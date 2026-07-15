@@ -1,0 +1,332 @@
+(*
+Author:  Christian Sternagel <c.sternagel@gmail.com> (2016, 2018)
+Author:  Thomas Sternagel <thomas.sternagel@uibk.ac.at> (2017)
+License: LGPL (see file COPYING.LESSER)
+*)
+
+section \<open>Infeasibility of Conditional Critical Pairs\<close>
+
+theory Infeasibility
+  imports
+    Ifrit_Impl
+    Left_Inline_Conditions_Impl
+    Nonreach.Nonreachability
+    Conditional_Critical_Pairs
+    Conditional_Rewriting_Impl
+begin
+
+datatype ('f, 'v) inf_transformation =
+  Ifrit_Rules_Inf
+    "('f, 'v) crule list"
+| Left_Inline_Conditions_Inf "('f, 'v) crules"
+    "(('f, 'v) crule \<times> ('f, 'v) rules) list"
+| Right_Inline_Conditions_Inf "('f, 'v) crules"
+    "(('f, 'v) crule \<times> ('f, 'v) rules) list"
+
+primrec check_inf_transform
+  where
+    "check_inf_transform R (Ifrit_Rules_Inf R') =
+      (do {
+       check (check_Ifrit_rules_iff R R') (showsl_lit (STR ''Given rules are not sound wrt Ifrit.''));
+       return R'
+      })"
+  | "check_inf_transform R (Left_Inline_Conditions_Inf R' rcs) =
+      (do {
+       check_left_inline_conds R R' rcs;
+       return R'
+      })"
+  | "check_inf_transform R (Right_Inline_Conditions_Inf R' rcs) =
+      (do {
+       check_inline_conds R R' rcs;
+       return R'
+      })"
+
+print_theorems
+
+lemma check_inf_transform:
+  fixes R :: "('f::{compare_order, showl}, 'v::{compare_order, showl}) crule list"
+  assumes "check_inf_transform R t = Inr S"
+  shows "(cstep (set R))\<^sup>* \<subseteq> (cstep (set S))\<^sup>*"
+  using assms
+proof (induction t arbitrary: R S)
+  case (Ifrit_Rules_Inf R')
+  then have "cstep (set R) \<subseteq> cstep (set S)"
+    using check_Ifrit_rules_iff by auto
+  then show ?case
+    by (simp add: rtrancl_mono)
+next
+  case (Left_Inline_Conditions_Inf R' rcs)
+  moreover have "S = R'"
+    using Left_Inline_Conditions_Inf by simp
+  ultimately show ?case
+    using check_left_inline_conds[of R R' rcs] by auto
+next
+  case (Right_Inline_Conditions_Inf R' rcs)
+  then show ?case by auto
+qed
+
+datatype ('f, 'v, 'rp) infeasibility_proof =
+  Infeasible_Compound_Conditions 'f "('f, 'v, 'rp) nonreachability_proof"
+| Infeasible_Equation "('f, 'v) term" "('f, 'v) term" "('f, 'v, 'rp) nonreachability_proof"
+| Infeasible_Subset "('f, 'v) rules" "('f, 'v, 'rp) infeasibility_proof"
+| Infeasible_Rhss_Equal "('f, 'v) term" "('f, 'v) term" "('f, 'v) term" "('f, 'v, 'rp) nonjoinability_proof"
+| Infeasible_Trans "('f, 'v) term" "('f, 'v) term" "('f, 'v) term" "('f, 'v, 'rp) nonreachability_proof"
+| Infeasible_Transform "('f, 'v) inf_transformation" "('f, 'v, 'rp) infeasibility_proof"
+
+abbreviation "err_not_cond e \<equiv>
+  showsl_lit (STR ''equation '') \<circ> showsl_eq e \<circ> showsl_lit (STR '' is not in list of conditions\<newline>'')"
+
+(*TODO: move*)
+definition "trancl_of_list xs =
+  concat (map (\<lambda>x. map (\<lambda>y. (x, y)) (trancl_list_impl xs [x])) (map fst xs))"
+
+lemma set_trancl_of_list [simp]:
+  "set (trancl_of_list R) = (set R)\<^sup>+"
+proof (intro equalityI subrelI)
+  fix x y assume "(x, y) \<in> (set R)\<^sup>+"
+  then show "(x, y) \<in> set (trancl_of_list R)"
+    by (induct) (auto dest: trancl_into_trancl simp: trancl_list_impl trancl_of_list_def, force)
+qed (auto simp: trancl_list_impl trancl_of_list_def)
+
+lemma conds_n_sat_trancl_of_list:
+  assumes "conds_n_sat R n cs \<sigma>"
+  shows "conds_n_sat R n (trancl_of_list cs) \<sigma>"
+using assms by (fastforce simp: conds_n_sat_iff elim: trancl.induct)
+
+context fixed_get_redtriple
+begin
+fun check_infeasible'
+where
+  "check_infeasible' R cs (Infeasible_Compound_Conditions f p) =
+    check_nonreachable (map fst R) (Fun f (map fst cs)) (Fun f (map snd cs)) p"
+| "check_infeasible' R cs (Infeasible_Equation s t p) = do {
+    check ((s, t) \<in> set cs) (err_not_cond (s, t));
+    check_nonreachable (map fst R) s t p
+  }"
+| "check_infeasible' R cs (Infeasible_Subset cs' p) = do {
+    check_subseteq cs' cs <+? err_not_cond;
+    check_infeasible' R cs' p
+  }"
+| "check_infeasible' R cs (Infeasible_Rhss_Equal s t u p) = do {
+    check ((s, u) \<in> set cs) (err_not_cond (s, u));
+    check ((t, u) \<in> set cs) (err_not_cond (t, u));
+    check_nonjoinable (map fst R) s t p
+  }"
+| "check_infeasible' R cs (Infeasible_Trans s t u p) = do {
+    check ((s, t) \<in> set cs) (err_not_cond (s, t));
+    check ((t, u) \<in> set cs) (err_not_cond (t, u));
+    check_nonreachable (map fst R) s u p
+  }"
+| "check_infeasible' R cs (Infeasible_Transform t p) = do {
+    R' \<leftarrow> check_inf_transform R t;
+    check_infeasible' R' cs p
+  }"
+
+definition
+  check_infeasible ::
+    "(('f::{compare_order, showl}, string) rules \<times> ('f, string, 'rp) infeasibility_proof) list \<Rightarrow>
+      ('f, string) crules \<Rightarrow> ('f, string) rules \<Rightarrow> ('f, string) rules \<Rightarrow> showsl check"
+where
+  "check_infeasible css R cs\<^sub>1 cs\<^sub>2 = check_exm (\<lambda>(cs, p). do {
+    let cs' = cs\<^sub>1 @ cs\<^sub>2;
+    check (match_rules cs cs' \<noteq> None \<and> match_rules cs' cs \<noteq> None) id;
+    check_infeasible' R (trancl_of_list cs) p
+  }) css (showsl_sep id showsl_nl)"
+end
+
+lemma perm_term_of_crule_eq_conv:
+  "\<pi> \<bullet> term_of_crule \<rho>\<^sub>1 = term_of_crule \<rho>\<^sub>2 \<longleftrightarrow> \<pi> \<bullet> \<rho>\<^sub>1 = \<rho>\<^sub>2"
+by (cases \<rho>\<^sub>1 rule: crule_cases; cases \<rho>\<^sub>2 rule: crule_cases; auto simp: eqvt rules_enc_aux)
+
+lemma match_crule_imp_variants:
+  fixes \<rho>\<^sub>1 \<rho>\<^sub>2 :: "('f, 'v :: infinite) crule"
+  assumes "match_crule \<rho>\<^sub>2 \<rho>\<^sub>1 = Some \<sigma>\<^sub>1" and "match_crule \<rho>\<^sub>1 \<rho>\<^sub>2 = Some \<sigma>\<^sub>2"
+  shows "\<exists>\<pi>. \<pi> \<bullet> \<rho>\<^sub>1 = \<rho>\<^sub>2"
+proof -
+  have "term_of_crule \<rho>\<^sub>2 \<cdot> \<sigma>\<^sub>2 = term_of_crule \<rho>\<^sub>1"
+    and "term_of_crule \<rho>\<^sub>1 \<cdot> \<sigma>\<^sub>1 = term_of_crule \<rho>\<^sub>2"
+    using assms by (auto simp: match_crule_alt_def dest: match_sound)
+  then obtain \<pi> where "\<pi> \<bullet> \<rho>\<^sub>2 = \<rho>\<^sub>1"
+    using term_variants_iff [of "term_of_crule \<rho>\<^sub>2" "term_of_crule \<rho>\<^sub>1"]
+    unfolding perm_term_of_crule_eq_conv by auto
+  then have "-\<pi> \<bullet> \<rho>\<^sub>1 = \<rho>\<^sub>2" by auto
+  then show ?thesis ..
+qed
+
+context sound_get_redtriple
+begin
+lemma check_infeasible':
+  assumes "isOK (check_infeasible' R cs p)"
+  shows "\<not> (\<exists>\<sigma> n. conds_n_sat (set R) n cs \<sigma>)"
+using assms
+proof (induct p arbitrary: cs R)
+  case ok: (Infeasible_Compound_Conditions f p)
+  let ?s = "Fun f (map fst cs)"
+  let ?t = "Fun f (map snd cs)"
+  have "\<not> (\<exists>\<sigma>. (?s \<cdot> \<sigma>, ?t \<cdot> \<sigma>) \<in> (rstep (Ru (set R)))\<^sup>*)"
+    using ok by (auto simp: Ru_def dest: check_nonreachable)
+  moreover
+  { fix \<sigma> and n assume "conds_n_sat (set R) n cs \<sigma>"
+    then have "\<forall>(s, t) \<in> set cs. (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> (rstep (Ru (set R)))\<^sup>*"
+      using rtrancl_mono [OF cstep_imp_Ru_step, of "set R"]
+      by (auto simp: conds_n_sat_iff split: prod.splits dest!: csteps_n_imp_csteps)
+    then have "(?s \<cdot> \<sigma>, ?t \<cdot> \<sigma>) \<in> (rstep (Ru (set R)))\<^sup>*"
+      by (unfold subst_apply_term.simps, intro args_steps_imp_steps)
+         (auto intro: args_steps_imp_steps) }
+   ultimately show ?case by auto
+next
+  case (Infeasible_Equation s t p)
+  then have "(s, t) \<in> set cs" and "\<not> (\<exists>\<sigma>. (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> (rstep (Ru (set R)))\<^sup>*)"
+    by (auto simp: Ru_def dest: check_nonreachable)
+  then show ?case
+    using csteps_n_imp_csteps [of _ _ "set R"]
+      and cstep_imp_Ru_step [THEN rtrancl_mono, of "set R"] by (auto simp: conds_n_sat_iff) blast
+next
+  case (Infeasible_Subset cs' p)
+  then show ?case by (auto simp: conds_n_sat_iff) blast
+next
+  case (Infeasible_Rhss_Equal s t u p)
+  then have "(s, u) \<in> set cs" and "(t, u) \<in> set cs"
+    and "\<not> (\<exists>\<sigma>. (s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> (rstep (Ru (set R)))\<^sup>\<down>)" by (auto simp: Ru_def dest: check_nonjoinable)
+  then show ?case
+    using csteps_n_imp_csteps [of _ _ "set R"] and cstep_imp_Ru_step [THEN rtrancl_mono, of "set R"]
+    by (blast dest: conds_n_satD)
+next
+  case (Infeasible_Trans s t u p)
+  then have "(s, t) \<in> set cs" and "(t, u) \<in> set cs"
+    and "\<not> (\<exists>\<sigma>. (s \<cdot> \<sigma>, u \<cdot> \<sigma>) \<in> (rstep (Ru (set R)))\<^sup>*)"
+    by (auto simp: Ru_def dest: check_nonreachable)
+  then show ?case
+    using csteps_n_imp_csteps [of _ _ "set R"]
+      and cstep_imp_Ru_step [THEN rtrancl_mono, of "set R"]
+    by (auto simp: conds_n_sat_iff subset_iff)
+      (metis (no_types, lifting) Pair_inject case_prodE rtrancl_trans)
+next
+  case (Infeasible_Transform t p)
+  then obtain S where S: "check_inf_transform R t = Inr S"
+    by auto
+  then have subs: "(cstep (set R))\<^sup>* \<subseteq> (cstep (set S))\<^sup>*"
+    using check_inf_transform[of R t S] by blast
+  have ok: "isOK (check_infeasible' S cs p)"
+    using Infeasible_Transform S by auto
+  then have "\<nexists>\<sigma> n. (\<forall>(s\<^sub>i, t\<^sub>i) \<in> set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep_n (set S) n)\<^sup>*)"
+    using Infeasible_Transform conds_n_sat_iff by blast
+  have "\<nexists>\<sigma> n. (\<forall>(s\<^sub>i, t\<^sub>i) \<in> set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep_n (set R) n)\<^sup>*)"
+  proof (rule ccontr)
+    assume "\<not> (\<nexists>\<sigma> n. \<forall>(s\<^sub>i, t\<^sub>i)\<in>set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep_n (set R) n)\<^sup>*)"
+    then obtain n \<sigma> where cstep_R: "(\<forall>(s\<^sub>i, t\<^sub>i)\<in>set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep_n (set R) n)\<^sup>*)"
+      by blast
+    then have "(\<forall>(s\<^sub>i, t\<^sub>i)\<in>set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep (set R))\<^sup>*)"
+      using csteps_n_imp_csteps by blast
+    then have csteps_S: "(\<forall>(s\<^sub>i, t\<^sub>i)\<in>set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep (set S))\<^sup>*)"
+      using subs by blast
+    then show "False"
+      by (meson Infeasible_Transform.hyps csteps_S ok conds_sat_conds_n_sat conds_sat_iff)
+  qed
+  then show ?case
+    using conds_n_sat_iff by blast
+qed
+
+lemma check_infeasible:
+  assumes "isOK (check_infeasible css R cs\<^sub>1 cs\<^sub>2)"
+  shows "\<not> (\<exists>\<sigma> n. conds_n_sat (set R) n (cs\<^sub>1 @ cs\<^sub>2) \<sigma>)"
+proof -
+  let ?cs' = "cs\<^sub>1 @ cs\<^sub>2"
+  obtain \<pi> :: "string perm" and cs and p where "(cs, p) \<in> set css"
+    and cs: "cs = \<pi> \<bullet> ?cs'" and ok: "isOK (check_infeasible' R (trancl_of_list cs) p)"
+    using assms and match_rules_imp_variants [of _ ?cs']
+    by (fastforce simp: check_infeasible_def Ru_def)
+  then have "\<not> (\<exists>\<sigma> n. conds_n_sat (set R) n cs \<sigma>)"
+    using conds_n_sat_trancl_of_list [of "set R" _ cs] by  (blast dest: check_infeasible')
+  then show ?thesis by (metis cs conds_n_sat_perm_shift rules_pt.permute_minus_cancel(2))
+qed
+end
+
+lemma infeasible_rule:
+  assumes "\<not> (\<exists>\<sigma>. conds_sat R (conds \<rho>) \<sigma>)"
+  shows "(cstep R) = (cstep (R - {\<rho>}))" (is "_ = (cstep ?R)")
+proof -
+  have "(cstep_n R n) = (cstep_n ?R n)" for n
+  proof (induct n)
+    case (Suc n)
+    show ?case
+    proof
+      show "(cstep_n R (Suc n)) \<subseteq> (cstep_n ?R (Suc n))"
+      proof
+        fix s t
+        assume "(s, t) \<in> cstep_n R (Suc n)"
+        then obtain C l r \<sigma> cs
+          where rule: "((l, r), cs) \<in> R"
+          and *: "\<forall>(s\<^sub>i, t\<^sub>i) \<in> set cs. (s\<^sub>i \<cdot> \<sigma>, t\<^sub>i \<cdot> \<sigma>) \<in> (cstep_n R n)\<^sup>*"
+          and s: "s = C\<langle>l \<cdot> \<sigma>\<rangle>"
+          and t: "t = C\<langle>r \<cdot> \<sigma>\<rangle>"
+          by (fast elim: cstep_nE)
+        then consider (\<rho>) "((l, r), cs) = \<rho>" | (not_\<rho>) "((l, r), cs) \<in> ?R" by fast
+        then show "(s, t) \<in> cstep_n ?R (Suc n)"
+        proof (cases)
+          case (\<rho>)
+          then have "conds_n_sat R n (conds \<rho>) \<sigma>" unfolding conds_n_sat_iff using * by fastforce
+          then have "conds_sat R (conds \<rho>) \<sigma>" using * conds_sat_conds_n_sat by blast
+          then show ?thesis using assms by auto
+        next
+          case (not_\<rho>)
+          then show ?thesis
+            using * by (intro cstep_n_SucI [of l r cs _ \<sigma> _ _ C]) (auto simp: Suc s t)
+        qed
+      qed
+    qed (auto intro: cstep_n_subset [THEN subsetD])
+  qed (simp)
+  then show ?thesis by (auto simp: cstep_iff)
+qed
+
+lemma infeasible_rules:
+  assumes "finite S"
+    and "\<forall>\<rho> \<in> S. \<not> (\<exists>\<sigma>. conds_sat R (conds \<rho>) \<sigma>)"
+  shows "(cstep R) = (cstep (R - S))" (is "_ = (cstep ?R)")
+  using assms
+proof (induct)
+  case (insert \<rho> S)
+  then have *: "\<nexists>\<sigma>. conds_sat (R - S) (conds \<rho>) \<sigma>"
+    using conds_sat_mono [of "R - S" R "conds \<rho>"] by blast
+  from insert have [simp]: "cstep R = cstep (R - S)" by auto
+  from infeasible_rule [OF *] and insert.hyps
+  show ?case
+    by (subst Diff_insert) simp
+qed (simp)
+
+context fixed_get_redtriple
+begin
+definition check_infeasible_rules
+  where
+    "check_infeasible_rules R = check_allm (\<lambda>(r, ps).
+      check_infeasible' R (conds r) ps
+      <+? (\<lambda>e. showsl_lit (STR ''rule '') \<circ> showsl_crule r \<circ> showsl_lit (STR '' is not infeasible\<newline>'') \<circ> e))"
+end
+
+context sound_get_redtriple
+begin
+lemma check_infeasible_rules:
+  assumes "isOK (check_infeasible_rules R rps)"
+  shows "cstep (set R) = cstep (set R - fst ` set rps)"
+proof -
+  have "\<forall>r \<in> fst ` set rps. \<not> (\<exists>\<sigma>. conds_sat (set R) (conds r) \<sigma>)"
+    using assms and check_infeasible' [of R]
+    by (fastforce simp: check_infeasible_rules_def conds_sat_conds_n_sat)
+  from infeasible_rules [OF _ this] show ?thesis by simp
+qed
+
+lemma check_infeasible_rules_imp_infeasible_rules_wrt:
+  assumes "isOK (check_infeasible_rules R rps)"
+  shows "infeasible_rules_wrt (set R) (fst ` set rps)"
+  using assms and check_infeasible' [of R]
+  by (auto simp: check_infeasible_rules_def infeasible_rules_wrt_def infeasible_at_def)
+
+lemma check_infeasible_rules':
+  assumes "isOK (check_infeasible_rules (list_diff R (map fst rps)) rps)"
+  shows "cstep (set R) = cstep (set R - fst ` set rps)"
+  using check_infeasible_rules_imp_infeasible_rules_wrt [OF assms]
+    and infeasible_rules_wrt_minimize [of "set R" "fst ` set rps"]
+  by (intro infeasible_rules_wrt_cstep_conv) simp
+end
+
+end

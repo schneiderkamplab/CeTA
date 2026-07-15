@@ -1,0 +1,51 @@
+theory LA_Solver_Common
+  imports 
+    Show.Shows_Literal
+    Simplex.Simplex
+    Containers.Containers
+    Polynomial_Interpolation.Is_Rat_To_Rat
+    "HOL-Library.Code_Abstract_Char" 
+    "HOL-Library.Code_Target_Numeral" 
+    Ord.Formula
+begin
+
+(* Code setup *)
+declare Lcm_fin.set_eq_fold[code_unfold]
+derive (eq) ceq "term" rat atom QDelta
+derive (linorder) compare rat QDelta
+derive compare_order atom
+derive (linorder) compare_order rat
+derive (compare) ccompare rat QDelta atom
+derive (rbt) set_impl rat atom QDelta
+
+lemma un_foldr[code_unfold]: "\<Union> (set xs) = foldr (\<union>) xs {}"
+  by (induct xs, auto)
+
+lemma in_ints_code_unfold[code_unfold]: "(x \<in> \<int>) = is_int_rat x"
+  by simp
+
+(* input type for linear constraints: restrict to integer coefficients *)
+
+type_synonym 'v lin_poly = "(integer \<times> 'v) list" 
+
+datatype lin_rel = Less | Less_Equal | Equal
+datatype 'v lin_constraint = Lin_Constraint "'v lin_poly" lin_rel integer
+
+(* example formula *)
+
+(* 2 y \<le> 11 \<and> x > 5 \<longrightarrow> x > y *)
+(* as NNF: !2 y \<le> 11 \<or> ! x > 5 \<or> x > y) *)
+(* negated version with negations removed: 2 y \<le> 11 \<and> x > 5 \<and> x \<le> y *)
+
+definition example_la_formula :: "String.literal lin_constraint formula" where
+  "example_la_formula = Disjunction [
+      NegAtom (Lin_Constraint [(2,STR ''y'')] Less_Equal 11),
+      NegAtom (Lin_Constraint [(-1,STR ''x'')] Less (-5)),
+      Atom (Lin_Constraint [(-1,STR ''x''), (1,STR ''y'')] Less 0)
+  ]" 
+
+
+end
+
+
+

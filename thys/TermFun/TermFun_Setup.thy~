@@ -1,0 +1,298 @@
+(*
+Author:  Christian Sternagel <c.sternagel@gmail.com> (2011-2015)
+Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2011-2015)
+License: LGPL (see file COPYING.LESSER)
+*)
+theory TermFun_Setup
+  imports "Ceta_Checker"
+  keywords "define_trs" :: thy_decl and "define_dps" :: thy_decl 
+    and "export_termination_problem" :: diag
+    and "export_dp_problem" :: diag
+begin
+
+section \<open>Preliminaries\<close>
+
+consts
+  emb_const :: "'a \<Rightarrow> (string, string) term list \<Rightarrow> (string, string) term"
+  (infix "<>" 100)
+
+setup \<open>
+let
+  fun quote (Const (@{const_name emb_const}, _) $ Const (n, _)) =
+      SOME (@{term "Fun :: string \<Rightarrow> (string,string) term list \<Rightarrow> (string,string) term"} $ HOLogic.mk_string n)
+    | quote _ = NONE
+
+  fun unquote (Const (@{const_name Term.Fun}, _) $ n) =
+      ((SOME (Const (@{const_name emb_const}, dummyT)
+        $ Const(HOLogic.dest_string n, dummyT)))
+      handle TERM _ => NONE)
+    | unquote _ = NONE
+
+  fun rew f ts ctxt =
+    let 
+      val thy = Proof_Context.theory_of ctxt
+      val ts' = map (Pattern.rewrite_term thy [] [f]) ts
+    in
+      if forall (aconv) (ts ~~ ts') then NONE
+      else SOME (ts', ctxt)
+    end
+in
+   Context.theory_map 
+    (Syntax_Phases.term_check' ~1 "quote_funs" (rew quote)
+    #> Syntax_Phases.term_uncheck' 1 "quote_funs" (rew unquote)) 
+end
+\<close>
+
+lemma length_eqI: "length xs = length ys \<Longrightarrow> length (x#xs) = length (y#ys)"
+  by auto
+
+lemma pairwiseI1: "\<forall>i<length []. P i"
+  and pairwiseI2: "(x, y) \<in> R
+  \<Longrightarrow> \<forall>i<length xs. (xs ! i, ys ! i) \<in> R
+  \<Longrightarrow> \<forall>i<length (x#xs). ((x#xs) ! i, (y#ys) ! i) \<in> R"
+  by auto (case_tac i, auto)
+
+lemma list_memberI1: "x \<in> set (x # xs)"
+  and list_memberI2: "y \<in> set xs \<Longrightarrow> y \<in> set (x # xs)"
+  by auto
+
+lemma fixes f shows inv_imageI: "(f a, f b) \<in> R \<Longrightarrow> (a, b) \<in> inv_image R f"
+  by auto
+
+lemmas into_ctxt_closure =  subsetD[OF ctxt.subset_closure]
+
+abbreviation (input) def_prefix :: "char" where "def_prefix \<equiv> CHR ''d''"
+abbreviation (input) con_prefix :: "char" where "con_prefix \<equiv> CHR ''c''"
+
+abbreviation (input) tf_Defs :: "string set" where "tf_Defs \<equiv> {f . f \<noteq> [] \<and> hd f = def_prefix}"
+definition tf_Q :: "(string,string)terms" where "tf_Q \<equiv> {Fun f ts | f ts. f \<in> tf_Defs}"
+abbreviation (input) tf_QL :: "(string,string)term list" where "tf_QL \<equiv> []"
+
+definition map_constructor :: "(string,string)term \<Rightarrow> (string,string)term"
+  where "map_constructor \<equiv> map_funs_term (Cons con_prefix)"
+
+lemma map_constructor_Fun[simp]: "map_constructor (Fun f ts) = Fun (Cons con_prefix f) (map map_constructor ts)"
+  unfolding map_constructor_def by simp
+
+definition check_constructor :: "(string,string)term \<Rightarrow> bool"
+  where "check_constructor \<equiv> \<lambda> t. funs_term t \<inter> tf_Defs = {}"
+
+lemma check_constructor_map_constructor[simp]: "check_constructor (map_constructor t)"
+  unfolding check_constructor_def map_constructor_def
+  by (induction t, auto)
+
+lemma check_constructor_fun[simp]: "check_constructor (Fun f ts) = ((f = [] \<or> hd f \<noteq> def_prefix) \<and> Ball (set ts) check_constructor)"
+  unfolding check_constructor_def by auto
+
+lemmas check_constructor_simps = check_constructor_map_constructor check_constructor_fun
+
+lemma check_constructor_NF: assumes check: "check_constructor t"
+  shows "t \<in> NF_terms tf_Q"
+proof
+  fix C l \<sigma>
+  assume "l \<in> tf_Q" and t: "t = C \<langle> l \<cdot> \<sigma> \<rangle>" 
+  from this[unfolded tf_Q_def] obtain f ls where l: "l = Fun f ls" and f: "f \<in> tf_Defs" by auto
+  have "(f,length ls) \<in> funas_term t" unfolding t l by simp
+  then have ft: "f \<in> funs_term t" unfolding funs_term_funas_term by force
+  with check[unfolded check_constructor_def] f show False by auto
+qed
+
+abbreviation dp_step :: "(string,string)trs \<Rightarrow> (string,string)trs"
+  where "dp_step P \<equiv> rqrstep True tf_Q P \<inter> NF_terms tf_Q \<times> UNIV"    
+
+lemma tf_Q_rqrstepI: assumes lr: "(l,r) \<in> R"
+  and no_defs: "Ball (set (args (l \<cdot> \<sigma>))) check_constructor \<and> Ball (set (map \<sigma> (vars_rule_list (l,r)))) check_constructor"
+  shows "(l \<cdot> \<sigma>, r \<cdot> \<sigma>) \<in> rqrstep True tf_Q R"
+  by (rule rqrstepI[OF _ lr refl refl], unfold NF_terms_args_conv[symmetric] NF_subst_def,
+  insert no_defs, auto intro: check_constructor_NF)
+
+lemma tf_Q_qrstepI: assumes lr: "(l,r) \<in> R"
+  and no_defs: "Ball (set (args (l \<cdot> \<sigma>))) check_constructor \<and> Ball (set (map \<sigma> (vars_rule_list (l,r)))) check_constructor"
+  shows "(l \<cdot> \<sigma>, r \<cdot> \<sigma>) \<in> qrstep True tf_Q R"
+  using tf_Q_rqrstepI[OF lr no_defs] unfolding qrstep_iff_rqrstep_or_nrqrstep by auto
+
+lemma dp_stepI: assumes lr: "(l,r) \<in> P"
+  and no_defs: "check_constructor (l \<cdot> \<sigma>) \<and> Ball (set (map \<sigma> (vars_rule_list (l,r)))) check_constructor"
+    (is "?a \<and> ?b")
+  shows "(l \<cdot> \<sigma>, r \<cdot> \<sigma>) \<in> dp_step P"
+proof -
+  from no_defs have "Ball (set (args (l \<cdot> \<sigma>))) check_constructor" (is ?c)
+    by (cases "l \<cdot> \<sigma>", auto)
+  with no_defs have "?c \<and> ?b" and "?a" by auto
+  from tf_Q_rqrstepI[OF lr this(1)] check_constructor_NF[OF \<open>?a\<close>]
+  show ?thesis by simp
+qed
+
+lemmas stepI_simps = Term.subst_apply_term.simps
+               Trs.vars_rule_list_def 
+               Term_More.vars_term_list.simps
+               Product_Type.fst_conv 
+               Product_Type.snd_conv
+               Fun.fun_upd_apply
+               HOL.if_True
+               HOL.if_False
+               List.list.inject
+               List.list.distinct
+               numeral_mod_numeral
+               HOL.refl
+               List.Ball_set
+               List.remdups.simps
+               term.sel
+               List.list_all_simps
+               List.append.simps
+               TermFun_Setup.check_constructor_simps
+               list.sel
+               List.list.simps
+               List.concat.simps
+               HOL.simp_thms
+               Set.empty_iff
+               Set.insert_iff
+               Set.ball_simps
+
+abbreviation "sub_steps R \<equiv> (supt \<union> qrstep True tf_Q R)^*"
+
+definition "dpr_step P R \<equiv> relto (dp_step P) (qrstep True tf_Q R)"
+
+lemma finite_dpp_imp_SN_dpr_step: assumes "finite_dpp (True,False,P,{},tf_Q,{},R)"
+  shows "SN (dpr_step P R)" unfolding dpr_step_def
+proof 
+  fix f
+  let ?R = "qrstep True tf_Q R"
+  let ?P = "dp_step P"
+  let ?RP = "?R^* O ?P O ?R^*"
+  assume steps: "\<forall> i. (f i, f (Suc i)) \<in> ?RP"
+  then have "\<forall> i. \<exists> u v. (f i, u) \<in> ?R^* \<and> (u,v) \<in> ?P \<and> (v, f (Suc i)) \<in> ?R^*" by blast
+  from choice[OF this] obtain u where "\<forall> i. \<exists> v. (f i, u i) \<in> ?R^* \<and> (u i,v) \<in> ?P \<and> (v, f (Suc i)) \<in> ?R^*" by blast
+  from choice[OF this] obtain v where bef: "\<And> i. (f i, u i) \<in> ?R^*" and step: "\<And> i. (u i,v i) \<in> ?P" and aft: "\<And> i. (v i, f (Suc i)) \<in> ?R^*" by blast  
+  {
+    fix i
+    from step[of i, unfolded rqrstep_def]
+    have
+    "\<exists> l r \<sigma> . (l, r) \<in> P \<and> u i = l \<cdot> \<sigma> \<and> v i = r \<cdot> \<sigma> \<and> NF_subst True (l, r) \<sigma> tf_Q" by auto
+  }
+  from choice[OF allI[OF this]] obtain l 
+    where "\<forall> i. \<exists> r \<sigma> . (l i, r) \<in> P \<and> u i = l i \<cdot> \<sigma> \<and> v i = r \<cdot> \<sigma> \<and> NF_subst True (l i, r) \<sigma> tf_Q" ..
+  from choice[OF this] obtain r
+    where "\<forall> i. \<exists> \<sigma> . (l i, r i) \<in> P \<and> u i = l i \<cdot> \<sigma> \<and> v i = r i \<cdot> \<sigma> \<and> NF_subst True (l i, r i) \<sigma> tf_Q" ..
+  from choice[OF this] obtain \<sigma>
+    where P: "\<And> i. (l i, r i) \<in> P" and u: "\<And> i. u i = l i \<cdot> \<sigma> i" 
+      and v: "\<And> i. v i = r i \<cdot> \<sigma> i" and nfs: "\<And> i. NF_subst True (l i, r i) (\<sigma> i) tf_Q" 
+    by blast
+  {
+    fix i
+    from step[of i] u[of i] have nf: "l i \<cdot> \<sigma> i \<in> NF_terms tf_Q" by auto
+    from aft[of i] bef[of "Suc i"] have "(r i \<cdot> \<sigma> i, l (Suc i) \<cdot> \<sigma> (Suc i)) \<in> ?R^*" unfolding u v by auto
+    note nf this
+  } note NF_steps = this
+  have "QDP_Framework.ichain (True,False,P,{},tf_Q,{},R) l r \<sigma>" unfolding QDP_Framework.ichain.simps
+    using P NF_steps nfs by auto
+  with assms show False unfolding finite_dpp_def by auto
+qed
+
+abbreviation "dpr_steps P R \<equiv> (dp_step P \<union> qrstep True tf_Q R)^*"
+
+lemma qterm_relI_initial:
+  "(x, y) \<in> qrstep True tf_Q R \<Longrightarrow> (y, z) \<in> sub_steps R \<Longrightarrow> (x,z) \<in> (supt \<union> qrstep True tf_Q R)^+"
+  by (rule rtrancl_into_trancl2) (rule UnI2)
+
+lemma dp_qterm_relI_initial:
+  "(x, y) \<in> dp_step P \<Longrightarrow> (y, z) \<in> dpr_steps P R \<Longrightarrow> (x,z) \<in> (dpr_step P R)^+"
+  unfolding relto_trancl_conv dpr_step_def by blast
+
+lemma dp_SN_dpr_step_trancl: "SN (dpr_step P R) \<Longrightarrow> SN ((dpr_step P R)^+)"
+  by (rule SN_imp_SN_trancl)
+
+lemma SN_supt_qrstep_trancl: "SN (qrstep True Q R) \<Longrightarrow> SN ((supt \<union> qrstep True Q R)^+)"
+  using SN_imp_SN_trancl[OF SN_imp_SN_union_supt[OF _ ctxt_closed_qrstep], of True Q R] 
+  unfolding Un_commute[of supt "qrstep True Q R"] .
+
+lemma qterm_relI_step:
+  "(x, y) \<in> qrstep True tf_Q R \<Longrightarrow> (y, z) \<in> sub_steps R \<Longrightarrow> (x,z) \<in> sub_steps R"
+  by (rule converse_rtrancl_into_rtrancl) (rule UnI2)
+
+lemma qterm_relI_steps:
+  "(x, y) \<in> (qrstep True tf_Q R)^* \<Longrightarrow> (y, z) \<in> sub_steps R \<Longrightarrow> (x,z) \<in> sub_steps R"
+  apply (rule rtrancl_trans)
+  apply (rule subsetD[OF rtrancl_mono])
+  by (rule Un_upper2)
+
+lemma dp_qterm_relI_steps:
+  assumes xy: "(x, y) \<in> (qrstep True tf_Q R)^*"
+  and yz: "(y, z) \<in> dpr_steps P R"
+  shows "(x,z) \<in> dpr_steps P R"
+proof -
+  have "(x,y) \<in> dpr_steps P R"
+    by (rule set_mp[OF rtrancl_mono xy], auto)
+  with yz show ?thesis by auto
+qed
+
+lemma qterm_relI_sub:
+  "(x, y) \<in> supt \<Longrightarrow> (y, z) \<in> sub_steps R \<Longrightarrow> (x,z) \<in> sub_steps R"
+  by (rule converse_rtrancl_into_rtrancl) (rule UnI1)
+
+lemma finite_dpp_mono_tf_Q: assumes Q: "Q \<subseteq> tf_Q"
+  and fin: "finite_dpp (nfs,False,P,Pw,Q,R,Rw)"
+  shows "finite_dpp (nfs,False,P,Pw,tf_Q,R,Rw)"
+  unfolding finite_dpp_def
+proof (intro notI, elim exE)
+  fix s t \<sigma>
+  assume "min_ichain (nfs, False, P,Pw,tf_Q,R,Rw) s t \<sigma>"
+  then have "QDP_Framework.ichain (nfs, False, P,Pw,tf_Q,R,Rw) s t \<sigma>" by simp
+  from ichain_mono[OF this subset_refl subset_refl NF_terms_anti_mono[OF Q] subset_refl subset_refl]
+  fin show False unfolding finite_dpp_def by auto
+qed
+
+lemma SN_trs_mono_tf_Q: assumes Q: "Q \<subseteq> tf_Q"
+  and SN: "SN (qrstep True Q R)"
+  shows "SN (qrstep True tf_Q R)"
+  by (rule SN_subset[OF SN qrstep_NF_anti_mono[OF Q]])
+
+  
+class trs_rep =
+  fixes embed :: "'a \<Rightarrow> (string, string) term" ("\<lceil>_\<rceil>")
+
+definition dummy_term :: "(string, string) term" where
+  "dummy_term \<equiv> Fun ''dummy_term'' []"
+notation (output) dummy_term ("\<bullet>")
+
+lemmas map_simps = list.simps(8-9)
+
+lemmas set_list_conv = 
+  List.set_simps[symmetric] List.set_append[symmetric]
+  List.append.simps
+
+find_theorems "?x \<unrhd> ?x" 
+
+ML_file "ML/term.ML"
+ML_file "ML/basics.ML"
+ML_file "ML/call_tree.ML"
+ML_file "ML/trs_data.ML"
+ML_file "ML/tactics.ML"
+ML_file "ML/embed.ML" 
+ML_file "ML/xml.ML"
+
+(* putting this declaration after loading term_fun.ML:
+   - ceta_checker_simp will work, loading term_fun.ML performs code generation *)
+(* putting this declaration before loading term_fun.ML:
+   - ceta_checker_simp will not work, loading term_fun.ML is immediate *)
+(* without this declaration: apply eval will perform code generation *)
+(* declare ceta_checker_def[code del] ceta_dp_checker_def[code del]  *)
+
+ML_file "ML/term_fun.ML"
+setup Term_Fun.setup
+
+
+(* Example proof to test startup-time of ceta_eval.
+   very fast by eval, if code_reflect and ceta_checker_def[code del] are used *)
+
+lemma "SN (qrstep True (set tf_QL) (set ([]::(string, string) rules)))"
+  apply (rule ceta_checker[of _ _ "R_is_Empty::(string, label_type, string) trs_termination_proof"])
+  apply ceta_checker_simp \<comment> \<open>or eval\<close>
+done
+
+lemma "finite_dpp (True,False,set ([]::(string, string) rules),set [],set tf_QL, set [], set[])"
+  apply (rule ceta_dp_checker[of _ _ _ "P_is_Empty::(string, label_type, string) dp_termination_proof"])
+  apply eval
+done
+
+end

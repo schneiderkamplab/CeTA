@@ -1,0 +1,266 @@
+(* author: René Thiemann *)
+
+(* this theory provides an alternative code setup for characters and strings, 
+   where in particular characters are represented by integers and not by 8 booleans,
+   so that execution is faster *)
+
+theory Code_Char_Setup
+  imports 
+    Main
+    "HOL-Library.Char_ord" 
+begin
+
+(* representative type for characters *)
+
+typedef char_integer = "{x :: integer . 0 \<le> x \<and> x < 256}" by auto
+
+setup_lifting type_definition_char_integer
+
+lift_definition char_of_ci :: "char_integer \<Rightarrow> char" is char_of_integer .
+lift_definition integer_of_ci :: "char_integer \<Rightarrow> integer" is "\<lambda> x. x" .
+lift_definition ascii_of_ci :: "char_integer \<Rightarrow> char_integer" is "\<lambda> x. if x < 128 then x else x - 128" by simp
+
+lift_definition (code_dt) char_integer_of_integer :: "integer \<Rightarrow> char_integer" 
+  is "\<lambda> x. if 0 \<le> x \<and> x < 256 then x 
+  else Code.abort (STR ''char_integer_of_integer argument must be in range 0 .. 255'') (\<lambda> _. integer_of_char (char_of x))" 
+  using unique_euclidean_semiring_numeral_class.pos_mod_bound[of "256 :: integer"]
+    unique_euclidean_semiring_numeral_class.pos_mod_sign[of "256 :: integer"]
+  by (auto simp: integer_of_char_def)
+
+lemma digit7_char_of[simp]: "0 \<le> (c :: integer) \<Longrightarrow> c < 128 \<Longrightarrow> \<not> digit7 (char_of c)" 
+  by (simp add: char_of_def bit_iff_odd unique_euclidean_semiring_numeral_class.div_less)
+
+lemma bit_add: fixes x :: "'a :: {unique_euclidean_semiring_with_bit_operations,ordered_semiring}"  
+  assumes "i < n" "0 \<le> x" "x < 2^n" shows "bit (x + c * 2^n) i = bit x i" 
+proof -
+  define j where "j = n - i" 
+  from assms(1) have n: "n = i + j" and j: "j > 0" unfolding j_def by auto
+  have id: "c * (2 ^ i * 2 ^ j) = 2 ^ i * (c * 2^j)" by (simp add: ac_simps)
+  show ?thesis unfolding n power_add bit_iff_odd id using j by simp
+qed
+
+lemma integer_of_char_of_nat: "integer_of_char c = integer_of_nat (of_char c :: nat)" 
+proof -
+  define ds where "ds = [digit0 c, digit1 c, digit2 c, digit3 c, digit4 c, digit5 c, digit6 c, digit7 c]" 
+  show ?thesis unfolding integer_of_char_def unfolding of_char_def ds_def[symmetric]
+    by (induct ds, auto simp: integer_of_nat_def)
+qed
+
+definition char_of_main :: "'a :: unique_euclidean_semiring_with_bit_operations \<Rightarrow> integer" where
+  "char_of_main n = sum_list (map (\<lambda> i. if bit n i then 2^i else 0) [0..<8])" 
+
+lemma char_of_main_code[code]: "char_of_main n
+   = (let s1 = if bit n 0 then 1 else 0;
+          s2 = if bit n 1 then s1 + 2 else s1;
+          s3 = if bit n 2 then s2 + 4 else s2;
+          s4 = if bit n 3 then s3 + 8 else s3;
+          s5 = if bit n 4 then s4 + 16 else s4;
+          s6 = if bit n 5 then s5 + 32 else s5;
+          s7 = if bit n 6 then s6 + 64 else s6;
+          s8 = if bit n 7 then s7 + 128 else s7
+       in s8)" 
+proof -
+  have id: "[0 ..< 8] = [0,1,2,3,4,5,6,7]" by code_simp
+  show ?thesis unfolding id Let_def char_of_main_def
+    by simp
+qed
+
+lemma char_of_main_256: "0 \<le> char_of_main n" "char_of_main n < 256" 
+proof -
+  let ?expr = "\<lambda> k. sum_list (map (\<lambda> i. if bit n i then 2^i else 0) [0..<k]) :: integer" 
+  have "0 \<le> ?expr k \<and> ?expr k < 2^k" for k
+    by (induct k, auto)
+  from this[of 8] show "0 \<le> char_of_main n" "char_of_main n < 256" unfolding char_of_main_def by auto
+qed
+
+
+lift_definition char_of_impl :: "'a :: unique_euclidean_semiring_with_bit_operations \<Rightarrow> char_integer" is
+  char_of_main using char_of_main_256 by auto
+
+(* this logically belongs somewhere else *)
+lemma (in semidom_divide) sum_list_dvdI: assumes "\<And> y. y \<in> set ys \<Longrightarrow> x dvd (y :: 'a)" 
+  shows "x dvd sum_list ys" 
+  using assms by (induct ys, auto)  
+
+
+(* now perform setup of alternative char-representation *)
+
+declare [[code drop: 
+      integer_of_char 
+      char_of_integer
+      String.ascii_of 
+      String.asciis_of_literal 
+      String.literal_of_asciis 
+      of_char
+      char_of]]
+
+declare 
+  equal_char_def[code del]
+  less_char_def[code del] 
+  less_eq_char_def[code del]
+
+lemma char_of_integer_of_char [code abstype]:
+  \<open>char_of_integer (integer_of_char c) = c\<close>
+  by (simp add: char_of_integer_def integer_of_char_def)
+
+
+lemma [code]:
+  \<open>integer_of_char (char_of a) = char_of_main a\<close>
+proof -
+  have "integer_of_char (char_of a) = horner_sum of_bool 2
+     [bit a 0, bit a 1, bit a 2, bit a 3,
+      bit a 4, bit a 5, bit a 6,
+      bit a 7]" 
+    by (simp add: char_of_def integer_of_char_def)
+  also have "\<dots> = horner_sum of_bool 2 (map (\<lambda> i. bit a i) [0..<8])" 
+    by (rule arg_cong[of _ _ "horner_sum _ _ "], auto simp: numeral_eq_Suc)
+  also have "\<dots> = char_of_main a" unfolding char_of_main_def
+    by (auto simp: numeral_eq_Suc)
+  finally show ?thesis .
+qed
+
+export_code char_of in Haskell module_name B2
+
+lemma integer_of_char_code[code]: "integer_of_char (char_of_ci x) = integer_of_ci x" 
+  by (transfer, auto simp: integer_of_char_def char_of_integer_def unique_euclidean_semiring_numeral_class.mod_less)
+
+lemma char_of_integer_code[code]: "char_of_integer x = char_of_ci (char_integer_of_integer x)"
+  by (transfer, auto simp: char_of_integer_def integer_of_char_def)
+
+lemma ascii_of_code[code]: "String.ascii_of (char_of_ci c) = char_of_ci (ascii_of_ci c)" 
+proof (transfer, goal_cases)
+  case (1 c)
+  show ?case
+  proof (cases "c < 128")
+    case True
+    thus ?thesis using 1 
+      by (simp add: char_of_integer_def String.ascii_of_def char_of_def bit_iff_odd unique_euclidean_semiring_numeral_class.div_less)
+  next
+    case False
+    define d where "d = c - 128"
+    from False have "0 \<le> d" "d < 128" "c = d + 128" using 1 unfolding d_def by auto
+    thus ?thesis apply (simp add: String.ascii_of_def char_of_integer_def char_of_def, intro conjI)
+      subgoal using bit_add[of 1 7 d 1] by simp
+      subgoal using bit_add[of 2 7 d 1] by simp
+      subgoal using bit_add[of 3 7 d 1] by simp
+      subgoal using bit_add[of 4 7 d 1] by simp
+      subgoal using bit_add[of 5 7 d 1] by simp
+      subgoal using bit_add[of 6 7 d 1] by simp
+      subgoal unfolding bit_iff_odd by (simp add: unique_euclidean_semiring_numeral_class.div_less)
+      done
+  qed
+qed
+
+lemma of_char_code[code]: "of_char c = of_nat (nat_of_integer (integer_of_char c))"
+proof -
+  define ds where "ds = [digit0 c, digit1 c, digit2 c, digit3 c, digit4 c, digit5 c, digit6 c, digit7 c]" 
+  show ?thesis 
+    unfolding integer_of_char_of_nat nat_of_integer_integer_of_nat
+    unfolding of_char_def ds_def[symmetric]
+    by (induct ds, auto simp: integer_of_nat_def)
+qed
+
+lemma less_char_code[code]: "less c d = (integer_of_char c < integer_of_char d)" 
+  unfolding less_char_def unfolding integer_of_char_of_nat integer_of_nat_def by auto
+
+lemma less_eq_char_code[code]: "less_eq c d = (integer_of_char c \<le> integer_of_char d)" 
+  unfolding less_eq_char_def unfolding integer_of_char_of_nat integer_of_nat_def by auto
+
+lemma equal_char_code[code]: "equal_class.equal c d = (integer_of_char c = integer_of_char d)" 
+  unfolding equal_char_def integer_of_char_of_nat integer_of_nat_def by simp
+
+lemma char_comparison[code_unfold]: 
+  "((of_char c :: nat) < of_char d) \<longleftrightarrow> integer_of_char c < integer_of_char d"
+  "((of_char c :: nat) \<le> of_char d) \<longleftrightarrow> integer_of_char c \<le> integer_of_char d"
+  unfolding integer_of_char_of_nat integer_of_nat_def by auto
+
+lemma char_of_code[code]: "char_of (n :: 'a :: unique_euclidean_semiring_with_bit_operations) = char_of_ci (char_of_impl n)" 
+proof transfer
+  fix n :: 'a
+  {
+    fix i :: nat
+    assume i: "i < 8" 
+    define si where "si = Suc i" 
+    let ?sum = "\<lambda> xs. (\<Sum>i\<leftarrow>xs. if bit n i then 2 ^ i else 0) :: integer" 
+    define c where "c = ?sum [Suc i ..< 8] div 2 ^ (Suc i)" 
+    have range: "0 \<le> ?sum [0 ..< k] \<and> ?sum [0 ..< k] < 2^k" for k
+      by (induct k, auto)
+    have "char_of_main n = ?sum [0..<8]" unfolding char_of_main_def by simp
+    also have "[0..<8] = take i [0..<8] @ drop i [0 ..< 8]"
+      by (metis append_take_drop_id)
+    also have "take i [0..<8] = [0 ..< i]" using i by simp
+    also have "drop i [0 ..< 8] = i # [Suc i ..< 8]" using i
+      by (metis add_0 drop_upt upt_conv_Cons)
+    finally have "char_of_main n = ?sum [0..< Suc i] + ?sum [Suc i ..< 8]" by simp
+    also have "?sum [Suc i ..< 8] = c * 2^(Suc i)" 
+      unfolding c_def si_def[symmetric]
+      by (subst dvd_div_mult_self, intro sum_list_dvdI, auto simp: le_imp_power_dvd)
+    also have "bit (?sum [0..< Suc i] + \<dots>) i = bit (?sum [0..< Suc i]) i" 
+      by (rule bit_add, insert range[of "Suc i"], auto)
+    also have "\<dots> = bit (?sum [0 ..< i] + ?sum [i]) i" by simp
+    also have "\<dots> = bit (?sum [i]) i" unfolding bit_iff_odd[of _ i]
+      apply (rule arg_cong[of _ _ odd])
+      apply (subst div_plus_div_distrib_dvd_right)
+      by (insert range[of i] unique_euclidean_semiring_numeral_class.div_less, auto)
+    also have "\<dots> = bit n i" by (simp add: bit_iff_odd)
+    finally have "bit (char_of_main n) i = bit n i" .
+  }
+  from this[of 0] this
+  show "char_of n = char_of_integer (char_of_main n)" 
+    unfolding char_of_integer_def 
+    unfolding char_of_def by auto
+qed
+
+(* while char_of_code provides a generic implementation, there are faster implementations for types int and nat,
+   (of course, assuming that integer_of_nat/int is efficient, which is ensured e.g., by also importing HOL-Library.Code_Target_Numeral) *)
+
+lemma char_integer_of_int: "char_of (integer_of_int x) = char_of x"
+  by (metis char_of_char int_of_integer_inverse int_of_integer_numeral integer_of_char_def integer_of_nat.abs_eq integer_of_nat_eq_of_nat modulo_integer.abs_eq of_char_code of_char_of)
+
+lemma char_of_nat_code_unfold[code_unfold]: "(char_of :: nat \<Rightarrow> char) = (char_of_integer o integer_of_nat)" 
+  unfolding char_of_integer_def integer_of_nat_def
+  by (intro ext, auto)
+
+lemma char_of_int_code_unfold[code_unfold]: "(char_of :: int \<Rightarrow> char) = (char_of_integer o integer_of_int)"
+  unfolding char_of_integer_def 
+  by (intro ext, unfold o_def, subst char_integer_of_int, simp)
+
+(* finally we provide a separate implementation for all 256 characters *)
+
+(* we first define all 256 characters (x = 0 .. 255) following the following schema:
+
+lift_definition char_x :: char_integer is x by simp
+*)
+local_setup \<open>
+  let fun create_char x = Lifting_Def.lift_def 
+    Lifting_Def.default_config 
+    (Binding.name ("char_" ^ string_of_int x),Mixfix.NoSyn) 
+    @{typ char_integer} 
+    (HOLogic.mk_number @{typ integer} x)
+    (fn ctxt => unfold_tac ctxt @{thms eq_onp_def} THEN simp_tac ctxt 1)
+    []
+    #> #2
+  in fold create_char (0 upto 255) end
+\<close>
+
+(* and then prove code-unfold lemmas of the following shape
+ 
+lemma char_256_unfold[code_unfold]: "CHR 0x00 = char_of_ci char_0" ... "CHR 0xFF = char_of_ci char_255"
+
+*)
+
+local_setup \<open>
+  fn lthy => let
+    (* there might be a better way than hard-coding the theory name in the name_prefix *)
+    val name_prefix = "Code_Char_Setup.char_"
+    fun create_eq x = let
+      val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (HOLogic.mk_char x, 
+        Const (@{const_name char_of_ci}, @{typ "char_integer \<Rightarrow> char"}) $ 
+          Const (name_prefix ^ string_of_int x, @{typ char_integer})));
+      in Goal.prove_future lthy [] [] eq (fn {context = ctxt, ...} => Transfer.transfer_tac true ctxt 1 THEN 
+               unfold_tac ctxt @{thms char_of_integer_def char_of_def} THEN simp_tac ctxt 1) end
+    val thms = map create_eq (0 upto 255)
+    in Local_Theory.note ((Binding.name "char_256_unfold", @{attributes [code_unfold]}), thms) lthy |> #2 end
+\<close>
+
+end

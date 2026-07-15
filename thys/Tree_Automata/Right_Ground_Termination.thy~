@@ -1,0 +1,117 @@
+(* to be started with
+
+PATH/TO/ISABELLE/bin/isabelle jedit -d . -l Preimage Right_Ground_Termination.thy
+
+*)
+
+theory Right_Ground_Termination
+  imports 
+    Rewriting.Trs (* abstract version *)
+    Rewriting.Trs_Impl (* includes a few algorithms, e.g., compute one-step relation *)
+begin
+
+text \<open>Hints:
+You can ctrl-click (cmd-click on Mac) 
+on elements to jump to their definition. Test
+it on @{typ "('f,'v)term"} to see the definition of
+terms or on @{term rstep} to see the definition of the
+r(ewrite)step. This clicking also works on outside text-blocks
+in the regular theory file, e.g., you can also click on the word
+rstep the lemma below
+\<close>
+
+lemma "R \<noteq> {} \<Longrightarrow> rstep R \<noteq> {}" 
+  sorry (* just assume this lemma (or some proof step) *)
+
+typ "('f,'v)trs" (* the type of a TRS *)
+typ "('f,'v)term" (* the type of a term with variable of type 'v and 
+                     function symbols of type 'f *)
+term rrstep (* a root-rewrite step *)
+
+find_theorems (10) rstep rrstep (* in the output-panel you can inspect the 
+  10 top-most known lemmas that contain both rstep and rrstep *)
+
+term ground (* being ground a ground-term *)
+
+find_theorems ground "_ :: (_,_)trs" (* search for facts on ground terms and
+  TRSs. The second pattern means: anything that contains an expression of
+  term-type. *)
+
+thm rstep.induct (* induction-rule over terms that comes from the
+  inductive definition of rstep *)
+
+thm term.induct (* induction over terms *)
+thm ctxt.induct (* induction over contexts *)
+
+term SN (* strong-normalization, ie. termination *)
+
+term "SN (rstep R)" (* termination of the rewrite-relation of a TRS R *)
+       
+find_theorems "SN" (* several facts on termination *)
+find_theorems (200) SN_on (* even more on termination w.r.t. a set of starting objects *)
+find_theorems (200) SN_on "_ :: nat \<Rightarrow> _" (* connection between termination
+  and functions from nat to elements *)
+thm SN_defs (* a full definition of SN *)
+
+find_theorems ideriv
+
+
+(*https://stackoverflow.com/questions/28633353/converting-a-set-to-a-list-in-isabelle *)
+fun set_to_list :: "'a set \<Rightarrow> 'a list" where
+"set_to_list s = (SOME l. set l = s)"
+
+fun list_to_set :: "'a list \<Rightarrow> 'a set" where
+"list_to_set [] = {}"|
+"list_to_set (x#xs) = {x} \<union> list_to_set xs"
+
+
+fun right_ground::"(('f,'v) rule) \<Rightarrow> bool " where
+"right_ground (l,r) = ground r"
+
+fun right_ground_TRS :: "('f, 'v) trs \<Rightarrow> bool " where 
+"right_ground_TRS x = Ball x (right_ground)"
+
+fun is_subterm :: "('f,'v) rule \<Rightarrow> bool" where
+"is_subterm (s,t) = s \<lhd> t"
+
+
+inductive_set rhs_tuple :: "_ \<Rightarrow> ('f,'v) rule set" for R :: "('f, 'v) trs"
+  where
+  rhs_tuple: "\<And>r. (_, r) \<in> R \<Longrightarrow> (r,r) \<in> rhs_tuple R"
+
+
+fun rewrite_tuple :: "('f,'v) rule set \<Rightarrow>  ('f, 'v) rule \<Rightarrow> ('f,'v) rule set" where
+"rewrite_tuple rs (r,t) = {(r,t_i) . t_i \<in> list_to_set (rewrite (set_to_list rs) t)}"
+
+fun rewrite_tuple_v2 :: "('f,'v) rules \<Rightarrow> ('f,'v) rule \<Rightarrow> ('f,'v) rules" where
+"rewrite_tuple_v2 rs (r,t) = [(r,t_i) . t_i \<leftarrow> (rewrite rs t)]"
+
+
+fun init :: "('f,'v) rule set \<Rightarrow> ('f,'v) rule set" where
+"init R =  \<Union>( rewrite_tuple R ` rhs_tuple R )"
+
+
+fun advance_sequence :: " ('f,'v) rules \<Rightarrow> ('f,'v) rules \<Rightarrow> ('f,'v) rules" where
+"advance_sequence R [] = []" |
+"advance_sequence R (x#xs) = (rewrite_tuple_v2 R x)  @ (advance_sequence R xs)"
+
+function right_ground_termination_step :: "('f, 'v) rules \<Rightarrow> ('f, 'v) rules \<Rightarrow> bool" where
+"right_ground_termination_step T S = 
+  (if S = []
+  then True
+  else
+    (if (find is_subterm S) = None
+    then right_ground_termination_step T ( advance_sequence T S)
+    else False
+    ) 
+  )"
+  by auto
+ 
+
+fun right_ground_termination :: "('f, 'v) trs \<Rightarrow> bool" where
+"right_ground_termination T = 
+  (if right_ground_TRS T
+  then right_ground_termination_step (set_to_list T) (set_to_list (init T))
+  else False)"
+
+end

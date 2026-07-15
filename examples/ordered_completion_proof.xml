@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="cpfHTML.xsl"?>
+<certificationProblem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../xml/cpf3.xsd">
+  <!--
+  <input>
+    <orderedCompletionInput>
+      <equations>
+        <rules>
+          <rule>
+            <lhs>
+              <funapp>
+                <name>g</name>
+                
+                  <var>X</var>
+                
+                
+                  <funapp>
+                    <name>h</name>
+                    
+                      <var>X</var>
+                    
+                  </funapp>
+                
+              </funapp>
+            </lhs>
+            <rhs>
+              <funapp>
+                <name>g</name>
+                
+                  <funapp>
+                    <name>h</name>
+                    
+                      <var>Y</var>
+                    
+                  </funapp>
+                
+                
+                  <var>Y</var>
+                
+              </funapp>
+            </rhs>
+          </rule>
+          <rule>
+            <lhs>
+              <funapp>
+                <name>f</name>
+                
+                  <funapp>
+                    <name>g</name>
+                    
+                      <funapp>
+                        <name>h</name>
+                        
+                          <var>X</var>
+                        
+                      </funapp>
+                    
+                    
+                      <var>X</var>
+                    
+                  </funapp>
+                
+              </funapp>
+            </lhs>
+            <rhs>
+              <funapp>
+                <name>c</name>
+              </funapp>
+            </rhs>
+          </rule>
+          <rule>
+            <lhs>
+              <funapp>
+                <name>g</name>
+                
+                  <var>X</var>
+                
+                
+                  <funapp>
+                    <name>h</name>
+                    
+                      <var>X</var>
+                    
+                  </funapp>
+                
+              </funapp>
+            </lhs>
+            <rhs>
+              <funapp>
+                <name>f</name>
+                
+                  <funapp>
+                    <name>g</name>
+                    
+                      <var>X</var>
+                    
+                    
+                      <funapp>
+                        <name>h</name>
+                        
+                          <var>X</var>
+                        
+                      </funapp>
+                    
+                  </funapp>
+                
+              </funapp>
+            </rhs>
+          </rule>
+        </rules>
+      </equations>
+      <trs>
+        <rules>
+          <rule>
+            <lhs>
+              <funapp>
+                <name>g</name>
+                
+                  <var>X</var>
+                
+                
+                  <funapp>
+                    <name>h</name>
+                    
+                      <var>X</var>
+                    
+                  </funapp>
+                
+              </funapp>
+            </lhs>
+            <rhs>
+              <funapp>
+                <name>c</name>
+              </funapp>
+            </rhs>
+          </rule>
+          <rule>
+            <lhs>
+              <funapp>
+                <name>g</name>
+                
+                  <funapp>
+                    <name>h</name>
+                    
+                      <var>X</var>
+                    
+                  </funapp>
+                
+                
+                  <var>X</var>
+                
+              </funapp>
+            </lhs>
+            <rhs>
+              <funapp>
+                <name>c</name>
+              </funapp>
+            </rhs>
+          </rule>
+          <rule>
+            <lhs>
+              <funapp>
+                <name>f</name>
+                
+                  <funapp>
+                    <name>c</name>
+                  </funapp>
+                
+              </funapp>
+            </lhs>
+            <rhs>
+              <funapp>
+                <name>c</name>
+              </funapp>
+            </rhs>
+          </rule>
+        </rules>
+      </trs>
+      <equations>
+        <rules/>
+      </equations>
+      <reductionOrder>
+        <knuthBendixOrder>
+          <w0>1</w0>
+          <precedenceWeight>
+            <precedenceWeightEntry>
+              <name>h</name>
+              <arity>1</arity>
+              <precedence>1</precedence>
+              <weight>1</weight>
+            </precedenceWeightEntry>
+            <precedenceWeightEntry>
+              <name>c</name>
+              <arity>0</arity>
+              <precedence>2</precedence>
+              <weight>1</weight>
+            </precedenceWeightEntry>
+            <precedenceWeightEntry>
+              <name>f</name>
+              <arity>1</arity>
+              <precedence>3</precedence>
+              <weight>1</weight>
+            </precedenceWeightEntry>
+            <precedenceWeightEntry>
+              <name>g</name>
+              <arity>2</arity>
+              <precedence>4</precedence>
+              <weight>0</weight>
+            </precedenceWeightEntry>
+          </precedenceWeight>
+        </knuthBendixOrder>
+      </reductionOrder>
+    </orderedCompletionInput>
+  </input>
+  <cpfVersion>2.1</cpfVersion>
+  -->
+  <cpfVersion>3</cpfVersion>
+  <lookupTables/>
+  <input><trsInput>
+    <trs> 
+      <rules/>
+    </trs>
+  </trsInput></input>
+  <answer><yes/></answer>  
+  <proof>
+    <orderedCompletionProof>
+      <run>
+        <orderedCompletionStep>
+          <deduce>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>g</name>
+                  
+                    <var>X</var>
+                  
+                  
+                    <funapp>
+                      <name>h</name>
+                      
+                        <var>X</var>
+                      
+                    </funapp>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>g</name>
+              
+                <var>X</var>
+              
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>g</name>
+                  
+                    <funapp>
+                      <name>h</name>
+                      
+                        <var>Y</var>
+                      
+                    </funapp>
+                  
+                  
+                    <var>Y</var>
+                  
+                </funapp>
+              
+            </funapp>
+          </deduce>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyr>
+            <funapp>
+              <name>g</name>
+              
+                <var>X</var>
+              
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>g</name>
+                  
+                    <funapp>
+                      <name>h</name>
+                      
+                        <var>Y</var>
+                      
+                    </funapp>
+                  
+                  
+                    <var>Y</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </simplifyr>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <deduce>
+            <funapp>
+              <name>g</name>
+              
+                <var>x285</var>
+              
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>x285</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>g</name>
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+              
+                <var>X</var>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </deduce>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyl>
+            <funapp>
+              <name>g</name>
+              
+                <var>X</var>
+              
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>g</name>
+                  
+                    <var>X</var>
+                  
+                  
+                    <funapp>
+                      <name>h</name>
+                      
+                        <var>X</var>
+                      
+                    </funapp>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </simplifyl>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyr>
+            <funapp>
+              <name>c</name>
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>g</name>
+                  
+                    <var>X</var>
+                  
+                  
+                    <funapp>
+                      <name>h</name>
+                      
+                        <var>X</var>
+                      
+                    </funapp>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>c</name>
+                </funapp>
+              
+            </funapp>
+          </simplifyr>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <orientr>
+            <funapp>
+              <name>c</name>
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>c</name>
+                </funapp>
+              
+            </funapp>
+          </orientr>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <orientl>
+            <funapp>
+              <name>g</name>
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+              
+                <var>X</var>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </orientl>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <orientl>
+            <funapp>
+              <name>g</name>
+              
+                <var>X</var>
+              
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </orientl>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyl>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>g</name>
+                  
+                    <funapp>
+                      <name>h</name>
+                      
+                        <var>X</var>
+                      
+                    </funapp>
+                  
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>c</name>
+                </funapp>
+              
+            </funapp>
+          </simplifyl>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyl>
+            <funapp>
+              <name>f</name>
+              
+                <funapp>
+                  <name>c</name>
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </simplifyl>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyl>
+            <funapp>
+              <name>g</name>
+              
+                <var>X</var>
+              
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>X</var>
+                  
+                </funapp>
+              
+            </funapp>
+            <funapp>
+              <name>g</name>
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>Y</var>
+                  
+                </funapp>
+              
+              
+                <var>Y</var>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </simplifyl>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <simplifyr>
+            <funapp>
+              <name>c</name>
+            </funapp>
+            <funapp>
+              <name>g</name>
+              
+                <funapp>
+                  <name>h</name>
+                  
+                    <var>Y</var>
+                  
+                </funapp>
+               
+              
+                <var>Y</var>
+              
+            </funapp>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </simplifyr>
+        </orderedCompletionStep>
+        <orderedCompletionStep>
+          <delete>
+            <funapp>
+              <name>c</name>
+            </funapp>
+          </delete>
+        </orderedCompletionStep>
+      </run>
+    </orderedCompletionProof>
+  </proof>
+  <metaInformation/>
+</certificationProblem>

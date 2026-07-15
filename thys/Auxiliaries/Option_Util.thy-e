@@ -1,0 +1,19 @@
+(*
+Author:  Christian Sternagel <c.sternagel@gmail.com> (2012-2015)
+Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2014, 2015)
+License: LGPL (see file COPYING.LESSER)
+*)
+theory Option_Util
+imports Main
+begin
+
+primrec option_to_list :: "'a option \<Rightarrow> 'a list"
+where
+  "option_to_list (Some a) = [a]" |
+  "option_to_list None = []"
+
+lemma set_option_to_list_sound [simp]:
+  "set (option_to_list t) = set_option t"
+  by (induct t) auto
+
+end

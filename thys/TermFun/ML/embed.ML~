@@ -1,0 +1,78 @@
+(*
+Author:  Alexander Krauss <krauss@in.tum.de> (2009, 2010)
+Author:  Christian Sternagel <c.sternagel@gmail.com> (2011-2015)
+Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2011-2015)
+License: LGPL (see file COPYING.LESSER)
+*)
+(*
+  Automated generation of trs_rep instances for datatypes
+*)
+
+signature EMBED =
+sig
+  val define_embedding : string -> theory -> theory
+end
+
+structure Embed : EMBED =
+struct
+
+open Isafor_Basics
+
+fun define_embedding tname thy =
+let
+  val {descr, ...} = Old_Datatype_Data.the_info thy tname
+  val _ = Output.tracing ("Deriving embed for type " ^ quote tname)
+  
+  (* extract the sorts, did not find nicer way, might be incorrect *)
+  val (_,(_,dtyps,_)) = hd descr 
+  val sorts = map Old_Datatype_Aux.dest_DtTFree dtyps
+
+  val sorts' =
+    map (fn (n, S) => (n, Sorts.inter_sort (Sign.classes_of thy) (trs_repS, S))) sorts
+  val tnames = map (#1 o snd) descr
+
+  val eqnss =
+    Old_Datatype_Aux.interpret_construction descr sorts'
+      { atyp = (fn T => 
+          if Sign.of_sort thy (T, trs_repS)
+          then embed_const T
+          else Abs (Name.uu, T, dummy_term)),
+        dtyp = (fn ftys => fn _ => fn (a, Ts) =>
+          if null ftys
+          then embed_const (Type (a, Ts))
+          else Abs (Name.uu, Type (a, Ts), dummy_term)) }
+    |> map (fn (tTs, constrs) =>
+         map (fn (constr, embs) =>
+          let
+            val Ts = map (domain_type o fastype_of) embs
+            val vars = map_index (fn (i,T) => Var (("x", i), T)) Ts
+            val lhs = embed_const (Type tTs) $
+              Term.list_comb (Const (constr, Ts ---> Type tTs), vars)
+            val rhs = mk_app true false constr (map (op $) (embs ~~ vars))
+          in
+            HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs))
+            |> fold_rev Logic.all vars
+          end) constrs)
+
+  fun definiens t =
+    let val _ $ (_ $ lhs $ _) = Term.strip_qnt_body @{const_name "Pure.all"} t
+    in dest_Free (fst (strip_comb lhs)) end
+
+  fun add_def lthy =
+    let
+      val eqnss' = burrow (Syntax.check_terms lthy) eqnss
+      val fixes = map (definiens o hd) eqnss'
+      val show_primrec_internal = false
+    in error "old-primrec needs adjustment in embed.ML" (*
+      Old_Primrec.primrec show_primrec_internal
+        (map (fn (n, T) => (Binding.name n, SOME T, NoSyn)) fixes)
+        (map (pair (Binding.empty, [Attrib.internal (K Trs_Data.add_emb)])) (flat eqnss)) lthy *)
+    end
+in
+  thy
+  |> Class.instantiation (tnames, sorts', trs_repS)
+  |> add_def |> snd
+  |> Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [])
+end
+
+end

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>
+                    Certification Problem
+                </title>
+<style type="text/css">
+                  * { font-family: "Times New Roman", Times, serif; }
+                  .dp_fun { color: darkgreen; }
+                  .error { color: red; }
+                  .fun { color: darkblue; }
+                  .label { color: gray; }
+                  .var { color: red; }
+                  table.matrix { margin: auto; } 
+                  .matrix td {
+                  text-align: center;
+                  line-height: 1.2em;
+                  padding: 0 1ex 0ex 1ex;
+                  }                  
+                  table.matrixbrak { display: inline-table; vertical-align: middle;}
+                  td.lbrak { width: 0.8ex;
+                  font-size: 50%;
+                  border: solid thin black;
+                  border-right: none;
+                  }
+                  td.rbrak { width: 0.8ex; 
+                  font-size: 50%;
+                  border: solid thin black;
+                  border-left: none;
+                  }
+                  .matrixbrak td { line-height: 1.4; }                                                        
+                </style>
+<style type="text/css">
+      .atom { display: inline-block; }
+      .prevar { color: green; font-style: italic; }
+      .postvar { color: brown; font-style: italic; }
+      .postvar:after { content: "'"; }
+      .error { color: red; }
+      .node { color: blue; }
+      .sharpnode { color: red; }
+      .sharpnode:after { font-size: small; vertical-align: super; content: "#"; }
+      .transition:before { font-size: medium; vertical-align: 15%; color: black; content: "→"; }
+      .sharptransition:before { font-size: medium; vertical-align: 15%; color: black; content: "→"; }
+      .transition { font-size: small; vertical-align: -15%; font-style: italic; }
+      .sharptransition { font-size: small; vertical-align: -15%; font-style: italic; color: red; }
+      .sharptransition:after { font-size: x-small; content: "#"; vertical-align: super; }
+    </style>
+</head>
+<body>
+<h1>
+                    Certification Problem                    
+                </h1>
+<h2>Input</h2>
+<p>We consider the TRS containing the following rules:</p>
+<table style="margin-left:20px">
+<tr>
+<td align="right">
+<span class="fun">I</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">I</span>(<span class="fun">J</span>(<span class="var">x</span>))</td>
+<td>(1)</td>
+</tr>
+<tr>
+<td align="right">
+<span class="fun">J</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))</td>
+<td>(2)</td>
+</tr>
+<tr>
+<td align="right">
+<span class="fun">H</span>(<span class="fun">I</span>(<span class="var">x</span>))</td>
+<td>→</td>
+<td>
+<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>))</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td align="right">
+<span class="fun">J</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>))</td>
+<td>(4)</td>
+</tr>
+</table>
+<p>The underlying signature is as follows:</p>{<span class="fun">I</span>/1, <span class="fun">J</span>/1, <span class="fun">K</span>/1, <span class="fun">H</span>/1}<h2>Property / Task</h2>Prove or disprove confluence.<h3>Answer / Result</h3>Yes.<h2>Proof (by ttt2)</h2>
+<h3>1 Rule Labeling</h3>
+      Confluence is proven, because all critical peaks can be joined decreasingly
+      using the following rule labeling function (rules that are not shown have label 0).
+      <ul>
+<li>
+<table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">I</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">I</span>(<span class="fun">J</span>(<span class="var">x</span>))</td>
+<td>(1)</td>
+</tr></table> ↦ 1</li>
+<li>
+<table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">J</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))</td>
+<td>(2)</td>
+</tr></table> ↦ 0</li>
+<li>
+<table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">H</span>(<span class="fun">I</span>(<span class="var">x</span>))</td>
+<td>→</td>
+<td>
+<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>))</td>
+<td>(3)</td>
+</tr></table> ↦ 0</li>
+<li>
+<table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">J</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>))</td>
+<td>(4)</td>
+</tr></table> ↦ 0</li>
+</ul>
+        The  critical pairs can be joined as follows. Here,
+           ↔  is always chosen as an appropriate rewrite relation which 
+          is automatically inferred by the certifier.
+        <ul>
+<li>
+                    The critical peak s = <span class="fun">H</span>(<span class="fun">I</span>(<span class="fun">J</span>(<span class="var">x</span>)))←→<sub>ε</sub> <span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)) = t can be joined as follows.
+                    <br>
+                    s 
+                     ↔ <span class="fun">K</span>(<span class="fun">J</span>(<span class="fun">J</span>(<span class="var">x</span>))) ↔ <span class="fun">K</span>(<span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))) ↔ 
+                    t
+                </li>
+<li>
+                    The critical peak s = <span class="fun">H</span>(<span class="fun">I</span>(<span class="fun">J</span>(<span class="var">x</span>)))←→<sub>ε</sub> <span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)) = t can be joined as follows.
+                    <br>
+                    s 
+                     ↔ <span class="fun">H</span>(<span class="fun">I</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))) ↔ <span class="fun">K</span>(<span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))) ↔ 
+                    t
+                </li>
+<li>
+                    The critical peak s = <span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))←→<sub>ε</sub> <span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)) = t can be joined as follows.
+                    <br>
+                    s 
+                     ↔ <span class="fun">K</span>(<span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))) ↔ 
+                    t
+                </li>
+<li>
+                    The critical peak s = <span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>))←→<sub>ε</sub> <span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>))) = t can be joined as follows.
+                    <br>
+                    s 
+                     ↔ <span class="fun">K</span>(<span class="fun">J</span>(<span class="fun">K</span>(<span class="fun">J</span>(<span class="var">x</span>)))) ↔ 
+                    t
+                </li>
+</ul>/&gt;
+    </body>
+</html>

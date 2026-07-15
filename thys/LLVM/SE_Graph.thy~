@@ -1,0 +1,2677 @@
+theory SE_Graph
+  imports
+    LLVM_Step
+    SE_Graph_Pre
+begin
+
+section \<open>Playing with bundle and notation\<close>
+
+bundle IA_formula_notation
+begin
+notation IA.implies (infix "\<Longrightarrow>\<^sub>I\<^sub>A" 41)
+notation IA.satisfies (infix "\<Turnstile>\<^sub>I\<^sub>A" 40)
+notation IA.eval ("\<lbrakk>(_)\<rbrakk>\<^sub>I\<^sub>A")
+notation form_and (infixl "\<and>\<^sub>f" 42)
+
+end
+
+bundle no_IA_formula_notation
+begin
+no_notation IA.implies (infix "\<Longrightarrow>\<^sub>I\<^sub>A" 41)
+no_notation IA.satisfies (infix "\<Turnstile>\<^sub>I\<^sub>A" 40)
+no_notation IA.eval ("\<lbrakk>(_)\<rbrakk>\<^sub>I\<^sub>A")
+no_notation form_and (infixl "\<and>\<^sub>f" 42)
+end
+
+unbundle IA_formula_notation
+
+(*
+TODO: replace camel case
+TODO: simplify the ...Inf_represents lemmas
+      you always have the two assumptions "represents cs\<^sub>1 n\<^sub>1" and "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+      and you always need to show
+      "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+      the only thing that differs is the used inference rule
+*)
+
+section \<open>Abstract states, mappings, etc\<close>
+
+type_synonym 'lv abstract_state = "(LLVM_State.pos, name, 'lv, llvm_type) abstract_state"
+
+inductive valid_var_mapping for
+  cs :: "(name, stack_value) mapping"
+  and as :: "name \<rightharpoonup> (llvm_type \<times> 'lv)"
+  and ev :: "'lv \<times> IA.ty \<Rightarrow> IA.val"
+  where
+  "valid_var_mapping cs as ev"
+  if
+  "\<And>i lv pv v t. Mapping.lookup cs pv = Some v
+   \<Longrightarrow> stack_value_to_int v = i
+   \<Longrightarrow> as pv = Some (t, lv)
+   \<Longrightarrow> ev (lv, IA.IntT) = IA.Int (stack_value_to_int v) \<and> t = ll_typeof v"
+
+inductive same_stack_names
+  for cs :: "(name, stack_value) mapping"
+    and as
+  where
+    "same_stack_names cs as"
+  if
+    "\<And>pv. (Mapping.lookup cs pv \<noteq> None) = (as pv \<noteq> None)"
+
+
+locale ll_mem_funs_extra = ll_mem_funs empty_mem 
+  for empty_mem :: "'mem" +
+  fixes len_of :: "llvm_type \<Rightarrow> nat"
+  fixes bounds :: "'mem \<Rightarrow> int \<Rightarrow> (int \<times> int) option"
+
+
+context ll_mem_funs_extra
+begin
+
+definition allocated_address where
+  "allocated_address m a = (bounds m a \<noteq> None)"
+
+inductive valid_allocs
+  for allos v m
+  where
+    "valid_allocs allos v m"
+  if
+    "\<And>lb ub lb' ub' a. (lb, ub) \<in> allos
+     \<Longrightarrow> v (lb, IA.IntT) = IA.Int lb'
+     \<Longrightarrow> v (ub, IA.IntT) = IA.Int ub'
+     \<Longrightarrow> lb' \<le> a
+     \<Longrightarrow> a < ub'
+     \<Longrightarrow> bounds m a = Some (lb', ub')"
+
+lemma valid_allocs_mem_unchanged_intro:
+  assumes
+    "valid_allocs allos\<^sub>1 v\<^sub>1 m\<^sub>1"
+    "allos\<^sub>1 = allos\<^sub>2"
+    "\<forall>(lb, ub) \<in> allos\<^sub>1. v\<^sub>1 (lb, IA.IntT) = v\<^sub>2 (lb, IA.IntT) \<and> v\<^sub>1 (ub, IA.IntT) = v\<^sub>2 (ub, IA.IntT)"
+    "bounds m\<^sub>2 = bounds m\<^sub>1"
+  shows
+    "valid_allocs allos\<^sub>2 v\<^sub>2 m\<^sub>2"
+  using assms unfolding valid_allocs.simps by (auto split: prod.splits)
+
+inductive valid_pointers for ps v m where
+  "valid_pointers ps v m"
+if
+  "\<And>a lt x a' x'. ps a = Some (lt, x)
+   \<Longrightarrow> v (a, IA.IntT) = IA.Int a'
+   \<Longrightarrow> v (x, IA.IntT) = IA.Int x'
+   \<Longrightarrow> allocated_address m a'
+       \<and> (\<exists>y. load m lt a' = Inr y \<and> stack_value_to_int y = x' \<and> ll_typeof y = lt) "
+
+lemma valid_pointers_mem_unchanged_intro:
+  assumes
+    "valid_pointers ps v\<^sub>1 m"
+    "\<forall>a lt x. ps a = Some (lt, x) \<longrightarrow> v\<^sub>1 (a, IA.IntT) = v\<^sub>2 (a, IA.IntT) \<and> v\<^sub>1 (x, IA.IntT) = v\<^sub>2 (x, IA.IntT)"
+  shows
+    "valid_pointers ps v\<^sub>2 m"
+  using assms unfolding valid_pointers.simps by (auto)
+
+
+inductive represents_frame for f as v where
+  "represents_frame f as v"
+  if
+  "frame.pos f = abstract_state.pos as"
+  "same_stack_names (frame.stack f) (abstract_state.stack as)"
+  "IA.assignment v"
+  "valid_var_mapping (frame.stack f) (abstract_state.stack as) v"
+  "IA.satisfies v (kb as)"
+  "valid_allocs (allocs as) v (mem f)"
+  "valid_pointers (pointers as) v (mem f)"
+
+inductive represents_state for fs as v where
+  "represents_state fs as v"
+if "frames fs \<noteq> []" and "represents_frame (hd (frames fs)) as v"
+
+lemma
+  "represents_state fs as v"
+  if "frames fs \<noteq> []" and "represents_frame (hd (frames fs)) as v"
+  apply(rule represents_state.intros)
+  using that by auto
+
+lemmas represents_simps = represents_state.simps represents_frame.simps
+
+end (* context ll_mem_funs *)
+
+fun encode_int_var where
+  "encode_int_var v = (Var (v, IA.IntT))"
+
+fun encode_int_const where
+  "encode_int_const i = Fun (IA.ConstF i) []"
+
+fun encode_sig :: "IA.sig \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.formula" where
+  "encode_sig s e\<^sub>1 e\<^sub>2 = Atom (Fun s [e\<^sub>1, e\<^sub>2])"
+
+fun encode_eq :: "_ IA.exp \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.formula" where
+  "encode_eq e\<^sub>1 e\<^sub>2 = encode_sig IA.EqF e\<^sub>1 e\<^sub>2"
+
+fun encode_binop :: "binop_instruction \<Rightarrow> _ \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.formula" where
+  "encode_binop Mul v t\<^sub>1 t\<^sub>2 = encode_eq (encode_int_var v) (Fun (IA.ProdF 2) [t\<^sub>1, t\<^sub>2])"
+| "encode_binop Add v t\<^sub>1 t\<^sub>2 = encode_eq (encode_int_var v) (Fun (IA.SumF 2) [t\<^sub>1, t\<^sub>2])"
+| "encode_binop Sub v t\<^sub>1 t\<^sub>2 = encode_eq (encode_int_var v)
+      (Fun (IA.SumF 2) [t\<^sub>1, Fun (IA.ProdF 2) [Fun (IA.ConstF (-1)) [], t\<^sub>2]])"
+| "encode_binop Xor v t\<^sub>1 t\<^sub>2 = True\<^sub>f" (* xor is not supported *)
+
+fun encode_pred :: "integerPredicate \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.exp \<Rightarrow> _ IA.formula" where
+  "encode_pred LLVM_Syntax.SLT t\<^sub>1 t\<^sub>2 = encode_sig IA.LessF t\<^sub>1 t\<^sub>2"
+| "encode_pred LLVM_Syntax.SGT t\<^sub>1 t\<^sub>2 = encode_sig IA.LessF t\<^sub>2 t\<^sub>1"
+| "encode_pred LLVM_Syntax.EQ t\<^sub>1 t\<^sub>2 = encode_sig IA.EqF t\<^sub>1 t\<^sub>2"
+| "encode_pred LLVM_Syntax.SLE t\<^sub>1 t\<^sub>2 = encode_sig IA.LeF t\<^sub>1 t\<^sub>2"
+| "encode_pred LLVM_Syntax.SGE t\<^sub>1 t\<^sub>2 = encode_sig IA.LeF t\<^sub>2 t\<^sub>1"
+| "encode_pred LLVM_Syntax.NE t\<^sub>1 t\<^sub>2 = NegAtom (Fun IA.EqF [t\<^sub>1, t\<^sub>2])"
+
+fun assig_of_frame :: "'mem frame \<Rightarrow> name \<times> IA.ty \<Rightarrow> IA.val" where
+  "assig_of_frame f (n,IA.IntT) = IA.Int (stack_value_to_int (the (Mapping.lookup (frame.stack f) n)))"
+| "assig_of_frame f (n,IA.BoolT) = IA.Bool undefined"
+
+definition assig_of_state :: "'mem llvm_state \<Rightarrow> name \<times> IA.ty \<Rightarrow> IA.val" where
+  "assig_of_state st = assig_of_frame (hd (frames st))"
+
+lemma same_stack_names_def': "same_stack_names cs as =
+  (\<forall>n. (\<exists>i x. Mapping.lookup cs n = Some x \<and> stack_value_to_int x = i) = (as n \<noteq> None))"
+  unfolding same_stack_names.simps by (auto)
+
+lemma assignment_assig_of_frame: "IA.assignment (assig_of_frame f)"
+proof -
+  have "assig_of_frame f (a, b) \<in> IA.Values_of_type b" for a b
+    by (cases b) auto
+  then show ?thesis
+    unfolding IA.assignment_def by (auto)
+qed
+
+lemma assignment_assig_of_state: "IA.assignment (assig_of_state cs)"
+  unfolding assig_of_state_def using assignment_assig_of_frame by blast
+
+fun operand_value :: "'v abstract_state \<Rightarrow> operand \<Rightarrow> (llvm_type \<times> 'v IA.exp) option" where
+  "operand_value as (LocalReference n) = map_option (\<lambda>(t, v). (t, encode_int_var v)) ((stack as) n)" |
+  "operand_value as (ConstantOperand (IntConstant l i)) = Some ((IntType l, encode_int_const i))"
+
+inductive update_as for as\<^sub>1 as\<^sub>2 :: "'v abstract_state" and n t v\<^sub>n \<phi> where
+  "update_as as\<^sub>1 as\<^sub>2 n t v\<^sub>n \<phi>"
+  if
+  "v\<^sub>n \<notin> all_sym_vars as\<^sub>1"
+  "stack as\<^sub>2 = ((stack as\<^sub>1)(n \<mapsto> (t, v\<^sub>n)))"
+  "IA.implies (kb as\<^sub>1 \<and>\<^sub>f \<phi>) (kb as\<^sub>2)"
+
+lemma operand_value_fresh: assumes
+  "operand_value as\<^sub>1 op = Some (t, lv)" "v\<^sub>n \<notin> all_sym_vars as\<^sub>1"
+shows "(v\<^sub>n, tt) \<notin> vars_term lv"
+proof (cases op)
+  case (LocalReference n)
+  then show ?thesis using assms ranI[of "abstract_state.stack as\<^sub>1"]
+    by (fastforce  simp add: all_sym_vars_def image_def update_as.simps)
+next
+  case (ConstantOperand x2)
+  then show ?thesis using assms by (cases x2, auto intro: llvm_constant.exhaust)
+qed
+
+lemma ssn_update:
+  assumes
+    "update_as as\<^sub>1 as\<^sub>2 n t v\<^sub>n \<phi>"
+    "same_stack_names s (stack as\<^sub>1)"
+    "s' = Mapping.update n x s"
+  shows "same_stack_names s' (stack as\<^sub>2)"
+  using assms unfolding same_stack_names.simps
+  by (auto simp add: lookup_update' elim: update_as.induct)
+
+
+(* TODO: Where does Trie2 come from?!? *)
+thm lookup_update
+
+lemma vvm_non_update_stack:
+  assumes
+    "valid_var_mapping s (stack as\<^sub>1) v"
+    "v' = v ((v\<^sub>m, IA.IntT) := IA.Int i)"
+    "v\<^sub>m \<notin> all_sym_vars as\<^sub>1"
+ shows "valid_var_mapping s (stack as\<^sub>1) v'"
+proof -
+  show ?thesis
+    unfolding valid_var_mapping.simps using assms ranI[of "abstract_state.stack as\<^sub>1"]
+    by (fastforce simp add: Mapping.lookup_update Mapping.lookup_update' valid_var_mapping.simps
+        update_as.simps all_sym_vars_def)
+qed
+
+lemma vvm_update_int:
+  assumes "valid_var_mapping s (stack as\<^sub>1) v" "update_as as\<^sub>1 as\<^sub>2 n (IntType l) v\<^sub>n \<phi>"
+    "v' = v ((v\<^sub>n, IA.IntT) := IA.Int i)"
+    "s' = Mapping.update n (IntegerValue l i) s"
+ shows "valid_var_mapping s' (stack as\<^sub>2) v'"
+proof -
+  show ?thesis
+    unfolding valid_var_mapping.simps using assms ranI[of "abstract_state.stack as\<^sub>1"]
+    apply(auto simp add: Mapping.lookup_update Mapping.lookup_update' valid_var_mapping.simps
+        update_as.simps all_sym_vars_def)
+    by blast
+qed
+
+lemma vvm_update_pointer:
+  assumes "valid_var_mapping s (stack as\<^sub>1) v" "update_as as\<^sub>1 as\<^sub>2 n (PointerType lt) v\<^sub>n \<phi>"
+    "v' = v ((v\<^sub>n, IA.IntT) := IA.Int i)"
+    "s' = Mapping.update n (Pointer lt i) s"
+ shows "valid_var_mapping s' (stack as\<^sub>2) v'"
+proof -
+  show ?thesis
+    unfolding valid_var_mapping.simps using assms ranI[of "abstract_state.stack as\<^sub>1"]
+    apply(auto simp add: Mapping.lookup_update Mapping.lookup_update' valid_var_mapping.simps
+        update_as.simps all_sym_vars_def)
+    by blast
+qed
+
+lemma operand_value_vvm_ssn:
+  assumes op: "SE_Graph.operand_value as op = Some (IntType l, lvt)"
+    and val: "valid_var_mapping (frame.stack f) (abstract_state.stack as) v"
+    and ssn: "same_stack_names (frame.stack f) (abstract_state.stack as)"
+  shows "IA.eval lvt v = IA.Int i \<longleftrightarrow> small_step.operand_value f op = Inr (IntegerValue l i)"
+proof (cases op)
+  case (ConstantOperand c)
+  then show ?thesis using op by (cases c) (auto simp add: small_step.operand_value.simps)
+next
+  case (LocalReference n)
+  have 1: "IA.eval lvt v = IA.Int i" if "small_step.operand_value f op = Inr (IntegerValue l i)"
+    using LocalReference op that val[unfolded valid_var_mapping.simps, rule_format, of n]
+    by (auto simp: small_step.operand_value.simps elim!: option_to_sum.elims)
+  have 2: "small_step.operand_value f op = Inr (IntegerValue l i)" if "IA.eval lvt v = IA.Int i"
+  proof -
+    obtain lv where lv: "abstract_state.stack as n = Some (IntType l, lv)" "lvt = encode_int_var lv"
+      using LocalReference op by auto
+    obtain iv where iv: "Mapping.lookup (frame.stack f) n = Some iv"
+      using lv ssn unfolding same_stack_names.simps by blast
+    note val' = val[unfolded valid_var_mapping.simps, rule_format, of n iv ]
+    have iv': "iv = IntegerValue l i"
+      using LocalReference iv lv op that val'
+      by (cases iv) (auto simp: small_step.operand_value.simps same_stack_names.simps)
+    then show ?thesis
+      using iv LocalReference by (auto simp: small_step.operand_value.simps )
+  qed
+  show ?thesis
+    using 1 2 by blast
+qed
+
+lemma operand_value_pointer_vvm_ssn:
+  assumes op: "SE_Graph.operand_value as op = Some (PointerType t, lvt)"
+    and val: "valid_var_mapping (frame.stack f) (abstract_state.stack as) v"
+    and ssn: "same_stack_names (frame.stack f) (abstract_state.stack as)"
+  shows "IA.eval lvt v = IA.Int i \<longleftrightarrow> small_step.operand_value f op = Inr (Pointer t i)"
+proof (cases op)
+  case (ConstantOperand c)
+  then show ?thesis using op by (cases c) (auto simp add: small_step.operand_value.simps)
+next
+  case (LocalReference n)
+  have 1: "IA.eval lvt v = IA.Int i" if "small_step.operand_value f op = Inr (Pointer t i)"
+    using LocalReference op that val[unfolded valid_var_mapping.simps, rule_format, of n]
+    by (auto simp: small_step.operand_value.simps elim!: option_to_sum.elims)
+  have 2: "small_step.operand_value f op = Inr (Pointer t i)" if "IA.eval lvt v = IA.Int i"
+  proof -
+    obtain lv where lv: "abstract_state.stack as n = Some (PointerType t, lv)" "lvt = encode_int_var lv"
+      using LocalReference op by auto
+    obtain iv where iv: "Mapping.lookup (frame.stack f) n = Some iv"
+      using lv ssn unfolding same_stack_names.simps by blast
+    note val' = val[unfolded valid_var_mapping.simps, rule_format, of n iv ]
+    have iv': "iv = (Pointer t i)"
+      using LocalReference iv lv op that val'
+      by (cases iv) (auto simp: small_step.operand_value.simps same_stack_names.simps)
+    then show ?thesis
+      using iv LocalReference by (auto simp: small_step.operand_value.simps )
+  qed
+  show ?thesis
+    using 1 2 by blast
+qed
+
+lemma (in ll_mem_funs_extra) operand_value_int_represents_frame:
+  assumes op: "SE_Graph.operand_value as op = Some (IntType l, lvt)"
+    and val: "represents_frame f as v"
+  shows "IA.eval lvt v = IA.Int i \<longleftrightarrow> small_step.operand_value f op = Inr (IntegerValue l i)"
+  using assms operand_value_vvm_ssn  unfolding represents_frame.simps by blast
+
+lemma (in ll_mem_funs_extra) operand_value_pointer_represents_frame:
+  assumes op: "SE_Graph.operand_value as op = Some (PointerType t, lvt)"
+    and val: "represents_frame f as v"
+  shows "IA.eval lvt v = IA.Int i \<longleftrightarrow> small_step.operand_value f op = Inr (Pointer t i)"
+  using assms operand_value_pointer_vvm_ssn  unfolding represents_frame.simps by blast
+
+lemma (in ll_mem_funs_extra) operand_value_represents_frame:
+  assumes op: "SE_Graph.operand_value as op = Some (t, lvt)"
+    and val: "represents_frame f as v"
+  shows "IA.eval lvt v = IA.Int i
+         \<longleftrightarrow> (\<exists>x. small_step.operand_value f op = Inr x \<and> stack_value_to_int x = i \<and> ll_typeof x = t)"
+proof (cases t)
+  case (IntType x1)
+  have "ll_typeof x = IntType x1 \<Longrightarrow> i = stack_value_to_int x
+   \<Longrightarrow> x = IntegerValue x1 (stack_value_to_int x)" for x
+    by (cases x) auto
+  then show ?thesis
+    using IntType assms by (auto simp add: operand_value_int_represents_frame)
+next
+  case (PointerType x3)
+  have "ll_typeof x = PointerType x3 \<Longrightarrow> i = stack_value_to_int x
+    \<Longrightarrow> x = Pointer x3 (stack_value_to_int x)" for x
+    by (cases x) auto
+  then show ?thesis
+    using PointerType assms by (auto simp add: operand_value_pointer_represents_frame)
+qed
+
+fun new_b_id_pos where
+  "new_b_id_pos (fn, _, _) new_b_id = (fn, new_b_id, 0)"
+
+inductive evalAsInf for prog as\<^sub>1 as\<^sub>2 where
+  "find_statement prog (pos as\<^sub>1) = Inr (Instruction (Assignment n (Binop binop o\<^sub>1 o\<^sub>2))) \<Longrightarrow>
+   pos as\<^sub>2 = inc_pos (pos as\<^sub>1) \<Longrightarrow>
+   operand_value as\<^sub>1 o\<^sub>1 = Some (IntType l\<^sub>1, te\<^sub>1) \<Longrightarrow>
+   operand_value as\<^sub>1 o\<^sub>2 = Some (IntType l\<^sub>2, te\<^sub>2) \<Longrightarrow>
+   l\<^sub>2 = l\<^sub>1 \<Longrightarrow>
+   0 < l\<^sub>1 \<Longrightarrow>
+   \<phi> = encode_binop binop v\<^sub>n te\<^sub>1 te\<^sub>2 \<Longrightarrow>
+   update_as as\<^sub>1 as\<^sub>2 n (IntType l\<^sub>1)  v\<^sub>n \<phi> \<Longrightarrow>
+   allocs as\<^sub>2 = allocs as\<^sub>1 \<Longrightarrow>
+   pointers as\<^sub>2 = pointers as\<^sub>1 \<Longrightarrow>
+   evalAsInf prog as\<^sub>1 as\<^sub>2"
+
+
+lemma update_pos_stack:
+  "update_pos (\<lambda>_. p) (update_stack (\<lambda>_. f) x) = update_stack (\<lambda>_. f) (update_pos (\<lambda>_. p) x)"
+  by (cases x) (auto)
+
+lemma option_to_sum:
+  "option_to_sum m l = Inr y \<Longrightarrow> m = Some y"
+  by (cases m)  auto
+
+
+
+locale ll_mem = ll_mem_funs_extra _ _ _ _  +
+  assumes S1: "len_of t > 0"
+  assumes S2: "l > 0 \<Longrightarrow> isOK (alloc m t l)"
+  assumes S3: "alloc m t l = Inr ((lb, ub), m') \<Longrightarrow> ub - lb = int (len_of t) * l"
+  assumes S4: "alloc m t l = Inr ((lb, ub), m') \<Longrightarrow> a \<notin> {lb..<ub} \<Longrightarrow> load m' t' a = load m t' a"
+  assumes S5: "alloc m t l = Inr ((lb, ub), m') \<Longrightarrow> a \<in> {lb..<ub} \<Longrightarrow> bounds m' a = Some (lb, ub)"
+  assumes S6: "alloc m t l = Inr ((lb, ub), m') \<Longrightarrow> a \<notin> {lb..<ub} \<Longrightarrow> bounds m' a = bounds m a"
+  assumes S7: "alloc m t l = Inr ((lb, ub), m') \<Longrightarrow> a \<in> {lb..<ub} \<Longrightarrow> bounds m a = None"
+  assumes S8: "bounds m a = Some (lb, ub) \<Longrightarrow> lb \<le> a \<Longrightarrow> a + len_of t \<le> ub \<Longrightarrow> (\<exists>m'. store m a t v = Inr m')"
+  assumes S9: "store m a t v = Inr m' \<Longrightarrow> bounds m' = bounds m"
+  assumes S10: "store m a t v = Inr m' \<Longrightarrow> a' + (len_of t') \<le> a \<or> a + (len_of t) \<le> a' \<Longrightarrow> load m' t' a' = load m t' a'"
+  assumes S11: "store m a t v = Inr m' \<Longrightarrow> load m' t a = Inr v"
+
+
+lemma (in IA_locale) assignment_eval_int: "assignment ev \<Longrightarrow> \<exists>i. ev (lv, IA.IntT) = IA.Int i"
+  by (metis IA.assignmentD IA.mem_Values_of_typeD prod.sel(2))
+
+lemma (in IA_locale) assignment_eval_to_int:
+  "assignment ev \<Longrightarrow> IA.to_int (ev (lv, IA.IntT)) = i \<Longrightarrow> ev (lv, IA.IntT) = IA.Int i"
+  using assignment_eval_int[of ev lv] by auto 
+
+
+lemma (in ll_mem) alloc_allocated_address_def:
+  assumes "alloc m t l = Inr ((lb, ub), m')"
+  shows  "bounds m' a = (if a \<in> {lb..<ub} then Some (lb, ub) else bounds m a)"
+  using assms S6 S5 by (auto)
+
+context ll_mem_funs_extra
+begin
+
+lemma evalAsInf_represents_step:
+  assumes
+    "evalAsInf prog as\<^sub>1 as\<^sub>2"
+    "represents_state cs\<^sub>1 as\<^sub>1 v\<^sub>1"
+  shows 
+    "isOK (step prog cs\<^sub>1)"
+    "step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow> (\<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id)"
+proof -
+  (* I choose this format for the lemmas, so that the lemma namespace doesn't get too crowded *)
+  have "isOK (step prog cs\<^sub>1)
+     \<and> (\<forall>cs\<^sub>2. step prog cs\<^sub>1 = Inr cs\<^sub>2 \<longrightarrow> (\<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id))"
+    using assms proof(induction rule: evalAsInf.induct)
+    case (1 n binop o\<^sub>1 o\<^sub>2 l\<^sub>1 te\<^sub>1 l\<^sub>2 te\<^sub>2 \<phi> v\<^sub>n)
+    note u = `update_as as\<^sub>1 as\<^sub>2 n (IntType l\<^sub>1) v\<^sub>n \<phi>`
+    obtain f\<^sub>1 fs\<^sub>1  where cs\<^sub>1: "frames cs\<^sub>1 = (f\<^sub>1 # fs\<^sub>1)"
+      using 1 unfolding represents_state.simps by (metis hd_Cons_tl)
+    interpret small_step alloc store load empty_mem prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 .
+    have [simp]: "hd (frames cs\<^sub>1) = f\<^sub>1"
+      by (simp add: cs\<^sub>1)
+    obtain fn bn p where p: "pos as\<^sub>1 = (fn, bn, p)"
+      using prod_cases3 by blast
+    then have p': "frame.pos f\<^sub>1 = (fn, bn, p)"
+      using 1 cs\<^sub>1 by (auto simp add: represents_state.simps represents_frame.simps)
+    have v: "represents_frame f\<^sub>1 as\<^sub>1 v\<^sub>1"
+      using 1 unfolding represents_state.simps by auto
+    obtain i\<^sub>1 where i\<^sub>1: "IA.eval te\<^sub>1 v\<^sub>1 = IA.Int i\<^sub>1"
+      using \<open>SE_Graph.operand_value as\<^sub>1 o\<^sub>1 = Some (IntType l\<^sub>1, te\<^sub>1)\<close> v IA.assignment_eval_int[of v\<^sub>1]
+      unfolding represents_frame.simps
+        (* Why is this proof taking so long? *)
+      by (cases o\<^sub>1) (fastforce elim: SE_Graph.operand_value.elims)+
+    obtain i\<^sub>2 where i\<^sub>2: "IA.eval te\<^sub>2 v\<^sub>1 = IA.Int i\<^sub>2"
+      using \<open>SE_Graph.operand_value as\<^sub>1 o\<^sub>2 = Some (IntType l\<^sub>2, te\<^sub>2)\<close> v IA.assignment_eval_int[of v\<^sub>1]
+      unfolding represents_frame.simps
+      by (cases o\<^sub>2) (fastforce elim: SE_Graph.operand_value.elims)+
+    have o\<^sub>1: "operand_value o\<^sub>1 = Inr (IntegerValue l\<^sub>1 i\<^sub>1)" "operand_value o\<^sub>2 = Inr (IntegerValue l\<^sub>1 i\<^sub>2)"
+      using v 1 i\<^sub>1 i\<^sub>2 operand_value_int_represents_frame by (blast)+
+    define s\<^sub>2 where
+      "s\<^sub>2 = Mapping.update n (IntegerValue l\<^sub>1 (binop_instruction binop i\<^sub>1 i\<^sub>2)) (frame.stack f\<^sub>1)"
+    define f\<^sub>2 where "f\<^sub>2 = update_pos (\<lambda>_. (fn, bn, Suc p)) (LLVM_State.update_stack (\<lambda>_. s\<^sub>2) f\<^sub>1)"
+    define cs\<^sub>2 where "cs\<^sub>2 = Llvm_state (f\<^sub>2 # fs\<^sub>1)"
+    have cs\<^sub>2: "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+      using o\<^sub>1 cs\<^sub>1 1 p' p by (auto simp add: cs\<^sub>2_def f\<^sub>2_def s\<^sub>2_def)
+    define v\<^sub>2 where "v\<^sub>2 = v\<^sub>1((v\<^sub>n, IA.IntT) := IA.Int (binop_instruction binop i\<^sub>1 i\<^sub>2))"
+    have "represents_state cs\<^sub>2' as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id" if "step prog cs\<^sub>1 = Inr cs\<^sub>2'" for cs\<^sub>2'
+    proof -
+      have cs\<^sub>2': "cs\<^sub>2' = cs\<^sub>2"
+        using that cs\<^sub>2 by simp
+      have v\<^sub>2: "v\<^sub>2 (v\<^sub>n, IA.IntT) = IA.Int (binop_instruction binop i\<^sub>1 i\<^sub>2)"
+        unfolding v\<^sub>2_def by simp
+      have [simp]: "IA.assignment v\<^sub>2"
+        using v unfolding v\<^sub>2_def represents_frame.simps by fastforce
+      have v\<^sub>2_i\<^sub>1: "IA.eval te\<^sub>1 v\<^sub>2 = IA.Int i\<^sub>1" "IA.eval te\<^sub>2 v\<^sub>2 = IA.Int i\<^sub>2"
+        using 1 i\<^sub>1 i\<^sub>2 unfolding v\<^sub>2_def update_as.simps
+        by (auto simp add: IA.eval_with_fresh_var[OF operand_value_fresh])
+      have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+      proof -
+        have "(v\<^sub>n, IA.IntT) \<notin> vars_formula (kb as\<^sub>1)"
+          using u by (auto simp add: all_sym_vars_def update_as.simps)
+        then show ?thesis
+          using u v by (auto simp add: represents_frame.simps v\<^sub>2_def)
+      qed
+      have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A \<phi>"
+        unfolding `\<phi> = encode_binop binop v\<^sub>n te\<^sub>1 te\<^sub>2` by (cases binop) (auto simp add: i\<^sub>1 i\<^sub>2 v\<^sub>2_i\<^sub>1 v\<^sub>2)
+      have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+        apply(rule IA.impliesD[of "kb as\<^sub>1 \<and>\<^sub>f \<phi>"])
+        using update_as.simps u apply(metis)
+        using represents_frame.simps by (auto)
+      have a: "same_stack_names s\<^sub>2 (abstract_state.stack as\<^sub>2)"
+        using v unfolding represents_frame.simps s\<^sub>2_def
+        by (intro ssn_update[OF u, of "frame.stack f\<^sub>1"]) auto
+      have vp: "valid_pointers (pointers as\<^sub>2) v\<^sub>2 (mem f\<^sub>2)"
+      proof -
+        have "x \<noteq> v\<^sub>n" if "pointers as\<^sub>1 a = Some (lt, x)" for a lt x
+          using that u ranI unfolding update_as.simps all_sym_vars_def by fastforce
+        then have a: "v\<^sub>1 (a, IA.IntT) = v\<^sub>2 (a, IA.IntT) \<and> v\<^sub>1 (x, IA.IntT) = v\<^sub>2 (x, IA.IntT)"
+          if "pointers as\<^sub>2 a = Some (lt, x) " for a lt x
+          using that 1 u unfolding update_as.simps by (auto simp add: v\<^sub>2_def all_sym_vars_def)
+        show ?thesis
+          using 1 v a unfolding f\<^sub>2_def represents_frame.simps
+          by (auto intro: valid_pointers_mem_unchanged_intro)
+      qed
+      have r_f\<^sub>2_v\<^sub>2: "represents_frame f\<^sub>2 as\<^sub>2 v\<^sub>2"
+        apply(auto simp add: f\<^sub>2_def represents_frame.simps)
+        subgoal
+          using 1  by (auto simp add: p)
+        subgoal using a by simp
+        subgoal
+          unfolding s\<^sub>2_def
+          apply(rule vvm_update_int[OF _ u, of "frame.stack f\<^sub>1" v\<^sub>1])
+          using represents_frame.cases v apply blast
+          using v\<^sub>2_def apply(simp)
+          using v\<^sub>2_def by (blast)
+        apply(rule valid_allocs_mem_unchanged_intro[of "allocs as\<^sub>1" v\<^sub>1 "mem f\<^sub>1"])
+        using v unfolding represents_frame.simps apply(blast)
+        using 1 apply(blast)
+        unfolding v\<^sub>2_def using u vp by (auto simp add: update_as.simps all_sym_vars_def v\<^sub>2_def f\<^sub>2_def)
+      have "represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2"
+        unfolding cs\<^sub>2_def represents_state.simps using r_f\<^sub>2_v\<^sub>2 by auto
+      moreover have "as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id"
+        apply(rule as_as_step.intros[where v\<^sub>1'=v\<^sub>2])
+        using v assignment_assig_of_state unfolding represents_frame.simps 
+        using u unfolding update_as.simps apply (auto)
+        using u unfolding update_as.simps by (auto simp add: v\<^sub>2_def)
+      ultimately show ?thesis
+        using cs\<^sub>2' by auto
+    qed
+    then show ?case
+      using cs\<^sub>2 by blast
+  qed
+  then show "isOK (step prog cs\<^sub>1)"
+    "step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow> \<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id"
+    by blast+
+qed
+
+inductive genAsInf for as\<^sub>1 as\<^sub>2 \<mu> where
+  "pos as\<^sub>1 = pos as\<^sub>2 \<Longrightarrow>
+   dom (stack as\<^sub>1) = dom (stack as\<^sub>2) \<Longrightarrow>
+   kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A rename_vars \<mu> (kb as\<^sub>2) \<Longrightarrow>
+   (\<forall>n lv t. stack as\<^sub>2 n = Some (t, lv) \<longrightarrow> stack as\<^sub>1 n = Some (t, (\<mu> lv))) \<Longrightarrow>
+   (\<forall>(lb, ub) \<in> allocs as\<^sub>2. (\<mu> lb, \<mu> ub) \<in> allocs as\<^sub>1) \<Longrightarrow>
+   (\<forall>a lt x. (pointers as\<^sub>2) a = Some (lt, x) \<longrightarrow> (pointers as\<^sub>1) (\<mu> a) = Some (lt, \<mu> x)) \<Longrightarrow>
+   genAsInf as\<^sub>1 as\<^sub>2 \<mu>"
+
+lemma genAsInf_represents:
+  assumes "genAsInf as\<^sub>1 as\<^sub>2 \<mu>" "represents_state cs as\<^sub>1 v\<^sub>1"
+  shows "\<exists>v\<^sub>2. represents_state cs as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 \<mu>"
+  using assms proof (induction rule: genAsInf.induct)
+  case (1)
+  obtain f fs where cs: "frames cs = f#fs"
+    using 1 unfolding represents_state.simps by (meson list.exhaust)
+  have r: "represents_frame f as\<^sub>1 v\<^sub>1"
+    using 1 cs unfolding represents_state.simps by auto
+  have v: "valid_var_mapping (frame.stack f) (abstract_state.stack as\<^sub>1) v\<^sub>1" "v\<^sub>1 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+    "IA.assignment v\<^sub>1" "valid_allocs (allocs as\<^sub>1) v\<^sub>1 (mem f)" "valid_pointers (pointers as\<^sub>1) v\<^sub>1 (mem f)"
+    and pos: "frame.pos f = abstract_state.pos as\<^sub>1" and sn: "same_stack_names (frame.stack f) (abstract_state.stack as\<^sub>1)"
+    using r unfolding represents_frame.simps by auto
+  define v\<^sub>2 where "v\<^sub>2 = v\<^sub>1 \<circ> (map_prod \<mu> id)"
+  have a: "IA.assignment v\<^sub>1" "IA.assignment v\<^sub>2"
+    using v(3) unfolding v\<^sub>2_def unfolding IA.assignment_def by auto
+  have sn': "same_stack_names (frame.stack f) (abstract_state.stack as\<^sub>2)"
+    using sn 1  unfolding same_stack_names.simps by blast
+  have vvm: "valid_var_mapping (frame.stack f) (abstract_state.stack as\<^sub>2) v\<^sub>2"
+    using 1 v unfolding v\<^sub>2_def valid_var_mapping.simps by (auto)
+  moreover have kbt: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+  proof -
+    have "v\<^sub>1 \<Turnstile>\<^sub>I\<^sub>A map_formula (rename_vars \<mu>) (kb as\<^sub>2)"
+      using v 1 a by blast
+    then show ?thesis
+      using a unfolding v\<^sub>2_def by (metis IA.satisfies_rename_vars comp_apply id_apply map_prod_simp)
+  qed
+  have aas: "as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 \<mu>"
+    using kbt v a by (auto intro!: as_as_step.intros simp add: v\<^sub>2_def)
+  have allocs: "valid_allocs (allocs as\<^sub>2) v\<^sub>2 (mem f)"
+    using `\<forall>(lb, ub)\<in>allocs as\<^sub>2. (\<mu> lb, \<mu> ub) \<in> allocs as\<^sub>1` `valid_allocs (allocs as\<^sub>1) v\<^sub>1 (mem f)`
+    by (intro valid_allocs.intros) (auto simp add: valid_allocs.simps v\<^sub>2_def)
+  have pointers: "valid_pointers (pointers as\<^sub>2) v\<^sub>2 (mem f)"
+    using `valid_pointers (pointers as\<^sub>1) v\<^sub>1 (mem f)`
+      `\<forall>a lt x. pointers as\<^sub>2 a = Some (lt, x) \<longrightarrow> pointers as\<^sub>1 (\<mu> a) = Some (lt, \<mu> x)`
+      unfolding valid_pointers.simps v\<^sub>2_def by (fastforce intro!: valid_pointers.intros)
+  have "represents_state cs as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 \<mu>"
+    using a sn' cs aas kbt vvm allocs r 1 pointers
+    unfolding represents_state.simps represents_frame.simps by (auto)
+  then show ?thesis
+    by blast
+qed
+
+fun encode_alloc where                   
+  "encode_alloc vlb vub te\<^sub>l ll_type =
+     (let len = encode_int_const (int (len_of ll_type)) in
+     encode_eq (encode_int_var vub)
+               (Fun (IA.SumF 2) [encode_int_var vlb, Fun (IA.ProdF 2) [te\<^sub>l, len]]))"
+
+inductive allocAsInf for prog as\<^sub>1 as\<^sub>2 where
+  "allocAsInf prog as\<^sub>1 as\<^sub>2"
+if
+  "find_statement prog (pos as\<^sub>1) = Inr (Instruction (Assignment n (Alloca lt o\<^sub>1)))"
+  "pos as\<^sub>2 = inc_pos (pos as\<^sub>1)"
+  "Some (IntType l\<^sub>1, te\<^sub>1) = (case o\<^sub>1 of None \<Rightarrow> Some (IntType 32, encode_int_const 1) | Some o\<^sub>1 \<Rightarrow> operand_value as\<^sub>1 o\<^sub>1)"
+  "0 < l\<^sub>1"
+  "kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_sig IA.LessF (encode_int_const 0) te\<^sub>1"
+  "vub \<notin> all_sym_vars as\<^sub>1"
+  "vub \<noteq> vlb"
+  "\<phi> = encode_alloc vlb vub te\<^sub>1 lt"
+  "update_as as\<^sub>1 as\<^sub>2 n (PointerType lt) vlb \<phi>"
+  "allocs as\<^sub>2 = allocs as\<^sub>1 \<union> {(vlb, vub)}"
+  "pointers as\<^sub>2 = pointers as\<^sub>1"
+
+lemma (in ll_mem) allocAsInf_represents_step:
+  assumes
+    "allocAsInf prog as\<^sub>1 as\<^sub>2"
+    "represents_state cs\<^sub>1 as\<^sub>1 v\<^sub>1"
+  shows 
+    "isOK (step prog cs\<^sub>1)"
+    "step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow> (\<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id)"
+proof -
+  have "isOK (step prog cs\<^sub>1)
+     \<and> (\<forall>cs\<^sub>2. step prog cs\<^sub>1 = Inr cs\<^sub>2 \<longrightarrow> (\<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id))"
+    using assms proof(induction rule: allocAsInf.induct)
+    case (1 n lt o\<^sub>1 l\<^sub>1 te\<^sub>1 vub vlb \<phi>)
+    note o\<^sub>1 = 1(3)[symmetric]
+    note u = `update_as as\<^sub>1 as\<^sub>2 n (PointerType lt) vlb \<phi>`
+    obtain f\<^sub>1 fs\<^sub>1  where cs\<^sub>1: "frames cs\<^sub>1 = (f\<^sub>1 # fs\<^sub>1)"
+      using 1 unfolding represents_state.simps by (metis hd_Cons_tl)
+    interpret small_step alloc store load empty_mem prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 .
+    have [simp]: "hd (frames cs\<^sub>1) = f\<^sub>1"
+      by (simp add: cs\<^sub>1)
+    obtain fn bn p where p: "pos as\<^sub>1 = (fn, bn, p)"
+      using prod_cases3 by blast
+    then have p': "frame.pos f\<^sub>1 = (fn, bn, p)"
+      using 1 cs\<^sub>1 by (auto simp add: represents_state.simps represents_frame.simps)
+    have v: "represents_frame f\<^sub>1 as\<^sub>1 v\<^sub>1"
+      using 1 unfolding represents_state.simps by auto
+    have kb: "IA.satisfies v\<^sub>1 (kb as\<^sub>1)" "IA.assignment v\<^sub>1"
+      using v unfolding represents_frame.simps by auto
+    have "\<exists>i\<^sub>1. IA.eval te\<^sub>1 v\<^sub>1 = IA.Int i\<^sub>1"
+    proof -
+      have a: ?thesis if "o\<^sub>1 = Some (LocalReference x)" for x
+        using o\<^sub>1 that v IA.assignment_eval_int[of v\<^sub>1] unfolding represents_frame.simps
+        by auto
+      have b: ?thesis if "o\<^sub>1 = Some (ConstantOperand x)" for x
+        using that o\<^sub>1 by (cases x) (auto)
+      show ?thesis
+        using a b o\<^sub>1 by (cases o\<^sub>1) (auto intro: operand.exhaust)
+    qed
+    then obtain i\<^sub>1 where i\<^sub>1: "IA.eval te\<^sub>1 v\<^sub>1 = IA.Int i\<^sub>1"
+      by blast
+    have some_o\<^sub>1: "SE_Graph.operand_value as\<^sub>1 x = Some (IntType l\<^sub>1, te\<^sub>1)" if "o\<^sub>1 = Some x" for x
+      using that o\<^sub>1 by (auto)
+    have o\<^sub>1_i\<^sub>1: "(case o\<^sub>1 of None \<Rightarrow> Inr (IntegerValue 32 1) | Some x \<Rightarrow> local.operand_value x)
+          = Inr (IntegerValue l\<^sub>1 i\<^sub>1)"
+      using v o\<^sub>1 some_o\<^sub>1 1 i\<^sub>1 operand_value_int_represents_frame[OF some_o\<^sub>1]
+      by (auto split: option.splits)
+    have i\<^sub>1_0: "0 < i\<^sub>1"
+    proof -
+      have "IA.satisfies v\<^sub>1 (encode_sig IA.LessF (encode_int_const 0) te\<^sub>1)"
+        using 1(5) kb by blast
+      then show ?thesis
+        using i\<^sub>1 by simp
+    qed
+    obtain lb ub mem' where mem': "alloc (mem f\<^sub>1) lt i\<^sub>1 = Inr ((lb, ub), mem')"
+      using i\<^sub>1_0 S2 by fast
+    define f\<^sub>2 where "f\<^sub>2 = update_pos inc_pos (LLVM_State.update_stack (Mapping.update n (Pointer lt lb)) (update_mem (\<lambda>_. mem') f\<^sub>1))"
+    define cs\<^sub>2 where "cs\<^sub>2 = Llvm_state (f\<^sub>2 # fs\<^sub>1)"
+    have cs\<^sub>2: "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+      using cs\<^sub>1 1 v o\<^sub>1_i\<^sub>1 mem' unfolding cs\<^sub>2_def f\<^sub>2_def represents_frame.simps 
+      by (auto split: prod.splits)
+    define v\<^sub>2 where "v\<^sub>2 = v\<^sub>1((vub, IA.IntT) := IA.Int ub, (vlb, IA.IntT) := IA.Int lb)"
+    have ub: "ub = lb + len_of lt * i\<^sub>1"
+      using mem' S3 by fastforce
+    have "represents_state cs\<^sub>2' as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id" if "step prog cs\<^sub>1 = Inr cs\<^sub>2'" for cs\<^sub>2'
+    proof -
+      have cs\<^sub>2': "cs\<^sub>2' = cs\<^sub>2"
+        using that cs\<^sub>2 by simp
+      have v\<^sub>2: "v\<^sub>2 (vlb, IA.IntT) = IA.Int lb"
+        "v\<^sub>2 (vub, IA.IntT) = IA.Int (lb + len_of lt * i\<^sub>1)"
+        using 1 unfolding v\<^sub>2_def ub by (auto)
+      have [simp]: "IA.assignment v\<^sub>2"
+        using v unfolding v\<^sub>2_def represents_frame.simps by fastforce
+      have "(vlb, IA.IntT) \<notin> vars_term te\<^sub>1" "(vub, IA.IntT) \<notin> vars_term te\<^sub>1"
+        using 1 u o\<^sub>1 operand_value_fresh unfolding update_as.simps by (fastforce split: option.splits)+
+      then have v\<^sub>2_i\<^sub>1: "IA.eval te\<^sub>1 v\<^sub>2 = IA.Int i\<^sub>1"
+        unfolding v\<^sub>2_def using i\<^sub>1 by auto
+      have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+      proof -
+        have "(vlb, IA.IntT) \<notin> vars_formula (kb as\<^sub>1)" "(vub, IA.IntT) \<notin> vars_formula (kb as\<^sub>1)"
+          using 1 u by (auto simp add: all_sym_vars_def update_as.simps)
+        then show ?thesis
+          using u v by (auto simp add: represents_frame.simps v\<^sub>2_def)
+      qed
+      have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A \<phi>"
+        unfolding `\<phi> =  encode_alloc vlb vub te\<^sub>1 lt` by (auto simp add: v\<^sub>2_i\<^sub>1 v\<^sub>2)
+      have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+        apply(rule IA.impliesD[of "kb as\<^sub>1 \<and>\<^sub>f \<phi>"])
+        using update_as.simps u apply(metis)
+        using represents_frame.simps by (auto)
+      have a: "same_stack_names (frame.stack f\<^sub>2) (abstract_state.stack as\<^sub>2)"
+        using v unfolding represents_frame.simps
+        by (intro ssn_update[OF u, of "frame.stack f\<^sub>1"]) (auto simp add: f\<^sub>2_def)
+      have va: "valid_allocs (allocs as\<^sub>2) v\<^sub>2 (mem f\<^sub>2)"
+      proof -
+        have "bounds (mem f\<^sub>2) a = Some (lb', ub')"
+          if a: "(lbv, ubv) \<in> allocs as\<^sub>2" "v\<^sub>2 (lbv, IA.IntT) = IA.Int lb'"
+            "v\<^sub>2 (ubv, IA.IntT) = IA.Int ub'" "lb' \<le> a" "a < ub'" for lbv ubv lb' ub' a
+        proof -
+          have b: "lb = lb' \<and> ub = ub'" if "lb \<le> a \<and> a < ub"
+          proof (cases "lbv = vlb \<and> ubv = vub")
+            case True
+            then show ?thesis
+              using a 1 by (auto simp add: v\<^sub>2_def)
+          next
+            case False
+            then have c: "(lbv, ubv) \<in> allocs as\<^sub>1"
+              using 1 a by blast
+            have d: "lbv \<noteq> vlb" "ubv \<noteq> vub" "lbv \<noteq> vub" "ubv \<noteq> vlb"
+              using c 1 u unfolding update_as.simps all_sym_vars_def by auto
+            have "bounds (mem f\<^sub>1) a = Some (lb', ub')"
+              using c d a v unfolding v\<^sub>2_def represents_frame.simps valid_allocs.simps by (auto)
+            then have False
+              using mem' a S7 that by auto
+            then show ?thesis
+              by simp
+          qed
+          have c: "bounds (mem f\<^sub>1) a = Some (lb', ub')" if "a \<notin> {lb..<ub}"
+          proof -
+            have c: "(lbv, ubv) \<in> allocs as\<^sub>1"
+              using 1 a that by (auto simp add: v\<^sub>2_def)
+            have d: "lbv \<noteq> vlb" "ubv \<noteq> vub" "lbv \<noteq> vub" "ubv \<noteq> vlb"
+              using c 1 u unfolding update_as.simps all_sym_vars_def by auto
+            show ?thesis
+              using c d a v unfolding v\<^sub>2_def represents_frame.simps valid_allocs.simps by (auto)
+          qed
+          show ?thesis
+            apply(subst alloc_allocated_address_def[of "mem f\<^sub>1" lt i\<^sub>1 lb ub])
+            using a b c mem' f\<^sub>2_def by (auto)
+        qed
+        then show ?thesis
+          by (auto intro: valid_allocs.intros)
+      qed
+      have vp: "valid_pointers (pointers as\<^sub>2) v\<^sub>2 (mem f\<^sub>2)"
+      proof (rule valid_pointers.intros, goal_cases case1)
+        case (case1 a llt x a' x')
+        have "x \<noteq> vlb" "x \<noteq> vub" "a \<noteq> vlb" "a \<noteq> vub"
+          using 1(6) 1(11) case1 u ranI unfolding update_as.simps all_sym_vars_def by fastforce+
+        then have a: "v\<^sub>2 (a, IA.IntT) = v\<^sub>1 (a, IA.IntT) \<and> v\<^sub>2 (x, IA.IntT) = v\<^sub>1 (x, IA.IntT)"
+          using that 1 u unfolding update_as.simps v\<^sub>2_def all_sym_vars_def by auto
+        then obtain y where aa': "allocated_address (mem f\<^sub>1) a'"
+          "load (mem f\<^sub>1) llt a' = Inr y \<and> stack_value_to_int y = x' \<and> ll_typeof y = llt"
+          using v case1 1 unfolding represents_frame.simps valid_pointers.simps by metis
+        then have albub: "a' \<notin> {lb..<ub}"
+           unfolding allocated_address_def using S7 mem' by metis
+        then have "allocated_address (mem f\<^sub>2) a'"
+          using aa' mem' S6 unfolding allocated_address_def f\<^sub>2_def by (simp)
+        then show ?case
+          using albub mem' aa' S4[OF mem' albub] unfolding f\<^sub>2_def by (auto)
+      qed
+      have r_f\<^sub>2_v\<^sub>2: "represents_frame f\<^sub>2 as\<^sub>2 v\<^sub>2"
+        apply(auto simp add: f\<^sub>2_def represents_frame.simps)
+        subgoal
+          using 1 by (auto simp add: p' p)
+        subgoal using f\<^sub>2_def a by simp
+        subgoal
+          apply(rule vvm_update_pointer[OF _ u, of "frame.stack f\<^sub>1" "v\<^sub>1((vub, IA.IntT) := IA.Int (lb + len_of lt * i\<^sub>1))"])
+          subgoal
+            apply(rule vvm_non_update_stack)
+              defer 
+              apply(simp)
+            using 1 apply(blast)
+            using v unfolding represents_frame.simps by simp
+          using v\<^sub>2_def apply(simp add: ub)
+          using v\<^sub>2_def by (blast)
+        subgoal using va unfolding f\<^sub>2_def by simp
+        using vp unfolding f\<^sub>2_def by auto
+      have "represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2"
+        unfolding cs\<^sub>2_def represents_state.simps using r_f\<^sub>2_v\<^sub>2 by auto
+      moreover have "as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id"
+        apply(rule as_as_step.intros[where v\<^sub>1'=v\<^sub>2])
+        using v assignment_assig_of_state unfolding represents_frame.simps 
+        using u unfolding update_as.simps apply (auto)
+        using u 1 unfolding update_as.simps by (auto simp add: v\<^sub>2_def)
+      ultimately show ?thesis
+        using cs\<^sub>2' by auto
+    qed
+    then show ?case
+      using cs\<^sub>2 by blast
+  qed
+  then show "isOK (step prog cs\<^sub>1)"
+    "step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow> \<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id"
+    by blast+
+qed
+
+inductive proper_store for kb allocs va t where
+   "proper_store kb allocs va t"
+ if
+   "(lb, ub) \<in> allocs"
+   "kb \<Longrightarrow>\<^sub>I\<^sub>A encode_sig IA.LeF (encode_int_var lb) (encode_int_var va)"
+   "kb \<Longrightarrow>\<^sub>I\<^sub>A encode_sig IA.LeF ((Fun (IA.SumF 2) [encode_int_var va, encode_int_const (len_of t)])) (encode_int_var ub)"
+
+
+inductive filter_pointers for kb pointers pt va t where
+   "filter_pointers kb pointers pt va t"
+ if
+   "\<And>a t' v'. pt a = Some (t', v')
+    \<Longrightarrow> pointers a = Some (t', v')
+    \<and> (kb \<Longrightarrow>\<^sub>I\<^sub>A (encode_sig IA.LeF (Fun (IA.SumF 2) [encode_int_var va, encode_int_const (len_of t)]) (encode_int_var a)
+                \<or>\<^sub>f encode_sig IA.LeF (Fun (IA.SumF 2) [encode_int_var a, encode_int_const (len_of t')]) (encode_int_var va)))"
+
+inductive storeAsInf for prog as\<^sub>1 as\<^sub>2 where
+   "storeAsInf prog as\<^sub>1 as\<^sub>2"
+ if
+   "find_statement prog (pos as\<^sub>1) = Inr (Instruction (Store t ov (LocalReference na)))"
+   "pos as\<^sub>2 = inc_pos (pos as\<^sub>1)"
+   "(stack as\<^sub>1) na = Some (type\<^sub>a, v\<^sub>a)"
+   "operand_value as\<^sub>1 ov = Some (type\<^sub>v, term\<^sub>v)"
+   "type\<^sub>a = PointerType type\<^sub>v"
+   "t = type\<^sub>v"
+   "proper_store (kb as\<^sub>1) (allocs as\<^sub>1) v\<^sub>a type\<^sub>v"
+   "w \<notin> all_sym_vars as\<^sub>1"
+   "IA.implies (kb as\<^sub>1 \<and>\<^sub>f encode_eq (encode_int_var w) term\<^sub>v) (kb as\<^sub>2)"
+   "filter_pointers (kb as\<^sub>1) (pointers as\<^sub>1) pt v\<^sub>a type\<^sub>v"
+   "pointers as\<^sub>2 = (pt(v\<^sub>a \<mapsto> (type\<^sub>v, w)))"
+   "stack as\<^sub>2 = stack as\<^sub>1"
+   "allocs as\<^sub>2 = allocs as\<^sub>1"
+
+lemma (in ll_mem) storeAsInf_represents_step:
+  assumes
+    "storeAsInf prog as\<^sub>1 as\<^sub>2"
+    "represents_state cs\<^sub>1 as\<^sub>1 v\<^sub>1"
+  shows 
+    "isOK (step prog cs\<^sub>1)"
+    "step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow> (\<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id)"
+proof -
+  have "isOK (step prog cs\<^sub>1)
+     \<and> (\<forall>cs\<^sub>2. step prog cs\<^sub>1 = Inr cs\<^sub>2 \<longrightarrow> (\<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id))"
+    using assms proof(induction rule: storeAsInf.induct)
+    case (1 t ov na type\<^sub>a v\<^sub>a type\<^sub>v term\<^sub>v w pt)
+    obtain f\<^sub>1 fs\<^sub>1  where cs\<^sub>1: "frames cs\<^sub>1 = (f\<^sub>1 # fs\<^sub>1)"
+      using 1 unfolding represents_state.simps by (metis hd_Cons_tl)
+    interpret small_step alloc store load empty_mem prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 .
+    have [simp]: "hd (frames cs\<^sub>1) = f\<^sub>1"
+      by (simp add: cs\<^sub>1)
+    obtain fn bn p where p: "pos as\<^sub>1 = (fn, bn, p)"
+      using prod_cases3 by blast
+    then have p': "frame.pos f\<^sub>1 = (fn, bn, p)"
+      using 1 cs\<^sub>1 by (auto simp add: represents_state.simps represents_frame.simps)
+    have v: "represents_frame f\<^sub>1 as\<^sub>1 v\<^sub>1"
+      using 1 unfolding represents_state.simps by auto
+    have kb: "IA.satisfies v\<^sub>1 (kb as\<^sub>1)" "IA.assignment v\<^sub>1"
+      using v unfolding represents_frame.simps by auto
+    obtain i\<^sub>v where i\<^sub>v: "IA.eval term\<^sub>v v\<^sub>1 = IA.Int i\<^sub>v"
+      using \<open>SE_Graph.operand_value as\<^sub>1 ov = Some (type\<^sub>v, term\<^sub>v)\<close> v IA.assignment_eval_int[of v\<^sub>1]
+      unfolding represents_frame.simps
+      by (cases ov) (fastforce elim: SE_Graph.operand_value.elims)+
+    obtain i\<^sub>a where i\<^sub>a: "IA.eval (encode_int_var v\<^sub>a) v\<^sub>1 = IA.Int i\<^sub>a"
+      using v IA.assignment_eval_int[of v\<^sub>1]  unfolding represents_frame.simps by (fastforce)
+    obtain x where ov: "operand_value ov = Inr x" "stack_value_to_int x = i\<^sub>v" "ll_typeof x = type\<^sub>v"
+      using v 1 i\<^sub>v operand_value_represents_frame by blast
+    have oa: "operand_value (LocalReference na) = Inr (Pointer type\<^sub>v i\<^sub>a)"
+      using 1 i\<^sub>a by (subst operand_value_pointer_represents_frame[symmetric, OF _ v]) auto
+
+    obtain v\<^sub>l\<^sub>b v\<^sub>u\<^sub>b where v\<^sub>l\<^sub>b: "(v\<^sub>l\<^sub>b, v\<^sub>u\<^sub>b) \<in> allocs as\<^sub>1"
+      "kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_sig IA.LeF (encode_int_var v\<^sub>l\<^sub>b) (encode_int_var v\<^sub>a)"
+      "kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_sig IA.LeF ((Fun (IA.SumF 2)
+                     [encode_int_var v\<^sub>a, encode_int_const (len_of type\<^sub>v)])) (encode_int_var v\<^sub>u\<^sub>b)"
+      using 1 unfolding proper_store.simps by auto
+    define lb ub where lb_ub_def:
+      "lb = IA.to_int (v\<^sub>1 (v\<^sub>l\<^sub>b, IA.IntT))" "ub = IA.to_int (v\<^sub>1 (v\<^sub>u\<^sub>b, IA.IntT))"
+    then have lb_ub_alt_def: "v\<^sub>1 (v\<^sub>l\<^sub>b, IA.IntT) = IA.Int lb" "v\<^sub>1 (v\<^sub>u\<^sub>b, IA.IntT) = IA.Int ub"
+      using IA.assignment_eval_to_int v unfolding represents_frame.simps by metis+
+    have "v\<^sub>1 \<in> {\<alpha>. IA.assignment \<alpha> \<and> IA.to_int (\<alpha> (v\<^sub>l\<^sub>b, IA.IntT)) \<le> IA.to_int (\<alpha> (v\<^sub>a, IA.IntT))}"
+      "v\<^sub>1 \<in> {\<alpha>. IA.assignment \<alpha> \<and> IA.to_int (\<alpha> (v\<^sub>a, IA.IntT)) + int (len_of type\<^sub>v) \<le> IA.to_int (\<alpha> (v\<^sub>u\<^sub>b, IA.IntT))}"
+      using v v\<^sub>l\<^sub>b unfolding represents_frame.simps by (auto simp add: IA.satisfies_Language)
+    then have lbub: "lb \<le> i\<^sub>a" "i\<^sub>a + int (len_of type\<^sub>v) \<le> ub"
+      unfolding lb_ub_def using i\<^sub>a by auto
+    have i\<^sub>a_ub: "i\<^sub>a < ub"
+      using lbub S1 by auto
+    then have bounds_i\<^sub>a: "bounds (mem f\<^sub>1) i\<^sub>a = Some (lb, ub)"
+      using v\<^sub>l\<^sub>b lbub v lb_ub_alt_def unfolding represents_frame.simps valid_allocs.simps by auto
+    obtain mem' where mem': "store (mem f\<^sub>1) i\<^sub>a (ll_typeof x) x = Inr mem'"
+      using S8 bounds_i\<^sub>a lbub i\<^sub>a_ub 1 ov by blast
+    define f\<^sub>2 where "f\<^sub>2 = update_pos inc_pos (update_mem (\<lambda>_. mem') f\<^sub>1)"
+    define cs\<^sub>2 where "cs\<^sub>2 = Llvm_state (f\<^sub>2#fs\<^sub>1)"
+    have cs\<^sub>2: "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+      using cs\<^sub>1 1 v ov oa mem' unfolding represents_frame.simps cs\<^sub>2_def f\<^sub>2_def by auto
+    define v\<^sub>2 where "v\<^sub>2 = v\<^sub>1((w, IA.IntT) := IA.Int i\<^sub>v)"
+    have "represents_state cs\<^sub>2' as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id" if "step prog cs\<^sub>1 = Inr cs\<^sub>2'" for cs\<^sub>2'
+    proof -
+      have cs\<^sub>2': "cs\<^sub>2' = cs\<^sub>2"
+        using that cs\<^sub>2 by simp
+      have v\<^sub>2: "v\<^sub>2 (w, IA.IntT) = IA.Int i\<^sub>v"
+        unfolding v\<^sub>2_def by (auto)
+      have [simp]: "IA.assignment v\<^sub>2"
+        using v unfolding v\<^sub>2_def represents_frame.simps by fastforce
+      have v\<^sub>2_kb\<^sub>1: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+      proof -
+        have "(w, IA.IntT) \<notin> vars_formula (kb as\<^sub>1)"
+          using 1 by (auto simp add: all_sym_vars_def update_as.simps)
+        then show ?thesis
+          using v by (auto simp add: represents_frame.simps v\<^sub>2_def)
+      qed
+      have "(w, IA.IntT) \<notin> vars_term term\<^sub>v"
+        using 1  operand_value_fresh unfolding update_as.simps by (fastforce split: option.splits)
+      then have "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A encode_eq (encode_int_var w) term\<^sub>v"
+        using v i\<^sub>v unfolding represents_frame.simps by (auto simp add: v\<^sub>2_def)
+      have v\<^sub>2_kb: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+        apply(rule IA.impliesD[of "kb as\<^sub>1 \<and>\<^sub>f encode_eq (encode_int_var w) term\<^sub>v"])
+        using 1 i\<^sub>v `v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1` `v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A encode_eq (encode_int_var w) term\<^sub>v` by auto
+      have a: "same_stack_names (frame.stack f\<^sub>2) (abstract_state.stack as\<^sub>2)"
+        using v 1 unfolding represents_frame.simps f\<^sub>2_def by (auto)
+      have va: "valid_allocs (allocs as\<^sub>2) v\<^sub>2 (mem f\<^sub>2)"
+        apply(rule valid_allocs_mem_unchanged_intro[of "allocs as\<^sub>1" v\<^sub>1 "mem f\<^sub>1"])
+        using v 1 S9 mem' by (auto simp add: all_sym_vars_def v\<^sub>2_def f\<^sub>2_def represents_frame.simps)
+      have vvm: "valid_var_mapping (frame.stack f\<^sub>1) (abstract_state.stack as\<^sub>1) v\<^sub>2"
+        apply(rule vvm_non_update_stack[of _ _ v\<^sub>1 _ w i\<^sub>v])
+        using 1 v unfolding v\<^sub>2_def represents_frame.simps by auto
+      have vp: "valid_pointers (pointers as\<^sub>2) v\<^sub>2 (mem f\<^sub>2)"
+      proof (rule valid_pointers.intros, goal_cases case1)
+        case (case1 av llt xv a' x')
+        consider (a) "pt av = Some (llt, xv)" | (b) "av = v\<^sub>a"
+          using case1 unfolding 1 by fastforce
+        then show ?case
+        proof cases
+          case a
+          define \<phi> where "\<phi> = (encode_sig IA.LeF (Fun (IA.SumF 2) [encode_int_var v\<^sub>a, encode_int_const (len_of type\<^sub>v)]) (encode_int_var av)
+                     \<or>\<^sub>f encode_sig IA.LeF (Fun (IA.SumF 2) [encode_int_var av, encode_int_const (len_of llt)]) (encode_int_var v\<^sub>a))"
+          have p: "(pointers as\<^sub>1) av = Some (llt, xv)" and k: "kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A \<phi>"
+            using a 1 unfolding \<phi>_def filter_pointers.simps by blast+
+          have avw: "av \<noteq> w" "xv \<noteq> w"
+            using case1 1 p unfolding v\<^sub>2_def by (auto simp add: all_sym_vars_def) (meson img_snd ranI)
+          then obtain y where aa': "allocated_address (mem f\<^sub>1) a'"
+            and y: "load (mem f\<^sub>1) llt a' = Inr y \<and> stack_value_to_int y = x' \<and> ll_typeof y = llt"
+            using p case1 v unfolding represents_frame.simps valid_pointers.simps by (fastforce simp add: v\<^sub>2_def)
+          have "IA.satisfies v\<^sub>1 \<phi>"
+            using k v unfolding represents_frame.simps by blast
+          then have "a' + int (len_of llt) \<le> i\<^sub>a \<or> i\<^sub>a + int (len_of (ll_typeof x)) \<le> a'"
+            using avw case1 i\<^sub>a unfolding \<phi>_def ov by (auto simp add: v\<^sub>2_def)
+          then have l: "load mem' llt a' = load (mem f\<^sub>1) llt a'"
+            using S10 mem' by blast
+          have "allocated_address mem' a'"
+            using aa' mem' S9 unfolding allocated_address_def  by auto
+          then show ?thesis
+            using l y unfolding f\<^sub>2_def by (auto)
+        next
+          case b
+          then have c: "llt = type\<^sub>v" "xv = w" 
+            using case1 unfolding 1 by auto
+          have "v\<^sub>a \<noteq> w"
+            using 1 by (auto simp add: all_sym_vars_def) (meson img_snd ranI)
+          then have a': "a' = i\<^sub>a"
+            using case1 b i\<^sub>a 1 by (auto simp add: v\<^sub>2_def all_sym_vars_def)
+          have x': "stack_value_to_int x = x' \<and> ll_typeof x = llt"
+            using case1 ov c by (simp add: v\<^sub>2_def)
+          then have l: "load mem' llt a' = Inr x"
+            using mem' a' S11  ov c by (auto)
+          have "allocated_address mem' a'"
+            using a' bounds_i\<^sub>a S9[OF mem'] unfolding allocated_address_def by simp
+          then show ?thesis
+            using x' l by (auto simp add: f\<^sub>2_def)
+        qed
+      qed
+      have r_f\<^sub>2_v\<^sub>2: "represents_frame f\<^sub>2 as\<^sub>2 v\<^sub>2"
+        apply(rule)
+        using v 1 a va vp v\<^sub>2_kb vvm by (auto simp add: f\<^sub>2_def represents_frame.simps)
+      have "represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2"
+        unfolding cs\<^sub>2_def represents_state.simps using r_f\<^sub>2_v\<^sub>2 by auto
+      moreover have "as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id"
+        apply(rule as_as_step.intros[where v\<^sub>1'=v\<^sub>2])
+        using 1 v v\<^sub>2_kb v\<^sub>2_kb\<^sub>1 assignment_assig_of_state unfolding represents_frame.simps
+         by (auto simp add: v\<^sub>2_def)
+      ultimately show ?thesis
+        using cs\<^sub>2' by auto
+    qed
+    then show ?case
+      using cs\<^sub>2 by blast
+  qed
+  then show "isOK (step prog cs\<^sub>1)"
+    "step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow> \<exists>v\<^sub>2. represents_state cs\<^sub>2 as\<^sub>2 v\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 v\<^sub>1 v\<^sub>2 id"
+    by blast+
+qed
+
+(*
+inductive refineAsInf for as as\<^sub>t as\<^sub>f where
+  "pos as\<^sub>t = pos as \<Longrightarrow>
+   pos as\<^sub>f = pos as \<Longrightarrow>
+   stack as\<^sub>t = stack as \<Longrightarrow>
+   stack as\<^sub>f = stack as \<Longrightarrow>
+   kb as \<and>\<^sub>f \<phi> \<Longrightarrow>\<^sub>I\<^sub>A kb as\<^sub>t \<Longrightarrow>
+   kb as \<and>\<^sub>f (\<not>\<^sub>f \<phi>) \<Longrightarrow>\<^sub>I\<^sub>A kb as\<^sub>f \<Longrightarrow>
+   refineAsInf as as\<^sub>t as\<^sub>f"
+
+lemma refineAsInf_represents:
+  shows "refineAsInf as as\<^sub>t as\<^sub>f \<Longrightarrow>
+  represents_state cs as \<Longrightarrow>
+  represents_state cs as\<^sub>t \<and> as_as_step as as\<^sub>t (assig_of_state cs) (assig_of_state cs) id
+  \<or> represents_state cs as\<^sub>f \<and> as_as_step as as\<^sub>f (assig_of_state cs) (assig_of_state cs) id"
+proof (induction rule: refineAsInf.induct)
+  case (1 \<phi>)
+  from this[unfolded represents_state.simps] obtain f fs v
+    where fcs: "frames cs = f # fs" and "represents_frame f as v" by (cases "frames cs", auto)
+  from this(2)[unfolded represents_frame.simps]
+  have pos: "frame.pos f = abstract_state.pos as" and
+    stack: "same_stack_names (frame.stack f) (stack as)" and
+    ass: "IA.assignment v" and
+    var: "valid_var_mapping (frame.stack f) (stack as) v" and
+    kb:  "v \<Turnstile>\<^sub>I\<^sub>A kb as" by blast+
+  have "\<exists> as' \<in> {as\<^sub>t, as\<^sub>f}. v \<Turnstile>\<^sub>I\<^sub>A kb as'"
+  proof (cases "v \<Turnstile>\<^sub>I\<^sub>A \<phi>")
+    case True
+    with kb ass 1(5) have "v \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>t"
+      using IA.satisfies_and by blast
+    thus ?thesis by auto
+  next
+    case False
+    hence "v \<Turnstile>\<^sub>I\<^sub>A \<not>\<^sub>f \<phi>" by auto
+    with kb ass 1(6) have "v \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>f"
+      using IA.satisfies_and by blast
+    thus ?thesis by auto
+  qed
+  then obtain as' where as': "as' \<in> {as\<^sub>t, as\<^sub>f}" and kb': "v \<Turnstile>\<^sub>I\<^sub>A kb as'" by auto
+  from 1(1-2) pos as' have pos': "frame.pos f = abstract_state.pos as'"
+    by auto
+  from 1(3-4) as' have id': "stack as' = stack as" by auto
+  from stack id' have stack': "same_stack_names (frame.stack f) (stack as')"
+    by auto
+  from var id' have var': "valid_var_mapping (frame.stack f) (stack as') v"
+    by auto
+  have repr': "represents_frame f as' v"
+    unfolding represents_frame.simps
+    by (intro conjI pos' stack' exI[of _ v] ass var' kb')
+(*
+  obtain n' where *: "n' \<in> nodes" "(n,n') \<in> edges" "renaming_of_edge n n' = None"
+    "as_of_node n' = as'" and n': "n' \<in> {n\<^sub>t,n\<^sub>f}"
+    using 1(8-) as' by auto
+  have repr': "represents cs n'" unfolding represents.simps represents_state.simps fcs
+    using repr' * by auto
+*)
+  have assig_stack: "assig_of_frame f (n, IA.IntT) = v (lv, IA.IntT)"
+    if "stack as n = Some lv" for n lv
+    using var[unfolded valid_var_mapping.simps, rule_format, OF _ that]
+      stack[unfolded same_stack_names_def', rule_format, of n] that by auto
+  have "as_as_step as as' (assig_of_state cs) (assig_of_state cs) id"
+    unfolding assig_of_state_def fcs list.sel using assignment_assig_of_frame assig_stack kb kb' 1
+    by (auto simp: id' intro: as_as_step.intros[OF ass ass, of _ _ _ _ id])
+  then show ?case
+    using repr' as' unfolding represents_state.simps fcs by auto
+qed
+
+lemma lookup_None_keys: "Mapping.lookup m n \<noteq> None \<Longrightarrow> n \<in> Mapping.keys m"
+  by (simp add: domIff keys_dom_lookup)
+*)
+(*
+lemma vars_formula_satisfies:
+  assumes "\<And>x. x \<in> vars_formula f \<Longrightarrow> v\<^sub>2 x = v\<^sub>1 x" "v\<^sub>1 \<Turnstile>\<^sub>I\<^sub>A f"
+  shows "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A f"
+  using assms proof (induction f)
+  case (Atom x)
+  then have "\<lbrakk>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1 = \<lbrakk>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>2"
+    by force
+  then show ?case
+    using Atom by (auto)
+next
+  case (NegAtom x)
+  then have "\<lbrakk>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1 = \<lbrakk>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>2"
+    by force
+  then show ?case
+    using NegAtom by (auto)
+qed (fastforce+)
+
+inductive phi_abstract' for as\<^sub>1 as\<^sub>2 x ps v\<^sub>x t\<^sub>x old_b_id where
+  "phi_abstract' as\<^sub>1 as\<^sub>2 x ps v\<^sub>x t\<^sub>x old_b_id"
+  if "small_step.phi_bid old_b_id ps = Some y\<^sub>x"
+     "operand_value as\<^sub>1 y\<^sub>x = Some t\<^sub>x" "v\<^sub>x \<notin> ran (stack as\<^sub>1)" "stack as\<^sub>2 x = Some v\<^sub>x"
+     "v\<^sub>x \<notin> fst ` vars_formula (kb as\<^sub>1)"
+     "IA.has_type t\<^sub>x IA.IntT"
+
+inductive phi_abstract where
+  "phi_abstract as\<^sub>1 as\<^sub>2 ((x, ps)#xs) ((v\<^sub>x, t\<^sub>x)#ys) old_b_id"
+if "phi_abstract' as\<^sub>1 as\<^sub>2 x ps v\<^sub>x t\<^sub>x old_b_id"
+    "phi_abstract as\<^sub>1 as\<^sub>2 xs ys old_b_id"
+  | "phi_abstract as\<^sub>1 as\<^sub>2 [] [] old_b_id"
+
+inductive branchAsInf for prog as\<^sub>1 as\<^sub>2 where
+  "find_statement prog (pos as\<^sub>1) = Inr (Terminator (Br new_b_id)) \<Longrightarrow>
+   pos as\<^sub>1 = (f_id, old_b_id, p) \<Longrightarrow>
+   pos as\<^sub>2 = (f_id, new_b_id, length phis_stats) \<Longrightarrow>
+   Inr phis_stats = find_phis prog f_id new_b_id \<Longrightarrow>
+   phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id \<Longrightarrow>
+   (Conjunction (map (\<lambda>(v\<^sub>x,t\<^sub>x). encode_eq (encode_var v\<^sub>x) t\<^sub>x) \<phi>s)) \<and>\<^sub>f (kb as\<^sub>1) \<Longrightarrow>\<^sub>I\<^sub>A kb as\<^sub>2 \<Longrightarrow>
+   inj_on (stack as\<^sub>2) (fst ` set phis_stats) \<Longrightarrow>
+   (\<forall>a \<in> fst ` \<Union> (vars_term ` snd ` set \<phi>s). a \<notin> fst ` set \<phi>s) \<Longrightarrow>
+   (\<forall>x \<in> dom (stack as\<^sub>1). x \<notin> (fst ` set phis_stats) \<longrightarrow> stack as\<^sub>2 x = stack as\<^sub>1 x) \<Longrightarrow>
+   dom (stack as\<^sub>2) = dom (stack as\<^sub>1) \<union> fst ` set phis_stats \<Longrightarrow>
+   distinct (map fst \<phi>s) \<Longrightarrow>
+   distinct (map fst phis_stats) \<Longrightarrow>
+   branchAsInf prog as\<^sub>1 as\<^sub>2"
+
+lemma branchAsInf_represents: "branchAsInf prog as\<^sub>1 as\<^sub>2 \<Longrightarrow>
+  represents_state cs\<^sub>1 as\<^sub>1 \<Longrightarrow>
+  step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow>
+  represents_state cs\<^sub>2 as\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+proof (induction rule: branchAsInf.induct)
+  case (1 new_b_id f_id old_b_id p phis_stats \<phi>s)
+  interpret successful_step prog cs\<^sub>1 cs\<^sub>2
+    by (standard) (use 1 in \<open>auto simp del: step.simps\<close>)
+  interpret successful_step' prog cs\<^sub>1 cs\<^sub>2 f_id old_b_id p
+    by(standard)
+      (use 1 in \<open>auto simp add: represents_frame.simps represents_state.simps f\<^sub>1_def simp del: step.simps\<close>)
+  note frames_cs\<^sub>1[simp]
+  have "c_action = Terminator ((Br new_b_id))"
+    using 1 c_block_def' c_find_action by (auto simp del: find_fun_block.simps)
+  then have "Inr cs\<^sub>2 = terminate_frame (Br new_b_id)"
+    using 1 c_action_Terminator by simp
+  also have "\<dots> = update_bid_frame new_b_id \<bind> update_frame"
+    using 1 c_block_def'' c_fun_def' by (auto simp add: terminate_frame_def)
+  finally have uu: "Inr cs\<^sub>2 = update_bid_frame new_b_id \<bind> update_frame"
+    by simp
+  define s where "s = projr (compute_phis old_b_id phis_stats)"
+  define s' where "s' = foldr (\<lambda>(k,v). Mapping.update k v) s (frame.stack f\<^sub>1)"
+  define f\<^sub>2 where "f\<^sub>2 = update_pos (\<lambda>_. (f_id, new_b_id, length phis_stats)) ((LLVM_Syntax.update_stack (\<lambda>_.  s')) f\<^sub>1)"
+  obtain v\<^sub>1 where v\<^sub>1: "represents_frame f\<^sub>1 as\<^sub>1 v\<^sub>1"
+    using \<open>represents_state cs\<^sub>1 as\<^sub>1\<close> unfolding represents_state.simps by auto
+  define v\<^sub>2 where "v\<^sub>2 = (\<lambda>(v, t).
+     if t = IA.IntT
+     then case map_of \<phi>s v of Some t\<^sub>x \<Rightarrow> (\<lbrakk>t\<^sub>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1) | None \<Rightarrow> v\<^sub>1 (v,t)
+     else v\<^sub>1 (v,t))"
+  have s': "Mapping.lookup s' x = (case map_of s x of None \<Rightarrow> Mapping.lookup (frame.stack f\<^sub>1) x | y \<Rightarrow> y)" for x
+    unfolding s'_def by (induction s) (auto simp add: lookup_update lookup_update')
+  have s: "compute_phis old_b_id phis_stats = Inr s"
+    unfolding s_def
+    apply(rule sum.collapse(2)[symmetric])
+    using uu by (auto simp add: 1(4)[symmetric] c_pos simp del: find_phis.simps split: sum_bind_splits)
+  have v\<^sub>2_v\<^sub>1: "v\<^sub>2 (v,t) = v\<^sub>1 (v,t)" if "v \<notin> fst ` set \<phi>s" for v t
+    using that map_of_eq_None_iff 1(11) unfolding v\<^sub>2_def by (auto split: option.splits)
+  have v\<^sub>2_s: "v\<^sub>2 (v,IA.IntT) = (\<lbrakk>t\<^sub>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1)" if "(v,t\<^sub>x) \<in> set \<phi>s" for v t\<^sub>x
+    using that map_of_eq_Some_iff 1  unfolding v\<^sub>2_def by (auto)
+  have \<phi>s_kb_as\<^sub>1: "fst ` set \<phi>s \<inter> fst ` vars_formula (kb as\<^sub>1) = {}"
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id`
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps)
+  have cs\<^sub>2: "cs\<^sub>2 = update_frames (\<lambda>_. f\<^sub>2#fs\<^sub>1) cs\<^sub>1"
+    using uu 1(4)[symmetric] s unfolding f\<^sub>2_def c_pos s'_def
+    by (auto simp add: c_pos simp del: find_phis.simps split: sum_bind_splits intro: frame.expand)
+  then have frames_cs\<^sub>2[simp]: "frames cs\<^sub>2 = (f\<^sub>2#fs\<^sub>1)"
+    by auto
+  then have vars_term_t\<^sub>x: "a \<notin> fst ` set \<phi>s" if "(a, b) \<in> vars_term t\<^sub>x" "(v\<^sub>x,t\<^sub>x) \<in> set \<phi>s" for v\<^sub>x a b t\<^sub>x
+    using 1(8) that by blast
+  have t\<^sub>x_IntT: "IA.has_type t\<^sub>x IA.IntT" if "(v\<^sub>x,t\<^sub>x) \<in> set \<phi>s" for v\<^sub>x t\<^sub>x
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id` that
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps)
+  have d1: "map fst s = map fst phis_stats"
+    using s by (induction old_b_id phis_stats arbitrary: s rule: compute_phis.induct )
+     (fastforce split: Option.bind_splits sum_bind_splits)+
+  then have d: "fst ` set s = fst ` set phis_stats"
+    by (metis list.set_map)
+  have e: "abstract_state.stack as\<^sub>1 pv = Some lv \<Longrightarrow> lv \<notin> fst ` set \<phi>s" for lv pv
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id`
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps ranI)
+  have f: "phi_abstract' as\<^sub>1 as\<^sub>2 pv ps lv t\<^sub>x old_b_id"
+    if "abstract_state.stack as\<^sub>2 pv = Some lv" "(lv, t\<^sub>x) \<in> set \<phi>s" "(pv, ps) \<in> set phis_stats"
+    for pv lv t\<^sub>x ps
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id` that 1(11) 1(7) 1(12)
+  proof (induction  as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id rule: phi_abstract.induct)
+    case (1 as\<^sub>1 as\<^sub>2 x ps\<^sub>a v\<^sub>x t\<^sub>x\<^sub>a xs ys)
+    have "pv = x \<longleftrightarrow> lv = v\<^sub>x"
+      apply(rule)
+       defer
+       apply(rule inj_onD)
+      using 1 apply(blast)
+      using 1(1,4) that unfolding phi_abstract'.simps apply(auto)[1]
+      using 1 apply(blast)
+       apply(simp)
+      using 1 unfolding phi_abstract'.simps by (auto)
+    then show ?case
+      using 1 by (auto)
+  next
+    case (2 as\<^sub>1 as\<^sub>2)
+    then show ?case by simp
+  qed
+  have g: "operand_value y\<^sub>x = Inr (IntConstant l i)"
+    if "(pv, ps) \<in> set phis_stats" "phi_bid old_b_id ps = Some y\<^sub>x" "(pv, IntConstant l i) \<in> set s"
+    for pv ps y\<^sub>x l i
+    using 1(12) s that unfolding d1[symmetric] using 1(12)
+  proof (induction old_b_id phis_stats arbitrary: ps s rule: compute_phis.induct)
+    case (1 old_b_id a psa as)
+    obtain x where x: "compute_phi old_b_id psa = Inr x"
+      using 1 by (auto split: sum_bind_splits)
+    have tl_s: "compute_phis old_b_id as = Inr (tl s)"
+      using 1 by (auto split: sum_bind_splits)
+    have ?case if "pv = a"
+      using 1 that by force
+    moreover have ?case if "pv \<noteq> a"
+      apply(rule 1(1)[of _ "tl s" ps]) using x apply(simp)
+      using 1 apply(fastforce)
+      using tl_s apply(simp)
+      using 1 that apply(simp)
+      using 1 that apply(blast)
+      using 1 that by (fastforce)+
+    ultimately show ?case
+      by blast
+  qed (auto)
+  have h: "\<exists>t\<^sub>x. (lv, t\<^sub>x) \<in> set \<phi>s" if "abstract_state.stack as\<^sub>2 pv = Some lv" "pv \<in> fst ` set phis_stats"
+    for lv pv
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id` that
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps ranI)
+  have "frame.pos (hd (frames cs\<^sub>2)) = abstract_state.pos as\<^sub>2"
+    unfolding cs\<^sub>2 f\<^sub>2_def using 1 by (simp)
+  moreover have 2: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+    apply(rule vars_formula_satisfies[of _ _ v\<^sub>1])
+    apply(auto)
+     apply(rule v\<^sub>2_v\<^sub>1)
+    using \<phi>s_kb_as\<^sub>1 apply(blast)
+    using v\<^sub>1 unfolding represents_frame.simps by auto
+  moreover have 3: "IA.assignment v\<^sub>2"
+    using v\<^sub>1 unfolding represents_frame.simps v\<^sub>2_def IA.assignment_def apply(auto split: option.splits)
+     apply blast
+    subgoal for a x2
+      apply(subgoal_tac "IA.has_type x2 IA.IntT")
+      using IA.eval_types IA_locale.Values_of_type.simps(2) represents_frame.cases v\<^sub>1
+       apply metis
+      using t\<^sub>x_IntT
+      by (meson map_of_SomeD)
+    done
+  moreover have "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+    apply(rule IA.impliesD[of "(Conjunction (map (\<lambda>(v\<^sub>x,t\<^sub>x). encode_eq (encode_var v\<^sub>x) t\<^sub>x) \<phi>s)) \<and>\<^sub>f (kb as\<^sub>1)"])
+    using 1 apply(simp)
+     defer
+     apply(auto)
+      apply(subst v\<^sub>2_s) apply(simp)
+      apply(subst IA.eval_same_vars[of _ v\<^sub>1 v\<^sub>2])
+    apply(auto)
+      apply(subst v\<^sub>2_v\<^sub>1[symmetric])
+       apply(rule vars_term_t\<^sub>x)
+        apply(simp) apply(auto)
+    using 2 apply(simp)
+    using 3 by simp
+  moreover have t: "same_stack_names (frame.stack (hd (frames cs\<^sub>2))) (abstract_state.stack as\<^sub>2)"
+    apply(rule same_stack_names.intros)
+    apply(auto simp add: f\<^sub>2_def)
+    subgoal for n y
+      apply(subgoal_tac "n \<in> dom (abstract_state.stack as\<^sub>2)")
+       apply(blast)
+      unfolding 1(10) s' apply(auto split: option.splits)
+      using v\<^sub>1 unfolding represents_frame.simps same_stack_names.simps
+       apply(blast)
+      using d
+      by (metis domI dom_map_of_conv_image_fst list.set_map)
+    apply(subgoal_tac "n \<in> dom (abstract_state.stack as\<^sub>2)")
+    subgoal for n y
+    unfolding 1(10) s'   apply(auto split: option.splits)
+      using v\<^sub>1 unfolding represents_frame.simps same_stack_names.simps
+          apply(blast)
+      defer
+      using d
+      by (metis img_fst list.set_map map_of_eq_None_iff)
+    by blast
+  moreover have u: "valid_var_mapping (frame.stack (hd (frames cs\<^sub>2))) (abstract_state.stack as\<^sub>2) v\<^sub>2"
+    apply(rule valid_var_mapping.intros)
+    apply(clarsimp simp add: f\<^sub>2_def s' split: option.splits)
+    subgoal for l i  lv pv
+      apply(subgoal_tac "abstract_state.stack as\<^sub>1 pv = Some lv")
+       apply(subst v\<^sub>2_v\<^sub>1)
+      using e apply(simp)
+       apply (meson represents_frame.cases v\<^sub>1 valid_var_mapping.cases)
+      apply(subgoal_tac "pv \<in> dom (abstract_state.stack as\<^sub>1)")
+       apply (simp add: "1.hyps"(9) d map_of_eq_None_iff)
+      apply(subgoal_tac "pv \<in> dom (abstract_state.stack as\<^sub>2)")
+      unfolding 1  apply (simp add: domD map_of_eq_None_iff d[symmetric] )
+      using 1 by (metis domI)
+    subgoal for l i lv pv
+      apply(subgoal_tac "(pv, IntConstant l i) \<in> set s")
+      apply(subgoal_tac "\<exists>t\<^sub>x. (lv, t\<^sub>x) \<in> set \<phi>s")
+       apply(auto)
+      subgoal for t\<^sub>x
+        apply(subst v\<^sub>2_s)
+         apply(simp)
+      proof (goal_cases)
+        note H = 1
+        case 1
+        then have "pv \<in> fst ` set phis_stats"
+          using d by blast
+        then obtain ps where ps: "(pv, ps) \<in> set phis_stats"
+          by auto
+        from f[OF 1(1) 1(4) ps, unfolded phi_abstract'.simps]
+        obtain y\<^sub>x where y\<^sub>x: "phi_bid old_b_id ps = Some y\<^sub>x" "SE_Graph.operand_value as\<^sub>1 y\<^sub>x = Some t\<^sub>x"
+          by auto
+        then show ?case
+          using g[OF ps y\<^sub>x(1) 1(3)]
+          apply(cases y\<^sub>x) apply(auto elim!: option_to_sum.elims)
+          by (meson represents_frame.cases v\<^sub>1 valid_var_mapping.cases)
+      qed
+      subgoal apply(rule h) using d by blast+
+      by (simp add: map_of_SomeD)
+    done
+  moreover have "assig_of_state cs\<^sub>1 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if "abstract_state.stack as\<^sub>1 n = Some lv" for n lv
+    unfolding assig_of_state_def apply(auto) using that
+    apply(subst v\<^sub>2_v\<^sub>1)
+    using e apply blast
+    apply(subgoal_tac "Mapping.lookup (frame.stack f\<^sub>1) n \<noteq> None")
+    apply(auto)
+    subgoal for y
+      apply(cases y)
+      apply(auto)
+      using v\<^sub>1 unfolding represents_frame.simps valid_var_mapping.simps by (auto)
+      using v\<^sub>1 unfolding represents_frame.simps same_stack_names.simps by (auto)
+  moreover have "assig_of_state cs\<^sub>2 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if "abstract_state.stack as\<^sub>2 n = Some lv " for n lv
+    unfolding assig_of_state_def apply(auto) using that
+    apply(subgoal_tac "Mapping.lookup (frame.stack f\<^sub>2) n \<noteq> None")
+    apply(auto)
+    subgoal for y
+      apply(cases y)
+      apply(auto)
+      using u unfolding valid_var_mapping.simps by (auto)
+    using t unfolding same_stack_names.simps by auto
+  ultimately have "represents_frame (hd (frames cs\<^sub>2)) as\<^sub>2 v\<^sub>2"
+    "as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+    using 1 assignment_assig_of_state
+    by (auto intro!: represents_frame.intros  as_as_step.intros[of v\<^sub>2 v\<^sub>2])
+  then show ?case
+    unfolding represents_state.simps using 1 by auto
+qed
+
+inductive condBranchAsInf for prog as\<^sub>1 as\<^sub>2 where
+  "find_statement prog (pos as\<^sub>1) = Inr (Terminator (CondBr c b_id_true b_id_false)) \<Longrightarrow>
+   operand_value as\<^sub>1 c = Some c' \<Longrightarrow>
+   new_b_id =
+   (if b then b_id_true else b_id_false) \<Longrightarrow>
+   (b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_eq c' (Fun (IA.ConstF 1) [])) \<Longrightarrow>
+   (\<not> b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_eq c' (Fun (IA.ConstF 0) [])) \<Longrightarrow>
+   pos as\<^sub>1 = (f_id, old_b_id, p) \<Longrightarrow>
+   pos as\<^sub>2 = (f_id, new_b_id, length phis_stats) \<Longrightarrow>
+   Inr phis_stats = find_phis prog f_id new_b_id \<Longrightarrow>
+   phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id \<Longrightarrow>
+   ((Conjunction (map (\<lambda>(v\<^sub>x,t\<^sub>x). encode_eq (encode_var v\<^sub>x) t\<^sub>x) \<phi>s)) \<and>\<^sub>f (kb as\<^sub>1) \<Longrightarrow>\<^sub>I\<^sub>A kb as\<^sub>2) \<Longrightarrow>
+   inj_on (stack as\<^sub>2) (fst ` set phis_stats) \<Longrightarrow>
+   (\<forall>x \<in> dom (stack as\<^sub>1). x \<notin> (fst ` set phis_stats) \<longrightarrow> stack as\<^sub>2 x = stack as\<^sub>1 x) \<Longrightarrow>
+   dom (stack as\<^sub>2) = dom (stack as\<^sub>1) \<union> fst ` set phis_stats \<Longrightarrow>
+   distinct (map fst \<phi>s) \<Longrightarrow>
+   distinct (map fst phis_stats) \<Longrightarrow>
+   (\<forall>a \<in> fst ` \<Union> (vars_term ` snd ` set \<phi>s). a \<notin> fst ` set \<phi>s) \<Longrightarrow>
+   condBranchAsInf prog as\<^sub>1 as\<^sub>2"
+
+lemma condBranchAsInf_represents: "condBranchAsInf prog as\<^sub>1 as\<^sub>2 \<Longrightarrow>
+  represents_state cs\<^sub>1 as\<^sub>1 \<Longrightarrow>
+  step prog cs\<^sub>1 = Inr cs\<^sub>2 \<Longrightarrow>
+  represents_state cs\<^sub>2 as\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+proof (induction rule: condBranchAsInf.induct)
+  case (1 c b_id_true b_id_false c' new_b_id b f_id old_b_id p phis_stats \<phi>s)
+  interpret successful_step prog cs\<^sub>1 cs\<^sub>2
+    by (standard) (use 1 in \<open>auto\<close>)
+  interpret successful_step' prog cs\<^sub>1 cs\<^sub>2 f_id old_b_id p
+    by (standard) (use 1 in \<open>auto simp add: represents_frame.simps represents_state.simps f\<^sub>1_def\<close>)
+  note frames_cs\<^sub>1[simp]
+  note inr_phis_stats = 1(8)
+  define s where "s = projr (compute_phis old_b_id phis_stats)"
+  define s' where "s' = foldr (\<lambda>(k,v). Mapping.update k v) s (frame.stack f\<^sub>1)"
+  define f\<^sub>2 where "f\<^sub>2 = update_pos (\<lambda>_. (f_id, new_b_id, length phis_stats)) ((LLVM_Syntax.update_stack (\<lambda>_.  s')) f\<^sub>1)"
+  obtain v\<^sub>1 where v\<^sub>1: "represents_frame f\<^sub>1 as\<^sub>1 v\<^sub>1"
+    using \<open>represents_state cs\<^sub>1 as\<^sub>1\<close> unfolding represents_state.simps by auto
+  define v\<^sub>2 where "v\<^sub>2 = (\<lambda>(v, t).
+     if t = IA.IntT
+     then case map_of \<phi>s v of Some t\<^sub>x \<Rightarrow> (\<lbrakk>t\<^sub>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1) | None \<Rightarrow> v\<^sub>1 (v,t)
+     else v\<^sub>1 (v,t))"
+  have "\<exists>oc. operand_value c = Inr oc"
+    using `SE_Graph.operand_value as\<^sub>1 c = Some c'`
+    using v\<^sub>1 unfolding represents_frame.simps same_stack_names.simps
+    by (cases c, auto elim: option_to_sum.elims) (force)
+  then obtain oc where oc: "operand_value c = Inr oc"
+    by blast
+  have "c_action = Terminator (CondBr c b_id_true b_id_false)"
+    using 1 c_block_def' c_find_action by (auto simp del: find_fun_block.simps)
+  then have a: "Inr cs\<^sub>2 = terminate_frame (CondBr c b_id_true b_id_false)"
+    using 1 c_action_Terminator by simp
+  then have oc': "oc = IntConstant 1 0 \<or> oc = IntConstant 1 1"
+    using oc
+    by (auto simp add: terminate_frame_def elim!: condBr_to_frame.elims split: sum_bind_splits if_splits)
+  then have a: "Inr cs\<^sub>2 = update_bid_frame (if oc = IntConstant 1 1 then b_id_true else b_id_false) \<bind> update_frame"
+    using a
+    using  c_block_def'' c_fun_def' oc by (auto simp add:  terminate_frame_def)
+  have "oc = IntConstant 1 1" if "b"
+    unfolding 1 using that oc' oc using `SE_Graph.operand_value as\<^sub>1 c = Some c'`
+    using `b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_eq c' (Fun (IA.ConstF 1) [])`
+    apply(auto)
+    apply(cases c)
+     apply(auto)
+    using "1.hyps"(2) IA.eval.simps(1) IA.satisfies_Language oc operand_value_valid_var_mapping represents_frame.cases subset_Collect_conv v\<^sub>1
+    apply smt
+    by (smt IA.satisfies_Language empty_iff represents_frame.cases v\<^sub>1)
+  moreover have "oc = IntConstant 1 0" if "\<not> b"
+    unfolding 1 using that oc' oc using `SE_Graph.operand_value as\<^sub>1 c = Some c'`
+    using `\<not> b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A encode_eq c' (Fun (IA.ConstF 0) [])`
+    apply(auto)
+    apply(cases c)
+     apply(auto elim!: option_to_error.elims)
+    using "1.hyps"(2) IA.eval.simps(1) IA.satisfies_Language oc operand_value_valid_var_mapping represents_frame.cases subset_Collect_conv v\<^sub>1
+     apply smt
+    by (smt IA.satisfies_Language empty_iff represents_frame.cases v\<^sub>1)
+  ultimately have b: "new_b_id = (if oc = IntConstant 1 1 then b_id_true else b_id_false)"
+    unfolding 1 by (auto)
+  have uu: "Inr cs\<^sub>2 = update_bid_frame new_b_id \<bind> update_frame"
+    using a b by simp
+  have s': "Mapping.lookup s' x = (case map_of s x of None \<Rightarrow> Mapping.lookup (frame.stack f\<^sub>1) x | y \<Rightarrow> y)" for x
+    unfolding s'_def by (induction s) (auto simp add: lookup_update lookup_update')
+  have s: "compute_phis old_b_id phis_stats = Inr s"
+    unfolding s_def
+    apply(rule sum.collapse(2)[symmetric])
+    using uu by (auto simp add: inr_phis_stats[symmetric] c_pos simp del: find_phis.simps split: sum_bind_splits)
+  have v\<^sub>2_v\<^sub>1: "v\<^sub>2 (v,t) = v\<^sub>1 (v,t)" if "v \<notin> fst ` set \<phi>s" for v t
+    using that map_of_eq_None_iff 1(14) unfolding v\<^sub>2_def by (auto split: option.splits)
+  have v\<^sub>2_s: "v\<^sub>2 (v,IA.IntT) = (\<lbrakk>t\<^sub>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1)" if "(v,t\<^sub>x) \<in> set \<phi>s" for v t\<^sub>x
+    using that map_of_eq_Some_iff 1  unfolding v\<^sub>2_def by (auto)
+  have \<phi>s_kb_as\<^sub>1: "fst ` set \<phi>s \<inter> fst ` vars_formula (kb as\<^sub>1) = {}"
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id`
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps)
+  have cs\<^sub>2: "cs\<^sub>2 = update_frames (\<lambda>_. f\<^sub>2#fs\<^sub>1) cs\<^sub>1"
+    using uu inr_phis_stats[symmetric] s unfolding f\<^sub>2_def c_pos s'_def
+    by (auto simp add: c_pos simp del: find_phis.simps split: sum_bind_splits intro: frame.expand)
+  then have frames_cs\<^sub>2[simp]: "frames cs\<^sub>2 = (f\<^sub>2#fs\<^sub>1)"
+    by auto
+  then have vars_term_t\<^sub>x: "a \<notin> fst ` set \<phi>s" if "(a, b) \<in> vars_term t\<^sub>x" "(v\<^sub>x,t\<^sub>x) \<in> set \<phi>s" for v\<^sub>x a b t\<^sub>x
+    using 1(16) that by blast
+  have t\<^sub>x_IntT: "IA.has_type t\<^sub>x IA.IntT" if "(v\<^sub>x,t\<^sub>x) \<in> set \<phi>s" for v\<^sub>x t\<^sub>x
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id` that
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps)
+  have d1: "map fst s = map fst phis_stats"
+    using s by (induction old_b_id phis_stats arbitrary: s rule: compute_phis.induct )
+     (fastforce split: Option.bind_splits sum_bind_splits)+
+  then have d: "fst ` set s = fst ` set phis_stats"
+    by (metis list.set_map)
+  have e: "abstract_state.stack as\<^sub>1 pv = Some lv \<Longrightarrow> lv \<notin> fst ` set \<phi>s" for lv pv
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id`
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps ranI)
+  have f: "phi_abstract' as\<^sub>1 as\<^sub>2 pv ps lv t\<^sub>x old_b_id"
+    if "abstract_state.stack as\<^sub>2 pv = Some lv" "(lv, t\<^sub>x) \<in> set \<phi>s" "(pv, ps) \<in> set phis_stats"
+    for pv lv t\<^sub>x ps
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id` that 1(14) 1(11) 1(15)
+  proof (induction  as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id rule: phi_abstract.induct)
+    case (1 as\<^sub>1 as\<^sub>2 x ps\<^sub>a v\<^sub>x t\<^sub>x\<^sub>a xs ys)
+    have "pv = x \<longleftrightarrow> lv = v\<^sub>x"
+      apply(rule)
+       defer
+       apply(rule inj_onD)
+      using 1 apply(blast)
+      using 1 that unfolding phi_abstract'.simps apply(auto)[1]
+      using 1 apply(blast)
+       apply(simp)
+      using 1 unfolding phi_abstract'.simps by (auto)
+    then show ?case
+      using 1 by (auto)
+  next
+    case (2 as\<^sub>1 as\<^sub>2)
+    then show ?case by simp
+  qed
+  have g: "operand_value y\<^sub>x = Inr (IntConstant l i)"
+    if "(pv, ps) \<in> set phis_stats" "phi_bid old_b_id ps = Some y\<^sub>x" "(pv, IntConstant l i) \<in> set s"
+    for pv ps y\<^sub>x l i
+    using 1(15) s that unfolding d1[symmetric] using 1(15)
+  proof (induction old_b_id phis_stats arbitrary: ps s rule: compute_phis.induct)
+    case (1 old_b_id a psa as)
+    obtain x where x: "compute_phi old_b_id psa = Inr x"
+      using 1 by (auto split: sum_bind_splits)
+    have tl_s: "compute_phis old_b_id as = Inr (tl s)"
+      using 1 by (auto split: sum_bind_splits)
+    have ?case if "pv = a"
+      using 1 that by force
+    moreover have ?case if "pv \<noteq> a"
+      apply(rule 1(1)[of _ "tl s" ps]) using x apply(simp)
+      using 1 apply(fastforce)
+      using tl_s apply(simp)
+      using 1 that apply(simp)
+      using 1 that apply(blast)
+      using 1 that by (fastforce)+
+    ultimately show ?case
+      by blast
+  qed (auto)
+  have h: "\<exists>t\<^sub>x. (lv, t\<^sub>x) \<in> set \<phi>s" if "abstract_state.stack as\<^sub>2 pv = Some lv" "pv \<in> fst ` set phis_stats"
+    for lv pv
+    using `phi_abstract as\<^sub>1 as\<^sub>2 phis_stats \<phi>s old_b_id` that
+    by (induction rule: phi_abstract.induct) (auto simp add: phi_abstract'.simps ranI)
+  have "frame.pos (hd (frames cs\<^sub>2)) = abstract_state.pos as\<^sub>2"
+    unfolding cs\<^sub>2 f\<^sub>2_def using 1 by (simp)
+  moreover have 2: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+    apply(rule vars_formula_satisfies[of _ _ v\<^sub>1])
+    apply(auto)
+     apply(rule v\<^sub>2_v\<^sub>1)
+    using \<phi>s_kb_as\<^sub>1 apply(blast)
+    using v\<^sub>1 unfolding represents_frame.simps by auto
+  moreover have 3: "IA.assignment v\<^sub>2"
+    using v\<^sub>1 unfolding represents_frame.simps v\<^sub>2_def IA.assignment_def apply(auto split: option.splits)
+     apply blast
+    subgoal for a x2
+      apply(subgoal_tac "IA.has_type x2 IA.IntT")
+      using IA.eval_types IA_locale.Values_of_type.simps(2) represents_frame.cases v\<^sub>1
+       apply metis
+      using t\<^sub>x_IntT
+      by (meson map_of_SomeD)
+    done
+  moreover have "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+    apply(rule IA.impliesD[of "(Conjunction (map (\<lambda>(v\<^sub>x,t\<^sub>x). encode_eq (encode_var v\<^sub>x) t\<^sub>x) \<phi>s)) \<and>\<^sub>f (kb as\<^sub>1)"])
+    using 1 apply(simp)
+     defer
+     apply(auto)
+      apply(subst v\<^sub>2_s) apply(simp)
+      apply(subst IA.eval_same_vars[of _ v\<^sub>1 v\<^sub>2])
+    apply(auto)
+      apply(subst v\<^sub>2_v\<^sub>1[symmetric])
+       apply(rule vars_term_t\<^sub>x)
+        apply(simp) apply(auto)
+    using 2 apply(simp)
+    using 3 by simp
+  moreover have t: "same_stack_names (frame.stack (hd (frames cs\<^sub>2))) (abstract_state.stack as\<^sub>2)"
+    apply(rule same_stack_names.intros)
+    apply(auto simp add: f\<^sub>2_def)
+    subgoal for n y
+      apply(subgoal_tac "n \<in> dom (abstract_state.stack as\<^sub>2)")
+       apply(blast)
+      unfolding 1(13) s' apply(auto split: option.splits)
+      using v\<^sub>1 unfolding represents_frame.simps same_stack_names.simps
+       apply(blast)
+      using d
+      by (metis domI dom_map_of_conv_image_fst list.set_map)
+    apply(subgoal_tac "n \<in> dom (abstract_state.stack as\<^sub>2)")
+    subgoal for n y
+    unfolding 1(13) s'   apply(auto split: option.splits)
+      using v\<^sub>1 unfolding represents_frame.simps same_stack_names.simps
+          apply(blast)
+      defer
+      using d
+      by (metis img_fst list.set_map map_of_eq_None_iff)
+    by blast
+  moreover have u: "valid_var_mapping (frame.stack (hd (frames cs\<^sub>2))) (abstract_state.stack as\<^sub>2) v\<^sub>2"
+    apply(rule valid_var_mapping.intros)
+    apply(clarsimp simp add: f\<^sub>2_def s' split: option.splits)
+    subgoal for l i  lv pv
+      apply(subgoal_tac "abstract_state.stack as\<^sub>1 pv = Some lv")
+       apply(subst v\<^sub>2_v\<^sub>1)
+      using e apply(simp)
+       apply (meson represents_frame.cases v\<^sub>1 valid_var_mapping.cases)
+      apply(subgoal_tac "pv \<in> dom (abstract_state.stack as\<^sub>1)")
+       apply (simp add: "1.hyps"(12) d map_of_eq_None_iff)
+      apply(subgoal_tac "pv \<in> dom (abstract_state.stack as\<^sub>2)")
+      unfolding 1  apply (simp add: domD map_of_eq_None_iff d[symmetric] )
+      using 1 by (metis domI)
+    subgoal for l i lv pv
+      apply(subgoal_tac "(pv, IntConstant l i) \<in> set s")
+      apply(subgoal_tac "\<exists>t\<^sub>x. (lv, t\<^sub>x) \<in> set \<phi>s")
+       apply(auto)
+      subgoal for t\<^sub>x
+        apply(subst v\<^sub>2_s)
+         apply(simp)
+      proof (goal_cases)
+        note H = 1
+        case 1
+        then have "pv \<in> fst ` set phis_stats"
+          using d by blast
+        then obtain ps where ps: "(pv, ps) \<in> set phis_stats"
+          by auto
+        from f[OF 1(1) 1(4) ps, unfolded phi_abstract'.simps]
+        obtain y\<^sub>x where y\<^sub>x: "phi_bid old_b_id ps = Some y\<^sub>x" "SE_Graph.operand_value as\<^sub>1 y\<^sub>x = Some t\<^sub>x"
+          by auto
+        then show ?case
+          using g[OF ps y\<^sub>x(1) 1(3)]
+          apply(cases y\<^sub>x) apply(auto elim!: option_to_sum.elims)
+          by (meson represents_frame.cases v\<^sub>1 valid_var_mapping.cases)
+      qed
+      subgoal apply(rule h) using d by blast+
+      by (simp add: map_of_SomeD)
+    done
+  moreover have "assig_of_state cs\<^sub>1 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if a: "abstract_state.stack as\<^sub>1 n = Some lv" for n lv
+  proof -
+    obtain y where y: "Mapping.lookup (frame.stack f\<^sub>1) n = Some y"
+      using v\<^sub>1 that a unfolding represents_frame.simps same_stack_names.simps by (auto)
+    moreover have "IA.Int (integerValue y) = v\<^sub>1 (lv, IA.IntT)"
+      using v\<^sub>1 y a unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+    ultimately show ?thesis
+      unfolding assig_of_state_def using e a by (auto simp add: v\<^sub>2_v\<^sub>1)
+  qed
+  moreover have "assig_of_state cs\<^sub>2 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if a: "abstract_state.stack as\<^sub>2 n = Some lv " for n lv
+  proof -
+    obtain y where y: "Mapping.lookup (frame.stack f\<^sub>2) n = Some y"
+      using v\<^sub>1 t a unfolding represents_frame.simps same_stack_names.simps by fastforce
+    moreover have "IA.Int (integerValue y) = v\<^sub>2 (lv, IA.IntT)"
+      using v\<^sub>1 y a u unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+    ultimately show ?thesis
+      unfolding assig_of_state_def using a by (auto simp add: v\<^sub>2_v\<^sub>1)
+  qed
+  ultimately have "represents_frame (hd (frames cs\<^sub>2)) as\<^sub>2 v\<^sub>2" "as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+    using 1 assignment_assig_of_state by (auto intro!: represents_frame.intros as_as_step.intros[of v\<^sub>2 v\<^sub>2])
+  then show ?case
+    unfolding represents_state.simps using 1 by auto
+qed
+
+inductive icmpAsInf for prog as\<^sub>1 as\<^sub>2 where
+  "icmpAsInf prog as\<^sub>1 as\<^sub>2"
+if
+  "find_statement prog (pos as\<^sub>1) = Inr (Instruction (Assignment n (Icmp p o\<^sub>1 o\<^sub>2)))"
+  "\<phi> = encode_pred p t\<^sub>1 t\<^sub>2"
+  "(b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A \<phi>)"
+  "(\<not>b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A (\<not>\<^sub>f \<phi>))"
+  "\<chi> = (if b then encode_eq (encode_var v\<^sub>n) (Fun (IA.ConstF 1) []) else encode_eq (encode_var v\<^sub>n) (Fun (IA.ConstF 0) []))"
+  "pos as\<^sub>2 = inc_pos (pos as\<^sub>1)"
+  "operand_value as\<^sub>1 o\<^sub>1 = Some t\<^sub>1"
+  "operand_value as\<^sub>1 o\<^sub>2 = Some t\<^sub>2"
+  "update_as as\<^sub>1 as\<^sub>2 n v\<^sub>n \<chi>"
+
+lemma icmpAsInf_represents:
+  assumes "icmpAsInf prog as\<^sub>1 as\<^sub>2" "represents_state cs\<^sub>1 as\<^sub>1" "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+  shows "represents_state cs\<^sub>2 as\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+using assms proof(induction rule: icmpAsInf.induct)
+  case (1 n p o\<^sub>1 o\<^sub>2 \<phi> t\<^sub>1 t\<^sub>2 b \<chi> v\<^sub>n)
+  note IA.implies_Language[simp del]
+  note u = `update_as as\<^sub>1 as\<^sub>2 n v\<^sub>n \<chi>`
+  define ins where "ins = (Assignment n (Icmp p o\<^sub>1 o\<^sub>2))"
+  obtain f\<^sub>1 fs\<^sub>1 where cs\<^sub>1: "frames cs\<^sub>1 = f\<^sub>1 # fs\<^sub>1"
+    using 1 unfolding represents_state.simps
+    by (metis list.exhaust_sel llvm_state.collapse)
+  interpret small_step prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 .
+  have [simp]: "hd (frames cs\<^sub>1) = f\<^sub>1"
+    by (simp add: cs\<^sub>1)
+  obtain fn bn pp where p: "pos as\<^sub>1 = (fn, bn, pp)"
+      using prod_cases3 by blast
+  then have p': "frame.pos f\<^sub>1 = (fn, bn, pp)"
+    using 1 cs\<^sub>1 by (auto simp add: represents_state.simps represents_frame.simps)
+  have "Inr cs\<^sub>2 = step prog cs\<^sub>1"
+    using 1 by auto
+  also have "\<dots> = run_instruction ins"
+    using 1(1) p p' ins_def cs\<^sub>1 by (auto)
+  finally have cs\<^sub>2': "run_instruction ins = Inr cs\<^sub>2"
+    by simp
+  then obtain x x' l i l' i' where
+    li_def: "operand_value o\<^sub>1 = Inr x" "x = IntConstant l i"
+            "operand_value o\<^sub>2 = Inr x'" "x' = IntConstant l' i'"
+    by (auto simp add: ins_def split: sum_bind_splits elim!: icmp_llvm_constant.elims)
+      (meson llvm_constant.exhaust)+
+  define f\<^sub>2 where "f\<^sub>2 = LLVM_Syntax.update_stack
+         (\<lambda>_. Mapping.update n (icmp_llvm_constant p x x') (frame.stack f\<^sub>1))
+         (update_pos (\<lambda>_. (fn, bn, Suc pp)) f\<^sub>1)"
+  have cs\<^sub>2: "cs\<^sub>2 =  update_frames (\<lambda>_. f\<^sub>2 # fs\<^sub>1) cs\<^sub>1"
+    using cs\<^sub>2' li_def unfolding ins_def f\<^sub>2_def
+    by (auto simp add: p' ins_def split: if_splits sum_bind_splits intro: frame.expand)
+  obtain v where v: "represents_frame f\<^sub>1 as\<^sub>1 v"
+    using 1 unfolding represents_state.simps by auto
+  define vv where "vv = IA.Int (if kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A \<phi> then 1 else 0)"
+  define v\<^sub>2 where "v\<^sub>2 = v((v\<^sub>n, IA.IntT) := vv)"
+  have [simp]: "IA.assignment v\<^sub>2"
+    using v unfolding v\<^sub>2_def vv_def represents_frame.simps by (fastforce)
+  have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+    using u v by (simp add: update_as.simps represents_frame.simps v\<^sub>2_def)
+  have ttii [simp]: "IA.to_int (\<lbrakk>t\<^sub>1\<rbrakk>\<^sub>I\<^sub>A v\<^sub>2) = i" "IA.to_int (\<lbrakk>t\<^sub>2\<rbrakk>\<^sub>I\<^sub>A v\<^sub>2) = i'"
+    unfolding v\<^sub>2_def
+    using "1.hyps"(7,8) cs\<^sub>1 li_def operand_value_valid_var_mapping represents_frame.simps
+      operand_value_fresh u v IA.eval_with_fresh_var  SE_Graph.operand_value_fresh
+    by (smt)+
+  have \<chi>[simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A \<chi>"
+    unfolding `\<chi> = (if b then encode_eq (encode_var v\<^sub>n) (Fun (IA.ConstF 1) []) else encode_eq (encode_var v\<^sub>n) (Fun (IA.ConstF 0) []))`
+    unfolding `\<phi> = encode_pred p t\<^sub>1 t\<^sub>2`
+    apply (cases p)
+      apply (auto simp add: v\<^sub>2_def vv_def `\<phi> = encode_pred p t\<^sub>1 t\<^sub>2`)
+         apply (metis (no_types, lifting) "1.hyps"(2) "1.hyps"(4) \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close> encode_pred.simps(1) encode_sig.elims formula.implies_def formula.satisfies_not)
+    using "1.hyps"(2) "1.hyps"(3) apply (auto)
+    apply (metis (no_types, lifting) "1.hyps"(4) \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close> formula.implies_def formula.satisfies_not)
+    apply (metis "1"(4) \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close> IA.impliesE IA.satisfies_not)
+    apply (smt "1"(4) \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close> form_not.simps(1) formula.impliesD IA.satisfies_NegAtom)
+    by (metis "1"(4) \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close> formula.satisfies_not IA.impliesD )+
+  have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+    apply(rule IA.impliesD[of "kb as\<^sub>1 \<and>\<^sub>f \<chi>"])
+    using update_as.simps u apply(metis)
+    using represents_frame.simps by (auto)
+  have as\<^sub>1_v\<^sub>2: "IA.Int (integerValue (the (Mapping.lookup (frame.stack f\<^sub>1) m))) = v\<^sub>2 (lv, IA.IntT)"
+    if t: "stack as\<^sub>1 m = Some lv" for m lv
+  proof -
+    obtain ll ii where look: "Mapping.lookup (frame.stack f\<^sub>1) m = Some (IntConstant ll ii)"
+      using v cs\<^sub>1 t unfolding same_stack_names_def' represents_frame.simps by fastforce+
+    have lvvn: "lv \<noteq> v\<^sub>n"
+      using t by (metis u update_as.simps rangeI)
+    then have "v\<^sub>2 (lv, IA.IntT) = v (lv, IA.IntT)"
+      unfolding v\<^sub>2_def by simp
+    then show ?thesis
+      by (metis llvm_constant.sel(2) look option.sel represents_frame.cases that v
+          valid_var_mapping.cases)
+  qed
+  have iI: "icmp_llvm_constant p x x' = IntConstant 1 (if b then 1 else 0)"
+    unfolding `\<chi> = (if b then encode_eq (encode_var v\<^sub>n) (Fun (IA.ConstF 1) []) else encode_eq (encode_var v\<^sub>n) (Fun (IA.ConstF 0) []))`
+    unfolding `\<phi> = encode_pred p t\<^sub>1 t\<^sub>2` apply (cases p)
+      apply (auto simp add: v\<^sub>2_def vv_def `\<phi> = encode_pred p t\<^sub>1 t\<^sub>2`)
+    using 1(3) 1(4) 1(5) apply (auto simp add: v\<^sub>2_def vv_def `\<phi> = encode_pred p t\<^sub>1 t\<^sub>2` li_def split: if_splits)
+
+    using IA.impliesD[OF _ \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close>]
+    by force+
+  have r_f\<^sub>2_v\<^sub>2: "represents_frame f\<^sub>2 as\<^sub>2 v\<^sub>2"
+  proof -
+    have a: "same_stack_names (Mapping.update n (icmp_llvm_constant p x x') (frame.stack f\<^sub>1))
+                              (abstract_state.stack as\<^sub>2)"
+      using \<open>update_as as\<^sub>1 as\<^sub>2 n v\<^sub>n \<chi>\<close> v
+      by (auto intro: same_stack_names.intros simp add: update_as.simps represents_simps
+          same_stack_names.simps lookup_update')
+    show ?thesis
+      apply(auto simp add: f\<^sub>2_def represents_frame.simps)
+      subgoal
+        using 1  by (auto simp add: p)
+      subgoal
+        using a by simp
+      apply(rule vvm_update[OF _ u, of "frame.stack f\<^sub>1" v, where l=1 ])
+      using represents_frame.cases v apply blast
+      using v\<^sub>2_def vv_def apply(blast)
+      using iI  apply auto
+      using "1.hyps"(3,4) apply blast
+      using "1.hyps"(4)
+      by (metis (mono_tags, lifting) \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close> formula.implies_def formula.satisfies_not)
+  qed
+  have "represents_state cs\<^sub>2 as\<^sub>2"
+    unfolding cs\<^sub>2  represents_state.simps using r_f\<^sub>2_v\<^sub>2 1 by (auto)
+  moreover have "as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+  proof -
+    have a: "IA.Int (integerValue (the (Mapping.lookup (frame.stack f\<^sub>2) n))) = v\<^sub>2 (v\<^sub>n, IA.IntT)"
+      unfolding v\<^sub>2_def f\<^sub>2_def vv_def iI using `b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A \<phi>` `\<not> b \<Longrightarrow> kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A \<not>\<^sub>f \<phi>`
+          by (auto) (metis IA.impliesE IA.satisfies_not \<open>IA.assignment v\<^sub>2\<close> \<open>v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1\<close>)
+    have b: "assig_of_state cs\<^sub>2 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if "abstract_state.stack as\<^sub>2 n = Some lv" for lv
+      using that u as\<^sub>1_v\<^sub>2 unfolding update_as.simps
+      by (auto simp add: assig_of_state_def cs\<^sub>2 a lookup_update_neq cs\<^sub>2 lookup_update_neq)
+    have c: "assig_of_state cs\<^sub>2 (m, IA.IntT) = v\<^sub>2 (lv, IA.IntT)"
+      if "abstract_state.stack as\<^sub>2 m = Some lv" "m \<noteq> n" for m lv
+      using that u as\<^sub>1_v\<^sub>2 unfolding update_as.simps
+      by (auto simp add: assig_of_state_def as\<^sub>1_v\<^sub>2 cs\<^sub>2 f\<^sub>2_def lookup_update_neq)
+    show ?thesis
+      apply(rule as_as_step.intros[where v=v\<^sub>2 and v'=v\<^sub>2])
+      using 1 assignment_assig_of_state
+      using as\<^sub>1_v\<^sub>2 a f\<^sub>2_def a b c
+      by (auto intro!: assignment_assig_of_frame simp add: cs\<^sub>2 cs\<^sub>1 assig_of_state_def lookup_update_neq
+          as\<^sub>1_v\<^sub>2 f\<^sub>2_def lookup_update')
+  qed
+  ultimately show ?case
+    by simp
+qed
+(*
+inductive evalExternalAsInf for prog as\<^sub>1 as\<^sub>2 where
+  "find_statement prog (pos as\<^sub>1) = Inr (Instruction (Assignment n (R_Call (Call t g ls)))) \<Longrightarrow>
+   small_step.map_of_funs prog g = Some (ExternalFunction _ _ ps) \<Longrightarrow>
+   pos as\<^sub>2 = inc_pos (pos as\<^sub>1) \<Longrightarrow>
+   update_as as\<^sub>1 as\<^sub>2 n v\<^sub>n True\<^sub>f \<Longrightarrow>
+   evalExternalAsInf prog as\<^sub>1 as\<^sub>2"
+
+lemma evalExternalAsInf_represents_step':
+  assumes "evalExternalAsInf prog as\<^sub>1 as\<^sub>2" "represents_state cs\<^sub>1 as\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents_state cs\<^sub>2 as\<^sub>2 \<and> as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+using assms proof(induction rule: evalExternalAsInf.induct)
+  case (1 n t g ls uu uv ps v\<^sub>n)
+  note u = `update_as as\<^sub>1 as\<^sub>2 n v\<^sub>n True\<^sub>f`
+  define ins where "ins = Instruction (Assignment n (R_Call (Call t g ls)))"
+  obtain f\<^sub>1 fs\<^sub>1 where cs\<^sub>1: "frames cs\<^sub>1 = f\<^sub>1 # fs\<^sub>1"
+    using 1 unfolding represents_state.simps  by (metis hd_Cons_tl llvm_state.collapse)
+  interpret small_step prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 .
+  have [simp]: "hd (frames cs\<^sub>1) = f\<^sub>1"
+    by (simp add: cs\<^sub>1)
+  obtain fn bn p where p: "pos as\<^sub>1 = (fn, bn, p)"
+    using prod_cases3 by blast
+  then have p': "frame.pos f\<^sub>1 = (fn, bn, p)"
+    using 1 cs\<^sub>1 by (auto simp add: represents_state.simps represents_frame.simps)
+  have "call_external_function g ls n (Inr cs\<^sub>2)"
+    using 1 cs\<^sub>1 p p' unfolding step'_def step_call.simps
+    by (auto split: list.splits sum.splits action.splits named.splits instruction.splits)
+  then have "assign_unknown_value n (Inr cs\<^sub>2)"
+    using 1 cs\<^sub>1 p p' unfolding call_external_function_def
+    by (auto split: list.splits sum.splits action.splits named.splits instruction.splits)
+  then obtain c where c: "Inr cs\<^sub>2 = update_frames_stack n (Inr c)"
+    unfolding assign_unknown_value.simps by blast
+  then obtain f\<^sub>2 where f\<^sub>2: "cs\<^sub>2 = Llvm_state (f\<^sub>2#fs\<^sub>1)"
+    unfolding update_frames_stack.simps by (auto split: prod.splits)
+  obtain v where v: "represents_frame f\<^sub>1 as\<^sub>1 v"
+    using 1 unfolding represents_state.simps by auto
+  define v\<^sub>2 where "v\<^sub>2 = v((v\<^sub>n, IA.IntT) := IA.Int (integerValue c))"
+  have [simp]: "IA.assignment v\<^sub>2"
+    using v unfolding v\<^sub>2_def represents_frame.simps by fastforce
+  have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+    using u v by (simp add: update_as.simps represents_frame.simps v\<^sub>2_def)
+  have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A True\<^sub>f"
+    by simp
+  have [simp]: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>2"
+    apply(rule IA.impliesD[of "kb as\<^sub>1 \<and>\<^sub>f True\<^sub>f"])
+    using update_as.simps u apply(metis)
+    using represents_frame.simps by (auto)
+  have as\<^sub>1_v\<^sub>2: "IA.Int (integerValue (the (Mapping.lookup (frame.stack f\<^sub>1) m))) = v\<^sub>2 (lv, IA.IntT)"
+    if t: "stack as\<^sub>1 m = Some lv" for m lv
+  proof -
+    obtain ll ii where look: "Mapping.lookup (frame.stack f\<^sub>1) m = Some (IntConstant ll ii)"
+      using v cs\<^sub>1 t unfolding same_stack_names_def' represents_frame.simps by fastforce+
+    have lvvn: "lv \<noteq> v\<^sub>n"
+      using t by (metis u update_as.simps rangeI)
+    then have "v\<^sub>2 (lv, IA.IntT) = v (lv, IA.IntT)"
+      unfolding v\<^sub>2_def by simp
+    then show ?thesis
+      by (metis llvm_constant.sel(2) look option.sel represents_frame.cases that v
+          valid_var_mapping.cases)
+  qed
+  have a: "same_stack_names (Mapping.update n c (frame.stack f\<^sub>1))
+                            (abstract_state.stack as\<^sub>2)"
+    apply(cases c)
+    apply(rule ssn_update[of as\<^sub>1 as\<^sub>2 n v\<^sub>n True\<^sub>f ])
+    using u 1 unfolding cs\<^sub>1 by (auto simp add: represents_state.simps represents_frame.simps)
+  have r_f\<^sub>2_v\<^sub>2: "represents_frame f\<^sub>2 as\<^sub>2 v\<^sub>2"
+    apply(auto simp add: represents_frame.simps)
+    subgoal
+      using 1 c f\<^sub>2 by (auto simp add: p' p)
+    subgoal using a c f\<^sub>2 by (auto split: prod.splits)
+    apply(rule vvm_update[OF _ u, of "frame.stack f\<^sub>1" v, where l="integerBits c" ])
+    using represents_frame.cases v apply blast
+    using v\<^sub>2_def apply(blast)
+    using f\<^sub>2 c 1 by (auto split: prod.splits)
+  have "represents_state cs\<^sub>2 as\<^sub>2"
+    unfolding represents_state.simps using f\<^sub>2  r_f\<^sub>2_v\<^sub>2 by (auto)
+  moreover have "as_as_step as\<^sub>1 as\<^sub>2 (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+    apply(rule as_as_step.intros[where v=v\<^sub>2 and v'=v\<^sub>2])
+    using 1 assignment_assig_of_state apply(auto)[6]
+    subgoal
+      unfolding v\<^sub>2_def apply(auto)
+       apply(subgoal_tac "Some v\<^sub>n \<in> range (abstract_state.stack as\<^sub>1)")
+      using 1 unfolding update_as.simps
+        apply(simp)
+      unfolding image_def apply(simp)
+       apply(metis)
+      by (simp add: as\<^sub>1_v\<^sub>2 assig_of_state_def v\<^sub>2_def)
+    subgoal
+      using f\<^sub>2 c apply (auto simp add: as\<^sub>1_v\<^sub>2 assig_of_state_def v\<^sub>2_def)
+       apply(cases f\<^sub>1)
+       apply (auto simp add: as\<^sub>1_v\<^sub>2 assig_of_state_def v\<^sub>2_def)
+      using 1 unfolding update_as.simps image_def apply(auto)[1]
+       apply(metis)
+      using as\<^sub>1_v\<^sub>2
+      apply(cases f\<^sub>1)
+      using 1 f\<^sub>2 c unfolding update_as.simps
+      by (auto split: prod.splits simp add: small_step.simps as\<^sub>1_v\<^sub>2 assig_of_state_def v\<^sub>2_def)
+    by auto
+  ultimately show ?case
+    by simp
+qed
+*)
+
+*)
+
+end (* context ll_mem_funs *)
+
+
+locale llvm_se_graph =
+  graph' as_of_node
+  + ll_mem _ _ _ empty_mem
+  for as_of_node :: "'n \<Rightarrow> ('lv::linorder) abstract_state"
+  and empty_mem :: "'mem"
+  +
+  fixes prog :: llvm_prog
+begin
+
+inductive represents for cs n v where
+  "represents cs n v"
+if "n \<in> nodes" "represents_state cs (as_of_node n) v"
+
+inductive evalInf for n\<^sub>1 n\<^sub>2 where
+  "evalAsInf prog as\<^sub>1 as\<^sub>2 \<Longrightarrow>
+   as_of_node n\<^sub>1 = as\<^sub>1 \<Longrightarrow>
+   as_of_node n\<^sub>2 = as\<^sub>2 \<Longrightarrow>
+   renaming_of_edge (n\<^sub>1, n\<^sub>2) = id \<Longrightarrow>
+   n\<^sub>1 \<in> nodes \<Longrightarrow> n\<^sub>2 \<in> nodes \<Longrightarrow> (n\<^sub>1,n\<^sub>2) \<in> edges \<Longrightarrow>
+   evalInf n\<^sub>1 n\<^sub>2"
+
+lemma evalInf_represents_step:
+  assumes "evalInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1 v\<^sub>1"
+  shows "\<exists>cs\<^sub>2 v\<^sub>2. step prog cs\<^sub>1 = Inr cs\<^sub>2 \<and> represents cs\<^sub>2 n\<^sub>2 v\<^sub>2 \<and> ((n\<^sub>1, v\<^sub>1), (n\<^sub>2, v\<^sub>2)) \<in> as_step"
+  using evalAsInf_represents_step assms unfolding evalInf.simps represents.simps
+  by (fastforce simp del: step.simps intro:  as_step.intros)
+
+
+inductive genInf for n\<^sub>1 n\<^sub>2 where
+  "genAsInf as\<^sub>1 as\<^sub>2 \<mu> \<Longrightarrow>
+   as_of_node n\<^sub>1 = as\<^sub>1 \<Longrightarrow>
+   as_of_node n\<^sub>2 = as\<^sub>2 \<Longrightarrow>
+   renaming_of_edge (n\<^sub>1, n\<^sub>2) = \<mu> \<Longrightarrow>
+   n\<^sub>1 \<in> nodes \<Longrightarrow> n\<^sub>2 \<in> nodes \<Longrightarrow> (n\<^sub>1,n\<^sub>2) \<in> edges \<Longrightarrow>
+   genInf n\<^sub>1 n\<^sub>2"
+
+lemma genInf_represents:
+  assumes "genInf n\<^sub>1 n\<^sub>2" "represents cs n\<^sub>1 v\<^sub>1"
+  shows "\<exists>v\<^sub>2. represents cs n\<^sub>2 v\<^sub>2 \<and> ((n\<^sub>1, v\<^sub>1), (n\<^sub>2, v\<^sub>2)) \<in> as_step"
+  using genAsInf_represents assms unfolding genInf.simps represents.simps
+  by (fastforce intro!: as_step.intros)
+(*
+inductive refineInf for n n\<^sub>t n\<^sub>f where
+  "refineAsInf as as\<^sub>t as\<^sub>f \<Longrightarrow>
+   as_of_node n = as \<Longrightarrow>
+   as_of_node n\<^sub>t = as\<^sub>t \<Longrightarrow>
+   as_of_node n\<^sub>f = as\<^sub>f \<Longrightarrow>
+   renaming_of_edge (n, n\<^sub>t) = id \<Longrightarrow>
+   renaming_of_edge (n, n\<^sub>f) = id \<Longrightarrow>
+   n \<in> nodes \<Longrightarrow> n\<^sub>t \<in> nodes \<Longrightarrow> n\<^sub>f \<in> nodes \<Longrightarrow>
+   (n,n\<^sub>t) \<in> edges \<Longrightarrow> (n,n\<^sub>f) \<in> edges \<Longrightarrow>
+   refineInf n n\<^sub>t n\<^sub>f"
+
+lemma refineInf_represents: "refineInf n n\<^sub>t n\<^sub>f \<Longrightarrow>
+  represents cs n \<Longrightarrow>
+  represents cs n\<^sub>t \<and> ((n, assig_of_state cs), (n\<^sub>t, assig_of_state cs)) \<in> as_step
+  \<or> represents cs n\<^sub>f \<and> ((n, assig_of_state cs), (n\<^sub>f, assig_of_state cs)) \<in> as_step"
+  using refineAsInf_represents unfolding refineInf.simps represents.simps
+  by (fastforce intro!: as_as_as_step)
+
+inductive branchInf for n\<^sub>1 n\<^sub>2 where
+  "branchAsInf prog as\<^sub>1 as\<^sub>2 \<Longrightarrow>
+   as_of_node n\<^sub>1 = as\<^sub>1 \<Longrightarrow>
+   as_of_node n\<^sub>2 = as\<^sub>2 \<Longrightarrow>
+   renaming_of_edge (n\<^sub>1, n\<^sub>2) = id \<Longrightarrow>
+   n\<^sub>1 \<in> nodes \<Longrightarrow> n\<^sub>2 \<in> nodes \<Longrightarrow> (n\<^sub>1,n\<^sub>2) \<in> edges \<Longrightarrow>
+   branchInf n\<^sub>1 n\<^sub>2"
+
+lemma branchInf_represents:
+  assumes "branchInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+  using assms branchAsInf_represents unfolding branchInf.simps represents.simps
+  by (fastforce intro!: as_as_as_step)
+
+inductive condBranchInf for n\<^sub>1 n\<^sub>2 where
+  "condBranchAsInf prog as\<^sub>1 as\<^sub>2 \<Longrightarrow>
+   as_of_node n\<^sub>1 = as\<^sub>1 \<Longrightarrow>
+   as_of_node n\<^sub>2 = as\<^sub>2 \<Longrightarrow>
+   renaming_of_edge (n\<^sub>1, n\<^sub>2) = id \<Longrightarrow>
+   n\<^sub>1 \<in> nodes \<Longrightarrow> n\<^sub>2 \<in> nodes \<Longrightarrow> (n\<^sub>1,n\<^sub>2) \<in> edges \<Longrightarrow>
+   condBranchInf n\<^sub>1 n\<^sub>2"
+
+lemma condBranchInf_represents:
+  assumes "condBranchInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+  using assms condBranchAsInf_represents unfolding condBranchInf.simps represents.simps
+  by (fastforce intro!: as_as_as_step)
+
+inductive icmpInf for n\<^sub>1 n\<^sub>2 where
+  "icmpAsInf prog as\<^sub>1 as\<^sub>2 \<Longrightarrow>
+   as_of_node n\<^sub>1 = as\<^sub>1 \<Longrightarrow>
+   as_of_node n\<^sub>2 = as\<^sub>2 \<Longrightarrow>
+   renaming_of_edge (n\<^sub>1, n\<^sub>2) = id \<Longrightarrow>
+   n\<^sub>1 \<in> nodes \<Longrightarrow> n\<^sub>2 \<in> nodes \<Longrightarrow> (n\<^sub>1,n\<^sub>2) \<in> edges \<Longrightarrow>
+   icmpInf n\<^sub>1 n\<^sub>2"
+
+lemma icmpInf_represents:
+  assumes "icmpInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+  using assms icmpAsInf_represents unfolding icmpInf.simps represents.simps
+  by (fastforce intro!: as_as_as_step)
+
+inductive returnInf where
+  "find_statement prog (pos as\<^sub>1) = Inr (Terminator (Ret (Some op))) \<Longrightarrow>
+   operand_value as\<^sub>1 op = Some t\<^sub>1 \<Longrightarrow>
+   as_of_node n\<^sub>1 = as\<^sub>1 \<Longrightarrow>
+   n\<^sub>1 \<in> nodes \<Longrightarrow>
+   returnInf n\<^sub>1"
+
+inductive evalExternalInf for n\<^sub>1 n\<^sub>2 where
+ "evalExternalInf n\<^sub>1 n\<^sub>2"
+if
+  "evalExternalAsInf prog (as_of_node n\<^sub>1) (as_of_node n\<^sub>2)"
+  "renaming_of_edge (n\<^sub>1, n\<^sub>2) = id"
+  "n\<^sub>1 \<in> nodes" "n\<^sub>2 \<in> nodes" "(n\<^sub>1,n\<^sub>2) \<in> edges"
+
+(*
+subsection \<open>step' semantics and inference rules\<close>
+
+lemma evalInf_represents_step':
+  assumes "evalInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+proof -
+  have "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+    using assms
+    by (auto simp add: step'_def evalAsInf.simps evalInf.simps represents.simps represents_simps
+        split: list.splits)
+  then show ?thesis
+    using evalInf_represents_step assms by blast
+qed
+
+lemma branchInf_represents_step':
+  assumes "branchInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+proof -
+  have "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+    using assms
+    by (auto simp add: step'_def branchInf.simps branchAsInf.simps represents.simps represents_simps
+        small_step.terminate_frame'_def
+        split: list.splits)
+  then show ?thesis
+    using branchInf_represents assms by blast
+qed
+
+lemma condBranchInf_represents_step':
+  assumes "condBranchInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+proof -
+  have "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+    using assms
+    by (auto simp add: step'_def condBranchInf.simps condBranchAsInf.simps represents.simps represents_simps
+        small_step.terminate_frame'_def
+        split: list.splits)
+  then show ?thesis
+    using condBranchInf_represents assms by blast
+qed
+
+lemma icmpInf_represents_step':
+  assumes "icmpInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+proof -
+  have "step prog cs\<^sub>1 = Inr cs\<^sub>2"
+    using assms
+    by (auto simp add: step'_def icmpInf.simps icmpAsInf.simps represents.simps represents_simps
+        small_step.terminate_frame'_def
+        split: list.splits)
+  then show ?thesis
+    using icmpInf_represents assms by blast
+qed
+
+lemma returnInf_represents_step': "returnInf n\<^sub>1 \<Longrightarrow>
+  represents cs\<^sub>1 n\<^sub>1 \<Longrightarrow>
+  (\<exists>c. step' prog cs\<^sub>1 (Inl (ReturnValue c)))"
+proof(induction rule: returnInf.induct)
+  case (1 as\<^sub>1   op t\<^sub>1 n\<^sub>1)
+  obtain f\<^sub>1 fs\<^sub>1 where cs\<^sub>1: "cs\<^sub>1 = Llvm_state (f\<^sub>1 # fs\<^sub>1)"
+    using 1 unfolding represents.simps represents_state.simps
+    by (metis llvm_state.exhaust_sel neq_Nil_conv)
+  interpret small_step prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 .
+  have [simp]: "hd (frames cs\<^sub>1) = f\<^sub>1"
+    by (simp add: cs\<^sub>1)
+  obtain fn bn pp where p: "pos as\<^sub>1 = (fn, bn, pp)"
+      using prod_cases3 by blast
+  then have p': "frame.pos f\<^sub>1 = (fn, bn, pp)"
+    using 1 cs\<^sub>1 by (auto simp add: represents.simps represents_state.simps represents_frame.simps)
+  have a: "step' prog cs\<^sub>1 (operand_value op \<bind> (\<lambda>c. Inl (ReturnValue c)))"
+    using cs\<^sub>1 1 p p' by (auto simp add: step'_def small_step.terminate_frame'_def)
+  have "(\<exists>c. operand_value op = Inr c)"
+    using 1 unfolding represents.simps represents_state.simps represents_frame.simps
+      same_stack_names.simps apply(cases op) apply(auto)
+    by (metis (no_types, hide_lams) option_to_sum.simps(1))
+  then obtain c where "operand_value op = Inr c"
+    by auto
+  then show ?case
+    using a by auto
+qed
+
+
+lemma evalExternalInf_represents_step':
+  assumes "evalExternalInf n\<^sub>1 n\<^sub>2" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents cs\<^sub>2 n\<^sub>2 \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+proof -
+  have "represents cs\<^sub>2 n\<^sub>2"
+    using evalExternalAsInf_represents_step' assms unfolding evalExternalInf.simps represents.simps
+    by blast
+  moreover have "((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>2, assig_of_state cs\<^sub>2)) \<in> as_step"
+    apply(rule as_as_as_step)
+    using evalExternalAsInf_represents_step' assms unfolding evalExternalInf.simps represents.simps
+    by (fastforce)+
+  ultimately show ?thesis
+    by simp
+qed
+
+lemma returnInf_represents_unique_step':
+  assumes "returnInf n\<^sub>1" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 x" "step' prog cs\<^sub>1 (Inl (ReturnValue c))"
+  shows "x = Inl (ReturnValue c)"
+  using assms
+  by (auto simp add: returnInf.simps step'_def represents.simps represents_simps split: list.splits)
+*)
+*)
+end
+
+(*
+inductive skipCallInf for as\<^sub>1 as\<^sub>s n v\<^sub>n where "skipCallInf as\<^sub>1 as\<^sub>s n v\<^sub>n"
+  if
+    "pos as\<^sub>s = inc_pos (pos as\<^sub>1)"
+    "update_as as\<^sub>1 as\<^sub>s n v\<^sub>n True\<^sub>f"
+
+inductive linkParams' for as\<^sub>1 as\<^sub>2 a x v\<^sub>a t\<^sub>x where "linkParams' as\<^sub>1 as\<^sub>2 a x v\<^sub>a t\<^sub>x"
+  if
+    "operand_value as\<^sub>1 x = Some t\<^sub>x"
+    "stack as\<^sub>2 a = Some v\<^sub>a"
+    "v\<^sub>a \<notin> ran (stack as\<^sub>1)"
+    "v\<^sub>a \<notin> fst ` vars_formula (kb as\<^sub>1)"
+    "IA.has_type t\<^sub>x IA.IntT"
+
+inductive linkParams where
+  "linkParams as\<^sub>1 as\<^sub>2 ((a, x)#xs) ((v\<^sub>a, t\<^sub>x)#ys)"
+if
+  "linkParams' as\<^sub>1 as\<^sub>2 a x v\<^sub>a t\<^sub>x" "linkParams as\<^sub>1 as\<^sub>2 xs ys"
+| "linkParams as\<^sub>1 as\<^sub>2 [] []"
+
+inductive callCallInf for prog as\<^sub>1 as\<^sub>f f bs vs where "callCallInf prog as\<^sub>1 as\<^sub>f f bs vs"
+  if
+  "pos as\<^sub>f = (f, LLVM_Syntax.name b, 0)"
+  "small_step.map_of_funs prog f = Some (Function _ _ ps b _)"
+  "linkParams as\<^sub>1 as\<^sub>f (zip (map parameter_name ps) bs) vs"
+  "(Formula.Conjunction (map (\<lambda>(v\<^sub>x,t\<^sub>x). encode_eq (encode_var v\<^sub>x) t\<^sub>x) vs)) \<and>\<^sub>f (kb as\<^sub>1) \<Longrightarrow>\<^sub>I\<^sub>A kb as\<^sub>f"
+  "distinct (map fst vs)"
+  "dom (stack as\<^sub>f) = set (map parameter_name ps)"
+  "distinct (map parameter_name ps)"
+  "(\<forall>x \<in> fst ` \<Union> (vars_term ` snd ` set vs). x \<notin> fst ` set vs)"
+(*
+lemma step_call_Inl_Inr:
+  assumes "step_call prog s f fs n t g ps (Inr s')"
+  shows "\<nexists>e. step_call prog s f fs n t g ps (Inl e)"
+  using assms map_of_funs_name unfolding step_call.simps
+  apply (auto simp add: small_step.simps small_step.call_external_function_def small_step.assign_unknown_value.simps split: list.splits option.splits action.splits
+      named.splits instruction.splits sum.splits sum_bind_splits prod.splits llvm_fun.splits option.splits)
+      apply (meson old.sum.exhaust)
+  apply (meson old.sum.exhaust)
+  by fastforce+
+
+lemma step'_Inl_Inr:
+  assumes "step' prog s\<^sub>1 (Inr s\<^sub>2)"
+  shows "\<nexists>e. step' prog s\<^sub>1 (Inl e)"
+proof -
+  have ?thesis if "find_statement prog (frame.pos f) = Inl x" "frames s\<^sub>1 = f#fs" for f fs x
+  using assms  that step_call_Inl_Inr
+  by  (auto simp add: step'_def small_step.simps small_step.terminate_frame'_def
+      split: list.splits option.splits action.splits named.splits instruction.splits sum_bind_splits
+      prod.splits terminator.splits)
+  moreover have ?thesis if "find_statement prog (frame.pos f) = Inr x" "frames s\<^sub>1 = f#fs" for f fs x
+  using assms that step_call_Inl_Inr
+  by  (fastforce simp add: step'_def small_step.simps small_step.terminate_frame'_def
+      split: step_splits)
+  ultimately have ?thesis if "frames s\<^sub>1 = f#fs" for f fs
+    using that by (cases "find_statement prog (frame.pos f)") blast+
+  then show ?thesis
+    using assms by (auto simp add: step'_def split: list.splits)
+qed
+
+(* as\<^sub>s like Skip and as\<^sub>f like move into Function *)
+inductive callAsInf for prog as\<^sub>1 as\<^sub>f as\<^sub>s where "callAsInf prog as\<^sub>1 as\<^sub>f as\<^sub>s"
+  if
+  "find_statement prog (pos as\<^sub>1) = Inr (Instruction (Assignment x (R_Call (Call t g ls))))"
+  "skipCallInf as\<^sub>1 as\<^sub>s x v\<^sub>n"
+  "callCallInf prog as\<^sub>1 as\<^sub>f g ls vs"
+
+lemma callInf_represents_step':
+  assumes "callAsInf prog as\<^sub>1 as\<^sub>f as\<^sub>s" "represents_state cs\<^sub>1 as\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents_state cs\<^sub>2 as\<^sub>f \<and> as_as_step as\<^sub>1 as\<^sub>f (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id
+       \<or> represents_state cs\<^sub>2 as\<^sub>s \<and>  as_as_step as\<^sub>1 as\<^sub>s (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+  using assms proof (induction rule: callAsInf.induct)
+  case (1 x t g ls v\<^sub>n vs)
+  note callInf = 1
+  obtain f\<^sub>1 fs\<^sub>1 where f\<^sub>1: "frames cs\<^sub>1 = f\<^sub>1#fs\<^sub>1"
+    using callInf by (auto simp add: step'_def split: list.splits)
+  have [simp]: "pos as\<^sub>1 = frame.pos f\<^sub>1"
+    using callInf by (auto simp add: represents_simps f\<^sub>1)
+  obtain t\<^sub>g ps\<^sub>g b\<^sub>g bs\<^sub>g where find_fun: "small_step.map_of_funs prog g = Some (Function t\<^sub>g g ps\<^sub>g b\<^sub>g bs\<^sub>g)"
+    using callInf unfolding callCallInf.simps using map_of_funs_name by auto blast
+  have callCallInf: "abstract_state.pos as\<^sub>f = (g, basic_block.name b\<^sub>g, 0)"
+    "linkParams as\<^sub>1 as\<^sub>f (zip (map parameter_name ps\<^sub>g) ls) vs"
+    "distinct (map fst vs)"
+    "dom (abstract_state.stack as\<^sub>f) = set (map parameter_name ps\<^sub>g)"
+    "(\<And>\<^sub>f (v\<^sub>x, y)\<leftarrow>vs. encode_eq (encode_var v\<^sub>x) y) \<and>\<^sub>f kb as\<^sub>1 \<Longrightarrow>\<^sub>I\<^sub>A kb as\<^sub>f"
+    "(\<forall>x \<in> fst ` \<Union> (vars_term ` snd ` set vs). x \<notin> fst ` set vs)"
+    "distinct (map parameter_name ps\<^sub>g)"
+    using find_fun callInf(3)[unfolded callCallInf.simps] by (force)+
+  obtain v\<^sub>1 where v\<^sub>1: "represents_frame f\<^sub>1 as\<^sub>1 v\<^sub>1"
+    using callInf unfolding represents_state.simps f\<^sub>1 by auto
+  have "step_call prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 x t g ls (Inr cs\<^sub>2)"
+    using callInf by (auto simp add: f\<^sub>1 step'_def split: list.splits)
+  then consider
+    (call) "small_step.call_external_function prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 g ls x (Inr cs\<^sub>2)"
+    | (skip) f' c where "Inr f' = small_step.enter_frame prog f\<^sub>1 g ls"
+      "(Inr (update_frames (\<lambda>_. [f']) cs\<^sub>1), Inl (ReturnValue c)) \<in> (step_rel_e prog)\<^sup>+"
+      "Inr cs\<^sub>2 = small_step.update_frames_stack cs\<^sub>1 f\<^sub>1 fs\<^sub>1 x (Inr c)"
+    unfolding step_call.simps by blast
+  then show ?case
+  proof (cases)
+    case call
+    then have call: "Inr cs\<^sub>2 = small_step.run_instruction prog cs\<^sub>1 f\<^sub>1 fs\<^sub>1 (Assignment x (R_Call (Call t g ls)))"
+      unfolding small_step.call_external_function_def using find_fun by (auto simp add: small_step.simps)
+    have a: "Inr cs\<^sub>2 =
+     small_step.zip_parameters f\<^sub>1 ls ps\<^sub>g \<bind>
+    (\<lambda>zs. Inr (Llvm_state (Frame (g, basic_block.name b\<^sub>g, 0) zs # f\<^sub>1 # fs\<^sub>1)))"
+      using callInf find_fun  unfolding call callCallInf.simps
+      by (auto simp add: small_step.simps split: sum_bind_splits)
+    obtain zs where zs_def: "Inr zs = small_step.zip_parameters f\<^sub>1 ls ps\<^sub>g"
+      using callInf find_fun step'_Inl_Inr [OF \<open>step' prog cs\<^sub>1 (Inr cs\<^sub>2)\<close>] unfolding call callCallInf.simps
+      by (auto simp add: small_step.simps split: sum_bind_splits)
+    define f\<^sub>2 where "f\<^sub>2 = Frame (g, basic_block.name b\<^sub>g, 0) zs"
+    have cs\<^sub>2: "cs\<^sub>2 = Llvm_state (f\<^sub>2 # f\<^sub>1 # fs\<^sub>1)"
+      using f\<^sub>2_def a zs_def by (auto split: sum_bind_splits)
+    define v\<^sub>2 where "v\<^sub>2 = (\<lambda>(v, t).
+     if t = IA.IntT
+     then case map_of vs v of Some t\<^sub>x \<Rightarrow> (\<lbrakk>t\<^sub>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1) | None \<Rightarrow> v\<^sub>1 (v,t)
+     else v\<^sub>1 (v,t))"
+    have v\<^sub>2_v\<^sub>1: "v\<^sub>2 (v,t) = v\<^sub>1 (v,t)" if "v \<notin> fst ` set vs" for v t
+      using that map_of_eq_None_iff 1 unfolding v\<^sub>2_def callCallInf.simps by (auto split: option.splits)
+    have v\<^sub>2_s: "v\<^sub>2 (v,IA.IntT) = (\<lbrakk>t\<^sub>x\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1)" if "(v,t\<^sub>x) \<in> set vs" for v t\<^sub>x
+      using that map_of_eq_Some_iff 1 unfolding v\<^sub>2_def callCallInf.simps by (auto)
+    have b: "lv \<notin> fst ` set vs" if "abstract_state.stack as\<^sub>1 pv = Some lv" for lv pv
+      using `linkParams as\<^sub>1 as\<^sub>f (zip (map parameter_name ps\<^sub>g) ls) vs` that
+      by (induction rule: linkParams.induct) (auto simp add: linkParams'.simps ranI)
+    have vars_term_t\<^sub>x: "a \<notin> fst ` set vs" if "(a, b) \<in> vars_term t\<^sub>x" "(v\<^sub>x,t\<^sub>x) \<in> set vs" for v\<^sub>x a b t\<^sub>x
+      using callCallInf that by blast
+    have t\<^sub>x_IntT: "IA.has_type t\<^sub>x IA.IntT" if "(v\<^sub>x,t\<^sub>x) \<in> set vs" for v\<^sub>x t\<^sub>x
+      using `linkParams as\<^sub>1 as\<^sub>f (zip (map parameter_name ps\<^sub>g) ls) vs` that
+      by (induction rule: linkParams.induct) (auto simp add: linkParams'.simps ranI)
+    have v\<^sub>2_assig: "IA.assignment v\<^sub>2"
+    proof -
+      have a: "v\<^sub>1 (n, IA.IntT) \<in> range IA.Int" for n
+        using v\<^sub>1 unfolding represents_frame.simps IA.assignment_def by fastforce
+      have "IA.has_type t IA.IntT" if "map_of vs n = Some t" for n t
+        using that t\<^sub>x_IntT  by (meson map_of_SomeD)
+      then have b: "\<lbrakk>t\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1 \<in> range IA.Int" if "map_of vs n = Some t" for n t
+        using that IA.eval_types IA_locale.Values_of_type.simps(2) represents_frame.cases v\<^sub>1
+        by metis
+      show ?thesis
+        using v\<^sub>1 a b unfolding represents_frame.simps v\<^sub>2_def IA.assignment_def
+        by (auto split: option.splits)
+    qed
+    have vs_kb_as\<^sub>1: "fst ` set vs \<inter> fst ` vars_formula (kb as\<^sub>1) = {}"
+      using `linkParams as\<^sub>1 as\<^sub>f (zip (map parameter_name ps\<^sub>g) ls) vs`
+      by (induction rule: linkParams.induct) (auto simp add: linkParams'.simps)
+    have c: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+    proof -
+      have "v\<^sub>2 x = v\<^sub>1 x" if "x \<in> vars_formula (kb as\<^sub>1)" for x
+        using vs_kb_as\<^sub>1 that by (cases x) (auto intro!: v\<^sub>2_v\<^sub>1)
+      then show ?thesis
+        by (rule vars_formula_satisfies[of _ _ v\<^sub>1])
+          (use v\<^sub>1 in \<open>auto simp add: represents_frame.simps\<close>)
+    qed
+    have v\<^sub>2_kb: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>f"
+    proof -
+      have a: "v\<^sub>1 x = v\<^sub>2 x" if "(n, t) \<in> set vs" "x \<in> vars_term t" for n t x
+        using vars_term_t\<^sub>x that by (cases x) (auto simp add: v\<^sub>2_v\<^sub>1)
+      then have b: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A (\<And>\<^sub>f (v\<^sub>x, t\<^sub>x)\<leftarrow>vs. encode_eq (encode_var v\<^sub>x) t\<^sub>x) \<and>\<^sub>f kb as\<^sub>1" (is "_ \<Turnstile>\<^sub>I\<^sub>A ?f")
+        using c by (auto simp add: v\<^sub>2_s IA.eval_same_vars[OF a])
+      show ?thesis
+        by (rule IA.impliesD[of ?f]) (use callCallInf v\<^sub>2_assig b in auto)
+    qed
+    define xs where "xs = zip (map parameter_name ps\<^sub>g) ls"
+    have ls: "length ls = length ps\<^sub>g"
+      using zs_def
+      by(induction ls ps\<^sub>g arbitrary: zs x rule: small_step.zip_parameters.induct)
+        (fastforce split: sum_bind_splits simp add: small_step.zip_parameters.simps)+
+    have lPa: "linkParams as\<^sub>1 as\<^sub>f xs vs"
+      unfolding xs_def using callCallInf by blast
+    have d: "same_stack_names (frame.stack f\<^sub>2) (abstract_state.stack as\<^sub>f)"
+    proof -
+      have  "\<exists>y. abstract_state.stack as\<^sub>f n = Some y" if "Mapping.lookup zs n = Some x" for n x
+      proof -
+        have "n \<in> set (map parameter_name ps\<^sub>g)"
+          using zs_def that
+          by(induction ls ps\<^sub>g arbitrary: zs n x rule: small_step.zip_parameters.induct)
+            (fastforce split: sum_bind_splits simp add: small_step.zip_parameters.simps)+
+        then have "\<exists>p\<^sub>o. (n, p\<^sub>o) \<in> set xs"
+          unfolding xs_def using ls by (metis in_set_impl_in_set_zip1 length_map)
+        then obtain p\<^sub>o where p\<^sub>o: "(n, p\<^sub>o) \<in> set xs"
+          by blast
+        have "\<exists>v\<^sub>n t. linkParams' as\<^sub>1 as\<^sub>f n p\<^sub>o v\<^sub>n t"
+          using lPa p\<^sub>o by (induction as\<^sub>1 as\<^sub>f  xs vs rule: linkParams.induct) (auto)
+        then show ?thesis
+          unfolding linkParams'.simps by auto
+      qed
+      moreover have "\<exists>x. Mapping.lookup zs n = Some x" if "abstract_state.stack as\<^sub>f n = Some y" for n y
+      proof -
+        have a: "n \<in> set (map parameter_name ps\<^sub>g)"
+          using callCallInf that by blast
+        then show "\<exists>x. Mapping.lookup zs n = Some x"
+          using zs_def
+          by (induction ls ps\<^sub>g arbitrary: zs n x rule: small_step.zip_parameters.induct)
+            (fastforce split: sum_bind_splits simp add: small_step.zip_parameters.simps)+
+      qed
+      ultimately show ?thesis
+        using same_stack_names.intros by (auto simp add: f\<^sub>2_def intro!: same_stack_names.intros)
+    qed
+    have e: "valid_var_mapping (frame.stack f\<^sub>2) (abstract_state.stack as\<^sub>f) v\<^sub>2"
+    proof -
+      have "v\<^sub>2 (lv, IA.IntT) = IA.Int i" if "Mapping.lookup zs n = Some (IntConstant l i)"
+        "abstract_state.stack as\<^sub>f n = Some lv"  for lv l i n
+      proof -
+        have "n \<in> set (map parameter_name ps\<^sub>g)"
+          using zs_def that
+          by(induction ls ps\<^sub>g arbitrary: zs n x rule: small_step.zip_parameters.induct)
+            (fastforce split: sum_bind_splits simp add: small_step.zip_parameters.simps)+
+        then have "\<exists>p\<^sub>o. (n, p\<^sub>o) \<in> set xs"
+          unfolding xs_def using ls by (metis in_set_impl_in_set_zip1 length_map)
+        then obtain p\<^sub>o where p\<^sub>o: "(n, p\<^sub>o) \<in> set xs"
+          by blast
+        have "\<exists>v\<^sub>n t. (v\<^sub>n, t) \<in> set vs \<and> linkParams' as\<^sub>1 as\<^sub>f n p\<^sub>o v\<^sub>n t"
+          using lPa p\<^sub>o by (induction as\<^sub>1 as\<^sub>f  xs vs rule: linkParams.induct) (auto)
+        then obtain v\<^sub>n t where v\<^sub>n: "(v\<^sub>n, t) \<in> set vs" "linkParams' as\<^sub>1 as\<^sub>f n p\<^sub>o v\<^sub>n t"
+          by auto
+        have ssop\<^sub>o: "small_step.operand_value f\<^sub>1 p\<^sub>o = Inr (IntConstant l i)"
+          using zs_def that(1) p\<^sub>o callCallInf(7) unfolding xs_def
+        proof (induction ls ps\<^sub>g arbitrary: zs x p\<^sub>o rule: small_step.zip_parameters.induct)
+          case (1 x' xs' t' n' ps')
+          then show ?case
+            using set_zip_leftD
+            by(cases "n = n'")
+              (fastforce split: sum_bind_splits simp add: small_step.zip_parameters.simps)+
+        qed (auto split: sum_bind_splits simp add: small_step.zip_parameters.simps)
+        have "IA.to_int (\<lbrakk>t\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1) = i"
+          using v\<^sub>n v\<^sub>1 ssop\<^sub>o unfolding linkParams'.simps represents_frame.simps
+          by (auto intro: operand_value_valid_var_mapping)
+        then have "\<lbrakk>t\<rbrakk>\<^sub>I\<^sub>A v\<^sub>1 = IA.Int i"
+          using v\<^sub>n v\<^sub>1
+          unfolding linkParams'.simps represents_frame.simps
+          by (auto simp add: IA.assignment_def IA.IA_exp_to_tpoly IA.assignmentI)
+        then show ?thesis
+          using v\<^sub>1 operand_value_valid_var_mapping v\<^sub>n that
+          unfolding linkParams'.simps represents_frame.simps
+          by (auto simp add: IA.assignment_def v\<^sub>2_s)
+      qed
+      then show ?thesis
+        by (rule valid_var_mapping.intros) (auto simp add: f\<^sub>2_def)
+    qed
+    have "assig_of_state cs\<^sub>1 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if a: "stack as\<^sub>1 n = Some lv" for n lv
+    proof -
+      obtain y where y: "Mapping.lookup (frame.stack f\<^sub>1) n = Some y"
+        using v\<^sub>1 that a unfolding represents_frame.simps same_stack_names.simps by (auto)
+      moreover have "IA.Int (integerValue y) = v\<^sub>1 (lv, IA.IntT)"
+        using v\<^sub>1 y a unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+      moreover have "IA.Int (integerValue y) = v\<^sub>1 (lv, IA.IntT)"
+        using v\<^sub>1 y a unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+      ultimately show ?thesis
+        unfolding assig_of_state_def f\<^sub>1 using a b by (auto simp add: v\<^sub>2_v\<^sub>1)
+    qed
+    moreover have "assig_of_state cs\<^sub>2 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if a: "abstract_state.stack as\<^sub>f n = Some lv " for n lv
+    proof -
+      obtain y where y: "Mapping.lookup (frame.stack f\<^sub>2) n = Some y"
+        using cs\<^sub>2 a d unfolding f\<^sub>2_def represents_frame.simps same_stack_names.simps by fastforce
+      moreover have "IA.Int (integerValue y) = v\<^sub>2 (lv, IA.IntT)"
+        using v\<^sub>1 y a e unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+      ultimately show ?thesis
+        unfolding assig_of_state_def cs\<^sub>2 using a by (auto simp add: v\<^sub>2_v\<^sub>1)
+    qed
+    ultimately have "as_as_step as\<^sub>1 as\<^sub>f (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+      using 1 c v\<^sub>2_kb v\<^sub>2_assig assignment_assig_of_state
+      by (intro as_as_step.intros[where v=v\<^sub>2 and v'=v\<^sub>2]) (auto)
+    moreover have "represents_state cs\<^sub>2 as\<^sub>f"
+      using 1 d e v\<^sub>2_assig v\<^sub>2_kb f\<^sub>2_def callCallInf
+      unfolding  cs\<^sub>2 f\<^sub>2_def
+      by (auto simp add: represents_state.simps represents_frame.simps)
+    ultimately show ?thesis
+      by (auto)
+  next
+    case skip
+    have skipCallInf: "pos as\<^sub>s = inc_pos (pos as\<^sub>1)" "update_as as\<^sub>1 as\<^sub>s x v\<^sub>n True\<^sub>f"
+      using find_fun callInf(2)[unfolded skipCallInf.simps] by (force)+
+    obtain l i where c: "c = IntConstant l i"
+      using llvm_constant.exhaust by blast
+    define f\<^sub>2 where "f\<^sub>2 = update_pos (\<lambda>_. inc_pos (pos as\<^sub>1)) (small_step.update_stack f\<^sub>1 x c)"
+    have cs\<^sub>2: "cs\<^sub>2 = Llvm_state (f\<^sub>2 # fs\<^sub>1)"
+      using skip
+      by  (auto simp add: small_step.update_frames_stack.simps small_step.update_frame.simps f\<^sub>2_def
+           split: prod.splits)
+    define v\<^sub>2 where "v\<^sub>2 = v\<^sub>1((v\<^sub>n, IA.IntT) := IA.Int i)"
+    have a: "same_stack_names (frame.stack f\<^sub>2) (abstract_state.stack as\<^sub>s)"
+      using v\<^sub>1 skipCallInf unfolding f\<^sub>2_def c
+      by (auto intro: ssn_update simp add: represents_frame.simps small_step.update_stack.simps)
+    have b: "IA.assignment v\<^sub>2"
+      using v\<^sub>1 unfolding v\<^sub>2_def represents_frame.simps by (auto)
+    have c: "valid_var_mapping (frame.stack f\<^sub>2) (abstract_state.stack as\<^sub>s) v\<^sub>2"
+      using v\<^sub>1 skipCallInf unfolding v\<^sub>2_def f\<^sub>2_def represents_frame.simps
+      by (auto intro: vvm_update simp add: small_step.update_stack.simps c)
+    have d: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>1"
+      using v\<^sub>1 skipCallInf by (simp add: update_as.simps represents_frame.simps v\<^sub>2_def)
+    have e: "v\<^sub>2 \<Turnstile>\<^sub>I\<^sub>A kb as\<^sub>s"
+      by(rule IA.impliesD[where \<phi>="kb as\<^sub>1"])
+        (use skipCallInf b d in \<open>auto simp add: update_as.simps \<close>)
+    have "assig_of_state cs\<^sub>1 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if A: "abstract_state.stack as\<^sub>1 n = Some lv" for n lv
+    proof -
+      obtain y where y: "Mapping.lookup (frame.stack f\<^sub>1) n = Some y"
+        using v\<^sub>1 that A unfolding represents_frame.simps same_stack_names.simps by (auto)
+      have "IA.Int (integerValue y) = v\<^sub>1 (lv, IA.IntT)"
+        using v\<^sub>1 y A unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+      then have "v\<^sub>2 (lv, IA.IntT) = IA.Int (integerValue y)"
+        using skipCallInf A rangeI[where f="stack as\<^sub>1" and x=n]
+        unfolding update_as.simps v\<^sub>2_def by auto
+      then show ?thesis
+        unfolding assig_of_state_def f\<^sub>1 using y by (auto simp add: v\<^sub>2_def)
+    qed
+    moreover have "assig_of_state cs\<^sub>2 (n, IA.IntT) = v\<^sub>2 (lv, IA.IntT)" if A: "abstract_state.stack as\<^sub>s n = Some lv " for n lv
+    proof -
+      obtain y where y: "Mapping.lookup (frame.stack f\<^sub>2) n = Some y"
+        using cs\<^sub>2 A a unfolding f\<^sub>2_def represents_frame.simps same_stack_names.simps by fastforce
+      moreover have "IA.Int (integerValue y) = v\<^sub>2 (lv, IA.IntT)"
+        using v\<^sub>1 y A c  unfolding represents_frame.simps valid_var_mapping.simps by (cases y) (auto)
+      ultimately show ?thesis
+        unfolding assig_of_state_def cs\<^sub>2 using a by (auto simp add: v\<^sub>2_def)
+    qed
+    ultimately have f: "as_as_step as\<^sub>1 as\<^sub>s (assig_of_state cs\<^sub>1) (assig_of_state cs\<^sub>2) id"
+      using 1 b e d assignment_assig_of_state by (auto intro: as_as_step.intros)
+    moreover have "represents_state cs\<^sub>2 as\<^sub>s"
+      using a b c e skipCallInf unfolding cs\<^sub>2 f\<^sub>2_def
+      by (auto simp add: represents_state.simps represents_frame.simps)
+    ultimately show ?thesis
+      by (auto)
+  qed
+qed
+*)
+*)
+context llvm_se_graph
+begin
+(*
+(* n\<^sub>s like Skip and n\<^sub>f like move into Function *)
+inductive callInf for n\<^sub>1 n\<^sub>f n\<^sub>s where "callInf n\<^sub>1 n\<^sub>f n\<^sub>s"
+  if
+  "callAsInf prog as\<^sub>1 as\<^sub>f as\<^sub>s"
+  "as_of_node n\<^sub>1 = as\<^sub>1"
+  "as_of_node n\<^sub>s = as\<^sub>s"
+  "as_of_node n\<^sub>f = as\<^sub>f"
+  "n\<^sub>1 \<in> nodes"
+  "n\<^sub>f \<in> nodes" "(n\<^sub>1,n\<^sub>f) \<in> edges" "renaming_of_edge (n\<^sub>1, n\<^sub>f) = id"
+  "n\<^sub>s \<in> nodes" "(n\<^sub>1,n\<^sub>s) \<in> edges" "renaming_of_edge (n\<^sub>1, n\<^sub>s) = id"
+
+lemma callInf_represents_step':
+  assumes "callInf n\<^sub>1 n\<^sub>f n\<^sub>s" "represents cs\<^sub>1 n\<^sub>1" "step' prog cs\<^sub>1 (Inr cs\<^sub>2)"
+  shows "represents cs\<^sub>2 n\<^sub>f \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>f, assig_of_state cs\<^sub>2)) \<in> as_step
+       \<or> represents cs\<^sub>2 n\<^sub>s \<and> ((n\<^sub>1, assig_of_state cs\<^sub>1), (n\<^sub>s, assig_of_state cs\<^sub>2)) \<in> as_step"
+ using assms callInf_represents_step' unfolding callInf.simps represents.simps
+  by (fastforce intro!: as_as_as_step)
+*)
+inductive valid_edge where
+  "valid_edge n" if "evalInf n n'"
+| "valid_edge n" if "genInf n n'"
+(*| "valid_edge n" if "refineInf n n\<^sub>t n\<^sub>f"
+| "valid_edge n" if "branchInf n n'"
+| "valid_edge n" if "condBranchInf n n'"
+| "valid_edge n" if "icmpInf n n'"
+| "valid_edge n" if "returnInf n"
+| "valid_edge n" if "evalExternalInf n n'" *)
+(* | "valid_edge n" if "callInf n n\<^sub>f n\<^sub>s" *)
+
+
+
+definition seg_represents where
+  "seg_represents = (\<forall> n \<in> nodes. valid_edge n)"
+
+context
+  fixes cs :: "nat \<Rightarrow> 'mem llvm_state"
+  assumes closed: seg_represents
+  and inf_run: "step prog (cs i) = Inr (cs (Suc i))"
+begin
+
+lemma closed_graph_inf_run_successor:
+  assumes repr: "represents (cs i) n v"
+shows "\<exists> j m v'. represents (cs j) m v' \<and> ((n, v), (m, v')) \<in> as_step"
+proof -
+  from repr[unfolded represents.simps] have n: "n \<in> nodes" by auto
+  from closed[unfolded seg_represents_def, rule_format, OF n]
+  consider (eval) n' where "evalInf n n'"
+    | (gen) n' where "genInf n n'"
+(*    | (ref) n\<^sub>t n\<^sub>f where "refineInf n n\<^sub>t n\<^sub>f"
+    | (br) n' where "branchInf n n'"
+    | (condbr) n' where "condBranchInf n n'"
+    | (icmp) n' where "icmpInf n n'"
+    | (ret) "returnInf n"
+    | (ext) n' where "evalExternalInf n n'"
+(*    | (call) n\<^sub>f n\<^sub>s where "callInf n n\<^sub>f n\<^sub>s" *) *)
+    unfolding valid_edge.simps by auto
+  then show ?thesis
+  proof cases
+    case (eval n')
+    show ?thesis
+      using evalInf_represents_step[OF eval repr ] inf_run by auto 
+  next
+    case (gen n')
+    from genInf_represents[OF gen repr] show ?thesis by auto
+(*
+  next
+    case (ref n\<^sub>t n\<^sub>f)
+    from refineInf_represents[OF ref repr] show ?thesis by auto
+  next
+    case (br n')
+    from branchInf_represents[OF br repr inf_run] show ?thesis by auto
+  next
+    case (condbr n')
+    from condBranchInf_represents[OF condbr repr inf_run] show ?thesis by auto
+  next
+    case (icmp n')
+    from icmpInf_represents[OF icmp repr inf_run] show ?thesis by auto
+  next
+    case (ret)
+    have False
+      using returnInf_represents[OF ret repr] returnInf_represents_unique_step'[OF ret repr]
+        inf_run by blast
+    then show ?thesis
+      by simp
+  next
+    case (ext n')
+    from evalExternalInf_represents_step'[OF ext repr inf_run] show ?thesis by auto
+  next
+    case (call n\<^sub>f n\<^sub>s)
+    from callInf_represents_step'[OF call repr inf_run] show ?thesis by auto
+*)
+  qed
+qed
+
+context
+  fixes n_init :: 'n
+    and i_init :: nat
+    and v_init ::  "'lv \<times> IA.ty \<Rightarrow> IA.val"
+  assumes init: "represents (cs i_init) n_init v_init"
+begin
+fun ni where
+  "ni 0 = (n_init, i_init, v_init)"
+| "ni (Suc k) = (let (n, i, v) = ni k in
+  (SOME (n', i', v'). represents (cs i') n' v' \<and> ((n, v), (n', v')) \<in> as_step))"
+
+
+declare ni.simps[simp del]
+
+lemma inf_simulation: 
+  assumes "ni k = (n, i, v)" "ni (Suc k) = (n', i', v')"
+  shows "((n, v) , (n', v')) \<in> as_step"
+proof -
+  have "?thesis \<and> represents (cs i) n v \<and> represents (cs i') n' v'"
+
+    using assms proof (induction k arbitrary: n i v n' i' v')
+    case 0
+    let ?P = "\<lambda>x. case x of (n', i', v') \<Rightarrow> represents (cs i') n' v' \<and> ((n, v), (n', v')) \<in> as_step"
+    have a: "n_init = n" "v_init = v"
+      using 0 by (auto simp add: ni.simps)
+    have "\<exists>j m v'. represents (cs j) m v' \<and> ((n, v), m, v') \<in> as_step"
+      using 0 closed_graph_inf_run_successor init unfolding ni.simps by blast
+    then have b: "\<exists>x. ?P x"
+      by blast
+    have "?P (ni (Suc 0))"
+      unfolding ni.simps unfolding Let_def a using someI_ex[OF b] by auto
+    then show ?case
+      using 0 init ni.simps by auto 
+  next
+    case (Suc k)
+    let ?P = "\<lambda>x. case x of (n', i', v') \<Rightarrow> represents (cs i') n' v' \<and> ((n, v), (n', v')) \<in> as_step"
+    have a: "represents (cs i) n v"
+      using Suc prod.exhaust by metis
+    then have "\<exists>j m v'. represents (cs j) m v' \<and> ((n, v), m, v') \<in> as_step"
+      using closed_graph_inf_run_successor by auto
+    then have b: "\<exists>x. ?P x"
+      by blast
+    have "?P (ni (Suc (Suc k)))"
+      apply(subst ni.simps) unfolding Let_def Suc using  someI_ex[OF b] by auto
+    then show ?case
+      using a Suc by auto
+  qed
+  then show ?thesis
+    by simp
+qed
+
+end
+end
+end
+
+fun initial_abstract_state where
+  "initial_abstract_state p fn as =
+   (let op = do {
+    fu \<leftarrow> find_fun p fn;
+    let bn = basic_block.name (hd_blocks fu);
+    let p = map parameter_name (params fu);
+    Inr (set p = dom (stack as) \<and> inj_on (stack as) (dom (stack as)) \<and> pos as = (fn, bn, 0)
+          \<and> IA.valid (kb as))
+    }
+    in case op of Inr x \<Rightarrow> x | Inl _ \<Rightarrow> False)"
+
+fun initial_llvm_frame where
+  "initial_llvm_frame p fn fr =
+   (let op = do {
+    fu \<leftarrow> find_fun p fn;
+    let bn = basic_block.name (hd_blocks fu);
+    let p = map parameter_name (params fu);
+    Inr (Mapping.keys (frame.stack fr) = set p \<and> frame.pos fr = (fn, bn, 0))
+    }
+    in case op of Inr x \<Rightarrow> x | Inl _ \<Rightarrow> False)"
+
+fun initial_fun_llvm_state where
+  "initial_fun_llvm_state p fn s =
+    (case frames s of
+        (f#fs) \<Rightarrow> initial_llvm_frame p fn f
+      | [] \<Rightarrow> False)"
+
+context llvm_se_graph
+begin
+
+lemma SN_as_step_imp_SN_step'_relation:
+  assumes seg_represents: seg_represents
+  and repr: "represents c n v"
+  and SN: "SN_on as_step {(n, v)}"
+shows "SN_on (step_relation prog) {c}"
+proof
+  fix cs :: "nat \<Rightarrow> 'mem llvm_state"
+  assume a: "cs 0 \<in> {c}"
+  hence repr: "represents (cs 0) n v"
+    using repr by auto
+  assume b: "\<forall> i. (cs i, cs (Suc i)) \<in> step_relation prog"
+  hence inf_run: "step prog (cs i) = (Inr (cs (Suc i)))" for i
+    unfolding step_relation_def by auto
+  define cs' where "cs' = (\<lambda>i. (cs i, assig_of_state (cs i)))"
+  let ?v = "\<lambda>x. case x of (n,i,v) \<Rightarrow> v"
+  let ?n = "\<lambda>x. case x of (n,i,v) \<Rightarrow> n"
+  define vs where "vs k = (?n (ni cs n 0 v k), ?v ((ni cs n 0 v k)))" for k
+  have c: "vs 0 \<in> {(n, v)}"
+    unfolding vs_def ni.simps[OF seg_represents, of cs, OF inf_run repr] using a by auto
+  note d = inf_simulation[OF seg_represents, of cs, OF inf_run repr, unfolded ni.simps]
+  then have "(vs k, vs (Suc k)) \<in> as_step" for k
+    unfolding vs_def by (auto split: prod.splits)
+  then show False
+    using c SN by auto
+qed
+
+(*
+lemma SN_on_step'_step:
+  assumes "SN_on (step'_relation prog) {c}" "stack_size c = 1"
+  shows "SN_on (step_relation prog) {c}"
+proof
+  fix cs :: "nat \<Rightarrow> llvm_state"
+  assume 1: "cs 0 \<in> {c}"
+  assume 2: "\<forall> i. (cs i, cs (Suc i)) \<in> step_relation prog"
+  then have "step prog (cs i) = Inr (cs (Suc i))" for i
+    unfolding step_relation_def by simp
+  then interpret inf_run cs prog
+    by unfold_locales simp
+  define cs' where "cs' x = cs (inf_run.r cs prog x)" for x
+  have 3: "cs' 0 = cs 0"
+    unfolding cs'_def
+    using stack_never_empty assms 1
+    apply(auto simp add: k\<^sub>m\<^sub>i\<^sub>n_def min_stack_size_def s\<^sub>c\<^sub>s_def)
+    apply(rule arg_cong[of _ _ cs])
+    apply(rule Least_eq_0)
+    apply(simp add: image_def)
+    apply(rule Least_equality[symmetric])
+     apply(metis)
+    using nat_geq_1_eq_neqz by auto
+  have "step' prog (cs' i) (Inr (cs' (Suc i)))" for i
+    using inf_run_step' unfolding cs'_def by simp
+  then show False
+    using assms 1 3 step'_relation_def by blast
+qed
+*)
+(*
+lemma same_stack_names_dom:
+  assumes "dom m' = Mapping.keys m"
+  shows "same_stack_names m m'"
+    using assms by (auto intro!: same_stack_names.intros simp add: dom_def keys_dom_lookup)
+
+lemma SN_on_initial_state:
+  assumes "SN_on as_step {(n, assig_of_state c)}"
+    "initial_abstract_state prog f (as_of_node n)" "n \<in> nodes"
+    "initial_llvm_frame prog f fr" "frames c = [fr]" "seg_represents"
+  shows "SN_on (step'_relation prog) {c}"
+proof -
+  have "\<exists>v. represents_frame (hd (frames c)) (as_of_node n) v"
+  proof -
+    let ?lookup_f = "Mapping.lookup (frame.stack (hd (frames c)))"
+    let ?lookup_as = "abstract_state.stack (as_of_node n)"
+    define v where "v =
+      (\<lambda>t. case t of
+              (lv, IA.IntT) \<Rightarrow>
+                 (if (\<exists>pv. ?lookup_as pv = Some lv)
+                   then IA.Int (integerValue (the (?lookup_f (SOME pv. ?lookup_as pv = Some lv))))
+                   else IA.Int 0)
+             | _ \<Rightarrow> IA.Bool True)"
+    have "IA.assignment v"
+      unfolding v_def by (auto split: prod.splits IA.ty.splits)
+    moreover have "same_stack_names (frame.stack (hd (frames c))) (abstract_state.stack (as_of_node n))"
+      using assms by (intro same_stack_names_dom) (auto split: list.splits sum_bind_splits)
+    moreover have "valid_var_mapping (frame.stack (hd (frames c))) (abstract_state.stack (as_of_node n)) v"
+    proof -
+      have "integerValue (the (?lookup_f (SOME pv. ?lookup_as pv = Some lv))) = i"
+        if a: "?lookup_f pv = Some (IntConstant l i)" "?lookup_as pv = Some lv"
+        for pv lv l i
+      proof -
+        have b: "x = pv" if "?lookup_as x = Some lv" for x
+          using assms a that by (auto split: option.splits sum_bind_splits simp add: domI inj_onD)
+        then have c: "integerValue (the (?lookup_f x)) = i"
+          if "abstract_state.stack (as_of_node n) x = Some lv" for x
+          using that a by (subst b) (auto)
+        show ?thesis
+          by(rule someI2[of _ pv])
+            (use that assms c in \<open>auto split: option.splits Option.bind_splits\<close>)
+      qed
+      then show ?thesis
+        by (auto intro!: valid_var_mapping.intros simp add: v_def)
+    qed
+    ultimately show ?thesis
+      using assms
+      by (intro exI[of _ v]) (auto intro: represents_frame.intros split: list.splits sum_bind_splits)
+  qed
+  then have "represents c n"
+    using assms unfolding represents.simps represents_state.simps
+    by (auto split: option.splits)
+  then show ?thesis
+    using assms by (auto intro: SN_as_step_imp_SN_step'_relation)
+qed
+
+end
+*)
+unbundle no_IA_formula_notation
+
+end

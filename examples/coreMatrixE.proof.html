@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>
+                    Certification Problem
+                </title>
+<style type="text/css">
+                  * { font-family: "Times New Roman", Times, serif; }
+                  .dp_fun { color: darkgreen; }
+                  .error { color: red; }
+                  .fun { color: darkblue; }
+                  .label { color: gray; }
+                  .var { color: red; }
+                  table.matrix { margin: auto; } 
+                  .matrix td {
+                  text-align: center;
+                  line-height: 1.2em;
+                  padding: 0 1ex 0ex 1ex;
+                  }                  
+                  table.matrixbrak { display: inline-table; vertical-align: middle;}
+                  td.lbrak { width: 0.8ex;
+                  font-size: 50%;
+                  border: solid thin black;
+                  border-right: none;
+                  }
+                  td.rbrak { width: 0.8ex; 
+                  font-size: 50%;
+                  border: solid thin black;
+                  border-left: none;
+                  }
+                  .matrixbrak td { line-height: 1.4; }                                                        
+                </style>
+<style type="text/css">
+      .atom { display: inline-block; }
+      .prevar { color: green; font-style: italic; }
+      .postvar { color: brown; font-style: italic; }
+      .postvar:after { content: "'"; }
+      .error { color: red; }
+      .node { color: blue; }
+      .sharpnode { color: red; }
+      .sharpnode:after { font-size: small; vertical-align: super; content: "#"; }
+      .transition:before { font-size: medium; vertical-align: 15%; color: black; content: "→"; }
+      .sharptransition:before { font-size: medium; vertical-align: 15%; color: black; content: "→"; }
+      .transition { font-size: small; vertical-align: -15%; font-style: italic; }
+      .sharptransition { font-size: small; vertical-align: -15%; font-style: italic; color: red; }
+      .sharptransition:after { font-size: x-small; content: "#"; vertical-align: super; }
+    </style>
+</head>
+<body>
+<h1>
+                    Certification Problem                    
+                </h1>
+<h2>Input (Example 2 in Hofbauer and Waldmann "Termination of String Rewriting with Matrix Interpretations")</h2>
+<p>The relative rewrite relation R/S is considered where R is the following TRS</p>
+<table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">a</span>(<span class="fun">a</span>(<span class="var">x</span>))</td>
+<td>→</td>
+<td>
+<span class="fun">a</span>(<span class="fun">b</span>(<span class="fun">a</span>(<span class="var">x</span>)))</td>
+<td>(1)</td>
+</tr></table>
+<p>and S is the following TRS.</p>
+<table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">b</span>(<span class="var">x</span>)</td>
+<td>→</td>
+<td>
+<span class="fun">b</span>(<span class="fun">b</span>(<span class="var">x</span>))</td>
+<td>(2)</td>
+</tr></table>
+<h2>Property / Task</h2>Prove or disprove termination.<h3>Answer / Result</h3>Yes.<h2>Proof</h2>
+<h3>1 Rule Removal</h3>
+                Using the
+                matrix interpretations (as in "Termination of String Rewriting with Matrix Interpretations") of dimension 2 with I = {1} and domain E<sub>I</sub><table align="center">
+<tr>
+<td align="right">[<span class="fun">a</span>(<span class="var">x<sub>1</sub></span>)]</td>
+<td align="center"> = </td>
+<td align="left">
+<table class="matrixbrak"><tbody><tr>
+<td class="lbrak"></td>
+<td><table class="matrix"><tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody></table></td>
+<td class="rbrak"></td>
+</tr></tbody></table> · <span class="var">x<sub>1</sub></span>
+</td>
+</tr>
+<tr>
+<td align="right">[<span class="fun">b</span>(<span class="var">x<sub>1</sub></span>)]</td>
+<td align="center"> = </td>
+<td align="left">
+<table class="matrixbrak"><tbody><tr>
+<td class="lbrak"></td>
+<td><table class="matrix"><tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table></td>
+<td class="rbrak"></td>
+</tr></tbody></table> · <span class="var">x<sub>1</sub></span>
+</td>
+</tr>
+</table>                
+                all of the following rules can be deleted.  
+                <table style="margin-left:20px"><tr>
+<td align="right">
+<span class="fun">a</span>(<span class="fun">a</span>(<span class="var">x</span>))</td>
+<td>→</td>
+<td>
+<span class="fun">a</span>(<span class="fun">b</span>(<span class="fun">a</span>(<span class="var">x</span>)))</td>
+<td>(1)</td>
+</tr></table>
+<p><h3>1.1 R is empty </h3><p>There are no rules in the TRS. Hence, it is terminating.</p></p>
+</body>
+</html>

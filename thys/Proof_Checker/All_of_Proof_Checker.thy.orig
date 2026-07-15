@@ -1,0 +1,24 @@
+(* Automatically generated file, do not change *)
+theory All_of_Proof_Checker
+  imports
+    CPF_Parser
+    Ceta
+    Ceta_Verifier
+    Check_AC_Termination
+    Check_Common
+    Check_Completion_Proof
+    Check_Complexity
+    Check_Conditional_CRP
+    Check_Equational_Proof
+    Check_Nontermination
+    Check_Quasi_Reductive
+    Check_Termination
+    Container_Setup
+    Pre_Ceta
+    Processors
+    Proof_Checker
+    Version
+    XTC_Parser
+    XTC_Problem
+begin
+end

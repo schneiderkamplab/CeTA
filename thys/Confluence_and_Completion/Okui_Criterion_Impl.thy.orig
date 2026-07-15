@@ -1,0 +1,1569 @@
+(* an attempt to implement simultaneous critical pairs *)
+
+theory Okui_Criterion_Impl
+  imports 
+    Okui_Criterion 
+    First_Order_Rewriting.Trs_Impl
+begin
+
+lemma those_map_Some[simp]: "those (map Some xs) = Some xs" by (induct xs, auto)
+
+lemma poss_to_pterm[simp]: "poss (to_pterm t) = poss t" 
+  by (induct t, auto)
+
+lemma linear_term_to_pterm[simp]: "linear_term (to_pterm t) = linear_term t"
+  by (simp add: distinct_vars_eq_linear vars_to_pterm)
+
+lemma to_pterm_subt_at[simp]: "p \<in> poss t \<Longrightarrow> (to_pterm t) |_p = to_pterm (t |_ p)" 
+  by (induct t arbitrary: p, auto)
+
+lemma vars_term_to_pterm[simp]: "vars_term (to_pterm t) = vars_term t" 
+  by (induct t, auto)
+
+lemma ctxt_of_pos_term_subt_at: "p \<in> poss t \<Longrightarrow> ctxt_of_pos_term (p @ q) t |_c p = ctxt_of_pos_term q (t |_ p)" 
+proof (induct p arbitrary: t)
+  case (Cons i p t)
+  then obtain f ts where "t = Fun f ts" "i < length ts" "p \<in> poss (ts ! i)" by (cases t, auto)
+  with Cons(1)[OF this(3)]
+  show ?case by auto
+qed auto
+
+context single_redex
+begin
+
+lemma difference_join_A: assumes C_def: "C = (ctxt_of_pos_term q A)\<langle>to_pterm (lhs \<alpha>) \<cdot> \<langle>As\<rangle>\<^sub>\<alpha>\<rangle>" 
+  and ap: "(\<alpha>, p) \<in> set (redex_patterns A)"
+  and q: "q \<in> poss A" 
+  and "left_lin_wf_trs R" 
+shows "\<Delta> \<squnion> C = Some A"
+proof -
+  interpret left_lin_wf_trs R by fact
+  from a_well have A: "A \<in> wf_pterm R" .
+  define B where "B = \<Delta>" 
+  have Bdef: "B = ll_single_redex (source A) p \<alpha>" unfolding B_def by (metis delta)
+  have BA: "B \<in> set (single_steps A)" unfolding Bdef using ap by auto
+  with A have B: "B \<in> wf_pterm R"
+    by (metis A single_step_wf)
+  from A ap have p: "p \<in> poss (source A)" 
+    using redex_patterns_label by blast
+  have qq: "q \<in> poss A" "ctxt_of_pos_term p (source A) = source_ctxt (ctxt_of_pos_term q A)"
+    using pq q by auto
+  have Aq: "A |_ q = Prule \<alpha> (map (\<lambda>i. A |_ (q @ [i])) [0..<length (var_rule \<alpha>)])" by (rule aq)
+
+  from BA A have srcB: "source B = source A" unfolding B_def
+    by (metis source_delta)
+  have sort: "sorted_wrt (ord.lexordp (<)) (map snd (redex_patterns A))" 
+    by (rule redex_patterns_sorted[OF A])
+  define As' where "As' = As" 
+  from deletion have ABC: "A -\<^sub>p B = Some C" unfolding C_def As'_def B_def by auto
+  have srcC: "source C = source A" using ABC A B
+    by (metis a_well ABC deletion_source)
+  from ABC have C: "C \<in> wf_pterm R"
+    using deletion_well unfolding B_def by auto
+
+  define Left where "Left = Prule \<alpha> (map (to_pterm \<circ> source) As')"
+  define Right where "Right = to_pterm (lhs \<alpha>) \<cdot> \<langle>As'\<rangle>\<^sub>\<alpha>" 
+  have "to_rule \<alpha> \<in> R" using A by (metis rule_in_TRS)
+  hence "is_Fun (lhs \<alpha>)"
+    by (metis is_Fun_Fun_conv wf_trs_alt wf_trs_imp_lhs_Fun)
+  then obtain f ls where lhs: "lhs \<alpha> = Fun f ls" by auto
+  define list where "list = map2 (\<squnion>) (map (to_pterm \<circ> source) As) (map \<langle>As\<rangle>\<^sub>\<alpha> (var_rule \<alpha>))" 
+  have lenl: "length list = length As" unfolding list_def by simp
+
+  have "Left \<squnion> Right = Left \<squnion> (to_pterm (lhs \<alpha>) \<cdot> \<langle>As\<rangle>\<^sub>\<alpha>)" 
+    unfolding Right_def Left_def As'_def by auto
+  also have id: "to_pterm (lhs \<alpha>) \<cdot> \<langle>As\<rangle>\<^sub>\<alpha> = Pfun f (map (\<lambda> l. to_pterm l \<cdot> \<langle>As\<rangle>\<^sub>\<alpha>) ls)" 
+    unfolding lhs  to_pterm.simps unfolding lhs[symmetric] by simp
+  also have "Left \<squnion> \<dots> = (
+         case those list of None \<Rightarrow> None
+         | Some xs \<Rightarrow> Some (Prule \<alpha> xs))" unfolding Left_def As'_def join.simps list_def unfolding id[symmetric]
+    unfolding lhs_subst_trivial by simp
+  also have "list = map Some As" 
+  proof (intro nth_equalityI; unfold lenl)
+    fix i
+    assume i: "i < length As" 
+    hence "list ! i = to_pterm (source (As ! i)) \<squnion> \<langle>As\<rangle>\<^sub>\<alpha> (var_rule \<alpha> ! i)" unfolding list_def
+      by auto
+    also have "\<dots> = Some (As ! i)" using i
+      by (metis Residual_Join_Deletion.join_sym as_well join_with_source length_as lhs_subst_var_i)
+    finally show "list ! i = map Some As ! i" using i by simp
+  qed simp
+  also have "those \<dots> = Some As" by (rule those_map_Some)
+  finally have LR: "Left \<squnion> Right = Some (Prule \<alpha> As')" by (simp add: As'_def)
+
+  have main: "(ctxt_of_pos_term p (to_pterm (source A)))\<langle>Left\<rangle> \<squnion> (ctxt_of_pos_term q A)\<langle>Right\<rangle> = Some A" 
+    using A pq p ap q source_at_pq Aq 
+    unfolding As'_def[symmetric]    
+  proof (induct A arbitrary: p q)
+    case (1 x)
+    from 1(3) show ?case by auto
+  next
+    case (2 As f)
+    let ?fAs = "Pfun f As" 
+    note IH = 2(1)[rule_format, THEN conjunct2, rule_format]
+    note ctxt_eq = 2(2)
+    note p = 2(3)
+    note rp = 2(4)
+    note q = 2(5)
+    note src_eq = 2(6)
+    note Aq = 2(7)
+    from 2(1) have As: "set As \<subseteq> wf_pterm R" by auto
+    from Aq obtain i q' where qq: "q = i # q'" by (cases q, auto)
+    with q have i: "i < length As" and q': "q' \<in> poss (As ! i)" by auto
+    have "p \<noteq> []" using src_eq i qq ctxt_eq by auto
+    then obtain j p' where pp: "p = j # p'" by (cases p, auto)
+    from p q ctxt_eq i pp have "j = i" by (metis nth_Cons_0 qq source_poss)
+    with pp have pp: "p = i # p'" by auto
+    define psAs where "psAs = map (to_pterm \<circ> source) As" 
+    let ?left = "(ctxt_of_pos_term p' (psAs ! i))\<langle>Left\<rangle>" 
+    let ?right = "(ctxt_of_pos_term q' (As ! i))\<langle>Right\<rangle>" 
+    define left where "left = psAs[i:=?left]" 
+    define right where "right = As[i:=?right]" 
+    have len: "length (map2 (\<squnion>) left right) = length As" 
+      unfolding left_def right_def psAs_def using i by auto
+    have cond: "f = f \<and> length left = length right"  
+      unfolding psAs_def left_def right_def by auto
+    have "(ctxt_of_pos_term p (to_pterm (source (Pfun f As))))\<langle>Left\<rangle> \<squnion> (ctxt_of_pos_term q (Pfun f As))\<langle>Right\<rangle>
+         = (case those (map2 (\<squnion>) left right) of
+            None \<Rightarrow> None | Some xs \<Rightarrow> Some (Pfun f xs))" 
+      using cond i unfolding pp qq psAs_def left_def right_def by (auto simp: upd_conv_take_nth_drop)
+    also have "map2 (\<squnion>) left right = map Some As" 
+    proof (intro nth_equalityI; unfold len)
+      fix j
+      assume j: "j < length As" 
+      with As have Asj: "As ! j \<in> wf_pterm R" by auto
+      show "map2 (\<squnion>) left right ! j = map Some As ! j"
+      proof (cases "j = i")
+        case False
+        hence "map2 (\<squnion>) left right ! j = (to_pterm \<circ> source) (As ! j) \<squnion> As ! j" 
+          unfolding left_def right_def psAs_def using j i by (auto simp: nth_append)
+        also have "\<dots> = Some (As ! j)" using Asj
+          by (simp add: join_sym join_with_source) 
+        also have "\<dots> = map Some As ! j" using j by auto
+        finally show ?thesis .
+      next
+        case True
+        hence "map2 (\<squnion>) left right ! j = (ctxt_of_pos_term p' (to_pterm (source (As ! i))))\<langle>Left\<rangle> \<squnion> ?right" 
+          unfolding left_def right_def psAs_def using i 
+          by (auto simp: nth_append)
+        also have "\<dots> = Some (As ! i)" 
+        proof (rule IH)
+          from Asj True have Asi: "As ! i \<in> wf_pterm R" by auto
+          from i show mem: "As ! i \<in> set As" by auto
+          from rp[unfolded pp] i show "(\<alpha>, p') \<in> set (redex_patterns (As ! i))" 
+            by (auto simp: set_zip)
+          from p[unfolded pp] show "p' \<in> poss (source (As ! i))" by auto
+          from q[unfolded qq] show "q' \<in> poss (As ! i)" by auto
+          from src_eq[unfolded qq pp] show "source (As ! i |_ q') = source (As ! i) |_ p'" using i by auto
+          from Aq[unfolded qq] show "As ! i |_ q' = Prule \<alpha> As'" by auto
+          from ctxt_eq[unfolded qq pp]
+          show "ctxt_of_pos_term p' (source (As ! i)) = source_ctxt (ctxt_of_pos_term q' (As ! i))" 
+            using i by auto
+        qed
+        also have "\<dots> = map Some As ! j" unfolding True using i by auto
+        finally show ?thesis by auto
+      qed
+    qed simp
+    finally show ?case by simp 
+  next
+    case (3 \<beta> Bs)
+    let ?rule = "Prule \<beta> Bs" 
+    note ctxt_eq = 3(4)
+    note p = 3(5)
+    note rp = 3(6)
+    note q = 3(7)
+    note src_eq = 3(8)
+    note Aq = 3(9)
+    note IH = 3(3)[rule_format, THEN conjunct2, rule_format]
+    note len = 3(2)
+    note \<beta> = 3(1)  
+    from 3(3) have Bs: "set Bs \<subseteq> wf_pterm R" by auto
+    from Bs len \<beta> have rule: "?rule \<in> wf_pterm R" by auto
+    show ?case
+    proof (cases "q = []")
+      case q: True
+      with p src_eq have p: "p = []" 
+        by (metis neq_Nil_conv subt_at.simps(1) subt_at_nepos_neq)
+      from Aq[unfolded q] have id: "\<beta> = \<alpha>" "Bs = As'" by auto
+      have "(ctxt_of_pos_term p (to_pterm (source (Prule \<beta> As))))\<langle>Left\<rangle> \<squnion> (ctxt_of_pos_term q (Prule \<beta> As))\<langle>Right\<rangle>
+          = Left \<squnion> Right" unfolding p q by auto
+      also have "\<dots> = Some (Prule \<alpha> As')" by fact
+      finally show ?thesis using id As'_def by auto
+    next
+      case False
+      then obtain i q' where qq: "q = i # q'" by (cases q, auto)
+      with q have i: "i < length Bs" and q': "q' \<in> poss (Bs ! i)" by auto
+      let ?Right = "(ctxt_of_pos_term q' (Bs ! i))\<langle>Right\<rangle>" 
+      define right where "right = Bs [i := ?Right]" 
+      have rhs: "(ctxt_of_pos_term q (Prule \<beta> Bs))\<langle>Right\<rangle> = Prule \<beta> right" 
+        unfolding qq right_def using i by (simp add: upd_conv_take_nth_drop)
+      from rule have "linear_term (lhs \<beta>)" 
+        by (metis \<beta> case_prod_conv left_lin left_linear_trs_def)
+      from ctxt_rule_obtain_pos[OF q[unfolded qq] p, folded qq, OF ctxt_eq[symmetric] this len]
+      obtain p1 p2 where pp: "p = p1 @ p2" and p1:  "p1 = var_poss_list (lhs \<beta>) ! i" and p2: "p2 \<in> poss (source (Bs ! i))" 
+        by auto
+      let ?Left = "(ctxt_of_pos_term p2 (to_pterm (source (Bs ! i))))\<langle>Left\<rangle>" 
+      let ?x = "vars_term_list (lhs \<beta>) ! i" 
+      from i have Bsi: "Bs ! i \<in> set Bs" by auto
+      have Aqi: "Bs ! i |_ q' = Prule \<alpha> As'" using Aq qq by auto
+      from rp have rpi: "(\<alpha>, p2) \<in> set (redex_patterns (Bs ! i))" using pp p1 i len 
+        using rule redex_patterns_rule'' by blast
+      have src: "source (Prule \<beta> Bs) = lhs \<beta> \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta>" by simp
+      have ctx: "ctxt_of_pos_term q (Prule \<beta> Bs) = Crule \<beta> (take i Bs) (ctxt_of_pos_term q' (Bs ! i)) (drop (Suc i) Bs)" 
+        unfolding qq by simp
+      have lBs: "length (take i Bs) = i" using i by auto
+      have lenBs: "length Bs = length (vars_term_list (lhs \<beta>))" unfolding len using rule 
+        by (metis \<beta> length_var_rule) 
+      have p1_lhs: "p1 \<in> poss (lhs \<beta>)" using p1 i 
+        by (metis lenBs length_var_poss_list nth_mem var_poss_imp_poss var_poss_list_sound)
+      have Var: "Var ?x = lhs \<beta> |_ p1" 
+        using  vars_term_list_var_poss_list[OF i[unfolded lenBs]] by (auto simp: p1)
+      from arg_cong[OF ctxt_eq, of "\<lambda> C. C |_c p1"] 
+      have "ctxt_of_pos_term (p1 @ p2) (lhs \<beta> \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta>) |_c p1 = 
+         source_ctxt (ctxt_of_pos_term q (Prule \<beta> Bs)) |_c p1"
+        unfolding ctxt pp src by auto
+      also have "ctxt_of_pos_term (p1 @ p2) (lhs \<beta> \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta>) |_c p1 = ctxt_of_pos_term p2 (source (Bs ! i))" 
+      proof (subst ctxt_of_pos_term_subt_at; (intro arg_cong[of _ _ "ctxt_of_pos_term _"])?)
+        show "p1 \<in> poss (lhs \<beta> \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta>)" using p1_lhs by auto
+        have "lhs \<beta> \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta> |_ p1 = lhs \<beta> |_ p1 \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta>" 
+          using p1_lhs by auto
+        also have "\<dots> = \<langle>map source Bs\<rangle>\<^sub>\<beta> ?x" using Var by auto
+        also have "\<dots> = source (Bs ! i)" using i 
+          by (metis (no_types, lifting) comp_apply len lenBs length_map length_remdups_eq length_rev lhs_subst_var_i nth_map
+              rev_swap)
+        finally show "lhs \<beta> \<cdot> \<langle>map source Bs\<rangle>\<^sub>\<beta> |_ p1 = source (Bs ! i)" .
+      qed
+      also have "source_ctxt (ctxt_of_pos_term q (Prule \<beta> Bs)) |_c p1 = source_ctxt (ctxt_of_pos_term q' (Bs ! i))" 
+        unfolding qq ctxt_of_pos_term.simps source_ctxt.simps lBs Let_def unfolding p1[symmetric]
+        using p1_lhs 
+        by (metis ctxt_of_pos_term_subst hole_pos_ctxt_of_pos_term hole_pos_subst subt_at_ctxt_compose)
+      finally have ctxti_eq: "ctxt_of_pos_term p2 (source (Bs ! i)) = source_ctxt (ctxt_of_pos_term q' (Bs ! i))" .
+      from src_eq have srci_eq: "source (Bs ! i |_ q') = source (Bs ! i) |_ p2" 
+        using p2
+        by (metis Bsi ctxt_of_pos_term_well ctxti_eq fun_well_arg rule q' replace_at_ident replace_at_subt_at
+            source_ctxt_apply_term)
+
+      have lin: "linear_term (lhs \<beta>)" by fact
+
+      define LEFT where "LEFT = ?Left" 
+      define RIGHT where "RIGHT = ?Right" 
+
+      have IH: "LEFT \<squnion> RIGHT = Some (Bs ! i)" unfolding LEFT_def RIGHT_def 
+        by (rule IH[OF Bsi ctxti_eq p2 rpi q' srci_eq Aqi])
+
+      let ?C1 = "(ctxt_of_pos_term p1 (to_pterm (lhs \<beta>)))"
+      let ?C2 = "ctxt_of_pos_term p2 (to_pterm (source (Bs ! i)))" 
+      let ?\<sigma> = "to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>" 
+      define \<delta> where "\<delta> = \<langle>(map (to_pterm \<circ> source) Bs)[i := LEFT]\<rangle>\<^sub>\<beta>" 
+      have rhs: "(ctxt_of_pos_term q (Prule \<beta> Bs))\<langle>Right\<rangle> = Prule \<beta> (Bs[i := RIGHT])" 
+        using rhs[unfolded right_def, folded RIGHT_def] .
+      have "(ctxt_of_pos_term p (to_pterm (source (Prule \<beta> Bs))))\<langle>Left\<rangle> = 
+          (ctxt_of_pos_term p1 (to_pterm (lhs \<beta>) \<cdot> (to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>)) \<circ>\<^sub>c
+          ctxt_of_pos_term p2 (to_pterm (lhs \<beta>) \<cdot> (to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>) |_ p1))\<langle>Left\<rangle>" unfolding pp src to_pterm_subst
+        by (subst ctxt_of_pos_term_append, insert p1_lhs, auto) 
+      also have "to_pterm (lhs \<beta>) \<cdot> (to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>) |_ p1 = 
+          to_pterm (lhs \<beta> |_ p1)  \<cdot> (to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>)" using p1_lhs by auto
+      also have "\<dots> = to_pterm (\<langle>map source Bs\<rangle>\<^sub>\<beta> ?x)" 
+        unfolding Var[symmetric] by (simp add: o_def)
+      also have "\<dots> = to_pterm (source (Bs ! i))" using i 
+        by (metis (no_types, lifting) comp_apply len lenBs length_map length_remdups_eq length_rev lhs_subst_var_i nth_map
+            rev_swap)
+      also have "ctxt_of_pos_term p1 (to_pterm (lhs \<beta>) \<cdot> (to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>)) = ?C1 \<cdot>\<^sub>c ?\<sigma>" 
+        by (subst ctxt_of_pos_term_subst, insert p1_lhs, auto)
+      also have "((?C1 \<cdot>\<^sub>c ?\<sigma>) \<circ>\<^sub>c ?C2)\<langle>Left\<rangle> = (?C1 \<cdot>\<^sub>c ?\<sigma>) \<langle>?Left\<rangle>" by simp
+      finally 
+      have "(ctxt_of_pos_term p (to_pterm (source (Prule \<beta> Bs))))\<langle>Left\<rangle> = (?C1 \<cdot>\<^sub>c ?\<sigma>)\<langle>LEFT\<rangle>" unfolding LEFT_def .
+      also have "(?C1 \<cdot>\<^sub>c ?\<sigma>)\<langle>LEFT\<rangle> = to_pterm (lhs \<beta>) \<cdot> (to_pterm \<circ> \<langle>map source Bs\<rangle>\<^sub>\<beta>)(?x := LEFT)" 
+        by (rule ctxt_subst_apply, insert Var p1_lhs lin, auto)
+      also have "\<dots> = to_pterm (lhs \<beta>) \<cdot> \<langle>(map (to_pterm o source) Bs)[i := LEFT]\<rangle>\<^sub>\<beta>" 
+        apply (intro term_subst_eq nth_equalityI, insert i len)
+        by (smt (verit, ccfv_SIG) comp_apply fun_mk_subst fun_upd_apply in_set_idx lenBs length_list_update length_map
+            length_remdups_eq length_rev lhs_subst_var_i map_map nth_list_update_eq nth_list_update_neq rev_swap
+            set_vars_term_list to_pterm.simps(1) vars_to_pterm)
+      finally have lhs: "(ctxt_of_pos_term p (to_pterm (source (Prule \<beta> Bs))))\<langle>Left\<rangle> =
+        to_pterm (lhs \<beta>) \<cdot> \<delta>" unfolding \<delta>_def .
+
+      have "is_Fun (lhs \<beta>)" using lhs_is_Fun rule by blast
+      then obtain f ls where lhsB: "lhs \<beta> = Fun f ls" by auto
+      hence pt_lhs: "to_pterm (lhs \<beta>) \<cdot> \<delta> = Pfun f (map ((\<lambda>s. s \<cdot> \<delta>) \<circ> to_pterm) ls)" by simp
+
+      have match: "match (to_pterm (lhs \<beta>) \<cdot> \<delta>) (to_pterm (lhs \<beta>)) = Some \<delta>" 
+        by (rule match_trivial, auto simp: subst_domain_def \<delta>_def mk_subst_def split: option.splits
+          dest!: map_of_SomeD set_zip_leftD)
+
+      let ?list = "map2 (\<squnion>) (map \<delta> (var_rule \<beta>)) (Bs[i := RIGHT])" 
+      have len2: "length ?list = length Bs" 
+        using len by auto
+      have map: "?list = map Some Bs" 
+      proof (intro nth_equalityI; unfold len2)
+        fix j
+        assume j: "j < length Bs"
+        hence "?list ! j = \<delta> (var_rule \<beta> ! j) \<squnion> (Bs[i := RIGHT]) ! j" using len by auto
+        also have "\<dots> = Some (Bs ! j)" 
+        proof (cases "j = i")
+          case True
+          show ?thesis unfolding True \<delta>_def IH[symmetric] using i 
+            apply (intro arg_cong2[of _ _ _ _ "(\<squnion>)"]) 
+            subgoal by (metis len length_list_update length_map lhs_subst_var_i nth_list_update_eq)
+            subgoal by auto
+            done
+        next
+          case False
+          have "\<delta> (var_rule \<beta> ! j) = \<langle>(map (to_pterm \<circ> source) Bs)\<rangle>\<^sub>\<beta> (var_rule \<beta> ! j)" unfolding \<delta>_def
+            using False j i by (metis len length_list_update length_map lhs_subst_var_i nth_list_update_neq)
+          also have "\<dots> = to_pterm (source (Bs ! j))" using j 
+            by (metis comp_apply len length_map lhs_subst_var_i nth_map)
+          also have "\<dots> \<squnion> Bs ! j = Some (Bs ! j)" using j
+            by (metis Bs join_sym join_with_source nth_mem subset_code(1))
+          finally show ?thesis using False i j by auto
+        qed
+        finally show "?list ! j = map Some Bs ! j" using j by simp
+      qed auto        
+
+      show ?thesis 
+        unfolding rhs lhs 
+        unfolding pt_lhs 
+        unfolding join.simps 
+        unfolding pt_lhs[symmetric]
+        unfolding match option.simps
+        unfolding map by simp
+    qed
+  qed
+  hence "B \<squnion> C = Some A"
+    unfolding single_redex_pterm C_def B_def Left_def Right_def As'_def .
+  thus ?thesis unfolding B_def .
+qed
+end
+
+lemma get_overlapping_part_alt:
+  "get_overlapping_part A B = (let As = filter (\<lambda> A'. possL A' \<inter> possL B \<noteq> {}) (single_steps A) in \<Squnion> As)" 
+  unfolding get_overlapping_part_def
+  apply (intro arg_cong[of _ _ "\<lambda> x. Let x _"])
+  apply (intro arg_cong[of _ _ "\<lambda> x. filter x _"])
+  by (simp add: finite_labelposs)
+
+context left_lin_wf_trs
+begin
+
+sublocale left_lin_no_var_lhs ..
+
+lemma single_steps_split: assumes A: "A \<in> wf_pterm R" and ne: "\<not> is_empty_step A" 
+  shows "\<exists> A' B. single_steps A = B # single_steps A' \<and> A' \<in> wf_pterm R \<and> B \<in> wf_pterm R \<and> B \<squnion> A' = Some A"
+proof -
+  from ne have "single_steps A \<noteq> []" 
+    using redex_poss_empty_imp_empty_step by fastforce
+  then obtain \<alpha> p rps where rpA: "redex_patterns A = (\<alpha>, p) # rps" by (cases "single_steps A", auto)
+  define B where "B = ll_single_redex (source A) p \<alpha>" 
+  define Bs where "Bs = map (\<lambda> (\<alpha>, p). ll_single_redex (source A) p \<alpha>) rps" 
+  have sA: "single_steps A = B # Bs" unfolding rpA B_def Bs_def by auto  
+  from sA have BA: "B \<in> set (single_steps A)" by auto
+  with A have B: "B \<in> wf_pterm R"
+    by (metis A single_step_wf)
+  have ap: "(\<alpha>, p) \<in> set (redex_patterns A)" using rpA by auto
+  from A ap have p: "p \<in> poss (source A)" 
+    using redex_patterns_label by blast
+  from A ap obtain q where qq: "q \<in> poss A" "ctxt_of_pos_term p (source A) = source_ctxt (ctxt_of_pos_term q A)" 
+    and Aq: "A |_ q = Prule \<alpha> (map (\<lambda>i. A |_ (q @ [i])) [0..<length (var_rule \<alpha>)])" 
+    by (metis labeled_source_to_term poss_labeled_source poss_term_lab_to_term redex_patterns_label)
+  interpret single_redex R A B p q \<alpha>
+    by (unfold_locales; intro A p qq B_def Aq)
+  from BA A have srcB: "source B = source A" 
+    by (metis source_delta)
+  have sort: "sorted_wrt (ord.lexordp (<)) (map snd (redex_patterns A))" 
+    by (rule redex_patterns_sorted[OF A])
+  define C where "C = (ctxt_of_pos_term q A)\<langle>to_pterm (lhs \<alpha>) \<cdot> \<langle>As\<rangle>\<^sub>\<alpha>\<rangle>"  
+  from deletion have ABC: "A -\<^sub>p B = Some C" unfolding C_def by auto
+  have srcC: "source C = source A" using ABC A B
+    by (metis a_well ABC deletion_source)
+  from ABC have C: "C \<in> wf_pterm R"
+    using deletion_well by force
+  show ?thesis
+  proof (rule exI[of _ C], rule exI[of _ B], intro conjI B C)
+    from difference_join_A[OF C_def ap qq(1)]
+    show join: "B \<squnion> C = Some A" 
+      using left_lin_wf_trs_axioms by metis
+
+    from redex_patterns_join[OF B C join]
+    have "set (redex_patterns A) = set (redex_patterns B) \<union> set (redex_patterns C)" by auto
+    also have "set (redex_patterns A) = insert (\<alpha>,p) (set rps)" unfolding rpA by auto
+    also have "set (redex_patterns B) = {(\<alpha>,p)}" unfolding B_def using A
+      using p redex_patterns_single rule_in_TRS by auto
+    finally have "set rps - {(\<alpha>,p)} = set (redex_patterns C) - {(\<alpha>,p)}" by blast
+    also have "set rps - {(\<alpha>,p)} = set rps" 
+      using distinct_snd_rdp[OF A] rpA unfolding distinct_map by auto
+    also have "set (redex_patterns C) - {(\<alpha>,p)} = set (redex_patterns C)" 
+    proof (rule ccontr) 
+      assume "\<not> ?thesis" 
+      hence mem: "(\<alpha>,p) \<in> set (redex_patterns C)" by auto
+      have "is_Fun (lhs \<alpha>)"
+        by (metis is_Fun_Fun_conv rule_in_TRS wf_trs_alt wf_trs_imp_lhs_Fun)
+      then obtain f ls where lhs: "lhs \<alpha> = Fun f ls" by auto
+      from mem[unfolded redex_patterns_label[OF C]]
+      have "get_label (labeled_source C |_ p) = Some (\<alpha>, 0)" by auto
+      also have "labeled_source C |_ p = labeled_source (to_pterm (lhs \<alpha>) \<cdot> \<langle>As\<rangle>\<^sub>\<alpha>)" 
+        unfolding C_def
+        by (metis (no_types, lifting) a_well label_source_ctxt labeled_source_to_term p poss_term_lab_to_term pq q replace_at_subt_at)
+      also have "get_label \<dots> = None" unfolding lhs by auto
+      finally show False by auto
+    qed
+    finally have "set rps = set (redex_patterns C)" by auto
+    from redex_patterns_equal[OF C _ this] sort[unfolded rpA]
+    have rps: "rps = redex_patterns C" by auto
+    show "single_steps A = B # single_steps C" unfolding B_def rpA
+      unfolding srcC rps by auto
+  qed
+qed
+
+
+lemma join_single_steps: assumes "A \<in> wf_pterm R" "\<not> is_empty_step A" 
+  shows "\<Squnion> (single_steps A) = Some A" 
+proof -
+  define xs where "xs = single_steps A" 
+  from assms have "xs \<noteq> []" unfolding xs_def
+    using redex_poss_empty_imp_empty_step by fastforce
+  with xs_def assms(1)
+  show ?thesis
+  proof (induct xs arbitrary: A)
+    case (Cons B xs A)
+    have A: "A \<in> wf_pterm R" by fact
+    from Cons(2-) have "\<not> is_empty_step A"
+      by (metis list.discI map_is_Nil_conv redex_patterns_to_pterm source_empty_step)
+    from single_steps_split[OF A this] Cons(2) obtain A' where 
+      xs: "xs = single_steps A'" and A': "A' \<in> wf_pterm R" 
+      and BA': "B \<squnion> A' = Some A" by auto
+    note IH = Cons(1)[OF this(1-2)]
+    show ?case
+    proof (cases "xs = []")
+      case True
+      with Cons have "single_steps A = [B]" by auto
+      with single_steps_singleton[OF A this]
+      have "single_steps A = [A]" by auto
+      with A show ?thesis by auto
+    next
+      case False
+      from IH[OF this]
+      have IH: "\<Squnion> (single_steps A') = Some A'" by auto
+      show ?thesis unfolding Cons(2)[symmetric] xs using IH BA' 
+        by (metis False join_list.simps(3) join_opt.simps(1) neq_Nil_conv xs)
+    qed
+  qed simp
+qed
+
+lemma redex_patt_possL: "A \<in> wf_pterm R \<Longrightarrow> (\<alpha>,p) \<in> set (redex_patterns A) \<Longrightarrow> p \<in> possL A" 
+  by (simp add: get_label_imp_labelposs redex_patterns_label)
+
+lemma get_overlap_cond_alt: assumes "A \<in> wf_pterm R" "\<not> is_empty_step A" 
+  shows "get_overlapping_part A B = Some A \<longleftrightarrow> (\<forall> A' \<in> set (single_steps A). possL A' \<inter> possL B \<noteq> {})" 
+proof -
+  from assms(1) have ss_wf: "set (single_steps A) \<subseteq> wf_pterm R" 
+    using single_step_wf by auto
+  define filt where "filt = filter (\<lambda>A'. possL A' \<inter> possL B \<noteq> {}) (single_steps A)" 
+  define all where "all = (single_steps A)" 
+  from ss_wf have filt_wf: "set filt \<subseteq> wf_pterm R" by (auto simp: filt_def)
+  have id: "\<Squnion> (single_steps A) = Some A" using join_single_steps[OF assms] .
+  show ?thesis
+  proof 
+    assume "\<forall>A'\<in>set (single_steps A). possL A' \<inter> possL B \<noteq> {}" 
+    hence filt: "filt = single_steps A" by (auto simp: filt_def)
+    thus "get_overlapping_part A B = Some A" unfolding get_overlapping_part_alt filt_def using id by auto
+  next
+    assume "get_overlapping_part A B = Some A" 
+    from this[unfolded get_overlapping_part_alt Let_def]
+    have "\<Squnion> filt = Some A" by (auto simp: filt_def)
+    from redex_patterns_join_list[OF this]
+    have "\<Union> (set (map (set \<circ> redex_patterns) filt)) = set (redex_patterns A)" using filt_wf by auto
+    also have "\<dots> = \<Union> (set (map (set \<circ> redex_patterns) all))" 
+      using redex_patterns_join_list[OF id] ss_wf unfolding all_def
+      by blast
+    finally have eq: "(\<Union>x\<in>set filt. set (redex_patterns x)) = (\<Union>x\<in>set all. set (redex_patterns x))" by simp
+    show "\<forall>A'\<in>set (single_steps A). possL A' \<inter> possL B \<noteq> {}" 
+    proof (rule ccontr)
+      assume "\<not> ?thesis" 
+      then obtain A' where A': "A' \<in> set (single_steps A)" "A' \<in> set all" "A' \<notin> set filt" 
+        unfolding all_def filt_def by auto
+      from single_step_redex_patterns[OF assms(1) A'(1)] obtain p \<alpha> where
+        "A' = ll_single_redex (source A) p \<alpha>" and "(\<alpha>, p) \<in> set (redex_patterns A)" and \<alpha>pA: "redex_patterns A' = [(\<alpha>, p)]" 
+        by auto
+      hence "(\<alpha>,p) \<in> (\<Union>x\<in>set all. set (redex_patterns x))" using A' by fastforce
+      from this[folded eq] obtain B' where B': "B' \<in> set filt" and \<alpha>pB: "(\<alpha>,p) \<in> set (redex_patterns B')" by fastforce
+      from B' A' have AB: "A' \<noteq> B'" and BA: "B' \<in> set (single_steps A)" unfolding filt_def by auto
+      from single_steps_measure[OF A'(1) BA assms(1) AB] have "measure_ov A' B' = 0" by auto
+      hence "possL A' \<inter> possL B' = {}" by (simp add: finite_labelposs)
+      moreover have "p \<in> possL A'" using A'(1) \<alpha>pA ss_wf by (intro redex_patt_possL, auto)  
+      moreover have "p \<in> possL B'" using \<alpha>pB BA ss_wf by (intro redex_patt_possL, auto)
+      ultimately show False by blast
+    qed
+  qed
+qed
+end  
+
+
+lemma wf_pterm_ctxt_apply: "(C\<langle>t\<rangle> \<in> wf_pterm R) = (C \<in> wf_pterm_ctxt R \<and> t \<in> wf_pterm R)" 
+proof (induct C)
+  case Hole
+  then show ?case by simp
+next
+  case (Cfun f ss1 C ss2)
+  then show ?case by (auto simp add: wf_pterm.simps[of "Pfun _ _"] wf_pterm_ctxt.simps[of "Cfun _ _ _ _"])
+next
+  case (Crule \<alpha> ss1 C ss2)
+  then show ?case by (auto simp add: wf_pterm.simps[of "Prule _ _"] wf_pterm_ctxt.simps[of "Crule _ _ _ _"])
+qed
+
+
+
+context ren_wf_trs
+begin
+sublocale left_lin_no_var_lhs ..  
+
+lemma vars_rule_vars_lhs: assumes "to_rule \<alpha> \<in> R"
+  shows "var_rule \<alpha> = vars_term_list (lhs \<alpha>)" 
+proof -
+  from assms left_lin 
+  have "linear_term (lhs \<alpha>)" unfolding left_linear_trs_def by blast
+  thus ?thesis by (metis linear_term_var_vars_term_list)
+qed
+
+lemma possL_root_step: assumes A: "A \<in> wf_pterm R" 
+  and rp_root: "redex_patterns A = [(\<alpha>, [])]" 
+shows "possL A = fun_poss (lhs \<alpha>)" 
+proof -
+  have rule: "to_rule \<alpha> \<in> R" 
+    using A rp_root redex_pattern_rule_symbol by simp
+  from A rp_root have "possL A = possL (ll_single_redex (source A) [] \<alpha>)" 
+    using single_steps_singleton by fastforce
+  also have "\<dots> = fun_poss (lhs \<alpha>)" using A rp_root
+    by (subst single_redex_possL[OF rule], auto) 
+  finally show ?thesis .
+qed
+
+definition alt_cond where "alt_cond \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s = 
+  (A \<in> wf_pterm R \<and> B \<in> wf_pterm R \<and> 
+    redex_patterns A = rdp_A \<and> redex_patterns B = [(\<beta>, q)] \<and> 
+    renamed_lhs_\<alpha>s = rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A) \<and>      
+    (q = [] \<or> snd (hd rdp_A) = []) \<and>     
+    l = replace_at (hd renamed_lhs_\<alpha>s) q (map_vars_term (ren_l ren) (lhs \<beta>)) \<and>
+    mgu_list (map2 (\<lambda> lhs_\<alpha> p. (lhs_\<alpha>, l|_p)) renamed_lhs_\<alpha>s (map snd rdp_A)) = Some \<tau> \<and> 
+    join_list As = Some A 
+    \<and> As = map2 (\<lambda>(\<alpha>i, pi) i. (ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+          rdp_A [0..<length rdp_A]
+    \<and> B = replace_at (to_pterm (l \<cdot> \<tau>)) q (Prule \<beta> (map (to_pterm \<circ> \<tau> \<circ> ren_l ren) (vars_term_list (lhs \<beta>))))
+    \<and> (\<forall> (\<alpha>,p) \<in> set rdp_A. (@) p ` fun_poss (lhs \<alpha>) \<inter> (@) q ` fun_poss (lhs \<beta>) \<noteq> {})
+    \<and> (\<forall> (\<alpha>,p) \<in> set rdp_A. to_rule \<alpha> \<in> R)
+    \<and> to_rule \<beta> \<in> R
+    \<and> rdp_A \<noteq> [])" 
+
+lemma sim_cp_alt_def:
+  "sim_cp = { (A, B) | \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s. 
+    alt_cond \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s}" (is "_ = ?RHS")
+proof -
+  have "sim_cp = { (A, B) | \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s. 
+    A \<in> wf_pterm R \<and> B \<in> wf_pterm R \<and> 
+    redex_patterns A = rdp_A \<and> redex_patterns B = [(\<beta>, q)] \<and> 
+    renamed_lhs_\<alpha>s = rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A) \<and>
+    (q = [] \<or> snd (hd rdp_A) = []) \<and>     
+    l = replace_at (hd renamed_lhs_\<alpha>s) q (map_vars_term (ren_l ren) (lhs \<beta>)) \<and>
+    mgu_list (map2 (\<lambda> lhs_\<alpha> p. (lhs_\<alpha>, l|_p)) renamed_lhs_\<alpha>s (map snd rdp_A)) = Some \<tau> \<and> 
+    join_list As = Some A \<and>
+    As = map2 (\<lambda>(\<alpha>i, pi) i. (ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (var_rule \<alpha>i))\<rangle>)
+          rdp_A [0..<length rdp_A] \<and>
+    B = replace_at (to_pterm (l \<cdot> \<tau>)) q (Prule \<beta> (map (to_pterm \<circ> \<tau> \<circ> ren_l ren) (var_rule \<beta>))) \<and>
+    get_overlapping_part A B = Some A \<and> True}" 
+    unfolding sim_cp_def map_map by blast
+  also have "\<dots> = ?RHS" unfolding alt_cond_def
+  proof (intro Collect_cong ex_cong1 conj_cong refl)
+    fix \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s
+    assume A: "A \<in> wf_pterm R" and B: "B \<in> wf_pterm R" and rdp_A: "redex_patterns A = rdp_A" 
+      and rdp_B: "redex_patterns B = [(\<beta>, q)]" 
+      and join: "\<Squnion> As = Some A" 
+    have \<beta>: "to_rule \<beta> \<in> R" using B rdp_B redex_pattern_rule_symbol by simp
+    from join have Asne: "As \<noteq> []" by auto
+    show "(As =
+        map2
+         (\<lambda>x. case x of
+               (\<alpha>i, pi) \<Rightarrow>
+                 \<lambda>i. (ctxt_of_pos_term pi
+                        (to_pterm
+                          (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (var_rule \<alpha>i))\<rangle>)
+         rdp_A [0..<length rdp_A]) =
+       (As =
+        map2
+         (\<lambda>x. case x of
+               (\<alpha>i, pi) \<Rightarrow>
+                 \<lambda>i. (ctxt_of_pos_term pi
+                        (to_pterm
+                          (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i
+                                    (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+         rdp_A [0..<length rdp_A])" 
+      (is "_ = ?Aseq")
+      apply (intro arg_cong[of _ _ "(=) _"])
+      apply (intro map_cong refl prod.case_cong)
+      subgoal for pair x y 
+        apply (rule fun_cong[of _ _ y], intro prod.case_cong ext refl)
+        subgoal for \<alpha> p
+          apply (subst vars_rule_vars_lhs)
+          subgoal using rdp_A A
+            by (meson in_set_zipE redex_pattern_rule_symbol)
+          subgoal by auto
+          done
+        done
+      done  
+    show "(B =
+        (ctxt_of_pos_term q
+          (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<beta> (map (to_pterm \<circ> \<tau> \<circ> rename_single ren) (var_rule \<beta>))\<rangle>) =
+       (B =
+        (ctxt_of_pos_term q
+          (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<beta> (map (to_pterm \<circ> \<tau> \<circ> rename_single ren) (vars_term_list (lhs \<beta>)))\<rangle>)" 
+      by (subst vars_rule_vars_lhs[OF \<beta>]) simp
+
+    from rdp_B B have q: "q \<in> poss (source B)" 
+      using redex_patterns_label by fastforce
+
+    from redex_patterns_label[OF A] 
+    have p: "(\<alpha>,p) \<in> set (redex_patterns A) \<Longrightarrow> p \<in> poss (source A)" for \<alpha> p
+      by auto
+    assume ?Aseq
+    with Asne have rdp_ne: "rdp_A \<noteq> []" by auto
+    with rdp_A A have "\<not> is_empty_step A" 
+      by (metis redex_patterns_to_pterm source_empty_step)
+    from get_overlap_cond_alt[OF A this]
+    have "get_overlapping_part A B = Some A \<longleftrightarrow> (\<forall>A'\<in>set (single_steps A). possL A' \<inter> possL B \<noteq> {})" .
+    also have "\<dots> = (\<forall> (\<alpha>,p) \<in> set rdp_A. (@) p ` fun_poss (lhs \<alpha>) \<inter> possL B \<noteq> {})" 
+      using single_redex_possL[OF redex_pattern_rule_symbol[OF A] p]
+      unfolding rdp_A by fastforce      
+    also have "possL B = possL (ll_single_redex (source B) q \<beta>)" 
+      using B rdp_B single_steps_singleton by fastforce
+    also have "\<dots> = (@) q ` fun_poss (lhs \<beta>)" 
+      by (subst single_redex_possL[OF \<beta> q], auto)
+    finally show "(get_overlapping_part A B = Some A) =
+      (\<forall> (\<alpha>,p) \<in> set rdp_A. (@) p ` fun_poss (lhs \<alpha>) \<inter> (@) q ` fun_poss (lhs \<beta>) \<noteq> {})" 
+      by auto  
+    show "True = ((\<forall>(\<alpha>, p)\<in>set rdp_A. to_rule \<alpha> \<in> R) \<and> to_rule \<beta> \<in> R \<and> rdp_A \<noteq> [])" 
+      using \<beta> rdp_ne A rdp_A redex_pattern_rule_symbol[OF A] by auto
+  qed 
+  finally show ?thesis .
+qed
+
+
+
+definition sim_cp_root where "sim_cp_root = { (A, B) | \<tau> rdp_A l \<beta> A B As renamed_lhs_\<alpha>s. 
+    alt_cond \<tau> rdp_A l \<beta> [] A B As renamed_lhs_\<alpha>s}" 
+
+definition sim_cp_non_root where "sim_cp_non_root = { (A, B) | \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s. 
+    alt_cond \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s \<and> q \<noteq> []}" 
+
+lemma sim_cp_mgu_split: "sim_cp = sim_cp_root \<union> sim_cp_non_root" 
+  unfolding sim_cp_alt_def sim_cp_root_def sim_cp_non_root_def by blast
+    
+
+lemma sim_cp_root_many_conds: "sim_cp_root = { (A, B) | \<tau> rdp_A l \<beta> A B As renamed_lhs_\<alpha>s. 
+    alt_cond \<tau> rdp_A l \<beta> [] A B As renamed_lhs_\<alpha>s \<and> 
+    (\<forall> (\<alpha>,p) \<in> set rdp_A. to_rule \<alpha> \<in> R \<and> p \<in> fun_poss (lhs \<beta>) 
+      \<and> mgu_vd_list ren [(lhs \<beta>|_p, lhs \<alpha>)] \<noteq> None)}" (is "_ = ?Many")
+proof
+  show "?Many \<subseteq> sim_cp_root" unfolding sim_cp_root_def by blast
+  show "sim_cp_root \<subseteq> ?Many" unfolding sim_cp_root_def
+  proof (intro Collect_mono ex_mono, intro impI, elim conjE, goal_cases)
+    case (1 pair \<tau> rdp_A l \<beta> A B As renamed_lhs_\<alpha>s)
+    from \<open>alt_cond \<tau> rdp_A l \<beta> [] A B As renamed_lhs_\<alpha>s\<close>[unfolded alt_cond_def]
+    have A: "A \<in> wf_pterm R" and B: "B \<in> wf_pterm R" 
+     and rdp_A: "redex_patterns A = rdp_A" 
+     and rdp_B: "redex_patterns B = [(\<beta>, [])]" 
+     and l_def: "l = map_vars_term (rename_single ren) (lhs \<beta>)" 
+     and unif: "mgu_list (map2 (\<lambda>x y. (x, l |_ y)) (rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)) (map snd rdp_A)) = Some \<tau>" 
+     and rdp_cond: "(\<forall>(\<alpha>, p)\<in>set rdp_A. to_rule \<alpha> \<in> R \<and> (@) p ` fun_poss (lhs \<alpha>) \<inter> fun_poss (lhs \<beta>) \<noteq> {})" 
+     and \<beta>: "to_rule \<beta> \<in> R" 
+      by auto
+    show ?case
+    proof (intro conjI; (fact)?)
+      {
+        fix \<alpha> p
+        assume mem: "(\<alpha>,p) \<in> set rdp_A" 
+        with rdp_cond have rule: "to_rule \<alpha> \<in> R" and p: "(@) p ` fun_poss (lhs \<alpha>) \<inter> fun_poss (lhs \<beta>) \<noteq> {}"
+          by auto
+        from p have p: "p \<in> fun_poss (lhs \<beta>)" 
+          using fun_poss_append_poss' by fastforce
+        hence p': "p \<in> poss (lhs \<beta>)" using fun_poss_imp_poss by blast
+
+        from mem obtain i where i: "i < length rdp_A" and rdp_A: "rdp_A ! i = (\<alpha>,p)" unfolding set_conv_nth by auto
+        define list where "list = map2 (\<lambda>x y. (x, l |_ y)) (rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)) (map snd rdp_A)" 
+        have len: "length list = length rdp_A" unfolding list_def by (auto simp: rename_list_def)
+        from mgu_list_Some[OF unif(1), folded list_def, unfolded is_imgu_def unifiers_def]
+        have unif: "\<And> pair. pair \<in> set list \<Longrightarrow> fst pair \<cdot> \<tau> = snd pair \<cdot> \<tau>" by auto
+        have "(map_vars_term (rename_many' ren i) (lhs \<alpha>), l |_ p) = list ! i"  
+          unfolding list_def rename_list_def using i rdp_A by auto
+        also have "\<dots> \<in> set list" using i len by auto
+        finally have "map_vars_term (rename_many' ren i) (lhs \<alpha>) \<cdot> \<tau> = l |_ p \<cdot> \<tau>" 
+          using unif by auto
+        also have "l |_ p = map_vars_term (rename_single ren) (lhs \<beta>) |_ p" 
+          unfolding l_def by simp
+        also have "\<dots> = map_vars_term (rename_single ren) (lhs \<beta> |_ p)" using p' by simp
+        finally obtain \<sigma> \<delta> :: "('b,'a)subst" where "lhs \<beta> |_ p \<cdot> \<delta> = lhs \<alpha> \<cdot> \<sigma>" 
+          unfolding map_vars_term_eq subst_subst by metis 
+        hence mgu: "mgu_vd_list ren [(lhs \<beta>|_p, lhs \<alpha>)] \<noteq> None" 
+          using mgu_vd_list_complete[of "[(lhs \<beta>|_p, lhs \<alpha>)]" "\<lambda> _. \<delta>" \<sigma> ren] by auto
+
+        note p mgu rule
+      }
+      thus "\<forall>(\<alpha>, p)\<in>set rdp_A. to_rule \<alpha> \<in> R \<and> p \<in> fun_poss (lhs \<beta>) \<and> mgu_vd_list ren [(lhs \<beta> |_ p, lhs \<alpha>)] \<noteq> None" 
+        by auto
+    qed
+  qed
+qed
+
+
+lemma sim_cp_non_root_many_conds: "sim_cp_non_root = { (A, B) | \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s. 
+    alt_cond \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s \<and> q \<noteq> [] \<and>
+    (\<exists> \<alpha> rdpA. rdp_A = (\<alpha>,[]) # rdpA \<and> to_rule \<alpha> \<in> R \<and> q \<in> fun_poss (lhs \<alpha>) \<and> mgu_vd_list ren [(lhs \<beta>, lhs \<alpha> |_q)] \<noteq> None
+       \<and> (\<forall> (\<alpha>',p) \<in> set rdpA. to_rule \<alpha>' \<in> R \<and> p \<in> (@) q ` fun_poss (lhs \<beta>) \<and> mgu_vd_list ren [(lhs \<beta> |_ (p -\<^sub>p q), lhs \<alpha>')] \<noteq> None))}" (is "_ = ?Many")
+proof
+  show "?Many \<subseteq> sim_cp_non_root" unfolding sim_cp_non_root_def by blast
+  show "sim_cp_non_root \<subseteq> ?Many" unfolding sim_cp_non_root_def
+  proof (intro Collect_mono ex_mono, intro impI, elim conjE, goal_cases)
+    case (1 pair \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s)
+    from \<open>alt_cond \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s\<close>[unfolded alt_cond_def] \<open>q \<noteq> []\<close>
+    have A: "A \<in> wf_pterm R" and B: "B \<in> wf_pterm R" 
+     and rdp_A: "redex_patterns A = rdp_A" 
+     and rdp_B: "redex_patterns B = [(\<beta>, q)]" 
+     and renl: "renamed_lhs_\<alpha>s = rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)" 
+     and l_def: "l = (ctxt_of_pos_term q (hd renamed_lhs_\<alpha>s))\<langle>map_vars_term (rename_single ren) (lhs \<beta>)\<rangle>" 
+     and unif: "mgu_list (map2 (\<lambda>x y. (x, l |_ y)) (rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)) (map snd rdp_A)) = Some \<tau>" 
+     and rdp_cond: "\<And> \<alpha> p. (\<alpha>, p)\<in>set rdp_A \<Longrightarrow> to_rule \<alpha> \<in> R \<and> (@) p ` fun_poss (lhs \<alpha>) \<inter> (@) q ` fun_poss (lhs \<beta>) \<noteq> {}" 
+     and \<beta>: "to_rule \<beta> \<in> R" 
+     and ne: "rdp_A \<noteq> []" 
+     and root: "snd (hd rdp_A) = []" 
+      by auto
+    from ne root obtain \<alpha> rdpA where split: "rdp_A = (\<alpha>,[]) # rdpA" by (cases rdp_A, auto)
+    from split have \<alpha>mem: "(\<alpha>,[]) \<in> set rdp_A" by auto
+    from rdp_cond[OF this]
+    have \<alpha>: "to_rule \<alpha> \<in> R" and q: "q \<in> fun_poss (lhs \<alpha>)" by (auto simp: fun_poss_append_poss')
+    define list where "list = map2 (\<lambda>x y. (x, l |_ y)) (rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)) (map snd rdp_A)" 
+    have len: "length list = length rdp_A" unfolding list_def by (auto simp: rename_list_def)
+    obtain other where [simp]: "[0..<length rdpA] @ [length rdpA] = 0 # other"
+      by (metis gr0_conv_Suc less_eq_nat.simps(1) upt_Suc_append upt_conv_Cons)
+    note q' = fun_poss_imp_poss[OF q]
+    from mgu_list_Some[OF unif(1), folded list_def, unfolded is_imgu_def unifiers_def]
+    have unif: "\<And> pair. pair \<in> set list \<Longrightarrow> fst pair \<cdot> \<tau> = snd pair \<cdot> \<tau>" by auto
+    define \<sigma> :: "('b,'a)subst" where "\<sigma> = Var o rename_many' ren 0" 
+    define \<delta> :: "('b,'a)subst" where "\<delta> = Var o rename_single ren" 
+    have "(lhs \<alpha> \<cdot> \<sigma>, l) \<in> set list" 
+      unfolding list_def split by (simp add: rename_list_def map_vars_term_eq \<sigma>_def)
+    from unif[OF this]
+    have "lhs \<alpha> \<cdot> (\<sigma> \<circ>\<^sub>s \<tau>) |_q = (l \<cdot> \<tau>) |_q" 
+      by simp
+    also have "l \<cdot> \<tau> = (ctxt_of_pos_term q (lhs \<alpha> \<cdot> \<sigma>))\<langle>lhs \<beta> \<cdot> \<delta>\<rangle> \<cdot> \<tau>" 
+      unfolding l_def renl split rename_list_def \<sigma>_def map_vars_term_eq \<delta>_def
+      by simp
+    also have "\<dots> |_q = lhs \<beta> \<cdot> \<delta> \<cdot> \<tau>" 
+      using q' by (metis hole_pos_ctxt_of_pos_term hole_pos_poss poss_imp_subst_poss replace_at_subt_at subt_at_subst)
+    also have "\<dots> = lhs \<beta> \<cdot> (\<delta> \<circ>\<^sub>s \<tau>)" by simp
+    also have "lhs \<alpha> \<cdot> (\<sigma> \<circ>\<^sub>s \<tau>) |_q = lhs \<alpha> |_q \<cdot> (\<sigma> \<circ>\<^sub>s \<tau>)" using q' by simp
+    finally obtain \<sigma> \<delta> :: "('b,'a)subst" where "lhs \<beta> \<cdot> \<delta> = lhs \<alpha> |_q \<cdot> \<sigma>" by metis
+    hence mgu_\<alpha>: "mgu_vd_list ren [(lhs \<beta>, lhs \<alpha> |_q)] \<noteq> None" 
+      using mgu_vd_list_complete[of "[(lhs \<beta>, lhs \<alpha> |_q)]" "\<lambda> _. \<delta>" \<sigma> ren] by auto
+
+    from split[folded rdp_A] have redA_eq: "redex_patterns A = (\<alpha>, []) # rdpA" by auto
+    have "\<exists> As. A = Prule \<alpha> As"
+    proof (cases A)
+      case (Pfun f As)
+      with redA_eq have "(\<alpha>,[]) \<in> set (concat (map2 (\<lambda>i. map (\<lambda>(\<alpha>, p). (\<alpha>, i # p))) [0..<length As] (map redex_patterns As)))"  by simp
+      hence False unfolding set_concat set_zip by force
+      thus ?thesis ..
+    qed (insert redA_eq, auto)
+    then obtain As where rule: "A = Prule \<alpha> As" by auto
+    {
+      fix \<alpha>' p
+      assume memA: "(\<alpha>',p) \<in> set rdpA" 
+      hence mem: "(\<alpha>',p) \<in> set rdp_A" unfolding split by auto
+      from rdp_cond[OF this]
+      have \<alpha>': "to_rule \<alpha>' \<in> R" and over: "(@) p ` fun_poss (lhs \<alpha>') \<inter> (@) q ` fun_poss (lhs \<beta>) \<noteq> {}" by auto
+      then obtain p' q' where p': "p' \<in> fun_poss (lhs \<alpha>')" and q'': "q' \<in> fun_poss (lhs \<beta>)" and eq: "p @ p' = q @ q'" by auto
+      from eq have disj: "p \<le>\<^sub>p q \<or> q \<le>\<^sub>p p" 
+        by (metis prefix_append prefix_order.dual_order.eq_iff)
+      
+      {
+        assume "p \<le>\<^sub>p q" 
+        with q have p: "p \<in> fun_poss (lhs \<alpha>)"
+          by (metis fun_poss_append_poss' prefix_def)
+        from A[unfolded rule] 
+        have lenv: "length (var_poss_list (lhs \<alpha>)) = length As" 
+          by (metis Inl_inject term.simps(4) length_var_poss_list vars_rule_vars_lhs sum.simps(4) term.inject(2)
+              wf_pterm.cases)
+
+        from redA_eq[unfolded rule]
+        have eq': "rdpA = concat (map2 (\<lambda>p1. map (\<lambda>(\<alpha>, p2). (\<alpha>, p1 @ p2))) (var_poss_list (lhs \<alpha>)) (map redex_patterns As))" by auto
+        have "snd ` set rdpA \<subseteq> {(var_poss_list (lhs \<alpha>) ! i) @ p2 |i p2. i < length As}" 
+          unfolding eq' by (force simp: set_zip)
+        with memA obtain p2 i where i: "i < length As" and pp2: "p = var_poss_list (lhs \<alpha>) ! i @ p2" by auto
+        let ?p1 = "var_poss_list (lhs \<alpha>) ! i" 
+        from i lenv have "?p1 \<in> var_poss (lhs \<alpha>)"
+          by (metis nth_mem var_poss_list_sound)
+        hence "?p1 \<notin> fun_poss (lhs \<alpha>)"
+          by (metis DiffE poss_simps(3))
+        hence "?p1 @ p2 \<notin> fun_poss (lhs \<alpha>)" 
+          using fun_poss_append_poss' by blast
+        from this[folded pp2] p have False ..
+      } note impossible = this
+      have pq: "p \<in> (@) q ` fun_poss (lhs \<beta>)"
+        by (smt (verit, best) eq fun_poss_append_poss' image_iff impossible pos_append_cases prefix_append prefix_order.order_refl q'')
+
+      then obtain p1 where "p1 \<in> fun_poss (lhs \<beta>)" and peq: "p = q @ p1" by auto
+      from this have p1: "p1 \<in> poss (lhs \<beta>)"
+        using fun_poss_imp_poss by blast
+
+      from mem obtain i where i: "i < length rdp_A" and rdpi: "rdp_A ! i = (\<alpha>',p)" unfolding set_conv_nth by auto
+      define \<sigma> :: "('b,'a)subst" where "\<sigma> = Var o rename_many' ren i" 
+      define \<delta> :: "('b,'a)subst" where "\<delta> = Var o rename_single ren" 
+      from i len have "list ! i \<in> set list" by auto
+      also have "list ! i = (lhs \<alpha>' \<cdot> \<sigma>, l |_ p)" using i unfolding list_def rename_list_def
+        by (simp add: rdpi \<sigma>_def map_vars_term_as_subst o_def)
+      finally have "(lhs \<alpha>' \<cdot> \<sigma>, l |_ p) \<in> set list" by auto
+      from unif[OF this] have "lhs \<alpha>' \<cdot> \<sigma> \<cdot> \<tau> = l |_ p \<cdot> \<tau>" by auto
+      also have "l |_ p = lhs \<beta> \<cdot> \<delta> |_ p1" using q' unfolding l_def peq renl split rename_list_def \<delta>_def o_def
+        by (simp add: map_vars_term_as_subst replace_at_below_poss replace_at_subt_at)
+      also have "\<dots> = lhs \<beta> |_ p1 \<cdot> \<delta>" using p1 by simp
+      finally have "lhs \<beta> |_ p1 \<cdot> (\<delta> \<circ>\<^sub>s \<tau>) = lhs \<alpha>' \<cdot> (\<sigma> \<circ>\<^sub>s \<tau>)" 
+        by simp
+      then obtain \<sigma> \<delta> :: "('b,'a)subst" where "lhs \<beta> |_ p1  \<cdot> \<delta> = lhs \<alpha>' \<cdot> \<sigma>" by metis
+      hence "mgu_vd_list ren [(lhs \<beta> |_ p1, lhs \<alpha>')] \<noteq> None" 
+        using mgu_vd_list_complete[of "[(lhs \<beta> |_ p1, lhs \<alpha>')]" "\<lambda> _. \<delta>" \<sigma> ren] by auto
+      also have "p1 = p -\<^sub>p q" using peq 
+        by (metis disj impossible prefix_pos_diff same_append_eq) 
+      finally have mgu_\<alpha>': "mgu_vd_list ren [(lhs \<beta> |_ (p -\<^sub>p q), lhs \<alpha>')] \<noteq> None" by auto
+
+      note \<alpha>' pq mgu_\<alpha>'
+    } note rdpA = this
+    show ?case
+      by (intro conjI exI; (fact)?) (insert rdpA, auto)
+  qed
+qed 
+end
+
+context
+  fixes ren :: "'v :: infinite renamingN"
+    and R :: "('f,'v)rules"
+begin
+
+function compute_rdp :: "pos \<Rightarrow> ('f,'v)term \<Rightarrow> (('f, 'v) prule \<times> pos) list list" where
+  "compute_rdp p (Var x) = [[]]"
+| "compute_rdp (i # p) (Fun f ts) = (if i < length ts 
+     then map (map (map_prod id ((#) i))) (compute_rdp p (ts ! i))
+     else [[]])"
+| "compute_rdp [] (Fun f ts) =  
+    (map concat o concat_lists) (map2 (\<lambda> i ti. map (map (map_prod id ((#) i))) (compute_rdp [] ti)) [0..<length ts] ts)
+    @ List.maps (\<lambda> (l,r). let ps = filter ((\<noteq>) []) (var_poss_list l);
+           rec = map (\<lambda> p. if p \<in> fun_poss (Fun f ts) then map (map (map_prod id ((@) p))) (compute_rdp [] (Fun f ts |_ p)) else [[]]) ps in
+         map ((#) (Rule l r, [])) ((map concat o concat_lists) rec))
+       (filter (\<lambda> rule. mgu_vd_list ren [ (Fun f ts, fst rule)] \<noteq> None) R)" 
+  by pat_completeness auto
+
+termination
+proof (standard, rule wf_measure[of "size o snd"], goal_cases)
+  case (3 f ts l _ filt p)
+  hence "p \<noteq> []" and "p \<in> poss (Fun f ts)" by (auto simp: fun_poss_imp_poss)
+  then show ?case 
+    by simp (metis nth_mem size_simp1 size_simp5 subt_at.simps(1,2) subt_at_subterm supt_size)
+qed (auto simp: termination_simp)
+
+lemma empty_compute_rdp: "[] \<in> set (compute_rdp p t)" 
+proof (induct p t rule: compute_rdp.induct)
+  case (1 p x)
+  then show ?case by auto
+next
+  case (2 i p f ts)
+  then show ?case by (cases "i < length ts", auto)
+next
+  case (3 f ts)
+  define e :: "(('f, 'v) prule \<times> nat list) list" where "e = []" 
+  have IH: "i < length ts \<Longrightarrow> e \<in> set (compute_rdp [] (ts ! i))" for i 
+    using 3(1)[of "(i, ts ! i)", OF _ refl] by (force simp: set_zip e_def)
+  let ?list = "map (\<lambda> i. map (map (map_prod id ((#) i))) (local.compute_rdp [] (ts ! i))) [0..<length ts]" 
+  have "concat (replicate (length ts) e) \<in> set (compute_rdp [] (Fun f ts))" 
+    unfolding compute_rdp.simps set_append 
+    apply (intro UnI1)
+    apply (unfold o_def)
+    apply simp
+    apply (intro imageI)
+    using IH by (auto simp: e_def)
+  also have "concat (replicate (length ts) e) = []" unfolding e_def by auto
+  finally show ?case .
+qed
+
+definition sim_cp_root_impl where "sim_cp_root_impl = 
+  List.maps (\<lambda> (ll,rr). List.maps (\<lambda> rdp_A. 
+     let l = map_vars_term (ren_l ren) ll;
+         renamed_lhs_\<alpha>s = ren.rename_list ren (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A) in 
+         case mgu_list (map2 (\<lambda> lhs_\<alpha> p. (lhs_\<alpha>, l|_p)) renamed_lhs_\<alpha>s (map snd rdp_A)) of 
+           None \<Rightarrow> []
+         | Some \<tau> \<Rightarrow> (let As = map2 (\<lambda>(\<alpha>i, pi) i. (ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+          rdp_A [0..<length rdp_A] 
+           in (case join_list As of None \<Rightarrow> []
+         | Some A \<Rightarrow> (let B = Prule (Rule ll rr) (map (to_pterm \<circ> \<tau> \<circ> ren_l ren) (vars_term_list ll))
+           in [(A,B)]
+       )))) (filter ((\<noteq>) []) (compute_rdp [] ll))) R"
+
+definition sim_cp_non_root_impl where "sim_cp_non_root_impl = 
+  List.maps (\<lambda> (lf,rf). List.maps (\<lambda> q. List.maps ( \<lambda> (ll,rr). List.maps (\<lambda> rdpA. 
+       let rdp_A = (Rule lf rf, []) # map (map_prod id ((@) q)) rdpA
+       in [rdp_A])
+     (compute_rdp q ll)) 
+    (filter (\<lambda> (ll,rr). mgu_vd_list ren [(ll, lf |_q)] \<noteq> None) R)) (filter ((\<noteq>) []) (fun_poss_list lf))) R" 
+  
+  .
+
+rdp_A.
+     let l = map_vars_term (ren_l ren) ll;
+         renamed_lhs_\<alpha>s = ren.rename_list ren (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A) in 
+         case mgu_list (map2 (\<lambda> lhs_\<alpha> p. (lhs_\<alpha>, l|_p)) renamed_lhs_\<alpha>s (map snd rdp_A)) of 
+           None \<Rightarrow> []
+         | Some \<tau> \<Rightarrow> (let As = map2 (\<lambda>(\<alpha>i, pi) i. (ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+          rdp_A [0..<length rdp_A] 
+           in (case join_list As of None \<Rightarrow> []
+         | Some A \<Rightarrow> (let B = Prule (Rule ll rr) (map (to_pterm \<circ> \<tau> \<circ> ren_l ren) (vars_term_list ll))
+           in [(A,B)]
+       )))) (filter ((\<noteq>) []) (compute_rdp [] ll))) R"
+
+(*
+
+lemma sim_cp_non_root_many_conds: "sim_cp_non_root = { (A, B) | \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s. 
+    alt_cond \<tau> rdp_A l \<beta> q A B As renamed_lhs_\<alpha>s \<and> q \<noteq> [] \<and>
+    (\<exists> \<alpha> rdpA. rdp_A = (\<alpha>,[]) # rdpA \<and> to_rule \<alpha> \<in> R \<and> q \<in> fun_poss (lhs \<alpha>) \<and> mgu_vd_list ren [(lhs \<beta>, lhs \<alpha> |_q)] \<noteq> None
+       \<and> (\<forall> (\<alpha>',p) \<in> set rdpA. to_rule \<alpha>' \<in> R \<and> p \<in> (@) q ` fun_poss (lhs \<beta>) \<and> mgu_vd_list ren [(lhs \<beta> |_ (p -\<^sub>p q), lhs \<alpha>')] \<noteq> None))}" (is "_ = ?Many")
+
+
+  (A \<in> wf_pterm R \<and> B \<in> wf_pterm R \<and> 
+    redex_patterns A = rdp_A \<and> redex_patterns B = [(\<beta>, q)] \<and> 
+    renamed_lhs_\<alpha>s = rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A) \<and>      
+    (q = [] \<or> snd (hd rdp_A) = []) \<and>     
+    l = replace_at (hd renamed_lhs_\<alpha>s) q (map_vars_term (ren_l ren) (lhs \<beta>)) \<and>
+    mgu_list (map2 (\<lambda> lhs_\<alpha> p. (lhs_\<alpha>, l|_p)) renamed_lhs_\<alpha>s (map snd rdp_A)) = Some \<tau> \<and> 
+    join_list As = Some A 
+    \<and> As = map2 (\<lambda>(\<alpha>i, pi) i. (ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+          rdp_A [0..<length rdp_A]
+    \<and> B = replace_at (to_pterm (l \<cdot> \<tau>)) q (Prule \<beta> (map (to_pterm \<circ> \<tau> \<circ> ren_l ren) (vars_term_list (lhs \<beta>))))
+    \<and> (\<forall> (\<alpha>,p) \<in> set rdp_A. (@) p ` fun_poss (lhs \<alpha>) \<inter> (@) q ` fun_poss (lhs \<beta>) \<noteq> {})
+    \<and> (\<forall> (\<alpha>,p) \<in> set rdp_A. to_rule \<alpha> \<in> R)
+    \<and> to_rule \<beta> \<in> R
+    \<and> rdp_A \<noteq> []) 
+*)
+end
+
+
+lemma no_pair_iff_empty[simp]: "(\<forall>a b. (a, b) \<notin> set xs) \<longleftrightarrow> xs = []"
+  by (metis in_set_simps(3) length_greater_0_conv nth_mem old.prod.exhaust)
+
+lemma split_upt: "i < length xs \<Longrightarrow> [0..< length xs] = [0..< i] @ i # [Suc i ..< length xs]"
+  by (metis le_Suc_ex less_Suc_eq_le less_imp_le_nat upt_add_eq_append upt_rec zero_less_Suc)
+
+lemma list_app_eqI: "xs = [] \<Longrightarrow> ys = us \<Longrightarrow> zs = [] \<Longrightarrow> xs @ ys @ zs = us" by auto
+
+context ren_wf_trs
+begin
+
+context
+  fixes RR :: "('b,'a)rules" 
+  assumes RR: "set RR = R"
+begin
+
+lemma compute_rdp: "set (compute_rdp ren RR p t) = 
+  { rp | rp A. A \<in> wf_pterm R \<and> rp = redex_patterns A \<and>
+       (\<forall> (\<alpha>,q) \<in> set rp. p \<le>\<^sub>p q \<and> q \<in> fun_poss t \<and> mgu_vd_list ren [(t|_q, lhs \<alpha>)] \<noteq> None)}" 
+  (is "?Left p t = ?Right p t")
+proof -
+  have empty: "[] \<in> ?Right p t" for p t
+    by (auto intro!: exI[of _ "Var undefined"])
+  hence [simp]: "\<exists>A. A \<in> wf_pterm R \<and> [] = redex_patterns A" by auto
+  show ?thesis
+  proof (induct p t rule: compute_rdp.induct)
+    case Var: (1 p x)
+    show ?case by auto 
+  next
+    case Below: (2 i p f ts)
+    let ?p = "i # p" 
+    let ?t = "Fun f ts" 
+    show ?case
+    proof (cases "i < length ts")
+      case False
+      have left: "?Left ?p ?t = {[]}" using False by auto
+      have id: "(?p \<le>\<^sub>p q \<and> q \<in> fun_poss ?t \<and> b) = False" for q b using False by (cases q, auto)
+      have "?Right ?p ?t = {[]}" unfolding id by auto
+      thus ?thesis unfolding left by auto
+    next
+      case True
+      let ?map = "map (map_prod id ((#) i))" 
+      from True have split: "[0..< length ts] = [0..< i] @ i # [Suc i ..< length ts]"
+        by (metis le_Suc_ex less_Suc_eq_le less_imp_le_nat upt_add_eq_append upt_rec zero_less_Suc)
+      have "?Left ?p ?t = ?map ` ?Left p (ts ! i)" using True by simp
+      also have "\<dots> = ?map ` ?Right p (ts ! i)" unfolding Below[OF True] ..
+      also have "\<dots> = ?Right ?p ?t"  
+      proof 
+        show "?map ` ?Right p (ts ! i) \<subseteq> ?Right ?p ?t"
+        proof
+          fix mrp
+          assume "mrp \<in> ?map ` ?Right p (ts ! i)" 
+          then obtain rp where "rp \<in> ?Right p (ts ! i)" and mrp: "mrp = ?map rp" by auto
+          from this(1) obtain A where A: "A \<in> wf_pterm R" and rp: "rp = redex_patterns A" 
+            and cond: "\<And> \<alpha> q. (\<alpha>,q) \<in> set rp \<Longrightarrow> p \<le>\<^sub>p q \<and> q \<in> fun_poss (ts ! i) \<and> mgu_vd_list ren [(ts ! i |_ q, lhs \<alpha>)] \<noteq> None" by force
+          define As where "As = (replicate (length ts) (Var undefined))[i := A]"
+          have [simp]: "length As = length ts" unfolding As_def by simp
+          let ?B = "Pfun f As" 
+          have "redex_patterns ?B = concat (map ((\<lambda> j. [])(i := mrp)) [0..<length ts])" unfolding redex_patterns.simps
+            apply (rule arg_cong[of _ _ concat])
+            apply (intro nth_equalityI)
+              apply force
+             apply (force simp add: As_def mrp rp)
+            by (auto simp: As_def mrp rp) (auto split: prod.splits)
+          also have "\<dots> = mrp" by (simp add: split)
+          finally have Bmrp: "mrp = redex_patterns ?B" ..
+          have B: "?B \<in> wf_pterm R" using A True by (auto intro!: wf_pterm.intros simp: As_def set_list_update)
+          show "mrp \<in> ?Right ?p ?t" 
+            apply (intro CollectI exI[of _ ?B] exI[of _ mrp] conjI refl B Bmrp)
+            using cond True unfolding mrp by auto
+        qed
+        show "?Right ?p ?t \<subseteq> ?map ` ?Right p (ts ! i)"
+        proof
+          fix rp
+          assume "rp \<in> ?Right ?p ?t" 
+          then obtain A where A: "A \<in> wf_pterm R" and rp: "rp = redex_patterns A" 
+            and cond: "\<And> \<alpha> q. (\<alpha>,q) \<in> set rp \<Longrightarrow> ?p \<le>\<^sub>p q \<and> q \<in> fun_poss ?t \<and> mgu_vd_list ren [(?t |_ q, lhs \<alpha>)] \<noteq> None" 
+            by blast
+          from A show "rp \<in> ?map ` ?Right p (ts ! i)" 
+          proof cases
+            case Var: (1 x)
+            hence rp: "rp = ?map []" unfolding rp by auto
+            show ?thesis unfolding rp 
+              by (intro imageI CollectI exI[of _ "Var x"] exI[of _ Nil], auto)
+          next
+            case Pfun: (2 As f)
+            from rp Pfun 
+            have rp: "rp = concat (map2 (\<lambda>i. map (\<lambda>(\<alpha>, p). (\<alpha>, i # p))) [0..<length As] (map redex_patterns As))" (is "_ = ?f (map redex_patterns As)") by simp
+            also have "map redex_patterns As = map ((\<lambda> j. [])(i := redex_patterns (As ! i))) [0..<length As]" 
+            proof (rule nth_equalityI, unfold length_map, force, clarsimp)
+              fix j
+              assume j: "j < length As" "j \<noteq> i" 
+              show "redex_patterns (As ! j) = []" 
+              proof (rule ccontr)
+                assume "\<not> ?thesis" 
+                then obtain \<alpha> q rp' where "redex_patterns (As ! j) = (\<alpha>,q) # rp'" (is "?e = _") by (cases ?e, auto)
+                hence "(\<alpha>, j # q) \<in> set rp" unfolding rp using j by (auto simp: set_zip) (force simp: set_conv_nth)
+                from cond[OF this] j show False by simp
+              qed
+            qed
+            also have "?f \<dots> = (if i < length As then ?map (redex_patterns (As ! i)) else [])" 
+              by (auto simp: set_zip) (auto simp: split_upt set_zip intro!: list_app_eqI) 
+            finally have rp: "rp = (if i < length As then ?map (redex_patterns (As ! i)) else [])" .
+            show ?thesis
+            proof (cases "i < length As")
+              case False
+              hence rp: "rp = ?map []" unfolding rp by auto
+              show ?thesis unfolding rp 
+                by (intro imageI CollectI exI[of _ "Var undefined"] exI[of _ Nil], auto)
+            next
+              case i: True
+              hence rp: "rp = ?map (redex_patterns (As ! i))" using rp by auto
+              from i A Pfun have Ai: "As ! i \<in> wf_pterm R" by auto
+              show ?thesis unfolding rp
+              proof (intro imageI CollectI exI[of _ "As ! i"] exI conjI Ai, rule refl, rule refl, clarify)
+                fix \<alpha> q
+                assume "(\<alpha>,q) \<in> set (redex_patterns (As ! i))" 
+                hence "(\<alpha>, i#q) \<in> set rp" unfolding rp by force
+                from cond[OF this]
+                show "p \<le>\<^sub>p q \<and> q \<in> fun_poss (ts ! i) \<and> mgu_vd_list ren [(ts ! i |_ q, lhs \<alpha>)] \<noteq> None" 
+                  by auto
+              qed
+            qed
+          next
+            case Prule: (3 \<alpha> As)
+            with rp have "(\<alpha>,[]) \<in> set rp" by auto
+            with cond[OF this] have False by auto
+            thus ?thesis ..
+          qed
+        qed
+      qed
+      finally show ?thesis .
+    qed
+  next
+    case (3 f ts)
+    let ?t = "Fun f ts" 
+    define addi :: "nat \<Rightarrow> (('b, 'a) prule \<times> nat list) list \<Rightarrow> (('b, 'a) prule \<times> nat list) list" 
+      where "addi = (\<lambda> i. map (map_prod id ((#) i)))" 
+    have addi: "addi i = map (\<lambda>(\<alpha>, p). (\<alpha>, i # p))" for i unfolding addi_def by (intro ext, force)
+    define addp :: "pos \<Rightarrow> (('b, 'a) prule \<times> nat list) list \<Rightarrow> (('b, 'a) prule \<times> nat list) list" 
+      where "addp = (\<lambda> p. map (map_prod id ((@) p)))" 
+    have addi: "addi i = map (\<lambda>(\<alpha>, p). (\<alpha>, i # p))" for i unfolding addi_def by (intro ext, force)
+    have addp: "addp p = map (\<lambda>(\<alpha>, q). (\<alpha>, p @ q))" for p unfolding addp_def by (intro ext, force)
+    define set1 where "set1 = concat ` set (concat_lists (map2 (\<lambda>x y. map (addi x) (compute_rdp ren RR [] y)) [0..<length ts] ts))" 
+    let ?addp = "\<lambda> p. map (map (map_prod id ((@) p)))" 
+    define set2 where "set2 = \<Union> (set `
+        (\<lambda>(l, r).
+            let ps = filter ((\<noteq>) []) (var_poss_list l);
+                rec = map (\<lambda>p. if p \<in> fun_poss ?t then map (addp p) (compute_rdp ren RR [] (?t |_ p)) else [[]]) ps
+            in map ((#) (l \<rightarrow> r, [])) (map concat (concat_lists rec))) `
+        set (filter (\<lambda>rule. mgu_vd_list ren [(?t, fst rule)] \<noteq> None) RR))" 
+    have left: "?Left [] ?t = set1 \<union> set2" 
+      unfolding compute_rdp.simps set_append o_def set_map List.maps_eq set_concat addi_def addp_def set1_def set2_def by auto 
+    show ?case unfolding left
+    proof 
+      show "set1 \<union> set2 \<subseteq> ?Right [] ?t" 
+      proof
+        fix rp
+        assume "rp \<in> set1 \<union> set2" 
+        thus "rp \<in> ?Right [] ?t"
+        proof
+          assume "rp \<in> set1" 
+          from this[unfolded set1_def, simplified]
+          obtain rps where len: "length rps = length ts" and rps: "\<And> i. i<length ts \<Longrightarrow> rps ! i \<in> addi i ` ?Left [] (ts ! i)" 
+            and rp: "rp = concat rps" by blast
+          let ?cond = "\<lambda> i rpi Ai. rps ! i = addi i rpi \<and> Ai \<in> wf_pterm R \<and>
+              rpi = redex_patterns Ai \<and> (\<forall>(\<alpha>, q)\<in>set rpi. q \<in> fun_poss (ts ! i) \<and> mgu_vd_list ren [(ts ! i |_ q, lhs \<alpha>)] \<noteq> None)" 
+          {
+            fix i
+            assume i: "i < length ts"  
+            hence "(i, ts ! i) \<in> set (zip [0..<length ts] ts)" by (force simp: set_zip)
+            from 3(1)[OF this refl]
+            have "?Left [] (ts ! i) = ?Right [] (ts ! i)" .
+            from rps[OF i, unfolded this] have "\<exists> rpi Ai. ?cond i rpi Ai"  
+              by auto
+          }
+          hence "\<forall> i. \<exists> rpi Ai. i < length ts \<longrightarrow> ?cond i rpi Ai" by blast
+          from choice[OF this] obtain rpi where "\<forall> i. \<exists> Ai. i < length ts \<longrightarrow> ?cond i (rpi i) Ai" by blast
+          from choice[OF this] obtain Ai where cond: "\<And> i. i < length ts \<Longrightarrow> ?cond i (rpi i) (Ai i)" by blast
+          let ?A = "Pfun f (map Ai [0..<length ts])" 
+          have A: "?A \<in> wf_pterm R" using cond by (auto intro!: wf_pterm.intros) 
+          have rpA: "redex_patterns ?A = rp" unfolding rp redex_patterns.simps length_map length_upt
+            apply (intro arg_cong[of _ _ concat], rule sym, rule nth_equalityI; unfold len)
+             apply force
+            subgoal for i using cond[of i] by (auto simp: addi)
+            done
+          {
+            fix \<alpha> q
+            assume "(\<alpha>,q) \<in> set rp" 
+            from this[unfolded rp] obtain i where i: "i < length ts" and mem: "(\<alpha>,q) \<in> set (rps ! i)"
+              by (metis in_set_conv_nth nth_concat_split len)
+            note mem
+            also have "rps ! i = addi i (rpi i)" using cond[OF i] by auto
+            finally obtain r where mem: "(\<alpha>,r) \<in> set (rpi i)"  and q: "q = i # r" 
+              unfolding addi_def by auto
+            from cond[OF i] mem have "r \<in> fun_poss (ts ! i) \<and> mgu_vd_list ren [(ts ! i |_ r, lhs \<alpha>)] \<noteq> None" by auto
+            hence "q \<in> fun_poss (Fun f ts) \<and> mgu_vd_list ren [(Fun f ts |_ q, lhs \<alpha>)] \<noteq> None" unfolding q using i by auto
+          }
+          thus ?thesis
+            by (intro CollectI exI[of _ rp] exI[of _ ?A] conjI A refl rpA[symmetric], auto)
+        next
+          assume "rp \<in> set2" 
+          from this[unfolded set2_def set_filter RR] obtain l r ps rec where 
+            lr: "(l,r) \<in> R" 
+            and mgu: "mgu_vd_list ren [(?t, l)] \<noteq> None" 
+            and ps: "ps = filter ((\<noteq>) []) (var_poss_list l)" 
+            and rec: "rec = map (\<lambda>p. if p \<in> fun_poss ?t then map (addp p) (compute_rdp ren RR [] (?t |_ p)) else [[]]) ps" 
+            and rp: "rp \<in> set (map ((#) (l \<rightarrow> r, [])) (map concat (concat_lists rec)))" 
+            by force
+          from rec have len_rec: "length rec = length ps" by auto
+          note IH = 3(2)[OF ps]
+          from lr have "is_Fun l" using no_var_lhs by fastforce
+          hence "[] \<notin> set (var_poss_list l)" by (cases l, auto)
+          hence ps: "ps = var_poss_list l" unfolding ps 
+            using filter_id_conv by blast
+          from rp len_rec obtain rps where
+            rp: "rp = (l \<rightarrow> r, []) # concat rps"  
+            and len_rps: "length rps = length ps" 
+            and as_mem: "\<And> i. i < length ps \<Longrightarrow>  rps ! i \<in> set (rec ! i)" 
+            by auto
+          let ?cond = "\<lambda> i rpi A. (A \<in> wf_pterm R \<and> rps ! i = addp (ps ! i) rpi \<and> rpi = redex_patterns A \<and>
+                  (\<forall> \<alpha> q. (\<alpha>,q) \<in>set rpi \<longrightarrow>
+                       q \<in> fun_poss (?t |_ ps ! i) \<and>
+                       mgu_vd_list ren [(?t |_ ps ! i |_ q, lhs \<alpha>)] \<noteq> None))" 
+          {
+            fix i
+            assume i: "i < length ps"
+            hence mem: "ps ! i \<in> set ps" by auto
+            {
+              assume fp: "ps ! i \<in> fun_poss ?t" 
+              have "set (rec ! i) = addp (ps ! i) ` ?Left [] (?t |_ ps ! i)" unfolding rec 
+                using i fp by auto
+              also have "\<dots> = addp (ps ! i) ` ?Right [] (?t |_ ps ! i)" unfolding IH[OF mem fp] ..
+              finally have "set (rec ! i) = addp (ps ! i) ` ?Right [] (?t |_ ps ! i)" .
+              from as_mem[OF i, unfolded this] 
+              have "\<exists>A rpi. ?cond i rpi A" by fast
+            } 
+            moreover
+            {
+              assume "ps ! i \<notin> fun_poss ?t" 
+              hence "rec ! i = [[]]" unfolding rec using i by auto
+              from as_mem[OF i, unfolded this] have "rps ! i = []" by auto
+              hence "\<exists> A rpi. ?cond i rpi A" 
+                by (intro exI[of _ "Var undefined"], auto simp: addp)
+            } 
+            ultimately have "\<exists> A rpi. ?cond i rpi A" by blast
+          }
+          hence "\<forall> i. \<exists> A rpi. i < length ps \<longrightarrow> ?cond i rpi A" by blast
+          from choice[OF this] obtain As where "\<forall> i. \<exists> rpi. i < length ps \<longrightarrow> ?cond i rpi (As i)" by blast
+          from choice[OF this] obtain rpi where cond: "\<And> i. i < length ps \<Longrightarrow> ?cond i (rpi i) (As i)" by blast
+          let ?A = "Prule (Rule l r) (map As [0..<length ps])" 
+          let ?addi = "\<lambda> i. map (\<lambda>(\<alpha>, p2). (\<alpha>, ps ! i @ p2))" 
+          from lr have len_ps: "length ps = length (var_rule (l \<rightarrow> r))" 
+            unfolding ps by (metis length_var_poss_list length_var_rule prule.sel(1,2))
+          have vpl: "var_poss_list (lhs (l \<rightarrow> r)) = ps" unfolding ps by simp
+          let ?rp = "(l \<rightarrow> r, []) # concat (map (\<lambda> i. rps ! i) [0..<length ps])" 
+          have rpA: "redex_patterns ?A = ?rp" 
+            unfolding rp redex_patterns.simps vpl
+            by (intro arg_cong[of _ _ "\<lambda> x. _ # concat x"], rule nth_equalityI; insert cond, auto simp: addp)
+          have A: "?A \<in> wf_pterm R" using lr len_ps cond by (intro wf_pterm.intros, auto)
+          have rp_id: "rp = ?rp" unfolding rp
+            by (intro arg_cong[of _ _ "\<lambda> x. _ # concat x"], rule nth_equalityI; insert len_rps cond, auto)
+          {
+            fix \<alpha> q
+            assume mem: "(\<alpha>,q) \<in> set ((l \<rightarrow> r, []) # concat (map ((!) rps) [0..<length ps]))" 
+            have "q \<in> fun_poss (Fun f ts) \<and> mgu_vd_list ren [(Fun f ts |_ q, lhs \<alpha>)] \<noteq> None" 
+            proof (cases "(\<alpha>,q) = (l \<rightarrow> r, [])")
+              case True
+              with mgu show ?thesis by auto
+            next
+              case False
+              with mem obtain i where i: "i < length ps" and aq: "(\<alpha>,q) \<in> set (rps ! i)" by auto
+              with cond[OF i] have "(\<alpha>,q) \<in> set (addp (ps ! i) (rpi i))" by auto
+              then obtain p where mem: "(\<alpha>,p) \<in> set (rpi i)" and q: "q = ps ! i @ p"
+                by (force simp: addp)
+              from cond[OF i] mem
+              have cond: "p \<in> fun_poss (?t |_ ps ! i)" "mgu_vd_list ren [(?t |_ ps ! i |_ p, lhs \<alpha>)] \<noteq> None" 
+                by auto
+              show ?thesis  
+              proof (cases "ps ! i \<in> fun_poss ?t")
+                case True
+                hence "ps ! i \<in> poss ?t" by (rule fun_poss_imp_poss)
+                hence id: "?t |_ ps ! i |_ p = ?t |_ q" unfolding q by auto
+                with cond have mgu: "mgu_vd_list ren [(?t |_ q, lhs \<alpha>)] \<noteq> None" by auto
+                from cond(1-2) True have "q \<in> fun_poss ?t" unfolding q 
+                  by (metis Term.term.simps(4) fun_poss_fun_conv fun_poss_imp_poss id is_VarE poss_append_poss
+                      poss_is_Fun_fun_poss q)
+                thus ?thesis 
+                  by (intro conjI mgu)
+              next
+                case False
+                from False i have "set (rec ! i) = {[]}" unfolding rec by (force simp: addp_def)
+                with as_mem[OF i] have "rps ! i = []" by auto
+                with aq show ?thesis by auto
+              qed
+            qed                
+          }
+          thus ?thesis
+            by (intro CollectI exI[of _ ?A] exI[of _ ?rp] conjI refl rpA[symmetric] A rp_id, blast)
+        qed
+      qed
+      show "?Right [] ?t \<subseteq> set1 \<union> set2" 
+      proof
+        fix rp
+        assume "rp \<in> ?Right [] ?t" 
+        then obtain A where A: "A \<in> wf_pterm R" 
+          and rp: "rp = redex_patterns A" 
+          and cond: "\<And> \<alpha> q. (\<alpha>,q) \<in> set rp \<Longrightarrow> q \<in> fun_poss ?t \<and> mgu_vd_list ren [(?t |_ q, lhs \<alpha>)] \<noteq> None" by blast
+        from A show "rp \<in> set1 \<union> set2"
+        proof cases
+          case Var: (1 x)
+          with rp have "rp = []" by simp
+          thus ?thesis unfolding left[symmetric] by (metis empty_compute_rdp)
+        next
+          case Pfun: (2 As f)
+          hence Asi: "\<And> i. i < length As \<Longrightarrow> As ! i \<in> wf_pterm R" by auto
+          define m where "m = min (length As) (length ts)" 
+          define Bs where "Bs i = (if i < m then As ! i else Var undefined)" for i
+          have Bsi: "\<And> i. Bs i \<in> wf_pterm R" unfolding Bs_def m_def using Asi by auto
+          have "rp = concat (map2 addi [0..<length As] (map redex_patterns As))" 
+            using rp Pfun by (simp add: addi)
+          also have "map2 addi [0..<length As] (map redex_patterns As) = map (\<lambda> i. addi i (redex_patterns (As ! i))) [0..<length As]" 
+            by (intro nth_equalityI, auto)
+          finally have rp: "rp = concat (map (\<lambda> i. addi i (redex_patterns (As ! i))) [0..<length As])" .
+          {
+            fix i
+            assume i: "i < length As" "\<not> i < length ts" 
+            have "redex_patterns (As ! i) = []" 
+            proof (rule ccontr)
+              assume "\<not> ?thesis" 
+              then obtain p \<alpha> Bs where "redex_patterns (As ! i) = (\<alpha>,p) # Bs" (is "?e = _") by (cases ?e, auto)
+              with i have "(\<alpha>,i # p) \<in> set rp" unfolding rp addi by force
+              from cond[OF this] i show False by auto
+            qed
+          } note large_i = this
+          note rp
+          also have "[0..<length As] = [0..<m] @ [m ..< length As]" unfolding m_def
+            by (metis (no_types, lifting) append_Nil2 min.absorb1 min.absorb3 min.left_idem split_upt upt_eq_Nil_conv upt_rec)
+          also have "map (\<lambda> i. addi i (redex_patterns (As ! i))) \<dots> = 
+            map (\<lambda> i. addi i (redex_patterns (As ! i))) [0..<m] @ 
+            map (\<lambda> i. addi i (redex_patterns (As ! i))) [m ..< length As]"
+            by simp
+          also have "map (\<lambda> i. addi i (redex_patterns (As ! i))) [m ..< length As] = map (\<lambda> _. []) [m ..< length As]" 
+          proof (intro map_cong[OF refl])
+            fix i
+            assume "i \<in> set [m ..< length As]" 
+            hence "i < length As" "\<not> i < length ts" unfolding m_def by force+
+            from large_i[OF this]
+            show "addi i (redex_patterns (As ! i)) = []" unfolding addi by simp
+          qed
+          also have "map (\<lambda> i. addi i (redex_patterns (As ! i))) [0..<m] = map (\<lambda> i. addi i (redex_patterns (Bs i))) [0..<m]" 
+            unfolding Bs_def by auto
+          finally have "rp = concat (map (\<lambda>i. addi i (redex_patterns (Bs i))) [0..<m])" by simp
+          also have "\<dots> = \<dots> @ concat (map (\<lambda>i. addi i (redex_patterns (Bs i))) [m..<length ts])" 
+            unfolding Bs_def by (auto simp: addi)
+          also have "\<dots> = concat (map (\<lambda>i. addi i (redex_patterns (Bs i))) ([0..<m] @ [m ..<length ts]))" by simp
+          also have "[0..<m] @ [m ..<length ts] = [0..<length ts]" unfolding m_def
+            by (metis append_Nil2 le_neq_implies_less min.cobounded2 split_upt upt_rec)
+          finally have rp_ts: "rp = concat (map (\<lambda>i. addi i (redex_patterns (Bs i))) [0..<length ts])" by auto
+          have len_id: "length (zip [0..<length ts] ts) = length ts" by auto
+          {
+            fix i
+            assume i: "i < length ts"
+            have "addi i (redex_patterns (Bs i)) \<in> addi i ` set (compute_rdp ren RR [] (ts ! i))"
+            proof (intro imageI, cases "i < length As")
+              case False
+              hence id: "redex_patterns (Bs i) = []" unfolding Bs_def m_def by auto
+              show "redex_patterns (Bs i) \<in> set (compute_rdp ren RR [] (ts ! i))" 
+                unfolding id by (rule empty_compute_rdp)
+            next
+              case True
+              from i have "(i, ts ! i) \<in> set (zip [0..<length ts] ts)" by (force simp: set_zip)
+              note IH = 3(1)[OF this refl]
+              {
+                fix \<alpha> q
+                assume "(\<alpha>, q)\<in>set (redex_patterns (As ! i))" 
+                hence "(\<alpha>, i # q) \<in> set rp" using True unfolding rp by (auto simp: addi)
+                from cond[OF this]
+                have "q \<in> fun_poss (ts ! i) \<and> mgu_vd_list ren [(ts ! i |_ q, lhs \<alpha>)] \<noteq> None"
+                  by auto
+              } note cond = this
+              have "redex_patterns (Bs i) = redex_patterns (As ! i)" unfolding Bs_def using True i m_def by auto
+              also have "\<dots> \<in> set (compute_rdp ren RR [] (ts ! i))" unfolding IH
+                by (intro CollectI exI[of _ "redex_patterns (As ! i)"] exI[of _ "As ! i"] conjI refl Asi[OF True])
+                  (insert cond, auto)
+              finally show "redex_patterns (Bs i) \<in> set (compute_rdp ren RR [] (ts ! i))" .
+            qed
+          } note IH = this
+          have "rp \<in> set1" unfolding set1_def rp_ts set_concat_lists length_map len_id
+            by (intro imageI CollectI conjI, insert IH, auto)
+          thus ?thesis ..
+        next
+          case Prule: (3 \<alpha> As)
+          then obtain l r where \<alpha>: "\<alpha> = Rule l r" by (cases \<alpha>, auto)
+          with Prule have lr: "(l,r) \<in> R" and lhs[simp]: "lhs \<alpha> = l" by auto 
+          define fR where "fR = set (filter (\<lambda>rule. mgu_vd_list ren [(Fun f ts, fst rule)] \<noteq> None) RR)" 
+          note rp_id = rp[unfolded Prule]
+          hence rp: "rp = (\<alpha>, []) # concat (map2 addp (var_poss_list l) (map redex_patterns As))" 
+            by (auto simp: addp)
+          hence "(\<alpha>, []) \<in> set rp" by auto
+          from cond[OF this] have "mgu_vd_list ren [(Fun f ts |_ [], l)] \<noteq> None" by auto
+          hence lr_fR: "(l,r) \<in> fR" unfolding fR_def using lr RR by auto
+          define ps where "ps = filter ((\<noteq>) []) (var_poss_list l)" 
+          from lr have "is_Fun l" 
+            using A Prule(1) lhs lhs_is_Fun by blast
+          hence "[] \<notin> set (var_poss_list l)" by (cases l, auto)
+          hence ps: "ps = var_poss_list l" unfolding ps_def
+            using filter_id_conv by blast
+          from Prule(3) have len: "length As = length ps" unfolding ps using lr
+            by (metis \<alpha> left_lin.length_var_rule left_lin_axioms length_var_poss_list lhs prule.sel(2))
+          let ?f = "(\<lambda>p. if p \<in> fun_poss ?t
+                                 then map (addp p) (compute_rdp ren RR [] (?t |_ p)) else [[]])" 
+          define rec where "rec = map ?f ps" 
+          have "concat (map2 addp ps (map redex_patterns As)) \<in> concat ` set (concat_lists rec)" 
+          proof (intro imageI, unfold set_concat_lists, intro CollectI conjI allI impI, force simp: len rec_def)
+            fix i
+            assume "i < length rec" 
+            hence i: "i < length ps" "i < length As" 
+              unfolding rec_def using len by auto
+            have id1: "map2 addp ps (map redex_patterns As) ! i = addp (ps ! i) (redex_patterns (As ! i))" 
+              using i by auto
+            have id2: "set (rec ! i) = set (?f (ps ! i))" unfolding rec_def using i by auto
+            from i have psi: "ps ! i \<in> set ps" by auto
+            from Prule i have Asi: "As ! i \<in> wf_pterm R" by auto
+            have "addp (ps ! i) (redex_patterns (As ! i)) \<in> set (?f (ps ! i))" 
+            proof (cases "ps ! i \<in> fun_poss ?t")
+              case False
+              hence "redex_patterns (As ! i) = []"
+                by (metis
+                    \<open>\<And>thesis. (\<And>A. A \<in> wf_pterm R \<Longrightarrow> rp = redex_patterns A \<Longrightarrow> 
+                        (\<And>\<alpha> q. (\<alpha>, q) \<in> set rp \<Longrightarrow> q \<in> fun_poss ?t \<and> mgu_vd_list ren [(?t |_ q, lhs \<alpha>)] \<noteq> None) \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
+                    rp_id fun_poss_append_poss' i(2) len lhs no_pair_iff_empty ps
+                    redex_patterns_elem_rule')
+              with False show ?thesis by (auto simp: addp)
+            next
+              case True
+              hence id: "(ps ! i \<in> fun_poss (Fun f ts)) = True" by auto
+              show ?thesis unfolding id if_True set_map
+              proof (intro imageI)
+                note IH = 3(2)[OF ps_def psi True]
+                {
+                  fix \<alpha> q
+                  assume "(\<alpha>, q) \<in> set (redex_patterns (As ! i))"
+                  hence "(\<alpha>, ps ! i @ q) \<in> set rp" unfolding rp[folded ps] addp using i 
+                    by (metis lhs ps redex_patterns.simps(3) redex_patterns_elem_rule')                  
+                  note cond = cond[OF this]
+                  from True have psi': "ps ! i \<in> poss ?t" by (rule fun_poss_imp_poss)
+                  from psi' have "?t |_ ps ! i |_ q = ?t |_ (ps ! i @ q)" by simp
+                  with cond have unif: "mgu_vd_list ren [(?t |_ ps ! i |_ q, lhs \<alpha>)] \<noteq> None" by auto
+                  from cond have "ps ! i @ q \<in> fun_poss ?t" by auto
+                  hence q_fp: "q \<in> fun_poss (?t |_ ps ! i)" 
+                    by (metis fun_poss_poss subterm_poss_conv)
+                  note q_fp unif
+                }
+                thus "redex_patterns (As ! i) \<in> ?Left [] (Fun f ts |_ ps ! i)" 
+                  unfolding IH
+                  by (intro CollectI exI[of _ "redex_patterns (As ! i)"] exI[of _  "As ! i"] conjI refl Asi, auto)
+              qed
+            qed
+            thus "map2 addp ps (map redex_patterns As) ! i \<in> set (rec ! i) " unfolding id1 id2 .
+          qed
+          hence rp: "rp \<in> set (map ((#) (\<alpha>, [])) (map concat (concat_lists rec)))" 
+            unfolding rp ps by auto
+          have "rp \<in> set2" unfolding set2_def fR_def[symmetric]
+            apply (intro UnionI)
+             apply (rule imageI, rule imageI)
+             apply (rule lr_fR)
+            using rp by (auto simp: rec_def ps_def Let_def \<alpha>)
+          thus ?thesis ..
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma sim_cp_root_impl_complete: "sim_cp_root \<subseteq> set (sim_cp_root_impl ren RR)" 
+proof
+  fix A B
+  assume "(A,B) \<in> sim_cp_root" 
+  from this[unfolded sim_cp_root_many_conds]
+  obtain \<tau> rdp_A l \<beta> As renamed_lhs_\<alpha>s where
+    alt: "alt_cond \<tau> rdp_A l \<beta> [] A B As renamed_lhs_\<alpha>s" 
+    and cond: "\<forall>(\<alpha>, p)\<in>set rdp_A. p \<in> fun_poss (lhs \<beta>) \<and> mgu_vd_list ren [(lhs \<beta> |_ p, lhs \<alpha>)] \<noteq> None" 
+    by blast
+  obtain ll rr where \<beta>: "\<beta> = Rule ll rr" by (cases \<beta>, auto)
+  note alt = alt[unfolded alt_cond_def \<beta>]
+  from alt have l: "l = map_vars_term (rename_single ren) ll"  by (simp add: \<beta>)
+  from alt have ren_as: "renamed_lhs_\<alpha>s = rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)" by (simp add: \<beta>)
+  from alt RR have llrr: "(ll,rr) \<in> set RR" by auto
+  from alt have mgu: "mgu_list (map2 (\<lambda>x y. (x, l |_ y)) renamed_lhs_\<alpha>s (map snd rdp_A)) =  Some \<tau>" by auto
+  from alt have As: "As = map2
+                      (\<lambda>(\<alpha>i, pi) i.
+                          (ctxt_of_pos_term pi
+                            (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+                      rdp_A [0..<length rdp_A]" by auto
+  from alt have join: "\<Squnion> As = Some A" by auto
+  have rdp_A: "rdp_A \<in> set (filter ((\<noteq>) []) (compute_rdp ren RR [] ll))" 
+    unfolding set_filter
+    apply (intro CollectI conjI)
+     apply (unfold compute_rdp, intro CollectI exI[of _ A] exI[of _ rdp_A])
+    using alt cond by (auto simp add: \<beta>)
+  show "(A,B) \<in> set (sim_cp_root_impl ren RR)" unfolding sim_cp_root_impl_def List.maps_eq set_concat set_map image_cong
+    apply (intro UnionI, rule imageI, rule imageI[OF llrr])
+    apply (unfold split)
+    apply (unfold set_concat, intro UnionI, rule imageI)
+     apply (unfold set_map, rule imageI[OF rdp_A])
+    apply (unfold l[symmetric])
+    apply (unfold ren_as[symmetric])
+    apply (unfold Let_def[of l])
+    apply (unfold Let_def[of renamed_lhs_\<alpha>s])
+    apply (unfold mgu option.simps)
+    apply (unfold As[symmetric] Let_def)
+    apply (unfold join option.simps)
+    using alt cond by auto
+qed
+
+lemma sim_cp_root_impl_sound: "set (sim_cp_root_impl ren RR) \<subseteq> sim_cp_root" 
+proof
+  fix A B
+  assume "(A, B) \<in> set (sim_cp_root_impl ren RR)" 
+  from this[unfolded sim_cp_root_impl_def List.maps_eq] RR obtain ll rr rdp_A l ren_as \<tau> As 
+    where llrr: "(ll,rr) \<in> R" 
+     and rdpA: "rdp_A \<in> set (compute_rdp ren RR [] ll)" 
+     and ne: "rdp_A \<noteq> []" 
+     and l: "l = map_vars_term (rename_single ren) ll" 
+     and ren_as: "ren_as = rename_list (map (\<lambda>(\<alpha>, p). lhs \<alpha>) rdp_A)" 
+     and mgu: "mgu_list (map2 (\<lambda>x y. (x, l |_ y)) ren_as (map snd rdp_A)) = Some \<tau>" 
+     and As: "As = map2  (\<lambda>(\<alpha>i, pi) i. (ctxt_of_pos_term pi
+           (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (to_pterm \<circ> \<tau> \<circ> rename_many' ren i) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+           rdp_A [0..<length rdp_A]" 
+     and join: "\<Squnion> As = Some A" 
+     and B: "B = Prule (ll \<rightarrow> rr) (map (to_pterm \<circ> \<tau> \<circ> rename_single ren) (vars_term_list ll))" 
+    by (force simp: Let_def o_def) 
+  from rdpA[unfolded compute_rdp]
+  obtain A' where A': "A' \<in> wf_pterm R" "rdp_A = redex_patterns A'" 
+    and rdp_cond: "\<And> \<alpha> q. (\<alpha>,q) \<in> set rdp_A \<Longrightarrow> q \<in> fun_poss ll \<and> mgu_vd_list ren [(ll |_ q, lhs \<alpha>)] \<noteq> None" 
+    by force
+  show "(A, B) \<in> sim_cp_root" 
+    unfolding sim_cp_root_def
+  proof (intro CollectI exI conjI, rule refl)
+    show "alt_cond \<tau> rdp_A l (Rule ll rr) [] A B As ren_as" unfolding alt_cond_def prule.sel ctxt_of_pos_term.simps intp_actxt.simps
+    proof (intro conjI; (fact)?)
+      {
+        fix \<alpha> p
+        assume mem: "(\<alpha>,p) \<in> set rdp_A" 
+        with A' have rule: "to_rule \<alpha> \<in> R"
+          using redex_pattern_rule_symbol by blast
+        from rule have len: "length (vars_term_list (lhs \<alpha>)) = length (var_rule \<alpha>)"
+          by (metis length_var_rule)
+        from rule have fn: "is_Fun (lhs \<alpha>)" 
+          using no_var_lhs by fastforce
+        from rdp_cond[OF mem]
+        have p: "p \<in> fun_poss ll" by auto
+        hence inter: "p \<in> (@) p ` fun_poss (lhs \<alpha>) \<inter> (@) [] ` fun_poss ll" using fn by (cases "lhs \<alpha>", auto) 
+        from fun_poss_imp_poss[OF p] have "p \<in> poss (l \<cdot> \<tau>)" unfolding l by auto
+        note rule len inter this
+      } note rdp_A_conds = this
+      thus "\<forall>(\<alpha>, p)\<in>set rdp_A. (@) p ` fun_poss (lhs \<alpha>) \<inter> (@) [] ` fun_poss ll \<noteq> {}" "\<forall>(\<alpha>, p)\<in>set rdp_A. to_rule \<alpha> \<in> R" by fast+
+      show "redex_patterns B = [(ll \<rightarrow> rr, [])]" unfolding B by (auto simp: set_zip redex_patterns_to_pterm)
+      from llrr have "length (vars_term_list ll) = length (var_rule (Rule ll rr))"
+        by (metis length_var_rule prule.sel(1,2))
+      thus "B \<in> wf_pterm R" unfolding B by (auto intro!: wf_pterm.intros llrr)  
+      {
+        fix i \<alpha> p
+        assume "i < length rdp_A" "(\<alpha>, p) = rdp_A ! i" 
+        hence "(\<alpha>,p) \<in> set rdp_A" by auto
+        note rdp_A_conds = rdp_A_conds[OF this]
+      } note rdp_A_conds_ith = this
+      have wf_As: "set As \<subseteq> wf_pterm R" unfolding As using rdp_A_conds_ith
+        by (auto simp: wf_pterm_ctxt_apply set_zip intro!: ctxt_of_pos_term_well wf_pterm.intros)
+      thus wf_A: "A \<in> wf_pterm R" using join_list_wf_pterm[OF _ join] by auto
+      from redex_patterns_join_list[OF join] wf_As
+      have "set (redex_patterns A) = \<Union> (set (map (set \<circ> redex_patterns) As))" by auto
+      also have "\<dots> = \<Union> { set (redex_patterns ((ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (\<lambda>x. to_pterm (\<tau> (rename_many' ren i x))) (vars_term_list (lhs \<alpha>i)))\<rangle>))
+          | i \<alpha>i pi. i < length rdp_A \<and> rdp_A ! i = (\<alpha>i,pi)}" unfolding set_map o_def As set_zip by force
+      also have "\<dots> = \<Union> { {(\<alpha>i, pi)} | i \<alpha>i pi. i < length rdp_A \<and> rdp_A ! i = (\<alpha>i,pi)}" 
+      proof (intro arg_cong[of _ _ "(\<Union>)"] Collect_cong ex_cong1 rev_conj_cong refl arg_cong[of _ _ "(=) _"])
+        fix \<alpha>i pi i
+        assume "i < length rdp_A \<and> rdp_A ! i = (\<alpha>i, pi)" 
+        hence "(\<alpha>i, pi) \<in> set rdp_A" by (force simp: set_conv_nth)
+        from rdp_A_conds[OF this] 
+        have "to_rule \<alpha>i \<in> R" and pi: "pi \<in> poss (l \<cdot> \<tau>)" by auto
+        have "set (redex_patterns
+             (ctxt_of_pos_term pi (to_pterm (l \<cdot> \<tau>)))\<langle>Prule \<alpha>i (map (\<lambda>x. to_pterm (\<tau> (rename_many' ren i x))) (vars_term_list (lhs \<alpha>i)))\<rangle>)
+          = (\<lambda>(\<alpha>, q). (\<alpha>, pi @ q)) ` set (redex_patterns (Prule \<alpha>i (map (\<lambda>x. to_pterm (\<tau> (rename_many' ren i x))) (vars_term_list (lhs \<alpha>i)))))" (is "?lhs = _")
+          by (subst redex_patterns_context[OF pi], simp)
+        also have "set (redex_patterns (Prule \<alpha>i (map (\<lambda>x. to_pterm (\<tau> (rename_many' ren i x))) (vars_term_list (lhs \<alpha>i))))) = {(\<alpha>i, [])}" 
+          by (auto simp: o_def redex_patterns_to_pterm set_zip)
+        also have "(\<lambda>(\<alpha>, q). (\<alpha>, pi @ q)) ` \<dots> = {(\<alpha>i, pi)}" by auto
+        finally show "?lhs = {(\<alpha>i, pi)} " .
+      qed
+      also have "\<dots> = \<Union> {u. \<exists>i. u = {rdp_A ! i} \<and> i < length rdp_A}" 
+        by (intro arg_cong[of _ _ "(\<Union>)"] Collect_cong ex_cong1, force)  
+      also have "\<dots> = set rdp_A" unfolding set_conv_nth by blast
+      finally have "set rdp_A = set (redex_patterns A)" by auto
+      from redex_patterns_equal[OF wf_A _ this] A'
+      show "redex_patterns A = rdp_A" using redex_patterns_sorted by auto
+    qed auto
+  qed
+qed
+
+lemma sim_cp_root_impl: "set (sim_cp_root_impl ren RR) = sim_cp_root" 
+  using sim_cp_root_impl_sound sim_cp_root_impl_complete by blast
+end
+end
+
+context (* TODO: move *)
+begin
+private fun in_funposs :: "pos \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+  where
+    "in_funposs (Cons i p) (Fun f ts) \<longleftrightarrow> i < length ts \<and> in_funposs p (ts ! i)" |
+    "in_funposs [] (Fun _ _) \<longleftrightarrow> True" |
+    "in_funposs p (Var _) \<longleftrightarrow> False"
+
+lemma funposs_code[code_unfold]:
+  "p \<in> fun_poss t = in_funposs p t" by (induct rule: in_funposs.induct) auto
+end
+end

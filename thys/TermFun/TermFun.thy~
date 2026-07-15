@@ -1,0 +1,73 @@
+(*
+Author:  Alexander Krauss <krauss@in.tum.de> (2009, 2010)
+Author:  Christian Sternagel <c.sternagel@gmail.com> (2011-2015)
+Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2010-2015)
+License: LGPL (see file COPYING.LESSER)
+*)
+theory TermFun
+imports TermFun_Setup
+begin
+
+(* TODO: activate again
+
+text \<open>Below, we provide a rewriting view for some predefined concepts\<close>
+
+text \<open>Register common types:\<close>
+
+setup \<open>
+  fold Term_Fun.register_datatypes
+   (map single ["HOL.bool", "Nat.nat", "List.list", "Option.option"])
+\<close>
+
+text \<open>
+  Assume globally that everything lives in the class.
+  Constraints can be removed later...
+\<close>
+
+default_sort trs_rep
+
+text \<open>Define TRSs for some standard functions.\<close>
+
+define_trs plus_nat.simps
+define_trs minus_nat.simps
+define_trs take.simps
+define_trs drop.simps
+lemma list_len_easy: "length (x # xs) = Suc (length xs)" by simp
+define_trs list.size(3) list_len_easy
+
+fun le :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
+  "le 0 n = True"
+| "le (Suc n) 0 = False"
+| "le (Suc n) (Suc m) = le n m"
+
+define_trs le.simps
+
+lemma le_subst[trs_subst]: "x \<le> y = (le x y)"
+  by (induct x y rule: le.induct) auto
+
+fun eq where
+  "eq 0 0 = True"
+| "eq (Suc x) 0 = False"
+| "eq 0 (Suc x) = False"
+| "eq (Suc x) (Suc y) = eq x y"
+
+define_trs eq.simps
+
+lemma eq_subst[trs_subst]: "(x = y) = eq x y"
+  by (induct x y rule: eq.induct) auto
+
+
+fun less where
+  "less 0 0 = False"
+| "less (Suc x) 0 = False"
+| "less 0 (Suc x) = True"
+| "less (Suc x) (Suc y) = less x y"
+
+define_trs less.simps
+
+lemma less_subst[trs_subst]: "(x < y) = less x y"
+  by (induct x y rule: less.induct) auto
+
+*)
+end
+

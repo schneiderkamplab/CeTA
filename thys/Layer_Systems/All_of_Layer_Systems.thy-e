@@ -1,0 +1,17 @@
+(* Automatically generated file, do not change *)
+theory All_of_Layer_Systems
+  imports
+    LS_Basics
+    LS_Bounded_Duplicating
+    LS_Common
+    LS_Currying
+    LS_Currying2
+    LS_Extras
+    LS_General
+    LS_Left_Linear
+    LS_Modularity
+    LS_Persistence
+    LS_Persistence_Impl
+    LS_Prelude
+begin
+end

@@ -1,0 +1,322 @@
+(*
+Author:  Alexander Krauss <krauss@in.tum.de> (2009, 2010)
+Author:  Christian Sternagel <c.sternagel@gmail.com> (2011-2015)
+Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2010-2015)
+License: LGPL (see file COPYING.LESSER)
+*)
+theory Ceta_Checker
+imports
+  Proof_Checker.Ceta
+  "HOL-Library.Code_Target_Numeral"
+begin
+
+subsection \<open>User exceptions in generated code\<close>
+(* FIXME:  will be moved to Main. update: did not happen for Isabelle2012. *)
+
+definition error :: "String.literal \<Rightarrow> 'a \<Rightarrow> 'a" 
+where [code del]: "error msg x = x"
+
+code_printing
+  constant error \<rightharpoonup>
+  (Eval) "(fn msg =>/ fn x =>/ error msg)"
+
+code_reserved Eval error
+
+subsection \<open>Checker\<close>
+
+text \<open>Assemble a checker with a simple interface from the bits and pieces provided by IsaFoR.\<close>
+
+(* FIXME: Shouldn't the errors be uniform (string vs. show)??? *)
+fun release_shows_error :: "'a \<Rightarrow> showsl + 'a \<Rightarrow> 'a"
+where
+  "release_shows_error d (Inl msg) = error (msg (STR '''')) d"
+| "release_shows_error d (Inr x) = x"
+
+fun release_string_error :: "'a \<Rightarrow> string +\<^sub>\<bottom> 'a \<Rightarrow> 'a"
+where
+  "release_string_error d (Left msg) = error (String.implode msg) d"
+| "release_string_error d (Right x) = x"
+
+lemma [code]: "release_string_error d (sumbot (Inl msg)) = error (String.implode msg) d" by simp
+lemma [code]: "release_string_error d (sumbot (Inr x)) = x" by simp
+
+
+lemma inj_map_funs_term_NF_terms: assumes inj: "inj fg"
+  and NF: "t \<in> NF_terms Q"
+  shows "map_funs_term fg t \<in> NF_terms (map_funs_term fg ` Q)"
+proof -
+  let ?m = "map_funs_term fg"
+  let ?Q = "?m ` Q"
+  let ?gf = "the_inv fg"
+  have id: "?gf o fg = id"
+    by (rule ext, insert the_inv_f_f[OF inj], auto)
+  {
+    fix s
+    have "(?m t, s) \<notin> rstep (Id_on ?Q)" 
+    proof
+      assume "(?m t, s) \<in> rstep (Id_on ?Q)"
+      from rstep_imp_map_rstep[OF this, of ?gf, unfolded map_funs_term_comp id map_funs_term_ident]
+      have "t \<notin> NF (rstep (map_funs_trs ?gf (Id_on ?Q)))" by auto
+      also have "map_funs_trs ?gf (Id_on ?Q) = Id_on Q"
+        unfolding map_funs_trs.simps Id_on_def using the_inv_f_f[OF inj] 
+        by (force simp: id map_funs_term_comp)
+      finally show False using NF ..
+    qed
+  }
+  then show ?thesis by auto
+qed
+
+lemma inj_map_funs_term_NF_subst: assumes inj: "inj fg"
+  and nfs: "NF_subst nfs (l,r) \<sigma> Q"
+  shows "NF_subst nfs (map_funs_term fg l, map_funs_term fg r) (map_funs_subst fg \<sigma>) (map_funs_term fg ` Q)"
+proof
+  fix x 
+  let ?m = "map_funs_term fg"
+  assume nfs and "x \<in> vars_term (?m l) \<or> x \<in> vars_term (?m r)"
+  then have "x \<in> vars_rule (l,r)" unfolding vars_rule_def by auto
+  with nfs[unfolded NF_subst_def] \<open>nfs\<close> have "\<sigma> x \<in> NF_terms Q" by auto
+  from inj_map_funs_term_NF_terms[OF inj this]
+  show "map_funs_subst fg \<sigma> x \<in> NF_terms (map_funs_term fg ` Q)" by simp
+qed
+
+lemma inj_map_funs_term_qrstep: assumes inj: "inj fg"
+  and step: "(s,t) \<in> qrstep nfs Q R"
+  shows "(map_funs_term fg s, map_funs_term fg t) \<in> qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg R)" 
+proof - 
+  let ?m = "map_funs_term fg"
+  let ?Q = "?m ` Q"
+  let ?R = "map_funs_trs fg R"
+  from step obtain C l r \<sigma> where lr: "(l,r) \<in> R" and s: "s = C \<langle> l \<cdot> \<sigma> \<rangle>" and t: "t = C \<langle> r \<cdot> \<sigma> \<rangle>"
+  and NF: "\<forall> u \<lhd> l \<cdot> \<sigma>. u \<in> NF_terms Q" 
+  and nfs: "NF_subst nfs (l,r) \<sigma> Q" by auto
+  note args_conv = NF_terms_args_conv
+  note distrib = map_funs_term_ctxt_distrib map_funs_subst_distrib
+  from lr have lr: "(?m l, ?m r) \<in> ?R" unfolding map_funs_trs.simps by force  
+  show ?thesis unfolding s t distrib
+  proof (rule qrstepI[OF _ lr refl refl], unfold distrib[symmetric] args_conv[symmetric], rule)
+    fix u
+    assume u: "u \<in> set (args (?m (l \<cdot> \<sigma>)))"
+    then obtain f ls where ls: "l \<cdot> \<sigma> = Fun f ls" by (cases "l \<cdot> \<sigma>", auto)
+    from u[unfolded ls] obtain li where li: "li \<in> set ls" and u: "u = ?m li" by auto
+    from li ls have "li \<in> set (args (l \<cdot> \<sigma>))" by auto
+    with NF[unfolded args_conv[symmetric]] have li: "li \<in> NF_terms Q" by auto
+    from inj_map_funs_term_NF_terms[OF inj li]
+    show "u \<in> NF_terms ?Q" unfolding u .
+  next
+    show "NF_subst nfs (?m l, ?m r) (map_funs_subst fg \<sigma>) ?Q"
+      using inj_map_funs_term_NF_subst[OF inj nfs] .
+  qed
+qed
+
+lemma inj_map_funs_term_qrsteps: assumes inj: "inj fg"
+  and steps: "(s,t) \<in> (qrstep nfs Q R)^*"
+  shows "(map_funs_term fg s, map_funs_term fg t) \<in> (qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg R))^*" 
+using steps
+proof (induction)
+  case (step t u)
+  from inj_map_funs_term_qrstep[OF inj step.hyps(2)] step.IH show ?case by auto
+qed simp
+
+
+lemma SN_map: "SN A \<Longrightarrow> \<lbrakk>\<And> x y. (x,y) \<in> B \<Longrightarrow> (f x, f y) \<in> A\<rbrakk> \<Longrightarrow> SN B" 
+  unfolding SN_defs by fast
+
+lemma inj_map_funs_term_qrstep_SN: assumes inj: "inj fg"
+  and SN: "SN (qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg R))"
+  shows "SN (qrstep nfs Q R)"
+  by (rule SN_map[OF SN inj_map_funs_term_qrstep[OF inj]])
+
+lemma inj_map_funs_term_finite_dpp: assumes inj: "inj fg"
+  and fin: "finite_dpp (nfs,False,map_funs_trs fg P, {}, map_funs_term fg ` Q, {}, map_funs_trs fg Rw)"
+    (is "finite_dpp (_,_,?P,_,?Q,_,?Rw)")
+  shows "finite_dpp (nfs,False,P,{},Q,{},Rw)" 
+  (* should be done via finite_dpp_map, but this does not allow change of 'f-type *)
+  unfolding finite_dpp_def
+proof (intro notI, elim exE)
+  fix s t \<sigma>
+  let ?dpp = "(nfs, False, P, {}, Q, {}, Rw)"
+  let ?mdpp = "(nfs,False, ?P, {}, ?Q, {}, ?Rw)"
+  let ?m = "map_funs_term fg"
+  let ?ms = "map_funs_subst fg"
+  assume "min_ichain ?dpp s t \<sigma>"
+  then have chain: "ichain ?dpp s t \<sigma>" by auto
+  from this[unfolded ichain.simps]
+  have P: "\<And> i. (s i, t i) \<in> P"
+  and nf: "\<And> i. s i \<cdot> \<sigma> i \<in> NF_terms Q"
+  and nfs: "\<And> i. NF_subst nfs (s i, t i) (\<sigma> i) Q"
+  and steps: "\<And> i. (t i \<cdot> \<sigma> i, s (Suc i) \<cdot> \<sigma> (Suc i)) \<in> (qrstep nfs Q Rw)^*" by auto
+  let ?s = "\<lambda> i. ?m (s i)"
+  let ?t = "\<lambda> i. ?m (t i)"
+  let ?\<sigma> = "\<lambda> i. ?ms (\<sigma> i)"
+  {
+    fix i
+    have "(?s i, ?t i) \<in> ?P" using P[of i] unfolding map_funs_trs.simps by force
+  } note P = this
+  have "ichain ?mdpp ?s ?t ?\<sigma>" unfolding ichain.simps Un_empty_right Un_empty_left
+  proof (intro conjI allI disjI1)
+    fix i
+    let ?si = "?s i \<cdot> ?\<sigma> i"
+    let ?ti = "?t i \<cdot> ?\<sigma> i"
+    let ?ssi = "?s (Suc i) \<cdot> ?\<sigma> (Suc i)"
+    show "(?s i, ?t i) \<in> ?P" by (rule P)
+    show "?si \<in> NF_terms ?Q" using inj_map_funs_term_NF_terms[OF inj nf[of i]] by simp
+    show "NF_subst nfs (?s i, ?t i) (?\<sigma> i) ?Q" using inj_map_funs_term_NF_subst[OF inj nfs] .
+    show "(?ti, ?ssi) \<in> (qrstep nfs ?Q ?Rw)^*" using inj_map_funs_term_qrsteps[OF inj steps[of i]] by simp 
+  qed (insert P, auto)
+  then have "min_ichain ?mdpp ?s ?t ?\<sigma>" by simp
+  with fin 
+  show False unfolding finite_dpp_def by blast
+qed
+ 
+definition ceta_checker :: "(string,string)term list \<Rightarrow> (string, string) rules \<Rightarrow>
+  (string, label_type, string) trs_termination_proof \<Rightarrow> bool"
+where
+  "ceta_checker q r prf = 
+    release_shows_error False 
+      (check_trs_termination_proof tp_impl dpp_impl False
+        (showsl_lit (STR ''1''))
+        (tp_ops.mk tp_impl True (map init_lab_term q) (init_lab_rules r) [])
+        prf
+      \<bind> (\<lambda>x. Error_Monad.return True))"
+
+definition ceta_dp_checker :: "(string,string)rules \<Rightarrow> (string,string)term list \<Rightarrow> (string, string) rules \<Rightarrow>
+  (string, label_type, string) dp_termination_proof \<Rightarrow> bool"
+where
+  "ceta_dp_checker p q r prf = 
+    release_shows_error False 
+      (check_dp_termination_proof tp_impl dpp_impl False
+        (showsl_lit (STR ''1'')) 
+        (dpp_ops.mk dpp_impl True False (init_lab_rules p) [] (map init_lab_term q) [] (init_lab_rules r))
+        prf
+      \<bind> (\<lambda>x. Error_Monad.return True))"
+
+lemma ceta_checker:
+  assumes check: "ceta_checker q r prf"
+  shows "SN (qrstep True (set q) (set r))"
+proof -
+  let ?Q = "map init_lab_term q ::((string, label_type) lab, string) term list"
+  let ?S = "[]::((string, label_type) lab, string) rules"
+  let ?QQ = "init_lab_term ` (set q)"
+  let ?R = "init_lab_rules r::((string, label_type) lab, string) rules"
+  let ?RR = "init_lab_trs (set r)::((string, label_type) lab, string) trs"
+  let ?call = "check_trs_termination_proof tp_impl dpp_impl False
+    (showsl_lit (STR ''1''))  (tp_ops.mk tp_impl True ?Q ?R ?S) prf"
+  show ?thesis 
+  proof (cases ?call)
+    case Inl with check show ?thesis by (auto simp: error_def ceta_checker_def)
+  next
+    case Inr
+    then have "isOK (?call)" by simp
+    from check_trs_termination_proof[OF tp_rbt_impl dpp_rbt_impl this]
+    have "SN (qrstep True (set ?Q) (set ?R))"
+      unfolding tp_spec.mk_sound[OF tp_rbt_impl] SN_qrel_def split
+      by simp
+    then have SN: "SN (qrstep True ?QQ ?RR)"
+      unfolding map_funs_trs.simps by auto
+    show ?thesis 
+    proof (rule inj_map_funs_term_qrstep_SN[OF _ SN])
+      show "inj init_lab" unfolding inj_on_def by simp
+    qed
+  qed
+qed
+
+lemma ceta_dp_checker:
+  assumes check: "ceta_dp_checker p q r prf"
+  shows "finite_dpp (True,False,set p,set [],set q,set [], set r)"
+proof -
+  let ?Q = "map init_lab_term q ::((string, label_type) lab, string) term list"
+  let ?E = "[]::((string, label_type) lab, string) rules"
+  let ?E' = "{}"
+  let ?Q' = "init_lab_term ` (set q)"
+  let ?P = "init_lab_rules p::((string, label_type) lab, string) rules"
+  let ?P' = "init_lab_trs (set p)::((string, label_type) lab, string) trs"
+  let ?R = "init_lab_rules r::((string, label_type) lab, string) rules"
+  let ?R' = "init_lab_trs (set r)::((string, label_type) lab, string) trs"
+  let ?call = "check_dp_termination_proof tp_impl dpp_impl False
+    (showsl_lit (STR ''1'')) (dpp_ops.mk dpp_impl True False ?P ?E ?Q ?E ?R) prf"
+  show ?thesis 
+  proof (cases ?call)
+    case Inl with check show ?thesis by (auto simp: error_def ceta_dp_checker_def)
+  next
+    case Inr
+    then have "isOK (?call)" by simp
+    from check_dp_termination_proof[OF tp_rbt_impl dpp_rbt_impl this]
+    have "finite_dpp (True,False,set ?P,set ?E,set ?Q,set ?E,set ?R)"
+      unfolding dpp_spec.mk_sound[OF dpp_rbt_impl] 
+      by simp
+    then have fin: "finite_dpp (True,False,?P',?E',?Q',?E',?R')"
+      unfolding map_funs_trs.simps by auto
+    show ?thesis unfolding list.simps
+    proof (rule inj_map_funs_term_finite_dpp[OF _ fin])
+      show "inj init_lab" unfolding inj_on_def by simp
+    qed
+  qed
+qed
+
+definition dummy_proof :: "(string, label_type, string) trs_termination_proof" where
+  "dummy_proof = R_is_Empty"
+
+definition dummy_dp_proof :: "(string, label_type, string) dp_termination_proof" where
+  "dummy_dp_proof = P_is_Empty"
+
+definition parse_trs_proof :: "String.literal \<Rightarrow> Code_Evaluation.term" where
+  "parse_trs_proof s = Code_Evaluation.term_of 
+  (case release_string_error
+    (None, TRS_Termination_Proof dummy_proof) (parse_cert_problem (String.explode s)) of
+    (_, TRS_Termination_Proof prf) \<Rightarrow> prf
+  | _ \<Rightarrow> error (STR ''not a termination proof'') dummy_proof)"
+
+definition parse_dp_proof :: "String.literal \<Rightarrow> Code_Evaluation.term" where
+  "parse_dp_proof s = Code_Evaluation.term_of 
+  (case release_string_error
+    (None, DP_Termination_Proof dummy_dp_proof) (parse_cert_problem (String.explode s)) of
+    (_, DP_Termination_Proof prf) \<Rightarrow> prf
+  | _ \<Rightarrow> error (STR ''not a finiteness proof'') dummy_dp_proof)"
+
+(*
+declare real_code_dels[code, code del]
+declare real_code_unfold_dels[code_unfold del]
+declare real_alg_code_eqns[code]
+*)
+
+ML \<open>
+structure Ceta_Parser =
+struct
+  val x = Var (("x",0), @{typ int})
+  val y = Var (("y",0), @{typ int})
+  val frct = @{const Rat.Frct} $ (HOLogic.mk_prod (x,y))
+  val fract = @{const Rat.Fract} $ x $ y
+  val read_cpf = 
+    @{code parse_trs_proof}
+    #> Pattern.rewrite_term @{theory} 
+      [(frct, fract)] []
+  val read_dp_cpf = 
+    @{code parse_dp_proof}
+    #> Pattern.rewrite_term @{theory} 
+      [(frct, fract)] []
+end
+\<close>
+
+(* currently does not work, complains about Frct and Target-Nat
+code_reflect Ceta_Checker
+  datatypes trs_termination_proof = "_" 
+  and dp_termination_proof = "_" and redtriple_impl = "_" and root_redtriple_impl = "_"
+  and projL = "_" and sl_inter = "_" and arithFun = "_" and redtriple_impl = "_"
+  and af_entry = "_" and arctic_delta = "_" and arctic = "_" and tpoly = "_"
+  and lab = "_" and sum = "_" 
+  and gctxt = "_" and "term" = "_" and order_tag = "_"
+  and scg = "_" and rat = "_" and int = "_" and nat = "_" and join_info = "_" 
+  and real = "_"
+  and list_order_type = "_" and ctxt = "_" and sl_variant = "_"
+  and cond_constraint = "_" and cond_constraint_prf = "_"
+  and complex_constant_removal_prf = "_"
+  and cond_red_pair_prf = "_" and location = "_"
+  functions ceta_checker ceta_dp_checker Trueprop 
+*)
+
+definition "termifyCR = (Code_Evaluation.term_of :: cert_result \<Rightarrow> Code_Evaluation.term)"
+definition "termifyCP = (Code_Evaluation.term_of :: string +\<^sub>\<bottom> ((label_type, string) input option \<times> (string, label_type, string) proof) \<Rightarrow> Code_Evaluation.term)"
+
+
+end
+

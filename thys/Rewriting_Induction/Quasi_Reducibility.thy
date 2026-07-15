@@ -1,0 +1,346 @@
+theory Quasi_Reducibility
+  imports 
+    First_Order_Terms.Term_More
+begin
+
+
+type_synonym ('f,'v)pat_problem = "(('f,nat)term \<times> ('f,'v)term) list list" 
+
+context
+  fixes C :: "('f \<times> nat)list" \<comment> \<open>list of constructors with arities\<close>
+  and m :: nat
+begin
+
+definition cg_subst :: "('f,nat,'v)gsubst \<Rightarrow> bool" where
+  "cg_subst \<sigma> = (\<forall> x. vars_term (\<sigma> x) = {} \<and> funas_term (\<sigma> x) \<subseteq> set C)" 
+
+definition pat_complete :: "('f,'v)pat_problem \<Rightarrow> bool" where
+  "pat_complete p = (\<forall> \<sigma> :: ('f,nat,'v)gsubst. cg_subst \<sigma> \<longrightarrow> (\<exists> tl \<in> set p. \<exists> \<mu>. \<forall> (ti,li) \<in> set tl. ti \<cdot> \<sigma> = li \<cdot> \<mu>))" 
+
+definition linear_pat_problem where "linear_pat_problem p = (\<forall> tl \<in> set p. \<forall> (ti,pi) \<in> set tl. linear_term pi)"  
+
+definition pat_complete_linear :: "('f,'v)pat_problem \<Rightarrow> bool" where
+  "pat_complete_linear p = (\<forall> \<sigma> :: ('f,nat,'v)gsubst. cg_subst \<sigma> \<longrightarrow> (\<exists> tl \<in> set p. \<forall> (ti,li) \<in> set tl. \<exists> \<mu>. ti \<cdot> \<sigma> = li \<cdot> \<mu>))" 
+
+definition tvars_pp :: "nat \<Rightarrow> ('f,'v)pat_problem \<Rightarrow> bool" where
+  "tvars_pp n p = (\<forall> tl \<in> set p. \<forall> (ti,pi) \<in> set tl. vars_term ti \<subseteq> {..<n})" 
+
+definition \<tau>s where "\<tau>s x n = map (\<lambda> (f,i). subst x (Fun f (map Var [n ..< n+i]))) C" 
+
+definition subst_pat_problem :: "('f,nat)subst \<Rightarrow> ('f,'v)pat_problem \<Rightarrow> ('f,'v)pat_problem" where
+  "subst_pat_problem \<tau> p = map (map (map_prod (\<lambda> t. t \<cdot> \<tau>) id)) p" 
+
+function check_pat_complete :: "nat \<Rightarrow> ('f,'v)pat_problem list \<Rightarrow> bool" where
+  "check_pat_complete n [] = True" \<comment> \<open>all pattern problems solved\<close>
+| "check_pat_complete n ([] # P) = False" \<comment> \<open>no left-hand sides left\<close>
+| "check_pat_complete n (([] # tls) # P) = check_pat_complete n P"  \<comment> \<open>match-list empty\<close>
+| "check_pat_complete n ((((t,Var x) # tls) # other) # P) = check_pat_complete n ((tls # other) # P)"  \<comment> \<open>match by var\<close>
+| "check_pat_complete n ((((Fun f ts,Fun g ls) # tls) # other) # P) = (if f = g \<and> length ts = length ls 
+     then check_pat_complete n (((zip ts ls @ tls) # other) # P)  \<comment> \<open>decompose\<close>
+     else check_pat_complete n (other # P))"                      \<comment> \<open>clash\<close>
+| "check_pat_complete n ((((Var x,Fun g ls) # tls) # other) # P) = check_pat_complete (n + m) \<comment> \<open>instantiate\<close>
+      (map (\<lambda> \<tau>. subst_pat_problem \<tau> (((Var x,Fun g ls) # tls) # other)) (\<tau>s x n) @ P)" 
+  by pat_completeness auto
+
+lemma size_list_snd_zip: "length ts = length ls \<Longrightarrow> size_list (\<lambda>x. size (snd x)) (zip ts ls) = size_list size ls"
+proof (induction ls arbitrary: ts)
+  case (Cons l ls ts)
+  thus ?case by (cases ts, auto simp: o_def)
+qed auto
+
+termination
+  sorry
+    (* this measure works for all recursive calls except for the one in "instantiate": 
+       by (relation "measure (size_list (size_list (size_list (size o snd))) o snd)", force, auto simp: o_def size_list_snd_zip) *)
+
+context
+  fixes c :: 'f
+  assumes c: "(c,0) \<in> set C" 
+  and m_def: "m = max_list (map snd C)"
+begin
+
+definition \<sigma>c :: "('f,nat,'v)gsubst" where "\<sigma>c x = Fun c []" 
+
+lemma \<sigma>c: "cg_subst \<sigma>c" unfolding \<sigma>c_def cg_subst_def using c by auto
+
+lemma check_pat_complete_linear: assumes "Ball (set P) linear_pat_problem" 
+  and "Ball (set P) (tvars_pp n)" 
+  shows "check_pat_complete n P = Ball (set P) pat_complete_linear" 
+proof -
+  note def = pat_complete_linear_def linear_pat_problem_def 
+  note tv_def = tvars_pp_def
+  show ?thesis using assms
+  proof (induction P rule: check_pat_complete.induct)
+    case 1
+    then show ?case by (auto simp: def)
+  next
+    case (2 n P)
+    then show ?case using \<sigma>c by (auto simp: def)
+  next
+    case (3 n tls P)
+    from 3(3) have "Ball (set P) (tvars_pp n)" by (auto simp: tv_def)
+    with 3 show ?case by (auto simp: def)
+  next
+    case (4 n t x tls other P)
+    from 4(3) have "Ball (set ((tls # other) # P)) (tvars_pp n)" 
+      unfolding tv_def by auto
+    hence IH: "check_pat_complete n ((tls # other) # P) = Ball (set ((tls # other) # P)) pat_complete_linear" 
+      using 4 by (auto simp: def)
+    show ?case by (simp add: IH, intro cnf.conj_cong refl iffI; force simp: def)
+  next
+    case (5 n f ts g ls tls other P)
+    show ?case 
+    proof (cases "f = g \<and> length ts = length ls")
+      case False
+      from 5(4) have "Ball (set (other # P)) (tvars_pp n)" unfolding tv_def by auto
+      from 5(2)[OF False _ this] 5(3) have IH: "check_pat_complete n (other # P) = (\<forall>a\<in>set (other # P). pat_complete_linear a)" 
+        by (auto simp: def)
+      have id: "check_pat_complete n ((((Fun f ts, Fun g ls) # tls) # other) # P) = (\<forall>a\<in>set (other # P). pat_complete_linear a)" 
+        using False IH by auto
+      {
+        assume "length ts \<noteq> length ls" 
+        hence "(map (\<lambda>t. t \<cdot> \<mu>) ls = map (\<lambda>t. t \<cdot> \<sigma>) ts) = False" for \<sigma> :: "('f,nat,'a)gsubst" and \<mu>
+          by (metis length_map)
+      } note len = this
+      show ?thesis unfolding id using False
+        by (auto simp: def len)
+    next
+      case True
+      have tv: "Ball (set (((zip ts ls @ tls) # other) # P)) (tvars_pp n)"
+      proof clarify
+        fix p
+        assume mem: "p \<in> set (((zip ts ls @ tls) # other) # P)" 
+        show "tvars_pp n p" 
+        proof (cases "p \<in> set P")
+          case True
+          with 5(4) show ?thesis by auto
+        next
+          case False
+          with mem have p: "p = (zip ts ls @ tls) # other" by auto
+          from 5(4) have tv: "tvars_pp n (((Fun f ts, Fun g ls) # tls) # other)" by auto
+          show ?thesis unfolding tv_def
+          proof clarify
+            fix tl a b x 
+            assume tl: "tl \<in> set p" and mem: "(a, b) \<in> set tl" "x \<in> vars_term a" 
+            show "x < n" 
+            proof (rule ccontr)
+              assume no: "\<not> x < n" 
+              from no tv mem tl have tl: "tl = (zip ts ls @ tls)" unfolding tv_def p by fastforce
+              from no tv tl mem have ab: "(a,b) \<in> set (zip ts ls)" unfolding tv_def p by fastforce
+              from in_set_zipE[OF ab]
+              have "a \<in> set ts" by auto
+              with mem have "x \<in> vars_term (Fun f ts)" by auto
+              with tv have "x < n" unfolding tv_def by auto
+              with no show False by auto
+            qed
+          qed
+        qed
+      qed
+      have IH: "check_pat_complete n (((zip ts ls @ tls) # other) # P) = (\<forall>a\<in>set (((zip ts ls @ tls) # other) # P). pat_complete_linear a)" 
+        by (rule 5(1)[OF True _ tv], insert 5(3), auto simp: def set_zip)
+      have id: "check_pat_complete n ((((Fun f ts, Fun g ls) # tls) # other) # P) = (\<forall>a\<in>set (((zip ts ls @ tls) # other) # P). pat_complete_linear a)" 
+        using True IH by auto
+      from 5(3) have lin: "linear_term (Fun g ls)" by (auto simp: def)
+      show ?thesis unfolding id list.simps ball_simps
+      proof (intro cnf.conj_cong refl)
+        {
+          fix \<sigma> :: "('f,nat,'a)gsubst" 
+          have "(\<forall> (ti,li) \<in> set ((Fun f ts, Fun g ls) # tls). \<exists> \<mu>. ti \<cdot> \<sigma> = li \<cdot> \<mu>) \<longleftrightarrow> (\<forall> (ti,li) \<in> set (zip ts ls @ tls). \<exists> \<mu>. ti \<cdot> \<sigma> = li \<cdot> \<mu>)"
+            (is "?l = ?r")
+          proof 
+            assume ?l
+            have "map (\<lambda>t. t \<cdot> \<mu>) ls = map (\<lambda>t. t \<cdot> \<sigma>) ts \<Longrightarrow> (ti, li) \<in> set (zip ts ls) \<Longrightarrow> ti \<cdot> \<sigma> = li \<cdot> \<mu>" 
+              for ti li \<mu> by (auto simp: set_zip map_eq_conv')
+            thus ?r using \<open>?l\<close> by auto
+          next
+            assume ?r
+            show ?l
+            proof clarify
+              fix t l
+              assume mem: "(t, l) \<in> set ((Fun f ts, Fun g ls) # tls)" 
+              show "\<exists>\<mu>. t \<cdot> \<sigma> = l \<cdot> \<mu>" 
+              proof (cases "(t,l) \<in> set tls")
+                case True
+                with \<open>?r\<close> show ?thesis by force
+              next
+                case False
+                with mem have id: "t = Fun f ts" "l = Fun g ls" by auto
+                from \<open>?r\<close> have "\<forall> tli. \<exists> \<mu>. tli \<in>set (zip ts ls) \<longrightarrow> fst tli \<cdot> \<sigma> = snd tli \<cdot> \<mu>" by force
+                hence "\<forall> i. \<exists> \<mu>. i < length ls \<longrightarrow> ts ! i \<cdot> \<sigma> = ls ! i \<cdot> \<mu>" 
+                  using True unfolding set_zip by auto  
+                from choice[OF this] obtain \<mu>' where match: "\<And> i. i < length ls \<Longrightarrow> ts ! i \<cdot> \<sigma> = ls ! i \<cdot> \<mu>' i" by auto  
+                from lin have "is_partition (map vars_term ls)" by simp
+                from subst_merge[OF this, of \<mu>'] obtain \<mu> where mu: 
+                  "\<And> i x. i<length ls \<Longrightarrow> x\<in>vars_term (ls ! i) \<Longrightarrow> \<mu> x = \<mu>' i x" 
+                  by auto
+                {
+                  fix i
+                  assume i: "i < length ls" 
+                  have "ts ! i \<cdot> \<sigma> = ls ! i \<cdot> \<mu>' i" using i by (rule match)
+                  also have "\<dots> = ls ! i \<cdot> \<mu>" 
+                    by (rule term_subst_eq, insert i mu, auto)
+                  finally have "ts ! i \<cdot> \<sigma> = ls ! i \<cdot> \<mu>" by auto
+                }
+                thus ?thesis unfolding id using True by (intro exI[of _ \<mu>], auto intro: nth_equalityI) 
+              qed
+            qed
+          qed
+        } note main = this
+        thus "pat_complete_linear ((zip ts ls @ tls) # other) = pat_complete_linear (((Fun f ts, Fun g ls) # tls) # other)" 
+          unfolding def by auto
+      qed
+    qed
+  next
+    case (6 n x g ls tls other P)
+    define pp where "pp = ((Var x, Fun g ls) # tls) # other" 
+    have "check_pat_complete n ((((Var x, Fun g ls) # tls) # other) # P) = 
+      check_pat_complete (n + m) (map (\<lambda>\<tau>. subst_pat_problem \<tau> pp) (\<tau>s x n) @ P)" 
+      unfolding pp_def by simp
+    also have "\<dots> = Ball (set (map (\<lambda>\<tau>. subst_pat_problem \<tau> pp) (\<tau>s x n) @ P)) pat_complete_linear" 
+      unfolding pp_def
+    proof (rule 6(1); intro ballI; unfold pp_def[symmetric])
+      fix p
+      assume mem: "p \<in> set (map (\<lambda>\<sigma>. subst_pat_problem \<sigma> pp) (\<tau>s x n) @ P)" 
+      have "linear_pat_problem p \<and> tvars_pp (n + m) p" 
+      proof (cases "p \<in> set P")
+        case True
+        with 6(2,3) show ?thesis unfolding tv_def by force
+      next
+        case False
+        with mem obtain \<tau> where \<tau>: "\<tau> \<in> set (\<tau>s x n)" and p: "p = subst_pat_problem \<tau> pp" 
+          by auto
+        from \<tau>[unfolded \<tau>s_def] obtain c i where ci: "(c,i) \<in> set C" 
+          and \<sigma>: "\<tau> = subst x (Fun c (map Var [n..<n + i]))" by auto
+        have i: "i \<le> m" unfolding m_def using ci
+          by (metis image_eqI list.set_map max_list snd_eqD)
+        from 6(2,3)[folded pp_def] have lin: "linear_pat_problem pp" and tv: "tvars_pp n pp" by auto
+        show ?thesis unfolding p linear_pat_problem_def tv_def
+        proof (intro ballI conjI; clarify)
+          fix tl ti li
+          assume tl: "tl \<in> set (subst_pat_problem \<tau> pp)" and tli: "(ti, li) \<in> set tl"
+          from tl[unfolded subst_pat_problem_def set_map] 
+          obtain tl' where tl': "tl' \<in> set pp" and tl: "tl = map (map_prod (\<lambda>t. t \<cdot> \<tau>) id) tl'" 
+            by auto
+          from tli[unfolded tl set_map] obtain ti' where
+            tli: "(ti', li) \<in> set tl'" and ti: "ti = ti' \<cdot> \<tau>" by auto 
+          from lin tli tl' show "linear_term li" unfolding def by auto
+          fix y
+          assume "y \<in> vars_term ti" 
+          from this[unfolded ti vars_term_subst] 
+          obtain z where z: "z \<in> vars_term ti'" and y: "y \<in> vars_term (\<tau> z)" by auto
+          from tv tl' tli z have z: "z < n" unfolding tv_def by force
+          show "y < n + m" using y i z unfolding \<sigma> by (auto simp: subst_def split: if_splits)
+        qed
+      qed
+      thus "linear_pat_problem p" "tvars_pp (n + m) p" by auto
+    qed
+    also have "\<dots> = Ball (set (pp # P)) pat_complete_linear" 
+    proof -
+      from 6(3)[folded pp_def] have tv: "tvars_pp n pp" by auto
+      have "pat_complete_linear pp = Ball (set (map (\<lambda>\<tau>. subst_pat_problem \<tau> pp) (\<tau>s x n))) pat_complete_linear"  
+      proof
+        assume complete: "Ball (set (map (\<lambda>\<tau>. subst_pat_problem \<tau> pp) (\<tau>s x n))) pat_complete_linear" 
+        show "pat_complete_linear pp" unfolding def
+        proof (intro allI impI)
+          fix \<sigma> :: "('f,nat,'a)gsubst" 
+          assume cg: "cg_subst \<sigma>" 
+          from this[unfolded cg_subst_def]
+          have ground: "vars_term (\<sigma> x) = {}" and \<sigma>C: "funas_term (\<sigma> x) \<subseteq> set C" by auto
+          then obtain f ts where \<sigma>x: "\<sigma> x = Fun f ts" and f: "(f,length ts) \<in> set C" by (cases "\<sigma> x", auto)
+          let ?l = "length ts" 
+          define \<sigma>' where "\<sigma>' = (\<lambda> y. if n \<le> y \<and> y < n + ?l then ts ! (y - n) else \<sigma> y)" 
+          have cg: "cg_subst \<sigma>'" using cg unfolding cg_subst_def \<sigma>'_def using ground \<sigma>C unfolding \<sigma>x
+            by force
+          define \<tau> where "\<tau> = subst x (Fun f (map Var [n..<n + ?l]))" 
+          from f have "\<tau> \<in> set (\<tau>s x n)" unfolding \<tau>s_def \<tau>_def by auto
+          hence "pat_complete_linear (subst_pat_problem \<tau> pp)" using complete by auto
+          from this[unfolded def, rule_format, OF cg]
+          obtain tl where tl: "tl \<in> set (subst_pat_problem \<tau> pp)" 
+            and match: "\<And> ti li. (ti, li) \<in>set tl \<Longrightarrow> \<exists>\<mu>. ti \<cdot> \<sigma>' = li \<cdot> \<mu>" by force          
+          from tl[unfolded subst_pat_problem_def set_map]
+          obtain tl' where tl': "tl' \<in> set pp" and tl: "tl = map (map_prod (\<lambda>t. t \<cdot> \<tau>) id) tl'" by auto 
+          show "\<exists>tl\<in>set pp. \<forall>(ti, li)\<in>set tl. \<exists>\<mu>. ti \<cdot> \<sigma> = li \<cdot> \<mu>" 
+          proof (intro bexI[OF _  tl'], clarify)
+            fix ti li
+            assume tli: "(ti, li) \<in> set tl'" 
+            hence tlit: "(ti \<cdot> \<tau>, li) \<in> set tl" unfolding tl by force
+            from match[OF this] obtain \<mu> where match: "ti \<cdot> \<tau> \<cdot> \<sigma>' = li \<cdot> \<mu>" by auto
+            from tv[unfolded tv_def] tl' tli have vti: "vars_term ti \<subseteq> {..<n}" by force
+            have "ti \<cdot> \<sigma> = ti \<cdot> (\<tau> \<circ>\<^sub>s \<sigma>')" 
+            proof (rule term_subst_eq, unfold subst_compose_def)
+              fix y
+              assume "y \<in> vars_term ti" 
+              with vti have y: "y < n" by auto
+              show "\<sigma> y = \<tau> y \<cdot> \<sigma>'" 
+              proof (cases "y = x")
+                case False
+                hence "\<tau> y \<cdot> \<sigma>' = \<sigma>' y" unfolding \<tau>_def subst_def by auto
+                also have "\<dots> = \<sigma> y" 
+                  unfolding \<sigma>'_def using y by auto
+                finally show ?thesis by simp
+              next
+                case True
+                show ?thesis unfolding True \<tau>_def 
+                  by (simp add: o_def \<sigma>x) (intro nth_equalityI, auto simp: \<sigma>'_def)
+              qed
+            qed  
+            also have "\<dots> = li \<cdot> \<mu>" using match by simp
+            finally show "\<exists>\<mu>. ti \<cdot> \<sigma> = li \<cdot> \<mu>" by blast
+          qed
+        qed
+      next
+        assume complete: "pat_complete_linear pp" 
+        show "Ball (set (map (\<lambda>\<tau>. subst_pat_problem \<tau> pp) (\<tau>s x n))) pat_complete_linear" 
+        proof clarsimp  
+          fix \<tau>
+          assume "\<tau> \<in> set (\<tau>s x n)"
+          from this[unfolded \<tau>s_def]
+          obtain f i where f: "(f,i) \<in> set C" and \<tau>: "\<tau> = subst x (Fun f (map Var [n..<n + i]))" by auto
+          show "pat_complete_linear (subst_pat_problem \<tau> pp)" unfolding def
+          proof (intro allI impI)
+            fix \<sigma> :: "('f,nat,'a)gsubst" 
+            assume cg: "cg_subst \<sigma>"
+            define \<sigma>' where "\<sigma>' = \<sigma>(x := Fun f (map (\<lambda> i. \<sigma> i) [n..<n + i]))" 
+            have cg: "cg_subst \<sigma>'" using cg f unfolding cg_subst_def \<sigma>'_def by auto
+            from complete[unfolded def, rule_format, OF this] 
+            obtain tl where tl: "tl \<in> set pp" and tli: "\<And> ti li. (ti, li)\<in>set tl \<Longrightarrow> \<exists>\<mu>. ti \<cdot> \<sigma>' = li \<cdot> \<mu>" by force
+            from tl have tlm: "map (map_prod (\<lambda>t. t \<cdot> \<tau>) id) tl \<in> set (subst_pat_problem \<tau> pp)" 
+              unfolding subst_pat_problem_def set_map by auto
+            show "\<exists>tl\<in>set (subst_pat_problem \<tau> pp). \<forall>(ti, li)\<in>set tl. \<exists>\<mu>. ti \<cdot> \<sigma> = li \<cdot> \<mu>" 
+            proof (intro bexI[OF _ tlm], clarsimp)
+              fix ti li
+              assume mem: "(ti, li) \<in> set tl"
+              from tv[unfolded tv_def] tl mem have vti: "vars_term ti \<subseteq> {..<n}" by force
+              from tli[OF mem] obtain \<mu> where "li \<cdot> \<mu> = ti \<cdot> \<sigma>'" by auto
+              also have "\<dots> = ti \<cdot> (\<tau> \<circ>\<^sub>s \<sigma>)" 
+              proof (intro term_subst_eq, unfold subst_compose_def)
+                fix y
+                assume "y \<in> vars_term ti" 
+                with vti have y: "y < n" by auto
+                show "\<sigma>' y = \<tau> y \<cdot> \<sigma>" 
+                proof (cases "y = x")
+                  case False
+                  hence "\<tau> y \<cdot> \<sigma> = \<sigma> y" unfolding \<tau> subst_def by auto
+                  also have "\<dots> = \<sigma>' y" 
+                    unfolding \<sigma>'_def using False by auto
+                  finally show ?thesis by simp
+                next
+                  case True
+                  show ?thesis unfolding True \<tau>
+                    by (simp add: o_def \<sigma>'_def)
+                qed
+              qed
+              finally show "\<exists>\<mu>. ti \<cdot> \<tau> \<cdot> \<sigma> = li \<cdot> \<mu>" by (intro exI[of _ \<mu>], auto)
+            qed
+          qed
+        qed
+      qed
+      thus ?thesis by auto
+    qed
+    finally show ?case unfolding pp_def .
+  qed
+qed
+
+end
+end
+end
