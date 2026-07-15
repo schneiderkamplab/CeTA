@@ -1342,6 +1342,12 @@ where
       p \<leftarrow> xml2trs_termination_proof;
       xml_return (Rule_Removal ord r p)
     } XMLor xml_change (bounds_info xml2name) (xml_return \<circ> Bounds)
+    XMLor XMLdo (STR ''relativeBounds'') {
+      a \<leftarrow> bounds_info xml2name;
+      b \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      c \<leftarrow> xml2trs_termination_proof;
+      xml_return (Relative_Bounds a b c)
+    }
     XMLor XMLdo (STR ''stringReversal'') {
       _ \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2trs_termination_proof;

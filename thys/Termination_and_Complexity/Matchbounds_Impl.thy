@@ -1207,6 +1207,129 @@ proof -
 qed
 
 definition
+  bounds_rel_tt ::
+    "('tp, 'f, 'v :: {showl,compare_order}) tp_ops \<Rightarrow>
+    ('f::{showl,compare_order}, 'q::{linorder,showl}) bounds_info \<Rightarrow>
+    ('f,'v)rules \<Rightarrow>
+    'tp \<Rightarrow> 'tp result"
+where
+  "bounds_rel_tt I info Rdelete tp \<equiv> do {
+      let R = tp_ops.R I tp;
+      let Rw = tp_ops.Rw I tp;
+      let R2 = ceta_list_diff R Rdelete;
+      check_subseteq Rdelete (tp_ops.rules I tp) \<comment> \<open>this is not required, just for early error detection\<close>
+         <+? (\<lambda> lr. showsl_lit (STR ''could not find rule '') \<circ> showsl_rule lr \<circ> showsl_lit (STR '' in current termination problem''));
+      check (boundstype info = Match) (showsl_lit (STR ''relative termination bounds require boundstype match''));
+      let all = tp_ops.rules I tp;
+      check_bounds_generic info Rdelete (Rw @ R2) (funas_trs_list all) (funas_trs_list all);
+      return (tp_ops.mk I (tp_ops.nfs I tp) (tp_ops.Q I tp) R2 (list_union Rw Rdelete))
+   }  <+? (\<lambda> s. showsl_lit (STR ''problem in ensuring relative match boundedness of\<newline>'') \<circ>
+        showsl_tp I tp \<circ> showsl_lit (STR ''\<newline>with deletion of rules\<newline>'') \<circ> showsl_trs Rdelete \<circ> s)"
+
+lemma bounds_rel_tt: fixes info :: "('f::{showl,compare_order}, 'q::{linorder,showl}) bounds_info"
+  assumes "tp_spec I" and res: "bounds_rel_tt I info Rdelete tp = return tp'"
+  and inf: "infinite (UNIV :: 'f set)"
+  and rec: "SN_qrel (tp_ops.qreltrs I tp')"
+  shows "SN_qrel (tp_ops.qreltrs I tp)"
+proof -
+  interpret tp_spec I by fact
+  note isOK_if [simp]
+  let ?R = "R tp"
+  let ?Rw = "Rw tp"
+  let ?diff = "ceta_list_diff ?R Rdelete"
+  let ?union = "list_union ?Rw Rdelete"
+  from res[unfolded bounds_rel_tt_def Let_def, simplified]
+  have bt: "boundstype info = Match"
+    and ok: "isOK (check_bounds_generic info Rdelete (?Rw @ ?diff) (funas_trs_list (rules tp)) (funas_trs_list (rules tp)))"
+    and tp': "tp' = mk (NFS tp) (Q tp) ?diff ?union" by auto
+  let ?cm = "Derivational_Complexity (funas_trs_list (rules tp))"
+  have ok_cm: "isOK (check_bounds_generic info Rdelete (?Rw @ ?diff) (stackable_of_cm ?cm) (roots_of_cm ?cm))"
+    using ok by simp
+  from check_bounds_complexity_rel[OF ok_cm inf bt]
+  have bnd: "deriv_bound_measure_class (relto (rstep (set Rdelete)) (rstep (set (?Rw @ ?diff))))
+    ?cm (Comp_Poly 1)" .
+  from deriv_bound_measure_class_SN_on[OF bnd]
+  have bnd_SN_on: "SN_on (relto (rstep (set Rdelete)) (rstep (set (?Rw @ ?diff))))
+    (terms_of ?cm)" .
+  let ?F = "set (funas_trs_list (rules tp))"
+  have sig_SN_on: "SN_on (relto (sig_step ?F (rstep (set Rdelete))) (sig_step ?F (rstep (set (?Rw @ ?diff)))))
+    (terms_of ?cm)"
+    by (rule SN_on_mono[OF bnd_SN_on relto_mono], unfold sig_step_def, auto)
+  have sig_rtrancl_source: "\<And>R s t. (s,t) \<in> (sig_step ?F R)\<^sup>* \<Longrightarrow> t \<in> terms_of ?cm \<Longrightarrow> s \<in> terms_of ?cm"
+  proof -
+    fix R s t
+    assume st: "(s,t) \<in> (sig_step ?F R)\<^sup>*"
+    from st show "t \<in> terms_of ?cm \<Longrightarrow> s \<in> terms_of ?cm"
+    proof (induct)
+      case base
+      then show ?case .
+    next
+      case (step y z)
+      have "y \<in> terms_of ?cm"
+        using step.hyps(2) unfolding terms_of.simps sig_step_def by auto
+      from step.hyps(3)[OF this] show ?case .
+    qed
+  qed
+  have sig_source: "\<And>s t. (s,t) \<in> relto (sig_step ?F (rstep (set Rdelete))) (sig_step ?F (rstep (set (?Rw @ ?diff))))
+    \<Longrightarrow> s \<in> terms_of ?cm"
+  proof -
+    fix s t
+    assume "(s,t) \<in> relto (sig_step ?F (rstep (set Rdelete))) (sig_step ?F (rstep (set (?Rw @ ?diff))))"
+    then obtain u v where su: "(s,u) \<in> (sig_step ?F (rstep (set (?Rw @ ?diff))))\<^sup>*"
+      and uv: "(u,v) \<in> sig_step ?F (rstep (set Rdelete))" by auto
+    have "u \<in> terms_of ?cm"
+      using uv unfolding terms_of.simps sig_step_def by auto
+    from sig_rtrancl_source[OF su this] show "s \<in> terms_of ?cm" .
+  qed
+  have sig_SN: "SN_rel (sig_step ?F (rstep (set Rdelete))) (sig_step ?F (rstep (set (?Rw @ ?diff))))"
+  proof (unfold SN_rel_defs SN_on_def, rule notI)
+    assume "\<exists>f. f 0 \<in> UNIV \<and> chain (relto (sig_step ?F (rstep (set Rdelete))) (sig_step ?F (rstep (set (?Rw @ ?diff))))) f"
+    then obtain f where ch: "chain (relto (sig_step ?F (rstep (set Rdelete))) (sig_step ?F (rstep (set (?Rw @ ?diff))))) f" by auto
+    from sig_source[OF ch[rule_format, of 0]]
+    have "f 0 \<in> terms_of ?cm" .
+    with sig_SN_on[unfolded SN_on_def] ch show False by blast
+  qed
+  from check_bounds_generic[OF ok_cm inf, unfolded bt]
+  have cond: "isOK (bounds_condition Match (Rdelete @ (?Rw @ ?diff)))"
+    by auto
+  have cond_ms: "\<And> l r. (l, r) \<in> set (Rdelete @ (?Rw @ ?diff)) \<Longrightarrow>
+    vars_term_ms r \<subseteq># vars_term_ms l"
+    using cond by (auto simp: isOK_check_allm)
+  have ms_vars_subset: "\<And> l r. vars_term_ms r \<subseteq># vars_term_ms l \<Longrightarrow> vars_term r \<subseteq> vars_term l"
+    by (metis set_mset_mono set_mset_vars_term_ms)
+  have var_cond: "\<And> l r. (l, r) \<in> set (?Rw @ ?diff) \<Longrightarrow> vars_term r \<subseteq> vars_term l"
+    by (rule ms_vars_subset, rule cond_ms, auto)
+  have funas_trs_list_set: "\<And>rs. funas_trs (set rs) = set (funas_trs_list rs)"
+    by (induct_tac rs, auto simp: funas_trs_def funas_rule_def)
+  have Rdelete: "set Rdelete \<subseteq> set (rules tp)"
+    using res[unfolded bounds_rel_tt_def Let_def, simplified] by auto
+  have weak_rules: "set (?Rw @ ?diff) \<subseteq> set (rules tp)"
+    by auto
+  have full_SN: "SN_rel (rstep (set Rdelete)) (rstep (set (?Rw @ ?diff)))"
+  proof (rule sig_ext_relative_rewriting_var_cond[OF var_cond _ _ sig_SN])
+    show "funas_trs (set Rdelete) \<subseteq> ?F"
+      using Rdelete unfolding funas_trs_list_set[symmetric] funas_trs_def funas_rule_def by force
+  next
+    show "funas_trs (set (?Rw @ ?diff)) \<subseteq> ?F"
+      using weak_rules unfolding funas_trs_list_set[symmetric] funas_trs_def funas_rule_def by force
+  qed
+  have bnd_SN: "SN_qrel (NFS tp, set (Q tp),
+    set Rdelete \<inter> (set ?R \<union> set ?Rw), set ?R \<union> set ?Rw - set Rdelete)"
+    unfolding SN_qrel_def split
+    by (rule SN_rel_mono[OF _ _ full_SN], auto intro: qrstep_subset_rstep)
+  from rec[unfolded tp', simplified]
+  have rec: "SN_qrel (NFS tp, set (Q tp), set ?R - set Rdelete, set ?Rw \<union> set Rdelete)" .
+  show ?thesis unfolding qreltrs_sound
+  proof (rule SN_qrel_split[where D = "set Rdelete"])
+    show "SN_qrel (NFS tp, set (Q tp), set Rdelete \<inter> (set ?R \<union> set ?Rw), set ?R \<union> set ?Rw - set Rdelete)"
+      by (rule bnd_SN)
+  next
+    show "SN_qrel (NFS tp, set (Q tp), set ?R - set Rdelete, set ?Rw - set Rdelete)"
+      by (rule SN_qrel_mono[OF _ _ _ rec], auto)
+  qed
+qed
+
+definition
   bounds_complexity ::
     "('tp, 'f, 'v :: {linorder,showl}) tp_ops \<Rightarrow>
     ('f::{linorder,showl}, 'q::{linorder,showl}) bounds_info \<Rightarrow>

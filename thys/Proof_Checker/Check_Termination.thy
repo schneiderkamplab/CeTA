@@ -323,6 +323,7 @@ and ('f, 'l, 'v) trs_termination_proof =
 | String_Reversal "('f, 'l, 'v) trs_termination_proof"
 | Constant_String "(('f,'l)lab,'v)const_string_sound_proof" "('f,'l,'v) trs_termination_proof"
 | Bounds "(('f, 'l) lab, 'v) bounds_info"
+| Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Uncurry "(('f, 'l) lab, 'v) uncurry_info" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Semlab
     "(('f, 'l) lab, 'v) sl_variant" "(('f, 'l) lab, 'v) term list"
@@ -380,6 +381,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (String_Reversal p) = sn_assms a p"
 | "sn_assms a (Constant_String _ p) = sn_assms a p"
 | "sn_assms a (Bounds _) = []"
+| "sn_assms a (Relative_Bounds _ _ p) = sn_assms a p"
 | "sn_assms a (Uncurry _ _ p) = sn_assms a p"
 | "sn_assms a (Semlab _ _ _ p) = sn_assms a p"
 | "sn_assms a R_is_Empty = []"
@@ -762,6 +764,14 @@ where
 | "check_trs_termination_proof i tp (Bounds info) = debug i (STR ''Bounds'') (do {
      bounds_tt J info tp 
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying bounds on the termination problem \<newline>'') \<circ> showsl_tp J tp \<circ> showsl_nl \<circ> s)})" 
+| "check_trs_termination_proof i tp (Relative_Bounds info Rr prf) = debug i (STR ''Relative Bounds'') (do {
+     tp' \<leftarrow> bounds_rel_tt J info Rr tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying relative bounds on the termination problem \<newline>'')
+         \<circ> showsl_tp J tp \<circ>
+         showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
+     check_trs_termination_proof (add_index i 1) tp' prf
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below relative bounds\<newline>'') \<circ> s)
+   })"
 | "check_trs_termination_proof i tp (Uncurry u_info rR prf) = debug i (STR ''Uncurry'') (do {
      tp' \<leftarrow> uncurry_tt J u_info rR tp
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying currying transformation\<newline>'') \<circ> s);
@@ -1599,7 +1609,23 @@ next
   show ?case
     by (rule bounds_tt [OF J tt infinite_lab])
 next
-  case (34 i tp mode info prof)
+  case (34 i tp info Rr prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "bounds_rel_tt J info Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by (auto simp: Let_def)
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule bounds_rel_tt [OF J tt infinite_lab])
+    apply (rule IH(1) [OF _ rec fin])
+    apply (unfold update_error_return)
+    apply (rule tt)
+    done
+next
+  case (35 i tp mode info prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1618,7 +1644,7 @@ next
     apply (rule tt)
   done
 next
-  case (35 i tp fcs R' prof)
+  case (36 i tp fcs R' prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1634,7 +1660,7 @@ next
     apply (rule tt)
   done
 next
-  case (36 i tp R' prof1 prof2)
+  case (37 i tp R' prof1 prof2)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i"
@@ -1656,7 +1682,7 @@ next
     apply auto
   done
 next
-  case (37 i tp joins prof)
+  case (38 i tp joins prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1674,7 +1700,7 @@ next
     apply (rule tt)
   done
 next
-  case (38 i tp prof)
+  case (39 i tp prof)
   note IH = this
   interpret tp_spec J by fact
   let ?Rw = "filter (\<lambda> (l,r). l \<noteq> r) (Rw tp)"
@@ -1703,7 +1729,7 @@ next
     finally show "?Q (set ?Rw') \<subseteq> Id" .
   qed
 next
-  case (39 i tp Rdelete prof)
+  case (40 i tp Rdelete prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1721,7 +1747,7 @@ next
   then show ?case
     by (simp add: id SN_qrel_def)
 next
-  case (40 i tp pi prof)
+  case (41 i tp pi prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1733,13 +1759,13 @@ next
   show ?case
     by (rule sound_tt_impl[OF argument_filter_tt[OF J] tt IH(1)[OF _ rec fin]], insert tt, auto)
 next
-  case (41 i tp)
+  case (42 i tp)
   then have tt: "isOK (right_ground_tt J tp)"
     by (auto simp: Let_def)
   interpret tp_spec J by fact
   show ?case by (rule right_ground_tt [OF tt])
 next
-  case (42 i tp tp' ass)
+  case (43 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -1802,7 +1828,7 @@ next
     qed
   qed
 next
-  case (43 i tp tp' ass)
+  case (44 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -1864,7 +1890,7 @@ next
     qed
   qed
 next
-  case (44 i tp tp' ass)
+  case (45 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
