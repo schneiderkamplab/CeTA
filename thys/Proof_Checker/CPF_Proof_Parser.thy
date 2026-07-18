@@ -426,6 +426,13 @@ definition bounds_info :: "'a xmlt \<Rightarrow> ('a, string) bounds_info xmlt"
       xml_return (Bounds_Info a b c d e)
     }"
 
+definition rfc_initial_terms :: "'a :: showl xmlt \<Rightarrow> 'a termIndexMap \<Rightarrow> ('a, string) term list xmlt"
+  where
+    "rfc_initial_terms xml2name termIndexMap = XMLdo (STR ''initialTerms'') {
+      ts \<leftarrow>* term xml2name termIndexMap;
+      xml_return ts
+    }"
+
 context
   fixes xml2name :: "'a :: showl xmlt"
     and termIndexMap :: "'a termIndexMap"
@@ -1347,6 +1354,11 @@ where
       b \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
       c \<leftarrow> xml2trs_termination_proof;
       xml_return (Relative_Bounds a b c)
+    }
+    XMLor XMLdo (STR ''rfcBounds'') {
+      ts \<leftarrow> CPF_Proof_Parser.rfc_initial_terms xml2name termIndexMap;
+      a \<leftarrow> bounds_info xml2name;
+      xml_return (Rfc_Bounds a ts)
     }
     XMLor XMLdo (STR ''stringReversal'') {
       _ \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
