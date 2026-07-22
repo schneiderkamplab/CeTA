@@ -7,6 +7,7 @@ theory All_of_Proof_Checker
     Ceta
     Ceta_Problem_Spec
     Ceta_Verifier
+    CSR_Checker
     Check_AC_Termination
     Check_AL94
     Check_CRP

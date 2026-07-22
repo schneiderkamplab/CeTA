@@ -1,7 +1,7 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  Matchbounds_Impl(Boundstype(..), Bounds_info(..), bounds_tt,
+  Matchbounds_Impl(Boundstype(..), Bounds_info(..), bounds_tt, bounds_rel_tt,
                     bounds_complexity, bounds_complexity_rel)
   where {
 
@@ -21,18 +21,18 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
-import qualified Map_Choice;
-import qualified Missing_List;
 import qualified RBTSetImpl;
-import qualified Compare_Order_Instances;
-import qualified QDP_Framework_Impl;
-import qualified Check_Monad;
 import qualified RBTMapImpl;
 import qualified RBT;
 import qualified Product_Lexorder;
-import qualified Error_Monad;
 import qualified Multiset;
 import qualified Matchbounds;
+import qualified QDP_Framework_Impl;
+import qualified Map_Choice;
+import qualified Missing_List;
+import qualified Check_Monad;
+import qualified Error_Monad;
+import qualified Compare_Order_Instances;
 import qualified HOL;
 import qualified Termination_Problem_Spec;
 import qualified Sum_Type;
@@ -501,6 +501,60 @@ equal_boundstype Roof Roof = True;
 
 boundstype :: forall a b. Bounds_info a b -> Boundstype;
 boundstype (Bounds_Info x1 x2 x3 x4 x5) = x1;
+
+bounds_rel_tt ::
+  forall a b c d.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b, Arith.Ceq c,
+      Arith.Ccompare c, Compare.Compare_order c, Eq c, Arith.Set_impl c,
+      Term_Rewriting.Showl c, Arith.Ccompare d, Eq d, Mapping.Mapping_impl d,
+      Quasi_Order.Linorder d,
+      Term_Rewriting.Showl d) => Termination_Problem_Spec.Tp_ops_ext a b c () ->
+                                   Bounds_info b d ->
+                                     [(Term_Rewriting.Term b c,
+Term_Rewriting.Term b c)] ->
+                                       a -> Sum_Type.Sum (String -> String) a;
+bounds_rel_tt i info rdelete tp =
+  Error_Monad.catch_error
+    (let {
+       r = Termination_Problem_Spec.r i tp;
+       rw = Termination_Problem_Spec.rw i tp;
+       r2 = Map_Choice.ceta_list_diff r rdelete;
+     } in Error_Monad.bind
+            (Error_Monad.catch_error
+              (Check_Monad.check_subseteq rdelete
+                (Termination_Problem_Spec.rules i tp))
+              (\ x ->
+                Sum_Type.Inl
+                  ((Term_Rewriting.showsl_lit "could not find rule " .
+                     Term_Rewriting.showsl_rule x) .
+                    Term_Rewriting.showsl_lit
+                      " in current termination problem")))
+            (\ _ ->
+              Error_Monad.bind
+                (Check_Monad.check (equal_boundstype (boundstype info) Match)
+                  (Term_Rewriting.showsl_lit
+                    "relative termination bounds require boundstype match"))
+                (\ _ ->
+                  let {
+                    alla = Termination_Problem_Spec.rules i tp;
+                  } in Error_Monad.bind
+                         (check_bounds_generic info rdelete (rw ++ r2)
+                           (Term_Rewriting.funas_trs_list alla)
+                           (Term_Rewriting.funas_trs_list alla))
+                         (\ _ ->
+                           Sum_Type.Inr
+                             (Termination_Problem_Spec.mk i
+                               (Termination_Problem_Spec.nfs i tp)
+                               (Termination_Problem_Spec.q i tp) r2
+                               (Missing_List.list_union rw rdelete))))))
+    (\ x ->
+      Sum_Type.Inl
+        ((((Term_Rewriting.showsl_lit
+              "problem in ensuring relative match boundedness of\n" .
+             QDP_Framework_Impl.showsl_tp i tp) .
+            Term_Rewriting.showsl_lit "\nwith deletion of rules\n") .
+           Term_Rewriting.showsl_trs rdelete) .
+          x));
 
 bounds_complexity ::
   forall a b c d.

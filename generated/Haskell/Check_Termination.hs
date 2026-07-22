@@ -104,6 +104,10 @@ data Trs_termination_proof a b c =
       (Monadic_Rewriting_Impl.Const_string_sound_proof (Labelings.Lab a b) c)
       (Trs_termination_proof a b c)
   | Bounds (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+  | Relative_Bounds (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Trs_termination_proof a b c)
   | Uncurry
       (Labelings.Lab a b,
         ([((Labelings.Lab a b, Arith.Nat), [Labelings.Lab a b])],
@@ -854,6 +858,28 @@ check_trs_termination_proof j ia assms i tp (Bounds info) =
               QDP_Framework_Impl.showsl_tp j tp) .
              Term_Rewriting.showsl_literal "\n") .
             x)));
+check_trs_termination_proof j ia assms i tp (Relative_Bounds info rr prf) =
+  FOR_Preliminaries.debug i "Relative Bounds"
+    (Error_Monad.bind
+      (Error_Monad.catch_error (Matchbounds_Impl.bounds_rel_tt j info rr tp)
+        (\ x ->
+          Sum_Type.Inl
+            ((((((i . Term_Rewriting.showsl_lit
+                        ": error when applying relative bounds on the termination problem \n") .
+                  QDP_Framework_Impl.showsl_tp j tp) .
+                 Term_Rewriting.showsl_lit "\n to remove the rules \n") .
+                Term_Rewriting.showsl_rules rr) .
+               Term_Rewriting.showsl_literal "\n") .
+              x)))
+      (\ tpa ->
+        Error_Monad.catch_error
+          (check_trs_termination_proof j ia assms
+            (Term_Rewriting.add_index i Arith.one_nat) tpa prf)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below relative bounds\n") .
+                x))));
 check_trs_termination_proof j ia assms i tp (Uncurry u_info rR prf) =
   FOR_Preliminaries.debug i "Uncurry"
     (Error_Monad.bind

@@ -1158,6 +1158,7 @@ partial_function_mr (sum_bot)
   xml2dp_termination_proof :: "('f, 'l, string) dp_termination_proof xmlt"
   and xml2trs_termination_proof :: "('f, 'l, string) trs_termination_proof xmlt"
   and xml2fptrs_termination_proof :: "('f, 'l, string) fptrs_termination_proof xmlt"
+  and xml2csr_termination_proof :: "('f, 'l, string) csr_termination_proof xmlt"
   and xml2unknown_proof :: "('f, 'l, string) unknown_proof xmlt"
   and xml2subproof
 where
@@ -1408,6 +1409,21 @@ where
       xml_return r
     }
   ) x"
+| "xml2csr_termination_proof x =
+  xml_singleton (STR ''nativeCsrTerminationProof'') (
+    XMLdo (STR ''rIsEmpty'') {
+      xml_return CSR_R_is_Empty
+    } XMLor XMLdo (STR ''csrRuleRemoval'') {
+      ord \<leftarrow> red_triple False;
+      r \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      p \<leftarrow> xml2csr_termination_proof;
+      xml_return (CSR_Rule_Removal ord r p)
+    } XMLor XMLdo (STR ''csrDependencyPairs'') {
+      dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
+      p \<leftarrow> xml2dp_termination_proof;
+      xml_return (CSR_Dependency_Pairs dps p)
+    }
+  ) id x"
 | "xml2unknown_proof x =
   XMLdo (STR ''unknownInputProof'') {
     ret \<leftarrow> XMLdo (STR ''unknownAssumption'') {
@@ -2572,6 +2588,7 @@ where
         XMLor xml_change xml2ncr_proof (xml_return \<circ> TRS_Non_Confluence_Proof)
         XMLor xml_change (xml2dp_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Termination_Proof)
         XMLor xml_change (xml2dp_nontermination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Nontermination_Proof)
+        XMLor xml_change (xml2csr_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> CSR_Termination_Proof)
         XMLor xml_change (xml2completion_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Completion_Proof)
         XMLor xml_change (xml2ordered_completion_proof xml2name termIndexMap) (xml_return \<circ> Ordered_Completion_Proof)
         XMLor xml_change (xml2equational_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Equational_Proof)

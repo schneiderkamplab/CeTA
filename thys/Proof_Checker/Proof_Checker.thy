@@ -8,6 +8,7 @@ License: LGPL (see file COPYING.LESSER)
 theory Proof_Checker
   imports
     Check_Termination
+    CSR_Checker
     Check_Nontermination
     Check_CRP
     Check_Conditional_CRP
@@ -29,6 +30,7 @@ datatype (dead 'f, dead 'l, dead 'v) "proof" =
 | DP_Nontermination_Proof "('f, 'l, 'v) dp_nontermination_proof"
 | TRS_Nontermination_Proof "('f, 'l, 'v) trs_nontermination_proof"
 | FP_Termination_Proof "('f,'l,'v) fptrs_termination_proof"
+| CSR_Termination_Proof "('f,'l,'v) csr_termination_proof"
 | FP_Nontermination_Proof "('f, 'l, 'v) fp_trs_nontermination_proof"
 | Relative_TRS_Nontermination_Proof "('f, 'l, 'v) reltrs_nontermination_proof"
 | TRS_Confluence_Proof "('f, 'l, 'v) cr_proof"
@@ -59,6 +61,7 @@ definition "proof_to_string proof =
   | DP_Nontermination_Proof _ \<Rightarrow> STR ''DP nontermination proof''
   | TRS_Nontermination_Proof _ \<Rightarrow> STR ''TRS nontermination proof''
   | FP_Termination_Proof _ \<Rightarrow> STR ''FP TRS termination proof''
+  | CSR_Termination_Proof _ \<Rightarrow> STR ''CSR termination proof''
   | FP_Nontermination_Proof _ \<Rightarrow> STR ''FP TRS nontermination proof''
   | Relative_TRS_Nontermination_Proof _ \<Rightarrow> STR ''relative TRS nontermination proof''
   | TRS_Confluence_Proof _ \<Rightarrow> STR ''TRS confluence proof''
@@ -85,6 +88,7 @@ definition "proof_to_string proof =
 primrec cert_assms :: "bool \<Rightarrow> ('f, 'l, 'v) proof \<Rightarrow> (('f, 'l, 'v) assm) list" where
   "cert_assms a (TRS_Termination_Proof p) = sn_assms a p"
 | "cert_assms a (FP_Termination_Proof p) = sn_fp_assms a p"
+| "cert_assms a (CSR_Termination_Proof p) = []"
 | "cert_assms a (TRS_Confluence_Proof p) = cr_assms a p"
 | "cert_assms a (TRS_Non_Confluence_Proof p) = ncr_assms a p"
 | "cert_assms a (Completion_Proof p) = completion_assms a p"
@@ -203,6 +207,11 @@ where "check_cert a input property answer proof \<equiv>
      (case triple of 
        (FP_TRS_input strat R, Termination, Decision True) \<Rightarrow>
        check_fptrs_termination_proof I J a (showsl_lit (STR ''1'')) (fp_strategy_to_fp_impl strat R, R) prf
+    | _ \<Rightarrow> error mismatch)
+  | CSR_Termination_Proof prf \<Rightarrow>
+     (case triple of
+       (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision True) \<Rightarrow>
+       check_csr_termination_proof I J a (showsl_lit (STR ''1'')) \<mu> R prf
     | _ \<Rightarrow> error mismatch)
   | FP_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
@@ -386,6 +395,16 @@ proof-
     have "SN_fpstep (set (fp_strategy_to_fp_impl strat R), set R)" by auto
     thus ?thesis using ostep_iff_fpstep_impl[of "map fst R",simplified] 
       by (cases strat, auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def csstep_iff_fpstep_impl)
+  next
+    case [simp]: (CSR_Termination_Proof pr)
+    obtain \<mu> R where [simp]: "input = FP_TRS_input (Context_Sensitive \<mu>) R" using check
+      by (cases input, auto split: fp_strategy.splits)
+    have [simp]: "property = Termination" using check by (cases property, auto)
+    have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+    from check[simplified] have check: "isOK (check_csr_termination_proof I J a idx \<mu> R pr)"
+      by auto
+    from check_csr_termination_proof_sound[OF I J check] show ?thesis
+      by (simp add: desired_property_def)
   next
     case [simp]: (Relative_TRS_Nontermination_Proof pr)
     obtain Q R S where [simp]: "input = Inn_TRS_input Q R S" using check by (cases input, auto)

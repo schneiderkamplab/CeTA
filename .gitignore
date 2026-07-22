@@ -1,0 +1,4 @@
+generated/Haskell/*.hi
+generated/Haskell/*.o
+/export/
+/ceta

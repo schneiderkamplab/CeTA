@@ -1,6 +1,6 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module Context_Sensitive_Impl(mu_to_fp_impl) where {
+module Context_Sensitive_Impl(mu_of, mu_to_fp_impl) where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -19,10 +19,24 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified Name;
+import qualified Term_Rewriting;
+import qualified Set_Interval;
 import qualified Map;
 import qualified HOL;
-import qualified Term_Rewriting;
 import qualified Arith;
+
+mu_of ::
+  forall a.
+    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] ->
+                (a, Arith.Nat) -> Arith.Set Arith.Nat;
+mu_of mu =
+  let {
+    m = Map.map_of mu;
+  } in (\ (f, a) ->
+         (case m (f, a) of {
+           Nothing -> Set_Interval.atLeastLessThan Arith.zero_nat a;
+           Just aa -> Arith.set aa;
+         }));
 
 mu_to_fp_impl ::
   forall a.
