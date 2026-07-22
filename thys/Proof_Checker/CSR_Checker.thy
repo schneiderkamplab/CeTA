@@ -224,6 +224,56 @@ where
     \<circ> showsl_lit (STR ''\<newline>but the order is monotone only in positions '')
     \<circ> showsl_position_set f (monof f))) fs"
 
+fun is_sharp_lab :: "('f, 'l) lab \<Rightarrow> bool"
+where
+  "is_sharp_lab (Sharp f) = True"
+| "is_sharp_lab (UnLab f) = False"
+| "is_sharp_lab (Lab f l) = False"
+| "is_sharp_lab (FunLab f ls) = False"
+
+definition csr_sharp_mu_entry_ok ::
+  "((('f, 'l) lab \<times> nat) \<times> nat list) \<Rightarrow> bool"
+where
+  "csr_sharp_mu_entry_ok e = (case e of ((f, n), is) \<Rightarrow>
+    \<not> is_sharp_lab f \<and> set is \<subseteq> {0..<n})"
+
+definition csr_sharp_mu_check ::
+  "(('f::{showl, compare_order}, 'l::showl) lab) muL \<Rightarrow> showsl check"
+where
+  "csr_sharp_mu_check \<mu> = check_allm (\<lambda>e.
+    check (csr_sharp_mu_entry_ok e)
+      (case e of ((f, n), is) \<Rightarrow>
+        showsl_lit (STR ''invalid replacement map entry for CSR-DP sharp side steps: '')
+        \<circ> showsl f \<circ> showsl_lit (STR ''/'') \<circ> showsl n)) \<mu>"
+
+lemma csr_sharp_mu_check_sound:
+  assumes ok: "isOK (csr_sharp_mu_check \<mu>)"
+  shows "mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
+proof -
+  have valid: "\<And>g m is. ((g, m), is) \<in> set \<mu> \<Longrightarrow>
+      \<not> is_sharp_lab g \<and> set is \<subseteq> {0..<m}"
+    using isOK_check_allm_checkD[OF ok[unfolded csr_sharp_mu_check_def]]
+    unfolding csr_sharp_mu_entry_ok_def by force
+  have none: "map_of \<mu> (Sharp f, n) = None"
+  proof (rule ccontr)
+    assume "map_of \<mu> (Sharp f, n) \<noteq> None"
+    then obtain js where some: "map_of \<mu> (Sharp f, n) = Some js"
+      by auto
+    from map_of_SomeD[OF some] valid
+    show False by fastforce
+  qed
+  show ?thesis
+  proof (cases "map_of \<mu> (f, n)")
+    case None
+    with none show ?thesis
+      unfolding mu_of_def by simp
+  next
+    case (Some js)
+    from valid[OF map_of_SomeD[OF Some]] Some none show ?thesis
+      unfolding mu_of_def by simp
+  qed
+qed
+
 definition csr_int_mu_mono_check ::
   "('f::{showl, compare_order}) itself \<Rightarrow>
    (('f, int) lpoly_interL) \<Rightarrow> 'f muL \<Rightarrow> showsl check"
