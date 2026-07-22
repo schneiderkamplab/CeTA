@@ -50,14 +50,43 @@ import qualified Context_Sensitive_Impl;
 import qualified Sharp_Syntax;
 import qualified HOL;
 import qualified Compare;
-import qualified Arith;
 import qualified Check_Termination;
+import qualified Subterm_Criterion_Impl;
+import qualified Arith;
 import qualified Reduction_Pair_Implementations;
 import qualified Labelings;
 import qualified Term_Rewriting;
 
 data Csr_dp_termination_proof a b c = CSR_DP_P_is_Empty
-  | CSR_DP_Ordinary_Proof (Check_Termination.Dp_termination_proof a b c);
+  | CSR_DP_Ordinary_Proof (Check_Termination.Dp_termination_proof a b c)
+  | CSR_DP_Subterm_Criterion_Proc
+      (Subterm_Criterion_Impl.ProjL (Labelings.Lab a b))
+      [((Term_Rewriting.Term (Labelings.Lab a b) c,
+          Term_Rewriting.Term (Labelings.Lab a b) c),
+         [([Arith.Nat],
+            ((Term_Rewriting.Term (Labelings.Lab a b) c,
+               Term_Rewriting.Term (Labelings.Lab a b) c),
+              Term_Rewriting.Term (Labelings.Lab a b) c))])]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Csr_dp_termination_proof a b c)
+  | CSR_DP_Gen_Subterm_Criterion_Proc
+      [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Csr_dp_termination_proof a b c)
+  | CSR_DP_Usable_Rules_Proc
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Csr_dp_termination_proof a b c)
+  | CSR_DP_Dep_Graph_Proc
+      [(Maybe (Csr_dp_termination_proof a b c),
+         [(Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Term (Labelings.Lab a b) c)])]
+  | CSR_DP_Size_Change_Subterm_Proc
+      [((Term_Rewriting.Term (Labelings.Lab a b) c,
+          Term_Rewriting.Term (Labelings.Lab a b) c),
+         ([(Arith.Nat, Arith.Nat)], [(Arith.Nat, Arith.Nat)]))];
 
 data Csr_termination_proof a b c = CSR_R_is_Empty
   | CSR_Rule_Removal
@@ -591,6 +620,24 @@ dp_proof_of_csr_dp_termination_proof ::
 dp_proof_of_csr_dp_termination_proof CSR_DP_P_is_Empty =
   Check_Termination.P_is_Empty;
 dp_proof_of_csr_dp_termination_proof (CSR_DP_Ordinary_Proof prf) = prf;
+dp_proof_of_csr_dp_termination_proof
+  (CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
+  Check_Termination.Subterm_Criterion_Proc p rseq pr
+    (dp_proof_of_csr_dp_termination_proof prf);
+dp_proof_of_csr_dp_termination_proof
+  (CSR_DP_Gen_Subterm_Criterion_Proc p pr prf) =
+  Check_Termination.Gen_Subterm_Criterion_Proc p pr
+    (dp_proof_of_csr_dp_termination_proof prf);
+dp_proof_of_csr_dp_termination_proof (CSR_DP_Usable_Rules_Proc u prf) =
+  Check_Termination.Usable_Rules_Proc u
+    (dp_proof_of_csr_dp_termination_proof prf);
+dp_proof_of_csr_dp_termination_proof (CSR_DP_Dep_Graph_Proc edpts) =
+  Check_Termination.Dep_Graph_Proc
+    (map (\ (prf, a) ->
+           (Arith.map_option dp_proof_of_csr_dp_termination_proof prf, a))
+      edpts);
+dp_proof_of_csr_dp_termination_proof (CSR_DP_Size_Change_Subterm_Proc graphs) =
+  Check_Termination.Size_Change_Subterm_Proc graphs;
 
 check_csr_dp_termination_proof ::
   forall a b c.

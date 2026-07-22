@@ -2806,6 +2806,14 @@ end
 datatype (dead 'f, dead 'l, dead 'v) csr_dp_termination_proof =
   CSR_DP_P_is_Empty
 | CSR_DP_Ordinary_Proof "('f, 'l, 'v) dp_termination_proof"
+| CSR_DP_Subterm_Criterion_Proc "('f, 'l) lab projL" "('f, 'l, 'v) rseqL"
+    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+| CSR_DP_Gen_Subterm_Criterion_Proc "('f, 'l) lab status_impl"
+    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+| CSR_DP_Usable_Rules_Proc "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+| CSR_DP_Dep_Graph_Proc "(('f, 'l, 'v) csr_dp_termination_proof option \<times> ('f, 'l, 'v) trsLL) list"
+| CSR_DP_Size_Change_Subterm_Proc
+    "((('f, 'l) lab, 'v) rule \<times> ((nat \<times> nat) list \<times> (nat \<times> nat) list)) list"
 
 datatype (dead 'f, dead 'l, dead 'v) csr_termination_proof =
   CSR_R_is_Empty
@@ -2820,6 +2828,19 @@ fun dp_proof_of_csr_dp_termination_proof ::
 where
   "dp_proof_of_csr_dp_termination_proof CSR_DP_P_is_Empty = P_is_Empty"
 | "dp_proof_of_csr_dp_termination_proof (CSR_DP_Ordinary_Proof prf) = prf"
+| "dp_proof_of_csr_dp_termination_proof
+    (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf) =
+    Subterm_Criterion_Proc p rseq Pr (dp_proof_of_csr_dp_termination_proof prf)"
+| "dp_proof_of_csr_dp_termination_proof
+    (CSR_DP_Gen_Subterm_Criterion_Proc p Pr prf) =
+    Gen_Subterm_Criterion_Proc p Pr (dp_proof_of_csr_dp_termination_proof prf)"
+| "dp_proof_of_csr_dp_termination_proof (CSR_DP_Usable_Rules_Proc U prf) =
+    Usable_Rules_Proc U (dp_proof_of_csr_dp_termination_proof prf)"
+| "dp_proof_of_csr_dp_termination_proof (CSR_DP_Dep_Graph_Proc edpts) =
+    Dep_Graph_Proc
+      (map (\<lambda>(prf, P). (map_option dp_proof_of_csr_dp_termination_proof prf, P)) edpts)"
+| "dp_proof_of_csr_dp_termination_proof (CSR_DP_Size_Change_Subterm_Proc graphs) =
+    Size_Change_Subterm_Proc graphs"
 
 definition check_csr_dp_termination_proof ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>

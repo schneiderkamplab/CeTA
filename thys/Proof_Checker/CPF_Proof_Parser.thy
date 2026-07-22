@@ -1432,6 +1432,31 @@ where
     } XMLor XMLdo (STR ''ordinaryDpProof'') {
       p \<leftarrow> xml2dp_termination_proof;
       xml_return (CSR_DP_Ordinary_Proof p)
+    } XMLor XMLdo (STR ''depGraphProc'') {
+      a \<leftarrow>* XMLdo (STR ''component'') {
+        dps \<leftarrow> (xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id);
+        prfOpt \<leftarrow>? xml2csr_dp_termination_proof;
+        xml_return (prfOpt, dps)
+      };
+      xml_return (CSR_DP_Dep_Graph_Proc a)
+    } XMLor XMLdo (STR ''usableRulesProc'') {
+      a \<leftarrow> xml_singleton (STR ''usableRules'') (rules xml2name termIndexMap ruleMap) id;
+      b \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_DP_Usable_Rules_Proc a b)
+    } XMLor XMLdo (STR ''subtermProc'') {
+      pi_mpi \<leftarrow> xml_change (CPF_Proof_Parser.proj xml2name) (xml_return \<circ> Inl)
+        XMLor xml_change (CPF_Proof_Parser.multiset_af xml2name) (xml_return \<circ> Inr);
+      seq \<leftarrow>* CPF_Proof_Parser.projected_rseq xml2name termIndexMap ruleMap
+        (create_proj (case pi_mpi of Inl lpi \<Rightarrow> lpi | Inr mpi \<Rightarrow> Projection []));
+      dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (case pi_mpi of
+         Inl lpi \<Rightarrow> CSR_DP_Subterm_Criterion_Proc lpi seq dps prf
+       | Inr mpi \<Rightarrow> CSR_DP_Gen_Subterm_Criterion_Proc mpi dps prf)
+    } XMLor XMLdo (STR ''sizeChangeProc'') {
+      version \<leftarrow> xml_leaf (STR ''subtermCriterion'') True;
+      b \<leftarrow>* CPF_Proof_Parser.scg xml2name termIndexMap ruleMap;
+      xml_return (CSR_DP_Size_Change_Subterm_Proc b)
     };
     xml_return p
   } x"

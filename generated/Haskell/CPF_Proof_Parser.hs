@@ -4577,10 +4577,88 @@ xml2csr_dp_termination_proof xml2name termIndexMap ruleMap x =
     (Xmlt.xml_take
       (Xmlt.xml_or
         (Xmlt.xml_do "pIsEmpty" (Xmlt.xml_return CSR_Checker.CSR_DP_P_is_Empty))
-        (Xmlt.xml_do "ordinaryDpProof"
-          (Xmlt.xml_take
-            (xml2dp_termination_proof xml2name termIndexMap ruleMap)
-            (\ p -> Xmlt.xml_return (CSR_Checker.CSR_DP_Ordinary_Proof p)))))
+        (Xmlt.xml_or
+          (Xmlt.xml_do "ordinaryDpProof"
+            (Xmlt.xml_take
+              (xml2dp_termination_proof xml2name termIndexMap ruleMap)
+              (\ p -> Xmlt.xml_return (CSR_Checker.CSR_DP_Ordinary_Proof p))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "depGraphProc"
+              (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                Extended_Nat.Infinity_enat
+                (Xmlt.xml_do "component"
+                  (Xmlt.xml_take
+                    (Xmlt.xml_do "dps"
+                      (Xmlt.xml_take
+                        (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                        (\ xa -> Xmlt.xml_return (id xa))))
+                    (\ dps ->
+                      Xmlt.xml_take_optional
+                        (xml2csr_dp_termination_proof xml2name termIndexMap
+                          ruleMap)
+                        (\ prfOpt -> Xmlt.xml_return (prfOpt, dps)))))
+                (\ a -> Xmlt.xml_return (CSR_Checker.CSR_DP_Dep_Graph_Proc a))))
+            (Xmlt.xml_or
+              (Xmlt.xml_do "usableRulesProc"
+                (Xmlt.xml_take
+                  (Xmlt.xml_do "usableRules"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ xa -> Xmlt.xml_return (id xa))))
+                  (\ a ->
+                    Xmlt.xml_take
+                      (xml2csr_dp_termination_proof xml2name termIndexMap
+                        ruleMap)
+                      (\ b ->
+                        Xmlt.xml_return
+                          (CSR_Checker.CSR_DP_Usable_Rules_Proc a b)))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "subtermProc"
+                  (Xmlt.xml_take
+                    (Xmlt.xml_or
+                      (Xmlt.xml_change (proj xml2name)
+                        (Xmlt.xml_return . Sum_Type.Inl))
+                      (Xmlt.xml_change (multiset_af xml2name)
+                        (Xmlt.xml_return . Sum_Type.Inr)))
+                    (\ pi_mpi ->
+                      Xmlt.xml_take_many_sub [] Arith.zero_nat
+                        Extended_Nat.Infinity_enat
+                        (projected_rseq xml2name termIndexMap ruleMap
+                          (Subterm_Criterion_Impl.create_proj
+                            (case pi_mpi of {
+                              Sum_Type.Inl lpi -> lpi;
+                              Sum_Type.Inr _ ->
+                                Subterm_Criterion_Impl.Projection [];
+                            })))
+                        (\ seq ->
+                          Xmlt.xml_take
+                            (Xmlt.xml_do "dps"
+                              (Xmlt.xml_take
+                                (CPF_Input_Parser.rules xml2name termIndexMap
+                                  ruleMap)
+                                (\ xa -> Xmlt.xml_return (id xa))))
+                            (\ dps ->
+                              Xmlt.xml_take
+                                (xml2csr_dp_termination_proof xml2name
+                                  termIndexMap ruleMap)
+                                (\ prf ->
+                                  Xmlt.xml_return
+                                    (case pi_mpi of {
+                                      Sum_Type.Inl lpi ->
+CSR_Checker.CSR_DP_Subterm_Criterion_Proc lpi seq dps prf;
+                                      Sum_Type.Inr mpi ->
+CSR_Checker.CSR_DP_Gen_Subterm_Criterion_Proc mpi dps prf;
+                                    })))))))
+                (Xmlt.xml_do "sizeChangeProc"
+                  (Xmlt.xml_take (Xmlt.xml_leaf "subtermCriterion" True)
+                    (\ _ ->
+                      Xmlt.xml_take_many_sub [] Arith.zero_nat
+                        Extended_Nat.Infinity_enat
+                        (scg xml2name termIndexMap ruleMap)
+                        (\ b ->
+                          Xmlt.xml_return
+                            (CSR_Checker.CSR_DP_Size_Change_Subterm_Proc
+                              b))))))))))
       Xmlt.xml_return)
     x;
 
