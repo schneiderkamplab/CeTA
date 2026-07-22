@@ -2400,6 +2400,38 @@ where
       Inr d \<Rightarrow> Inr d
     | Inl e \<Rightarrow> safe_csr_dependency_pairs_tt J \<mu> R P)"
 
+definition
+  csr_mu_usable_rules_proc ::
+    "('dpp, 'f::{showl, compare_order}, 'v::{showl, compare_order}) dpp_ops \<Rightarrow>
+     'f muL \<Rightarrow> ('f, 'v) rules \<Rightarrow> 'dpp proc"
+where
+  "csr_mu_usable_rules_proc J \<mu> U dpp \<equiv>
+    check_return (do {
+      check_allm (\<lambda>(l, r). check (is_Fun l)
+        (showsl_lit (STR ''variables as lhss not allowed''))) (dpp_ops.rules J dpp);
+      check_ur_P_closed_rm_af (dpp_ops.rules_map J dpp) U (mu_of \<mu>) (dpp_ops.pairs J dpp)
+        <+? (\<lambda>s. showsl_lit (STR ''error when checking CSR usable-rule closure\<newline>'') \<circ> s)
+    }) (dpp_ops.intersect_rules J dpp U)"
+
+lemma csr_mu_usable_rules_proc_closure:
+  assumes J: "dpp_spec J"
+    and ok: "csr_mu_usable_rules_proc J \<mu> U dpp = return dpp'"
+  shows "ur_closed_af (set (dpp_ops.rules J dpp)) (set U) UNIV (mu_of \<mu>) \<and>
+    ur_P_closed_af (set (dpp_ops.rules J dpp)) (set U) UNIV (mu_of \<mu>)
+      (set (dpp_ops.pairs J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  from ok[unfolded csr_mu_usable_rules_proc_def, simplified]
+  have lhs: "\<And>lr. lr \<in> set (rules dpp) \<Longrightarrow> is_Fun (fst lr)"
+    and closed: "isOK (check_ur_P_closed_rm_af (rules_map dpp) U (mu_of \<mu>) (pairs dpp))"
+    by (auto simp: isOK_check_allm isOK_check)
+  have rm: "\<And>f n. set (rules_map dpp (f, n)) =
+    {(l, r). (l, r) \<in> set (rules dpp) \<and> root l = Some (f, n)}"
+    using rules_map_sound by auto
+  show ?thesis
+    by (rule check_ur_P_closed_rm_af_sound[OF lhs rm closed]) auto
+qed
+
 lemma mu_CSDP_list:
   "set (mu_CSDP_list R \<mu> D) = mu_CSDP_on (mu_of \<mu>) (set D) (set R)"
 proof
