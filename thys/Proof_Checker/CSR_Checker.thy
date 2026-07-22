@@ -2243,6 +2243,86 @@ proof -
     by (rule nrrsteps_imp_sharp_rsteps)
 qed
 
+lemma csnrstep_imp_csstep:
+  assumes "(s, t) \<in> csnrstep \<mu> R"
+  shows "(s, t) \<in> csstep \<mu> R"
+  using assms unfolding csnrstep_def csstep_def by auto
+
+lemma sharp_csnrstep_imp_csstep:
+  assumes sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+    and "(s, t) \<in> csnrstep \<mu> R"
+  shows "(\<sharp> s, \<sharp> t) \<in> csstep \<mu> R"
+proof -
+  from assms(2)
+  obtain p lr \<sigma> where p_ne: "p \<noteq> []"
+    and step: "(s, t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    unfolding csnrstep_def csstep_p_def by auto
+  have "(\<sharp> s, \<sharp> t) \<in> rstep_r_p_s R lr p \<sigma>"
+  proof (cases s)
+    case (Var x)
+    with step p_ne have False
+      unfolding rstep_r_p_s_def' by auto
+    then show ?thesis ..
+  next
+    case (Fun f ts)
+    from p_ne obtain i q where p: "p = i # q"
+      by (cases p, auto)
+    from step Fun show ?thesis
+      unfolding rstep_r_p_s_def' p by auto
+  qed
+  moreover have "csstep_cond \<mu> p (\<sharp> s)"
+  proof (cases s)
+    case (Var x)
+    with step p_ne have False
+      unfolding rstep_r_p_s_def' by auto
+    then show ?thesis ..
+  next
+    case (Fun f ts)
+    from p_ne obtain i q where p: "p = i # q"
+      by (cases p, auto)
+    show ?thesis
+      unfolding csstep_cond_def
+    proof (intro allI impI)
+      fix p1 j p2
+      assume A: "p = p1 @ j # p2 \<and> p \<in> poss (\<sharp> s)"
+      show "\<exists>g us. \<sharp> s |_ p1 = Fun g us \<and> j \<in> \<mu> (g, length us)"
+      proof (cases p1)
+        case Nil
+        with A Fun p cond[unfolded csstep_cond_def, rule_format, of "[]" j p2]
+        show ?thesis
+          using sharp_mu[of f "length ts"] by auto
+      next
+        case (Cons k qs)
+        with A Fun have A': "p = p1 @ j # p2 \<and> p \<in> poss s"
+          by auto
+        from cond[unfolded csstep_cond_def, rule_format, OF A']
+        obtain g us where s_sub: "s |_ p1 = Fun g us" and j: "j \<in> \<mu> (g, length us)"
+          by blast
+        with Cons Fun show ?thesis
+          by auto
+      qed
+    qed
+  qed
+  ultimately show ?thesis
+    unfolding csstep_def csstep_p_def by blast
+qed
+
+lemma csnrsteps_imp_sharp_cssteps:
+  assumes sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+    and "(s, t) \<in> (csnrstep \<mu> R)\<^sup>*"
+  shows "(\<sharp> s, \<sharp> t) \<in> (csstep \<mu> R)\<^sup>*"
+  using assms(2)
+proof (induct rule: rtrancl_induct)
+  case base
+  show ?case by simp
+next
+  case (step y z)
+  from sharp_csnrstep_imp_csstep[OF sharp_mu step.hyps(2)]
+  have "(\<sharp> y, \<sharp> z) \<in> csstep \<mu> R" .
+  with step.hyps(3) show ?case by auto
+qed
+
 lemma mu_Tinf_imp_mu_CSDP_relstep:
   assumes wf: "wf_trs R"
     and Tinf: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
@@ -2271,6 +2351,39 @@ proof -
   have right: "(\<sharp> u, \<sharp> u) \<in> (rstep R)\<^sup>*"
     by simp
   have "(\<sharp> t, \<sharp> u) \<in> (rstep R)\<^sup>* O rrstep (mu_CSDP_on \<mu> D R) O (rstep R)\<^sup>*"
+    using left dp right by auto
+  with uT show ?thesis by blast
+qed
+
+lemma mu_Tinf_imp_mu_CSDP_csrelstep:
+  assumes wf: "wf_trs R"
+    and Tinf: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and vc: "rhs_mu_vars_condition \<mu> R"
+    and D: "{f. defined R f} \<subseteq> D"
+    and sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+  shows "\<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
+    (\<sharp> t, \<sharp> u) \<in> (csstep \<mu> R)\<^sup>* O rrstep (mu_CSDP_on \<mu> D R) O (csstep \<mu> R)\<^sup>*"
+proof -
+  from mu_Tinf_imp_SN_csnr_first_csrstep[OF wf Tinf]
+  obtain s v where pref: "(t, s) \<in> (csnrstep \<mu> R)\<^sup>*"
+    and root: "(s, v) \<in> csrstep \<mu> R"
+    and notSN_v: "\<not> SN_on (csstep \<mu> R) {v}"
+    by auto
+  have sv: "(s, v) \<in> csstep \<mu> R"
+    using root unfolding csstep_root_nonroot by auto
+  have notSN_s: "\<not> SN_on (csstep \<mu> R) {s}"
+    by (rule step_notSN_on_source[OF sv notSN_v])
+  have sT: "s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    by (rule csnrsteps_mu_Tinf_preserve[OF wf pref Tinf notSN_s])
+  from csrstep_mu_Tinf_rhs_imp_rrstep_mu_CSDP_on[OF wf root sT notSN_v vc D]
+  obtain u where uT: "u \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and dp: "(\<sharp> s, \<sharp> u) \<in> rrstep (mu_CSDP_on \<mu> D R)"
+    by blast
+  have left: "(\<sharp> t, \<sharp> s) \<in> (csstep \<mu> R)\<^sup>*"
+    by (rule csnrsteps_imp_sharp_cssteps[OF sharp_mu pref])
+  have right: "(\<sharp> u, \<sharp> u) \<in> (csstep \<mu> R)\<^sup>*"
+    by simp
+  have "(\<sharp> t, \<sharp> u) \<in> (csstep \<mu> R)\<^sup>* O rrstep (mu_CSDP_on \<mu> D R) O (csstep \<mu> R)\<^sup>*"
     using left dp right by auto
   with uT show ?thesis by blast
 qed
@@ -2765,6 +2878,79 @@ lemma finite_mu_CSDP_on_imp_SN_rel:
   using fin
   unfolding finite_dpp_iff_SN_rel CS_rrstep_conv by simp
 
+definition finite_csr_dpp ::
+  "'f mu \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) trs \<Rightarrow> bool"
+where
+  "finite_csr_dpp \<mu> P R \<longleftrightarrow> SN_rel (rrstep P) (csstep \<mu> R)"
+
+lemma finite_dpp_imp_finite_csr_dpp:
+  assumes fin: "finite_dpp (False, False, P, {}, {}, {}, R)"
+  shows "finite_csr_dpp \<mu> P R"
+proof -
+  have rel: "SN_rel (rrstep P) (rstep R)"
+    using fin unfolding finite_dpp_iff_SN_rel CS_rrstep_conv by simp
+  have cs_sub: "csstep \<mu> R \<subseteq> rstep R"
+    unfolding csstep_def csstep_p_def
+    by (auto dest: rstep_r_p_s_imp_rstep)
+  show ?thesis
+    unfolding finite_csr_dpp_def
+    by (rule SN_rel_mono[OF subset_refl cs_sub rel])
+qed
+
+lemma finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress:
+  assumes progress: "\<And>t. t \<in> mu_Tinf \<mu> (csstep \<mu> R) \<Longrightarrow>
+      \<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
+        (\<sharp> t, \<sharp> u) \<in> (csstep \<mu> R)\<^sup>* O rrstep P O (csstep \<mu> R)\<^sup>*"
+    and fin: "finite_csr_dpp \<mu> P R"
+  shows "SN (csstep \<mu> R)"
+proof (rule ccontr)
+  assume "\<not> SN (csstep \<mu> R)"
+  from not_SN_imp_Tinf[OF this]
+  obtain t0 where t0_T: "t0 \<in> Tinf (csstep \<mu> R)"
+    by blast
+  from Tinf_imp_mu_Tinf[OF t0_T]
+  have t0: "t0 \<in> mu_Tinf \<mu> (csstep \<mu> R)" .
+  let ?S = "csstep \<mu> R"
+  let ?rel = "?S\<^sup>* O rrstep P O ?S\<^sup>*"
+  have all_ex: "\<forall>t. \<exists>u. t \<in> mu_Tinf \<mu> ?S \<longrightarrow>
+    u \<in> mu_Tinf \<mu> ?S \<and> (\<sharp> t, \<sharp> u) \<in> ?rel"
+    using progress by blast
+  from choice[OF all_ex]
+  obtain nxt where nxt: "\<And>t. t \<in> mu_Tinf \<mu> ?S \<Longrightarrow>
+    nxt t \<in> mu_Tinf \<mu> ?S \<and> (\<sharp> t, \<sharp> (nxt t)) \<in> ?rel"
+    by blast
+  define ts where "ts = rec_nat t0 (\<lambda>n t. nxt t)"
+  have ts_T: "ts n \<in> mu_Tinf \<mu> ?S" for n
+  proof (induct n)
+    case 0
+    then show ?case unfolding ts_def using t0 by simp
+  next
+    case (Suc n)
+    from nxt[OF Suc.hyps] have "nxt (ts n) \<in> mu_Tinf \<mu> ?S"
+      by simp
+    show ?case
+      using \<open>nxt (ts n) \<in> mu_Tinf \<mu> ?S\<close>
+      unfolding ts_def by simp
+  qed
+  have ts_step: "(\<sharp> (ts n), \<sharp> (ts (Suc n))) \<in> ?rel" for n
+  proof -
+    from nxt[OF ts_T[of n]]
+    have step: "(\<sharp> (ts n), \<sharp> (nxt (ts n))) \<in> ?rel"
+      by simp
+    show ?thesis
+      using step unfolding ts_def by simp
+  qed
+  define f where "f n = \<sharp> (ts n)" for n
+  have chain: "\<And>n. (f n, f (Suc n)) \<in> ?rel"
+    unfolding f_def using ts_step by simp
+  have "\<not> SN_rel (rrstep P) ?S"
+    unfolding SN_rel_on_def SN_defs
+    using chain by blast
+  moreover from fin have "SN_rel (rrstep P) ?S"
+    unfolding finite_csr_dpp_def .
+  ultimately show False by contradiction
+qed
+
 lemma finite_mu_CSDP_on_imp_SN_csstep_if_mu_Tinf_progress:
   assumes progress: "\<And>t. t \<in> mu_Tinf \<mu> (csstep \<mu> R) \<Longrightarrow>
       \<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
@@ -2831,6 +3017,16 @@ lemma finite_mu_CSDP_on_imp_SN_csstep:
   shows "SN (csstep \<mu> R)"
   by (rule finite_mu_CSDP_on_imp_SN_csstep_if_mu_Tinf_progress[OF _ fin],
       rule mu_Tinf_imp_mu_CSDP_relstep[OF wf _ vc D])
+
+lemma finite_csr_mu_CSDP_on_imp_SN_csstep:
+  assumes wf: "wf_trs R"
+    and vc: "rhs_mu_vars_condition \<mu> R"
+    and D: "{f. defined R f} \<subseteq> D"
+    and sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+    and fin: "finite_csr_dpp \<mu> (mu_CSDP_on \<mu> D R) R"
+  shows "SN (csstep \<mu> R)"
+  by (rule finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress[OF _ fin],
+      rule mu_Tinf_imp_mu_CSDP_csrelstep[OF wf _ vc D sharp_mu])
 
 
 end
