@@ -3146,6 +3146,8 @@ where
       | Inr R2 \<Rightarrow> check_csr_termination_proof I J a i \<mu> R2 prf)"
 | "check_csr_termination_proof I J a i \<mu> R (CSR_Dependency_Pairs P prf) =
     debug i (STR ''CSR dependency pairs'') (do {
+      csr_sharp_mu_check \<mu>
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': invalid replacement map for CSR dependency pairs\<newline>'') \<circ> s);
       dpp \<leftarrow> csr_dependency_pairs_tt Sharp J \<mu> R P
         <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when switching from CSR to a CS-DP problem\<newline>'')
           \<circ> showsl_rules R \<circ> showsl_lit (STR ''\<newline>with pairs\<newline>'') \<circ> showsl_rules P
@@ -3250,6 +3252,8 @@ lemma check_csr_termination_proof_sound:
     assume ok_case:
       "isOK (check_csr_termination_proof I J a i \<mu> R0 (CSR_Dependency_Pairs P dp_prf))"
     let ?i = "add_index i 1"
+    have sharp_ok: "isOK (csr_sharp_mu_check \<mu>)"
+      using ok_case by auto
     obtain dpp where
       dp: "csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
       and rec: "isOK (check_csr_dp_termination_proof I J False ?i dpp dp_prf)"
@@ -3283,6 +3287,9 @@ lemma check_csr_termination_proof_sound:
       have fin_mu: "finite_dpp
         (False, False, mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R0)) (set R0), {}, {}, {}, set R0)"
         by (rule mu_csr_dependency_pairs_tt_finite_mu_CSDP_on[OF J mu_dp fin])
+      have fin_mu_csr: "finite_csr_dpp (mu_of \<mu>)
+        (mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R0)) (set R0)) (set R0)"
+        by (rule finite_dpp_imp_finite_csr_dpp[OF fin_mu])
       note mu_dp' = mu_dp[unfolded mu_csr_dependency_pairs_tt_def Let_def, simplified]
       have wf: "wf_trs (set R0)"
         using mu_dp' by auto
@@ -3290,8 +3297,10 @@ lemma check_csr_termination_proof_sound:
         by (rule rhs_mu_vars_condition_list_sound, insert mu_dp', auto)
       have D: "{f. defined (set R0) f} \<subseteq> set (defined_list R0)"
         using mu_dp' by auto
+      have sharp_mu: "\<And>f n. mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
+        by (rule csr_sharp_mu_check_sound[OF sharp_ok])
       show ?thesis
-        by (rule finite_mu_CSDP_on_imp_SN_csstep[OF wf vc D fin_mu])
+        by (rule finite_csr_mu_CSDP_on_imp_SN_csstep[OF wf vc D sharp_mu fin_mu_csr])
     qed
   qed
   done
