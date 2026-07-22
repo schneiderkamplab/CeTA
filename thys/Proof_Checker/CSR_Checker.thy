@@ -2249,7 +2249,7 @@ lemma csnrstep_imp_csstep:
   using assms unfolding csnrstep_def csstep_def by auto
 
 lemma sharp_csnrstep_imp_csstep:
-  assumes sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+  assumes sharp_mu: "\<And>f n. \<mu> (f, n) \<subseteq> \<mu> (\<sharp> f, n)"
     and "(s, t) \<in> csnrstep \<mu> R"
   shows "(\<sharp> s, \<sharp> t) \<in> csstep \<mu> R"
 proof -
@@ -2309,7 +2309,7 @@ proof -
 qed
 
 lemma csnrsteps_imp_sharp_cssteps:
-  assumes sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+  assumes sharp_mu: "\<And>f n. \<mu> (f, n) \<subseteq> \<mu> (\<sharp> f, n)"
     and "(s, t) \<in> (csnrstep \<mu> R)\<^sup>*"
   shows "(\<sharp> s, \<sharp> t) \<in> (csstep \<mu> R)\<^sup>*"
   using assms(2)
@@ -2360,7 +2360,7 @@ lemma mu_Tinf_imp_mu_CSDP_csrelstep:
     and Tinf: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
     and vc: "rhs_mu_vars_condition \<mu> R"
     and D: "{f. defined R f} \<subseteq> D"
-    and sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+    and sharp_mu: "\<And>f n. \<mu> (f, n) \<subseteq> \<mu> (\<sharp> f, n)"
   shows "\<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
     (\<sharp> t, \<sharp> u) \<in> (csstep \<mu> R)\<^sup>* O rrstep (mu_CSDP_on \<mu> D R) O (csstep \<mu> R)\<^sup>*"
 proof -
@@ -3022,7 +3022,7 @@ lemma finite_csr_mu_CSDP_on_imp_SN_csstep:
   assumes wf: "wf_trs R"
     and vc: "rhs_mu_vars_condition \<mu> R"
     and D: "{f. defined R f} \<subseteq> D"
-    and sharp_mu: "\<And>f n. \<mu> (\<sharp> f, n) = \<mu> (f, n)"
+    and sharp_mu: "\<And>f n. \<mu> (f, n) \<subseteq> \<mu> (\<sharp> f, n)"
     and fin: "finite_csr_dpp \<mu> (mu_CSDP_on \<mu> D R) R"
   shows "SN (csstep \<mu> R)"
   by (rule finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress[OF _ fin],
