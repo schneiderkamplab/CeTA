@@ -3147,6 +3147,13 @@ where
   "check_csr_dp_termination_proof I J a i dpp prf =
     check_dp_termination_proof I J a i dpp (dp_proof_of_csr_dp_termination_proof prf)"
 
+definition plain_csr_dpp ::
+  "('dpp, 'f::{showl, compare_order}, 'v::showl) dpp_ops \<Rightarrow> 'dpp \<Rightarrow> bool"
+where
+  "plain_csr_dpp J dpp \<longleftrightarrow>
+    \<not> dpp_ops.nfs J dpp \<and> \<not> dpp_ops.minimal J dpp \<and>
+    dpp_ops.Pw J dpp = [] \<and> dpp_ops.Q J dpp = [] \<and> dpp_ops.R J dpp = []"
+
 primrec check_csr_termination_proof ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow> bool \<Rightarrow>
@@ -3180,6 +3187,35 @@ lemma check_csr_dp_termination_proof_sound:
   shows "finite_dpp (dpp_ops.dpp J dpp)"
   using ok unfolding check_csr_dp_termination_proof_def
   by (rule check_dp_termination_proof[OF I J])
+
+lemma plain_csr_dpp_finite_dpp_imp_finite_csr_dpp:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and fin: "finite_dpp (dpp_ops.dpp J dpp)"
+  shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  from plain have plain':
+    "\<not> NFS dpp" "\<not> M dpp" "Pw dpp = []" "Q dpp = []" "R dpp = []"
+    unfolding plain_csr_dpp_def by auto
+  have Pset: "set (dpp_ops.P J dpp) = set (dpp_ops.pairs J dpp)"
+    using pairs_sound plain' by auto
+  have Rset: "set (dpp_ops.Rw J dpp) = set (dpp_ops.rules J dpp)"
+    using rules_sound plain' by auto
+  have dpp: "dpp_ops.dpp J dpp =
+    (False, False, set (dpp_ops.pairs J dpp), {}, {}, {}, set (dpp_ops.rules J dpp))"
+    using dpp_sound plain' Pset Rset by auto
+  show ?thesis
+    by (rule finite_dpp_imp_finite_csr_dpp[OF fin[unfolded dpp]])
+qed
+
+lemma check_csr_dp_termination_proof_sound_csr:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and ok: "isOK (check_csr_dp_termination_proof I J False i dpp prf)"
+  shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  by (rule plain_csr_dpp_finite_dpp_imp_finite_csr_dpp[OF J plain
+      check_csr_dp_termination_proof_sound[OF I J ok]])
 
 lemma csstep_subset_rstep: "csstep \<mu> R \<subseteq> rstep R"
 proof
