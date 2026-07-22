@@ -1159,6 +1159,7 @@ partial_function_mr (sum_bot)
   and xml2trs_termination_proof :: "('f, 'l, string) trs_termination_proof xmlt"
   and xml2fptrs_termination_proof :: "('f, 'l, string) fptrs_termination_proof xmlt"
   and xml2csr_termination_proof :: "('f, 'l, string) csr_termination_proof xmlt"
+  and xml2csr_dp_termination_proof :: "('f, 'l, string) csr_dp_termination_proof xmlt"
   and xml2unknown_proof :: "('f, 'l, string) unknown_proof xmlt"
   and xml2subproof
 where
@@ -1420,10 +1421,20 @@ where
       xml_return (CSR_Rule_Removal ord r p)
     } XMLor XMLdo (STR ''csrDependencyPairs'') {
       dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
-      p \<leftarrow> xml2dp_termination_proof;
+      p \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (CSR_Dependency_Pairs dps p)
     }
   ) id x"
+| "xml2csr_dp_termination_proof x =
+  XMLdo (STR ''csrDpProof'') {
+    p \<leftarrow> XMLdo (STR ''pIsEmpty'') {
+      xml_return CSR_DP_P_is_Empty
+    } XMLor XMLdo (STR ''ordinaryDpProof'') {
+      p \<leftarrow> xml2dp_termination_proof;
+      xml_return (CSR_DP_Ordinary_Proof p)
+    };
+    xml_return p
+  } x"
 | "xml2unknown_proof x =
   XMLdo (STR ''unknownInputProof'') {
     ret \<leftarrow> XMLdo (STR ''unknownAssumption'') {

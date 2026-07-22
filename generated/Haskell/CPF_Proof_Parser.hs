@@ -4552,6 +4552,38 @@ xml2quasi_reductive_proof xml2name termIndexMap ruleMap =
               (\ b -> Xmlt.xml_return (Check_Quasi_Reductive.Unravel a b)))))
       (\ x -> Xmlt.xml_return (id x)));
 
+xml2csr_dp_termination_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (CSR_Checker.Csr_dp_termination_proof a b [Arith.Char]);
+xml2csr_dp_termination_proof xml2name termIndexMap ruleMap x =
+  Xmlt.xml_do "csrDpProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "pIsEmpty" (Xmlt.xml_return CSR_Checker.CSR_DP_P_is_Empty))
+        (Xmlt.xml_do "ordinaryDpProof"
+          (Xmlt.xml_take
+            (xml2dp_termination_proof xml2name termIndexMap ruleMap)
+            (\ p -> Xmlt.xml_return (CSR_Checker.CSR_DP_Ordinary_Proof p)))))
+      Xmlt.xml_return)
+    x;
+
 xml2csr_termination_proof ::
   forall a b.
     (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
@@ -4600,7 +4632,7 @@ xml2csr_termination_proof xml2name termIndexMap ruleMap x =
                   (\ xa -> Xmlt.xml_return (id xa))))
               (\ dps ->
                 Xmlt.xml_take
-                  (xml2dp_termination_proof xml2name termIndexMap ruleMap)
+                  (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
                   (\ p ->
                     Xmlt.xml_return
                       (CSR_Checker.CSR_Dependency_Pairs dps p)))))))

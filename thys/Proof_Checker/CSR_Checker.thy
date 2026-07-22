@@ -2803,13 +2803,32 @@ lemma finite_mu_CSDP_on_imp_SN_csstep:
 
 end
 
+datatype (dead 'f, dead 'l, dead 'v) csr_dp_termination_proof =
+  CSR_DP_P_is_Empty
+| CSR_DP_Ordinary_Proof "('f, 'l, 'v) dp_termination_proof"
+
 datatype (dead 'f, dead 'l, dead 'v) csr_termination_proof =
   CSR_R_is_Empty
 | CSR_Rule_Removal
     "('f, 'l) lab redtriple_impl" "('f, 'l, 'v) trsLL"
     "('f, 'l, 'v) csr_termination_proof"
 | CSR_Dependency_Pairs
-    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) dp_termination_proof"
+    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+
+fun dp_proof_of_csr_dp_termination_proof ::
+  "('f, 'l, 'v) csr_dp_termination_proof \<Rightarrow> ('f, 'l, 'v) dp_termination_proof"
+where
+  "dp_proof_of_csr_dp_termination_proof CSR_DP_P_is_Empty = P_is_Empty"
+| "dp_proof_of_csr_dp_termination_proof (CSR_DP_Ordinary_Proof prf) = prf"
+
+definition check_csr_dp_termination_proof ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f, label_type, string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_csr_dp_termination_proof I J a i dpp prf =
+    check_dp_termination_proof I J a i dpp (dp_proof_of_csr_dp_termination_proof prf)"
 
 primrec check_csr_termination_proof ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
@@ -2832,9 +2851,16 @@ where
         <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when switching from CSR to a CS-DP problem\<newline>'')
           \<circ> showsl_rules R \<circ> showsl_lit (STR ''\<newline>with pairs\<newline>'') \<circ> showsl_rules P
           \<circ> showsl_nl \<circ> s);
-      check_dp_termination_proof I J False (add_index i 1) dpp prf
+      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
         <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below CSR dependency pairs\<newline>'') \<circ> s)
     })"
+
+lemma check_csr_dp_termination_proof_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_csr_dp_termination_proof I J False i dpp prf)"
+  shows "finite_dpp (dpp_ops.dpp J dpp)"
+  using ok unfolding check_csr_dp_termination_proof_def
+  by (rule check_dp_termination_proof[OF I J])
 
 lemma csstep_subset_rstep: "csstep \<mu> R \<subseteq> rstep R"
 proof
@@ -2927,10 +2953,10 @@ lemma check_csr_termination_proof_sound:
     let ?i = "add_index i 1"
     obtain dpp where
       dp: "csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
-      and rec: "isOK (check_dp_termination_proof I J False ?i dpp dp_prf)"
+      and rec: "isOK (check_csr_dp_termination_proof I J False ?i dpp dp_prf)"
       using ok_case by auto
     have fin: "finite_dpp (dpp_ops.dpp J dpp)"
-      by (rule check_dp_termination_proof[OF I J rec])
+      by (rule check_csr_dp_termination_proof_sound[OF I J rec])
     show ?thesis
     proof (cases "mu_csr_dependency_pairs_tt Sharp J \<mu> R0 P")
       case (Inl e)

@@ -1,6 +1,8 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module CSR_Checker(Csr_termination_proof(..), check_csr_termination_proof)
+module
+  CSR_Checker(Csr_dp_termination_proof(..), Csr_termination_proof(..),
+               check_csr_termination_proof)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -49,10 +51,13 @@ import qualified Sharp_Syntax;
 import qualified HOL;
 import qualified Compare;
 import qualified Arith;
-import qualified Reduction_Pair_Implementations;
 import qualified Check_Termination;
+import qualified Reduction_Pair_Implementations;
 import qualified Labelings;
 import qualified Term_Rewriting;
+
+data Csr_dp_termination_proof a b c = CSR_DP_P_is_Empty
+  | CSR_DP_Ordinary_Proof (Check_Termination.Dp_termination_proof a b c);
 
 data Csr_termination_proof a b c = CSR_R_is_Empty
   | CSR_Rule_Removal
@@ -63,7 +68,7 @@ data Csr_termination_proof a b c = CSR_R_is_Empty
   | CSR_Dependency_Pairs
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Check_Termination.Dp_termination_proof a b c);
+      (Csr_dp_termination_proof a b c);
 
 mu_fun_poss_list ::
   forall a b.
@@ -579,6 +584,31 @@ csr_dependency_pairs_tt shp j mu r p =
     Sum_Type.Inr a -> Sum_Type.Inr a;
   });
 
+dp_proof_of_csr_dp_termination_proof ::
+  forall a b c.
+    Csr_dp_termination_proof a b c ->
+      Check_Termination.Dp_termination_proof a b c;
+dp_proof_of_csr_dp_termination_proof CSR_DP_P_is_Empty =
+  Check_Termination.P_is_Empty;
+dp_proof_of_csr_dp_termination_proof (CSR_DP_Ordinary_Proof prf) = prf;
+
+check_csr_dp_termination_proof ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     Bool ->
+                                       (String -> String) ->
+ c -> Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+        Sum_Type.Sum (String -> String) ();
+check_csr_dp_termination_proof ia j a i dpp prf =
+  Check_Termination.check_dp_termination_proof ia j a i dpp
+    (dp_proof_of_csr_dp_termination_proof prf);
+
 check_csr_termination_proof ::
   forall a b c.
     (Compare.Compare_order b, Countable.Countable b, Eq b,
@@ -621,7 +651,7 @@ check_csr_termination_proof ia j a i mu r (CSR_Dependency_Pairs p prf) =
               x)))
       (\ dpp ->
         Error_Monad.catch_error
-          (Check_Termination.check_dp_termination_proof ia j False
+          (check_csr_dp_termination_proof ia j False
             (Term_Rewriting.add_index i Arith.one_nat) dpp prf)
           (\ x ->
             Sum_Type.Inl
