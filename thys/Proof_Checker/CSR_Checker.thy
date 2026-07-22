@@ -2947,6 +2947,24 @@ proof -
     by (rule SN_rel_mono[OF subset_refl cs_sub rel])
 qed
 
+lemma csstep_mono:
+  assumes "R \<subseteq> S"
+  shows "csstep \<mu> R \<subseteq> csstep \<mu> S"
+  using assms unfolding csstep_def csstep_p_def rstep_r_p_s_def' by auto
+
+lemma rrstep_mono:
+  assumes "P \<subseteq> Q"
+  shows "rrstep P \<subseteq> rrstep Q"
+  using assms unfolding rrstep_def' by auto
+
+lemma finite_csr_dpp_mono:
+  assumes fin: "finite_csr_dpp \<mu> P' R'"
+    and P: "P \<subseteq> P'"
+    and R: "R \<subseteq> R'"
+  shows "finite_csr_dpp \<mu> P R"
+  using fin unfolding finite_csr_dpp_def
+  by (rule SN_rel_mono[OF rrstep_mono[OF P] csstep_mono[OF R]])
+
 lemma finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress:
   assumes progress: "\<And>t. t \<in> mu_Tinf \<mu> (csstep \<mu> R) \<Longrightarrow>
       \<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
