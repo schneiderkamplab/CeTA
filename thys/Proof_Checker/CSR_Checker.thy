@@ -2965,6 +2965,64 @@ lemma finite_csr_dpp_mono:
   using fin unfolding finite_csr_dpp_def
   by (rule SN_rel_mono[OF rrstep_mono[OF P] csstep_mono[OF R]])
 
+lemma finite_csr_dpp_rename_vars:
+  assumes fin: "finite_csr_dpp \<mu> P' R"
+    and P: "\<And>st. st \<in> P \<Longrightarrow> \<exists>st'. st' \<in> P' \<and> st =\<^sub>v st'"
+  shows "finite_csr_dpp \<mu> P R"
+proof -
+  have P_step: "rrstep P \<subseteq> rrstep P'"
+  proof
+    fix s t
+    assume "(s, t) \<in> rrstep P"
+    then obtain l r \<sigma> where st: "s = l \<cdot> \<sigma>" "t = r \<cdot> \<sigma>" and lr: "(l, r) \<in> P"
+      unfolding rrstep_def' by auto
+    from P[OF lr] obtain l' r' where lr': "(l', r') \<in> P'" and eq: "(l, r) =\<^sub>v (l', r')"
+      by auto
+    from eq_rule_mod_varsE[OF eq]
+    obtain \<tau> where l: "l = l' \<cdot> \<tau>" and r: "r = r' \<cdot> \<tau>"
+      by blast
+    have step: "\<exists>la ra \<rho>. (la, ra) \<in> P' \<and> s = la \<cdot> \<rho> \<and> t = ra \<cdot> \<rho>"
+      using lr' st unfolding l r
+      by (intro exI[of _ l'] exI[of _ r'] exI[of _ "\<tau> \<circ>\<^sub>s \<sigma>"], simp)
+    show "(s, t) \<in> rrstep P'"
+      unfolding rrstep_def'
+      using step by auto
+  qed
+  show ?thesis
+    using fin unfolding finite_csr_dpp_def
+    by (rule SN_rel_mono[OF P_step subset_refl])
+qed
+
+lemma mu_csr_dependency_pairs_tt_finite_csr_mu_CSDP_on:
+  assumes J: "dpp_spec J"
+    and tt: "mu_csr_dependency_pairs_tt J \<mu> R P = return d"
+    and fin: "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J d)) (set (dpp_ops.rules J d))"
+  shows "finite_csr_dpp (mu_of \<mu>)
+    (mu_CSDP_on (mu_of \<mu>) (set (defined_list R)) (set R)) (set R)"
+proof -
+  interpret dpp_spec J by fact
+  let ?D = "defined_list R"
+  let ?P = "mu_CSDP_on (mu_of \<mu>) (set ?D) (set R)"
+  note tt' = tt[unfolded mu_csr_dependency_pairs_tt_def Let_def, simplified]
+  from tt' have d: "d = dpp_ops.mk J False False P [] [] [] R"
+    by auto
+  from tt' have cover: "\<And>dp. dp \<in> set (mu_CSDP_list R \<mu> ?D) \<Longrightarrow>
+      dp \<in> set P \<or> (\<exists>dp'\<in>set P. dp =\<^sub>v dp')"
+    by auto
+  have cover': "\<And>dp. dp \<in> ?P \<Longrightarrow>
+      dp \<in> set P \<or> (\<exists>dp'\<in>set P. dp =\<^sub>v dp')"
+    using cover unfolding mu_CSDP_list by auto
+  have finP: "finite_csr_dpp (mu_of \<mu>) (set P) (set R)"
+    using fin unfolding d mk_sound by simp
+  show ?thesis
+  proof (rule finite_csr_dpp_rename_vars[OF finP])
+    fix dp
+    assume "dp \<in> ?P"
+    from cover'[OF this] show "\<exists>dp'. dp' \<in> set P \<and> dp =\<^sub>v dp'"
+      using eq_rule_mod_vars_refl[of dp] by blast
+  qed
+qed
+
 lemma finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress:
   assumes progress: "\<And>t. t \<in> mu_Tinf \<mu> (csstep \<mu> R) \<Longrightarrow>
       \<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
@@ -3154,6 +3212,46 @@ where
     \<not> dpp_ops.nfs J dpp \<and> \<not> dpp_ops.minimal J dpp \<and>
     dpp_ops.Pw J dpp = [] \<and> dpp_ops.Q J dpp = [] \<and> dpp_ops.R J dpp = []"
 
+primrec check_csr_dp_termination_proof_core ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f, label_type, string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_csr_dp_termination_proof_core I J \<mu> a i dpp CSR_DP_P_is_Empty =
+    debug i (STR ''CSR-DP P is empty'')
+      (if dpp_ops.pairs J dpp = []
+       then succeed
+       else error (i \<circ> showsl_lit (STR '': CSR-DP P is not empty in the following DP-problem\<newline>'')
+         \<circ> showsl_dpp J dpp))"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp (CSR_DP_Ordinary_Proof prf) =
+    check_csr_dp_termination_proof I J a i dpp (CSR_DP_Ordinary_Proof prf)"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp
+    (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf) =
+    check_csr_dp_termination_proof I J a i dpp
+      (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf)"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc p Pr prf) =
+    check_csr_dp_termination_proof I J a i dpp
+      (CSR_DP_Gen_Subterm_Criterion_Proc p Pr prf)"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp (CSR_DP_Usable_Rules_Proc U prf) =
+    debug i (STR ''CSR-DP usable rules'') (do {
+      dpp' \<leftarrow> csr_mu_usable_rules_proc J \<mu> U dpp
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying CSR usable rules\<newline>'') \<circ> s);
+      check_allm (\<lambda>lr. check (lr \<in> set U)
+        (i \<circ> showsl_lit (STR '': conservative CSR usable-rules checker requires the usable rules to contain '')
+          \<circ> showsl_rule lr)) (dpp_ops.rules J dpp);
+      check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp' prf
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below CSR usable rules\<newline>'') \<circ> s)
+    })"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp (CSR_DP_Dep_Graph_Proc edpts) =
+    check_csr_dp_termination_proof I J a i dpp (CSR_DP_Dep_Graph_Proc edpts)"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp
+    (CSR_DP_Size_Change_Subterm_Proc graphs) =
+    check_csr_dp_termination_proof I J a i dpp
+      (CSR_DP_Size_Change_Subterm_Proc graphs)"
+
 primrec check_csr_termination_proof ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow> bool \<Rightarrow>
@@ -3173,12 +3271,17 @@ where
     debug i (STR ''CSR dependency pairs'') (do {
       csr_sharp_mu_check \<mu>
         <+? (\<lambda>s. i \<circ> showsl_lit (STR '': invalid replacement map for CSR dependency pairs\<newline>'') \<circ> s);
-      dpp \<leftarrow> csr_dependency_pairs_tt Sharp J \<mu> R P
-        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when switching from CSR to a CS-DP problem\<newline>'')
-          \<circ> showsl_rules R \<circ> showsl_lit (STR ''\<newline>with pairs\<newline>'') \<circ> showsl_rules P
-          \<circ> showsl_nl \<circ> s);
-      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
-        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below CSR dependency pairs\<newline>'') \<circ> s)
+      (case mu_csr_dependency_pairs_tt Sharp J \<mu> R P of
+        Inr dpp \<Rightarrow> check_csr_dp_termination_proof_core I J \<mu> False (add_index i 1) dpp prf
+          <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below replacement-map-specific CSR dependency pairs\<newline>'') \<circ> s)
+      | Inl e \<Rightarrow> do {
+          dpp \<leftarrow> safe_csr_dependency_pairs_tt Sharp J \<mu> R P
+            <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when switching from CSR to a safe CS-DP problem\<newline>'')
+              \<circ> showsl_rules R \<circ> showsl_lit (STR ''\<newline>with pairs\<newline>'') \<circ> showsl_rules P
+              \<circ> showsl_nl \<circ> s);
+          check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+            <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below safe CSR dependency pairs\<newline>'') \<circ> s)
+        })
     })"
 
 lemma check_csr_dp_termination_proof_sound:
@@ -3216,6 +3319,115 @@ lemma check_csr_dp_termination_proof_sound_csr:
   shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
   by (rule plain_csr_dpp_finite_dpp_imp_finite_csr_dpp[OF J plain
       check_csr_dp_termination_proof_sound[OF I J ok]])
+
+lemma plain_csr_dpp_intersect_rules:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+  shows "plain_csr_dpp J (dpp_ops.intersect_rules J dpp U)"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "intersect_rules dpp U"
+  have sem: "dpp_ops.dpp J ?d = (NFS dpp, M dpp, set (P dpp), set (Pw dpp), set (Q dpp),
+      set (R dpp) \<inter> set U, set (Rw dpp) \<inter> set U)"
+    by (rule intersect_rules_sound)
+  have sem': "dpp_ops.dpp J ?d = (NFS ?d, M ?d, set (P ?d), set (Pw ?d), set (Q ?d),
+      set (R ?d), set (Rw ?d))"
+    by (rule dpp_sound)
+  from plain sem sem' have fields: "\<not> NFS ?d" "\<not> M ?d" "set (Pw ?d) = {}"
+    "set (Q ?d) = {}" "set (R ?d) = {}"
+    unfolding plain_csr_dpp_def by auto
+  show ?thesis
+    using fields by (auto simp: plain_csr_dpp_def)
+qed
+
+lemma finite_csr_dpp_intersect_rules_all:
+  assumes J: "dpp_spec J"
+    and all: "set (dpp_ops.rules J dpp) \<subseteq> set U"
+    and fin: "finite_csr_dpp \<mu>
+      (set (dpp_ops.pairs J (dpp_ops.intersect_rules J dpp U)))
+      (set (dpp_ops.rules J (dpp_ops.intersect_rules J dpp U)))"
+  shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "intersect_rules dpp U"
+  have sem: "dpp_ops.dpp J ?d = (NFS dpp, M dpp, set (P dpp), set (Pw dpp), set (Q dpp),
+      set (R dpp) \<inter> set U, set (Rw dpp) \<inter> set U)"
+    by (rule intersect_rules_sound)
+  have sem': "dpp_ops.dpp J ?d = (NFS ?d, M ?d, set (P ?d), set (Pw ?d), set (Q ?d),
+      set (R ?d), set (Rw ?d))"
+    by (rule dpp_sound)
+  have P: "set (pairs ?d) = set (pairs dpp)"
+    using sem sem' pairs_sound[of ?d] pairs_sound[of dpp] by auto
+  have R: "set (rules ?d) = set (rules dpp)"
+    using all sem sem' rules_sound[of ?d] rules_sound[of dpp] by auto
+  show ?thesis
+    using fin unfolding P R .
+qed
+
+lemma check_csr_dp_termination_proof_core_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and ok: "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp prf)"
+  shows "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  using ok plain
+proof (induct "prf" arbitrary: dpp i)
+  case CSR_DP_P_is_Empty
+  then show ?case
+    unfolding finite_csr_dpp_def SN_rel_defs by auto
+next
+  case (CSR_DP_Ordinary_Proof x)
+  then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp (CSR_DP_Ordinary_Proof x))"
+    by simp
+  from CSR_DP_Ordinary_Proof.prems(2) ok' show ?case
+    by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+next
+  case (CSR_DP_Subterm_Criterion_Proc p rseq prules subprf)
+  then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp
+      (CSR_DP_Subterm_Criterion_Proc p rseq prules subprf))"
+    by simp
+  from CSR_DP_Subterm_Criterion_Proc.prems(2) ok' show ?case
+    by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+next
+  case (CSR_DP_Gen_Subterm_Criterion_Proc p prules subprf)
+  then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp
+      (CSR_DP_Gen_Subterm_Criterion_Proc p prules subprf))"
+    by simp
+  from CSR_DP_Gen_Subterm_Criterion_Proc.prems(2) ok' show ?case
+    by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+next
+  case (CSR_DP_Usable_Rules_Proc U subprf)
+  then obtain dpp' where
+    proc: "csr_mu_usable_rules_proc J \<mu> U dpp = return dpp'"
+    and all_ok: "isOK (check_allm (\<lambda>lr. check (lr \<in> set U)
+        (i \<circ> showsl_lit (STR '': conservative CSR usable-rules checker requires the usable rules to contain '')
+          \<circ> showsl_rule lr)) (dpp_ops.rules J dpp))"
+    and rec: "isOK (check_csr_dp_termination_proof_core I J \<mu> False (add_index i 1) dpp' subprf)"
+    by auto
+  from proc[unfolded csr_mu_usable_rules_proc_def, simplified]
+  have dpp': "dpp' = dpp_ops.intersect_rules J dpp U"
+    by auto
+  from all_ok have all: "set (dpp_ops.rules J dpp) \<subseteq> set U"
+    by (auto simp: isOK_check_allm isOK_check)
+  have plain': "plain_csr_dpp J dpp'"
+    unfolding dpp' by (rule plain_csr_dpp_intersect_rules[OF J CSR_DP_Usable_Rules_Proc.prems(2)])
+  from CSR_DP_Usable_Rules_Proc.hyps[OF rec plain']
+  have fin': "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J dpp')) (set (dpp_ops.rules J dpp'))" .
+  show ?case
+    by (rule finite_csr_dpp_intersect_rules_all[OF J all fin'[unfolded dpp']])
+next
+  case (CSR_DP_Dep_Graph_Proc x)
+  then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp (CSR_DP_Dep_Graph_Proc x))"
+    by simp
+  from CSR_DP_Dep_Graph_Proc.prems(2) ok' show ?case
+    by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+next
+  case (CSR_DP_Size_Change_Subterm_Proc x)
+  then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp
+      (CSR_DP_Size_Change_Subterm_Proc x))"
+    by simp
+  from CSR_DP_Size_Change_Subterm_Proc.prems(2) ok' show ?case
+    by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+qed
 
 lemma csstep_subset_rstep: "csstep \<mu> R \<subseteq> rstep R"
 proof
@@ -3308,17 +3520,15 @@ lemma check_csr_termination_proof_sound:
     let ?i = "add_index i 1"
     have sharp_ok: "isOK (csr_sharp_mu_check \<mu>)"
       using ok_case by auto
-    obtain dpp where
-      dp: "csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
-      and rec: "isOK (check_csr_dp_termination_proof I J False ?i dpp dp_prf)"
-      using ok_case by auto
-    have fin: "finite_dpp (dpp_ops.dpp J dpp)"
-      by (rule check_csr_dp_termination_proof_sound[OF I J rec])
     show ?thesis
     proof (cases "mu_csr_dependency_pairs_tt Sharp J \<mu> R0 P")
       case (Inl e)
-      from dp Inl have safe_dp: "safe_csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
-        unfolding csr_dependency_pairs_tt_def by simp
+      from ok_case Inl obtain dpp where
+        safe_dp: "safe_csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
+        and rec: "isOK (check_csr_dp_termination_proof I J False ?i dpp dp_prf)"
+        by auto
+      have fin: "finite_dpp (dpp_ops.dpp J dpp)"
+        by (rule check_csr_dp_termination_proof_sound[OF I J rec])
       have fin_safe: "finite_dpp
         (False, True, safe_CSDP_on Sharp (set (defined_list R0)) (set R0), {}, {}, {}, set R0)"
         by (rule safe_csr_dependency_pairs_tt_finite_safe_CSDP_on[OF J safe_dp fin])
@@ -3334,16 +3544,36 @@ lemma check_csr_termination_proof_sound:
         by (rule finite_safe_CSDP_on_imp_SN_csstep[OF wf fresh D fin_safe])
     next
       case (Inr d)
-      from dp Inr have d: "d = dpp"
-        unfolding csr_dependency_pairs_tt_def by simp
-      have mu_dp: "mu_csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
-        using Inr d by simp
-      have fin_mu: "finite_dpp
-        (False, False, mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R0)) (set R0), {}, {}, {}, set R0)"
-        by (rule mu_csr_dependency_pairs_tt_finite_mu_CSDP_on[OF J mu_dp fin])
+      from ok_case Inr have rec:
+        "isOK (check_csr_dp_termination_proof_core I J \<mu> False ?i d dp_prf)"
+        by auto
+      have mu_dp: "mu_csr_dependency_pairs_tt Sharp J \<mu> R0 P = return d"
+        using Inr by simp
+      have plain: "plain_csr_dpp J d"
+      proof -
+        interpret dpp_spec J by fact
+        from Inr[unfolded mu_csr_dependency_pairs_tt_def Let_def, simplified]
+        have d: "d = dpp_ops.mk J False False P [] [] [] R0"
+          by auto
+        have sem: "dpp_ops.dpp J d = (False, False, set P, {}, {}, {}, set R0)"
+          using d unfolding dpp_spec.mk_sound[OF J] by simp
+        have sem': "dpp_ops.dpp J d = (NFS d, M d, set (local.P d), set (Pw d), set (Q d),
+          set (local.R d), set (Rw d))"
+          by (rule dpp_sound)
+        from sem sem' have "\<not> NFS d" "\<not> M d" "set (Pw d) = {}"
+          "set (Q d) = {}" "set (local.R d) = {}"
+          by auto
+        then show ?thesis
+          unfolding plain_csr_dpp_def by auto
+      qed
       have fin_mu_csr: "finite_csr_dpp (mu_of \<mu>)
         (mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R0)) (set R0)) (set R0)"
-        by (rule finite_dpp_imp_finite_csr_dpp[OF fin_mu])
+      proof -
+        have fin_core: "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J d)) (set (dpp_ops.rules J d))"
+          by (rule check_csr_dp_termination_proof_core_sound[OF I J plain rec])
+        show ?thesis
+          by (rule mu_csr_dependency_pairs_tt_finite_csr_mu_CSDP_on[OF J mu_dp fin_core])
+      qed
       note mu_dp' = mu_dp[unfolded mu_csr_dependency_pairs_tt_def Let_def, simplified]
       have wf: "wf_trs (set R0)"
         using mu_dp' by auto
