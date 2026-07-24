@@ -109,6 +109,79 @@ where
          rec = (if fhs = [] then rec0 else (ta_eps TA)\<^sup>* `` rec0)
      in {p. \<exists>a\<in>rec. (fh [a] \<rightarrow> p) \<in> ta_rules TA})"
 
+lemma rtrancl_image_idem:
+  "R\<^sup>* `` (R\<^sup>* `` A) = R\<^sup>* `` A"
+  by (auto dest: rtrancl_trans)
+
+lemma rfc_native_labeled_word_res_append:
+  assumes xs: "xs \<noteq> []" and ys: "ys \<noteq> []"
+  shows "p \<in> rfc_native_labeled_word_res TA q (xs @ ys) \<longleftrightarrow>
+    (\<exists>m\<in>(ta_eps TA)\<^sup>* `` rfc_native_labeled_word_res TA q ys.
+      p \<in> rfc_native_labeled_word_res TA m xs)"
+  using xs ys
+proof (induct xs arbitrary: p q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons x xs)
+  show ?case
+  proof (cases "xs = []")
+    case True
+    with Cons.prems show ?thesis
+      by (auto simp: Let_def)
+  next
+    case False
+    have tail_ne: "xs @ ys \<noteq> []"
+      using False by simp
+    have ih: "\<And>z r. r \<in> rfc_native_labeled_word_res TA z (xs @ ys) \<longleftrightarrow>
+      (\<exists>m\<in>(ta_eps TA)\<^sup>* `` rfc_native_labeled_word_res TA z ys.
+        r \<in> rfc_native_labeled_word_res TA m xs)"
+      using Cons.hyps[OF False Cons.prems(2)] .
+    show ?thesis
+    proof
+      assume left: "p \<in> rfc_native_labeled_word_res TA q
+        ((x # xs) @ ys)"
+      from left obtain a xa where
+        rule: "(x [a] \<rightarrow> p) \<in> ta_rules TA"
+        and eps: "(xa,a) \<in> (ta_eps TA)\<^sup>*"
+        and xa: "xa \<in> rfc_native_labeled_word_res TA q (xs @ ys)"
+        using False tail_ne
+        by (auto simp: Let_def)
+      from ih[of xa q] xa obtain m where
+        m: "m \<in> (ta_eps TA)\<^sup>* ``
+          rfc_native_labeled_word_res TA q ys"
+        and xa_m: "xa \<in> rfc_native_labeled_word_res TA m xs"
+        by auto
+      have "p \<in> rfc_native_labeled_word_res TA m (x # xs)"
+        using rule eps xa_m False
+        by (auto simp: Let_def)
+      with m show "\<exists>m\<in>(ta_eps TA)\<^sup>* ``
+          rfc_native_labeled_word_res TA q ys.
+        p \<in> rfc_native_labeled_word_res TA m (x # xs)"
+        by blast
+    next
+      assume right: "\<exists>m\<in>(ta_eps TA)\<^sup>* ``
+          rfc_native_labeled_word_res TA q ys.
+        p \<in> rfc_native_labeled_word_res TA m (x # xs)"
+      then obtain m where
+        m: "m \<in> (ta_eps TA)\<^sup>* ``
+          rfc_native_labeled_word_res TA q ys"
+        and p_m: "p \<in> rfc_native_labeled_word_res TA m (x # xs)"
+        by blast
+      from p_m obtain a xa where
+        rule: "(x [a] \<rightarrow> p) \<in> ta_rules TA"
+        and eps: "(xa,a) \<in> (ta_eps TA)\<^sup>*"
+        and xa_m: "xa \<in> rfc_native_labeled_word_res TA m xs"
+        using False by (auto simp: Let_def)
+      have xa: "xa \<in> rfc_native_labeled_word_res TA q (xs @ ys)"
+        using ih[of xa q] m xa_m by auto
+      show "p \<in> rfc_native_labeled_word_res TA q ((x # xs) @ ys)"
+        using rule eps xa False tail_ne
+        by (auto simp: Let_def)
+    qed
+  qed
+qed
+
 fun
   rfc_labeled_height_vectors :: "nat \<Rightarrow> 'f list \<Rightarrow> ('f \<times> nat) list list"
 where
