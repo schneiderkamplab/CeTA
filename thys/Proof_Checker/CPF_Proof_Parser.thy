@@ -1360,6 +1360,32 @@ where
       a \<leftarrow> bounds_info xml2name;
       xml_return (Rfc_Bounds a ts)
     }
+    XMLor XMLdo (STR ''rfcAutomatonClosedBounds'') {
+      ts \<leftarrow> CPF_Proof_Parser.rfc_initial_terms xml2name termIndexMap;
+      a \<leftarrow> bounds_info xml2name;
+      xml_return (Rfc_Automaton_Closed_Bounds a ts)
+    }
+    XMLor XMLdo (STR ''rfcRelativeBounds'') {
+      ts \<leftarrow> CPF_Proof_Parser.rfc_initial_terms xml2name termIndexMap;
+      a \<leftarrow> bounds_info xml2name;
+      b \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      c \<leftarrow> xml2trs_termination_proof;
+      xml_return (Rfc_Relative_Bounds a ts b c)
+    }
+    XMLor XMLdo (STR ''rfcAutomatonClosedRelativeBounds'') {
+      ts \<leftarrow> CPF_Proof_Parser.rfc_initial_terms xml2name termIndexMap;
+      a \<leftarrow> bounds_info xml2name;
+      b \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      c \<leftarrow> xml2trs_termination_proof;
+      xml_return (Rfc_Automaton_Closed_Relative_Bounds a ts b c)
+    }
+    XMLor XMLdo (STR ''rfcMatchboxRelativeBounds'') {
+      ts \<leftarrow> CPF_Proof_Parser.rfc_initial_terms xml2name termIndexMap;
+      a \<leftarrow> bounds_info xml2name;
+      b \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      c \<leftarrow> xml2trs_termination_proof;
+      xml_return (Rfc_Matchbox_Relative_Bounds a ts b c)
+    }
     XMLor XMLdo (STR ''stringReversal'') {
       _ \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2trs_termination_proof;
