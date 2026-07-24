@@ -2928,10 +2928,63 @@ lemma finite_mu_CSDP_on_imp_SN_rel:
   using fin
   unfolding finite_dpp_iff_SN_rel CS_rrstep_conv by simp
 
+definition csdp_step_cond ::
+  "'f mu \<Rightarrow> pos \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csdp_step_cond \<mu> p s \<longleftrightarrow>
+    (\<forall>p1 j p2. p = p1 @ j # p2 \<and> p \<in> poss s \<longrightarrow>
+      (\<exists>g us. s |_ p1 = Fun g us \<and>
+        (case p1 of
+          [] \<Rightarrow> (\<exists>f. g = shp f \<and> j \<in> \<mu> (f, length us))
+        | _ \<Rightarrow> j \<in> \<mu> (g, length us))))"
+
+definition csdp_step_p :: "'f mu \<Rightarrow> pos \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) trs"
+where
+  "csdp_step_p \<mu> p R = {(s,t).
+    (\<exists>lr \<sigma>. (s,t) \<in> rstep_r_p_s R lr p \<sigma>) \<and> csdp_step_cond \<mu> p s}"
+
+definition csdp_step :: "'f mu \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) trs"
+where
+  "csdp_step \<mu> R = {(s,t). \<exists>p. (s,t) \<in> csdp_step_p \<mu> p R}"
+
 definition finite_csr_dpp ::
   "'f mu \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) trs \<Rightarrow> bool"
 where
-  "finite_csr_dpp \<mu> P R \<longleftrightarrow> SN_rel (rrstep P) (csstep \<mu> R)"
+  "finite_csr_dpp \<mu> P R \<longleftrightarrow> SN_rel (rrstep P) (csdp_step \<mu> R)"
+
+fun term_gctxt :: "('f, 'v) term \<Rightarrow> ('f, 'w) gctxt"
+where
+  "term_gctxt (Var _) = GCHole"
+| "term_gctxt (Fun f ts) = GCFun f (map term_gctxt ts)"
+
+fun csr_tcap :: "'f mu \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) gctxt"
+where
+  "csr_tcap \<mu> R (Var _) = GCHole"
+| "csr_tcap \<mu> R (Fun f ts) = (
+    let n = length ts;
+        h = GCFun f (map (\<lambda>(i,t). if i \<in> \<mu> (f,n) then csr_tcap \<mu> R t else term_gctxt t)
+              (zip [0..<n] ts))
+    in if (\<exists>r \<in> R. Ground_Context.match h (fst r)) then GCHole else h)"
+
+lemma term_gctxt_refl[simp]: "t \<in> Ground_Context.equiv_class (term_gctxt t)"
+  by (induct t) auto
+
+lemma term_gctxt_instance[simp]: "t \<cdot> \<sigma> \<in> Ground_Context.equiv_class (term_gctxt t)"
+  by (induct t) auto
+
+lemma csr_tcap_refl[simp]: "t \<in> Ground_Context.equiv_class (csr_tcap \<mu> R t)"
+  by (induct t) (auto simp: Let_def split: if_splits)
+
+lemma term_gctxt_match_if_instances_eq:
+  fixes t u :: "('f, 'v) term"
+    and \<sigma> \<tau> :: "'v \<Rightarrow> ('f, 'v) term"
+  assumes "t \<cdot> \<sigma> = u \<cdot> \<tau>"
+  shows "Ground_Context.match (term_gctxt t) u"
+  unfolding Ground_Context.match_def
+proof (rule exI[of _ \<tau>])
+  show "u \<cdot> \<tau> \<in> Ground_Context.equiv_class (term_gctxt t)"
+    using assms term_gctxt_instance[of t \<sigma>] by simp
+qed
 
 lemma finite_dpp_imp_finite_csr_dpp:
   assumes fin: "finite_dpp (False, False, P, {}, {}, {}, R)"
@@ -2939,18 +2992,18 @@ lemma finite_dpp_imp_finite_csr_dpp:
 proof -
   have rel: "SN_rel (rrstep P) (rstep R)"
     using fin unfolding finite_dpp_iff_SN_rel CS_rrstep_conv by simp
-  have cs_sub: "csstep \<mu> R \<subseteq> rstep R"
-    unfolding csstep_def csstep_p_def
+  have cs_sub: "csdp_step \<mu> R \<subseteq> rstep R"
+    unfolding csdp_step_def csdp_step_p_def
     by (auto dest: rstep_r_p_s_imp_rstep)
   show ?thesis
     unfolding finite_csr_dpp_def
     by (rule SN_rel_mono[OF subset_refl cs_sub rel])
 qed
 
-lemma csstep_mono:
+lemma csdp_step_mono:
   assumes "R \<subseteq> S"
-  shows "csstep \<mu> R \<subseteq> csstep \<mu> S"
-  using assms unfolding csstep_def csstep_p_def rstep_r_p_s_def' by auto
+  shows "csdp_step \<mu> R \<subseteq> csdp_step \<mu> S"
+  using assms unfolding csdp_step_def csdp_step_p_def rstep_r_p_s_def' by auto
 
 lemma rrstep_mono:
   assumes "P \<subseteq> Q"
@@ -2963,7 +3016,7 @@ lemma finite_csr_dpp_mono:
     and R: "R \<subseteq> R'"
   shows "finite_csr_dpp \<mu> P R"
   using fin unfolding finite_csr_dpp_def
-  by (rule SN_rel_mono[OF rrstep_mono[OF P] csstep_mono[OF R]])
+  by (rule SN_rel_mono[OF rrstep_mono[OF P] csdp_step_mono[OF R]])
 
 lemma finite_csr_dpp_rename_vars:
   assumes fin: "finite_csr_dpp \<mu> P' R"
@@ -3023,10 +3076,120 @@ proof -
   qed
 qed
 
+lemma sharp_csnrstep_imp_csdp_step:
+  assumes step: "(s, t) \<in> csnrstep \<mu> R"
+  shows "(\<sharp> s, \<sharp> t) \<in> csdp_step \<mu> R"
+proof -
+  from step
+  obtain p lr \<sigma> where p_ne: "p \<noteq> []"
+    and rewrite: "(s, t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    unfolding csnrstep_def csstep_p_def by auto
+  have rewrite': "(\<sharp> s, \<sharp> t) \<in> rstep_r_p_s R lr p \<sigma>"
+  proof (cases s)
+    case (Var x)
+    with rewrite p_ne have False
+      unfolding rstep_r_p_s_def' by auto
+    then show ?thesis ..
+  next
+    case (Fun f ts)
+    from p_ne obtain i q where p: "p = i # q"
+      by (cases p, auto)
+    from rewrite Fun show ?thesis
+      unfolding rstep_r_p_s_def' p by auto
+  qed
+  have cond': "csdp_step_cond \<mu> p (\<sharp> s)"
+  proof (cases s)
+    case (Var x)
+    with rewrite p_ne have False
+      unfolding rstep_r_p_s_def' by auto
+    then show ?thesis ..
+  next
+    case (Fun f ts)
+    from p_ne obtain i q where p: "p = i # q"
+      by (cases p, auto)
+    show ?thesis
+      unfolding csdp_step_cond_def
+    proof (intro allI impI)
+      fix p1 j p2
+      assume A: "p = p1 @ j # p2 \<and> p \<in> poss (\<sharp> s)"
+      show "\<exists>g us. \<sharp> s |_ p1 = Fun g us \<and>
+        (case p1 of [] \<Rightarrow> \<exists>h. g = shp h \<and> j \<in> \<mu> (h, length us)
+          | _ \<Rightarrow> j \<in> \<mu> (g, length us))"
+      proof (cases p1)
+        case Nil
+        with A Fun p cond[unfolded csstep_cond_def, rule_format, of "[]" j p2]
+        show ?thesis by auto
+      next
+        case (Cons k qs)
+        with A Fun have A': "p = p1 @ j # p2 \<and> p \<in> poss s"
+          by auto
+        from cond[unfolded csstep_cond_def, rule_format, OF A']
+        obtain g us where sub: "s |_ p1 = Fun g us"
+          and j: "j \<in> \<mu> (g, length us)"
+          by blast
+        with Cons Fun show ?thesis
+          by auto
+      qed
+    qed
+  qed
+  show ?thesis
+    unfolding csdp_step_def csdp_step_p_def
+    using rewrite' cond' by blast
+qed
+
+lemma csnrsteps_imp_sharp_csdp_steps:
+  assumes "(s, t) \<in> (csnrstep \<mu> R)\<^sup>*"
+  shows "(\<sharp> s, \<sharp> t) \<in> (csdp_step \<mu> R)\<^sup>*"
+  using assms
+proof (induct rule: rtrancl_induct)
+  case base
+  show ?case by simp
+next
+  case (step y z)
+  from sharp_csnrstep_imp_csdp_step[OF step.hyps(2)]
+  have "(\<sharp> y, \<sharp> z) \<in> csdp_step \<mu> R" .
+  with step.hyps(3) show ?case by auto
+qed
+
+lemma mu_Tinf_imp_mu_CSDP_csdp_relstep:
+  assumes wf: "wf_trs R"
+    and Tinf: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and vc: "rhs_mu_vars_condition \<mu> R"
+    and D: "{f. defined R f} \<subseteq> D"
+  shows "\<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
+    (\<sharp> t, \<sharp> u) \<in> (csdp_step \<mu> R)\<^sup>* O
+      rrstep (mu_CSDP_on \<mu> D R) O (csdp_step \<mu> R)\<^sup>*"
+proof -
+  from mu_Tinf_imp_SN_csnr_first_csrstep[OF wf Tinf]
+  obtain s v where pref: "(t, s) \<in> (csnrstep \<mu> R)\<^sup>*"
+    and root: "(s, v) \<in> csrstep \<mu> R"
+    and notSN_v: "\<not> SN_on (csstep \<mu> R) {v}"
+    by auto
+  have sv: "(s, v) \<in> csstep \<mu> R"
+    using root unfolding csstep_root_nonroot by auto
+  have notSN_s: "\<not> SN_on (csstep \<mu> R) {s}"
+    by (rule step_notSN_on_source[OF sv notSN_v])
+  have sT: "s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    by (rule csnrsteps_mu_Tinf_preserve[OF wf pref Tinf notSN_s])
+  from csrstep_mu_Tinf_rhs_imp_rrstep_mu_CSDP_on[OF wf root sT notSN_v vc D]
+  obtain u where uT: "u \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and dp: "(\<sharp> s, \<sharp> u) \<in> rrstep (mu_CSDP_on \<mu> D R)"
+    by blast
+  have left: "(\<sharp> t, \<sharp> s) \<in> (csdp_step \<mu> R)\<^sup>*"
+    by (rule csnrsteps_imp_sharp_csdp_steps[OF pref])
+  have right: "(\<sharp> u, \<sharp> u) \<in> (csdp_step \<mu> R)\<^sup>*"
+    by simp
+  have "(\<sharp> t, \<sharp> u) \<in> (csdp_step \<mu> R)\<^sup>* O
+      rrstep (mu_CSDP_on \<mu> D R) O (csdp_step \<mu> R)\<^sup>*"
+    using left dp right by auto
+  with uT show ?thesis by blast
+qed
+
 lemma finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress:
   assumes progress: "\<And>t. t \<in> mu_Tinf \<mu> (csstep \<mu> R) \<Longrightarrow>
       \<exists>u. u \<in> mu_Tinf \<mu> (csstep \<mu> R) \<and>
-        (\<sharp> t, \<sharp> u) \<in> (csstep \<mu> R)\<^sup>* O rrstep P O (csstep \<mu> R)\<^sup>*"
+        (\<sharp> t, \<sharp> u) \<in> (csdp_step \<mu> R)\<^sup>* O rrstep P O (csdp_step \<mu> R)\<^sup>*"
     and fin: "finite_csr_dpp \<mu> P R"
   shows "SN (csstep \<mu> R)"
 proof (rule ccontr)
@@ -3036,26 +3199,27 @@ proof (rule ccontr)
     by blast
   from Tinf_imp_mu_Tinf[OF t0_T]
   have t0: "t0 \<in> mu_Tinf \<mu> (csstep \<mu> R)" .
-  let ?S = "csstep \<mu> R"
+  let ?T = "csstep \<mu> R"
+  let ?S = "csdp_step \<mu> R"
   let ?rel = "?S\<^sup>* O rrstep P O ?S\<^sup>*"
-  have all_ex: "\<forall>t. \<exists>u. t \<in> mu_Tinf \<mu> ?S \<longrightarrow>
-    u \<in> mu_Tinf \<mu> ?S \<and> (\<sharp> t, \<sharp> u) \<in> ?rel"
+  have all_ex: "\<forall>t. \<exists>u. t \<in> mu_Tinf \<mu> ?T \<longrightarrow>
+    u \<in> mu_Tinf \<mu> ?T \<and> (\<sharp> t, \<sharp> u) \<in> ?rel"
     using progress by blast
   from choice[OF all_ex]
-  obtain nxt where nxt: "\<And>t. t \<in> mu_Tinf \<mu> ?S \<Longrightarrow>
-    nxt t \<in> mu_Tinf \<mu> ?S \<and> (\<sharp> t, \<sharp> (nxt t)) \<in> ?rel"
+  obtain nxt where nxt: "\<And>t. t \<in> mu_Tinf \<mu> ?T \<Longrightarrow>
+    nxt t \<in> mu_Tinf \<mu> ?T \<and> (\<sharp> t, \<sharp> (nxt t)) \<in> ?rel"
     by blast
   define ts where "ts = rec_nat t0 (\<lambda>n t. nxt t)"
-  have ts_T: "ts n \<in> mu_Tinf \<mu> ?S" for n
+  have ts_T: "ts n \<in> mu_Tinf \<mu> ?T" for n
   proof (induct n)
     case 0
     then show ?case unfolding ts_def using t0 by simp
   next
     case (Suc n)
-    from nxt[OF Suc.hyps] have "nxt (ts n) \<in> mu_Tinf \<mu> ?S"
+    from nxt[OF Suc.hyps] have "nxt (ts n) \<in> mu_Tinf \<mu> ?T"
       by simp
     show ?case
-      using \<open>nxt (ts n) \<in> mu_Tinf \<mu> ?S\<close>
+      using \<open>nxt (ts n) \<in> mu_Tinf \<mu> ?T\<close>
       unfolding ts_def by simp
   qed
   have ts_step: "(\<sharp> (ts n), \<sharp> (ts (Suc n))) \<in> ?rel" for n
@@ -3148,11 +3312,10 @@ lemma finite_csr_mu_CSDP_on_imp_SN_csstep:
   assumes wf: "wf_trs R"
     and vc: "rhs_mu_vars_condition \<mu> R"
     and D: "{f. defined R f} \<subseteq> D"
-    and sharp_mu: "\<And>f n. \<mu> (f, n) \<subseteq> \<mu> (\<sharp> f, n)"
     and fin: "finite_csr_dpp \<mu> (mu_CSDP_on \<mu> D R) R"
   shows "SN (csstep \<mu> R)"
   by (rule finite_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress[OF _ fin],
-      rule mu_Tinf_imp_mu_CSDP_csrelstep[OF wf _ vc D sharp_mu])
+      rule mu_Tinf_imp_mu_CSDP_csdp_relstep[OF wf _ vc D])
 
 
 end
@@ -3175,6 +3338,8 @@ datatype (dead 'f, dead 'l, dead 'v) csr_termination_proof =
     "('f, 'l) lab redtriple_impl" "('f, 'l, 'v) trsLL"
     "('f, 'l, 'v) csr_termination_proof"
 | CSR_Dependency_Pairs
+    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+| CSR_Safe_Dependency_Pairs
     "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
 
 fun dp_proof_of_csr_dp_termination_proof ::
@@ -3212,6 +3377,618 @@ where
     \<not> dpp_ops.nfs J dpp \<and> \<not> dpp_ops.minimal J dpp \<and>
     dpp_ops.Pw J dpp = [] \<and> dpp_ops.Q J dpp = [] \<and> dpp_ops.R J dpp = []"
 
+fun graph_approx_csr_rt where
+  "graph_approx_csr_rt m _ = Multi_Map.values m"
+
+declare graph_approx_csr_rt.simps[simp del]
+
+fun csr_inactive_arg_no_edge ::
+  "'f::{showl, compare_order} mu \<Rightarrow> ('f, 'v) rules \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csr_inactive_arg_no_edge \<mu> R (Fun f ts) (Fun g us) =
+    ((f, length ts) \<notin> set (defined_list R) \<and>
+      ((f, length ts) \<noteq> (g, length us) \<or>
+       (\<exists>i<length ts. i \<notin> \<mu> (f, length ts) \<and>
+         \<not> Ground_Context.match (term_gctxt (ts ! i)) (us ! i))))"
+| "csr_inactive_arg_no_edge \<mu> R _ _ = False"
+
+fun csr_frozen_root_no_edge ::
+  "'f::{showl, compare_order} mu \<Rightarrow> ('f, 'v::compare_order) rules \<Rightarrow>
+   ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csr_frozen_root_no_edge \<mu> R (Fun f ts) u =
+    ((f, length ts) \<notin> set (defined_list R) \<and>
+     \<mu> (f, length ts) = {} \<and>
+     mgu (map_vars_term Inl (Fun f ts)) (map_vars_term Inr u) = None)"
+| "csr_frozen_root_no_edge \<mu> R (Var x) u = False"
+
+definition csr_tcap_no_edge ::
+  "('f::compare_order, 'v) rules \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csr_tcap_no_edge R t u \<longleftrightarrow>
+    \<not> Ground_Context.match (tcapI R t) u"
+
+definition csr_reverse_tcap_no_edge ::
+  "('f::compare_order, 'v) rules \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csr_reverse_tcap_no_edge R t u \<longleftrightarrow>
+    \<not> Ground_Context.match (tcapI (map (\<lambda>(l, r). (r, l)) R) u) t"
+
+fun csr_root_tcap ::
+  "'f::{showl, compare_order} mu \<Rightarrow> ('f, 'v) rules \<Rightarrow>
+   ('f, 'v) term \<Rightarrow> ('f, 'v) gctxt"
+where
+  "csr_root_tcap \<mu> R (Var x) = GCHole"
+| "csr_root_tcap \<mu> R (Fun f ts) =
+    GCFun f (map (\<lambda>(i, t).
+      if i \<in> \<mu> (f, length ts) then tcapI R t else term_gctxt t)
+      (zip [0..<length ts] ts))"
+
+fun csr_root_tcap_no_edge ::
+  "'f::{showl, compare_order} mu \<Rightarrow> ('f, 'v) rules \<Rightarrow>
+   ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csr_root_tcap_no_edge \<mu> R (Fun f ts) u =
+    ((f, length ts) \<notin> set (defined_list R) \<and>
+     \<not> Ground_Context.match (csr_root_tcap \<mu> R (Fun f ts)) u)"
+| "csr_root_tcap_no_edge \<mu> R (Var x) u = False"
+
+fun csr_shared_inactive_arg_no_edge ::
+  "'f::{showl, compare_order} mu \<Rightarrow> ('f, 'v::compare_order) rules \<Rightarrow>
+   ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+where
+  "csr_shared_inactive_arg_no_edge \<mu> R (Fun f ts) (Fun g us) =
+    ((f, length ts) \<notin> set (defined_list R) \<and>
+     f = g \<and> length ts = length us \<and>
+     (\<exists>i<length ts. \<exists>j<length ts.
+       i \<noteq> j \<and>
+       i \<notin> \<mu> (f, length ts) \<and>
+       j \<notin> \<mu> (f, length ts) \<and>
+       ts ! i = ts ! j \<and>
+       mgu (map_vars_term Inl (us ! i)) (map_vars_term Inr (us ! j)) = None))"
+| "csr_shared_inactive_arg_no_edge \<mu> R _ _ = False"
+
+fun csr_dep_graph_edge_check ::
+  "'f::{showl, compare_order} mu \<Rightarrow> ('f, 'v::compare_order) rules \<Rightarrow>
+   ((('f, 'v) term \<times> ('f, 'v) term) \<times> unit) \<times>
+   ((('f, 'v) term \<times> ('f, 'v) term) \<times> unit) \<Rightarrow> bool"
+where
+  "csr_dep_graph_edge_check \<mu> R (((s, t), _), ((u, v), _)) =
+    (\<not> csr_inactive_arg_no_edge \<mu> R t u \<and>
+     \<not> csr_frozen_root_no_edge \<mu> R t u \<and>
+     \<not> csr_tcap_no_edge R t u \<and>
+     \<not> csr_reverse_tcap_no_edge R t u \<and>
+     \<not> csr_root_tcap_no_edge \<mu> R t u \<and>
+     \<not> csr_shared_inactive_arg_no_edge \<mu> R t u)"
+
+fun csr_dp_root_mu ::
+  "(('f, 'l) lab) mu \<Rightarrow> ((('f, 'l) lab) \<times> nat) \<Rightarrow> nat set"
+where
+  "csr_dp_root_mu \<mu> (Sharp f, n) = \<mu> (f, n)"
+| "csr_dp_root_mu \<mu> (f, n) = \<mu> (f, n)"
+
+lemma csstep_Fun_undefined_root_preserved:
+  assumes wf: "wf_trs R"
+    and undef: "\<not> defined R (f, length ts)"
+    and step: "(Fun f ts, v) \<in> csdp_step Sharp \<mu> R"
+  shows "\<exists>us. v = Fun f us \<and> length us = length ts"
+  using step
+proof (auto simp: csdp_step_def csdp_step_p_def)
+  fix p lr \<sigma>
+  assume st: "(Fun f ts, v) \<in> rstep_r_p_s R lr p \<sigma>"
+  show "\<exists>us. v = Fun f us \<and> length us = length ts"
+  proof (cases p)
+    case Nil
+    from st Nil have lr: "lr \<in> R" and lhs: "fst lr \<cdot> \<sigma> = Fun f ts"
+      unfolding rstep_r_p_s_def by (auto simp: Let_def)
+    from wf lr have "is_Fun (fst lr)"
+      unfolding wf_trs_def by (cases lr, force)
+    then obtain g ss where l: "fst lr = Fun g ss"
+      by (cases "fst lr", auto)
+    from lhs l have args: "map (\<lambda>t. t \<cdot> \<sigma>) ss = ts"
+      by simp
+    from args have len: "length ss = length ts"
+      by (metis length_map)
+    from lhs l have root: "root (fst lr) = Some (f, length ts)"
+      using len by simp
+    from lr root have "defined R (f, length ts)"
+      unfolding defined_def
+      by (intro exI[of _ "fst lr"] exI[of _ "snd lr"], cases lr, auto)
+    with undef show ?thesis by contradiction
+  next
+    case (Cons j q)
+    from st Cons have jq: "j < length ts" "q \<in> poss (ts ! j)"
+      unfolding rstep_r_p_s_def by (auto simp: Let_def)
+    from st Cons have v: "v = replace_at (Fun f ts) (j # q) (snd lr \<cdot> \<sigma>)"
+      unfolding rstep_r_p_s_def' by auto
+    have "v = Fun f (ts[j := replace_at (ts ! j) q (snd lr \<cdot> \<sigma>)])"
+      using v jq by (simp add: upd_conv_take_nth_drop)
+    then show ?thesis by auto
+  qed
+qed
+
+lemma cssteps_Fun_undefined_root_preserved:
+  assumes wf: "wf_trs R"
+    and undef: "\<not> defined R (f, length ts)"
+    and steps: "(Fun f ts, v) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "\<exists>us. v = Fun f us \<and> length us = length ts"
+  using steps undef
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by auto
+next
+  case (step y z)
+  from step.hyps(3)[OF step.prems] obtain ys where
+    y: "y = Fun f ys" and len: "length ys = length ts"
+    by blast
+  have undef_y: "\<not> defined R (f, length ys)"
+    using step.prems len by simp
+  from csstep_Fun_undefined_root_preserved[OF wf undef_y step.hyps(2)[unfolded y]]
+  obtain zs where z: "z = Fun f zs" and zlen: "length zs = length ys"
+    by blast
+  show ?case
+    unfolding z using zlen len by auto
+qed
+
+lemma csstep_Fun_inactive_arg_preserved:
+  assumes wf: "wf_trs R"
+    and undef: "\<not> defined R (f, length ts)"
+    and i: "i < length ts"
+    and inactive: "i \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+    and step: "(Fun f ts, v) \<in> csdp_step Sharp \<mu> R"
+  shows "\<exists>us. v = Fun f us \<and> length us = length ts \<and> us ! i = ts ! i"
+  using step
+proof (auto simp: csdp_step_def csdp_step_p_def)
+  fix p lr \<sigma>
+  assume st: "(Fun f ts, v) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csdp_step_cond Sharp \<mu> p (Fun f ts)"
+  show "\<exists>us. v = Fun f us \<and> length us = length ts \<and> us ! i = ts ! i"
+  proof (cases p)
+    case Nil
+    from st Nil have lr: "lr \<in> R" and lhs: "fst lr \<cdot> \<sigma> = Fun f ts"
+      and v: "v = snd lr \<cdot> \<sigma>"
+      unfolding rstep_r_p_s_def by (auto simp: Let_def)
+    from wf lr have "is_Fun (fst lr)"
+      unfolding wf_trs_def by (cases lr, force)
+    then obtain g ss where l: "fst lr = Fun g ss"
+      by (cases "fst lr", auto)
+    from lhs l have lhs': "Fun g (map (\<lambda>t. t \<cdot> \<sigma>) ss) = Fun f ts"
+      by simp
+    from lhs' have gf: "g = f" and args: "map (\<lambda>t. t \<cdot> \<sigma>) ss = ts"
+      by auto
+    from args have "length (map (\<lambda>t. t \<cdot> \<sigma>) ss) = length ts"
+      by simp
+    then have len: "length ss = length ts"
+      by simp
+    have root: "root (fst lr) = Some (f, length ts)"
+    proof -
+      have "root (fst lr) = root (Fun g ss)"
+        unfolding l by simp
+      also have "\<dots> = Some (g, length ss)"
+        by simp
+      also have "\<dots> = Some (f, length ts)"
+        using gf len by simp
+      finally show ?thesis .
+    qed
+    from lr root have "defined R (f, length ts)"
+      unfolding defined_def
+      by (intro exI[of _ "fst lr"] exI[of _ "snd lr"], cases lr, auto)
+    with undef show ?thesis by contradiction
+  next
+    case (Cons j q)
+    from st Cons have jq: "j < length ts" "q \<in> poss (ts ! j)"
+      unfolding rstep_r_p_s_def by (auto simp: Let_def)
+    from cond Cons jq have j_active: "j \<in> csr_dp_root_mu \<mu> (f, length ts)"
+      unfolding csdp_step_cond_def
+      by (drule_tac x = "[]" in spec, drule_tac x = j in spec,
+          drule_tac x = q in spec, cases f, auto)
+    with inactive have ji: "j \<noteq> i" by auto
+    from st Cons have v: "v = replace_at (Fun f ts) (j # q) (snd lr \<cdot> \<sigma>)"
+      unfolding rstep_r_p_s_def' by auto
+    have v': "v = Fun f (ts[j := replace_at (ts ! j) q (snd lr \<cdot> \<sigma>)])"
+      using v jq by (simp add: upd_conv_take_nth_drop)
+    show ?thesis
+      using v' i ji by auto
+  qed
+qed
+
+lemma cssteps_Fun_inactive_arg_preserved:
+  assumes wf: "wf_trs R"
+    and undef: "\<not> defined R (f, length ts)"
+    and i: "i < length ts"
+    and inactive: "i \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+    and steps: "(Fun f ts, v) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "\<exists>us. v = Fun f us \<and> length us = length ts \<and> us ! i = ts ! i"
+  using steps undef
+proof (induct rule: rtrancl_induct)
+  case base
+  show ?case using i by auto
+next
+  case (step y z)
+  from step.hyps(3)[OF step.prems] obtain ys where
+    y: "y = Fun f ys" and len: "length ys = length ts" and same: "ys ! i = ts ! i"
+    by blast
+  have undef_y: "\<not> defined R (f, length ys)"
+    using step.prems len by simp
+  have i_y: "i < length ys"
+    using i len by simp
+  from csstep_Fun_inactive_arg_preserved[OF wf undef_y i_y _ step.hyps(2)[unfolded y]]
+  obtain zs where z: "z = Fun f zs" and zlen: "length zs = length ys" and zsame: "zs ! i = ys ! i"
+    using inactive len by auto
+  show ?case
+    unfolding z using zlen len zsame same by auto
+qed
+
+lemma cssteps_Fun_frozen_root_preserved:
+  assumes wf: "wf_trs R"
+    and undef: "\<not> defined R (f, length ts)"
+    and frozen: "csr_dp_root_mu \<mu> (f, length ts) = {}"
+    and steps: "(Fun f ts, v) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "v = Fun f ts"
+proof -
+  from cssteps_Fun_undefined_root_preserved[OF wf undef steps]
+  obtain us where v: "v = Fun f us" and len: "length us = length ts"
+    by blast
+  have nth: "\<And>i. i < length ts \<Longrightarrow> us ! i = ts ! i"
+  proof -
+    fix i
+    assume i: "i < length ts"
+    have inactive: "i \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+      using frozen by auto
+    from cssteps_Fun_inactive_arg_preserved[OF wf undef i inactive steps]
+    obtain us' where v': "v = Fun f us'" and same: "us' ! i = ts ! i"
+      by blast
+    from v v' have "us = us'" by simp
+    with same show "us ! i = ts ! i" by simp
+  qed
+  have "us = ts"
+  proof (rule nth_equalityI)
+    show "length us = length ts" by fact
+    fix i
+    assume "i < length us"
+    with len have "i < length ts" by simp
+    then show "us ! i = ts ! i" by (rule nth)
+  qed
+  with v show ?thesis by simp
+qed
+
+lemma csr_frozen_root_no_edge_sound:
+  fixes R :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), 'v::compare_order) rules"
+  assumes wf: "wf_trs (set R)"
+    and no: "csr_frozen_root_no_edge (csr_dp_root_mu \<mu>) R t u"
+  shows "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<notin> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+proof
+  assume steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  from no obtain f ts where
+    t: "t = Fun f ts"
+    and undef_list: "(f, length ts) \<notin> set (defined_list R)"
+    and frozen: "csr_dp_root_mu \<mu> (f, length ts) = {}"
+    and no_mgu: "mgu (map_vars_term Inl t) (map_vars_term Inr u) = None"
+    by (cases t, auto)
+  have undef: "\<not> defined (set R) (f, length ts)"
+    using undef_list set_defined_list by force
+  have undef': "\<not> defined (set R) (f, length (map (\<lambda>s. s \<cdot> \<sigma>) ts))"
+    using undef by simp
+  have frozen': "csr_dp_root_mu \<mu>
+      (f, length (map (\<lambda>s. s \<cdot> \<sigma>) ts)) = {}"
+    using frozen by simp
+  have steps': "(Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts), u \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> (set R))\<^sup>*"
+    using steps unfolding t by simp
+  from cssteps_Fun_frozen_root_preserved[OF wf undef' frozen' steps']
+  have eq: "t \<cdot> \<sigma> = u \<cdot> \<tau>"
+    unfolding t by simp
+  let ?\<gamma> = "merge_substs (map_vars_subst_ran Inl \<sigma>) (map_vars_subst_ran Inl \<tau>)"
+  have left: "map_vars_term Inl t \<cdot> ?\<gamma> = map_vars_term Inl (t \<cdot> \<sigma>)"
+    using merge_substs_left[of t "map_vars_subst_ran Inl \<sigma>"
+      "map_vars_subst_ran Inl \<tau>"]
+    by (simp add: map_vars_subst_ran)
+  have right: "map_vars_term Inr u \<cdot> ?\<gamma> = map_vars_term Inl (u \<cdot> \<tau>)"
+    using merge_substs_right[of u "map_vars_subst_ran Inl \<sigma>"
+      "map_vars_subst_ran Inl \<tau>"]
+    by (simp add: map_vars_subst_ran)
+  have "map_vars_term Inl t \<cdot> ?\<gamma> = map_vars_term Inr u \<cdot> ?\<gamma>"
+  proof -
+    have mapped_eq: "map_vars_term Inl (t \<cdot> \<sigma>) =
+        map_vars_term Inl (u \<cdot> \<tau>)"
+      using eq by simp
+    show ?thesis using mapped_eq by (simp only: left right)
+  qed
+  then have "?\<gamma> \<in>
+      unifiers {(map_vars_term Inl t, map_vars_term Inr u)}"
+    unfolding unifiers_def by simp
+  moreover from mgu_complete[OF no_mgu] have
+    "unifiers {(map_vars_term Inl t, map_vars_term Inr u)} = {}" .
+  ultimately show False by simp
+qed
+
+lemma csr_tcap_no_edge_sound:
+  assumes no: "csr_tcap_no_edge R t u"
+  shows "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<notin> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+proof
+  assume steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  have sub: "csdp_step Sharp \<mu> (set R) \<subseteq> rstep (set R)"
+    unfolding csdp_step_def csdp_step_p_def
+    by (auto dest: rstep_r_p_s_imp_rstep)
+  from steps have rsteps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (rstep (set R))\<^sup>*"
+    using rtrancl_mono[OF sub] by blast
+  from match_tcap_sound[OF rsteps] no show False
+    unfolding csr_tcap_no_edge_def by simp
+qed
+
+lemma csr_reverse_tcap_no_edge_sound:
+  assumes no: "csr_reverse_tcap_no_edge R t u"
+  shows "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<notin> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+proof
+  assume steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  have sub: "csdp_step Sharp \<mu> (set R) \<subseteq> rstep (set R)"
+    unfolding csdp_step_def csdp_step_p_def
+    by (auto dest: rstep_r_p_s_imp_rstep)
+  from steps have rsteps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (rstep (set R))\<^sup>*"
+    using rtrancl_mono[OF sub] by blast
+  have rev: "(\<lambda>(l, r). (r, l)) ` set R = (set R)\<inverse>"
+    by auto
+  from match_tcap_inv_sound[OF rsteps] no show False
+    unfolding csr_reverse_tcap_no_edge_def using rev by simp
+qed
+
+lemma csr_root_tcap_no_edge_sound:
+  fixes R :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), 'v) rules"
+  assumes wf: "wf_trs (set R)"
+    and no: "csr_root_tcap_no_edge (csr_dp_root_mu \<mu>) R t u"
+  shows "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<notin> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+proof
+  assume steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  from no obtain f ts where t: "t = Fun f ts"
+    and undef_list: "(f, length ts) \<notin> set (defined_list R)"
+    and nomatch: "\<not> Ground_Context.match
+      (csr_root_tcap (csr_dp_root_mu \<mu>) R (Fun f ts)) u"
+    by (cases t, auto)
+  have undef: "\<not> defined (set R) (f, length ts)"
+    using undef_list set_defined_list by force
+  have cs_sub: "csdp_step Sharp \<mu> (set R) \<subseteq> rstep (set R)"
+    unfolding csdp_step_def csdp_step_p_def
+    by (auto dest: rstep_r_p_s_imp_rstep)
+  from steps have rsteps0: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (rstep (set R))\<^sup>*"
+    using rtrancl_mono[OF cs_sub] by blast
+  have rsteps:
+    "(Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts), u \<cdot> \<tau>) \<in> (rstep (set R))\<^sup>*"
+    using rsteps0 unfolding t by simp
+  have lhs_fun: "\<forall>(l, r)\<in>set R. is_Fun l"
+    using wf unfolding wf_trs_def by force
+  have undef': "\<not> defined (set R)
+      (f, length (map (\<lambda>s. s \<cdot> \<sigma>) ts))"
+    using undef by simp
+  from nondef_root_imp_arg_steps[OF rsteps lhs_fun undef']
+  obtain us where len: "length us = length (map (\<lambda>s. s \<cdot> \<sigma>) ts)"
+    and target: "u \<cdot> \<tau> = Fun f us"
+    and arg_steps: "\<forall>i<length (map (\<lambda>s. s \<cdot> \<sigma>) ts).
+      (map (\<lambda>s. s \<cdot> \<sigma>) ts ! i, us ! i) \<in>
+        (rstep (set R))\<^sup>*"
+    by blast
+  have arg_class: "\<forall>i<length ts. us ! i \<in>
+      Ground_Context.equiv_class
+        (if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+         then tcapI R (ts ! i) else term_gctxt (ts ! i))"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ts"
+    show "us ! i \<in>
+      Ground_Context.equiv_class
+        (if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+         then tcapI R (ts ! i) else term_gctxt (ts ! i))"
+    proof (cases "i \<in> csr_dp_root_mu \<mu> (f, length ts)")
+      case True
+      from arg_steps i have
+        "(ts ! i \<cdot> \<sigma>, us ! i) \<in> (rstep (set R))\<^sup>*"
+        by simp
+      from tcap_sound[OF this] True show ?thesis by simp
+    next
+      case False
+      have steps':
+        "(Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts), u \<cdot> \<tau>) \<in>
+          (csdp_step Sharp \<mu> (set R))\<^sup>*"
+        using steps unfolding t by simp
+      from cssteps_Fun_inactive_arg_preserved[OF wf undef' _ _ steps']
+      obtain us' where target': "u \<cdot> \<tau> = Fun f us'"
+        and same: "us' ! i = map (\<lambda>s. s \<cdot> \<sigma>) ts ! i"
+        using i False by auto
+      from target target' have "us = us'" by simp
+      with same i False show ?thesis by simp
+    qed
+  qed
+  have target_class:
+    "u \<cdot> \<tau> \<in> Ground_Context.equiv_class
+      (csr_root_tcap (csr_dp_root_mu \<mu>) R (Fun f ts))"
+    unfolding target
+    using len arg_class by (auto simp: in_set_conv_nth)
+  have "Ground_Context.match
+      (csr_root_tcap (csr_dp_root_mu \<mu>) R (Fun f ts)) u"
+    unfolding Ground_Context.match_def using target_class by blast
+  with nomatch show False by contradiction
+qed
+
+lemma csr_shared_inactive_arg_no_edge_sound:
+  fixes R :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab),
+    'v::compare_order) rules"
+  assumes wf: "wf_trs (set R)"
+    and no: "csr_shared_inactive_arg_no_edge (csr_dp_root_mu \<mu>) R t u"
+  shows "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<notin> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+proof
+  assume steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  from no obtain f ts g us i j where
+    t: "t = Fun f ts" and u: "u = Fun g us"
+    and undef_list: "(f, length ts) \<notin> set (defined_list R)"
+    and fg: "f = g" and len: "length ts = length us"
+    and i: "i < length ts" and j: "j < length ts" and ij: "i \<noteq> j"
+    and inactive_i: "i \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+    and inactive_j: "j \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+    and shared: "ts ! i = ts ! j"
+    and no_mgu:
+      "mgu (map_vars_term Inl (us ! i)) (map_vars_term Inr (us ! j)) = None"
+    by (cases t; cases u, auto)
+  have undef: "\<not> defined (set R) (f, length ts)"
+    using undef_list set_defined_list by force
+  have steps':
+    "(Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts), u \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> (set R))\<^sup>*"
+    using steps unfolding t by simp
+  have undef': "\<not> defined (set R)
+      (f, length (map (\<lambda>s. s \<cdot> \<sigma>) ts))"
+    using undef by simp
+  from cssteps_Fun_inactive_arg_preserved[OF wf undef' _ _ steps']
+  obtain vsi where target_i: "u \<cdot> \<tau> = Fun f vsi"
+    and same_i: "vsi ! i = map (\<lambda>s. s \<cdot> \<sigma>) ts ! i"
+    using i inactive_i by auto
+  from cssteps_Fun_inactive_arg_preserved[OF wf undef' _ _ steps']
+  obtain vsj where target_j: "u \<cdot> \<tau> = Fun f vsj"
+    and same_j: "vsj ! j = map (\<lambda>s. s \<cdot> \<sigma>) ts ! j"
+    using j inactive_j by auto
+  have map_i: "map (\<lambda>s. s \<cdot> \<tau>) us = vsi"
+    using target_i u fg by simp
+  have map_j: "map (\<lambda>s. s \<cdot> \<tau>) us = vsj"
+    using target_j u fg by simp
+  have vsi_i: "vsi ! i = us ! i \<cdot> \<tau>"
+  proof -
+    have "vsi ! i = map (\<lambda>s. s \<cdot> \<tau>) us ! i"
+      using map_i by simp
+    also have "\<dots> = us ! i \<cdot> \<tau>"
+      using len i by simp
+    finally show ?thesis .
+  qed
+  have vsj_j: "vsj ! j = us ! j \<cdot> \<tau>"
+  proof -
+    have "vsj ! j = map (\<lambda>s. s \<cdot> \<tau>) us ! j"
+      using map_j by simp
+    also have "\<dots> = us ! j \<cdot> \<tau>"
+      using len j by simp
+    finally show ?thesis .
+  qed
+  have eq_i: "us ! i \<cdot> \<tau> = ts ! i \<cdot> \<sigma>"
+    using vsi_i same_i i by simp
+  have eq_j: "us ! j \<cdot> \<tau> = ts ! j \<cdot> \<sigma>"
+    using vsj_j same_j j by simp
+  from eq_i eq_j shared have target_eq: "us ! i \<cdot> \<tau> = us ! j \<cdot> \<tau>"
+    by simp
+  let ?\<gamma> = "merge_substs (map_vars_subst_ran Inl \<tau>) (map_vars_subst_ran Inl \<tau>)"
+  have left: "map_vars_term Inl (us ! i) \<cdot> ?\<gamma> =
+      map_vars_term Inl (us ! i \<cdot> \<tau>)"
+    using merge_substs_left[of "us ! i" "map_vars_subst_ran Inl \<tau>"
+      "map_vars_subst_ran Inl \<tau>"]
+    by (simp add: map_vars_subst_ran)
+  have right: "map_vars_term Inr (us ! j) \<cdot> ?\<gamma> =
+      map_vars_term Inl (us ! j \<cdot> \<tau>)"
+    using merge_substs_right[of "us ! j" "map_vars_subst_ran Inl \<tau>"
+      "map_vars_subst_ran Inl \<tau>"]
+    by (simp add: map_vars_subst_ran)
+  have "map_vars_term Inl (us ! i) \<cdot> ?\<gamma> =
+      map_vars_term Inr (us ! j) \<cdot> ?\<gamma>"
+  proof -
+    have mapped_eq: "map_vars_term Inl (us ! i \<cdot> \<tau>) =
+        map_vars_term Inl (us ! j \<cdot> \<tau>)"
+      using target_eq by simp
+    show ?thesis using mapped_eq by (simp only: left right)
+  qed
+  then have "?\<gamma> \<in> unifiers
+      {(map_vars_term Inl (us ! i), map_vars_term Inr (us ! j))}"
+    unfolding unifiers_def by simp
+  moreover from mgu_complete[OF no_mgu] have
+    "unifiers {(map_vars_term Inl (us ! i), map_vars_term Inr (us ! j))} = {}" .
+  ultimately show False by simp
+qed
+
+lemma csr_inactive_arg_no_edge_sound:
+  fixes R :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), 'v) rules"
+  assumes wf: "wf_trs (set R)"
+    and no: "csr_inactive_arg_no_edge (csr_dp_root_mu \<mu>) R t u"
+  shows "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<notin> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+proof
+  assume steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  from no obtain f ts g us i where
+    t: "t = Fun f ts" and u: "u = Fun g us"
+    and undef_list: "(f, length ts) \<notin> set (defined_list R)"
+    and distinguish: "(f, length ts) \<noteq> (g, length us) \<or>
+      (\<exists>i<length ts. i \<notin> csr_dp_root_mu \<mu> (f, length ts) \<and>
+        \<not> Ground_Context.match (term_gctxt (ts ! i)) (us ! i))"
+    by (cases t; cases u, auto)
+  have undef: "\<not> defined (set R) (f, length ts)"
+    using undef_list set_defined_list by force
+  have steps': "(Fun f (map (\<lambda>t. t \<cdot> \<sigma>) ts), u \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> (set R))\<^sup>*"
+    using steps unfolding t u by simp
+  have undef': "\<not> defined (set R) (f, length (map (\<lambda>t. t \<cdot> \<sigma>) ts))"
+    using undef by simp
+  show False
+  proof (rule disjE[OF distinguish])
+    assume root_diff: "(f, length ts) \<noteq> (g, length us)"
+    from cssteps_Fun_undefined_root_preserved[OF wf undef' steps']
+    obtain vs where eq: "u \<cdot> \<tau> = Fun f vs" and vlen: "length vs = length ts"
+      by auto
+    from eq u have "f = g" and "length vs = length us"
+      by auto
+    with vlen root_diff show False by auto
+  next
+    assume inactive_mismatch: "\<exists>i<length ts. i \<notin> csr_dp_root_mu \<mu> (f, length ts) \<and>
+      \<not> Ground_Context.match (term_gctxt (ts ! i)) (us ! i)"
+    then obtain i where i: "i < length ts"
+      and inactive: "i \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+      and nomatch: "\<not> Ground_Context.match (term_gctxt (ts ! i)) (us ! i)"
+      by blast
+    have i': "i < length (map (\<lambda>t. t \<cdot> \<sigma>) ts)"
+      using i by simp
+    have inactive': "i \<notin> csr_dp_root_mu \<mu>
+      (f, length (map (\<lambda>t. t \<cdot> \<sigma>) ts))"
+      using inactive by simp
+    have nth: "map (\<lambda>t. t \<cdot> \<sigma>) ts ! i = ts ! i \<cdot> \<sigma>"
+      using i by simp
+    from cssteps_Fun_inactive_arg_preserved[OF wf undef' i' inactive' steps']
+    obtain vs where eq: "u \<cdot> \<tau> = Fun f vs" and vlen: "length vs = length ts"
+      and vsi: "vs ! i = ts ! i \<cdot> \<sigma>"
+      using nth by auto
+    from eq u have fg: "f = g" and len': "length vs = length us"
+      by auto
+    from vlen len' have len: "length ts = length us"
+      by simp
+    from len i u fg have "(u \<cdot> \<tau>) |_ [i] = us ! i \<cdot> \<tau>"
+      by simp
+    with eq vsi have "ts ! i \<cdot> \<sigma> = us ! i \<cdot> \<tau>"
+      by auto
+    from term_gctxt_match_if_instances_eq[OF this] nomatch
+    show False by contradiction
+  qed
+qed
+
+definition check_csr_dep_graph_proc ::
+  "('dpp, ('f::{showl, compare_order}, 'l::{showl, compare_order}) lab, string) dpp_ops \<Rightarrow>
+   (('f, 'l) lab) muL \<Rightarrow> 'dpp \<Rightarrow>
+   ('a option \<times> ((('f, 'l) lab), string) rules) list \<Rightarrow> showsl check"
+where
+  "check_csr_dep_graph_proc J \<mu> dpp dps = do {
+    let P = dpp_ops.pairs J dpp;
+    let R = dpp_ops.rules J dpp;
+    check_wf_trs R;
+    check_subseteq P (concat (map snd dps))
+      <+? (\<lambda>dp. showsl_lit (STR ''CSR dependency pair '') \<circ> showsl_rule dp
+        \<circ> showsl_lit (STR '' is missing in decomposition\<newline>''));
+    check_graph_decomp
+      (showsl \<circ> fst)
+      (Multi_Map.empty (root o fst o fst))
+      graph_approx_csr_rt
+      Multi_Map.insert
+      (csr_dep_graph_edge_check (csr_dp_root_mu (mu_of \<mu>)) R)
+      (map (\<lambda>(real, Cs).
+        (real \<noteq> None, map (\<lambda>(s,t). ((s,t), ())) Cs)) dps)
+        <+? (\<lambda>s. showsl_lit (STR ''our CSR dependency-graph estimation could not show that you have a valid decomposition '')
+          \<circ> showsl_lit (STR ''due to the following reason\<newline>'') \<circ> s)
+  }"
+
+lemma no_real_csr_graph_component:
+  assumes C: "C \<in> set (map snd (filter fst
+    (map (\<lambda>(real, Cs). (real \<noteq> None, map (\<lambda>(s,t). ((s,t), ())) Cs)) edps)))"
+    and none: "\<And>prf P. (prf, P) \<in> set edps \<Longrightarrow> prf = None"
+  shows False
+  using C none by force
+
 primrec check_csr_dp_termination_proof_core ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
@@ -3246,7 +4023,11 @@ where
         <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below CSR usable rules\<newline>'') \<circ> s)
     })"
 | "check_csr_dp_termination_proof_core I J \<mu> a i dpp (CSR_DP_Dep_Graph_Proc edpts) =
-    check_csr_dp_termination_proof I J a i dpp (CSR_DP_Dep_Graph_Proc edpts)"
+    (if list_all (\<lambda>(prf, P). prf = None) edpts
+     then debug i (STR ''CSR-DP dependency graph'')
+       (check_csr_dep_graph_proc J \<mu> dpp edpts
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying CSR dependency graph\<newline>'') \<circ> s))
+     else check_csr_dp_termination_proof I J a i dpp (CSR_DP_Dep_Graph_Proc edpts))"
 | "check_csr_dp_termination_proof_core I J \<mu> a i dpp
     (CSR_DP_Size_Change_Subterm_Proc graphs) =
     check_csr_dp_termination_proof I J a i dpp
@@ -3283,6 +4064,17 @@ where
             <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below safe CSR dependency pairs\<newline>'') \<circ> s)
         })
     })"
+| "check_csr_termination_proof I J a i \<mu> R (CSR_Safe_Dependency_Pairs P prf) =
+    debug i (STR ''safe CSR dependency pairs'') (do {
+      csr_sharp_mu_check \<mu>
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': invalid replacement map for safe CSR dependency pairs\<newline>'') \<circ> s);
+      dpp \<leftarrow> safe_csr_dependency_pairs_tt Sharp J \<mu> R P
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when switching from CSR to a safe CS-DP problem\<newline>'')
+          \<circ> showsl_rules R \<circ> showsl_lit (STR ''\<newline>with pairs\<newline>'') \<circ> showsl_rules P
+          \<circ> showsl_nl \<circ> s);
+      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below safe CSR dependency pairs\<newline>'') \<circ> s)
+    })"
 
 lemma check_csr_dp_termination_proof_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
@@ -3295,7 +4087,7 @@ lemma plain_csr_dpp_finite_dpp_imp_finite_csr_dpp:
   assumes J: "dpp_spec J"
     and plain: "plain_csr_dpp J dpp"
     and fin: "finite_dpp (dpp_ops.dpp J dpp)"
-  shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  shows "finite_csr_dpp Sharp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
 proof -
   interpret dpp_spec J by fact
   from plain have plain':
@@ -3316,7 +4108,7 @@ lemma check_csr_dp_termination_proof_sound_csr:
   assumes I: "tp_spec I" and J: "dpp_spec J"
     and plain: "plain_csr_dpp J dpp"
     and ok: "isOK (check_csr_dp_termination_proof I J False i dpp prf)"
-  shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  shows "finite_csr_dpp Sharp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
   by (rule plain_csr_dpp_finite_dpp_imp_finite_csr_dpp[OF J plain
       check_csr_dp_termination_proof_sound[OF I J ok]])
 
@@ -3343,10 +4135,10 @@ qed
 lemma finite_csr_dpp_intersect_rules_all:
   assumes J: "dpp_spec J"
     and all: "set (dpp_ops.rules J dpp) \<subseteq> set U"
-    and fin: "finite_csr_dpp \<mu>
+    and fin: "finite_csr_dpp Sharp \<mu>
       (set (dpp_ops.pairs J (dpp_ops.intersect_rules J dpp U)))
       (set (dpp_ops.rules J (dpp_ops.intersect_rules J dpp U)))"
-  shows "finite_csr_dpp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  shows "finite_csr_dpp Sharp \<mu> (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
 proof -
   interpret dpp_spec J by fact
   let ?d = "intersect_rules dpp U"
@@ -3364,11 +4156,174 @@ proof -
     using fin unfolding P R .
 qed
 
+lemma check_csr_dep_graph_proc_acyclic_sound:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and check: "isOK (check_csr_dep_graph_proc J \<mu> dpp edps)"
+    and none: "\<And>prf P. (prf, P) \<in> set edps \<Longrightarrow> prf = None"
+  shows "finite_csr_dpp Sharp (mu_of \<mu>) (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  let ?P = "set (pairs dpp)"
+  let ?RL = "rules dpp"
+  let ?R = "set (rules dpp)"
+  let ?echeck = "csr_dep_graph_edge_check (csr_dp_root_mu (mu_of \<mu>)) ?RL"
+  let ?conv = "\<lambda>(real, Cs). (real \<noteq> None, map (\<lambda>(s,t). ((s,t), ())) Cs)"
+  from check have wf: "wf_trs ?R"
+    and subset: "?P \<subseteq> set (concat (map snd edps))"
+    and scc: "isOK (check_graph_decomp (showsl \<circ> fst)
+      (Multi_Map.empty (root o fst o fst))
+      graph_approx_csr_rt Multi_Map.insert ?echeck (map ?conv edps))"
+    unfolding check_csr_dep_graph_proc_def
+    by (auto simp: Let_def)
+  show ?thesis
+    unfolding finite_csr_dpp_def SN_rel_defs SN_defs
+  proof (rule notI)
+    assume infinite: "\<exists>f. f 0 \<in> UNIV \<and>
+      (\<forall>i. (f i, f (Suc i)) \<in>
+        (relto (rrstep ?P) (csdp_step Sharp (mu_of \<mu>) ?R)))"
+    from infinite obtain ch where chain:
+      "\<And>i. (ch i, ch (Suc i)) \<in>
+        relto (rrstep ?P) (csdp_step Sharp (mu_of \<mu>) ?R)"
+      by auto
+    from chain have chain':
+      "\<And>i. (ch i, ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>* O
+        rrstep ?P O (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+      by auto
+    have ex_step: "\<forall>i. \<exists>l r \<sigma>.
+      (l, r) \<in> ?P \<and>
+      (ch i, l \<cdot> \<sigma>) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>* \<and>
+      (r \<cdot> \<sigma>, ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+    proof
+      fix i
+      from chain'[of i] obtain x y where pre:
+        "(ch i, x) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+        and strict: "(x, y) \<in> rrstep ?P"
+        and post: "(y, ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+        by auto
+      from strict obtain l r \<sigma> where lr: "(l, r) \<in> ?P" and x: "x = l \<cdot> \<sigma>" and y: "y = r \<cdot> \<sigma>"
+        unfolding rrstep_def' by auto
+      show "\<exists>l r \<sigma>. (l, r) \<in> ?P \<and>
+        (ch i, l \<cdot> \<sigma>) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>* \<and>
+        (r \<cdot> \<sigma>, ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+        using lr pre post unfolding x y by blast
+    qed
+    then obtain s t \<sigma> where
+      pair: "\<And>i. (s i, t i) \<in> ?P"
+      and pre: "\<And>i. (ch i, s i \<cdot> \<sigma> i) \<in>
+        (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+      and post: "\<And>i. (t i \<cdot> \<sigma> i, ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+      by metis
+    have steps: "\<And>i. (t i \<cdot> \<sigma> i, s (Suc i) \<cdot> \<sigma> (Suc i)) \<in>
+      (csdp_step Sharp (mu_of \<mu>) ?R)\<^sup>*"
+      using post pre by (meson rtrancl_trans)
+    let ?p = "\<lambda>i. ((s i, t i), ())"
+    have path: "\<And>i. ?echeck (?p i, ?p (Suc i))"
+    proof -
+      fix i
+      have echeck_i: "?echeck (?p i, ?p (Suc i)) =
+        (\<not> csr_inactive_arg_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i)) \<and>
+         \<not> csr_frozen_root_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i)) \<and>
+         \<not> csr_tcap_no_edge ?RL (t i) (s (Suc i)) \<and>
+         \<not> csr_reverse_tcap_no_edge ?RL (t i) (s (Suc i)) \<and>
+         \<not> csr_root_tcap_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i)) \<and>
+         \<not> csr_shared_inactive_arg_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i)))"
+        by simp
+      show "?echeck (?p i, ?p (Suc i))"
+        unfolding echeck_i
+      proof (intro conjI notI)
+        assume no: "csr_inactive_arg_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i))"
+        from csr_inactive_arg_no_edge_sound[OF wf no, of "\<sigma> i" "\<sigma> (Suc i)"]
+          steps[of i] show False by blast
+      next
+        assume no: "csr_frozen_root_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i))"
+        from csr_frozen_root_no_edge_sound[OF wf no, of "\<sigma> i" "\<sigma> (Suc i)"]
+          steps[of i] show False by blast
+      next
+        assume no: "csr_tcap_no_edge ?RL (t i) (s (Suc i))"
+        from csr_tcap_no_edge_sound[OF no, of "\<sigma> i" "\<sigma> (Suc i)"]
+          steps[of i] show False by blast
+      next
+        assume no: "csr_reverse_tcap_no_edge ?RL (t i) (s (Suc i))"
+        from csr_reverse_tcap_no_edge_sound[OF no, of "\<sigma> i" "\<sigma> (Suc i)"]
+          steps[of i] show False by blast
+      next
+        assume no: "csr_root_tcap_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i))"
+        from csr_root_tcap_no_edge_sound[OF wf no, of "\<sigma> i" "\<sigma> (Suc i)"]
+          steps[of i] show False by blast
+      next
+        assume no: "csr_shared_inactive_arg_no_edge
+          (csr_dp_root_mu (mu_of \<mu>)) ?RL (t i) (s (Suc i))"
+        from csr_shared_inactive_arg_no_edge_sound[OF wf no,
+          of "\<sigma> i" "\<sigma> (Suc i)"] steps[of i]
+        show False by blast
+      qed
+    qed
+    have lift_node: "\<And>l r. (l, r) \<in> set (concat (map snd edps)) \<Longrightarrow>
+      ((l, r), ()) \<in> set (concat (map snd (map ?conv edps)))"
+    proof -
+      fix l r
+      assume lr: "(l, r) \<in> set (concat (map snd edps))"
+      then obtain x where x: "x \<in> set edps" and lrx: "(l, r) \<in> set (snd x)"
+        by auto
+      obtain real Cs where xeq: "x = (real, Cs)"
+        by (cases x, auto)
+      from x xeq have mem: "(real, Cs) \<in> set edps"
+        by simp
+      from lrx xeq have lrCs: "(l, r) \<in> set Cs"
+        by simp
+      have node: "((l, r), ()) \<in> set (map (\<lambda>(s, t). ((s, t), ())) Cs)"
+        using lrCs by force
+      have conv_mem: "?conv (real, Cs) \<in> set (map ?conv edps)"
+        using mem by (auto split: prod.splits)
+      have comp_mem: "snd (?conv (real, Cs)) \<in> set (map snd (map ?conv edps))"
+        using conv_mem unfolding set_map by blast
+      have node': "((l, r), ()) \<in> set (snd (?conv (real, Cs)))"
+        using node by simp
+      show "((l, r), ()) \<in> set (concat (map snd (map ?conv edps)))"
+        using comp_mem node' unfolding set_concat by blast
+    qed
+    have nodes: "path_nodes ?p \<subseteq> set (concat (map snd (map ?conv edps)))"
+    proof
+      fix x
+      assume "x \<in> path_nodes ?p"
+      then obtain i where x: "x = ?p i"
+        unfolding path_nodes_def by auto
+      from pair[of i] subset have "(s i, t i) \<in> set (concat (map snd edps))"
+        by auto
+      then show "x \<in> set (concat (map snd (map ?conv edps)))"
+        unfolding x by (rule lift_node)
+    qed
+    have key_insert: "\<And>x m. Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      Multi_Map.key_fun (Multi_Map.insert x m) = root \<circ> fst \<circ> fst"
+      by simp
+    have approx: "\<And>m a b. Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      ?echeck (a, b) \<Longrightarrow> b \<in> set (Multi_Map.values m) \<Longrightarrow>
+      b \<in> set (graph_approx_csr_rt m a)"
+      unfolding graph_approx_csr_rt.simps by simp
+    have component: "\<exists>q C. ?p =\<dots> q \<and> C \<in> set (map snd (filter fst (map ?conv edps)))
+      \<and> path_nodes q \<subseteq> set C"
+      by (rule check_graph_decomp_sound[of "\<lambda>m. set (Multi_Map.values m)",
+        OF values_empty values_insert, of "\<lambda>m. Multi_Map.key_fun m = (root o fst o fst)",
+        OF key_fun_empty key_insert approx scc path nodes])
+    show False
+      using component none by force
+  qed
+qed
+
 lemma check_csr_dp_termination_proof_core_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
     and plain: "plain_csr_dpp J dpp"
     and ok: "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp prf)"
-  shows "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  shows "finite_csr_dpp Sharp (mu_of \<mu>) (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
   using ok plain
 proof (induct "prf" arbitrary: dpp i)
   case CSR_DP_P_is_Empty
@@ -3411,15 +4366,28 @@ next
   have plain': "plain_csr_dpp J dpp'"
     unfolding dpp' by (rule plain_csr_dpp_intersect_rules[OF J CSR_DP_Usable_Rules_Proc.prems(2)])
   from CSR_DP_Usable_Rules_Proc.hyps[OF rec plain']
-  have fin': "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J dpp')) (set (dpp_ops.rules J dpp'))" .
+  have fin': "finite_csr_dpp Sharp (mu_of \<mu>) (set (dpp_ops.pairs J dpp')) (set (dpp_ops.rules J dpp'))" .
   show ?case
     by (rule finite_csr_dpp_intersect_rules_all[OF J all fin'[unfolded dpp']])
 next
   case (CSR_DP_Dep_Graph_Proc x)
-  then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp (CSR_DP_Dep_Graph_Proc x))"
-    by simp
-  from CSR_DP_Dep_Graph_Proc.prems(2) ok' show ?case
-    by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+  show ?case
+  proof (cases "list_all (\<lambda>(prf, P). prf = None) x")
+    case True
+    from CSR_DP_Dep_Graph_Proc.prems(1) have ok':
+      "isOK (check_csr_dep_graph_proc J \<mu> dpp x)"
+      using True by auto
+    have none: "\<And>prf P. (prf, P) \<in> set x \<Longrightarrow> prf = None"
+      using True by (auto simp: list_all_iff)
+    show ?thesis
+      by (rule check_csr_dep_graph_proc_acyclic_sound[OF J CSR_DP_Dep_Graph_Proc.prems(2) ok' none])
+  next
+    case False
+    then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp (CSR_DP_Dep_Graph_Proc x))"
+      using CSR_DP_Dep_Graph_Proc.prems(1) by simp
+    from CSR_DP_Dep_Graph_Proc.prems(2) ok' show ?thesis
+      by (rule check_csr_dp_termination_proof_sound_csr[OF I J])
+  qed
 next
   case (CSR_DP_Size_Change_Subterm_Proc x)
   then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp
@@ -3566,10 +4534,10 @@ lemma check_csr_termination_proof_sound:
         then show ?thesis
           unfolding plain_csr_dpp_def by auto
       qed
-      have fin_mu_csr: "finite_csr_dpp (mu_of \<mu>)
+      have fin_mu_csr: "finite_csr_dpp Sharp (mu_of \<mu>)
         (mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R0)) (set R0)) (set R0)"
       proof -
-        have fin_core: "finite_csr_dpp (mu_of \<mu>) (set (dpp_ops.pairs J d)) (set (dpp_ops.rules J d))"
+        have fin_core: "finite_csr_dpp Sharp (mu_of \<mu>) (set (dpp_ops.pairs J d)) (set (dpp_ops.rules J d))"
           by (rule check_csr_dp_termination_proof_core_sound[OF I J plain rec])
         show ?thesis
           by (rule mu_csr_dependency_pairs_tt_finite_csr_mu_CSDP_on[OF J mu_dp fin_core])
@@ -3581,11 +4549,35 @@ lemma check_csr_termination_proof_sound:
         by (rule rhs_mu_vars_condition_list_sound, insert mu_dp', auto)
       have D: "{f. defined (set R0) f} \<subseteq> set (defined_list R0)"
         using mu_dp' by auto
-      have sharp_mu: "\<And>f n. mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
-        by (rule csr_sharp_mu_check_sound[OF sharp_ok])
       show ?thesis
-        by (rule finite_csr_mu_CSDP_on_imp_SN_csstep[OF wf vc D sharp_mu fin_mu_csr])
+        by (rule finite_csr_mu_CSDP_on_imp_SN_csstep[OF wf vc D fin_mu_csr])
     qed
+  qed
+  subgoal for P dp_prf R0
+  proof -
+    assume ok_case:
+      "isOK (check_csr_termination_proof I J a i \<mu> R0
+        (CSR_Safe_Dependency_Pairs P dp_prf))"
+    let ?i = "add_index i 1"
+    from ok_case obtain dpp where
+      safe_dp: "safe_csr_dependency_pairs_tt Sharp J \<mu> R0 P = return dpp"
+      and rec: "isOK (check_csr_dp_termination_proof I J False ?i dpp dp_prf)"
+      by auto
+    have fin: "finite_dpp (dpp_ops.dpp J dpp)"
+      by (rule check_csr_dp_termination_proof_sound[OF I J rec])
+    have fin_safe: "finite_dpp
+      (False, True, safe_CSDP_on Sharp (set (defined_list R0)) (set R0), {}, {}, {}, set R0)"
+      by (rule safe_csr_dependency_pairs_tt_finite_safe_CSDP_on[OF J safe_dp fin])
+    note safe_dp' = safe_dp[unfolded safe_csr_dependency_pairs_tt_def Let_def, simplified]
+    have wf: "wf_trs (set R0)"
+      using safe_dp' by auto
+    have fresh: "\<And>f n. (f, n) \<in> set (defined_list R0) \<Longrightarrow>
+      \<not> defined (set R0) (Sharp f, n)"
+      using safe_dp' by auto
+    have D: "\<And>fn. defined (set R0) fn \<Longrightarrow> fn \<in> set (defined_list R0)"
+      using safe_dp' by auto
+    show ?thesis
+      by (rule finite_safe_CSDP_on_imp_SN_csstep[OF wf fresh D fin_safe])
   qed
   done
 

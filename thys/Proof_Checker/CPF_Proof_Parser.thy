@@ -1423,6 +1423,10 @@ where
       dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
       p \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (CSR_Dependency_Pairs dps p)
+    } XMLor XMLdo (STR ''csrSafeDependencyPairs'') {
+      dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
+      p \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_Safe_Dependency_Pairs dps p)
     }
   ) id x"
 | "xml2csr_dp_termination_proof x =

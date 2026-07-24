@@ -4702,18 +4702,31 @@ xml2csr_termination_proof xml2name termIndexMap ruleMap x =
                       (\ p ->
                         Xmlt.xml_return
                           (CSR_Checker.CSR_Rule_Removal ord r p))))))
-          (Xmlt.xml_do "csrDependencyPairs"
-            (Xmlt.xml_take
-              (Xmlt.xml_do "dps"
-                (Xmlt.xml_take
-                  (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                  (\ xa -> Xmlt.xml_return (id xa))))
-              (\ dps ->
-                Xmlt.xml_take
-                  (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
-                  (\ p ->
-                    Xmlt.xml_return
-                      (CSR_Checker.CSR_Dependency_Pairs dps p)))))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "csrDependencyPairs"
+              (Xmlt.xml_take
+                (Xmlt.xml_do "dps"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ dps ->
+                  Xmlt.xml_take
+                    (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
+                    (\ p ->
+                      Xmlt.xml_return
+                        (CSR_Checker.CSR_Dependency_Pairs dps p)))))
+            (Xmlt.xml_do "csrSafeDependencyPairs"
+              (Xmlt.xml_take
+                (Xmlt.xml_do "dps"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ dps ->
+                  Xmlt.xml_take
+                    (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
+                    (\ p ->
+                      Xmlt.xml_return
+                        (CSR_Checker.CSR_Safe_Dependency_Pairs dps p))))))))
       (\ xa -> Xmlt.xml_return (id xa)))
     x;
 

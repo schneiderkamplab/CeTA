@@ -8,7 +8,7 @@ License: LGPL (see file COPYING.LESSER)
 theory Proof_Checker
   imports
     Check_Termination
-    CSR_Checker
+    CSR_Minimal_CSDP_Proofs
     Check_Nontermination
     Check_CRP
     Check_Conditional_CRP
@@ -211,7 +211,7 @@ where "check_cert a input property answer proof \<equiv>
   | CSR_Termination_Proof prf \<Rightarrow>
      (case triple of
        (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision True) \<Rightarrow>
-       check_csr_termination_proof I J a (showsl_lit (STR ''1'')) \<mu> R prf
+       check_csr_termination_proof_min I J a (showsl_lit (STR ''1'')) \<mu> R prf
     | _ \<Rightarrow> error mismatch)
   | FP_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
@@ -401,9 +401,9 @@ proof-
       by (cases input, auto split: fp_strategy.splits)
     have [simp]: "property = Termination" using check by (cases property, auto)
     have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
-    from check[simplified] have check: "isOK (check_csr_termination_proof I J a idx \<mu> R pr)"
+    from check[simplified] have check: "isOK (check_csr_termination_proof_min I J a idx \<mu> R pr)"
       by auto
-    from check_csr_termination_proof_sound[OF I J check] show ?thesis
+    from check_csr_termination_proof_min_sound[OF I J check] show ?thesis
       by (simp add: desired_property_def)
   next
     case [simp]: (Relative_TRS_Nontermination_Proof pr)

@@ -18,6 +18,7 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
+import qualified CSR_Minimal_CSDP_Proofs;
 import qualified IA_Instance;
 import qualified Check_Monad;
 import qualified Error_Monad;
@@ -664,7 +665,7 @@ check_cert i j k l a input property answer proof =
              (Ceta_Problem_Spec.FP_TRS_input
                 (Ceta_Problem_Spec.Context_Sensitive mu) r,
                (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
-               -> CSR_Checker.check_csr_termination_proof i j a
+               -> CSR_Minimal_CSDP_Proofs.check_csr_termination_proof_min i j a
                     (Term_Rewriting.showsl_lit "1") mu r prf;
              (Ceta_Problem_Spec.FP_TRS_input
                 (Ceta_Problem_Spec.Context_Sensitive _) _,
