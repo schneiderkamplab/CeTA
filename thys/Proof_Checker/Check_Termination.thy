@@ -342,6 +342,7 @@ and ('f, 'l, 'v) trs_termination_proof =
 | Right_Ground_Termination
 | Assume_SN "('f, 'l, 'v) qreltrsLL" "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 | Rfc_Matchbox_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
+| Rfc_Native_Matchbox_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 and ('f, 'l, 'v) unknown_proof =
   Assume_Unknown unknown_info "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 and ('f, 'l, 'v) fptrs_termination_proof =
@@ -392,6 +393,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (Rfc_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Automaton_Closed_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
+| "sn_assms a (Rfc_Native_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Uncurry _ _ p) = sn_assms a p"
 | "sn_assms a (Semlab _ _ _ p) = sn_assms a p"
 | "sn_assms a R_is_Empty = []"
@@ -874,6 +876,14 @@ where
          showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
      check_trs_termination_proof (add_index i 1) tp' prf
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below RFC Matchbox-style relative bounds\<newline>'') \<circ> s)
+   })"
+| "check_trs_termination_proof i tp (Rfc_Native_Matchbox_Relative_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Native Matchbox Relative Bounds'') (do {
+     tp' \<leftarrow> rfc_native_matchbox_relative_bounds_tt J info initial_terms Rr tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying native RFC Matchbox-style relative bounds\<newline>'')
+         \<circ> showsl_tp J tp \<circ>
+         showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
+     check_trs_termination_proof (add_index i 1) tp' prf
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below native RFC Matchbox-style relative bounds\<newline>'') \<circ> s)
    })"
 | "check_fptrs_termination_proof i tp (Assume_FP_SN tp' ass) =
     debug i (STR ''Outermost Termination Assumption or Unknown Proof'') (
@@ -1928,7 +1938,25 @@ next
     apply (rule tt)
     done
 next
-  case (49 i tp tp' ass)
+  case (49 i tp info initial_terms Rr prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "rfc_native_matchbox_relative_bounds_tt
+      J info initial_terms Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by (auto simp: Let_def)
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule RFC_Matchbounds_Ext.rfc_native_matchbox_relative_bounds_tt[
+      OF J tt infinite_lab])
+    apply (rule IH(1)[OF _ rec fin])
+    apply (unfold update_error_return)
+    apply (rule tt)
+    done
+next
+  case (50 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -1990,7 +2018,7 @@ next
     qed
   qed
 next
-  case (50 i tp tp' ass)
+  case (51 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact

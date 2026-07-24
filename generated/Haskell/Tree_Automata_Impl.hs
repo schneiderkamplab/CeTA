@@ -2,11 +2,13 @@
 
 module
   Tree_Automata_Impl(showsl_ta_rule, Ta_rule_impl, Ta_impl, Ta_relation(..),
-                      Tree_automaton(..), ta_of_ta, check_det, rel_checker,
+                      Tree_automaton(..), ta_of_ta, check_det, rqss_impl,
+                      r_rhs_impl, rel_checker, r_lhs_states_impl, ta_res_impl,
                       generate_ta_cond, ta_rhs_states_set, ta_rules_impl,
-                      state_compatible_eff_list, tree_aut_trs_closed,
-                      non_join_with_ta, ta_final_impl, ta_contains_impl,
-                      ta_rules_impla, rule_state_compatible_heuristic)
+                      ta_epss_impl, state_compatible_eff_list,
+                      tree_aut_trs_closed, non_join_with_ta, ta_final_impl,
+                      ta_contains_impl, ta_rules_impla,
+                      rule_state_compatible_heuristic, equal_ta_relation)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -111,6 +113,9 @@ check_det (Tree_Automaton fin rules eps) =
 
 rqss_impl :: forall a b. Ta_rule_impl a b -> RBT.Rbt a ();
 rqss_impl (TA_rule_impl f qsa q qs) = qs;
+
+r_rhs_impl :: forall a b. Ta_rule_impl a b -> a;
+r_rhs_impl (TA_rule_impl f qsa q qs) = q;
 
 r_sym_impl :: forall a b. Ta_rule_impl a b -> (b, Arith.Nat);
 r_sym_impl (TA_rule_impl f qsa q qs) = (f, Arith.size_list qsa);
@@ -741,5 +746,23 @@ rule_state_compatible_heuristic ::
 rule_state_compatible_heuristic ta l =
   RBTSetImpl.g_isEmpty_dflt_basic_oops_rm_basic_ops
     (ta_res_impl_all (ta_rhs_states_set ta) (ta_rules_impl ta) l);
+
+equal_ta_relation :: forall a. (Eq a) => Ta_relation a -> Ta_relation a -> Bool;
+equal_ta_relation Id_Relation (Some_Relation x4) = False;
+equal_ta_relation (Some_Relation x4) Id_Relation = False;
+equal_ta_relation Decision_Proc (Some_Relation x4) = False;
+equal_ta_relation (Some_Relation x4) Decision_Proc = False;
+equal_ta_relation Decision_Proc Id_Relation = False;
+equal_ta_relation Id_Relation Decision_Proc = False;
+equal_ta_relation Decision_Proc_Old (Some_Relation x4) = False;
+equal_ta_relation (Some_Relation x4) Decision_Proc_Old = False;
+equal_ta_relation Decision_Proc_Old Id_Relation = False;
+equal_ta_relation Id_Relation Decision_Proc_Old = False;
+equal_ta_relation Decision_Proc_Old Decision_Proc = False;
+equal_ta_relation Decision_Proc Decision_Proc_Old = False;
+equal_ta_relation (Some_Relation x4) (Some_Relation y4) = x4 == y4;
+equal_ta_relation Id_Relation Id_Relation = True;
+equal_ta_relation Decision_Proc Decision_Proc = True;
+equal_ta_relation Decision_Proc_Old Decision_Proc_Old = True;
 
 }
