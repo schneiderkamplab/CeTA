@@ -2,7 +2,8 @@
 
 module
   CSR_Checker(Csr_dp_termination_proof(..), Csr_termination_proof(..),
-               is_sharp_lab, csr_sharp_mu_check, csr_rule_removal_impl,
+               is_sharp_lab, mu_supt_list, csr_dp_root_mu, csr_sharp_mu_check,
+               csr_rule_removal_impl, csr_dep_graph_edge_check,
                mu_csr_dependency_pairs_tt, check_csr_dp_termination_proof,
                check_csr_dp_termination_proof_core,
                safe_csr_dependency_pairs_tt, check_csr_termination_proof)

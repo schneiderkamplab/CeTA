@@ -25,6 +25,11 @@ import qualified Reduction_Pair_Implementations;
 import qualified Termination_Problem_Spec;
 import qualified Countable;
 import qualified Mapping;
+import qualified Size_Change_Termination_Processors;
+import qualified Missing_List;
+import qualified HOL;
+import qualified Size_Change_Termination;
+import qualified Product_Lexorder;
 import qualified Compare_Order_Instances;
 import qualified CSR_Checker;
 import qualified Error_Monad;
@@ -36,6 +41,14 @@ import qualified Context_Sensitive_Impl;
 import qualified Arith;
 import qualified Labelings;
 import qualified Term_Rewriting;
+
+csr_sct_sharp_term ::
+  forall a b c. Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
+csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.Sharp f) ts) = True;
+csr_sct_sharp_term (Term_Rewriting.Var v) = False;
+csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.Lab vb vc) va) = False;
+csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.FunLab vb vc) va) = False;
+csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.UnLab vb) va) = False;
 
 qcs_ur_closed_term_check ::
   forall a b c d.
@@ -117,6 +130,24 @@ csr_qcs_usable_rules_proc j mu u dpp =
       Sum_Type.Inr (Dependency_Pair_Problem_Spec.intersect_rules j dpp u);
   });
 
+csr_sct_active_index_check ::
+  forall a b c.
+    (Eq a,
+      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                 Term_Rewriting.Term (Labelings.Lab a b) c -> Arith.Nat -> Bool;
+csr_sct_active_index_check mu (Term_Rewriting.Fun (Labelings.Sharp f) ts) i =
+  Arith.less_nat Arith.zero_nat i &&
+    Arith.less_eq_nat i (Arith.size_list ts) &&
+      Arith.member (Arith.minus_nat i Arith.one_nat)
+        (Context_Sensitive_Impl.mu_of mu (f, Arith.size_list ts));
+csr_sct_active_index_check mu (Term_Rewriting.Var v) i = False;
+csr_sct_active_index_check mu (Term_Rewriting.Fun (Labelings.Lab vb vc) va) i =
+  False;
+csr_sct_active_index_check mu (Term_Rewriting.Fun (Labelings.FunLab vb vc) va) i
+  = False;
+csr_sct_active_index_check mu (Term_Rewriting.Fun (Labelings.UnLab vb) va) i =
+  False;
+
 csr_rules_sharp_fresh_check ::
   forall a b c.
     [(Term_Rewriting.Term (Labelings.Lab a b) c,
@@ -130,6 +161,100 @@ csr_rules_sharp_fresh_check r =
           (Term_Rewriting.showsl_lit "source CSR defines a sharp symbol"))
       (Term_Rewriting.defined_list r))
     (\ x -> Sum_Type.Inl (snd x));
+
+csr_sct_active_subterm_proc ::
+  forall a b c.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b,
+      Compare.Compare_order c, Eq c,
+      Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a
+                                   (Labelings.Lab b c) [Arith.Char] () ->
+                                   [((Labelings.Lab b c, Arith.Nat),
+                                      [Arith.Nat])] ->
+                                     [((Term_Rewriting.Term (Labelings.Lab b c)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char]),
+([(Arith.Nat, Arith.Nat)], [(Arith.Nat, Arith.Nat)]))] ->
+                                       a -> Sum_Type.Sum (String -> String) ();
+csr_sct_active_subterm_proc j mu gs dpp =
+  let {
+    p = Dependency_Pair_Problem_Spec.pairs j dpp;
+    r = Dependency_Pair_Problem_Spec.rules j dpp;
+  } in Error_Monad.bind
+         (Error_Monad.catch_error (Check_Monad.check_subseteq p (map fst gs))
+           (\ x ->
+             Sum_Type.Inl
+               (Term_Rewriting.showsl_lit
+                  "there is no CSR size-change graph for pair " .
+                 Term_Rewriting.showsl_rule x)))
+         (\ _ ->
+           let {
+             gGs = filter (\ g -> Arith.membera p (fst g)) gs;
+           } in Error_Monad.bind
+                  (Error_Monad.catch_error
+                    (Error_Monad.forallM
+                      (\ (a, b) ->
+                        (case a of {
+                          (s, t) ->
+                            (\ (stri, nstri) ->
+                              Error_Monad.bind
+                                (Check_Monad.check
+                                  (csr_sct_sharp_term s && csr_sct_sharp_term t)
+                                  (Term_Rewriting.showsl_lit
+                                    "CSR size-change pair is not sharp-rooted"))
+                                (\ _ ->
+                                  Error_Monad.bind
+                                    (Error_Monad.catch_error
+                                      (Error_Monad.forallM
+(\ (i, ja) ->
+  Check_Monad.check
+    (csr_sct_active_index_check mu s i &&
+      csr_sct_active_index_check mu t ja &&
+        Arith.membera
+          (CSR_Checker.mu_supt_list mu
+            (Size_Change_Termination_Processors.get_arg s i))
+          (Size_Change_Termination_Processors.get_arg t ja))
+    (Term_Rewriting.showsl_lit "invalid strict active CSR size-change edge"))
+stri)
+                                      (\ x -> Sum_Type.Inl (snd x)))
+                                    (\ _ ->
+                                      Error_Monad.catch_error
+(Error_Monad.forallM
+  (\ (i, ja) ->
+    Check_Monad.check
+      (csr_sct_active_index_check mu s i &&
+        csr_sct_active_index_check mu t ja &&
+          (Term_Rewriting.equal_term
+             (Size_Change_Termination_Processors.get_arg s i)
+             (Size_Change_Termination_Processors.get_arg t ja) ||
+            Arith.membera
+              (CSR_Checker.mu_supt_list mu
+                (Size_Change_Termination_Processors.get_arg s i))
+              (Size_Change_Termination_Processors.get_arg t ja)))
+      (Term_Rewriting.showsl_lit
+        "invalid non-strict active CSR size-change edge"))
+  nstri)
+(\ x -> Sum_Type.Inl (snd x)))));
+                        })
+                          b)
+                      gGs)
+                    (\ x -> Sum_Type.Inl (snd x)))
+                  (\ _ ->
+                    let {
+                      conn =
+                        (\ st uv ->
+                          CSR_Checker.csr_dep_graph_edge_check
+                            (CSR_Checker.csr_dp_root_mu
+                              (Context_Sensitive_Impl.mu_of mu))
+                            r ((st, ()), (uv, ())));
+                    } in Check_Monad.check
+                           (Size_Change_Termination.check_SCT conn
+                             (map (\ (st, (stri, nstri)) ->
+                                    Size_Change_Termination.Scg st st
+                                      (Missing_List.remdups_sort stri)
+                                      (Missing_List.remdups_sort nstri))
+                               gGs))
+                           (Term_Rewriting.showsl_lit
+                             "active CSR size-change analysis failed")));
 
 check_csr_dp_termination_proof_min ::
   forall a b c.
@@ -186,8 +311,10 @@ check_csr_dp_termination_proof_min ia j mu a i dpp
     (CSR_Checker.CSR_DP_Dep_Graph_Proc edpts);
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_Checker.CSR_DP_Size_Change_Subterm_Proc graphs) =
-  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-    (CSR_Checker.CSR_DP_Size_Change_Subterm_Proc graphs);
+  (if Error_Monad.isOK (csr_sct_active_subterm_proc j mu graphs dpp)
+    then FOR_Preliminaries.debug i "active CSR size-change" (Sum_Type.Inr ())
+    else CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+           (CSR_Checker.CSR_DP_Size_Change_Subterm_Proc graphs));
 
 check_csr_termination_proof_min ::
   forall a b c.
