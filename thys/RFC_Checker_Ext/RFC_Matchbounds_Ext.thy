@@ -79,6 +79,68 @@ lemma rfc_native_word_res_impl_singleton:
   by (auto simp: Let_def rs.correct)
 
 fun
+  rfc_native_labeled_word_res_impl ::
+    "(('f \<times> nat) \<times> nat,
+      ('q :: linorder,'f :: linorder \<times> nat)ta_rule_impl list)rm \<Rightarrow>
+      ('q \<Rightarrow> 'q rs) \<Rightarrow> 'q \<Rightarrow> ('f \<times> nat) list \<Rightarrow> 'q rs"
+where
+  "rfc_native_labeled_word_res_impl TA eps q [] = rs.from_list [q]"
+| "rfc_native_labeled_word_res_impl TA eps q (fh # fhs) =
+    (let rec0 = rfc_native_labeled_word_res_impl TA eps q fhs;
+         rec = (if fhs = [] then rec0
+                else rs_Union (map eps (rs.to_list rec0)));
+         rules = rm_set_lookup TA (fh,1);
+         arules = filter (\<lambda>rule.
+           rs.memb (r_lhs_states_impl rule ! 0) rec) rules
+     in rs.from_list (map r_rhs_impl arules))"
+
+lemma rfc_native_labeled_word_res_impl_uniform:
+  "rfc_native_labeled_word_res_impl TA eps q (map (\<lambda>f. (f,h)) w) =
+    rfc_native_word_res_impl TA eps q h w"
+  by (induct w) (simp_all add: Let_def)
+
+fun
+  rfc_native_labeled_word_res ::
+    "('q,('f \<times> nat))ta \<Rightarrow> 'q \<Rightarrow> ('f \<times> nat) list \<Rightarrow> 'q set"
+where
+  "rfc_native_labeled_word_res TA q [] = {q}"
+| "rfc_native_labeled_word_res TA q (fh # fhs) =
+    (let rec0 = rfc_native_labeled_word_res TA q fhs;
+         rec = (if fhs = [] then rec0 else (ta_eps TA)\<^sup>* `` rec0)
+     in {p. \<exists>a\<in>rec. (fh [a] \<rightarrow> p) \<in> ta_rules TA})"
+
+fun
+  rfc_labeled_height_vectors :: "nat \<Rightarrow> 'f list \<Rightarrow> ('f \<times> nat) list list"
+where
+  "rfc_labeled_height_vectors c [] = [[]]"
+| "rfc_labeled_height_vectors c (f # fs) =
+    concat (map (\<lambda>h.
+      map (Cons (f,h)) (rfc_labeled_height_vectors c fs))
+      [0..<Suc c])"
+
+lemma rfc_labeled_height_vectors_length:
+  assumes "fhs \<in> set (rfc_labeled_height_vectors c fs)"
+  shows "length fhs = length fs"
+  using assms by (induct fs arbitrary: fhs) auto
+
+lemma rfc_labeled_height_vectors_fst:
+  assumes "fhs \<in> set (rfc_labeled_height_vectors c fs)"
+  shows "map fst fhs = fs"
+  using assms by (induct fs arbitrary: fhs) auto
+
+lemma rfc_labeled_height_vectors_bound:
+  assumes "fhs \<in> set (rfc_labeled_height_vectors c fs)"
+    and "fh \<in> set fhs"
+  shows "snd fh \<le> c"
+  using assms by (induct fs arbitrary: fhs) auto
+
+definition
+  rfc_labeled_min_height :: "('f \<times> nat) list \<Rightarrow> nat"
+where
+  "rfc_labeled_min_height fhs \<equiv>
+    Min (snd ` set fhs)"
+
+fun
   rfc_native_word_res ::
     "('q,'f \<times> nat)ta \<Rightarrow> 'q \<Rightarrow> nat \<Rightarrow> 'f list \<Rightarrow> 'q set"
 where
@@ -87,6 +149,11 @@ where
     (let rec0 = rfc_native_word_res TA q h fs;
          rec = (if fs = [] then rec0 else (ta_eps TA)\<^sup>* `` rec0)
      in {p. \<exists>a\<in>rec. ((f,h) [a] \<rightarrow> p) \<in> ta_rules TA})"
+
+lemma rfc_native_labeled_word_res_uniform:
+  "rfc_native_labeled_word_res TA q (map (\<lambda>f. (f,h)) w) =
+    rfc_native_word_res TA q h w"
+  by (induct w) (simp_all add: Let_def)
 
 lemma rfc_native_word_res_impl_eq:
   fixes TA :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
@@ -872,6 +939,44 @@ definition
 where
   "rfc_native_no_top_redex_impl TA qs c R \<equiv>
     list_all (rfc_rule_native_no_top_redex_impl TA qs c) R"
+
+definition
+  rfc_rule_native_inner_splice_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_native_inner_splice_impl TA qs c lr \<equiv>
+    (case rfc_rule_words lr of
+      None \<Rightarrow> False
+    | Some (lw, rw) \<Rightarrow>
+        lw \<noteq> [] \<and>
+        list_all (\<lambda>q.
+          list_all (\<lambda>lfhs.
+            let lhs = rfc_native_labeled_word_res_impl
+              (ta_rules_impl TA) (ta_epss_impl TA) q lfhs;
+                h = min c (Suc (rfc_labeled_min_height lfhs));
+                rfhs = map (\<lambda>f. (f,h)) rw
+            in list_all (\<lambda>p.
+              if rw = [] then
+                rs.memb p (ta_epss_impl TA q)
+              else
+                list_ex (\<lambda>s.
+                  let rhs = rfc_native_labeled_word_res_impl
+                    (ta_rules_impl TA) (ta_epss_impl TA) s rfhs
+                  in list_ex (\<lambda>e. rs.memb p (ta_epss_impl TA e))
+                    (rs.to_list rhs))
+                  (rs.to_list (ta_epss_impl TA q)))
+              (rs.to_list lhs))
+            (rfc_labeled_height_vectors c lw))
+          qs)"
+
+definition
+  rfc_native_inner_splice_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_native_inner_splice_impl TA qs c R \<equiv>
+    list_all (rfc_rule_native_inner_splice_impl TA qs c) R"
 
 definition
   rfc_rule_matchbox_closed_indexed_impl ::
