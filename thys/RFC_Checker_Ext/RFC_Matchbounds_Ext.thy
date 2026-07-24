@@ -43,6 +43,248 @@ lemma rfc_word_res_impl_eq[simp]:
   by (induct w) (simp_all add: Let_def)
 
 definition
+  rfc_unary_rule_index_impl ::
+    "('q :: linorder,'f)ta_rule_impl list \<Rightarrow>
+      ('q,('q,'f)ta_rule_impl list)RBT.rbt"
+where
+  "rfc_unary_rule_index_impl rules \<equiv>
+    elem_list_to_rm (\<lambda>rule. r_lhs_states_impl rule ! 0) rules"
+
+definition
+  rfc_word_indexed_step_impl ::
+    "('q :: linorder,'f)ta_rule_impl list \<Rightarrow> 'q rs \<Rightarrow> 'q rs"
+where
+  "rfc_word_indexed_step_impl rules rec \<equiv>
+    (let idx = rfc_unary_rule_index_impl rules in
+      rs_Union (map (\<lambda>p.
+        rs_Union (map rqss_impl (rm_set_lookup idx p)))
+        (rs.to_list rec)))"
+
+lemma rfc_word_indexed_step_impl:
+  "rs.\<alpha> (rfc_word_indexed_step_impl rules rec) =
+    rs.\<alpha> (rs_Union (map rqss_impl
+      (filter (\<lambda>rule.
+        rs.memb (r_lhs_states_impl rule ! 0) rec) rules)))"
+  unfolding rfc_word_indexed_step_impl_def rfc_unary_rule_index_impl_def
+  by (auto simp: rs.correct elem_list_to_rm.rm_set_lookup)
+
+definition
+  rfc_word_scan_step_impl ::
+    "('q :: linorder,'f)ta_rule_impl list \<Rightarrow> 'q rs \<Rightarrow> 'q rs"
+where
+  "rfc_word_scan_step_impl rules rec \<equiv>
+    rs_Union (map rqss_impl
+      (filter (\<lambda>rule.
+        rs.memb (r_lhs_states_impl rule ! 0) rec) rules))"
+
+lemma rfc_word_indexed_scan_step_impl:
+  "rs.\<alpha> (rfc_word_indexed_step_impl rules rec) =
+    rs.\<alpha> (rfc_word_scan_step_impl rules rec)"
+  unfolding rfc_word_scan_step_impl_def
+  by (rule rfc_word_indexed_step_impl)
+
+lemma rfc_word_scan_step_impl_cong:
+  assumes "rs.\<alpha> rec = rs.\<alpha> rec'"
+  shows "rs.\<alpha> (rfc_word_scan_step_impl rules rec) =
+    rs.\<alpha> (rfc_word_scan_step_impl rules rec')"
+  using assms
+  unfolding rfc_word_scan_step_impl_def
+  by (auto simp: rs.correct)
+
+lemma map_rfc_word_indexed_scan_step_impl:
+  assumes "map rs.\<alpha> recs = map rs.\<alpha> recs'"
+  shows
+    "map rs.\<alpha> (map (rfc_word_indexed_step_impl rules) recs) =
+      map rs.\<alpha> (map (rfc_word_scan_step_impl rules) recs')"
+  using assms
+proof (induct recs arbitrary: recs')
+  case Nil
+  then show ?case by simp
+next
+  case (Cons rec recs)
+  then obtain rec' recs'' where recs':
+    "recs' = rec' # recs''"
+    by (cases recs') auto
+  with Cons.prems have head:
+    "rs.\<alpha> rec = rs.\<alpha> rec'"
+    and tail:
+    "map rs.\<alpha> recs = map rs.\<alpha> recs''"
+    by auto
+  have indexed:
+    "rs.\<alpha> (rfc_word_indexed_step_impl rules rec) =
+      rs.\<alpha> (rfc_word_scan_step_impl rules rec')"
+    using rfc_word_indexed_scan_step_impl[of rules rec]
+      rfc_word_scan_step_impl_cong[OF head, of rules]
+    by simp
+  show ?case
+    unfolding recs'
+    using indexed Cons.hyps[OF tail]
+    by simp
+qed
+
+fun
+  rfc_word_results_impl ::
+    "(('f \<times> nat) \<times> nat,
+      ('q :: linorder,'f :: linorder \<times> nat)ta_rule_impl list)rm \<Rightarrow>
+      ('q \<Rightarrow> 'q rs) \<Rightarrow> nat \<Rightarrow> 'f list \<Rightarrow> 'q list \<Rightarrow> 'q rs list"
+where
+  "rfc_word_results_impl TA eps h [] qs = map eps qs"
+| "rfc_word_results_impl TA eps h (f # fs) qs =
+    (let recs = rfc_word_results_impl TA eps h fs qs;
+         rules = rm_set_lookup TA ((f,h),1)
+     in map (rfc_word_indexed_step_impl rules) recs)"
+
+lemma rfc_word_results_impl_eq:
+  "map rs.\<alpha> (rfc_word_results_impl TA eps h w qs) =
+    map (\<lambda>q. rs.\<alpha> (rfc_word_res_impl TA eps q h w)) qs"
+proof (induct w arbitrary: qs)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons f fs)
+  let ?recs = "rfc_word_results_impl TA eps h fs qs"
+  let ?old = "map (\<lambda>q. rfc_word_res_impl TA eps q h fs) qs"
+  let ?rules = "rm_set_lookup TA ((f,h),1)"
+  have alpha:
+    "map rs.\<alpha> ?recs = map rs.\<alpha> ?old"
+    using Cons.hyps[of qs]
+    by simp
+  have step:
+    "map rs.\<alpha> (map (rfc_word_indexed_step_impl ?rules) ?recs) =
+      map rs.\<alpha> (map (rfc_word_scan_step_impl ?rules) ?old)"
+    by (rule map_rfc_word_indexed_scan_step_impl[OF alpha])
+  show ?case
+    using step
+    by (simp add: Let_def rfc_word_scan_step_impl_def)
+qed
+
+lemma rel_checker_some_none:
+  "(rel_checker (Some_Relation rel) lhs rhs = None) =
+    (\<forall>l \<in> rs.\<alpha> lhs. \<exists>r \<in> rs.\<alpha> rhs. (l,r) \<in> set rel)"
+proof -
+  let ?check = "check_allm
+    (\<lambda>l. check (\<exists>r \<in> set (rs.to_list rhs). (l,r) \<in> set rel) l)
+    (rs.to_list lhs)"
+  have "(rel_checker (Some_Relation rel) lhs rhs = None) = isOK ?check"
+    by (cases ?check) auto
+  also have "\<dots> =
+    (\<forall>l \<in> rs.\<alpha> lhs. \<exists>r \<in> rs.\<alpha> rhs. (l,r) \<in> set rel)"
+    by (simp add: isOK_check_allm rs.correct)
+  finally show ?thesis .
+qed
+
+lemma rel_checker_alpha_cong:
+  assumes "rs.\<alpha> lhs = rs.\<alpha> lhs'"
+    and "rs.\<alpha> rhs = rs.\<alpha> rhs'"
+  shows "(rel_checker rel lhs rhs = None) =
+    (rel_checker rel lhs' rhs' = None)"
+proof (cases rel)
+  case (Some_Relation relation)
+  then show ?thesis
+    using assms
+    by (simp only: rel_checker_some_none)
+qed (use assms in \<open>auto simp: rs_\<alpha>_to_RBT_keys\<close>)
+
+lemma list_all2_rel_checker_alpha_cong:
+  assumes "map rs.\<alpha> xs = map rs.\<alpha> xs'"
+    and "map rs.\<alpha> ys = map rs.\<alpha> ys'"
+  shows "list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None) xs ys =
+    list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None) xs' ys'"
+  using assms
+proof (induct xs arbitrary: ys xs' ys')
+  case Nil
+  then show ?case
+    by (cases xs'; cases ys; cases ys') auto
+next
+  case (Cons lhs xs)
+  then obtain lhs' xs'' where lhs':
+    "xs' = lhs' # xs''"
+    by (cases xs') auto
+  show ?case
+  proof (cases ys)
+    case Nil
+    with Cons.prems lhs' show ?thesis by simp
+  next
+    case (Cons rhs ys'')
+    then obtain rhs' ys''' where rhs':
+      "ys' = rhs' # ys'''"
+      using Cons.prems by (cases ys') auto
+    from Cons.prems lhs' Cons rhs' have heads:
+      "rs.\<alpha> lhs = rs.\<alpha> lhs'"
+      "rs.\<alpha> rhs = rs.\<alpha> rhs'"
+      and tails:
+      "map rs.\<alpha> xs = map rs.\<alpha> xs''"
+      "map rs.\<alpha> ys'' = map rs.\<alpha> ys'''"
+      by auto
+    show ?thesis
+      unfolding lhs' Cons rhs'
+      using rel_checker_alpha_cong[OF heads]
+        Cons.hyps[OF tails]
+      by simp
+  qed
+qed
+
+lemma list_all2_map_same:
+  "list_all2 P (map f xs) (map g xs) =
+    list_all (\<lambda>x. P (f x) (g x)) xs"
+  by (induct xs) simp_all
+
+lemma list_all_map_same:
+  "list_all P (map f xs) = list_all (\<lambda>x. P (f x)) xs"
+  by (induct xs) simp_all
+
+lemma list_all_alpha_cong:
+  assumes "map rs.\<alpha> xs = map rs.\<alpha> ys"
+    and "\<And>x y. rs.\<alpha> x = rs.\<alpha> y \<Longrightarrow> P x = P y"
+  shows "list_all P xs = list_all P ys"
+  using assms(1)
+proof (induct xs arbitrary: ys)
+  case Nil
+  then show ?case by (cases ys) simp_all
+next
+  case (Cons x xs)
+  then obtain y ys' where ys: "ys = y # ys'"
+    by (cases ys) auto
+  with Cons.prems have head: "rs.\<alpha> x = rs.\<alpha> y"
+    and tail: "map rs.\<alpha> xs = map rs.\<alpha> ys'"
+    by auto
+  show ?case
+    unfolding ys
+    using assms(2)[OF head] Cons.hyps[OF tail]
+    by simp
+qed
+
+lemma rfc_word_results_rel_checker:
+  "list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None)
+      (rfc_word_results_impl TA eps h lw qs)
+      (rfc_word_results_impl TA eps h rw qs) =
+    list_all (\<lambda>q.
+      rel_checker rel
+        (rfc_word_res_impl TA eps q h lw)
+        (rfc_word_res_impl TA eps q h rw) = None) qs"
+proof -
+  have lhs:
+    "map rs.\<alpha> (rfc_word_results_impl TA eps h lw qs) =
+      map rs.\<alpha> (map (\<lambda>q. rfc_word_res_impl TA eps q h lw) qs)"
+    using rfc_word_results_impl_eq[of TA eps h lw qs]
+    by simp
+  have rhs:
+    "map rs.\<alpha> (rfc_word_results_impl TA eps h rw qs) =
+      map rs.\<alpha> (map (\<lambda>q. rfc_word_res_impl TA eps q h rw) qs)"
+    using rfc_word_results_impl_eq[of TA eps h rw qs]
+    by simp
+  have "list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None)
+      (rfc_word_results_impl TA eps h lw qs)
+      (rfc_word_results_impl TA eps h rw qs) =
+    list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None)
+      (map (\<lambda>q. rfc_word_res_impl TA eps q h lw) qs)
+      (map (\<lambda>q. rfc_word_res_impl TA eps q h rw) qs)"
+    by (rule list_all2_rel_checker_alpha_cong[OF lhs rhs])
+  then show ?thesis
+    by (simp add: list_all2_map_same)
+qed
+
+definition
   rfc_word_reaches_height_impl ::
     "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow> 'q \<Rightarrow> nat \<Rightarrow> ('f list) \<Rightarrow> 'q \<Rightarrow> bool"
 where
@@ -90,6 +332,67 @@ definition
 where
   "rfc_no_top_redex_fast_impl TA qs c R \<equiv>
     list_all (rfc_rule_no_top_redex_fast_impl TA qs c) R"
+
+definition
+  rfc_rule_no_top_redex_indexed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_no_top_redex_indexed_impl TA qs c lr \<equiv>
+    (let qset = rs.from_list qs in
+      case rfc_rule_words lr of
+        None \<Rightarrow> False
+      | Some (lw, rw) \<Rightarrow>
+          list_all (\<lambda>res. rs.isEmpty (rs.inter qset res))
+            (rfc_word_results_impl
+              (ta_rules_impl TA) (ta_epss_impl TA) c lw qs))"
+
+definition
+  rfc_no_top_redex_indexed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_no_top_redex_indexed_impl TA qs c R \<equiv>
+    list_all (rfc_rule_no_top_redex_indexed_impl TA qs c) R"
+
+lemma rfc_rule_no_top_redex_indexed_impl_eq:
+  "rfc_rule_no_top_redex_indexed_impl TA qs c lr =
+    rfc_rule_no_top_redex_fast_impl TA qs c lr"
+proof (cases "rfc_rule_words lr")
+  case None
+  then show ?thesis
+    by (simp add: rfc_rule_no_top_redex_indexed_impl_def
+      rfc_rule_no_top_redex_fast_impl_def Let_def)
+next
+  case (Some words)
+  then obtain lw rw where words: "words = (lw,rw)"
+    by (cases words)
+  let ?qset = "rs.from_list qs"
+  let ?results = "rfc_word_results_impl
+    (ta_rules_impl TA) (ta_epss_impl TA) c lw qs"
+  let ?old = "map (\<lambda>q. rfc_word_res_impl
+    (ta_rules_impl TA) (ta_epss_impl TA) q c lw) qs"
+  have alpha: "map rs.\<alpha> ?results = map rs.\<alpha> ?old"
+    using rfc_word_results_impl_eq[
+      of "ta_rules_impl TA" "ta_epss_impl TA" c lw qs]
+    by simp
+  have empty:
+    "list_all (\<lambda>res. rs.isEmpty (rs.inter ?qset res)) ?results =
+      list_all (\<lambda>res. rs.isEmpty (rs.inter ?qset res)) ?old"
+    by (rule list_all_alpha_cong[OF alpha]) (auto simp: rs.correct)
+  show ?thesis
+    unfolding rfc_rule_no_top_redex_indexed_impl_def
+      rfc_rule_no_top_redex_fast_impl_def Let_def
+    using Some words empty
+    by (simp add: list_all_map_same)
+qed
+
+lemma rfc_no_top_redex_indexed_impl_eq:
+  "rfc_no_top_redex_indexed_impl TA qs c R =
+    rfc_no_top_redex_fast_impl TA qs c R"
+  unfolding rfc_no_top_redex_indexed_impl_def
+    rfc_no_top_redex_fast_impl_def
+  by (induct R) (simp_all add: rfc_rule_no_top_redex_indexed_impl_eq)
 
 definition
   rfc_lifted_lhs_top_impl :: "nat \<Rightarrow> ('f \<times> nat,'v)term \<Rightarrow> bool"
@@ -334,6 +637,57 @@ where
     list_all (rfc_rule_matchbox_closed_impl TA rel qs) R"
 
 definition
+  rfc_rule_matchbox_closed_indexed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_matchbox_closed_indexed_impl TA rel qs lr \<equiv>
+    (case rfc_rule_words lr of
+      None \<Rightarrow> False
+    | Some (lw, rw) \<Rightarrow>
+        list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None)
+          (rfc_word_results_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) 0 lw qs)
+          (rfc_word_results_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) 0 rw qs))"
+
+definition
+  rfc_matchbox_closed_indexed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_matchbox_closed_indexed_impl TA rel qs R \<equiv>
+    list_all (rfc_rule_matchbox_closed_indexed_impl TA rel qs) R"
+
+lemma rfc_rule_matchbox_closed_indexed_impl_eq:
+  "rfc_rule_matchbox_closed_indexed_impl TA rel qs lr =
+    rfc_rule_matchbox_closed_impl TA rel qs lr"
+proof (cases "rfc_rule_words lr")
+  case None
+  then show ?thesis
+    by (simp add: rfc_rule_matchbox_closed_indexed_impl_def
+      rfc_rule_matchbox_closed_impl_def)
+next
+  case (Some words)
+  then obtain lw rw where words: "words = (lw,rw)"
+    by (cases words)
+  show ?thesis
+    unfolding rfc_rule_matchbox_closed_indexed_impl_def
+      rfc_rule_matchbox_closed_impl_def
+    using Some words
+      rfc_word_results_rel_checker[
+        of rel "ta_rules_impl TA" "ta_epss_impl TA" 0 lw qs rw]
+    by simp
+qed
+
+lemma rfc_matchbox_closed_indexed_impl_eq:
+  "rfc_matchbox_closed_indexed_impl TA rel qs R =
+    rfc_matchbox_closed_impl TA rel qs R"
+  unfolding rfc_matchbox_closed_indexed_impl_def
+    rfc_matchbox_closed_impl_def
+  by (induct R) (simp_all add: rfc_rule_matchbox_closed_indexed_impl_eq)
+
+definition
   rfc_rule_matchbox_ext_right_impl ::
     "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
       'q ta_relation \<Rightarrow> 'q list \<Rightarrow> 'q list \<Rightarrow>
@@ -364,6 +718,86 @@ definition
 where
   "rfc_matchbox_ext_right_impl TA rel tails qs R \<equiv>
     list_all (rfc_rule_matchbox_ext_right_impl TA rel tails qs) R"
+
+definition
+  rfc_rule_matchbox_ext_right_indexed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> 'q list \<Rightarrow>
+      ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_matchbox_ext_right_indexed_impl TA rel tails qs lr \<equiv>
+    (case rfc_rule_words lr of
+      None \<Rightarrow> False
+    | Some (lw, rw) \<Rightarrow>
+        lw \<noteq> [] \<and>
+        (let rhs = rfc_word_results_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) 0 rw tails in
+          list_all (\<lambda>i.
+            let prefix = take i lw in
+            list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None)
+              (rfc_word_results_impl
+                (ta_rules_impl TA) (ta_epss_impl TA) 0 prefix tails)
+              rhs)
+            [1..<length lw]))"
+
+definition
+  rfc_matchbox_ext_right_indexed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> 'q list \<Rightarrow>
+      ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_matchbox_ext_right_indexed_impl TA rel tails qs R \<equiv>
+    list_all
+      (rfc_rule_matchbox_ext_right_indexed_impl TA rel tails qs) R"
+
+lemma list_all_swap:
+  "list_all (\<lambda>x. list_all (\<lambda>y. P x y) ys) xs =
+    list_all (\<lambda>y. list_all (\<lambda>x. P x y) xs) ys"
+  unfolding list_all_iff
+  by auto
+
+lemma rfc_rule_matchbox_ext_right_indexed_impl_eq:
+  "rfc_rule_matchbox_ext_right_indexed_impl TA rel tails qs lr =
+    rfc_rule_matchbox_ext_right_impl TA rel tails qs lr"
+proof (cases "rfc_rule_words lr")
+  case None
+  then show ?thesis
+    by (simp add: rfc_rule_matchbox_ext_right_indexed_impl_def
+      rfc_rule_matchbox_ext_right_impl_def)
+next
+  case (Some words)
+  then obtain lw rw where words: "words = (lw,rw)"
+    by (cases words)
+  have each: "\<And>i.
+    list_all2 (\<lambda>lhs rhs. rel_checker rel lhs rhs = None)
+      (rfc_word_results_impl
+        (ta_rules_impl TA) (ta_epss_impl TA) 0 (take i lw) tails)
+      (rfc_word_results_impl
+        (ta_rules_impl TA) (ta_epss_impl TA) 0 rw tails) =
+    list_all (\<lambda>q.
+      rel_checker rel
+        (rfc_word_res_impl
+          (ta_rules_impl TA) (ta_epss_impl TA) q 0 (take i lw))
+        (rfc_word_res_impl
+          (ta_rules_impl TA) (ta_epss_impl TA) q 0 rw) = None)
+      tails"
+    by (rule rfc_word_results_rel_checker)
+  show ?thesis
+    unfolding rfc_rule_matchbox_ext_right_indexed_impl_def
+      rfc_rule_matchbox_ext_right_impl_def Let_def
+    using Some words
+    by (simp only: option.case(2) prod.case each)
+      (rule arg_cong[where f = "\<lambda>x. lw \<noteq> [] \<and> x"],
+        rule list_all_swap)
+qed
+
+lemma rfc_matchbox_ext_right_indexed_impl_eq:
+  "rfc_matchbox_ext_right_indexed_impl TA rel tails qs R =
+    rfc_matchbox_ext_right_impl TA rel tails qs R"
+  unfolding rfc_matchbox_ext_right_indexed_impl_def
+    rfc_matchbox_ext_right_impl_def
+  by (induct R)
+    (simp_all add: rfc_rule_matchbox_ext_right_indexed_impl_eq)
 
 definition productive_tree_automaton ::
   "('q :: compare_order, 'f :: compare_order) tree_automaton \<Rightarrow> ('q,'f) tree_automaton"
@@ -465,11 +899,11 @@ where
         (showsl_lit (STR ''RFC Matchbox-relative tail states must occur as automaton right-hand-side states''));
       check (rfc_initial_paired_accepted_impl TYPE('f) TA qfin initial_terms)
         (showsl_lit (STR ''RFC Matchbox-relative right-hand sides are not accepted by their paired tail states''));
-      check (rfc_matchbox_closed_impl TA rel states Rstrict)
+      check (rfc_matchbox_closed_indexed_impl TA rel states Rstrict)
         (showsl_lit (STR ''RFC Matchbox-relative merge/epsilon split condition failed''));
-      check (rfc_matchbox_ext_right_impl TA rel qfin states Rstrict)
+      check (rfc_matchbox_ext_right_indexed_impl TA rel qfin states Rstrict)
         (showsl_lit (STR ''RFC Matchbox-relative right-extension condition failed''));
-      check (rfc_no_top_redex_fast_impl TA states c Rdelete)
+      check (rfc_no_top_redex_indexed_impl TA states c Rdelete)
         (showsl_lit (STR ''RFC Matchbox-relative removed rules have a redex at the top match-bound layer''));
       check_bounds_generic_rfc_relative info Rdelete Rkeep;
       return (tp_ops.mk I (tp_ops.nfs I tp) (tp_ops.Q I tp) Rkeep Rdelete)
@@ -4213,21 +4647,24 @@ proof -
       (\<lambda>q. rs.memb q (ta_rhs_states_set (projr (generate_ta_cond preTA rel)))) qfin"
     and initial_acc_proj: "rfc_initial_paired_accepted_impl TYPE('f)
       (projr (generate_ta_cond preTA rel)) qfin initial_terms"
-    and closed_proj: "rfc_matchbox_closed_impl
+    and closed_proj: "rfc_matchbox_closed_indexed_impl
       (projr (generate_ta_cond preTA rel)) rel ?states ?Rstrict"
-    and ext_right_proj: "rfc_matchbox_ext_right_impl
+    and ext_right_proj: "rfc_matchbox_ext_right_indexed_impl
       (projr (generate_ta_cond preTA rel)) rel qfin ?states ?Rstrict"
-    and no_top_fast_proj: "rfc_no_top_redex_fast_impl
+    and no_top_fast_proj: "rfc_no_top_redex_indexed_impl
       (projr (generate_ta_cond preTA rel)) ?states c Rdelete"
     by (auto simp: Q_empty_sound)
   have initial_acc_impl: "rfc_initial_paired_accepted_impl TYPE('f) TA qfin initial_terms"
     using initial_acc_proj TA by simp
   have closed: "rfc_matchbox_closed_impl TA rel ?states ?Rstrict"
-    using closed_proj TA by simp
+    using closed_proj TA
+    by (simp add: rfc_matchbox_closed_indexed_impl_eq)
   have ext_right: "rfc_matchbox_ext_right_impl TA rel qfin ?states ?Rstrict"
-    using ext_right_proj TA by simp
+    using ext_right_proj TA
+    by (simp add: rfc_matchbox_ext_right_indexed_impl_eq)
   have no_top_fast: "rfc_no_top_redex_fast_impl TA ?states c Rdelete"
-    using no_top_fast_proj TA by simp
+    using no_top_fast_proj TA
+    by (simp add: rfc_no_top_redex_indexed_impl_eq)
   have no_top: "rfc_no_top_redex_impl TA ?states c Rdelete"
     by (rule rfc_no_top_redex_fast_impl_imp[OF no_top_fast])
   from check_bounds_generic_rfc_relative_exact[
