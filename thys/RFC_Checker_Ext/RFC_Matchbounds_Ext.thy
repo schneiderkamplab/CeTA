@@ -796,6 +796,84 @@ where
     list_all (rfc_rule_matchbox_closed_impl TA rel qs) R"
 
 definition
+  rfc_rule_native_matchbox_closed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_native_matchbox_closed_impl TA rel qs lr \<equiv>
+    (case rfc_rule_words lr of
+      None \<Rightarrow> False
+    | Some (lw, rw) \<Rightarrow>
+        list_all (\<lambda>q.
+          rel_checker rel
+            (rfc_native_word_res_impl
+              (ta_rules_impl TA) (ta_epss_impl TA) q 0 lw)
+            (rfc_native_word_res_impl
+              (ta_rules_impl TA) (ta_epss_impl TA) q 0 rw) = None)
+          qs)"
+
+definition
+  rfc_native_matchbox_closed_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_native_matchbox_closed_impl TA rel qs R \<equiv>
+    list_all (rfc_rule_native_matchbox_closed_impl TA rel qs) R"
+
+definition
+  rfc_rule_native_matchbox_ext_right_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_native_matchbox_ext_right_impl TA rel tails lr \<equiv>
+    (case rfc_rule_words lr of
+      None \<Rightarrow> False
+    | Some (lw, rw) \<Rightarrow>
+        lw \<noteq> [] \<and>
+        list_all (\<lambda>q.
+          let rhs = rfc_native_word_res_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) q 0 rw
+          in list_all (\<lambda>i.
+            rel_checker rel
+              (rfc_native_word_res_impl
+                (ta_rules_impl TA) (ta_epss_impl TA) q 0 (take i lw))
+              rhs = None)
+            [1..<length lw])
+          tails)"
+
+definition
+  rfc_native_matchbox_ext_right_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_native_matchbox_ext_right_impl TA rel tails R \<equiv>
+    list_all (rfc_rule_native_matchbox_ext_right_impl TA rel tails) R"
+
+definition
+  rfc_rule_native_no_top_redex_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
+where
+  "rfc_rule_native_no_top_redex_impl TA qs c lr \<equiv>
+    (let qset = rs.from_list qs in
+      case rfc_rule_words lr of
+        None \<Rightarrow> False
+      | Some (lw, rw) \<Rightarrow>
+          list_all (\<lambda>q.
+            rs.isEmpty (rs.inter qset
+              (rfc_native_word_res_impl
+                (ta_rules_impl TA) (ta_epss_impl TA) q c lw)))
+            qs)"
+
+definition
+  rfc_native_no_top_redex_impl ::
+    "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
+      'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rules \<Rightarrow> bool"
+where
+  "rfc_native_no_top_redex_impl TA qs c R \<equiv>
+    list_all (rfc_rule_native_no_top_redex_impl TA qs c) R"
+
+definition
   rfc_rule_matchbox_closed_indexed_impl ::
     "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
       'q ta_relation \<Rightarrow> 'q list \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
@@ -1737,6 +1815,111 @@ proof -
     by auto
   from rfc_rule_words_sound[OF words]
   show ?thesis by auto
+qed
+
+lemma rfc_native_matchbox_closed_impl_rule:
+  assumes closed: "rfc_native_matchbox_closed_impl TA rel qs R"
+    and lr: "lr \<in> set R"
+  shows "rfc_rule_native_matchbox_closed_impl TA rel qs lr"
+  using assms unfolding rfc_native_matchbox_closed_impl_def
+  by (auto simp: list_all_iff)
+
+lemma rfc_rule_native_matchbox_closed_implD:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi (rel_checker rel_info) (relation_of rel_info)"
+    and closed: "rfc_rule_native_matchbox_closed_impl TAi rel_info qs lr"
+    and words: "rfc_rule_words lr = Some (lw, rw)"
+    and q: "q \<in> set qs"
+    and p: "p \<in> rfc_native_word_res (ta_of TAi) q 0 lw"
+  shows "p \<in> (relation_of rel_info)\<inverse> ``
+    rfc_native_word_res (ta_of TAi) q 0 rw"
+proof -
+  let ?lhs = "rfc_native_word_res_impl
+    (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 lw"
+  let ?rhs = "rfc_native_word_res_impl
+    (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 rw"
+  from closed words q have rel_ok:
+    "rel_checker rel_info ?lhs ?rhs = None"
+    unfolding rfc_rule_native_matchbox_closed_impl_def
+    by (auto simp: list_all_iff)
+  from rel_checker[OF rel_ok] have subset:
+    "rs.\<alpha> ?lhs \<subseteq>
+      (relation_of rel_info)\<inverse> `` rs.\<alpha> ?rhs" .
+  have lhs: "rs.\<alpha> ?lhs =
+      rfc_native_word_res (ta_of TAi) q 0 lw"
+    by (rule rfc_native_word_res_impl_eq[OF inv])
+  have rhs: "rs.\<alpha> ?rhs =
+      rfc_native_word_res (ta_of TAi) q 0 rw"
+    by (rule rfc_native_word_res_impl_eq[OF inv])
+  from subset p lhs rhs show ?thesis by auto
+qed
+
+lemma rfc_native_matchbox_ext_right_impl_rule:
+  assumes ext: "rfc_native_matchbox_ext_right_impl TA rel tails R"
+    and lr: "lr \<in> set R"
+  shows "rfc_rule_native_matchbox_ext_right_impl TA rel tails lr"
+  using assms unfolding rfc_native_matchbox_ext_right_impl_def
+  by (auto simp: list_all_iff)
+
+lemma rfc_rule_native_matchbox_ext_right_implD:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi (rel_checker rel_info) (relation_of rel_info)"
+    and ext: "rfc_rule_native_matchbox_ext_right_impl TAi rel_info tails lr"
+    and words: "rfc_rule_words lr = Some (lw, rw)"
+    and i: "i \<in> set [1..<length lw]"
+    and q: "q \<in> set tails"
+    and p: "p \<in> rfc_native_word_res (ta_of TAi) q 0 (take i lw)"
+  shows "p \<in> (relation_of rel_info)\<inverse> ``
+    rfc_native_word_res (ta_of TAi) q 0 rw"
+proof -
+  let ?lhs = "rfc_native_word_res_impl
+    (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 (take i lw)"
+  let ?rhs = "rfc_native_word_res_impl
+    (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 rw"
+  from ext words i q have rel_ok:
+    "rel_checker rel_info ?lhs ?rhs = None"
+    unfolding rfc_rule_native_matchbox_ext_right_impl_def
+    by (auto simp: list_all_iff Let_def)
+  from rel_checker[OF rel_ok] have subset:
+    "rs.\<alpha> ?lhs \<subseteq>
+      (relation_of rel_info)\<inverse> `` rs.\<alpha> ?rhs" .
+  have lhs: "rs.\<alpha> ?lhs =
+      rfc_native_word_res (ta_of TAi) q 0 (take i lw)"
+    by (rule rfc_native_word_res_impl_eq[OF inv])
+  have rhs: "rs.\<alpha> ?rhs =
+      rfc_native_word_res (ta_of TAi) q 0 rw"
+    by (rule rfc_native_word_res_impl_eq[OF inv])
+  from subset p lhs rhs show ?thesis by auto
+qed
+
+lemma rfc_native_no_top_redex_impl_rule:
+  assumes no_top: "rfc_native_no_top_redex_impl TA qs c R"
+    and lr: "lr \<in> set R"
+  shows "rfc_rule_native_no_top_redex_impl TA qs c lr"
+  using assms unfolding rfc_native_no_top_redex_impl_def
+  by (auto simp: list_all_iff)
+
+lemma rfc_rule_native_no_top_redex_implD:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi rel rell"
+    and no_top: "rfc_rule_native_no_top_redex_impl TAi qs c lr"
+    and words: "rfc_rule_words lr = Some (lw, rw)"
+    and q: "q \<in> set qs"
+    and p: "p \<in> set qs"
+  shows "p \<notin> rfc_native_word_res (ta_of TAi) q c lw"
+proof -
+  let ?res = "rfc_native_word_res_impl
+    (ta_rules_impl TAi) (ta_epss_impl TAi) q c lw"
+  from no_top words q have empty:
+    "rs.isEmpty (rs.inter (rs.from_list qs) ?res)"
+    unfolding rfc_rule_native_no_top_redex_impl_def
+    by (auto simp: list_all_iff Let_def)
+  have impl: "p \<notin> rs.\<alpha> ?res"
+    using empty p by (auto simp: rs.correct)
+  have alpha: "rs.\<alpha> ?res =
+      rfc_native_word_res (ta_of TAi) q c lw"
+    by (rule rfc_native_word_res_impl_eq[OF inv])
+  from impl alpha show ?thesis by simp
 qed
 
 lemma rfc_rule_matchbox_closed_implD:
