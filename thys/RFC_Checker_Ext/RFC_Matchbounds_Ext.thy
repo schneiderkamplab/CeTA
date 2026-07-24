@@ -42,6 +42,165 @@ lemma rfc_word_res_impl_eq[simp]:
       (map_vars_term (\<lambda>_. q) (lift_term h (rfc_word_term w ''x'')))"
   by (induct w) (simp_all add: Let_def)
 
+fun
+  rfc_native_word_res_impl ::
+    "(('f \<times> nat) \<times> nat,
+      ('q :: linorder,'f :: linorder \<times> nat)ta_rule_impl list)rm \<Rightarrow>
+      ('q \<Rightarrow> 'q rs) \<Rightarrow> 'q \<Rightarrow> nat \<Rightarrow> 'f list \<Rightarrow> 'q rs"
+where
+  "rfc_native_word_res_impl TA eps q h [] = rs.from_list [q]"
+| "rfc_native_word_res_impl TA eps q h (f # fs) =
+    (let rec0 = rfc_native_word_res_impl TA eps q h fs;
+         rec = (if fs = [] then rec0
+                else rs_Union (map eps (rs.to_list rec0)));
+         rules = rm_set_lookup TA ((f,h),1);
+         arules = filter (\<lambda>rule.
+           rs.memb (r_lhs_states_impl rule ! 0) rec) rules
+     in rs.from_list (map r_rhs_impl arules))"
+
+text \<open>
+The native Matchbox evaluator takes epsilon transitions strictly between
+letters.  In particular, neither the supplied tail state nor the result after
+the outermost letter is epsilon-closed.  This differs intentionally from
+term-automaton evaluation and is the boundary convention used by the barren
+and merge constructions.
+\<close>
+
+lemma rfc_native_word_res_impl_Nil[simp]:
+  "rs.\<alpha> (rfc_native_word_res_impl TA eps q h []) = {q}"
+  by (simp add: rs.correct)
+
+lemma rfc_native_word_res_impl_singleton:
+  "rfc_native_word_res_impl TA eps q h [f] =
+    (let rules = rm_set_lookup TA ((f,h),1);
+         arules = filter (\<lambda>rule.
+           r_lhs_states_impl rule ! 0 = q) rules
+     in rs.from_list (map r_rhs_impl arules))"
+  by (auto simp: Let_def rs.correct)
+
+fun
+  rfc_native_word_res ::
+    "('q,'f \<times> nat)ta \<Rightarrow> 'q \<Rightarrow> nat \<Rightarrow> 'f list \<Rightarrow> 'q set"
+where
+  "rfc_native_word_res TA q h [] = {q}"
+| "rfc_native_word_res TA q h (f # fs) =
+    (let rec0 = rfc_native_word_res TA q h fs;
+         rec = (if fs = [] then rec0 else (ta_eps TA)\<^sup>* `` rec0)
+     in {p. \<exists>a\<in>rec. ((f,h) [a] \<rightarrow> p) \<in> ta_rules TA})"
+
+lemma rfc_native_word_res_impl_eq:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TA rel rell"
+  shows "rs.\<alpha> (rfc_native_word_res_impl
+      (ta_rules_impl TA) (ta_epss_impl TA) q h w) =
+    rfc_native_word_res (ta_of TA) q h w"
+proof -
+  interpret ta_inv TA rel rell by (rule inv)
+  show ?thesis
+  proof (induct w)
+    case Nil
+    then show ?case by (simp add: rs.correct)
+  next
+    case (Cons f fs)
+    let ?rec0 = "rfc_native_word_res_impl
+      (ta_rules_impl TA) (ta_epss_impl TA) q h fs"
+    let ?rec = "if fs = [] then ?rec0
+      else rs_Union (map (ta_epss_impl TA) (rs.to_list ?rec0))"
+    have rec_alpha: "rs.\<alpha> ?rec =
+      (if fs = [] then rfc_native_word_res (ta_of TA) q h fs
+       else (ta_eps (ta_of TA))\<^sup>* ``
+         rfc_native_word_res (ta_of TA) q h fs)"
+    proof (cases "fs = []")
+      case True
+      then show ?thesis using Cons by simp
+    next
+      case False
+      then show ?thesis
+        using Cons
+        by (auto simp: rs.correct ta_epss)
+    qed
+    show ?case
+    proof (rule set_eqI)
+      fix p
+      show "(p \<in> rs.\<alpha> (rfc_native_word_res_impl
+          (ta_rules_impl TA) (ta_epss_impl TA) q h (f # fs))) =
+        (p \<in> rfc_native_word_res (ta_of TA) q h (f # fs))"
+      proof
+        assume left: "p \<in> rs.\<alpha> (rfc_native_word_res_impl
+          (ta_rules_impl TA) (ta_epss_impl TA) q h (f # fs))"
+        then obtain rule where
+          rule: "rule \<in> set (ta_rm_set_lookup ((f,h),1))"
+          and arg: "r_lhs_states_impl rule ! 0 \<in>
+            (if fs = [] then rfc_native_word_res (ta_of TA) q h fs
+             else (ta_eps (ta_of TA))\<^sup>* ``
+               rfc_native_word_res (ta_of TA) q h fs)"
+          and p: "p = r_rhs_impl rule"
+          using left rec_alpha
+          by (auto simp: Let_def rs.correct)
+        from rm_set_lookup1[OF rule] obtain qs p' qs' where
+          id: "rule = TA_rule_impl (f,h) qs p' qs'"
+          and len: "1 = length qs"
+          and abs_rule: "((f,h) qs \<rightarrow> p') \<in> ta_rules (ta_of TA)"
+          by auto
+        have lhs: "r_lhs_states_impl rule = qs"
+          using id by simp
+        from len obtain a where qs: "qs = [a]"
+          by (cases qs) auto
+        have a: "a = r_lhs_states_impl rule ! 0"
+          using lhs qs by simp
+        have p': "p' = p"
+          using id p by simp
+        have abs_rule': "((f,h) [r_lhs_states_impl rule ! 0] \<rightarrow> p)
+            \<in> ta_rules (ta_of TA)"
+          using abs_rule qs a p' by simp
+        show "p \<in> rfc_native_word_res (ta_of TA) q h (f # fs)"
+          unfolding rfc_native_word_res.simps Let_def
+          using arg abs_rule'
+          by (simp only: mem_Collect_eq) blast
+      next
+        assume right: "p \<in> rfc_native_word_res (ta_of TA) q h (f # fs)"
+        then obtain a where
+          arg: "a \<in> (if fs = [] then rfc_native_word_res (ta_of TA) q h fs
+            else (ta_eps (ta_of TA))\<^sup>* ``
+              rfc_native_word_res (ta_of TA) q h fs)"
+          and abs_rule: "((f,h) [a] \<rightarrow> p) \<in> ta_rules (ta_of TA)"
+          by (auto simp: Let_def)
+        let ?rule = "conv_ta_rule (ta_epss_impl TA) ((f,h) [a] \<rightarrow> p)"
+        have conv: "?rule \<in> conv_ta_rule (ta_epss_impl TA) `
+            ta_rules (ta_of TA)"
+          using abs_rule by blast
+        have lookup0: "?rule \<in> set (ta_rm_set_lookup (r_sym_impl ?rule))"
+          by (rule rm_set_lookup2[OF conv])
+        have lookup: "?rule \<in> set (ta_rm_set_lookup ((f,h),1))"
+          using lookup0 by simp
+        have arg_impl: "a \<in> rs.\<alpha> ?rec"
+          using arg rec_alpha by simp
+        have selected: "?rule \<in>
+            {rule \<in> set (ta_rm_set_lookup ((f,h),1)).
+              r_lhs_states_impl rule ! 0 \<in> rs.\<alpha> ?rec}"
+          using lookup arg_impl by simp
+        have unfold: "rfc_native_word_res_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) q h (f # fs) =
+          rs.from_list (map r_rhs_impl
+            (filter (\<lambda>rule. rs.memb (r_lhs_states_impl rule ! 0) ?rec)
+              (ta_rm_set_lookup ((f,h),1))))"
+          by (simp only: rfc_native_word_res_impl.simps Let_def)
+        have rhs: "r_rhs_impl ?rule = p"
+          by simp
+        show "p \<in> rs.\<alpha> (rfc_native_word_res_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) q h (f # fs))"
+          unfolding unfold
+          apply (simp only: rs.correct set_map set_filter mem_Collect_eq)
+          apply (subst rhs[symmetric])
+          apply (rule imageI)
+          using selected
+          apply (simp add: rs.correct)
+          done
+      qed
+    qed
+  qed
+qed
+
 definition
   rfc_unary_rule_index_impl ::
     "('q :: linorder,'f)ta_rule_impl list \<Rightarrow>
