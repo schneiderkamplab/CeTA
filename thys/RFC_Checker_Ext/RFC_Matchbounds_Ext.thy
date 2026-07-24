@@ -182,6 +182,114 @@ next
   qed
 qed
 
+lemma rfc_native_labeled_word_res_ta_res:
+  fixes TA :: "('q,('f \<times> nat))ta"
+  shows "p \<in> ta_res TA
+      (map_vars_term (\<lambda>_. q) (rfc_word_term fhs ''x'')) \<longleftrightarrow>
+    (\<exists>q0\<in>(ta_eps TA)\<^sup>* `` {q}.
+      \<exists>p0\<in>rfc_native_labeled_word_res TA q0 fhs.
+        (p0,p) \<in> (ta_eps TA)\<^sup>*)"
+proof (induct fhs arbitrary: p)
+  case Nil
+  then show ?case
+    by (auto dest: rtrancl_trans)
+next
+  case (Cons fh fhs)
+  show ?case
+  proof (cases "fhs = []")
+    case True
+    show ?thesis
+    proof
+      assume left: "p \<in> ta_res TA
+        (map_vars_term (\<lambda>_. q) (rfc_word_term (fh # fhs) ''x''))"
+      from left True obtain qa qs where
+        rule: "(fh qs \<rightarrow> qa) \<in> ta_rules TA"
+        and final: "(qa,p) \<in> (ta_eps TA)\<^sup>*"
+        and len: "length qs = 1"
+        and arg: "(q,qs ! 0) \<in> (ta_eps TA)\<^sup>*"
+        by auto
+      from len obtain a where qs: "qs = [a]"
+        by (auto simp: length_Suc_conv)
+      show "\<exists>q0\<in>(ta_eps TA)\<^sup>* `` {q}.
+          \<exists>p0\<in>rfc_native_labeled_word_res TA q0 (fh # fhs).
+            (p0,p) \<in> (ta_eps TA)\<^sup>*"
+        using rule final arg qs True
+        by (rule_tac x=a in bexI, auto simp: Let_def)
+    next
+      assume right: "\<exists>q0\<in>(ta_eps TA)\<^sup>* `` {q}.
+          \<exists>p0\<in>rfc_native_labeled_word_res TA q0 (fh # fhs).
+            (p0,p) \<in> (ta_eps TA)\<^sup>*"
+      then obtain q0 p0 where
+        q0: "(q,q0) \<in> (ta_eps TA)\<^sup>*"
+        and p0: "p0 \<in> rfc_native_labeled_word_res TA q0 (fh # fhs)"
+        and final: "(p0,p) \<in> (ta_eps TA)\<^sup>*"
+        by auto
+      from p0 True have rule: "(fh [q0] \<rightarrow> p0) \<in> ta_rules TA"
+        by (auto simp: Let_def)
+      show "p \<in> ta_res TA
+          (map_vars_term (\<lambda>_. q) (rfc_word_term (fh # fhs) ''x''))"
+        using rule q0 final True
+        apply simp
+        apply (rule exI[of _ p0])
+        apply (rule exI[of _ "[q0]"])
+        apply simp
+        done
+    qed
+  next
+    case False
+    show ?thesis
+    proof
+      assume left: "p \<in> ta_res TA
+        (map_vars_term (\<lambda>_. q) (rfc_word_term (fh # fhs) ''x''))"
+      from left obtain qa qs where
+        rule: "(fh qs \<rightarrow> qa) \<in> ta_rules TA"
+        and final: "(qa,p) \<in> (ta_eps TA)\<^sup>*"
+        and len: "length qs = 1"
+        and arg: "qs ! 0 \<in> ta_res TA
+          (map_vars_term (\<lambda>_. q) (rfc_word_term fhs ''x''))"
+        by auto
+      from len obtain a where qs: "qs = [a]"
+        by (auto simp: length_Suc_conv)
+      from Cons.hyps[of a] arg obtain q0 p0 where
+        q0: "(q,q0) \<in> (ta_eps TA)\<^sup>*"
+        and p0: "p0 \<in> rfc_native_labeled_word_res TA q0 fhs"
+        and eps: "(p0,a) \<in> (ta_eps TA)\<^sup>*"
+        using qs by auto
+      have native: "qa \<in> rfc_native_labeled_word_res TA q0 (fh # fhs)"
+        using rule p0 eps qs False by (auto simp: Let_def)
+      show "\<exists>q0\<in>(ta_eps TA)\<^sup>* `` {q}.
+          \<exists>p0\<in>rfc_native_labeled_word_res TA q0 (fh # fhs).
+            (p0,p) \<in> (ta_eps TA)\<^sup>*"
+        using q0 native final by auto
+    next
+      assume right: "\<exists>q0\<in>(ta_eps TA)\<^sup>* `` {q}.
+          \<exists>p0\<in>rfc_native_labeled_word_res TA q0 (fh # fhs).
+            (p0,p) \<in> (ta_eps TA)\<^sup>*"
+      then obtain q0 p0 where
+        q0: "(q,q0) \<in> (ta_eps TA)\<^sup>*"
+        and p0: "p0 \<in> rfc_native_labeled_word_res TA q0 (fh # fhs)"
+        and final: "(p0,p) \<in> (ta_eps TA)\<^sup>*"
+        by auto
+      from p0 obtain a a0 where
+        rule: "(fh [a] \<rightarrow> p0) \<in> ta_rules TA"
+        and eps: "(a0,a) \<in> (ta_eps TA)\<^sup>*"
+        and a0: "a0 \<in> rfc_native_labeled_word_res TA q0 fhs"
+        using False by (auto simp: Let_def)
+      have arg: "a \<in> ta_res TA
+          (map_vars_term (\<lambda>_. q) (rfc_word_term fhs ''x''))"
+        using Cons.hyps[of a] q0 a0 eps by auto
+      show "p \<in> ta_res TA
+          (map_vars_term (\<lambda>_. q) (rfc_word_term (fh # fhs) ''x''))"
+        using rule arg final
+        apply simp
+        apply (rule exI[of _ p0])
+        apply (rule exI[of _ "[a]"])
+        apply simp
+        done
+    qed
+  qed
+qed
+
 fun
   rfc_labeled_height_vectors :: "nat \<Rightarrow> 'f list \<Rightarrow> ('f \<times> nat) list list"
 where
