@@ -315,11 +315,104 @@ lemma rfc_labeled_height_vectors_bound:
   shows "snd fh \<le> c"
   using assms by (induct fs arbitrary: fhs) auto
 
+lemma rfc_labeled_height_vectors_complete:
+  assumes bases: "map fst fhs = fs"
+    and bound: "\<And>fh. fh \<in> set fhs \<Longrightarrow> snd fh \<le> c"
+  shows "fhs \<in> set (rfc_labeled_height_vectors c fs)"
+  using bases bound
+proof (induct fs arbitrary: fhs)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons f fs)
+  then obtain fh fhs' where fhs: "fhs = fh # fhs'"
+    by (cases fhs) auto
+  from Cons.prems fhs have fst: "fst fh = f"
+    and tail: "map fst fhs' = fs"
+    and h: "snd fh \<le> c"
+    and tail_bound: "\<And>x. x \<in> set fhs' \<Longrightarrow> snd x \<le> c"
+    by auto
+  obtain h' where fh: "fh = (f,h')"
+    using fst by (cases fh) auto
+  have h'_range: "h' \<in> set [0..<Suc c]"
+    using h unfolding fh by simp
+  have tail_mem: "fhs' \<in> set (rfc_labeled_height_vectors c fs)"
+    by (rule Cons.hyps[OF tail tail_bound])
+  show ?case
+    unfolding fhs fh
+    using h'_range tail_mem by auto
+qed
+
 definition
   rfc_labeled_min_height :: "('f \<times> nat) list \<Rightarrow> nat"
 where
   "rfc_labeled_min_height fhs \<equiv>
     Min (snd ` set fhs)"
+
+lemma rfc_labeled_min_height_min_list:
+  assumes "fhs \<noteq> []"
+  shows "rfc_labeled_min_height fhs = min_list (map snd fhs)"
+  using assms
+proof (induct fhs)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons fh fhs)
+  show ?case
+  proof (cases fhs)
+    case Nil
+    then show ?thesis
+      by (simp add: rfc_labeled_min_height_def)
+  next
+    case (Cons gh ghs)
+    have ih: "rfc_labeled_min_height (gh # ghs) =
+        min_list (map snd (gh # ghs))"
+      by (rule Cons.hyps) simp
+    show ?thesis
+      unfolding Cons rfc_labeled_min_height_def
+      using ih[unfolded rfc_labeled_min_height_def]
+      by simp
+  qed
+qed
+
+lemma funs_term_list_rfc_word_term[simp]:
+  "funs_term_list (rfc_word_term w x) = w"
+  by (induct w) (simp_all add: funs_term_list.simps)
+
+lemma funas_term_rfc_word_term:
+  "funas_term (rfc_word_term w x) = (\<lambda>f. (f,1)) ` set w"
+  by (induct w) auto
+
+lemma lift_term_rfc_word_term:
+  "lift_term h (rfc_word_term w x) =
+    rfc_word_term (map (\<lambda>f. (f,h)) w) x"
+  by (induct w) auto
+
+lemma base_term_rfc_word_termE:
+  fixes l :: "('f \<times> nat,string)term"
+  assumes base: "base_term l = rfc_word_term w x"
+  obtains fhs where
+    "l = rfc_word_term fhs x"
+    "map fst fhs = w"
+proof (atomize_elim, insert base, induct w arbitrary: l)
+  case Nil
+  then show ?case
+    by (cases l) auto
+next
+  case (Cons f fs)
+  then obtain fh ts where l: "l = Fun fh ts"
+    by (cases l) auto
+  from Cons.prems[unfolded l] obtain t where
+    ts: "ts = [t]" and base_fh: "fst fh = f"
+      and base_t: "base_term t = rfc_word_term fs x"
+    by (cases fh) auto
+  from Cons.hyps[OF base_t] obtain fhs where
+    t: "t = rfc_word_term fhs x" and bases: "map fst fhs = fs"
+    by auto
+  show ?case
+    using l ts base_fh t bases
+    by (rule_tac x="fh # fhs" in exI) auto
+qed
 
 fun
   rfc_native_word_res ::
@@ -335,6 +428,121 @@ lemma rfc_native_labeled_word_res_uniform:
   "rfc_native_labeled_word_res TA q (map (\<lambda>f. (f,h)) w) =
     rfc_native_word_res TA q h w"
   by (induct w) (simp_all add: Let_def)
+
+lemma rfc_native_labeled_word_res_impl_eq:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TA rel rell"
+  shows "rs.\<alpha> (rfc_native_labeled_word_res_impl
+      (ta_rules_impl TA) (ta_epss_impl TA) q fhs) =
+    rfc_native_labeled_word_res (ta_of TA) q fhs"
+proof -
+  interpret ta_inv TA rel rell by (rule inv)
+  show ?thesis
+  proof (induct fhs)
+    case Nil
+    then show ?case by (simp add: rs.correct)
+  next
+    case (Cons fh fhs)
+    let ?rec0 = "rfc_native_labeled_word_res_impl
+      (ta_rules_impl TA) (ta_epss_impl TA) q fhs"
+    let ?rec = "if fhs = [] then ?rec0
+      else rs_Union (map (ta_epss_impl TA) (rs.to_list ?rec0))"
+    have rec_alpha: "rs.\<alpha> ?rec =
+      (if fhs = [] then rfc_native_labeled_word_res (ta_of TA) q fhs
+       else (ta_eps (ta_of TA))\<^sup>* ``
+         rfc_native_labeled_word_res (ta_of TA) q fhs)"
+    proof (cases "fhs = []")
+      case True
+      then show ?thesis using Cons by simp
+    next
+      case False
+      then show ?thesis
+        using Cons
+        by (auto simp: rs.correct ta_epss)
+    qed
+    show ?case
+    proof (rule set_eqI)
+      fix p
+      show "(p \<in> rs.\<alpha> (rfc_native_labeled_word_res_impl
+          (ta_rules_impl TA) (ta_epss_impl TA) q (fh # fhs))) =
+        (p \<in> rfc_native_labeled_word_res (ta_of TA) q (fh # fhs))"
+      proof
+        assume left: "p \<in> rs.\<alpha> (rfc_native_labeled_word_res_impl
+          (ta_rules_impl TA) (ta_epss_impl TA) q (fh # fhs))"
+        then obtain rule where
+          rule: "rule \<in> set (ta_rm_set_lookup (fh,1))"
+          and arg: "r_lhs_states_impl rule ! 0 \<in>
+            (if fhs = [] then rfc_native_labeled_word_res (ta_of TA) q fhs
+             else (ta_eps (ta_of TA))\<^sup>* ``
+               rfc_native_labeled_word_res (ta_of TA) q fhs)"
+          and p: "p = r_rhs_impl rule"
+          using left rec_alpha
+          by (auto simp: Let_def rs.correct)
+        from rm_set_lookup1[OF rule] obtain qs p' qs' where
+          id: "rule = TA_rule_impl fh qs p' qs'"
+          and len: "1 = length qs"
+          and abs_rule: "(fh qs \<rightarrow> p') \<in> ta_rules (ta_of TA)"
+          by auto
+        have lhs: "r_lhs_states_impl rule = qs"
+          using id by simp
+        from len obtain a where qs: "qs = [a]"
+          by (cases qs) auto
+        have a: "a = r_lhs_states_impl rule ! 0"
+          using lhs qs by simp
+        have p': "p' = p"
+          using id p by simp
+        have abs_rule': "(fh [r_lhs_states_impl rule ! 0] \<rightarrow> p)
+            \<in> ta_rules (ta_of TA)"
+          using abs_rule qs a p' by simp
+        show "p \<in> rfc_native_labeled_word_res (ta_of TA) q (fh # fhs)"
+          unfolding rfc_native_labeled_word_res.simps Let_def
+          using arg abs_rule'
+          by (simp only: mem_Collect_eq) blast
+      next
+        assume right: "p \<in> rfc_native_labeled_word_res
+          (ta_of TA) q (fh # fhs)"
+        then obtain a where
+          arg: "a \<in> (if fhs = [] then
+              rfc_native_labeled_word_res (ta_of TA) q fhs
+            else (ta_eps (ta_of TA))\<^sup>* ``
+              rfc_native_labeled_word_res (ta_of TA) q fhs)"
+          and abs_rule: "(fh [a] \<rightarrow> p) \<in> ta_rules (ta_of TA)"
+          by (auto simp: Let_def)
+        let ?rule = "conv_ta_rule (ta_epss_impl TA) (fh [a] \<rightarrow> p)"
+        have conv: "?rule \<in> conv_ta_rule (ta_epss_impl TA) `
+            ta_rules (ta_of TA)"
+          using abs_rule by blast
+        have lookup0: "?rule \<in> set (ta_rm_set_lookup (r_sym_impl ?rule))"
+          by (rule rm_set_lookup2[OF conv])
+        have lookup: "?rule \<in> set (ta_rm_set_lookup (fh,1))"
+          using lookup0 by simp
+        have arg_impl: "a \<in> rs.\<alpha> ?rec"
+          using arg rec_alpha by simp
+        have selected: "?rule \<in>
+            {rule \<in> set (ta_rm_set_lookup (fh,1)).
+              r_lhs_states_impl rule ! 0 \<in> rs.\<alpha> ?rec}"
+          using lookup arg_impl by simp
+        have unfold: "rfc_native_labeled_word_res_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) q (fh # fhs) =
+          rs.from_list (map r_rhs_impl
+            (filter (\<lambda>rule. rs.memb (r_lhs_states_impl rule ! 0) ?rec)
+              (ta_rm_set_lookup (fh,1))))"
+          by (simp only: rfc_native_labeled_word_res_impl.simps Let_def)
+        have rhs: "r_rhs_impl ?rule = p"
+          by simp
+        show "p \<in> rs.\<alpha> (rfc_native_labeled_word_res_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) q (fh # fhs))"
+          unfolding unfold
+          apply (simp only: rs.correct set_map set_filter mem_Collect_eq)
+          apply (subst rhs[symmetric])
+          apply (rule imageI)
+          using selected
+          apply (simp add: rs.correct)
+          done
+      qed
+    qed
+  qed
+qed
 
 lemma rfc_native_word_res_impl_eq:
   fixes TA :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
@@ -2206,6 +2414,290 @@ proof -
       rfc_native_word_res (ta_of TAi) q c lw"
     by (rule rfc_native_word_res_impl_eq[OF inv])
   from impl alpha show ?thesis by simp
+qed
+
+lemma rfc_native_inner_splice_impl_rule:
+  assumes splice: "rfc_native_inner_splice_impl TA qs c R"
+    and lr: "lr \<in> set R"
+  shows "rfc_rule_native_inner_splice_impl TA qs c lr"
+  using assms unfolding rfc_native_inner_splice_impl_def
+  by (auto simp: list_all_iff)
+
+lemma rfc_rule_native_inner_splice_implD:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi rel rell"
+    and splice: "rfc_rule_native_inner_splice_impl TAi qs c lr"
+    and words: "rfc_rule_words lr = Some (lw, rw)"
+    and q: "q \<in> set qs"
+    and labels: "lfhs \<in> set (rfc_labeled_height_vectors c lw)"
+    and p: "p \<in> rfc_native_labeled_word_res (ta_of TAi) q lfhs"
+  defines "h \<equiv> min c (Suc (rfc_labeled_min_height lfhs))"
+  shows "p \<in> ta_res (ta_of TAi)
+    (map_vars_term (\<lambda>_. q) (rfc_word_term (map (\<lambda>f. (f,h)) rw) ''x''))"
+proof -
+  interpret ta_inv TAi rel rell by (rule inv)
+  let ?TA = "ta_of TAi"
+  let ?lhs = "rfc_native_labeled_word_res_impl
+    (ta_rules_impl TAi) (ta_epss_impl TAi) q lfhs"
+  have p_impl: "p \<in> rs.\<alpha> ?lhs"
+    using p rfc_native_labeled_word_res_impl_eq[OF inv, of q lfhs]
+    by simp
+  from splice words q labels p_impl have checked:
+    "if rw = [] then rs.memb p (ta_epss_impl TAi q)
+     else list_ex (\<lambda>s.
+       let rhs = rfc_native_labeled_word_res_impl
+         (ta_rules_impl TAi) (ta_epss_impl TAi) s
+         (map (\<lambda>f. (f,h)) rw)
+       in list_ex (\<lambda>e. rs.memb p (ta_epss_impl TAi e))
+         (rs.to_list rhs))
+       (rs.to_list (ta_epss_impl TAi q))"
+    unfolding rfc_rule_native_inner_splice_impl_def h_def
+    by (auto simp: list_all_iff Let_def rs.correct)
+  show ?thesis
+  proof (cases "rw = []")
+    case True
+    with checked have "(q,p) \<in> (ta_eps ?TA)\<^sup>*"
+      by (simp add: ta_epss rs.correct)
+    with True show ?thesis by simp
+  next
+    case False
+    from checked False obtain s e where
+      qs: "(q,s) \<in> (ta_eps ?TA)\<^sup>*"
+      and e: "e \<in> rfc_native_labeled_word_res ?TA s
+        (map (\<lambda>f. (f,h)) rw)"
+      and ep: "(e,p) \<in> (ta_eps ?TA)\<^sup>*"
+      using rfc_native_labeled_word_res_impl_eq[OF inv]
+      by (auto simp: Let_def ta_epss rs.correct)
+    show ?thesis
+      using rfc_native_labeled_word_res_ta_res[
+        of p ?TA q "map (\<lambda>f. (f,h)) rw"] qs e ep
+      by auto
+  qed
+qed
+
+lemma rfc_rule_native_inner_splice_compatible:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi rel rell"
+    and state_cover: "ta_states (ta_of TAi) \<subseteq> set qs"
+    and splice: "rfc_rule_native_inner_splice_impl TAi qs c lr"
+    and words: "rfc_rule_words lr = Some (lw, rw)"
+    and labels: "lfhs \<in> set (rfc_labeled_height_vectors c lw)"
+  defines "h \<equiv> min c (Suc (rfc_labeled_min_height lfhs))"
+  shows "rule_state_compatible (ta_of TAi) Id
+    (rfc_word_term lfhs x, rfc_word_term (map (\<lambda>f. (f,h)) rw) x)"
+proof -
+  let ?TA = "ta_of TAi"
+  from splice words have lw_ne: "lw \<noteq> []"
+    unfolding rfc_rule_native_inner_splice_impl_def by simp
+  have labels_ne: "lfhs \<noteq> []"
+    using rfc_labeled_height_vectors_length[OF labels] lw_ne by auto
+  show ?thesis
+    unfolding rule_state_compatible_def
+  proof (intro allI impI subsetI)
+    fix \<sigma> p
+    assume sig: "\<sigma> ` vars_term (rfc_word_term lfhs x) \<subseteq>
+        ta_rhs_states ?TA"
+      and p: "p \<in> ta_res ?TA
+        (map_vars_term \<sigma> (rfc_word_term lfhs x))"
+    have vars: "vars_term (rfc_word_term lfhs x) = {x}"
+      by (induct lfhs) auto
+    have tail_rhs: "\<sigma> x \<in> ta_rhs_states ?TA"
+      using sig vars by auto
+    have tail_state: "\<sigma> x \<in> ta_states ?TA"
+      using tail_rhs ta_rhs_states_subset_states by blast
+    have lhs_term: "map_vars_term \<sigma> (rfc_word_term lfhs x) =
+        map_vars_term (\<lambda>_. \<sigma> x) (rfc_word_term lfhs ''x'')"
+      by (induct lfhs) auto
+    from p[unfolded lhs_term]
+      rfc_native_labeled_word_res_ta_res[of p ?TA "\<sigma> x" lfhs]
+    obtain q0 p0 where
+      q0: "q0 \<in> (ta_eps ?TA)\<^sup>* `` {\<sigma> x}"
+      and p0: "p0 \<in> rfc_native_labeled_word_res ?TA q0 lfhs"
+      and p0p: "(p0,p) \<in> (ta_eps ?TA)\<^sup>*"
+      by auto
+    have q0_state: "q0 \<in> ta_states ?TA"
+      using q0 tail_state by (auto intro: ta_eps_ta_states)
+    have q0_qs: "q0 \<in> set qs"
+      using state_cover q0_state by auto
+    have rhs0: "p0 \<in> ta_res ?TA
+        (map_vars_term (\<lambda>_. q0)
+          (rfc_word_term (map (\<lambda>f. (f,h)) rw) ''x''))"
+      by (rule rfc_rule_native_inner_splice_implD[
+        OF inv splice words q0_qs labels p0, folded h_def])
+    from rhs0
+      rfc_native_labeled_word_res_ta_res[
+        of p0 ?TA q0 "map (\<lambda>f. (f,h)) rw"]
+    obtain q1 e where
+      q1: "q1 \<in> (ta_eps ?TA)\<^sup>* `` {q0}"
+      and e: "e \<in> rfc_native_labeled_word_res ?TA q1
+        (map (\<lambda>f. (f,h)) rw)"
+      and ep0: "(e,p0) \<in> (ta_eps ?TA)\<^sup>*"
+      by auto
+    have tail_q1: "q1 \<in> (ta_eps ?TA)\<^sup>* `` {\<sigma> x}"
+      using q0 q1 by (auto dest: rtrancl_trans)
+    have rhs_p0: "p0 \<in> ta_res ?TA
+        (map_vars_term (\<lambda>_. \<sigma> x)
+          (rfc_word_term (map (\<lambda>f. (f,h)) rw) ''x''))"
+      using rfc_native_labeled_word_res_ta_res[
+        of p0 ?TA "\<sigma> x" "map (\<lambda>f. (f,h)) rw"]
+        tail_q1 e ep0
+      by auto
+    have rhs_term: "map_vars_term (\<lambda>_. \<sigma> x)
+          (rfc_word_term (map (\<lambda>f. (f,h)) rw) ''x'') =
+        map_vars_term \<sigma> (rfc_word_term (map (\<lambda>f. (f,h)) rw) x)"
+      by (induct rw) auto
+    have "p \<in> ta_res ?TA
+        (map_vars_term \<sigma> (rfc_word_term (map (\<lambda>f. (f,h)) rw) x))"
+      using ta_res_eps[OF rhs_p0 p0p] unfolding rhs_term .
+    then show "p \<in> Id\<inverse> ``
+        ta_res ?TA
+          (map_vars_term \<sigma> (rfc_word_term (map (\<lambda>f. (f,h)) rw) x))"
+      by simp
+  qed
+qed
+
+lemma rfc_native_inner_splice_full_strict_compat:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi rel rell"
+    and state_cover: "ta_states (ta_of TAi) \<subseteq> set qs"
+    and splice: "rfc_native_inner_splice_impl TAi qs c R"
+    and no_top: "rfc_native_no_top_redex_impl TAi qs c R"
+  shows "state_compatible (ta_of TAi) Id
+    (cover_bound c Matchbounds.match Strict_TRS (set R))"
+proof (unfold state_compatible_def, intro allI impI)
+  fix l r
+  let ?TA = "ta_of TAi"
+  assume lr: "(l,r) \<in> cover_bound c Matchbounds.match Strict_TRS (set R)"
+    and funas: "funas_term l \<subseteq> ta_syms ?TA"
+  from lr obtain bl br h where
+    base_lr: "(bl,br) \<in> set R"
+    and base_l: "base_term l = bl"
+    and r: "r = lift_term h br"
+    and h: "h = Suc (min_list (map height (funs_term_list l)))"
+    and bound: "\<And>fh n. (fh,n) \<in> funas_term l \<Longrightarrow> height fh \<le> c"
+    unfolding cover_bound_def cover_def
+    by (auto simp: sym_collect_match)
+  from rfc_native_inner_splice_impl_rule[OF splice base_lr]
+  have splice_rule: "rfc_rule_native_inner_splice_impl TAi qs c (bl,br)" .
+  from splice_rule obtain lw rw where
+    words: "rfc_rule_words (bl,br) = Some (lw,rw)"
+    unfolding rfc_rule_native_inner_splice_impl_def
+    by (cases "rfc_rule_words (bl,br)") auto
+  from rfc_rule_words_sound[OF words] obtain x where
+    bl: "bl = rfc_word_term lw x"
+    and br: "br = rfc_word_term rw x"
+    by auto
+  from base_term_rfc_word_termE[OF base_l[unfolded bl]]
+  obtain fhs where
+    l: "l = rfc_word_term fhs x"
+    and bases: "map fst fhs = lw"
+    by auto
+  from splice_rule words have lw_ne: "lw \<noteq> []"
+    unfolding rfc_rule_native_inner_splice_impl_def by simp
+  have fhs_ne: "fhs \<noteq> []"
+    using bases lw_ne by auto
+  have fhs_bound: "\<And>fh. fh \<in> set fhs \<Longrightarrow> snd fh \<le> c"
+  proof -
+    fix fh
+    assume fh: "fh \<in> set fhs"
+    have "(fh,1) \<in> funas_term l"
+      unfolding l funas_term_rfc_word_term using fh by auto
+    from bound[OF this] show "snd fh \<le> c"
+      by (cases fh) simp
+  qed
+  have labels: "fhs \<in> set (rfc_labeled_height_vectors c lw)"
+    by (rule rfc_labeled_height_vectors_complete[OF bases fhs_bound])
+  let ?m = "min_list (map snd fhs)"
+  have min_eq: "rfc_labeled_min_height fhs = ?m"
+    by (rule rfc_labeled_min_height_min_list[OF fhs_ne])
+  have funs: "funs_term_list l = fhs"
+    unfolding l by simp
+  have h_eq: "h = Suc ?m"
+    using h unfolding funs by simp
+  have min_mem: "?m \<in> set (map snd fhs)"
+    using min_list_ex[of "map snd fhs"] fhs_ne by auto
+  have min_le_c: "?m \<le> c"
+    using min_mem fhs_bound by auto
+  show "rule_state_compatible ?TA Id (l,r)"
+  proof (cases "?m < c")
+    case True
+    have native_h: "min c (Suc (rfc_labeled_min_height fhs)) = h"
+      using True h_eq min_eq by simp
+    have compat: "rule_state_compatible ?TA Id
+      (rfc_word_term fhs x,
+       rfc_word_term (map (\<lambda>f. (f,min c
+         (Suc (rfc_labeled_min_height fhs)))) rw) x)"
+      by (rule rfc_rule_native_inner_splice_compatible[
+        OF inv state_cover splice_rule words labels])
+    show ?thesis
+      using compat unfolding l r br lift_term_rfc_word_term native_h .
+  next
+    case False
+    have min_c: "?m = c"
+      using False min_le_c by simp
+    have all_c: "\<And>fh. fh \<in> set fhs \<Longrightarrow> snd fh = c"
+    proof -
+      fix fh
+      assume fh: "fh \<in> set fhs"
+      have "?m \<le> snd fh"
+        by (rule min_list) (use fh in auto)
+      with fhs_bound[OF fh] show "snd fh = c"
+        unfolding min_c by simp
+    qed
+    have uniform0: "map (\<lambda>fh. (fst fh,c)) fhs = fhs"
+      by (rule map_idI, insert all_c, case_tac x, auto)
+    have uniform: "fhs = map (\<lambda>f. (f,c)) lw"
+      using uniform0 bases by (simp add: o_def)
+    from rfc_native_no_top_redex_impl_rule[OF no_top base_lr]
+    have no_top_rule: "rfc_rule_native_no_top_redex_impl TAi qs c (bl,br)" .
+    show ?thesis
+      unfolding rule_state_compatible_def
+    proof (intro allI impI subsetI)
+      fix \<sigma> p
+      assume sig: "\<sigma> ` vars_term l \<subseteq> ta_rhs_states ?TA"
+        and p: "p \<in> ta_res ?TA (map_vars_term \<sigma> l)"
+      have vars: "vars_term l = {x}"
+        unfolding l by (induct fhs) auto
+      have tail_rhs: "\<sigma> x \<in> ta_rhs_states ?TA"
+        using sig vars by auto
+      have tail_state: "\<sigma> x \<in> ta_states ?TA"
+        using tail_rhs ta_rhs_states_subset_states by blast
+      have lhs_term: "map_vars_term \<sigma> l =
+          map_vars_term (\<lambda>_. \<sigma> x)
+            (rfc_word_term fhs ''x'')"
+        unfolding l by (induct fhs) auto
+      from p[unfolded lhs_term]
+        rfc_native_labeled_word_res_ta_res[of p ?TA "\<sigma> x" fhs]
+      obtain q0 p0 where
+        q0: "q0 \<in> (ta_eps ?TA)\<^sup>* `` {\<sigma> x}"
+        and p0: "p0 \<in> rfc_native_labeled_word_res ?TA q0 fhs"
+        and p0p: "(p0,p) \<in> (ta_eps ?TA)\<^sup>*"
+        by auto
+      have q0_state: "q0 \<in> ta_states ?TA"
+        using q0 tail_state by (auto intro: ta_eps_ta_states)
+      have q0_qs: "q0 \<in> set qs"
+        using state_cover q0_state by auto
+      have p0_res: "p0 \<in> ta_res ?TA
+          (map_vars_term (\<lambda>_. q0) (lift_term c
+            (rfc_word_term lw ''x'')))"
+        using rfc_native_labeled_word_res_ta_res[
+          of p0 ?TA q0 "map (\<lambda>f. (f,c)) lw"]
+          p0 unfolding uniform lift_term_rfc_word_term
+        by auto
+      have p0_state: "p0 \<in> ta_states ?TA"
+        by (rule rfc_word_ta_res_state_height[OF q0_state p0_res])
+      have p0_qs: "p0 \<in> set qs"
+        using state_cover p0_state by auto
+      have "p0 \<notin> rfc_native_word_res ?TA q0 c lw"
+        by (rule rfc_rule_native_no_top_redex_implD[
+          OF inv no_top_rule words q0_qs p0_qs])
+      moreover have "p0 \<in> rfc_native_word_res ?TA q0 c lw"
+        using p0 unfolding uniform rfc_native_labeled_word_res_uniform .
+      ultimately show "p \<in> Id\<inverse> ``
+          ta_res ?TA (map_vars_term \<sigma> r)"
+        by contradiction
+    qed
+  qed
 qed
 
 lemma rfc_rule_matchbox_closed_implD:
