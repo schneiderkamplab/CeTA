@@ -22,13 +22,33 @@ lemma sum_bind_split_asm:
 
 lemmas sum_bind_splits = sum_bind_split sum_bind_split_asm
 
+fun
+  rfc_word_res_impl ::
+    "(('f \<times> nat) \<times> nat,
+      ('q :: linorder,'f :: linorder \<times> nat)ta_rule_impl list)rm \<Rightarrow>
+      ('q \<Rightarrow> 'q rs) \<Rightarrow> 'q \<Rightarrow> nat \<Rightarrow> 'f list \<Rightarrow> 'q rs"
+where
+  "rfc_word_res_impl TA eps q h [] = eps q"
+| "rfc_word_res_impl TA eps q h (f # fs) =
+    (let rec = rfc_word_res_impl TA eps q h fs;
+         rules = rm_set_lookup TA ((f,h),1);
+         arules = filter (\<lambda>rule.
+           rs.memb (r_lhs_states_impl rule ! 0) rec) rules
+     in rs_Union (map rqss_impl arules))"
+
+lemma rfc_word_res_impl_eq[simp]:
+  "rfc_word_res_impl TA eps q h w =
+    ta_res_impl TA eps
+      (map_vars_term (\<lambda>_. q) (lift_term h (rfc_word_term w ''x'')))"
+  by (induct w) (simp_all add: Let_def)
+
 definition
   rfc_word_reaches_height_impl ::
     "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow> 'q \<Rightarrow> nat \<Rightarrow> ('f list) \<Rightarrow> 'q \<Rightarrow> bool"
 where
   "rfc_word_reaches_height_impl TA q h w p \<equiv>
-    rs.memb p (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
-      (map_vars_term (\<lambda>_. q) (lift_term h (rfc_word_term w ''x''))))"
+    rs.memb p
+      (rfc_word_res_impl (ta_rules_impl TA) (ta_epss_impl TA) q h w)"
 
 definition
   rfc_rule_has_top_redex_impl ::
@@ -52,14 +72,16 @@ definition
     "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
       'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
 where
-  "rfc_rule_no_top_redex_fast_impl TA qs c lr \<equiv> (case rfc_rule_words lr of
-      None \<Rightarrow> False
-    | Some (lw, rw) \<Rightarrow>
-        list_all (\<lambda>q.
-          rs.isEmpty (rs.inter (rs.from_list qs)
-            (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
-              (map_vars_term (\<lambda>_. q) (lift_term c (rfc_word_term lw ''x''))))))
-          qs)"
+  "rfc_rule_no_top_redex_fast_impl TA qs c lr \<equiv>
+    (let qset = rs.from_list qs in
+      case rfc_rule_words lr of
+        None \<Rightarrow> False
+      | Some (lw, rw) \<Rightarrow>
+          list_all (\<lambda>q.
+            rs.isEmpty (rs.inter qset
+              (rfc_word_res_impl
+                (ta_rules_impl TA) (ta_epss_impl TA) q c lw)))
+            qs)"
 
 definition
   rfc_no_top_redex_fast_impl ::
@@ -297,12 +319,10 @@ where
     | Some (lw, rw) \<Rightarrow>
         list_all (\<lambda>q.
           rel_checker rel
-            (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
-              (map_vars_term (\<lambda>_. q)
-                (lift_term 0 (rfc_word_term lw ''x''))))
-            (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
-              (map_vars_term (\<lambda>_. q)
-                (lift_term 0 (rfc_word_term rw ''x'')))) = None)
+            (rfc_word_res_impl
+              (ta_rules_impl TA) (ta_epss_impl TA) q 0 lw)
+            (rfc_word_res_impl
+              (ta_rules_impl TA) (ta_epss_impl TA) q 0 rw) = None)
           qs)"
 
 definition
@@ -324,18 +344,17 @@ where
       None \<Rightarrow> False
     | Some (lw, rw) \<Rightarrow>
         lw \<noteq> [] \<and>
-        list_all (\<lambda>i.
-          let prefix = take i lw in
-          list_all (\<lambda>q.
+        list_all (\<lambda>q.
+          let rhs = rfc_word_res_impl
+            (ta_rules_impl TA) (ta_epss_impl TA) q 0 rw in
+          list_all (\<lambda>i.
+            let prefix = take i lw in
             rel_checker rel
-              (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
-                (map_vars_term (\<lambda>_. q)
-                  (lift_term 0 (rfc_word_term prefix ''x''))))
-              (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
-                (map_vars_term (\<lambda>_. q)
-                  (lift_term 0 (rfc_word_term rw ''x'')))) = None)
-            tails)
-          [1..<length lw])"
+              (rfc_word_res_impl
+                (ta_rules_impl TA) (ta_epss_impl TA) q 0 prefix)
+              rhs = None)
+            [1..<length lw])
+          tails)"
 
 definition
   rfc_matchbox_ext_right_impl ::
