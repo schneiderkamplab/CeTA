@@ -302,6 +302,11 @@ session CeTA_CSR_Proofs in "Session_Dirs/CeTA_CSR_Proofs" = Proof_Checker +
   theories
     CSR_CSDP_Proofs
 
+session CeTA_CSR_SCT_Ext in "Session_Dirs/CeTA_CSR_SCT_Ext" = Proof_Checker +
+  options [document = false]
+  theories
+    CSR_Minimal_SCT_Ext
+
 
 (* Sessions for building IsaFoR *)
 session IsaFoR_1 in "Session_Dirs/IsaFoR_1" = "HOL-AFP" +
