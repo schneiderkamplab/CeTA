@@ -146,7 +146,9 @@ definition desired_property :: "('f::compare_order, 'v) input \<Rightarrow> ('f,
   | (AC_input r a c, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (relation_ac_tp (set r, set a, set c))
   | (FP_TRS_input Outermost R, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (ostep (lhss (set R)) (set R))
   | (FP_TRS_input (Forbidden_Patterns P) R, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (fpstep (set P) (set R))
-  | (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (csstep (mu_of \<mu>) (set R))
+  | (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision b) \<Rightarrow>
+      b \<longleftrightarrow> SN (sig_step (set (funas_trs_list R))
+        (csstep (mu_of \<mu>) (set R)))
   | (LTS_input r, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN_on (IA.transition (lts_of r)) (IA.initial_states (lts_of r))
   | (CTRS_input ctrs, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (cstep (set ctrs))
   \<comment> \<open>for DP-problems, termination and non-termination are not dual!\<close> 

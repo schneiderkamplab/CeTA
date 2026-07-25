@@ -4,7 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_Improved_CSDP_Proofs
   imports
-    CSR_CSDP_Proofs
+    "Proof_Checker.CSR_Checker"
 begin
 
 text \<open>
@@ -706,31 +706,11 @@ where
         [x \<leftarrow> remdups (mu_vars_term_list \<mu> r).
           x \<notin> set (mu_vars_term_list \<mu> l)]) R)"
 
-lemma duplicated_mu_poss_eq [simp]:
-  "CSR_Checker.mu_poss \<mu> t = CSR_CSDP_Proofs.mu_poss \<mu> t"
-  by (induct t) auto
-
-lemma duplicated_mu_vars_term_eq [simp]:
-  "CSR_Checker.mu_vars_term \<mu> t = CSR_CSDP_Proofs.mu_vars_term \<mu> t"
-  unfolding CSR_Checker.mu_vars_term_def CSR_CSDP_Proofs.mu_vars_term_def
-  using duplicated_mu_poss_eq by auto
-
-lemma duplicated_mu_supt_eq [simp]:
-  "CSR_Checker.mu_supt \<mu> s t = CSR_CSDP_Proofs.mu_supt \<mu> s t"
-  unfolding CSR_Checker.mu_supt_def CSR_CSDP_Proofs.mu_supt_def
-  using duplicated_mu_poss_eq by simp
-
-lemma duplicated_mu_CSDP_on_eq:
-  "CSR_Checker.mu_CSDP_on shp \<mu> D R =
-    CSR_CSDP_Proofs.mu_CSDP_on shp \<mu> D R"
-  unfolding CSR_Checker.mu_CSDP_on_def CSR_CSDP_Proofs.mu_CSDP_on_def
-  by simp
-
 lemma mu_CSDP_list_split_semantics:
   "set (mu_CSDP_list Sharp R \<mu> D) =
-    CSR_CSDP_Proofs.mu_CSDP_on Sharp (mu_of \<mu>) (set D) (set R)"
+    CSR_Checker.mu_CSDP_on Sharp (mu_of \<mu>) (set D) (set R)"
   using CSR_Checker.mu_CSDP_list[of Sharp R \<mu> D]
-  unfolding duplicated_mu_CSDP_on_eq .
+  by simp
 
 lemma collapsing_mu_CSDP_list:
   "set (collapsing_mu_CSDP_list shp U \<mu> R) =
@@ -1074,8 +1054,8 @@ qed
 
 lemma csdp_mu_poss_restrict_mu_to_sig:
   assumes sig: "funas_term t \<subseteq> F"
-  shows "CSR_CSDP_Proofs.mu_poss (restrict_mu_to_sig F \<mu>) t =
-    CSR_CSDP_Proofs.mu_poss \<mu> t"
+  shows "CSR_Checker.mu_poss (restrict_mu_to_sig F \<mu>) t =
+    CSR_Checker.mu_poss \<mu> t"
   using sig
 proof (induct t)
   case (Var x)
@@ -1086,8 +1066,8 @@ next
     and args: "\<And>t. t \<in> set ts \<Longrightarrow> funas_term t \<subseteq> F"
     by auto
   have ih: "\<And>i. i < length ts \<Longrightarrow>
-    CSR_CSDP_Proofs.mu_poss (restrict_mu_to_sig F \<mu>) (ts ! i) =
-      CSR_CSDP_Proofs.mu_poss \<mu> (ts ! i)"
+    CSR_Checker.mu_poss (restrict_mu_to_sig F \<mu>) (ts ! i) =
+      CSR_Checker.mu_poss \<mu> (ts ! i)"
     by (rule Fun.hyps, rule nth_mem, assumption, rule args, rule nth_mem, assumption)
   show ?case
     using fn ih unfolding restrict_mu_to_sig_def by auto
@@ -1095,16 +1075,16 @@ qed
 
 lemma csdp_mu_vars_term_restrict_mu_to_sig:
   assumes "funas_term t \<subseteq> F"
-  shows "CSR_CSDP_Proofs.mu_vars_term (restrict_mu_to_sig F \<mu>) t =
-    CSR_CSDP_Proofs.mu_vars_term \<mu> t"
-  unfolding CSR_CSDP_Proofs.mu_vars_term_def
+  shows "CSR_Checker.mu_vars_term (restrict_mu_to_sig F \<mu>) t =
+    CSR_Checker.mu_vars_term \<mu> t"
+  unfolding CSR_Checker.mu_vars_term_def
   using csdp_mu_poss_restrict_mu_to_sig[OF assms] by simp
 
 lemma csdp_mu_supt_restrict_mu_to_sig:
   assumes "funas_term s \<subseteq> F"
-  shows "CSR_CSDP_Proofs.mu_supt (restrict_mu_to_sig F \<mu>) s t =
-    CSR_CSDP_Proofs.mu_supt \<mu> s t"
-  unfolding CSR_CSDP_Proofs.mu_supt_def
+  shows "CSR_Checker.mu_supt (restrict_mu_to_sig F \<mu>) s t =
+    CSR_Checker.mu_supt \<mu> s t"
+  unfolding CSR_Checker.mu_supt_def
   using csdp_mu_poss_restrict_mu_to_sig[OF assms] by simp
 
 lemma mu_CSDP_on_restrict_mu_to_sig:
@@ -1142,19 +1122,19 @@ proof -
     then obtain l r p f ts where lr: "(l,r) \<in> R"
       and pos: "p \<in> mu_fun_poss (restrict_mu_to_sig F \<mu>) r"
       and sub: "r |_ p = Fun f ts" and def: "(f,length ts) \<in> D"
-      and ns: "\<not> CSR_CSDP_Proofs.mu_supt
+      and ns: "\<not> CSR_Checker.mu_supt
         (restrict_mu_to_sig F \<mu>) l (r |_ p)"
       and dp: "dp = (sharp_term shp l, sharp_term shp (r |_ p))"
-      unfolding CSR_CSDP_Proofs.mu_CSDP_on_def by blast
+      unfolding CSR_Checker.mu_CSDP_on_def by blast
     from terms[OF lr] have lF: "funas_term l \<subseteq> F"
       and rF: "funas_term r \<subseteq> F" by auto
     have pos': "p \<in> mu_fun_poss \<mu> r"
       using pos mu_fun_poss_restrict_mu_to_sig[OF rF, of \<mu>] by simp
-    have ns': "\<not> CSR_CSDP_Proofs.mu_supt \<mu> l (r |_ p)"
+    have ns': "\<not> CSR_Checker.mu_supt \<mu> l (r |_ p)"
       using ns csdp_mu_supt_restrict_mu_to_sig[OF lF, of \<mu> "r |_ p"]
       by simp
     show "dp \<in> mu_CSDP_on shp \<mu> D R"
-      unfolding CSR_CSDP_Proofs.mu_CSDP_on_def
+      unfolding CSR_Checker.mu_CSDP_on_def
       using lr pos' sub def ns' dp by blast
   next
     fix dp
@@ -1162,19 +1142,19 @@ proof -
     then obtain l r p f ts where lr: "(l,r) \<in> R"
       and pos: "p \<in> mu_fun_poss \<mu> r"
       and sub: "r |_ p = Fun f ts" and def: "(f,length ts) \<in> D"
-      and ns: "\<not> CSR_CSDP_Proofs.mu_supt \<mu> l (r |_ p)"
+      and ns: "\<not> CSR_Checker.mu_supt \<mu> l (r |_ p)"
       and dp: "dp = (sharp_term shp l, sharp_term shp (r |_ p))"
-      unfolding CSR_CSDP_Proofs.mu_CSDP_on_def by blast
+      unfolding CSR_Checker.mu_CSDP_on_def by blast
     from terms[OF lr] have lF: "funas_term l \<subseteq> F"
       and rF: "funas_term r \<subseteq> F" by auto
     have pos': "p \<in> mu_fun_poss (restrict_mu_to_sig F \<mu>) r"
       using pos mu_fun_poss_restrict_mu_to_sig[OF rF, of \<mu>] by simp
-    have ns': "\<not> CSR_CSDP_Proofs.mu_supt
+    have ns': "\<not> CSR_Checker.mu_supt
       (restrict_mu_to_sig F \<mu>) l (r |_ p)"
       using ns csdp_mu_supt_restrict_mu_to_sig[OF lF, of \<mu> "r |_ p"]
       by simp
     show "dp \<in> mu_CSDP_on shp (restrict_mu_to_sig F \<mu>) D R"
-      unfolding CSR_CSDP_Proofs.mu_CSDP_on_def
+      unfolding CSR_Checker.mu_CSDP_on_def
       using lr pos' sub def ns' dp by blast
   qed
 qed
@@ -1213,17 +1193,17 @@ proof -
     assume "dp \<in> collapsing_mu_CSDP_on shp U
       (restrict_mu_to_sig F \<mu>) R"
     then obtain l r x where lr: "(l,r) \<in> R"
-      and xr: "x \<in> CSR_CSDP_Proofs.mu_vars_term
+      and xr: "x \<in> CSR_Checker.mu_vars_term
         (restrict_mu_to_sig F \<mu>) r"
-      and xl: "x \<notin> CSR_CSDP_Proofs.mu_vars_term
+      and xl: "x \<notin> CSR_Checker.mu_vars_term
         (restrict_mu_to_sig F \<mu>) l"
       and dp: "dp = (sharp_term shp l, Fun U [Var x])"
       unfolding collapsing_mu_CSDP_on_def by blast
     from terms[OF lr] have lF: "funas_term l \<subseteq> F"
       and rF: "funas_term r \<subseteq> F" by auto
-    have xr': "x \<in> CSR_CSDP_Proofs.mu_vars_term \<mu> r"
+    have xr': "x \<in> CSR_Checker.mu_vars_term \<mu> r"
       using xr csdp_mu_vars_term_restrict_mu_to_sig[OF rF, of \<mu>] by simp
-    have xl': "x \<notin> CSR_CSDP_Proofs.mu_vars_term \<mu> l"
+    have xl': "x \<notin> CSR_Checker.mu_vars_term \<mu> l"
       using xl csdp_mu_vars_term_restrict_mu_to_sig[OF lF, of \<mu>] by simp
     show "dp \<in> collapsing_mu_CSDP_on shp U \<mu> R"
       unfolding collapsing_mu_CSDP_on_def using lr xr' xl' dp by blast
@@ -1231,16 +1211,16 @@ proof -
     fix dp
     assume "dp \<in> collapsing_mu_CSDP_on shp U \<mu> R"
     then obtain l r x where lr: "(l,r) \<in> R"
-      and xr: "x \<in> CSR_CSDP_Proofs.mu_vars_term \<mu> r"
-      and xl: "x \<notin> CSR_CSDP_Proofs.mu_vars_term \<mu> l"
+      and xr: "x \<in> CSR_Checker.mu_vars_term \<mu> r"
+      and xl: "x \<notin> CSR_Checker.mu_vars_term \<mu> l"
       and dp: "dp = (sharp_term shp l, Fun U [Var x])"
       unfolding collapsing_mu_CSDP_on_def by blast
     from terms[OF lr] have lF: "funas_term l \<subseteq> F"
       and rF: "funas_term r \<subseteq> F" by auto
-    have xr': "x \<in> CSR_CSDP_Proofs.mu_vars_term
+    have xr': "x \<in> CSR_Checker.mu_vars_term
       (restrict_mu_to_sig F \<mu>) r"
       using xr csdp_mu_vars_term_restrict_mu_to_sig[OF rF, of \<mu>] by simp
-    have xl': "x \<notin> CSR_CSDP_Proofs.mu_vars_term
+    have xl': "x \<notin> CSR_Checker.mu_vars_term
       (restrict_mu_to_sig F \<mu>) l"
       using xl csdp_mu_vars_term_restrict_mu_to_sig[OF lF, of \<mu>] by simp
     show "dp \<in> collapsing_mu_CSDP_on shp U

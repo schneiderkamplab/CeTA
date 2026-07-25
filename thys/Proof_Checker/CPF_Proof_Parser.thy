@@ -2628,7 +2628,8 @@ where
         XMLor xml_change xml2ncr_proof (xml_return \<circ> TRS_Non_Confluence_Proof)
         XMLor xml_change (xml2dp_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Termination_Proof)
         XMLor xml_change (xml2dp_nontermination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Nontermination_Proof)
-        XMLor xml_change (xml2csr_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> CSR_Termination_Proof)
+        XMLor xml_change (xml2csr_termination_proof xml2name termIndexMap ruleMap)
+          (\<lambda>p. xml_return (CSR_Termination_Proof (Existing_CSR_Proof p)))
         XMLor xml_change (xml2completion_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Completion_Proof)
         XMLor xml_change (xml2ordered_completion_proof xml2name termIndexMap) (xml_return \<circ> Ordered_Completion_Proof)
         XMLor xml_change (xml2equational_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Equational_Proof)
@@ -2669,7 +2670,32 @@ where [code]: "symbol_parser x = (
       | Inr ls \<Rightarrow> FunLab f ls)
   ) x"
 
-definition "proof_parser = proof symbol_parser" 
+definition xml2conservative_csr_termination_proof ::
+  "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
+    (string, label_type, string) extended_csr_termination_proof xmlt"
+where
+  "xml2conservative_csr_termination_proof termIndexMap ruleMap =
+    xml_singleton (STR ''nativeConservativeCsrTerminationProof'')
+      (XMLdo (STR ''csrConservativeDependencyPairs'') {
+        U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        S \<leftarrow> xml_singleton (STR ''auxiliaryRules'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Conservative_CSR_Dependency_Pairs U P S prf)
+      }) id"
+
+definition "proof_parser termIndexMap ruleMap =
+  XMLdo (STR ''proof'') {
+    p \<leftarrow>
+      xml_change
+        (xml2conservative_csr_termination_proof termIndexMap ruleMap)
+        (\<lambda>p. xml_return (CSR_Termination_Proof p))
+      XMLor proof_content symbol_parser termIndexMap ruleMap;
+    xml_return p
+  }"
 definition "input_parser = input symbol_parser" 
 definition "answer_parser = answer symbol_parser" 
 definition "property_parser = property symbol_parser" 
