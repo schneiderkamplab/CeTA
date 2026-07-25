@@ -6,7 +6,7 @@ License: LGPL (see file COPYING.LESSER)
 -}
 module Main (main) where
 
-import Ceta -- the certifier
+import Ceta(certify_proof)
 import Proof_Checker(Cert_result(..)) 
 import Arith(explode)
 import Version(version)
@@ -98,7 +98,7 @@ start a inputO propertyO answerO proofString =
 
 usage = "usage: ceta [(parameters) certificate | --version]\n\
         \  \n\
-        \  A \"certificate\" is an XML file in the certification problem format (CPF 3.x).\n\
+        \  A \"certificate\" is an XML file in the certification problem format (CPF 3.x or CPF 4.0).\n\
         \  \n\
         \  (manually setting a parameter overwrites information in CPF):\n\
         \  --allow-assumptions    Allow (axiomatic) assumptions in the certificate.\n\

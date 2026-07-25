@@ -98,7 +98,7 @@ start a inputO propertyO answerO proofString =
 
 usage = "usage: ceta [(parameters) certificate | --version]\n\
         \  \n\
-        \  A \"certificate\" is an XML file in the certification problem format (CPF 3.x).\n\
+        \  A \"certificate\" is an XML file in the certification problem format (CPF 3.x or CPF 4.0).\n\
         \  \n\
         \  (manually setting a parameter overwrites information in CPF):\n\
         \  --allow-assumptions    Allow (axiomatic) assumptions in the certificate.\n\

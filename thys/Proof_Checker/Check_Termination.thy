@@ -4,7 +4,7 @@ Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2013-2015)
 License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Termination
-  imports Check_Termination_Common
+  imports Check_Termination_Common RFC_Checker_Ext.RFC_Matchbounds_Ext
 begin
 
 fun collect_assms :: "('tp \<Rightarrow> ('f, 'l, 'v) assm list)
@@ -324,6 +324,10 @@ and ('f, 'l, 'v) trs_termination_proof =
 | Constant_String "(('f,'l)lab,'v)const_string_sound_proof" "('f,'l,'v) trs_termination_proof"
 | Bounds "(('f, 'l) lab, 'v) bounds_info"
 | Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
+| Rfc_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list"
+| Rfc_Automaton_Closed_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list"
+| Rfc_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
+| Rfc_Automaton_Closed_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Uncurry "(('f, 'l) lab, 'v) uncurry_info" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Semlab
     "(('f, 'l) lab, 'v) sl_variant" "(('f, 'l) lab, 'v) term list"
@@ -337,6 +341,8 @@ and ('f, 'l, 'v) trs_termination_proof =
 | Permuting_AFS "('f,'l)lab afs_list" "('f, 'l, 'v) trs_termination_proof"
 | Right_Ground_Termination
 | Assume_SN "('f, 'l, 'v) qreltrsLL" "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
+| Rfc_Matchbox_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
+| Rfc_Native_Matchbox_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 and ('f, 'l, 'v) unknown_proof =
   Assume_Unknown unknown_info "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 and ('f, 'l, 'v) fptrs_termination_proof =
@@ -382,6 +388,12 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (Constant_String _ p) = sn_assms a p"
 | "sn_assms a (Bounds _) = []"
 | "sn_assms a (Relative_Bounds _ _ p) = sn_assms a p"
+| "sn_assms a (Rfc_Bounds _ _) = []"
+| "sn_assms a (Rfc_Automaton_Closed_Bounds _ _) = []"
+| "sn_assms a (Rfc_Relative_Bounds _ _ _ p) = sn_assms a p"
+| "sn_assms a (Rfc_Automaton_Closed_Relative_Bounds _ _ _ p) = sn_assms a p"
+| "sn_assms a (Rfc_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
+| "sn_assms a (Rfc_Native_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Uncurry _ _ p) = sn_assms a p"
 | "sn_assms a (Semlab _ _ _ p) = sn_assms a p"
 | "sn_assms a R_is_Empty = []"
@@ -772,6 +784,28 @@ where
      check_trs_termination_proof (add_index i 1) tp' prf
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below relative bounds\<newline>'') \<circ> s)
    })"
+| "check_trs_termination_proof i tp (Rfc_Bounds info initial_terms) = debug i (STR ''RFC Bounds'') (do {
+     rfc_bounds_tt J info initial_terms tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying RFC bounds on the termination problem \<newline>'') \<circ> showsl_tp J tp \<circ> showsl_nl \<circ> s)})"
+| "check_trs_termination_proof i tp (Rfc_Automaton_Closed_Bounds info initial_terms) = debug i (STR ''RFC Automaton-Closed Bounds'') (do {
+     rfc_automaton_closed_bounds_tt J info initial_terms tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying RFC automaton-closed bounds on the termination problem \<newline>'') \<circ> showsl_tp J tp \<circ> showsl_nl \<circ> s)})"
+| "check_trs_termination_proof i tp (Rfc_Relative_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Relative Bounds'') (do {
+     tp' \<leftarrow> rfc_relative_bounds_tt J info initial_terms Rr tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying RFC relative bounds on the termination problem \<newline>'')
+         \<circ> showsl_tp J tp \<circ>
+         showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
+     check_trs_termination_proof (add_index i 1) tp' prf
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below RFC relative bounds\<newline>'') \<circ> s)
+   })"
+| "check_trs_termination_proof i tp (Rfc_Automaton_Closed_Relative_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Automaton-Closed Relative Bounds'') (do {
+     tp' \<leftarrow> rfc_automaton_closed_relative_bounds_tt J info initial_terms Rr tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying RFC automaton-closed relative bounds on the termination problem \<newline>'')
+         \<circ> showsl_tp J tp \<circ>
+         showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
+     check_trs_termination_proof (add_index i 1) tp' prf
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below RFC automaton-closed relative bounds\<newline>'') \<circ> s)
+   })"
 | "check_trs_termination_proof i tp (Uncurry u_info rR prf) = debug i (STR ''Uncurry'') (do {
      tp' \<leftarrow> uncurry_tt J u_info rR tp
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying currying transformation\<newline>'') \<circ> s);
@@ -835,6 +869,22 @@ where
              ass
         }) else error (i \<circ> showsl_lit (STR '': the proof contains a termination assumption or unknown proof\<newline>''))
     )"
+| "check_trs_termination_proof i tp (Rfc_Matchbox_Relative_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Matchbox Relative Bounds'') (do {
+     tp' \<leftarrow> rfc_matchbox_relative_bounds_tt J info initial_terms Rr tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying RFC Matchbox-style relative bounds on the termination problem \<newline>'')
+         \<circ> showsl_tp J tp \<circ>
+         showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
+     check_trs_termination_proof (add_index i 1) tp' prf
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below RFC Matchbox-style relative bounds\<newline>'') \<circ> s)
+   })"
+| "check_trs_termination_proof i tp (Rfc_Native_Matchbox_Relative_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Native Matchbox Relative Bounds'') (do {
+     tp' \<leftarrow> rfc_native_rel_matchbox_relative_bounds_tt J info initial_terms Rr tp
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying native RFC Matchbox-style relative bounds\<newline>'')
+         \<circ> showsl_tp J tp \<circ>
+         showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
+     check_trs_termination_proof (add_index i 1) tp' prf
+       <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below native RFC Matchbox-style relative bounds\<newline>'') \<circ> s)
+   })"
 | "check_fptrs_termination_proof i tp (Assume_FP_SN tp' ass) =
     debug i (STR ''Outermost Termination Assumption or Unknown Proof'') (
       if assms
@@ -1625,7 +1675,51 @@ next
     apply (rule tt)
     done
 next
-  case (35 i tp mode info prof)
+  case (35 i tp info initial_terms)
+  then have tt: "isOK (rfc_bounds_tt J info initial_terms tp)"
+    by (auto simp: Let_def)
+  show ?case
+    by (rule rfc_bounds_tt [OF J tt infinite_lab])
+next
+  case (36 i tp info initial_terms)
+  then have tt: "isOK (rfc_automaton_closed_bounds_tt J info initial_terms tp)"
+    by (auto simp: Let_def)
+  show ?case
+    by (rule RFC_Matchbounds_Ext.rfc_automaton_closed_bounds_tt [OF J tt infinite_lab])
+next
+  case (37 i tp info initial_terms Rr prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "rfc_relative_bounds_tt J info initial_terms Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by (auto simp: Let_def)
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule rfc_relative_bounds_tt [OF J tt infinite_lab])
+    apply (rule IH(1) [OF _ rec fin])
+    apply (unfold update_error_return)
+    apply (rule tt)
+    done
+next
+  case (38 i tp info initial_terms Rr prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "rfc_automaton_closed_relative_bounds_tt J info initial_terms Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by (auto simp: Let_def)
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule RFC_Matchbounds_Ext.rfc_automaton_closed_relative_bounds_tt [OF J tt infinite_lab])
+    apply (rule IH(1) [OF _ rec fin])
+    apply (unfold update_error_return)
+    apply (rule tt)
+    done
+next
+  case (39 i tp mode info prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1644,7 +1738,7 @@ next
     apply (rule tt)
   done
 next
-  case (36 i tp fcs R' prof)
+  case (40 i tp fcs R' prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1660,7 +1754,7 @@ next
     apply (rule tt)
   done
 next
-  case (37 i tp R' prof1 prof2)
+  case (41 i tp R' prof1 prof2)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i"
@@ -1682,7 +1776,7 @@ next
     apply auto
   done
 next
-  case (38 i tp joins prof)
+  case (42 i tp joins prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1700,7 +1794,7 @@ next
     apply (rule tt)
   done
 next
-  case (39 i tp prof)
+  case (43 i tp prof)
   note IH = this
   interpret tp_spec J by fact
   let ?Rw = "filter (\<lambda> (l,r). l \<noteq> r) (Rw tp)"
@@ -1729,7 +1823,7 @@ next
     finally show "?Q (set ?Rw') \<subseteq> Id" .
   qed
 next
-  case (40 i tp Rdelete prof)
+  case (44 i tp Rdelete prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1747,7 +1841,7 @@ next
   then show ?case
     by (simp add: id SN_qrel_def)
 next
-  case (41 i tp pi prof)
+  case (45 i tp pi prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1759,13 +1853,13 @@ next
   show ?case
     by (rule sound_tt_impl[OF argument_filter_tt[OF J] tt IH(1)[OF _ rec fin]], insert tt, auto)
 next
-  case (42 i tp)
+  case (46 i tp)
   then have tt: "isOK (right_ground_tt J tp)"
     by (auto simp: Let_def)
   interpret tp_spec J by fact
   show ?case by (rule right_ground_tt [OF tt])
 next
-  case (43 i tp tp' ass)
+  case (47 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -1828,7 +1922,41 @@ next
     qed
   qed
 next
-  case (44 i tp tp' ass)
+  case (48 i tp info initial_terms Rr prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "rfc_matchbox_relative_bounds_tt J info initial_terms Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by (auto simp: Let_def)
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule RFC_Matchbounds_Ext.rfc_matchbox_relative_bounds_tt [OF J tt infinite_lab])
+    apply (rule IH(1) [OF _ rec fin])
+    apply (unfold update_error_return)
+    apply (rule tt)
+    done
+next
+  case (49 i tp info initial_terms Rr prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "rfc_native_rel_matchbox_relative_bounds_tt
+      J info initial_terms Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by (auto simp: Let_def)
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule RFC_Matchbounds_Ext.rfc_native_rel_matchbox_relative_bounds_tt[
+      OF J tt infinite_lab])
+    apply (rule IH(1)[OF _ rec fin])
+    apply (unfold update_error_return)
+    apply (rule tt)
+    done
+next
+  case (50 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -1890,7 +2018,7 @@ next
     qed
   qed
 next
-  case (45 i tp tp' ass)
+  case (51 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact

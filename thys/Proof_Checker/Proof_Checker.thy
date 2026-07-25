@@ -310,13 +310,57 @@ proof-
   show ?thesis
   proof (cases "proof")
     case [simp]: (TRS_Termination_Proof pr)
-    obtain Q R S where [simp]: "input = Inn_TRS_input Q R S" using check by (cases input, auto)
-    have [simp]: "property = Termination" using check by (cases property, auto)
-    have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
-    from check[simplified] have check: "isOK (check_trs_termination_proof I J a idx (mk (strategy_to_nfs Q) (strategy_to_Q Q R) R S) pr)" 
-      by auto
-    from check_trs_termination_proof_with_assms[OF I J check] a
-    show ?thesis by auto 
+    obtain Q R S strat where input: "input = Inn_TRS_input Q R S \<or> input = FP_TRS_input strat R"
+      using check by (cases input, auto)
+    from input show ?thesis
+    proof
+      assume [simp]: "input = Inn_TRS_input Q R S"
+      have [simp]: "property = Termination" using check by (cases property, auto)
+      have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+      from check[simplified] have check: "isOK (check_trs_termination_proof I J a idx (mk (strategy_to_nfs Q) (strategy_to_Q Q R) R S) pr)"
+        by auto
+      from check_trs_termination_proof_with_assms[OF I J check] a
+      show ?thesis by auto
+    next
+      assume [simp]: "input = FP_TRS_input strat R"
+      have [simp]: "property = Termination" using check by (cases property, auto)
+      have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+      from check[simplified] have empty: "fp_strategy_to_fp_impl strat R = []"
+        and check: "isOK (check_trs_termination_proof I J a idx (mk False [] R []) pr)"
+        by auto
+      from check_trs_termination_proof_with_assms[OF I J check] a
+      have SN: "SN (rstep (set R))"
+        unfolding SN_qrel_def by auto
+      have fp_subset: "fpstep {} (set R) \<subseteq> rstep (set R)"
+        using rstep_r_p_s_imp_rstep by (auto simp: fpstep_defs)
+      from SN_subset[OF SN fp_subset]
+      have SN_fp_empty: "SN (fpstep {} (set R))" .
+      have SN_fp: "SN_fpstep (set (fp_strategy_to_fp_impl strat R), set R)"
+        unfolding empty SN_fpstep_def by (simp add: SN_fp_empty)
+      show ?thesis
+      proof (cases strat)
+        case Outermost
+        with SN_fp empty show ?thesis
+          using ostep_iff_fpstep_impl[of "map fst R", simplified]
+          by (auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def)
+      next
+        case (Context_Sensitive \<mu>)
+        from SN_fp Context_Sensitive have global:
+          "SN (csstep (mu_of \<mu>) (set R))"
+          by (simp add: fp_strategy_to_fp_impl_def SN_fpstep_def
+            csstep_iff_fpstep_impl)
+        have restricted:
+          "SN (sig_step (set (funas_trs_list R))
+            (csstep (mu_of \<mu>) (set R)))"
+          by (rule SN_subset[OF global], auto simp: sig_step_def)
+        from Context_Sensitive restricted show ?thesis
+          by (simp add: desired_property_def)
+      next
+        case (Forbidden_Patterns P)
+        with SN_fp empty show ?thesis
+          by (auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def)
+      qed
+    qed
   next
     case [simp]: (Complexity_Proof pr)
     obtain Q R S where [simp]: "input = Inn_TRS_input Q R S" using check by (cases input, auto)

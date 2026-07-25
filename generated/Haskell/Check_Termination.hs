@@ -24,6 +24,7 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified Right_Ground_Termination_Impl;
+import qualified RFC_Matchbounds_Ext;
 import qualified DP_Transformation_Impl;
 import qualified String_Reversal_Impl;
 import qualified Argument_Filter_Impl;
@@ -108,6 +109,22 @@ data Trs_termination_proof a b c =
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       (Trs_termination_proof a b c)
+  | Rfc_Bounds (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [Term_Rewriting.Term (Labelings.Lab a b) c]
+  | Rfc_Automaton_Closed_Bounds
+      (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [Term_Rewriting.Term (Labelings.Lab a b) c]
+  | Rfc_Relative_Bounds (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [Term_Rewriting.Term (Labelings.Lab a b) c]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Trs_termination_proof a b c)
+  | Rfc_Automaton_Closed_Relative_Bounds
+      (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [Term_Rewriting.Term (Labelings.Lab a b) c]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Trs_termination_proof a b c)
   | Uncurry
       (Labelings.Lab a b,
         ([((Labelings.Lab a b, Arith.Nat), [Labelings.Lab a b])],
@@ -151,7 +168,19 @@ data Trs_termination_proof a b c =
                Term_Rewriting.Term (Labelings.Lab a b) c)])))
       [Check_Termination_Common.Generic_assm_proof a b c
          (Trs_termination_proof a b c) (Dp_termination_proof a b c)
-         (Fptrs_termination_proof a b c) () (Unknown_proof a b c)];
+         (Fptrs_termination_proof a b c) () (Unknown_proof a b c)]
+  | Rfc_Matchbox_Relative_Bounds
+      (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [Term_Rewriting.Term (Labelings.Lab a b) c]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Trs_termination_proof a b c)
+  | Rfc_Native_Matchbox_Relative_Bounds
+      (Matchbounds_Impl.Bounds_info (Labelings.Lab a b) c)
+      [Term_Rewriting.Term (Labelings.Lab a b) c]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Trs_termination_proof a b c);
 
 data Dp_termination_proof a b c = P_is_Empty
   | Subterm_Criterion_Proc (Subterm_Criterion_Impl.ProjL (Labelings.Lab a b))
@@ -880,6 +909,79 @@ check_trs_termination_proof j ia assms i tp (Relative_Bounds info rr prf) =
               ((i . Term_Rewriting.showsl_lit
                       ": error below relative bounds\n") .
                 x))));
+check_trs_termination_proof j ia assms i tp (Rfc_Bounds info initial_terms) =
+  FOR_Preliminaries.debug i "RFC Bounds"
+    (Error_Monad.catch_error
+      (Matchbounds_Impl.rfc_bounds_tt j info initial_terms tp)
+      (\ x ->
+        Sum_Type.Inl
+          ((((i . Term_Rewriting.showsl_lit
+                    ": error when applying RFC bounds on the termination problem \n") .
+              QDP_Framework_Impl.showsl_tp j tp) .
+             Term_Rewriting.showsl_literal "\n") .
+            x)));
+check_trs_termination_proof j ia assms i tp
+  (Rfc_Automaton_Closed_Bounds info initial_terms) =
+  FOR_Preliminaries.debug i "RFC Automaton-Closed Bounds"
+    (Error_Monad.catch_error
+      (RFC_Matchbounds_Ext.rfc_automaton_closed_bounds_tt j info initial_terms
+        tp)
+      (\ x ->
+        Sum_Type.Inl
+          ((((i . Term_Rewriting.showsl_lit
+                    ": error when applying RFC automaton-closed bounds on the termination problem \n") .
+              QDP_Framework_Impl.showsl_tp j tp) .
+             Term_Rewriting.showsl_literal "\n") .
+            x)));
+check_trs_termination_proof j ia assms i tp
+  (Rfc_Relative_Bounds info initial_terms rr prf) =
+  FOR_Preliminaries.debug i "RFC Relative Bounds"
+    (Error_Monad.bind
+      (Error_Monad.catch_error
+        (RFC_Matchbounds_Ext.rfc_relative_bounds_tt j info initial_terms rr tp)
+        (\ x ->
+          Sum_Type.Inl
+            ((((((i . Term_Rewriting.showsl_lit
+                        ": error when applying RFC relative bounds on the termination problem \n") .
+                  QDP_Framework_Impl.showsl_tp j tp) .
+                 Term_Rewriting.showsl_lit "\n to remove the rules \n") .
+                Term_Rewriting.showsl_rules rr) .
+               Term_Rewriting.showsl_literal "\n") .
+              x)))
+      (\ tpa ->
+        Error_Monad.catch_error
+          (check_trs_termination_proof j ia assms
+            (Term_Rewriting.add_index i Arith.one_nat) tpa prf)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below RFC relative bounds\n") .
+                x))));
+check_trs_termination_proof j ia assms i tp
+  (Rfc_Automaton_Closed_Relative_Bounds info initial_terms rr prf) =
+  FOR_Preliminaries.debug i "RFC Automaton-Closed Relative Bounds"
+    (Error_Monad.bind
+      (Error_Monad.catch_error
+        (RFC_Matchbounds_Ext.rfc_automaton_closed_relative_bounds_tt j info
+          initial_terms rr tp)
+        (\ x ->
+          Sum_Type.Inl
+            ((((((i . Term_Rewriting.showsl_lit
+                        ": error when applying RFC automaton-closed relative bounds on the termination problem \n") .
+                  QDP_Framework_Impl.showsl_tp j tp) .
+                 Term_Rewriting.showsl_lit "\n to remove the rules \n") .
+                Term_Rewriting.showsl_rules rr) .
+               Term_Rewriting.showsl_literal "\n") .
+              x)))
+      (\ tpa ->
+        Error_Monad.catch_error
+          (check_trs_termination_proof j ia assms
+            (Term_Rewriting.add_index i Arith.one_nat) tpa prf)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below RFC automaton-closed relative bounds\n") .
+                x))));
 check_trs_termination_proof j ia assms i tp (Uncurry u_info rR prf) =
   FOR_Preliminaries.debug i "Uncurry"
     (Error_Monad.bind
@@ -1067,6 +1169,56 @@ check_trs_termination_proof j ia assms i tpa (Assume_SN tp ass) =
       else Sum_Type.Inl
              (i . Term_Rewriting.showsl_lit
                     ": the proof contains a termination assumption or unknown proof\n"));
+check_trs_termination_proof j ia assms i tp
+  (Rfc_Matchbox_Relative_Bounds info initial_terms rr prf) =
+  FOR_Preliminaries.debug i "RFC Matchbox Relative Bounds"
+    (Error_Monad.bind
+      (Error_Monad.catch_error
+        (RFC_Matchbounds_Ext.rfc_matchbox_relative_bounds_tt j info
+          initial_terms rr tp)
+        (\ x ->
+          Sum_Type.Inl
+            ((((((i . Term_Rewriting.showsl_lit
+                        ": error when applying RFC Matchbox-style relative bounds on the termination problem \n") .
+                  QDP_Framework_Impl.showsl_tp j tp) .
+                 Term_Rewriting.showsl_lit "\n to remove the rules \n") .
+                Term_Rewriting.showsl_rules rr) .
+               Term_Rewriting.showsl_literal "\n") .
+              x)))
+      (\ tpa ->
+        Error_Monad.catch_error
+          (check_trs_termination_proof j ia assms
+            (Term_Rewriting.add_index i Arith.one_nat) tpa prf)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below RFC Matchbox-style relative bounds\n") .
+                x))));
+check_trs_termination_proof j ia assms i tp
+  (Rfc_Native_Matchbox_Relative_Bounds info initial_terms rr prf) =
+  FOR_Preliminaries.debug i "RFC Native Matchbox Relative Bounds"
+    (Error_Monad.bind
+      (Error_Monad.catch_error
+        (RFC_Matchbounds_Ext.rfc_native_rel_matchbox_relative_bounds_tt j info
+          initial_terms rr tp)
+        (\ x ->
+          Sum_Type.Inl
+            ((((((i . Term_Rewriting.showsl_lit
+                        ": error when applying native RFC Matchbox-style relative bounds\n") .
+                  QDP_Framework_Impl.showsl_tp j tp) .
+                 Term_Rewriting.showsl_lit "\n to remove the rules \n") .
+                Term_Rewriting.showsl_rules rr) .
+               Term_Rewriting.showsl_literal "\n") .
+              x)))
+      (\ tpa ->
+        Error_Monad.catch_error
+          (check_trs_termination_proof j ia assms
+            (Term_Rewriting.add_index i Arith.one_nat) tpa prf)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below native RFC Matchbox-style relative bounds\n") .
+                x))));
 
 check_dp_termination_proof ::
   forall a b c.

@@ -8,8 +8,7 @@ module
                         check_reltrs_nontermination_proof,
                         check_trs_nontermination_proof,
                         check_fp_nontermination_proof,
-                        check_dp_nontermination_proof,
-                        trs_nontermination_proof_to_fp)
+                        check_dp_nontermination_proof)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -1153,62 +1152,5 @@ check_dp_nontermination_proof ia j assms i dpp (DP_Assume_Infinite dp ass) =
       else Sum_Type.Inl
              (i . Term_Rewriting.showsl_lit
                     ": the proof contains an assumption or unknown proof\n"));
-
-trs_nontermination_proof_to_fp ::
-  forall a b c.
-    Trs_nontermination_proof a b c ->
-      Sum_Type.Sum (String -> String) (Fp_trs_nontermination_proof a b c);
-trs_nontermination_proof_to_fp (TRS_Loop x) = Sum_Type.Inr (FP_TRS_Loop x);
-trs_nontermination_proof_to_fp (TRS_Rule_Removal x p) =
-  Error_Monad.bind (trs_nontermination_proof_to_fp p)
-    (\ pa -> Sum_Type.Inr (FP_TRS_Rule_Removal x pa));
-trs_nontermination_proof_to_fp TRS_Not_Well_Formed =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_String_Reversal v) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Constant_String v va) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_DP_Trans v va) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Termination_Switch v va) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Nonloop v) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Nonloop_SRS v) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Q_Increase v va) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Uncurry v va) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Not_WN_Tree_Automaton v) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp TRS_Not_RG_Decision =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
-trs_nontermination_proof_to_fp (TRS_Assume_Not_SN v va) =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit
-      "for the given strategy, only loops and rule removal are supported as nontermination techniques");
 
 }

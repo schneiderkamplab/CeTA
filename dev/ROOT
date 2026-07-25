@@ -1,0 +1,4 @@
+session RFC_Native_Ext = IsaFoR_2 +
+  options [document = false]
+  theories
+    "../thys/RFC_Checker_Ext/RFC_Matchbounds_Ext"

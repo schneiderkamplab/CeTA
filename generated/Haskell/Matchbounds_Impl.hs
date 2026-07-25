@@ -1,8 +1,16 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  Matchbounds_Impl(Boundstype(..), Bounds_info(..), bounds_tt, bounds_rel_tt,
-                    bounds_complexity, bounds_complexity_rel)
+  Matchbounds_Impl(Boundstype(..), Bounds_info(..), states_of_tree_automata_dup,
+                    get_integer_bounds_info, cover_bound_list_filter,
+                    get_renaming_info, check_ta_bounded, bounds_condition,
+                    construct_c_opt, boundstype_fun, bounds_tt,
+                    equal_boundstype, boundstype, bounds_rel_tt,
+                    rfc_initial_accepted_with_tail_states_impl,
+                    check_bounds_generic_without_contains,
+                    rfc_initial_single_var, rfc_initial_covers,
+                    rfc_initial_closed, rfc_bounds_tt, bounds_complexity,
+                    bounds_complexity_rel)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -22,6 +30,7 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified RBTSetImpl;
+import qualified Option_Util;
 import qualified RBTMapImpl;
 import qualified RBT;
 import qualified Product_Lexorder;
@@ -555,6 +564,266 @@ bounds_rel_tt i info rdelete tp =
             Term_Rewriting.showsl_lit "\nwith deletion of rules\n") .
            Term_Rewriting.showsl_trs rdelete) .
           x));
+
+rfc_initial_accepted_with_tail_states_impl ::
+  forall a b.
+    (Compare.Compare_order a,
+      Compare.Compare_order b) => HOL.Itself a ->
+                                    Tree_Automata_Impl.Ta_impl b
+                                      (a, Arith.Nat) ->
+                                      [b] ->
+[Term_Rewriting.Term a [Arith.Char]] -> Bool;
+rfc_initial_accepted_with_tail_states_impl uu ta qfin i =
+  all (\ t ->
+        all (\ q ->
+              not (RBTSetImpl.g_isEmpty_dflt_basic_oops_rm_basic_ops
+                    (RBTSetImpl.g_inter_dflt_basic_oops_rm_basic_ops
+                      (Tree_Automata_Impl.ta_final_impl ta)
+                      (Tree_Automata_Impl.ta_res_impl
+                        (Tree_Automata_Impl.ta_rules_impl ta)
+                        (Tree_Automata_Impl.ta_epss_impl ta)
+                        (Term_Rewriting.map_term (\ x -> x) (\ _ -> q)
+                          (Term_Rewriting.map_term
+                            (Matchbounds.lift Arith.zero_nat) (\ x -> x) t))))))
+          qfin)
+    i;
+
+check_bounds_generic_without_contains ::
+  forall a b c.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a, Arith.Ccompare b,
+      Eq b, Mapping.Mapping_impl b, Quasi_Order.Linorder b,
+      Term_Rewriting.Showl b, Arith.Ceq c, Arith.Ccompare c,
+      Compare.Compare_order c, Eq c, Arith.Set_impl c,
+      Term_Rewriting.Showl c) => Bounds_info a b ->
+                                   [(Term_Rewriting.Term a c,
+                                      Term_Rewriting.Term a c)] ->
+                                     [(Term_Rewriting.Term a c,
+Term_Rewriting.Term a c)] ->
+                                       Sum_Type.Sum (String -> String) ();
+check_bounds_generic_without_contains bi r s =
+  (case get_integer_bounds_info bi of {
+    (Bounds_Info typea c qfin preTA rel, ren) ->
+      Error_Monad.catch_error
+        (let {
+           c_opt = construct_c_opt c r;
+           rs = r ++ s;
+         } in Error_Monad.bind (Tree_Automata_Impl.generate_ta_cond preTA rel)
+                (\ ta ->
+                  let {
+                    rell = Tree_Automata_Impl.rel_checker rel;
+                  } in Error_Monad.bind (Term_Rewriting.check_wf_trs rs)
+                         (\ _ ->
+                           Error_Monad.bind
+                             (Check_Monad.check
+                               (Arith.less_eq_set (Arith.set qfin)
+                                 (RBTSetImpl.alpha_rm_basic_ops
+                                   (Tree_Automata_Impl.ta_final_impl ta)))
+                               (Term_Rewriting.showsl_lit
+                                 "explicitly mentioned final states must be final"))
+                             (\ _ ->
+                               Error_Monad.bind
+                                 (if Error_Monad.isOK
+                                       (Term_Rewriting.check_left_linear_trs rs)
+                                   then Sum_Type.Inr ()
+                                   else Error_Monad.bind
+  (Error_Monad.catch_error (Tree_Automata_Impl.check_det preTA)
+    (\ x ->
+      Sum_Type.Inl
+        (Term_Rewriting.showsl_lit
+           "for non left-linear TRS we require det. automaton\n" .
+          x)))
+  (\ _ ->
+    Error_Monad.bind (relation_as_list rel)
+      (check_state_raise_consistent preTA)))
+                                 (\ _ ->
+                                   Error_Monad.bind (bounds_condition typea rs)
+                                     (\ _ ->
+                                       Error_Monad.bind (check_ta_bounded ta c)
+ (\ _ ->
+   Error_Monad.bind
+     (Check_Monad.check
+       (any (\ q ->
+              RBTSetImpl.memb_rm_basic_ops q
+                (Tree_Automata_Impl.ta_rhs_states_set ta))
+         qfin)
+       (Term_Rewriting.showsl_lit "did not find mentioned final state in TA"))
+     (\ _ ->
+       Error_Monad.bind
+         (Error_Monad.catch_error
+           (Tree_Automata_Impl.state_compatible_eff_list ta rell
+             (cover_bound_list_filter
+               (\ l ->
+                 not (Tree_Automata_Impl.rule_state_compatible_heuristic ta l))
+               (boundstype_fun typea) Matchbounds.Strict_TRS c r))
+           (\ x ->
+             Sum_Type.Inl
+               (case x of {
+                 (lr, (lr_rhs, q)) ->
+                   ((((((Term_Rewriting.showsl_lit
+                           "TA is not compatible with TRS\n" .
+                          Term_Rewriting.showsl_lit "for rule ") .
+                         Term_Rewriting.showsl_rule lr) .
+                        Term_Rewriting.showsl_lit
+                          "\nwhich is instantiated by states to ") .
+                       Term_Rewriting.showsl_rule lr_rhs) .
+                      Term_Rewriting.showsl_lit "\nthe state ") .
+                     Term_Rewriting.showsl_integer q) .
+                     Term_Rewriting.showsl_lit
+                       " is only reachable from the lhs\n";
+               })))
+         (\ _ ->
+           Error_Monad.catch_error
+             (Tree_Automata_Impl.state_compatible_eff_list ta rell
+               (cover_bound_list_filter
+                 (\ l ->
+                   not (Tree_Automata_Impl.rule_state_compatible_heuristic ta
+                         l))
+                 Matchbounds.match (Matchbounds.Weak_TRS c_opt) c s))
+             (\ x ->
+               Sum_Type.Inl
+                 (case x of {
+                   (lr, (lr_rhs, q)) ->
+                     ((((((Term_Rewriting.showsl_lit
+                             "TA is not compatible with relative TRS\n" .
+                            Term_Rewriting.showsl_lit "for rule ") .
+                           Term_Rewriting.showsl_rule lr) .
+                          Term_Rewriting.showsl_lit
+                            "\nwhich is instantiated by states to ") .
+                         Term_Rewriting.showsl_rule lr_rhs) .
+                        Term_Rewriting.showsl_lit "\nthe state ") .
+                       Term_Rewriting.showsl_integer q) .
+                       Term_Rewriting.showsl_lit
+                         " is only reachable from the lhs\n";
+                 })))))))))))
+        (\ x ->
+          Sum_Type.Inl
+            (((Term_Rewriting.showsl_lit
+                 "problem during checking local bounds conditions of automaton\n" .
+                get_renaming_info ren) .
+               Term_Rewriting.showsl_lit "\nerror:\n") .
+              x));
+  });
+
+rfc_initial_single_var ::
+  forall a. [Term_Rewriting.Term a [Arith.Char]] -> Bool;
+rfc_initial_single_var i =
+  all (\ t ->
+        Arith.less_eq_nat
+          (Arith.size_list (Arith.remdups (Term_Rewriting.vars_term_list t)))
+          Arith.one_nat)
+    i;
+
+rfc_initial_covers ::
+  forall a.
+    (Eq a) => [(Term_Rewriting.Term a [Arith.Char],
+                 Term_Rewriting.Term a [Arith.Char])] ->
+                [Term_Rewriting.Term a [Arith.Char]] -> Bool;
+rfc_initial_covers r i = all (\ (_, a) -> Arith.membera i a) r;
+
+rfc_narrows_impl ::
+  forall a.
+    (Eq a) => [(Term_Rewriting.Term a [Arith.Char],
+                 Term_Rewriting.Term a [Arith.Char])] ->
+                Term_Rewriting.Term a [Arith.Char] ->
+                  [Term_Rewriting.Term a [Arith.Char]];
+rfc_narrows_impl r t =
+  concatMap
+    (\ p ->
+      let {
+        tp = Term_Rewriting.subt_at t p;
+      } in (if not (Term_Rewriting.is_Var tp)
+             then concatMap
+                    (\ (l, ra) ->
+                      map (\ (mu_1, mu_2) ->
+                            Term_Rewriting.intp_actxt Term_Rewriting.Fun
+                              (Term_Rewriting.ctxt_of_pos_term p
+                                (Term_Rewriting.eval_term Term_Rewriting.Fun t
+                                  mu_1))
+                              (Term_Rewriting.eval_term Term_Rewriting.Fun ra
+                                mu_2))
+                        (Option_Util.option_to_list
+                          (Term_Rewriting.mgu_vd_string tp l)))
+                    r
+             else []))
+    (Term_Rewriting.poss_list t);
+
+rfc_initial_closed ::
+  forall a.
+    (Eq a) => [(Term_Rewriting.Term a [Arith.Char],
+                 Term_Rewriting.Term a [Arith.Char])] ->
+                [Term_Rewriting.Term a [Arith.Char]] -> Bool;
+rfc_initial_closed r i =
+  all (\ t -> all (Arith.membera i) (rfc_narrows_impl r t)) i;
+
+rfc_bounds_tt ::
+  forall a b c.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b, Arith.Ccompare c,
+      Eq c, Mapping.Mapping_impl c, Quasi_Order.Linorder c,
+      Term_Rewriting.Showl c) => Termination_Problem_Spec.Tp_ops_ext a b
+                                   [Arith.Char] () ->
+                                   Bounds_info b c ->
+                                     [Term_Rewriting.Term b [Arith.Char]] ->
+                                       a -> Sum_Type.Sum (String -> String) ();
+rfc_bounds_tt i info initial_terms tp =
+  (case get_integer_bounds_info info of {
+    (Bounds_Info _ _ qfin preTA rel, _) ->
+      Error_Monad.bind (Tree_Automata_Impl.generate_ta_cond preTA rel)
+        (\ ta ->
+          Error_Monad.bind
+            (Check_Monad.check (Termination_Problem_Spec.q_empty i tp)
+              (Term_Rewriting.showsl_lit
+                "RFC bounds currently require an empty Q component"))
+            (\ _ ->
+              Error_Monad.bind
+                (Check_Monad.check (null (Termination_Problem_Spec.rw i tp))
+                  (Term_Rewriting.showsl_lit
+                    "RFC bounds currently require no weak rules"))
+                (\ _ ->
+                  Error_Monad.bind
+                    (Check_Monad.check (not (Termination_Problem_Spec.nfs i tp))
+                      (Term_Rewriting.showsl_lit
+                        "RFC bounds currently certify full rewriting, not innermost rewriting"))
+                    (\ _ ->
+                      Error_Monad.bind
+                        (Term_Rewriting.check_wf_trs
+                          (Termination_Problem_Spec.r i tp))
+                        (\ _ ->
+                          Error_Monad.bind
+                            (Check_Monad.check
+                              (all (\ (_, a) -> Term_Rewriting.linear_term a)
+                                (Termination_Problem_Spec.r i tp))
+                              (Term_Rewriting.showsl_lit
+                                "RFC bounds require right-linear rules"))
+                            (\ _ ->
+                              Error_Monad.bind
+                                (Check_Monad.check
+                                  (rfc_initial_single_var initial_terms)
+                                  (Term_Rewriting.showsl_lit
+                                    "RFC bounds finite initial language templates must contain at most one variable"))
+                                (\ _ ->
+                                  Error_Monad.bind
+                                    (Check_Monad.check
+                                      (rfc_initial_covers
+(Termination_Problem_Spec.r i tp) initial_terms)
+                                      (Term_Rewriting.showsl_lit
+"RFC initial language does not contain all right-hand sides"))
+                                    (\ _ ->
+                                      Error_Monad.bind
+(Check_Monad.check
+  (rfc_initial_closed (Termination_Problem_Spec.r i tp) initial_terms)
+  (Term_Rewriting.showsl_lit
+    "RFC initial language is not closed under one-step right-forward narrowing"))
+(\ _ ->
+  Error_Monad.bind
+    (Check_Monad.check
+      (rfc_initial_accepted_with_tail_states_impl HOL.Type ta qfin
+        initial_terms)
+      (Term_Rewriting.showsl_lit
+        "RFC bounds finite initial language is not accepted by the automaton for all tail states"))
+    (\ _ ->
+      check_bounds_generic_without_contains info
+        (Termination_Problem_Spec.r i tp) []))))))))));
+  });
 
 bounds_complexity ::
   forall a b c d.

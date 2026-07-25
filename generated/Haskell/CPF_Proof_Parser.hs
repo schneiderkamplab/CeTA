@@ -43,31 +43,8 @@ import qualified Ordered_Semiring;
 import qualified Non_Confluence_Impl;
 import qualified Defaults;
 import qualified Map;
-import qualified Check_Termination_Common;
-import qualified Equational_Reasoning;
-import qualified Rule_Labeling_Impl;
-import qualified Parallel_Critical_Pairs_Impl;
-import qualified Ceta_Problem_Spec;
-import qualified HOL;
-import qualified Nonloop_SRS;
-import qualified Matchbounds_Impl;
-import qualified Critical_Pairs_Impl;
-import qualified Check_Joins;
-import qualified List_Order_Implementations;
-import qualified Max_Polynomial;
-import qualified Max_Monus;
-import qualified WPO;
-import qualified Not_WN_Tree_Automaton_Impl;
-import qualified Sum_Type;
-import qualified Semantic_Labeling_Carrier;
-import qualified NthRoot;
-import qualified Congruence;
-import qualified Group;
-import qualified Ring;
-import qualified Nonloop_Impl;
 import qualified LTS_Parser;
 import qualified Ordered_Completion_Impl;
-import qualified Reduction_Pair_Implementations;
 import qualified Check_Quasi_Reductive;
 import qualified Check_Conditional_CRP;
 import qualified Check_AC_Termination;
@@ -78,13 +55,37 @@ import qualified Check_Nontermination;
 import qualified Check_Infeasibility;
 import qualified Check_Complexity;
 import qualified CSR_Checker;
-import qualified Check_Termination;
-import qualified Tree_Automata_Impl;
 import qualified LTS_Safety_Prover;
-import qualified Proof_Checker;
-import qualified Check_CRP;
 import qualified IA_Checker;
+import qualified Check_Termination_Common;
+import qualified Equational_Reasoning;
+import qualified Rule_Labeling_Impl;
+import qualified Parallel_Critical_Pairs_Impl;
+import qualified Check_Termination;
+import qualified Check_CRP;
 import qualified Compare_Order_Instances;
+import qualified CSR_Conservative_Checker;
+import qualified Proof_Checker;
+import qualified Ceta_Problem_Spec;
+import qualified HOL;
+import qualified Nonloop_SRS;
+import qualified Matchbounds_Impl;
+import qualified Critical_Pairs_Impl;
+import qualified Check_Joins;
+import qualified Reduction_Pair_Implementations;
+import qualified List_Order_Implementations;
+import qualified Max_Polynomial;
+import qualified Max_Monus;
+import qualified WPO;
+import qualified Not_WN_Tree_Automaton_Impl;
+import qualified Tree_Automata_Impl;
+import qualified Sum_Type;
+import qualified Semantic_Labeling_Carrier;
+import qualified NthRoot;
+import qualified Congruence;
+import qualified Group;
+import qualified Ring;
+import qualified Nonloop_Impl;
 import qualified Conditional_Rewriting_Impl;
 import qualified Labelings;
 import qualified Compare;
@@ -555,38 +556,44 @@ csteps xml2name termIndexMap x =
       (cstep xml2name termIndexMap) (\ a -> Xmlt.xml_return (id a)))
     x;
 
-xml2dp_input ::
-  forall a b c.
-    (Eq a,
-      Term_Rewriting.Showl a) => ((Xml.Xml,
+string ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
                                     ([([Arith.Char], [Arith.Char])],
                                       (Bool, ([String], [String])))) ->
                                    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     a) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term a [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term a [Arith.Char],
- Term_Rewriting.Term a [Arith.Char]) ->
-                                       Bool ->
- (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-     (Bool,
-       (Bool,
-         ([(Term_Rewriting.Term a [Arith.Char],
-             Term_Rewriting.Term a [Arith.Char])],
-           ([b], ([Term_Rewriting.Term a [Arith.Char]],
-                   ([c], [(Term_Rewriting.Term a [Arith.Char],
-                            Term_Rewriting.Term a [Arith.Char])]))))));
-xml2dp_input xml2name termIndexMap ruleMap termination =
-  Xmlt.xml_change (CPF_Input_Parser.dp_input xml2name termIndexMap ruleMap)
-    (\ (Ceta_Problem_Spec.DP_input m p q r) ->
-      Xmlt.xml_return
-        ((if termination then Defaults.default_nfs_dp
-           else Defaults.default_nfs_nt_dp),
-          (m, (p, ([], (Ceta_Problem_Spec.strategy_to_Q q r, ([], r)))))));
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       [Labelings.Lab a b];
+string xml2name =
+  Xmlt.xml_do "string"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      xml2name (\ a -> Xmlt.xml_return (id a)));
 
-xml2crit_pair_info ::
+oc_srs ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       ([Labelings.Lab a b],
+ [Labelings.Lab a b]);
+oc_srs xml2name =
+  Xmlt.xml_do "overlapClosureSRS"
+    (Xmlt.xml_take (string xml2name)
+      (\ a -> Xmlt.xml_take (string xml2name) (\ b -> Xmlt.xml_return (a, b))));
+
+rsteps ::
   forall a.
     (Term_Rewriting.Showl a) => ((Xml.Xml,
                                    ([([Arith.Char], [Arith.Char])],
@@ -595,133 +602,27 @@ xml2crit_pair_info ::
                                     a) ->
                                   Mapping.Mapping [Arith.Char]
                                     (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-(Check_Joins.Crit_pair_info a [Arith.Char]);
-xml2crit_pair_info xml2name termIndexMap =
-  Xmlt.xml_do "critPairInfo"
+                                    Mapping.Mapping [Arith.Char]
+                                      (Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char]) ->
+                                      (Xml.Xml,
+([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+  (Term_Rewriting.Term a [Arith.Char],
+    [([Arith.Nat],
+       ((Term_Rewriting.Term a [Arith.Char],
+          Term_Rewriting.Term a [Arith.Char]),
+         Term_Rewriting.Term a [Arith.Char]))]);
+rsteps xml2name termIndexMap ruleMap =
+  Xmlt.xml_do "rewriteSequence"
     (Xmlt.xml_take
-      (Xmlt.xml_do "left"
+      (Xmlt.xml_do "startTerm"
         (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
           (\ x -> Xmlt.xml_return (id x))))
-      (\ s ->
-        Xmlt.xml_take_optional
-          (Xmlt.xml_do "peak"
-            (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-              (\ x -> Xmlt.xml_return (id x))))
-          (\ t ->
-            Xmlt.xml_take
-              (Xmlt.xml_do "right"
-                (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                  (\ x -> Xmlt.xml_return (id x))))
-              (\ u ->
-                Xmlt.xml_take_optional
-                  (Xmlt.xml_do "overlapPositions"
-                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                      Extended_Nat.Infinity_enat CPF_Input_Parser.pos
-                      Xmlt.xml_return))
-                  (\ pos ->
-                    Xmlt.xml_take_optional
-                      (Xmlt.xml_do "labels"
-                        (Xmlt.xml_take (Xmlt.xml_nat "maxLeft")
-                          (\ left ->
-                            Xmlt.xml_take (Xmlt.xml_nat "right")
-                              (\ right -> Xmlt.xml_return (left, right)))))
-                      (\ labels ->
-                        Xmlt.xml_take
-                          (Xmlt.xml_do "intermediateTerms"
-                            (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                              Extended_Nat.Infinity_enat
-                              (CPF_Input_Parser.term xml2name termIndexMap)
-                              Xmlt.xml_return))
-                          (\ joins ->
-                            Xmlt.xml_return
-                              (Check_Joins.Crit_Pair_Info s t u joins pos
-                                labels))))))));
-
-joinSequences ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-[Check_Joins.Crit_pair_info a [Arith.Char]];
-joinSequences xml2name termIndexMap =
-  Xmlt.xml_do "joinSequences"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (xml2crit_pair_info xml2name termIndexMap) Xmlt.xml_return);
-
-joinAutoBfs ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String) (Maybe Arith.Nat);
-joinAutoBfs =
-  Xmlt.xml_change (Xmlt.xml_int "joinAutoBfs")
-    (\ x ->
-      Xmlt.xml_return
-        (if Arith.less_int x Arith.zero_int then Nothing
-          else Just (Arith.nat x)));
-
-joinAutoBfs1 ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Arith.Nat;
-joinAutoBfs1 =
-  Xmlt.xml_change joinAutoBfs
-    (\ x -> Xmlt.xml_return (case x of {
-                              Nothing -> Arith.one_nat;
-                              Just n -> n;
-                            }));
-
-xml2cp_join_info ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-(Check_Joins.Cp_join_hints a [Arith.Char]);
-xml2cp_join_info xml2name termIndexMap =
-  Xmlt.xml_or
-    (Xmlt.xml_change joinAutoBfs1 (Xmlt.xml_return . Check_Joins.CP_Auto))
-    (Xmlt.xml_change (joinSequences xml2name termIndexMap)
-      (\ joins -> Xmlt.xml_return (Check_Joins.CP_Sequences joins)));
-
-wcr_proof ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-(Critical_Pairs_Impl.Join_info a [Arith.Char]);
-wcr_proof xml2name termIndexMap =
-  Xmlt.xml_do "wcrProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_change (xml2cp_join_info xml2name termIndexMap)
-          (Xmlt.xml_return . Critical_Pairs_Impl.Guided_BFS))
-        (Xmlt.xml_leaf "joinAutoNF" Critical_Pairs_Impl.Join_NF))
-      (\ x -> Xmlt.xml_return (id x)));
+      (\ start ->
+        Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+          (rstep xml2name termIndexMap ruleMap)
+          (\ steps -> Xmlt.xml_return (start, steps))));
 
 pat_eqv_prf ::
   forall a.
@@ -785,37 +686,6 @@ pat_term xml2name termIndexMap =
           (\ s1 ->
             Xmlt.xml_take (subst xml2name termIndexMap)
               (\ s2 -> Xmlt.xml_return (t, (s1, s2))))));
-
-rsteps ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    Mapping.Mapping [Arith.Char]
-                                      (Term_Rewriting.Term a [Arith.Char],
-Term_Rewriting.Term a [Arith.Char]) ->
-                                      (Xml.Xml,
-([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-  (Term_Rewriting.Term a [Arith.Char],
-    [([Arith.Nat],
-       ((Term_Rewriting.Term a [Arith.Char],
-          Term_Rewriting.Term a [Arith.Char]),
-         Term_Rewriting.Term a [Arith.Char]))]);
-rsteps xml2name termIndexMap ruleMap =
-  Xmlt.xml_do "rewriteSequence"
-    (Xmlt.xml_take
-      (Xmlt.xml_do "startTerm"
-        (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-          (\ x -> Xmlt.xml_return (id x))))
-      (\ start ->
-        Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-          (rstep xml2name termIndexMap ruleMap)
-          (\ steps -> Xmlt.xml_return (start, steps))));
 
 pat_rule_prf ::
   forall a.
@@ -967,666 +837,62 @@ nonloop xml2name termIndexMap ruleMap =
                             Xmlt.xml_return
                               (Nonloop_Impl.Non_loop_prf a b c d e f))))))));
 
-xml2dp_nontermination_proof ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   (Check_Nontermination.Dp_nontermination_proof a b [Arith.Char]);
-xml2dp_nontermination_proof xml2name termIndexMap ruleMap x =
-  Xmlt.xml_do "dpNonterminationProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_do "dpRuleRemoval"
-          (Xmlt.xml_take
-            (Xmlt.xml_do "dps"
-              (Xmlt.xml_take
-                (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                (\ xa -> Xmlt.xml_return (id xa))))
-            (\ p ->
-              Xmlt.xml_take
-                (Xmlt.xml_do "trs"
-                  (Xmlt.xml_take
-                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                    (\ xa -> Xmlt.xml_return (id xa))))
-                (\ r ->
-                  Xmlt.xml_take
-                    (xml2dp_nontermination_proof xml2name termIndexMap ruleMap)
-                    (\ prf ->
-                      Xmlt.xml_return
-                        (Check_Nontermination.DP_Rule_Removal
-                          (Nontermination_Impl.Rule_removal_nonterm_dp_prf p r)
-                          prf))))))
-        (Xmlt.xml_or
-          (Xmlt.xml_do "loop"
-            (Xmlt.xml_take (relsteps xml2name termIndexMap ruleMap)
-              (\ (s, rseq) ->
-                Xmlt.xml_take (subst xml2name termIndexMap)
-                  (\ sigma ->
-                    Xmlt.xml_take (ctxt xml2name termIndexMap)
-                      (\ c ->
-                        Xmlt.xml_return
-                          (Check_Nontermination.DP_Loop
-                            (Loops_Impl.DP_loop_prf s rseq sigma c)))))))
-          (Xmlt.xml_or
-            (Xmlt.xml_change (nonloop xml2name termIndexMap ruleMap)
-              (Xmlt.xml_return . Check_Nontermination.DP_Nonloop))
-            (Xmlt.xml_or
-              (Xmlt.xml_do "innermostLhssRemovalProc"
-                (Xmlt.xml_take
-                  (CPF_Input_Parser.innermostLhss xml2name termIndexMap)
-                  (\ q ->
-                    Xmlt.xml_take
-                      (xml2dp_nontermination_proof xml2name termIndexMap
-                        ruleMap)
-                      (\ p ->
-                        Xmlt.xml_return
-                          (Check_Nontermination.DP_Q_Reduction
-                            (Q_Reduction_Nonterm_Impl.DP_q_reduction_nonterm_prf
-                              q)
-                            p)))))
-              (Xmlt.xml_or
-                (Xmlt.xml_do "innermostLhssIncreaseProc"
-                  (Xmlt.xml_take
-                    (CPF_Input_Parser.innermostLhss xml2name termIndexMap)
-                    (\ q ->
-                      Xmlt.xml_take
-                        (xml2dp_nontermination_proof xml2name termIndexMap
-                          ruleMap)
-                        (\ p ->
-                          Xmlt.xml_return
-                            (Check_Nontermination.DP_Q_Increase
-                              (Nontermination_Impl.Q_increase_nonterm_dp_prf q)
-                              p)))))
-                (Xmlt.xml_or
-                  (Xmlt.xml_do "instantiationProc"
-                    (Xmlt.xml_take
-                      (Xmlt.xml_do "dps"
-                        (Xmlt.xml_take
-                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                          (\ xa -> Xmlt.xml_return (id xa))))
-                      (\ p ->
-                        Xmlt.xml_take
-                          (xml2dp_nontermination_proof xml2name termIndexMap
-                            ruleMap)
-                          (\ prf ->
-                            Xmlt.xml_return
-                              (Check_Nontermination.DP_Instantiation
-                                (Instantiation_Impl.Instantiation_complete_proc_prf
-                                  p)
-                                prf)))))
-                  (Xmlt.xml_or
-                    (Xmlt.xml_do "narrowingProc"
-                      (Xmlt.xml_take
-                        (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-                        (\ st ->
-                          Xmlt.xml_take CPF_Input_Parser.pos
-                            (\ po ->
-                              Xmlt.xml_take
-                                (Xmlt.xml_do "narrowings"
-                                  (Xmlt.xml_take
-                                    (CPF_Input_Parser.rules xml2name
-                                      termIndexMap ruleMap)
-                                    (\ xa -> Xmlt.xml_return (id xa))))
-                                (\ p ->
-                                  Xmlt.xml_take
-                                    (xml2dp_nontermination_proof xml2name
-                                      termIndexMap ruleMap)
-                                    (\ prf ->
-                                      Xmlt.xml_return
-(Check_Nontermination.DP_Narrowing
-  (Narrowing_Impl.Narrowing_complete_proc_prf st po p) prf)))))))
-                    (Xmlt.xml_or
-                      (Xmlt.xml_do "rewritingProc"
-                        (Xmlt.xml_take
-                          (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-                          (\ (s, t) ->
-                            Xmlt.xml_take (rstep xml2name termIndexMap ruleMap)
-                              (\ (p, (lr, ta)) ->
-                                Xmlt.xml_take
-                                  (CPF_Input_Parser.rule xml2name termIndexMap
-                                    ruleMap)
-                                  (\ st ->
-                                    Xmlt.xml_take
-                                      (Xmlt.xml_do "usableRules"
-(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-  (\ xa -> Xmlt.xml_return (id xa))))
-                                      (\ u ->
-Xmlt.xml_take (xml2dp_nontermination_proof xml2name termIndexMap ruleMap)
-  (\ prf ->
-    Xmlt.xml_return
-      (Check_Nontermination.DP_Rewriting
-        (Rewriting_Impl.Rewriting_complete_proc_prf (Just u) (s, t) (s, ta) st
-          lr p)
-        prf))))))))
-                      (Xmlt.xml_or
-                        (Xmlt.xml_do "switchFullStrategyProc"
-                          (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
-                            (\ a ->
-                              Xmlt.xml_take
-                                (xml2dp_nontermination_proof xml2name
-                                  termIndexMap ruleMap)
-                                (\ b ->
-                                  Xmlt.xml_return
-                                    (Check_Nontermination.DP_Termination_Switch
-                                      a b)))))
-                        (Xmlt.xml_or
-                          (Xmlt.xml_do "infinitenessAssumption"
-                            (Xmlt.xml_take
-                              (xml2dp_input xml2name termIndexMap ruleMap False)
-                              (\ qdp ->
-                                Xmlt.xml_return
-                                  (Check_Nontermination.DP_Assume_Infinite qdp
-                                    []))))
-                          (Xmlt.xml_do "unknownProof"
-                            (Xmlt.xml_take (Xmlt.xml_text "description")
-                              (\ _ ->
-                                Xmlt.xml_take
-                                  (xml2dp_input xml2name termIndexMap ruleMap
-                                    False)
-                                  (\ b ->
-                                    Xmlt.xml_take_many_sub [] Arith.zero_nat
-                                      Extended_Nat.Infinity_enat
-                                      (\ xa -> Strict_Sum.right (fst xa))
-                                      (\ _ ->
-Xmlt.xml_return (Check_Nontermination.DP_Assume_Infinite b []))))))))))))))))
-      (\ xa -> Xmlt.xml_return (id xa)))
-    x;
-
-xml2inn_nt_trs_assm :: forall a. a;
-xml2inn_nt_trs_assm = error "undefined";
-
-uncurry_info ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    Mapping.Mapping [Arith.Char]
-                                      (Term_Rewriting.Term a [Arith.Char],
-Term_Rewriting.Term a [Arith.Char]) ->
-                                      (Xml.Xml,
-([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-  (a, ([((a, Arith.Nat), [a])],
-        ([(Term_Rewriting.Term a [Arith.Char],
-            Term_Rewriting.Term a [Arith.Char])],
-          [(Term_Rewriting.Term a [Arith.Char],
-             Term_Rewriting.Term a [Arith.Char])])));
-uncurry_info xml2name termIndexMap ruleMap =
-  Xmlt.xml_do "uncurryInformation"
-    (Xmlt.xml_take xml2name
-      (\ a ->
-        Xmlt.xml_take
-          (Xmlt.xml_do "uncurriedSymbols"
-            (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-              (Xmlt.xml_do "uncurriedSymbolEntry"
-                (Xmlt.xml_take xml2name
-                  (\ f ->
-                    Xmlt.xml_take (Xmlt.xml_nat "arity")
-                      (\ n ->
-                        Xmlt.xml_take_many_sub [] Arith.zero_nat
-                          Extended_Nat.Infinity_enat xml2name
-                          (\ fs -> Xmlt.xml_return ((f, n), fs))))))
-              Xmlt.xml_return))
-          (\ sml ->
-            Xmlt.xml_take
-              (Xmlt.xml_do "uncurryRules"
-                (Xmlt.xml_take
-                  (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                  (\ x -> Xmlt.xml_return (id x))))
-              (\ u ->
-                Xmlt.xml_take
-                  (Xmlt.xml_do "etaRules"
-                    (Xmlt.xml_take
-                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                      (\ x -> Xmlt.xml_return (id x))))
-                  (\ e -> Xmlt.xml_return (a, (sml, (u, e))))))));
-
-string ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       [Labelings.Lab a b];
-string xml2name =
-  Xmlt.xml_do "string"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      xml2name (\ a -> Xmlt.xml_return (id a)));
-
-word_pattern ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       ([Labelings.Lab a b],
- ((Arith.Nat, (Arith.Nat, [Labelings.Lab a b])), [Labelings.Lab a b]));
-word_pattern xml2name =
-  Xmlt.xml_do "wordPattern"
-    (Xmlt.xml_take (string xml2name)
-      (\ l ->
-        Xmlt.xml_take (string xml2name)
-          (\ m ->
-            Xmlt.xml_take (Xmlt.xml_nat "factor")
-              (\ f ->
-                Xmlt.xml_take (Xmlt.xml_nat "constant")
-                  (\ c ->
-                    Xmlt.xml_take (string xml2name)
-                      (\ r -> Xmlt.xml_return (l, ((f, (c, m)), r))))))));
-
-derivation_pattern ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       (([Labelings.Lab a b],
-  ((Arith.Nat, (Arith.Nat, [Labelings.Lab a b])), [Labelings.Lab a b])),
- ([Labelings.Lab a b],
-   ((Arith.Nat, (Arith.Nat, [Labelings.Lab a b])), [Labelings.Lab a b])));
-derivation_pattern xml2name =
-  Xmlt.xml_do "derivationPattern"
-    (Xmlt.xml_take (word_pattern xml2name)
-      (\ a ->
-        Xmlt.xml_take (word_pattern xml2name) (\ b -> Xmlt.xml_return (a, b))));
-
-oc_srs ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       ([Labelings.Lab a b],
- [Labelings.Lab a b]);
-oc_srs xml2name =
-  Xmlt.xml_do "overlapClosureSRS"
-    (Xmlt.xml_take (string xml2name)
-      (\ a -> Xmlt.xml_take (string xml2name) (\ b -> Xmlt.xml_return (a, b))));
-
-derivation_pattern_proof ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       (Nonloop_SRS.Dp_proof_step
- (Labelings.Lab a b));
-derivation_pattern_proof xml2name =
-  let {
-    oc = oc_srs xml2name;
-    dp = derivation_pattern xml2name;
-    s = string xml2name;
-  } in Xmlt.xml_do "derivationPatternProof"
-         (Xmlt.xml_take
-           (Xmlt.xml_or
-             (Xmlt.xml_do "OC1"
-               (Xmlt.xml_take oc
-                 (\ a ->
-                   Xmlt.xml_take (Xmlt.xml_bool "isPair")
-                     (\ b -> Xmlt.xml_return (Nonloop_SRS.OC1 a b)))))
-             (Xmlt.xml_or
-               (Xmlt.xml_do "OC2"
-                 (Xmlt.xml_take oc
-                   (\ a ->
-                     Xmlt.xml_take oc
-                       (\ b ->
-                         Xmlt.xml_take oc
-                           (\ c ->
-                             Xmlt.xml_take s
-                               (\ d ->
-                                 Xmlt.xml_take s
-                                   (\ e ->
-                                     Xmlt.xml_take s
-                                       (\ f ->
- Xmlt.xml_return (Nonloop_SRS.OC2 a b c d e f)))))))))
-               (Xmlt.xml_or
-                 (Xmlt.xml_do "OC2prime"
-                   (Xmlt.xml_take oc
-                     (\ a ->
-                       Xmlt.xml_take oc
-                         (\ b ->
-                           Xmlt.xml_take oc
-                             (\ c ->
-                               Xmlt.xml_take s
-                                 (\ d ->
-                                   Xmlt.xml_take s
-                                     (\ e ->
-                                       Xmlt.xml_take s
- (\ f -> Xmlt.xml_return (Nonloop_SRS.OC2p a b c d e f)))))))))
-                 (Xmlt.xml_or
-                   (Xmlt.xml_do "OC3"
-                     (Xmlt.xml_take oc
-                       (\ a ->
-                         Xmlt.xml_take oc
-                           (\ b ->
-                             Xmlt.xml_take oc
-                               (\ c ->
-                                 Xmlt.xml_take s
-                                   (\ d ->
-                                     Xmlt.xml_take s
-                                       (\ e ->
- Xmlt.xml_return (Nonloop_SRS.OC3 a b c d e))))))))
-                   (Xmlt.xml_or
-                     (Xmlt.xml_do "OC3prime"
-                       (Xmlt.xml_take oc
-                         (\ a ->
-                           Xmlt.xml_take oc
-                             (\ b ->
-                               Xmlt.xml_take oc
-                                 (\ c ->
-                                   Xmlt.xml_take s
-                                     (\ d ->
-                                       Xmlt.xml_take s
- (\ e -> Xmlt.xml_return (Nonloop_SRS.OC3p a b c d e))))))))
-                     (Xmlt.xml_or
-                       (Xmlt.xml_do "OCintoDP1"
-                         (Xmlt.xml_take dp
-                           (\ a ->
-                             Xmlt.xml_take oc
-                               (\ b ->
-                                 Xmlt.xml_return (Nonloop_SRS.OCDP1 a b)))))
-                       (Xmlt.xml_or
-                         (Xmlt.xml_do "OCintoDP2"
-                           (Xmlt.xml_take dp
-                             (\ a ->
-                               Xmlt.xml_take oc
-                                 (\ b ->
-                                   Xmlt.xml_return (Nonloop_SRS.OCDP2 a b)))))
-                         (Xmlt.xml_or
-                           (Xmlt.xml_do "equivalent"
-                             (Xmlt.xml_take dp
-                               (\ a ->
-                                 Xmlt.xml_take dp
-                                   (\ b ->
-                                     Xmlt.xml_return (Nonloop_SRS.WPEQ a b)))))
-                           (Xmlt.xml_or
-                             (Xmlt.xml_do "lift"
-                               (Xmlt.xml_take dp
-                                 (\ a ->
-                                   Xmlt.xml_take dp
-                                     (\ b ->
-                                       Xmlt.xml_return
- (Nonloop_SRS.Lift a b)))))
-                             (Xmlt.xml_or
-                               (Xmlt.xml_do "DP_OC_1_1"
-                                 (Xmlt.xml_take dp
-                                   (\ a ->
-                                     Xmlt.xml_take dp
-                                       (\ b ->
- Xmlt.xml_take oc
-   (\ c ->
-     Xmlt.xml_take s
-       (\ d ->
-         Xmlt.xml_take s
-           (\ e -> Xmlt.xml_return (Nonloop_SRS.DPOC1_1 a b c d e))))))))
-                               (Xmlt.xml_or
-                                 (Xmlt.xml_do "DP_OC_1_2"
-                                   (Xmlt.xml_take dp
-                                     (\ a ->
-                                       Xmlt.xml_take dp
- (\ b ->
-   Xmlt.xml_take oc
-     (\ c ->
-       Xmlt.xml_take s
-         (\ d ->
-           Xmlt.xml_take s
-             (\ e ->
-               Xmlt.xml_take s
-                 (\ f ->
-                   Xmlt.xml_return (Nonloop_SRS.DPOC1_2 a b c d e f)))))))))
-                                 (Xmlt.xml_or
-                                   (Xmlt.xml_do "DP_OC_2"
-                                     (Xmlt.xml_take dp
-                                       (\ a ->
- Xmlt.xml_take dp
-   (\ b ->
-     Xmlt.xml_take oc
-       (\ c ->
-         Xmlt.xml_take s
-           (\ d ->
-             Xmlt.xml_take s
-               (\ e -> Xmlt.xml_return (Nonloop_SRS.DPOC2 a b c d e))))))))
-                                   (Xmlt.xml_or
-                                     (Xmlt.xml_do "DP_OC_3_1"
-                                       (Xmlt.xml_take dp
- (\ a ->
-   Xmlt.xml_take dp
-     (\ b ->
-       Xmlt.xml_take oc
-         (\ c ->
-           Xmlt.xml_take s
-             (\ d ->
-               Xmlt.xml_take s
-                 (\ e -> Xmlt.xml_return (Nonloop_SRS.DPOC3_1 a b c d e))))))))
-                                     (Xmlt.xml_or
-                                       (Xmlt.xml_do "DP_OC_3_2"
- (Xmlt.xml_take dp
-   (\ a ->
-     Xmlt.xml_take dp
-       (\ b ->
-         Xmlt.xml_take oc
-           (\ c ->
-             Xmlt.xml_take s
-               (\ d ->
-                 Xmlt.xml_take s
-                   (\ e ->
-                     Xmlt.xml_take s
-                       (\ f ->
-                         Xmlt.xml_return
-                           (Nonloop_SRS.DPOC3_2 a b c d e f)))))))))
-                                       (Xmlt.xml_or
- (Xmlt.xml_do "DP_DP_1_1"
-   (Xmlt.xml_take dp
-     (\ a ->
-       Xmlt.xml_take dp
-         (\ b ->
-           Xmlt.xml_take dp
-             (\ c ->
-               Xmlt.xml_take s
-                 (\ d ->
-                   Xmlt.xml_take s
-                     (\ e ->
-                       Xmlt.xml_return (Nonloop_SRS.DPDP1_1 a b c d e))))))))
- (Xmlt.xml_or
-   (Xmlt.xml_do "DP_DP_1_2"
-     (Xmlt.xml_take dp
-       (\ a ->
-         Xmlt.xml_take dp
-           (\ b ->
-             Xmlt.xml_take dp
-               (\ c ->
-                 Xmlt.xml_take s
-                   (\ d ->
-                     Xmlt.xml_take s
-                       (\ e ->
-                         Xmlt.xml_return (Nonloop_SRS.DPDP1_2 a b c d e))))))))
-   (Xmlt.xml_or
-     (Xmlt.xml_do "DP_DP_2_1"
-       (Xmlt.xml_take dp
-         (\ a ->
-           Xmlt.xml_take dp
-             (\ b ->
-               Xmlt.xml_take dp
-                 (\ c ->
-                   Xmlt.xml_take s
-                     (\ d ->
-                       Xmlt.xml_take s
-                         (\ e ->
-                           Xmlt.xml_return
-                             (Nonloop_SRS.DPDP2_1 a b c d e))))))))
-     (Xmlt.xml_do "DP_DP_2_2"
-       (Xmlt.xml_take dp
-         (\ a ->
-           Xmlt.xml_take dp
-             (\ b ->
-               Xmlt.xml_take dp
-                 (\ c ->
-                   Xmlt.xml_take s
-                     (\ d ->
-                       Xmlt.xml_take s
-                         (\ e ->
-                           Xmlt.xml_return
-                             (Nonloop_SRS.DPDP2_2 a b c d
-                               e)))))))))))))))))))))))))
-           (\ x -> Xmlt.xml_return (id x)));
-
-nonloop_srs_reason ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       ([Nonloop_SRS.Dp_proof_step
-   (Labelings.Lab a b)] ->
- Nonloop_SRS.Non_loop_srs_proof (Labelings.Lab a b));
-nonloop_srs_reason xml2name =
-  Xmlt.xml_or
-    (Xmlt.xml_do "selfEmbeddingOC"
-      (Xmlt.xml_take (string xml2name)
-        (\ a ->
-          Xmlt.xml_take (string xml2name)
-            (\ b ->
-              Xmlt.xml_take (string xml2name)
-                (\ c ->
-                  Xmlt.xml_return (Nonloop_SRS.SE_OC (b, a ++ b ++ c) a c))))))
-    (Xmlt.xml_do "selfEmbeddingDP"
-      (Xmlt.xml_take (derivation_pattern xml2name)
-        (\ a ->
-          Xmlt.xml_take (string xml2name)
-            (\ b ->
-              Xmlt.xml_take (string xml2name)
-                (\ c -> Xmlt.xml_return (Nonloop_SRS.SE_DP a b c))))));
-
-nonloop_srs ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       (Nonloop_SRS.Non_loop_srs_proof
- (Labelings.Lab a b));
-nonloop_srs xml2name =
-  Xmlt.xml_do "nonterminatingSRS"
-    (Xmlt.xml_take
-      (Xmlt.xml_do "derivationPatterns"
-        (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-          (derivation_pattern_proof xml2name) (\ a -> Xmlt.xml_return (id a))))
-      (\ a ->
-        Xmlt.xml_take (nonloop_srs_reason xml2name)
-          (\ b -> Xmlt.xml_return (b a))));
-
-closed_criterion ::
+xml_rat ::
   (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-      (Tree_Automata_Impl.Ta_relation [Arith.Char]);
-closed_criterion =
-  Xmlt.xml_do "criterion"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_leaf "compatibility" Tree_Automata_Impl.Id_Relation)
-        (Xmlt.xml_or
-          (Xmlt.xml_do "stateCompatibility"
-            (Xmlt.xml_take
-              (Xmlt.xml_do "relation"
-                (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                  Extended_Nat.Infinity_enat
-                  (Xmlt.xml_do "entry"
-                    (Xmlt.xml_take CPF_Input_Parser.state
-                      (\ a ->
-                        Xmlt.xml_take CPF_Input_Parser.state
-                          (\ b -> Xmlt.xml_return (a, b)))))
-                  Xmlt.xml_return))
-              (\ x -> Xmlt.xml_return (Tree_Automata_Impl.Some_Relation x))))
-          (Xmlt.xml_or
-            (Xmlt.xml_leaf "decisionProcedure" Tree_Automata_Impl.Decision_Proc)
-            (Xmlt.xml_leaf "decisionProcedureOld"
-              Tree_Automata_Impl.Decision_Proc_Old))))
-      Xmlt.xml_return);
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Term_Rewriting.Rat;
+xml_rat =
+  Xmlt.xml_or
+    (Xmlt.xml_change (Xmlt.xml_int "integer")
+      (Xmlt.xml_return . Term_Rewriting.of_int))
+    (Xmlt.xml_do "rational"
+      (Xmlt.xml_take (Xmlt.xml_int "numerator")
+        (\ a ->
+          Xmlt.xml_take (Xmlt.xml_int "denominator")
+            (\ b ->
+              Xmlt.xml_return
+                (Term_Rewriting.divide_rat (Term_Rewriting.of_int a)
+                  (Term_Rewriting.of_int b))))));
 
-not_wn_ta ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   (Xml.Xml,
-                                     ([([Arith.Char], [Arith.Char])],
-                                       (Bool, ([String], [String])))) ->
-                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                       (Not_WN_Tree_Automaton_Impl.Not_wn_ta_prf
- (Labelings.Lab a b) [Arith.Char]);
-not_wn_ta xml2name =
-  Xmlt.xml_do "notWNTreeAutomaton"
-    (Xmlt.xml_take
-      (CPF_Input_Parser.tree_automaton
-        (CPF_Input_Parser.ta_normal_lhs xml2name))
-      (\ a ->
-        Xmlt.xml_take closed_criterion
-          (\ b ->
-            Xmlt.xml_return (Not_WN_Tree_Automaton_Impl.Not_wn_ta_prf a b))));
+sum_lpoly ::
+  forall a.
+    Congruence.Partial_object_ext a (Group.Monoid_ext a (Ring.Ring_ext a ())) ->
+      [a] -> [a] -> [a];
+sum_lpoly c [] ys = ys;
+sum_lpoly c (v : va) [] = v : va;
+sum_lpoly c (x : xs) (y : ys) = Ring.add c x y : sum_lpoly c xs ys;
+
+lpoly_of ::
+  forall a.
+    (Eq a) => Congruence.Partial_object_ext a
+                (Group.Monoid_ext a (Ring.Ring_ext a ())) ->
+                Polynomials.Tpoly Arith.Nat a ->
+                  Strict_Sum.Sum_bot String (a, [a]);
+lpoly_of c (Polynomials.PNum i) = Strict_Sum.returna (i, []);
+lpoly_of c (Polynomials.PVar x) =
+  Strict_Sum.returna
+    (Ring.zero c, Arith.replicate x (Ring.zero c) ++ [Group.one c]);
+lpoly_of c (Polynomials.PSum []) = Strict_Sum.returna (Ring.zero c, []);
+lpoly_of c (Polynomials.PSum (p : ps)) =
+  Strict_Sum.bind (lpoly_of c p)
+    (\ (cp, ncp) ->
+      Strict_Sum.bind (lpoly_of c (Polynomials.PSum ps))
+        (\ (cq, ncq) ->
+          Strict_Sum.returna (Ring.add c cp cq, sum_lpoly c ncp ncq)));
+lpoly_of c (Polynomials.PMult []) = Strict_Sum.returna (Group.one c, []);
+lpoly_of c (Polynomials.PMult (p : ps)) =
+  Strict_Sum.bind (lpoly_of c p)
+    (\ (cp, ncp) ->
+      Strict_Sum.bind (lpoly_of c (Polynomials.PMult ps))
+        (\ (cq, ncq) ->
+          (if all (\ a -> Ring.zero c == a) ncp
+            then Strict_Sum.returna
+                   (Group.mult c cp cq, map (Group.mult c cp) ncq)
+            else (if all (\ a -> Ring.zero c == a) ncq
+                   then Strict_Sum.returna
+                          (Group.mult c cp cq,
+                            map (\ x -> Group.mult c x cq) ncp)
+                   else Strict_Sum.errora
+                          "cannot transform non-linear polynomial to linear polynomial"))));
 
 renaming ::
   forall a.
@@ -1648,726 +914,23 @@ renaming xml2name =
           (\ a -> Xmlt.xml_take xml2name (\ b -> Xmlt.xml_return (a, b)))))
       Xmlt.xml_return);
 
-xml2trs_nontermination_proof ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   (Check_Nontermination.Trs_nontermination_proof a b [Arith.Char]);
-xml2trs_nontermination_proof xml2name termIndexMap ruleMap x =
-  Xmlt.xml_do "trsNonterminationProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_do "variableConditionViolated"
-          (Xmlt.xml_return Check_Nontermination.TRS_Not_Well_Formed))
-        (Xmlt.xml_or
-          (Xmlt.xml_change (loop xml2name termIndexMap ruleMap)
-            (\ (s, (rseq, (sigma, c))) ->
-              Xmlt.xml_return
-                (Check_Nontermination.TRS_Loop
-                  (Loops_Impl.TRS_loop_prf s
-                    (map (\ (xa, (y, (_, z))) -> (xa, (y, z))) rseq) sigma c))))
-          (Xmlt.xml_or
-            (Xmlt.xml_change (nonloop xml2name termIndexMap ruleMap)
-              (Xmlt.xml_return . Check_Nontermination.TRS_Nonloop))
-            (Xmlt.xml_or
-              (Xmlt.xml_change (nonloop_srs xml2name)
-                (Xmlt.xml_return . Check_Nontermination.TRS_Nonloop_SRS))
-              (Xmlt.xml_or
-                (Xmlt.xml_do "rightGroundNontermination"
-                  (Xmlt.xml_return Check_Nontermination.TRS_Not_RG_Decision))
-                (Xmlt.xml_or
-                  (Xmlt.xml_do "ruleRemoval"
-                    (Xmlt.xml_take
-                      (Xmlt.xml_do "trs"
-                        (Xmlt.xml_take
-                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                          (\ xa -> Xmlt.xml_return (id xa))))
-                      (\ r ->
-                        Xmlt.xml_take
-                          (xml2trs_nontermination_proof xml2name termIndexMap
-                            ruleMap)
-                          (\ p ->
-                            Xmlt.xml_return
-                              (Check_Nontermination.TRS_Rule_Removal
-                                (Nontermination_Impl.Rule_removal_nonterm_trs_prf
-                                  r)
-                                p)))))
-                  (Xmlt.xml_or
-                    (Xmlt.xml_do "dpTrans"
-                      (Xmlt.xml_take
-                        (Xmlt.xml_do "dps"
-                          (Xmlt.xml_take
-                            (CPF_Input_Parser.rules xml2name termIndexMap
-                              ruleMap)
-                            (\ xa -> Xmlt.xml_return (id xa))))
-                        (\ p ->
-                          Xmlt.xml_take
-                            (xml2dp_nontermination_proof xml2name termIndexMap
-                              ruleMap)
-                            (\ c ->
-                              Xmlt.xml_return
-                                (Check_Nontermination.TRS_DP_Trans
-                                  (Nontermination_Impl.DP_trans_nontermination_tt_prf
-                                    p)
-                                  c)))))
-                    (Xmlt.xml_or
-                      (Xmlt.xml_do "stringReversal"
-                        (Xmlt.xml_take
-                          (Xmlt.xml_do "trs"
-                            (Xmlt.xml_take
-                              (CPF_Input_Parser.rules xml2name termIndexMap
-                                ruleMap)
-                              (\ xa -> Xmlt.xml_return (id xa))))
-                          (\ _ ->
-                            Xmlt.xml_take
-                              (xml2trs_nontermination_proof xml2name
-                                termIndexMap ruleMap)
-                              (\ p ->
-                                Xmlt.xml_return
-                                  (Check_Nontermination.TRS_String_Reversal
-                                    p)))))
-                      (Xmlt.xml_or
-                        (Xmlt.xml_do "constantToUnary"
-                          (Xmlt.xml_take CPF_Input_Parser.plain_var
-                            (\ v ->
-                              Xmlt.xml_take (renaming xml2name)
-                                (\ ren ->
-                                  Xmlt.xml_take
-                                    (Xmlt.xml_do "trs"
-                                      (Xmlt.xml_take
-(CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-(\ xa -> Xmlt.xml_return (id xa))))
-                                    (\ s ->
-                                      Xmlt.xml_take
-(xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
-(\ p ->
-  Xmlt.xml_return
-    (Check_Nontermination.TRS_Constant_String
-      (Monadic_Rewriting_Impl.Const_string_complete_proof v ren s) p)))))))
-                        (Xmlt.xml_or
-                          (Xmlt.xml_do "innermostLhssIncrease"
-                            (Xmlt.xml_take
-                              (CPF_Input_Parser.innermostLhss xml2name
-                                termIndexMap)
-                              (\ q ->
-                                Xmlt.xml_take
-                                  (xml2trs_nontermination_proof xml2name
-                                    termIndexMap ruleMap)
-                                  (\ r ->
-                                    Xmlt.xml_return
-                                      (Check_Nontermination.TRS_Q_Increase
-(Nontermination_Impl.Q_increase_nonterm_trs_prf q) r)))))
-                          (Xmlt.xml_or
-                            (Xmlt.xml_do "switchFullStrategy"
-                              (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
-                                (\ a ->
-                                  Xmlt.xml_take
-                                    (xml2trs_nontermination_proof xml2name
-                                      termIndexMap ruleMap)
-                                    (\ b ->
-                                      Xmlt.xml_return
-(Check_Nontermination.TRS_Termination_Switch a b)))))
-                            (Xmlt.xml_or
-                              (Xmlt.xml_do "uncurry"
-                                (Xmlt.xml_take
-                                  (uncurry_info xml2name termIndexMap ruleMap)
-                                  (\ i ->
-                                    Xmlt.xml_take
-                                      (Xmlt.xml_do "trs"
-(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-  (\ xa -> Xmlt.xml_return (id xa))))
-                                      (\ r ->
-Xmlt.xml_take (xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
-  (\ p ->
-    Xmlt.xml_return
-      (Check_Nontermination.TRS_Uncurry (Uncurry_Impl.Uncurry_nt_proof i r)
-        p))))))
-                              (Xmlt.xml_or
-                                (Xmlt.xml_change (not_wn_ta xml2name)
-                                  (Xmlt.xml_return .
-                                    Check_Nontermination.TRS_Not_WN_Tree_Automaton))
-                                (Xmlt.xml_or
-                                  (Xmlt.xml_do "nonterminationAssumption"
-                                    (Xmlt.xml_take xml2inn_nt_trs_assm
-                                      (\ qtrs ->
-Xmlt.xml_return (Check_Nontermination.TRS_Assume_Not_SN qtrs []))))
-                                  (Xmlt.xml_do "unknownProof"
-                                    (Xmlt.xml_take (Xmlt.xml_text "description")
-                                      (\ _ ->
-Xmlt.xml_take xml2inn_nt_trs_assm
-  (\ b ->
-    Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (\ xa -> Strict_Sum.right (fst xa))
-      (\ _ ->
-        Xmlt.xml_return
-          (Check_Nontermination.TRS_Assume_Not_SN b []))))))))))))))))))))
-      (\ xa -> Xmlt.xml_return (id xa)))
-    x;
-
-xml2inn_rel_nt_trs_assm :: forall a. a;
-xml2inn_rel_nt_trs_assm = error "undefined";
-
-xml2reltrs_nontermination_proof ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   (Check_Nontermination.Reltrs_nontermination_proof a b [Arith.Char]);
-xml2reltrs_nontermination_proof xml2name termIndexMap ruleMap x =
-  Xmlt.xml_do "relativeNonterminationProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_do "variableConditionViolated"
-          (Xmlt.xml_return Check_Nontermination.Rel_Not_Well_Formed))
-        (Xmlt.xml_or
-          (Xmlt.xml_change (loop xml2name termIndexMap ruleMap)
-            (\ (s, (rseq, (sigma, c))) ->
-              Xmlt.xml_return
-                (Check_Nontermination.Rel_Loop
-                  (Loops_Impl.Rel_trs_loop_prf s rseq sigma c))))
-          (Xmlt.xml_or
-            (Xmlt.xml_do "ignoreRelativePart"
-              (Xmlt.xml_take
-                (xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
-                (\ prf ->
-                  Xmlt.xml_return (Check_Nontermination.Rel_R_Not_SN prf))))
-            (Xmlt.xml_or
-              (Xmlt.xml_do "ruleRemoval"
-                (Xmlt.xml_take
-                  (Xmlt.xml_do "trs"
-                    (Xmlt.xml_take
-                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                      (\ xa -> Xmlt.xml_return (id xa))))
-                  (\ r ->
-                    Xmlt.xml_take
-                      (Xmlt.xml_do "trs"
-                        (Xmlt.xml_take
-                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                          (\ xa -> Xmlt.xml_return (id xa))))
-                      (\ s ->
-                        Xmlt.xml_take
-                          (xml2reltrs_nontermination_proof xml2name termIndexMap
-                            ruleMap)
-                          (\ p ->
-                            Xmlt.xml_return
-                              (Check_Nontermination.Rel_Rule_Removal
-                                (Nontermination_Impl.Rule_removal_nonterm_reltrs_prf
-                                  r s)
-                                p))))))
-              (Xmlt.xml_or
-                (Xmlt.xml_do "stringReversal"
-                  (Xmlt.xml_take
-                    (Xmlt.xml_do "trs"
-                      (Xmlt.xml_take
-                        (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                        (\ xa -> Xmlt.xml_return (Just xa))))
-                    (\ _ ->
-                      Xmlt.xml_take
-                        (Xmlt.xml_do "trs"
-                          (Xmlt.xml_take
-                            (CPF_Input_Parser.rules xml2name termIndexMap
-                              ruleMap)
-                            (\ xa -> Xmlt.xml_return (Just xa))))
-                        (\ _ ->
-                          Xmlt.xml_take
-                            (xml2reltrs_nontermination_proof xml2name
-                              termIndexMap ruleMap)
-                            (\ p ->
-                              Xmlt.xml_return
-                                (Check_Nontermination.Rel_TRS_String_Reversal
-                                  p))))))
-                (Xmlt.xml_or
-                  (Xmlt.xml_do "nonterminationAssumption"
-                    (Xmlt.xml_take xml2inn_rel_nt_trs_assm
-                      (\ qtrs ->
-                        Xmlt.xml_return
-                          (Check_Nontermination.Rel_TRS_Assume_Not_SN qtrs
-                            []))))
-                  (Xmlt.xml_do "unknownProof"
-                    (Xmlt.xml_take (Xmlt.xml_text "description")
-                      (\ _ ->
-                        Xmlt.xml_take xml2inn_rel_nt_trs_assm
-                          (\ b ->
-                            Xmlt.xml_take_many_sub [] Arith.zero_nat
-                              Extended_Nat.Infinity_enat
-                              (\ xa -> Strict_Sum.right (fst xa))
-                              (\ _ ->
-                                Xmlt.xml_return
-                                  (Check_Nontermination.Rel_TRS_Assume_Not_SN b
-                                    []))))))))))))
-      (\ xa -> Xmlt.xml_return (id xa)))
-    x;
-
-xml2ordered_completion_step ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     (Xml.Xml,
-                                       ([([Arith.Char], [Arith.Char])],
- (Bool, ([String], [String])))) ->
-                                       Strict_Sum.Sum_bot
- (Xmlt.Xml_error String)
- (Ordered_Completion_Impl.Oc_irule (Labelings.Lab a b) [Arith.Char]);
-xml2ordered_completion_step xml2name termIndexMap =
+xml_real ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Term_Rewriting.Real;
+xml_real =
   Xmlt.xml_or
-    (Xmlt.xml_do "deduce"
-      (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+    (Xmlt.xml_change xml_rat (Xmlt.xml_return . Term_Rewriting.ratreal))
+    (Xmlt.xml_do "algebraic"
+      (Xmlt.xml_take xml_rat
         (\ a ->
-          Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+          Xmlt.xml_take xml_rat
             (\ b ->
-              Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+              Xmlt.xml_take xml_rat
                 (\ c ->
-                  Xmlt.xml_return (Ordered_Completion_Impl.OC_Deduce a b c))))))
-    (Xmlt.xml_or
-      (Xmlt.xml_do "orientl"
-        (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-          (\ a ->
-            Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-              (\ b ->
-                Xmlt.xml_return (Ordered_Completion_Impl.OC_Orientl a b)))))
-      (Xmlt.xml_or
-        (Xmlt.xml_do "orientr"
-          (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-            (\ a ->
-              Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                (\ b ->
-                  Xmlt.xml_return (Ordered_Completion_Impl.OC_Orientr a b)))))
-        (Xmlt.xml_or
-          (Xmlt.xml_do "delete"
-            (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-              (\ x -> Xmlt.xml_return (Ordered_Completion_Impl.OC_Delete x))))
-          (Xmlt.xml_or
-            (Xmlt.xml_do "compose"
-              (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                (\ a ->
-                  Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                    (\ b ->
-                      Xmlt.xml_take
-                        (CPF_Input_Parser.term xml2name termIndexMap)
-                        (\ c ->
-                          Xmlt.xml_return
-                            (Ordered_Completion_Impl.OC_Compose a b c))))))
-            (Xmlt.xml_or
-              (Xmlt.xml_do "simplifyl"
-                (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                  (\ a ->
-                    Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                      (\ b ->
-                        Xmlt.xml_take
-                          (CPF_Input_Parser.term xml2name termIndexMap)
-                          (\ c ->
-                            Xmlt.xml_return
-                              (Ordered_Completion_Impl.OC_Simplifyl a b c))))))
-              (Xmlt.xml_or
-                (Xmlt.xml_do "simplifyr"
-                  (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                    (\ a ->
-                      Xmlt.xml_take
-                        (CPF_Input_Parser.term xml2name termIndexMap)
-                        (\ b ->
-                          Xmlt.xml_take
-                            (CPF_Input_Parser.term xml2name termIndexMap)
-                            (\ c ->
-                              Xmlt.xml_return
-                                (Ordered_Completion_Impl.OC_Simplifyr a b
-                                  c))))))
-                (Xmlt.xml_do "collapse"
-                  (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                    (\ a ->
-                      Xmlt.xml_take
-                        (CPF_Input_Parser.term xml2name termIndexMap)
-                        (\ b ->
-                          Xmlt.xml_take
-                            (CPF_Input_Parser.term xml2name termIndexMap)
-                            (\ c ->
-                              Xmlt.xml_return
-                                (Ordered_Completion_Impl.OC_Collapse a b
-                                  c))))))))))));
-
-xml2ordered_completion_proof ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     (Xml.Xml,
-                                       ([([Arith.Char], [Arith.Char])],
- (Bool, ([String], [String])))) ->
-                                       Strict_Sum.Sum_bot
- (Xmlt.Xml_error String)
- (Ordered_Completion_Impl.Ordered_completion_proof (Labelings.Lab a b)
-   [Arith.Char]);
-xml2ordered_completion_proof xml2name termIndexMap =
-  Xmlt.xml_do "orderedCompletionProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_do "run"
-        (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-          (Xmlt.xml_do "orderedCompletionStep"
-            (Xmlt.xml_take (xml2ordered_completion_step xml2name termIndexMap)
-              (\ x -> Xmlt.xml_return (id x))))
-          (\ a -> Xmlt.xml_return (id a))))
-      (\ x -> Xmlt.xml_return (Ordered_Completion_Impl.OKB x)));
-
-xml2cond_constraint ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-(Generalized_Usable_Rules.Cond_constraint a [Arith.Char]);
-xml2cond_constraint xml2name termIndexMap x =
-  Xmlt.xml_do "conditionalConstraint"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_do "all"
-          (Xmlt.xml_take (Xmlt.xml_text "var")
-            (\ a ->
-              Xmlt.xml_take (xml2cond_constraint xml2name termIndexMap)
-                (\ b ->
-                  Xmlt.xml_return (Generalized_Usable_Rules.CC_all a b)))))
-        (Xmlt.xml_or
-          (Xmlt.xml_do "implication"
-            (Xmlt.xml_take (xml2cond_constraint xml2name termIndexMap)
-              (\ c ->
-                Xmlt.xml_take_many_sub [] Arith.zero_nat
-                  Extended_Nat.Infinity_enat
-                  (xml2cond_constraint xml2name termIndexMap)
-                  (\ cs ->
-                    let {
-                      ccs = c : cs;
-                    } in Xmlt.xml_return
-                           (Generalized_Usable_Rules.CC_impl
-                             (Arith.take (Arith.size_list cs) ccs)
-                             (Arith.last ccs))))))
-          (Xmlt.xml_do "constraint"
-            (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-              (\ s ->
-                Xmlt.xml_take
-                  (Xmlt.xml_or (Xmlt.xml_leaf "rewrite" Nothing)
-                    (Xmlt.xml_or (Xmlt.xml_leaf "strict" (Just True))
-                      (Xmlt.xml_leaf "nonStrict" (Just False))))
-                  (\ rel ->
-                    Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                      (\ t ->
-                        Xmlt.xml_return
-                          (case rel of {
-                            Nothing -> Generalized_Usable_Rules.CC_rewr s t;
-                            Just stri ->
-                              Generalized_Usable_Rules.CC_cond stri (s, t);
-                          }))))))))
-      (\ xa -> Xmlt.xml_return (id xa)))
-    x;
-
-xml2cond_constraint_prf ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    Mapping.Mapping [Arith.Char]
-                                      (Term_Rewriting.Term a [Arith.Char],
-Term_Rewriting.Term a [Arith.Char]) ->
-                                      (Xml.Xml,
-([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-  (Bounded_Increase_Impl.Cond_constraint_prf a [Arith.Char]);
-xml2cond_constraint_prf xml2name termIndexMap ruleMap x =
-  let {
-    cc = xml2cond_constraint xml2name termIndexMap;
-  } in Xmlt.xml_do "conditionalConstraintProof"
-         (Xmlt.xml_take
-           (Xmlt.xml_or (Xmlt.xml_leaf "final" Bounded_Increase_Impl.Final)
-             (Xmlt.xml_or
-               (Xmlt.xml_do "differentConstructor"
-                 (Xmlt.xml_take cc
-                   (\ a ->
-                     Xmlt.xml_return
-                       (Bounded_Increase_Impl.Different_Constructor a))))
-               (Xmlt.xml_or
-                 (Xmlt.xml_do "sameConstructor"
-                   (Xmlt.xml_take cc
-                     (\ a ->
-                       Xmlt.xml_take cc
-                         (\ b ->
-                           Xmlt.xml_take
-                             (xml2cond_constraint_prf xml2name termIndexMap
-                               ruleMap)
-                             (\ c ->
-                               Xmlt.xml_return
-                                 (Bounded_Increase_Impl.Same_Constructor a b
-                                   c))))))
-                 (Xmlt.xml_or
-                   (Xmlt.xml_do "variableEquation"
-                     (Xmlt.xml_take (Xmlt.xml_text "var")
-                       (\ a ->
-                         Xmlt.xml_take
-                           (CPF_Input_Parser.term xml2name termIndexMap)
-                           (\ b ->
-                             Xmlt.xml_take cc
-                               (\ c ->
-                                 Xmlt.xml_take
-                                   (xml2cond_constraint_prf xml2name
-                                     termIndexMap ruleMap)
-                                   (\ d ->
-                                     Xmlt.xml_return
-                                       (Bounded_Increase_Impl.Variable_Equation
- a b c d)))))))
-                   (Xmlt.xml_or
-                     (Xmlt.xml_do "funargIntoVar"
-                       (Xmlt.xml_take cc
-                         (\ a ->
-                           Xmlt.xml_take CPF_Input_Parser.position
-                             (\ b ->
-                               Xmlt.xml_take (Xmlt.xml_text "var")
-                                 (\ c ->
-                                   Xmlt.xml_take cc
-                                     (\ d ->
-                                       Xmlt.xml_take
- (xml2cond_constraint_prf xml2name termIndexMap ruleMap)
- (\ e ->
-   Xmlt.xml_return (Bounded_Increase_Impl.Funarg_Into_Var a b c d e))))))))
-                     (Xmlt.xml_or
-                       (Xmlt.xml_do "simplifyCondition"
-                         (Xmlt.xml_take cc
-                           (\ a ->
-                             Xmlt.xml_take (subst xml2name termIndexMap)
-                               (\ b ->
-                                 Xmlt.xml_take cc
-                                   (\ c ->
-                                     Xmlt.xml_take
-                                       (xml2cond_constraint_prf xml2name
- termIndexMap ruleMap)
-                                       (\ d ->
- Xmlt.xml_return (Bounded_Increase_Impl.Simplify_Condition a b c d)))))))
-                       (Xmlt.xml_or
-                         (Xmlt.xml_do "induction"
-                           (Xmlt.xml_take cc
-                             (\ a ->
-                               Xmlt.xml_take
-                                 (Xmlt.xml_do "conjuncts"
-                                   (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                                     Extended_Nat.Infinity_enat cc
-                                     Xmlt.xml_return))
-                                 (\ b ->
-                                   Xmlt.xml_take
-                                     (Xmlt.xml_do "ruleConstraintProofs"
-                                       (Xmlt.xml_take_many_sub [] Arith.zero_nat
- Extended_Nat.Infinity_enat
- (Xmlt.xml_do "ruleConstraintProof"
-   (Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-     (\ lr ->
-       Xmlt.xml_take
-         (Xmlt.xml_do "subtermVarEntries"
-           (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-             (Xmlt.xml_do "subtermVarEntry"
-               (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
-                 (\ aa ->
-                   Xmlt.xml_take_many_sub [] Arith.zero_nat
-                     Extended_Nat.Infinity_enat (Xmlt.xml_text "var")
-                     (\ ba -> Xmlt.xml_return (aa, ba)))))
-             Xmlt.xml_return))
-         (\ rys ->
-           Xmlt.xml_take cc
-             (\ cca ->
-               Xmlt.xml_take
-                 (xml2cond_constraint_prf xml2name termIndexMap ruleMap)
-                 (\ p -> Xmlt.xml_return (lr, (rys, (cca, p)))))))))
- Xmlt.xml_return))
-                                     (\ c ->
-                                       Xmlt.xml_return
- (Bounded_Increase_Impl.Induction a b c))))))
-                         (Xmlt.xml_do "deleteCondition"
-                           (Xmlt.xml_take cc
-                             (\ a ->
-                               Xmlt.xml_take
-                                 (xml2cond_constraint_prf xml2name termIndexMap
-                                   ruleMap)
-                                 (\ b ->
-                                   Xmlt.xml_return
-                                     (Bounded_Increase_Impl.Delete_Condition a
-                                       b))))))))))))
-           (\ xa -> Xmlt.xml_return (id xa)))
-         x;
-
-xml2cond_red_pair_proof ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    Mapping.Mapping [Arith.Char]
-                                      (Term_Rewriting.Term a [Arith.Char],
-Term_Rewriting.Term a [Arith.Char]) ->
-                                      (Xml.Xml,
-([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-  (Bounded_Increase_Impl.Cond_red_pair_prf a [Arith.Char]);
-xml2cond_red_pair_proof xml2name termIndexMap ruleMap =
-  Xmlt.xml_do "condRedPairProof"
-    (Xmlt.xml_take xml2name
-      (\ c ->
-        Xmlt.xml_take (Xmlt.xml_nat "before")
-          (\ b ->
-            Xmlt.xml_take (Xmlt.xml_nat "after")
-              (\ a ->
-                Xmlt.xml_take
-                  (Xmlt.xml_do "conditions"
-                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                      Extended_Nat.Infinity_enat
-                      (Xmlt.xml_do "condition"
-                        (Xmlt.xml_take
-                          (xml2cond_constraint xml2name termIndexMap)
-                          (\ ca ->
-                            Xmlt.xml_take
-                              (Xmlt.xml_do "dpSequence"
-                                (Xmlt.xml_take
-                                  (CPF_Input_Parser.rules xml2name termIndexMap
-                                    ruleMap)
-                                  (\ x -> Xmlt.xml_return (id x))))
-                              (\ s ->
-                                Xmlt.xml_take
-                                  (xml2cond_constraint_prf xml2name termIndexMap
-                                    ruleMap)
-                                  (\ p -> Xmlt.xml_return (ca, (s, p)))))))
-                      Xmlt.xml_return))
-                  (\ ccs ->
-                    Xmlt.xml_return
-                      (Bounded_Increase_Impl.Cond_Red_Pair_Prf c ccs b a))))));
-
-projected_rseq ::
-  forall a.
-    (Eq a,
-      Term_Rewriting.Showl a) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     a) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term a [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term a [Arith.Char],
- Term_Rewriting.Term a [Arith.Char]) ->
-                                       ((a, Arith.Nat) -> Arith.Nat) ->
- (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-     ((Term_Rewriting.Term a [Arith.Char], Term_Rewriting.Term a [Arith.Char]),
-       [([Arith.Nat],
-          ((Term_Rewriting.Term a [Arith.Char],
-             Term_Rewriting.Term a [Arith.Char]),
-            Term_Rewriting.Term a [Arith.Char]))]);
-projected_rseq xml2name termIndexMap ruleMap pi =
-  Xmlt.xml_do "projectedRewriteSequence"
-    (Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-      (\ r ->
-        Xmlt.xml_take (rseq xml2name termIndexMap ruleMap pi r)
-          Xmlt.xml_return));
-
-flat_contexts ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-[Term_Rewriting.Actxt a (Term_Rewriting.Term a [Arith.Char])];
-flat_contexts xml2name termIndexMap =
-  Xmlt.xml_do "flatContexts"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (ctxt xml2name termIndexMap) Xmlt.xml_return);
-
-xml2fp_trs_assm :: forall a. a;
-xml2fp_trs_assm = error "undefined";
-
-xml2inn_fp_trs_assm :: forall a. a;
-xml2inn_fp_trs_assm = error "undefined";
-
-multiset_af ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  (Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                      [((a, Arith.Nat), [Arith.Nat])];
-multiset_af xml2name =
-  Xmlt.xml_do "multisetArgumentFilter"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (Xmlt.xml_do "multisetArgumentFilterEntry"
-        (Xmlt.xml_take xml2name
-          (\ f ->
-            Xmlt.xml_take (Xmlt.xml_nat "arity")
-              (\ a ->
-                Xmlt.xml_take
-                  (Xmlt.xml_do "status"
-                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                      Extended_Nat.Infinity_enat CPF_Input_Parser.position
-                      Xmlt.xml_return))
-                  (\ p -> Xmlt.xml_return ((f, a), p))))))
-      Xmlt.xml_return);
+                  Xmlt.xml_return
+                    (Term_Rewriting.plus_real (Term_Rewriting.ratreal a)
+                      (Term_Rewriting.times_real (Term_Rewriting.ratreal b)
+                        (NthRoot.sqrt (Term_Rewriting.ratreal c)))))))));
 
 arith_fun ::
   (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
@@ -2423,58 +986,104 @@ d)))))))))))))
       Xmlt.xml_return)
     xml;
 
-sl_variant ::
+int_coeff ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Arith.Int;
+int_coeff = Xmlt.xml_int "integer";
+
+vec_coeff ::
   forall a.
     ((Xml.Xml,
        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
       Strict_Sum.Sum_bot (Xmlt.Xml_error String) a) ->
       (Xml.Xml,
         ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-          (Semantic_Labeling_Carrier.Sl_variant a [Arith.Char]);
-sl_variant xml2name =
-  Xmlt.xml_do "model"
+        Strict_Sum.Sum_bot (Xmlt.Xml_error String) (Matrix.Vec a);
+vec_coeff xml2coeff =
+  Xmlt.xml_do "vector"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      xml2coeff (\ a -> Xmlt.xml_return (Matrix.vec_of_list a)));
+
+mat_coeff ::
+  forall a.
+    Arith.Nat ->
+      a -> ((Xml.Xml,
+              ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+             Strict_Sum.Sum_bot (Xmlt.Xml_error String) a) ->
+             (Xml.Xml,
+               ([([Arith.Char], [Arith.Char])],
+                 (Bool, ([String], [String])))) ->
+               Strict_Sum.Sum_bot (Xmlt.Xml_error String) (Matrix.Mat a);
+mat_coeff n ze xml2coeff =
+  Xmlt.xml_or
+    (Xmlt.xml_do "matrix"
+      (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+        (vec_coeff xml2coeff)
+        (\ a -> Xmlt.xml_return (Matrix.mat_of_rows n a))))
+    (Xmlt.xml_change (vec_coeff xml2coeff)
+      (\ v ->
+        Xmlt.xml_return
+          (Matrix.mat n n
+            (\ (i, j) ->
+              (if Arith.equal_nat j Arith.zero_nat then Matrix.vec_index v i
+                else ze)))));
+
+nat_coeff ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Arith.Nat;
+nat_coeff = Xmlt.xml_nat "nat";
+
+closed_criterion ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+      (Tree_Automata_Impl.Ta_relation [Arith.Char]);
+closed_criterion =
+  Xmlt.xml_do "criterion"
     (Xmlt.xml_take
       (Xmlt.xml_or
-        (Xmlt.xml_do "rootLabeling"
-          (Xmlt.xml_take_optional xml2name
-            (\ fo ->
-              Xmlt.xml_return
-                (Semantic_Labeling_Carrier.Rootlab
-                  (case fo of {
-                    Nothing -> Nothing;
-                    Just f -> Just (f, Arith.one_nat);
-                  })))))
-        (Xmlt.xml_do "finiteModel"
-          (Xmlt.xml_take
-            (Xmlt.xml_change (Xmlt.xml_nat "carrierSize")
-              (\ n -> Xmlt.xml_return (Arith.minus_nat n Arith.one_nat)))
-            (\ n ->
-              Xmlt.xml_take_optional
-                (Xmlt.xml_do "tupleOrder"
-                  (Xmlt.xml_take (Xmlt.xml_leaf "pointWise" ())
-                    (\ x -> Xmlt.xml_return (id x))))
-                (\ to ->
-                  Xmlt.xml_take_many_sub [] Arith.zero_nat
-                    Extended_Nat.Infinity_enat
-                    (Xmlt.xml_do "interpret"
-                      (Xmlt.xml_take xml2name
-                        (\ a ->
-                          Xmlt.xml_take (Xmlt.xml_nat "arity")
-                            (\ b ->
-                              Xmlt.xml_take arith_fun
-                                (\ c -> Xmlt.xml_return ((a, b), c))))))
-                    (\ inter ->
-                      Xmlt.xml_return
-                        (case to of {
-                          Nothing ->
-                            Semantic_Labeling_Carrier.Finitelab
-                              (Semantic_Labeling_Carrier.SL_Inter n inter);
-                          Just _ ->
-                            Semantic_Labeling_Carrier.QuasiFinitelab
-                              (Semantic_Labeling_Carrier.SL_Inter n inter) [];
-                        })))))))
-      (\ x -> Xmlt.xml_return (id x)));
+        (Xmlt.xml_leaf "compatibility" Tree_Automata_Impl.Id_Relation)
+        (Xmlt.xml_or
+          (Xmlt.xml_do "stateCompatibility"
+            (Xmlt.xml_take
+              (Xmlt.xml_do "relation"
+                (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                  Extended_Nat.Infinity_enat
+                  (Xmlt.xml_do "entry"
+                    (Xmlt.xml_take CPF_Input_Parser.state
+                      (\ a ->
+                        Xmlt.xml_take CPF_Input_Parser.state
+                          (\ b -> Xmlt.xml_return (a, b)))))
+                  Xmlt.xml_return))
+              (\ x -> Xmlt.xml_return (Tree_Automata_Impl.Some_Relation x))))
+          (Xmlt.xml_or
+            (Xmlt.xml_leaf "decisionProcedure" Tree_Automata_Impl.Decision_Proc)
+            (Xmlt.xml_leaf "decisionProcedureOld"
+              Tree_Automata_Impl.Decision_Proc_Old))))
+      Xmlt.xml_return);
+
+not_wn_ta ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       (Not_WN_Tree_Automaton_Impl.Not_wn_ta_prf
+ (Labelings.Lab a b) [Arith.Char]);
+not_wn_ta xml2name =
+  Xmlt.xml_do "notWNTreeAutomaton"
+    (Xmlt.xml_take
+      (CPF_Input_Parser.tree_automaton
+        (CPF_Input_Parser.ta_normal_lhs xml2name))
+      (\ a ->
+        Xmlt.xml_take closed_criterion
+          (\ b ->
+            Xmlt.xml_return (Not_WN_Tree_Automaton_Impl.Not_wn_ta_prf a b))));
 
 precedence_weight_ac ::
   forall a.
@@ -2786,40 +1395,6 @@ int_matrix ::
       ((a, Arith.Nat), (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]));
 int_matrix (Int_matrix x6) = x6;
 
-xml_rat ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Term_Rewriting.Rat;
-xml_rat =
-  Xmlt.xml_or
-    (Xmlt.xml_change (Xmlt.xml_int "integer")
-      (Xmlt.xml_return . Term_Rewriting.of_int))
-    (Xmlt.xml_do "rational"
-      (Xmlt.xml_take (Xmlt.xml_int "numerator")
-        (\ a ->
-          Xmlt.xml_take (Xmlt.xml_int "denominator")
-            (\ b ->
-              Xmlt.xml_return
-                (Term_Rewriting.divide_rat (Term_Rewriting.of_int a)
-                  (Term_Rewriting.of_int b))))));
-
-xml_real ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Term_Rewriting.Real;
-xml_real =
-  Xmlt.xml_or
-    (Xmlt.xml_change xml_rat (Xmlt.xml_return . Term_Rewriting.ratreal))
-    (Xmlt.xml_do "algebraic"
-      (Xmlt.xml_take xml_rat
-        (\ a ->
-          Xmlt.xml_take xml_rat
-            (\ b ->
-              Xmlt.xml_take xml_rat
-                (\ c ->
-                  Xmlt.xml_return
-                    (Term_Rewriting.plus_real (Term_Rewriting.ratreal a)
-                      (Term_Rewriting.times_real (Term_Rewriting.ratreal b)
-                        (NthRoot.sqrt (Term_Rewriting.ratreal c)))))))));
-
 real_domain ::
   (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
     Strict_Sum.Sum_bot (Xmlt.Xml_error String) Term_Rewriting.Real;
@@ -2860,11 +1435,6 @@ basic_domain =
                           (\ _ -> Xmlt.xml_return (\ _ -> Arctic_rat)))))
                     (\ x -> Xmlt.xml_return (id x))))
                 (\ x -> Xmlt.xml_return (id x))))))));
-
-nat_coeff ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Arith.Nat;
-nat_coeff = Xmlt.xml_nat "nat";
 
 interpretation_type ::
   (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
@@ -2981,11 +1551,6 @@ arctic_rat_coeff =
     (Xmlt.xml_change xml_rat (Xmlt.xml_return . Term_Rewriting.Num_arc_delta))
     (Xmlt.xml_leaf "minusInfinity" Term_Rewriting.MinInfty_delta);
 
-int_coeff ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Arith.Int;
-int_coeff = Xmlt.xml_int "integer";
-
 arctic_coeff ::
   (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
     Strict_Sum.Sum_bot (Xmlt.Xml_error String) Term_Rewriting.Arctic;
@@ -3040,84 +1605,6 @@ fit_length c n uu =
                    (Ring.zero c);
            b : bs -> b : fit_length c (Arith.minus_nat n Arith.one_nat) bs;
          }));
-
-vec_coeff ::
-  forall a.
-    ((Xml.Xml,
-       ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-      Strict_Sum.Sum_bot (Xmlt.Xml_error String) a) ->
-      (Xml.Xml,
-        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-        Strict_Sum.Sum_bot (Xmlt.Xml_error String) (Matrix.Vec a);
-vec_coeff xml2coeff =
-  Xmlt.xml_do "vector"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      xml2coeff (\ a -> Xmlt.xml_return (Matrix.vec_of_list a)));
-
-mat_coeff ::
-  forall a.
-    Arith.Nat ->
-      a -> ((Xml.Xml,
-              ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-             Strict_Sum.Sum_bot (Xmlt.Xml_error String) a) ->
-             (Xml.Xml,
-               ([([Arith.Char], [Arith.Char])],
-                 (Bool, ([String], [String])))) ->
-               Strict_Sum.Sum_bot (Xmlt.Xml_error String) (Matrix.Mat a);
-mat_coeff n ze xml2coeff =
-  Xmlt.xml_or
-    (Xmlt.xml_do "matrix"
-      (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-        (vec_coeff xml2coeff)
-        (\ a -> Xmlt.xml_return (Matrix.mat_of_rows n a))))
-    (Xmlt.xml_change (vec_coeff xml2coeff)
-      (\ v ->
-        Xmlt.xml_return
-          (Matrix.mat n n
-            (\ (i, j) ->
-              (if Arith.equal_nat j Arith.zero_nat then Matrix.vec_index v i
-                else ze)))));
-
-sum_lpoly ::
-  forall a.
-    Congruence.Partial_object_ext a (Group.Monoid_ext a (Ring.Ring_ext a ())) ->
-      [a] -> [a] -> [a];
-sum_lpoly c [] ys = ys;
-sum_lpoly c (v : va) [] = v : va;
-sum_lpoly c (x : xs) (y : ys) = Ring.add c x y : sum_lpoly c xs ys;
-
-lpoly_of ::
-  forall a.
-    (Eq a) => Congruence.Partial_object_ext a
-                (Group.Monoid_ext a (Ring.Ring_ext a ())) ->
-                Polynomials.Tpoly Arith.Nat a ->
-                  Strict_Sum.Sum_bot String (a, [a]);
-lpoly_of c (Polynomials.PNum i) = Strict_Sum.returna (i, []);
-lpoly_of c (Polynomials.PVar x) =
-  Strict_Sum.returna
-    (Ring.zero c, Arith.replicate x (Ring.zero c) ++ [Group.one c]);
-lpoly_of c (Polynomials.PSum []) = Strict_Sum.returna (Ring.zero c, []);
-lpoly_of c (Polynomials.PSum (p : ps)) =
-  Strict_Sum.bind (lpoly_of c p)
-    (\ (cp, ncp) ->
-      Strict_Sum.bind (lpoly_of c (Polynomials.PSum ps))
-        (\ (cq, ncq) ->
-          Strict_Sum.returna (Ring.add c cp cq, sum_lpoly c ncp ncq)));
-lpoly_of c (Polynomials.PMult []) = Strict_Sum.returna (Group.one c, []);
-lpoly_of c (Polynomials.PMult (p : ps)) =
-  Strict_Sum.bind (lpoly_of c p)
-    (\ (cp, ncp) ->
-      Strict_Sum.bind (lpoly_of c (Polynomials.PMult ps))
-        (\ (cq, ncq) ->
-          (if all (\ a -> Ring.zero c == a) ncp
-            then Strict_Sum.returna
-                   (Group.mult c cp cq, map (Group.mult c cp) ncq)
-            else (if all (\ a -> Ring.zero c == a) ncq
-                   then Strict_Sum.returna
-                          (Group.mult c cp cq,
-                            map (\ x -> Group.mult c x cq) ncp)
-                   else Strict_Sum.errora
-                          "cannot transform non-linear polynomial to linear polynomial"))));
 
 interpretation ::
   forall a.
@@ -3623,8 +2110,244 @@ List_Order_Implementations.Max_Ext))))
 (Reduction_Pair_Implementations.SCNP a b c))))))))))))))))
     xml;
 
-xml2inn_trs_assm :: forall a. a;
-xml2inn_trs_assm = error "undefined";
+xml2crit_pair_info ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+(Check_Joins.Crit_pair_info a [Arith.Char]);
+xml2crit_pair_info xml2name termIndexMap =
+  Xmlt.xml_do "critPairInfo"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "left"
+        (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+          (\ x -> Xmlt.xml_return (id x))))
+      (\ s ->
+        Xmlt.xml_take_optional
+          (Xmlt.xml_do "peak"
+            (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+              (\ x -> Xmlt.xml_return (id x))))
+          (\ t ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "right"
+                (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ u ->
+                Xmlt.xml_take_optional
+                  (Xmlt.xml_do "overlapPositions"
+                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                      Extended_Nat.Infinity_enat CPF_Input_Parser.pos
+                      Xmlt.xml_return))
+                  (\ pos ->
+                    Xmlt.xml_take_optional
+                      (Xmlt.xml_do "labels"
+                        (Xmlt.xml_take (Xmlt.xml_nat "maxLeft")
+                          (\ left ->
+                            Xmlt.xml_take (Xmlt.xml_nat "right")
+                              (\ right -> Xmlt.xml_return (left, right)))))
+                      (\ labels ->
+                        Xmlt.xml_take
+                          (Xmlt.xml_do "intermediateTerms"
+                            (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                              Extended_Nat.Infinity_enat
+                              (CPF_Input_Parser.term xml2name termIndexMap)
+                              Xmlt.xml_return))
+                          (\ joins ->
+                            Xmlt.xml_return
+                              (Check_Joins.Crit_Pair_Info s t u joins pos
+                                labels))))))));
+
+joinSequences ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+[Check_Joins.Crit_pair_info a [Arith.Char]];
+joinSequences xml2name termIndexMap =
+  Xmlt.xml_do "joinSequences"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (xml2crit_pair_info xml2name termIndexMap) Xmlt.xml_return);
+
+joinAutoBfs ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String) (Maybe Arith.Nat);
+joinAutoBfs =
+  Xmlt.xml_change (Xmlt.xml_int "joinAutoBfs")
+    (\ x ->
+      Xmlt.xml_return
+        (if Arith.less_int x Arith.zero_int then Nothing
+          else Just (Arith.nat x)));
+
+joinAutoBfs1 ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String) Arith.Nat;
+joinAutoBfs1 =
+  Xmlt.xml_change joinAutoBfs
+    (\ x -> Xmlt.xml_return (case x of {
+                              Nothing -> Arith.one_nat;
+                              Just n -> n;
+                            }));
+
+xml2cp_join_info ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+(Check_Joins.Cp_join_hints a [Arith.Char]);
+xml2cp_join_info xml2name termIndexMap =
+  Xmlt.xml_or
+    (Xmlt.xml_change joinAutoBfs1 (Xmlt.xml_return . Check_Joins.CP_Auto))
+    (Xmlt.xml_change (joinSequences xml2name termIndexMap)
+      (\ joins -> Xmlt.xml_return (Check_Joins.CP_Sequences joins)));
+
+wcr_proof ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+(Critical_Pairs_Impl.Join_info a [Arith.Char]);
+wcr_proof xml2name termIndexMap =
+  Xmlt.xml_do "wcrProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_change (xml2cp_join_info xml2name termIndexMap)
+          (Xmlt.xml_return . Critical_Pairs_Impl.Guided_BFS))
+        (Xmlt.xml_leaf "joinAutoNF" Critical_Pairs_Impl.Join_NF))
+      (\ x -> Xmlt.xml_return (id x)));
+
+conversion ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+[Term_Rewriting.Term a [Arith.Char]];
+conversion xml2name termIndexMap =
+  Xmlt.xml_do "conversion"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (CPF_Input_Parser.term xml2name termIndexMap) Xmlt.xml_return);
+
+rule_pairs ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    Mapping.Mapping [Arith.Char]
+                                      (Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char]) ->
+                                      String ->
+String ->
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+      [((Term_Rewriting.Term a [Arith.Char],
+          Term_Rewriting.Term a [Arith.Char]),
+         (Term_Rewriting.Term a [Arith.Char],
+           Term_Rewriting.Term a [Arith.Char]))];
+rule_pairs xml2name termIndexMap ruleMap s p =
+  Xmlt.xml_do s
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (Xmlt.xml_do p
+        (Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+          (\ a ->
+            Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+              (\ b -> Xmlt.xml_return (a, b)))))
+      Xmlt.xml_return);
+
+sl_variant ::
+  forall a.
+    ((Xml.Xml,
+       ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+      Strict_Sum.Sum_bot (Xmlt.Xml_error String) a) ->
+      (Xml.Xml,
+        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+          (Semantic_Labeling_Carrier.Sl_variant a [Arith.Char]);
+sl_variant xml2name =
+  Xmlt.xml_do "model"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "rootLabeling"
+          (Xmlt.xml_take_optional xml2name
+            (\ fo ->
+              Xmlt.xml_return
+                (Semantic_Labeling_Carrier.Rootlab
+                  (case fo of {
+                    Nothing -> Nothing;
+                    Just f -> Just (f, Arith.one_nat);
+                  })))))
+        (Xmlt.xml_do "finiteModel"
+          (Xmlt.xml_take
+            (Xmlt.xml_change (Xmlt.xml_nat "carrierSize")
+              (\ n -> Xmlt.xml_return (Arith.minus_nat n Arith.one_nat)))
+            (\ n ->
+              Xmlt.xml_take_optional
+                (Xmlt.xml_do "tupleOrder"
+                  (Xmlt.xml_take (Xmlt.xml_leaf "pointWise" ())
+                    (\ x -> Xmlt.xml_return (id x))))
+                (\ to ->
+                  Xmlt.xml_take_many_sub [] Arith.zero_nat
+                    Extended_Nat.Infinity_enat
+                    (Xmlt.xml_do "interpret"
+                      (Xmlt.xml_take xml2name
+                        (\ a ->
+                          Xmlt.xml_take (Xmlt.xml_nat "arity")
+                            (\ b ->
+                              Xmlt.xml_take arith_fun
+                                (\ c -> Xmlt.xml_return ((a, b), c))))))
+                    (\ inter ->
+                      Xmlt.xml_return
+                        (case to of {
+                          Nothing ->
+                            Semantic_Labeling_Carrier.Finitelab
+                              (Semantic_Labeling_Carrier.SL_Inter n inter);
+                          Just _ ->
+                            Semantic_Labeling_Carrier.QuasiFinitelab
+                              (Semantic_Labeling_Carrier.SL_Inter n inter) [];
+                        })))))))
+      (\ x -> Xmlt.xml_return (id x)));
 
 ta_bounds_lhs ::
   forall a.
@@ -3689,228 +2412,814 @@ bounds_info xml2name =
                         Xmlt.xml_return
                           (Matchbounds_Impl.Bounds_Info a b c d e)))))));
 
-xml2trs_termination_proof ::
+multiset_af ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  (Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                      [((a, Arith.Nat), [Arith.Nat])];
+multiset_af xml2name =
+  Xmlt.xml_do "multisetArgumentFilter"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (Xmlt.xml_do "multisetArgumentFilterEntry"
+        (Xmlt.xml_take xml2name
+          (\ f ->
+            Xmlt.xml_take (Xmlt.xml_nat "arity")
+              (\ a ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "status"
+                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                      Extended_Nat.Infinity_enat CPF_Input_Parser.position
+                      Xmlt.xml_return))
+                  (\ p -> Xmlt.xml_return ((f, a), p))))))
+      Xmlt.xml_return);
+
+word_pattern ::
   forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
       Term_Rewriting.Showl b) => ((Xml.Xml,
                                     ([([Arith.Char], [Arith.Char])],
                                       (Bool, ([String], [String])))) ->
                                    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
                                      (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       ([Labelings.Lab a b],
+ ((Arith.Nat, (Arith.Nat, [Labelings.Lab a b])), [Labelings.Lab a b]));
+word_pattern xml2name =
+  Xmlt.xml_do "wordPattern"
+    (Xmlt.xml_take (string xml2name)
+      (\ l ->
+        Xmlt.xml_take (string xml2name)
+          (\ m ->
+            Xmlt.xml_take (Xmlt.xml_nat "factor")
+              (\ f ->
+                Xmlt.xml_take (Xmlt.xml_nat "constant")
+                  (\ c ->
+                    Xmlt.xml_take (string xml2name)
+                      (\ r -> Xmlt.xml_return (l, ((f, (c, m)), r))))))));
+
+derivation_pattern ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       (([Labelings.Lab a b],
+  ((Arith.Nat, (Arith.Nat, [Labelings.Lab a b])), [Labelings.Lab a b])),
+ ([Labelings.Lab a b],
+   ((Arith.Nat, (Arith.Nat, [Labelings.Lab a b])), [Labelings.Lab a b])));
+derivation_pattern xml2name =
+  Xmlt.xml_do "derivationPattern"
+    (Xmlt.xml_take (word_pattern xml2name)
+      (\ a ->
+        Xmlt.xml_take (word_pattern xml2name) (\ b -> Xmlt.xml_return (a, b))));
+
+derivation_pattern_proof ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       (Nonloop_SRS.Dp_proof_step
+ (Labelings.Lab a b));
+derivation_pattern_proof xml2name =
+  let {
+    oc = oc_srs xml2name;
+    dp = derivation_pattern xml2name;
+    s = string xml2name;
+  } in Xmlt.xml_do "derivationPatternProof"
+         (Xmlt.xml_take
+           (Xmlt.xml_or
+             (Xmlt.xml_do "OC1"
+               (Xmlt.xml_take oc
+                 (\ a ->
+                   Xmlt.xml_take (Xmlt.xml_bool "isPair")
+                     (\ b -> Xmlt.xml_return (Nonloop_SRS.OC1 a b)))))
+             (Xmlt.xml_or
+               (Xmlt.xml_do "OC2"
+                 (Xmlt.xml_take oc
+                   (\ a ->
+                     Xmlt.xml_take oc
+                       (\ b ->
+                         Xmlt.xml_take oc
+                           (\ c ->
+                             Xmlt.xml_take s
+                               (\ d ->
+                                 Xmlt.xml_take s
+                                   (\ e ->
+                                     Xmlt.xml_take s
+                                       (\ f ->
+ Xmlt.xml_return (Nonloop_SRS.OC2 a b c d e f)))))))))
+               (Xmlt.xml_or
+                 (Xmlt.xml_do "OC2prime"
+                   (Xmlt.xml_take oc
+                     (\ a ->
+                       Xmlt.xml_take oc
+                         (\ b ->
+                           Xmlt.xml_take oc
+                             (\ c ->
+                               Xmlt.xml_take s
+                                 (\ d ->
+                                   Xmlt.xml_take s
+                                     (\ e ->
+                                       Xmlt.xml_take s
+ (\ f -> Xmlt.xml_return (Nonloop_SRS.OC2p a b c d e f)))))))))
+                 (Xmlt.xml_or
+                   (Xmlt.xml_do "OC3"
+                     (Xmlt.xml_take oc
+                       (\ a ->
+                         Xmlt.xml_take oc
+                           (\ b ->
+                             Xmlt.xml_take oc
+                               (\ c ->
+                                 Xmlt.xml_take s
+                                   (\ d ->
+                                     Xmlt.xml_take s
+                                       (\ e ->
+ Xmlt.xml_return (Nonloop_SRS.OC3 a b c d e))))))))
+                   (Xmlt.xml_or
+                     (Xmlt.xml_do "OC3prime"
+                       (Xmlt.xml_take oc
+                         (\ a ->
+                           Xmlt.xml_take oc
+                             (\ b ->
+                               Xmlt.xml_take oc
+                                 (\ c ->
+                                   Xmlt.xml_take s
+                                     (\ d ->
+                                       Xmlt.xml_take s
+ (\ e -> Xmlt.xml_return (Nonloop_SRS.OC3p a b c d e))))))))
+                     (Xmlt.xml_or
+                       (Xmlt.xml_do "OCintoDP1"
+                         (Xmlt.xml_take dp
+                           (\ a ->
+                             Xmlt.xml_take oc
+                               (\ b ->
+                                 Xmlt.xml_return (Nonloop_SRS.OCDP1 a b)))))
+                       (Xmlt.xml_or
+                         (Xmlt.xml_do "OCintoDP2"
+                           (Xmlt.xml_take dp
+                             (\ a ->
+                               Xmlt.xml_take oc
+                                 (\ b ->
+                                   Xmlt.xml_return (Nonloop_SRS.OCDP2 a b)))))
+                         (Xmlt.xml_or
+                           (Xmlt.xml_do "equivalent"
+                             (Xmlt.xml_take dp
+                               (\ a ->
+                                 Xmlt.xml_take dp
+                                   (\ b ->
+                                     Xmlt.xml_return (Nonloop_SRS.WPEQ a b)))))
+                           (Xmlt.xml_or
+                             (Xmlt.xml_do "lift"
+                               (Xmlt.xml_take dp
+                                 (\ a ->
+                                   Xmlt.xml_take dp
+                                     (\ b ->
+                                       Xmlt.xml_return
+ (Nonloop_SRS.Lift a b)))))
+                             (Xmlt.xml_or
+                               (Xmlt.xml_do "DP_OC_1_1"
+                                 (Xmlt.xml_take dp
+                                   (\ a ->
+                                     Xmlt.xml_take dp
+                                       (\ b ->
+ Xmlt.xml_take oc
+   (\ c ->
+     Xmlt.xml_take s
+       (\ d ->
+         Xmlt.xml_take s
+           (\ e -> Xmlt.xml_return (Nonloop_SRS.DPOC1_1 a b c d e))))))))
+                               (Xmlt.xml_or
+                                 (Xmlt.xml_do "DP_OC_1_2"
+                                   (Xmlt.xml_take dp
+                                     (\ a ->
+                                       Xmlt.xml_take dp
+ (\ b ->
+   Xmlt.xml_take oc
+     (\ c ->
+       Xmlt.xml_take s
+         (\ d ->
+           Xmlt.xml_take s
+             (\ e ->
+               Xmlt.xml_take s
+                 (\ f ->
+                   Xmlt.xml_return (Nonloop_SRS.DPOC1_2 a b c d e f)))))))))
+                                 (Xmlt.xml_or
+                                   (Xmlt.xml_do "DP_OC_2"
+                                     (Xmlt.xml_take dp
+                                       (\ a ->
+ Xmlt.xml_take dp
+   (\ b ->
+     Xmlt.xml_take oc
+       (\ c ->
+         Xmlt.xml_take s
+           (\ d ->
+             Xmlt.xml_take s
+               (\ e -> Xmlt.xml_return (Nonloop_SRS.DPOC2 a b c d e))))))))
+                                   (Xmlt.xml_or
+                                     (Xmlt.xml_do "DP_OC_3_1"
+                                       (Xmlt.xml_take dp
+ (\ a ->
+   Xmlt.xml_take dp
+     (\ b ->
+       Xmlt.xml_take oc
+         (\ c ->
+           Xmlt.xml_take s
+             (\ d ->
+               Xmlt.xml_take s
+                 (\ e -> Xmlt.xml_return (Nonloop_SRS.DPOC3_1 a b c d e))))))))
+                                     (Xmlt.xml_or
+                                       (Xmlt.xml_do "DP_OC_3_2"
+ (Xmlt.xml_take dp
+   (\ a ->
+     Xmlt.xml_take dp
+       (\ b ->
+         Xmlt.xml_take oc
+           (\ c ->
+             Xmlt.xml_take s
+               (\ d ->
+                 Xmlt.xml_take s
+                   (\ e ->
+                     Xmlt.xml_take s
+                       (\ f ->
+                         Xmlt.xml_return
+                           (Nonloop_SRS.DPOC3_2 a b c d e f)))))))))
+                                       (Xmlt.xml_or
+ (Xmlt.xml_do "DP_DP_1_1"
+   (Xmlt.xml_take dp
+     (\ a ->
+       Xmlt.xml_take dp
+         (\ b ->
+           Xmlt.xml_take dp
+             (\ c ->
+               Xmlt.xml_take s
+                 (\ d ->
+                   Xmlt.xml_take s
+                     (\ e ->
+                       Xmlt.xml_return (Nonloop_SRS.DPDP1_1 a b c d e))))))))
+ (Xmlt.xml_or
+   (Xmlt.xml_do "DP_DP_1_2"
+     (Xmlt.xml_take dp
+       (\ a ->
+         Xmlt.xml_take dp
+           (\ b ->
+             Xmlt.xml_take dp
+               (\ c ->
+                 Xmlt.xml_take s
+                   (\ d ->
+                     Xmlt.xml_take s
+                       (\ e ->
+                         Xmlt.xml_return (Nonloop_SRS.DPDP1_2 a b c d e))))))))
+   (Xmlt.xml_or
+     (Xmlt.xml_do "DP_DP_2_1"
+       (Xmlt.xml_take dp
+         (\ a ->
+           Xmlt.xml_take dp
+             (\ b ->
+               Xmlt.xml_take dp
+                 (\ c ->
+                   Xmlt.xml_take s
+                     (\ d ->
+                       Xmlt.xml_take s
+                         (\ e ->
+                           Xmlt.xml_return
+                             (Nonloop_SRS.DPDP2_1 a b c d e))))))))
+     (Xmlt.xml_do "DP_DP_2_2"
+       (Xmlt.xml_take dp
+         (\ a ->
+           Xmlt.xml_take dp
+             (\ b ->
+               Xmlt.xml_take dp
+                 (\ c ->
+                   Xmlt.xml_take s
+                     (\ d ->
+                       Xmlt.xml_take s
+                         (\ e ->
+                           Xmlt.xml_return
+                             (Nonloop_SRS.DPDP2_2 a b c d
+                               e)))))))))))))))))))))))))
+           (\ x -> Xmlt.xml_return (id x)));
+
+nonloop_srs_reason ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       ([Nonloop_SRS.Dp_proof_step
+   (Labelings.Lab a b)] ->
+ Nonloop_SRS.Non_loop_srs_proof (Labelings.Lab a b));
+nonloop_srs_reason xml2name =
+  Xmlt.xml_or
+    (Xmlt.xml_do "selfEmbeddingOC"
+      (Xmlt.xml_take (string xml2name)
+        (\ a ->
+          Xmlt.xml_take (string xml2name)
+            (\ b ->
+              Xmlt.xml_take (string xml2name)
+                (\ c ->
+                  Xmlt.xml_return (Nonloop_SRS.SE_OC (b, a ++ b ++ c) a c))))))
+    (Xmlt.xml_do "selfEmbeddingDP"
+      (Xmlt.xml_take (derivation_pattern xml2name)
+        (\ a ->
+          Xmlt.xml_take (string xml2name)
+            (\ b ->
+              Xmlt.xml_take (string xml2name)
+                (\ c -> Xmlt.xml_return (Nonloop_SRS.SE_DP a b c))))));
+
+nonloop_srs ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   (Xml.Xml,
+                                     ([([Arith.Char], [Arith.Char])],
+                                       (Bool, ([String], [String])))) ->
+                                     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                       (Nonloop_SRS.Non_loop_srs_proof
+ (Labelings.Lab a b));
+nonloop_srs xml2name =
+  Xmlt.xml_do "nonterminatingSRS"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "derivationPatterns"
+        (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+          (derivation_pattern_proof xml2name) (\ a -> Xmlt.xml_return (id a))))
+      (\ a ->
+        Xmlt.xml_take (nonloop_srs_reason xml2name)
+          (\ b -> Xmlt.xml_return (b a))));
+
+symbol_parser ::
+  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+      (Labelings.Lab [Arith.Char] [Arith.Nat]);
+symbol_parser x =
+  Xmlt.xml_or
+    (Xmlt.xml_change (Xmlt.xml_text "name") (Xmlt.xml_return . Labelings.UnLab))
+    (Xmlt.xml_or
+      (Xmlt.xml_do "sharp"
+        (Xmlt.xml_take symbol_parser
+          (\ xa -> Xmlt.xml_return (Labelings.Sharp xa))))
+      (Xmlt.xml_do "labeledSymbol"
+        (Xmlt.xml_take symbol_parser
+          (\ a ->
+            Xmlt.xml_take
+              (Xmlt.xml_or
+                (Xmlt.xml_do "numberLabel"
+                  (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                    Extended_Nat.Infinity_enat (Xmlt.xml_nat "number")
+                    (\ aa -> Xmlt.xml_return (Sum_Type.Inl aa))))
+                (Xmlt.xml_do "symbolLabel"
+                  (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                    Extended_Nat.Infinity_enat symbol_parser
+                    (\ aa -> Xmlt.xml_return (Sum_Type.Inr aa)))))
+              (\ b ->
+                Xmlt.xml_return (case b of {
+                                  Sum_Type.Inl ba -> Labelings.Lab a ba;
+                                  Sum_Type.Inr ba -> Labelings.FunLab a ba;
+                                }))))))
+    x;
+
+input_parser ::
+  Mapping.Mapping [Arith.Char]
+    (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+      [Arith.Char]) ->
+    Mapping.Mapping [Arith.Char]
+      (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+         [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+          [Arith.Char]) ->
+      (Xml.Xml,
+        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+          (Ceta_Problem_Spec.Input (Labelings.Lab [Arith.Char] [Arith.Nat])
+            [Arith.Char]);
+input_parser = CPF_Input_Parser.input symbol_parser;
+
+rfc_initial_terms ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+[Term_Rewriting.Term a [Arith.Char]];
+rfc_initial_terms xml2name termIndexMap =
+  Xmlt.xml_do "initialTerms"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (CPF_Input_Parser.term xml2name termIndexMap) Xmlt.xml_return);
+
+xml2inn_trs_assm :: forall a. a;
+xml2inn_trs_assm = error "undefined";
+
+flat_contexts ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+[Term_Rewriting.Actxt a (Term_Rewriting.Term a [Arith.Char])];
+flat_contexts xml2name termIndexMap =
+  Xmlt.xml_do "flatContexts"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (ctxt xml2name termIndexMap) Xmlt.xml_return);
+
+xml2fp_trs_assm :: forall a. a;
+xml2fp_trs_assm = error "undefined";
+
+xml2inn_fp_trs_assm :: forall a. a;
+xml2inn_fp_trs_assm = error "undefined";
+
+xml2dp_input ::
+  forall a b c.
+    (Eq a,
+      Term_Rewriting.Showl a) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     a) ->
                                    Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
+                                     (Term_Rewriting.Term a [Arith.Char]) ->
                                      Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   (Check_Termination.Trs_termination_proof a b [Arith.Char]);
-xml2trs_termination_proof xml2name termIndexMap ruleMap x =
-  Xmlt.xml_do "trsTerminationProof"
+                                       (Term_Rewriting.Term a [Arith.Char],
+ Term_Rewriting.Term a [Arith.Char]) ->
+                                       Bool ->
+ (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+     (Bool,
+       (Bool,
+         ([(Term_Rewriting.Term a [Arith.Char],
+             Term_Rewriting.Term a [Arith.Char])],
+           ([b], ([Term_Rewriting.Term a [Arith.Char]],
+                   ([c], [(Term_Rewriting.Term a [Arith.Char],
+                            Term_Rewriting.Term a [Arith.Char])]))))));
+xml2dp_input xml2name termIndexMap ruleMap termination =
+  Xmlt.xml_change (CPF_Input_Parser.dp_input xml2name termIndexMap ruleMap)
+    (\ (Ceta_Problem_Spec.DP_input m p q r) ->
+      Xmlt.xml_return
+        ((if termination then Defaults.default_nfs_dp
+           else Defaults.default_nfs_nt_dp),
+          (m, (p, ([], (Ceta_Problem_Spec.strategy_to_Q q r, ([], r)))))));
+
+uncurry_info ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    Mapping.Mapping [Arith.Char]
+                                      (Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char]) ->
+                                      (Xml.Xml,
+([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+  (a, ([((a, Arith.Nat), [a])],
+        ([(Term_Rewriting.Term a [Arith.Char],
+            Term_Rewriting.Term a [Arith.Char])],
+          [(Term_Rewriting.Term a [Arith.Char],
+             Term_Rewriting.Term a [Arith.Char])])));
+uncurry_info xml2name termIndexMap ruleMap =
+  Xmlt.xml_do "uncurryInformation"
+    (Xmlt.xml_take xml2name
+      (\ a ->
+        Xmlt.xml_take
+          (Xmlt.xml_do "uncurriedSymbols"
+            (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+              (Xmlt.xml_do "uncurriedSymbolEntry"
+                (Xmlt.xml_take xml2name
+                  (\ f ->
+                    Xmlt.xml_take (Xmlt.xml_nat "arity")
+                      (\ n ->
+                        Xmlt.xml_take_many_sub [] Arith.zero_nat
+                          Extended_Nat.Infinity_enat xml2name
+                          (\ fs -> Xmlt.xml_return ((f, n), fs))))))
+              Xmlt.xml_return))
+          (\ sml ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "uncurryRules"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ u ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "etaRules"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ x -> Xmlt.xml_return (id x))))
+                  (\ e -> Xmlt.xml_return (a, (sml, (u, e))))))));
+
+xml2cond_constraint ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    (Xml.Xml,
+                                      ([([Arith.Char], [Arith.Char])],
+(Bool, ([String], [String])))) ->
+                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+(Generalized_Usable_Rules.Cond_constraint a [Arith.Char]);
+xml2cond_constraint xml2name termIndexMap x =
+  Xmlt.xml_do "conditionalConstraint"
     (Xmlt.xml_take
       (Xmlt.xml_or
-        (Xmlt.xml_do "rIsEmpty" (Xmlt.xml_return Check_Termination.R_is_Empty))
+        (Xmlt.xml_do "all"
+          (Xmlt.xml_take (Xmlt.xml_text "var")
+            (\ a ->
+              Xmlt.xml_take (xml2cond_constraint xml2name termIndexMap)
+                (\ b ->
+                  Xmlt.xml_return (Generalized_Usable_Rules.CC_all a b)))))
         (Xmlt.xml_or
-          (Xmlt.xml_do "semlab"
-            (Xmlt.xml_take (sl_variant xml2name)
-              (\ sli ->
+          (Xmlt.xml_do "implication"
+            (Xmlt.xml_take (xml2cond_constraint xml2name termIndexMap)
+              (\ c ->
+                Xmlt.xml_take_many_sub [] Arith.zero_nat
+                  Extended_Nat.Infinity_enat
+                  (xml2cond_constraint xml2name termIndexMap)
+                  (\ cs ->
+                    let {
+                      ccs = c : cs;
+                    } in Xmlt.xml_return
+                           (Generalized_Usable_Rules.CC_impl
+                             (Arith.take (Arith.size_list cs) ccs)
+                             (Arith.last ccs))))))
+          (Xmlt.xml_do "constraint"
+            (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+              (\ s ->
                 Xmlt.xml_take
-                  (Xmlt.xml_do "trs"
-                    (Xmlt.xml_take
-                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                      (\ xa -> Xmlt.xml_return (id xa))))
-                  (\ lr ->
-                    Xmlt.xml_take_default []
-                      (CPF_Input_Parser.innermostLhss xml2name termIndexMap)
-                      (\ lq ->
-                        Xmlt.xml_take
-                          (xml2trs_termination_proof xml2name termIndexMap
-                            ruleMap)
-                          (\ p ->
-                            Xmlt.xml_return
-                              (Check_Termination.Semlab sli lq lr p)))))))
-          (Xmlt.xml_or
-            (Xmlt.xml_do "split"
-              (Xmlt.xml_take
-                (Xmlt.xml_do "trs"
-                  (Xmlt.xml_take
-                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                    (\ xa -> Xmlt.xml_return (id xa))))
-                (\ a ->
-                  Xmlt.xml_take
-                    (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-                    (\ b ->
-                      Xmlt.xml_take
-                        (xml2trs_termination_proof xml2name termIndexMap
-                          ruleMap)
-                        (\ c ->
-                          Xmlt.xml_return (Check_Termination.Split a b c))))))
-            (Xmlt.xml_or
-              (Xmlt.xml_do "dpTrans"
-                (Xmlt.xml_take
-                  (Xmlt.xml_do "dps"
-                    (Xmlt.xml_take
-                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                      (\ xa -> Xmlt.xml_return (id xa))))
-                  (\ dps ->
-                    Xmlt.xml_take
-                      (xml2dp_termination_proof xml2name termIndexMap ruleMap)
-                      (\ prf ->
+                  (Xmlt.xml_or (Xmlt.xml_leaf "rewrite" Nothing)
+                    (Xmlt.xml_or (Xmlt.xml_leaf "strict" (Just True))
+                      (Xmlt.xml_leaf "nonStrict" (Just False))))
+                  (\ rel ->
+                    Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                      (\ t ->
                         Xmlt.xml_return
-                          (Check_Termination.DP_Trans Defaults.default_nfs_dp
-                            True dps prf)))))
-              (Xmlt.xml_or
-                (Xmlt.xml_do "ruleRemoval"
-                  (Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
-                    (\ ord ->
-                      Xmlt.xml_take
-                        (Xmlt.xml_do "trs"
-                          (Xmlt.xml_take
-                            (CPF_Input_Parser.rules xml2name termIndexMap
-                              ruleMap)
-                            (\ xa -> Xmlt.xml_return (id xa))))
-                        (\ r ->
-                          Xmlt.xml_take
-                            (xml2trs_termination_proof xml2name termIndexMap
-                              ruleMap)
-                            (\ p ->
-                              Xmlt.xml_return
-                                (Check_Termination.Rule_Removal ord r p))))))
-                (Xmlt.xml_or
-                  (Xmlt.xml_change (bounds_info xml2name)
-                    (Xmlt.xml_return . Check_Termination.Bounds))
-                  (Xmlt.xml_or
-                    (Xmlt.xml_do "relativeBounds"
-                      (Xmlt.xml_take (bounds_info xml2name)
-                        (\ a ->
-                          Xmlt.xml_take
-                            (Xmlt.xml_do "trs"
-                              (Xmlt.xml_take
-                                (CPF_Input_Parser.rules xml2name termIndexMap
-                                  ruleMap)
-                                (\ xa -> Xmlt.xml_return (id xa))))
-                            (\ b ->
-                              Xmlt.xml_take
-                                (xml2trs_termination_proof xml2name termIndexMap
-                                  ruleMap)
-                                (\ c ->
-                                  Xmlt.xml_return
-                                    (Check_Termination.Relative_Bounds a b
-                                      c))))))
-                    (Xmlt.xml_or
-                      (Xmlt.xml_do "stringReversal"
-                        (Xmlt.xml_take
-                          (Xmlt.xml_do "trs"
-                            (Xmlt.xml_take
-                              (CPF_Input_Parser.rules xml2name termIndexMap
-                                ruleMap)
-                              (\ xa -> Xmlt.xml_return (id xa))))
-                          (\ _ ->
-                            Xmlt.xml_take
-                              (xml2trs_termination_proof xml2name termIndexMap
-                                ruleMap)
-                              (\ prf ->
-                                Xmlt.xml_return
-                                  (Check_Termination.String_Reversal prf)))))
-                      (Xmlt.xml_or
-                        (Xmlt.xml_do "equalityRemoval"
-                          (Xmlt.xml_take
-                            (xml2trs_termination_proof xml2name termIndexMap
-                              ruleMap)
-                            (\ a ->
-                              Xmlt.xml_return
-                                (Check_Termination.Drop_Equality a))))
-                        (Xmlt.xml_or
-                          (Xmlt.xml_do "rightGroundTermination"
-                            (Xmlt.xml_return
-                              Check_Termination.Right_Ground_Termination))
-                          (Xmlt.xml_or
-                            (Xmlt.xml_do "constantToUnary"
-                              (Xmlt.xml_take CPF_Input_Parser.plain_var
-                                (\ v ->
-                                  Xmlt.xml_take (renaming xml2name)
-                                    (\ ren ->
-                                      Xmlt.xml_take
-(Xmlt.xml_do "trs"
-  (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-    (\ xa -> Xmlt.xml_return (id xa))))
-(\ s ->
-  Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-    (\ p ->
-      Xmlt.xml_return
-        (Check_Termination.Constant_String
-          (Monadic_Rewriting_Impl.Const_string_sound_proof v ren s) p)))))))
-                            (Xmlt.xml_or
-                              (Xmlt.xml_do "removeNonApplicableRules"
-                                (Xmlt.xml_take
-                                  (Xmlt.xml_do "trs"
-                                    (Xmlt.xml_take
-                                      (CPF_Input_Parser.rules xml2name
-termIndexMap ruleMap)
-                                      (\ xa -> Xmlt.xml_return (id xa))))
-                                  (\ a ->
-                                    Xmlt.xml_take
-                                      (xml2trs_termination_proof xml2name
-termIndexMap ruleMap)
-                                      (\ b ->
-Xmlt.xml_return (Check_Termination.Remove_Nonapplicable_Rules a b)))))
-                              (Xmlt.xml_or
-                                (Xmlt.xml_do "uncurry"
-                                  (Xmlt.xml_take
-                                    (uncurry_info xml2name termIndexMap ruleMap)
-                                    (\ i ->
-                                      Xmlt.xml_take
-(Xmlt.xml_do "trs"
-  (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-    (\ xa -> Xmlt.xml_return (id xa))))
-(\ r ->
-  Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-    (\ p -> Xmlt.xml_return (Check_Termination.Uncurry i r p))))))
-                                (Xmlt.xml_or
-                                  (Xmlt.xml_do "flatContextClosure"
-                                    (Xmlt.xml_take
-                                      (flat_contexts xml2name termIndexMap)
-                                      (\ i ->
-Xmlt.xml_take
-  (Xmlt.xml_do "trs"
-    (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-      (\ xa -> Xmlt.xml_return (id xa))))
-  (\ r ->
-    Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-      (\ p -> Xmlt.xml_return (Check_Termination.Fcc i r p))))))
-                                  (Xmlt.xml_or
-                                    (Xmlt.xml_do "switchInnermost"
-                                      (Xmlt.xml_take
-(wcr_proof xml2name termIndexMap)
-(\ a ->
-  Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-    (\ b -> Xmlt.xml_return (Check_Termination.Switch_Innermost a b)))))
-                                    (Xmlt.xml_or
-                                      (Xmlt.xml_do "permutingArgumentFilter"
-(Xmlt.xml_take (afs xml2name)
-  (\ a ->
-    Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-      (\ b -> Xmlt.xml_return (Check_Termination.Permuting_AFS a b)))))
-                                      (Xmlt.xml_or
-(Xmlt.xml_do "terminationAssumption"
-  (Xmlt.xml_take (xml2inn_trs_assm xml2name)
-    (\ qtrs -> Xmlt.xml_return (Check_Termination.Assume_SN qtrs []))))
-(Xmlt.xml_do "unknownProof"
-  (Xmlt.xml_take (Xmlt.xml_text "description")
-    (\ _ ->
-      Xmlt.xml_take (xml2inn_trs_assm xml2name)
-        (\ b ->
-          Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-            (xml2subproof xml2name termIndexMap ruleMap)
-            (\ c ->
-              Xmlt.xml_return
-                (Check_Termination.Assume_SN b c)))))))))))))))))))))))
+                          (case rel of {
+                            Nothing -> Generalized_Usable_Rules.CC_rewr s t;
+                            Just stri ->
+                              Generalized_Usable_Rules.CC_cond stri (s, t);
+                          }))))))))
       (\ xa -> Xmlt.xml_return (id xa)))
     x;
+
+xml2cond_constraint_prf ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    Mapping.Mapping [Arith.Char]
+                                      (Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char]) ->
+                                      (Xml.Xml,
+([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+  (Bounded_Increase_Impl.Cond_constraint_prf a [Arith.Char]);
+xml2cond_constraint_prf xml2name termIndexMap ruleMap x =
+  let {
+    cc = xml2cond_constraint xml2name termIndexMap;
+  } in Xmlt.xml_do "conditionalConstraintProof"
+         (Xmlt.xml_take
+           (Xmlt.xml_or (Xmlt.xml_leaf "final" Bounded_Increase_Impl.Final)
+             (Xmlt.xml_or
+               (Xmlt.xml_do "differentConstructor"
+                 (Xmlt.xml_take cc
+                   (\ a ->
+                     Xmlt.xml_return
+                       (Bounded_Increase_Impl.Different_Constructor a))))
+               (Xmlt.xml_or
+                 (Xmlt.xml_do "sameConstructor"
+                   (Xmlt.xml_take cc
+                     (\ a ->
+                       Xmlt.xml_take cc
+                         (\ b ->
+                           Xmlt.xml_take
+                             (xml2cond_constraint_prf xml2name termIndexMap
+                               ruleMap)
+                             (\ c ->
+                               Xmlt.xml_return
+                                 (Bounded_Increase_Impl.Same_Constructor a b
+                                   c))))))
+                 (Xmlt.xml_or
+                   (Xmlt.xml_do "variableEquation"
+                     (Xmlt.xml_take (Xmlt.xml_text "var")
+                       (\ a ->
+                         Xmlt.xml_take
+                           (CPF_Input_Parser.term xml2name termIndexMap)
+                           (\ b ->
+                             Xmlt.xml_take cc
+                               (\ c ->
+                                 Xmlt.xml_take
+                                   (xml2cond_constraint_prf xml2name
+                                     termIndexMap ruleMap)
+                                   (\ d ->
+                                     Xmlt.xml_return
+                                       (Bounded_Increase_Impl.Variable_Equation
+ a b c d)))))))
+                   (Xmlt.xml_or
+                     (Xmlt.xml_do "funargIntoVar"
+                       (Xmlt.xml_take cc
+                         (\ a ->
+                           Xmlt.xml_take CPF_Input_Parser.position
+                             (\ b ->
+                               Xmlt.xml_take (Xmlt.xml_text "var")
+                                 (\ c ->
+                                   Xmlt.xml_take cc
+                                     (\ d ->
+                                       Xmlt.xml_take
+ (xml2cond_constraint_prf xml2name termIndexMap ruleMap)
+ (\ e ->
+   Xmlt.xml_return (Bounded_Increase_Impl.Funarg_Into_Var a b c d e))))))))
+                     (Xmlt.xml_or
+                       (Xmlt.xml_do "simplifyCondition"
+                         (Xmlt.xml_take cc
+                           (\ a ->
+                             Xmlt.xml_take (subst xml2name termIndexMap)
+                               (\ b ->
+                                 Xmlt.xml_take cc
+                                   (\ c ->
+                                     Xmlt.xml_take
+                                       (xml2cond_constraint_prf xml2name
+ termIndexMap ruleMap)
+                                       (\ d ->
+ Xmlt.xml_return (Bounded_Increase_Impl.Simplify_Condition a b c d)))))))
+                       (Xmlt.xml_or
+                         (Xmlt.xml_do "induction"
+                           (Xmlt.xml_take cc
+                             (\ a ->
+                               Xmlt.xml_take
+                                 (Xmlt.xml_do "conjuncts"
+                                   (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                                     Extended_Nat.Infinity_enat cc
+                                     Xmlt.xml_return))
+                                 (\ b ->
+                                   Xmlt.xml_take
+                                     (Xmlt.xml_do "ruleConstraintProofs"
+                                       (Xmlt.xml_take_many_sub [] Arith.zero_nat
+ Extended_Nat.Infinity_enat
+ (Xmlt.xml_do "ruleConstraintProof"
+   (Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+     (\ lr ->
+       Xmlt.xml_take
+         (Xmlt.xml_do "subtermVarEntries"
+           (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+             (Xmlt.xml_do "subtermVarEntry"
+               (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                 (\ aa ->
+                   Xmlt.xml_take_many_sub [] Arith.zero_nat
+                     Extended_Nat.Infinity_enat (Xmlt.xml_text "var")
+                     (\ ba -> Xmlt.xml_return (aa, ba)))))
+             Xmlt.xml_return))
+         (\ rys ->
+           Xmlt.xml_take cc
+             (\ cca ->
+               Xmlt.xml_take
+                 (xml2cond_constraint_prf xml2name termIndexMap ruleMap)
+                 (\ p -> Xmlt.xml_return (lr, (rys, (cca, p)))))))))
+ Xmlt.xml_return))
+                                     (\ c ->
+                                       Xmlt.xml_return
+ (Bounded_Increase_Impl.Induction a b c))))))
+                         (Xmlt.xml_do "deleteCondition"
+                           (Xmlt.xml_take cc
+                             (\ a ->
+                               Xmlt.xml_take
+                                 (xml2cond_constraint_prf xml2name termIndexMap
+                                   ruleMap)
+                                 (\ b ->
+                                   Xmlt.xml_return
+                                     (Bounded_Increase_Impl.Delete_Condition a
+                                       b))))))))))))
+           (\ xa -> Xmlt.xml_return (id xa)))
+         x;
+
+xml2cond_red_pair_proof ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    Mapping.Mapping [Arith.Char]
+                                      (Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char]) ->
+                                      (Xml.Xml,
+([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+  (Bounded_Increase_Impl.Cond_red_pair_prf a [Arith.Char]);
+xml2cond_red_pair_proof xml2name termIndexMap ruleMap =
+  Xmlt.xml_do "condRedPairProof"
+    (Xmlt.xml_take xml2name
+      (\ c ->
+        Xmlt.xml_take (Xmlt.xml_nat "before")
+          (\ b ->
+            Xmlt.xml_take (Xmlt.xml_nat "after")
+              (\ a ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "conditions"
+                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                      Extended_Nat.Infinity_enat
+                      (Xmlt.xml_do "condition"
+                        (Xmlt.xml_take
+                          (xml2cond_constraint xml2name termIndexMap)
+                          (\ ca ->
+                            Xmlt.xml_take
+                              (Xmlt.xml_do "dpSequence"
+                                (Xmlt.xml_take
+                                  (CPF_Input_Parser.rules xml2name termIndexMap
+                                    ruleMap)
+                                  (\ x -> Xmlt.xml_return (id x))))
+                              (\ s ->
+                                Xmlt.xml_take
+                                  (xml2cond_constraint_prf xml2name termIndexMap
+                                    ruleMap)
+                                  (\ p -> Xmlt.xml_return (ca, (s, p)))))))
+                      Xmlt.xml_return))
+                  (\ ccs ->
+                    Xmlt.xml_return
+                      (Bounded_Increase_Impl.Cond_Red_Pair_Prf c ccs b a))))));
+
+projected_rseq ::
+  forall a.
+    (Eq a,
+      Term_Rewriting.Showl a) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     a) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term a [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term a [Arith.Char],
+ Term_Rewriting.Term a [Arith.Char]) ->
+                                       ((a, Arith.Nat) -> Arith.Nat) ->
+ (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+     ((Term_Rewriting.Term a [Arith.Char], Term_Rewriting.Term a [Arith.Char]),
+       [([Arith.Nat],
+          ((Term_Rewriting.Term a [Arith.Char],
+             Term_Rewriting.Term a [Arith.Char]),
+            Term_Rewriting.Term a [Arith.Char]))]);
+projected_rseq xml2name termIndexMap ruleMap pi =
+  Xmlt.xml_do "projectedRewriteSequence"
+    (Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+      (\ r ->
+        Xmlt.xml_take (rseq xml2name termIndexMap ruleMap pi r)
+          Xmlt.xml_return));
 
 xml2dp_termination_proof ::
   forall a b.
@@ -4395,6 +3704,308 @@ Xmlt.xml_take
       (\ xa -> Xmlt.xml_return (id xa)))
     x;
 
+xml2trs_termination_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (Check_Termination.Trs_termination_proof a b [Arith.Char]);
+xml2trs_termination_proof xml2name termIndexMap ruleMap x =
+  Xmlt.xml_do "trsTerminationProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "rIsEmpty" (Xmlt.xml_return Check_Termination.R_is_Empty))
+        (Xmlt.xml_or
+          (Xmlt.xml_do "semlab"
+            (Xmlt.xml_take (sl_variant xml2name)
+              (\ sli ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "trs"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ xa -> Xmlt.xml_return (id xa))))
+                  (\ lr ->
+                    Xmlt.xml_take_default []
+                      (CPF_Input_Parser.innermostLhss xml2name termIndexMap)
+                      (\ lq ->
+                        Xmlt.xml_take
+                          (xml2trs_termination_proof xml2name termIndexMap
+                            ruleMap)
+                          (\ p ->
+                            Xmlt.xml_return
+                              (Check_Termination.Semlab sli lq lr p)))))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "split"
+              (Xmlt.xml_take
+                (Xmlt.xml_do "trs"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ a ->
+                  Xmlt.xml_take
+                    (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+                    (\ b ->
+                      Xmlt.xml_take
+                        (xml2trs_termination_proof xml2name termIndexMap
+                          ruleMap)
+                        (\ c ->
+                          Xmlt.xml_return (Check_Termination.Split a b c))))))
+            (Xmlt.xml_or
+              (Xmlt.xml_do "dpTrans"
+                (Xmlt.xml_take
+                  (Xmlt.xml_do "dps"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ xa -> Xmlt.xml_return (id xa))))
+                  (\ dps ->
+                    Xmlt.xml_take
+                      (xml2dp_termination_proof xml2name termIndexMap ruleMap)
+                      (\ prf ->
+                        Xmlt.xml_return
+                          (Check_Termination.DP_Trans Defaults.default_nfs_dp
+                            True dps prf)))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "ruleRemoval"
+                  (Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
+                    (\ ord ->
+                      Xmlt.xml_take
+                        (Xmlt.xml_do "trs"
+                          (Xmlt.xml_take
+                            (CPF_Input_Parser.rules xml2name termIndexMap
+                              ruleMap)
+                            (\ xa -> Xmlt.xml_return (id xa))))
+                        (\ r ->
+                          Xmlt.xml_take
+                            (xml2trs_termination_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ p ->
+                              Xmlt.xml_return
+                                (Check_Termination.Rule_Removal ord r p))))))
+                (Xmlt.xml_or
+                  (Xmlt.xml_change (bounds_info xml2name)
+                    (Xmlt.xml_return . Check_Termination.Bounds))
+                  (Xmlt.xml_or
+                    (Xmlt.xml_do "relativeBounds"
+                      (Xmlt.xml_take (bounds_info xml2name)
+                        (\ a ->
+                          Xmlt.xml_take
+                            (Xmlt.xml_do "trs"
+                              (Xmlt.xml_take
+                                (CPF_Input_Parser.rules xml2name termIndexMap
+                                  ruleMap)
+                                (\ xa -> Xmlt.xml_return (id xa))))
+                            (\ b ->
+                              Xmlt.xml_take
+                                (xml2trs_termination_proof xml2name termIndexMap
+                                  ruleMap)
+                                (\ c ->
+                                  Xmlt.xml_return
+                                    (Check_Termination.Relative_Bounds a b
+                                      c))))))
+                    (Xmlt.xml_or
+                      (Xmlt.xml_do "rfcBounds"
+                        (Xmlt.xml_take (rfc_initial_terms xml2name termIndexMap)
+                          (\ ts ->
+                            Xmlt.xml_take (bounds_info xml2name)
+                              (\ a ->
+                                Xmlt.xml_return
+                                  (Check_Termination.Rfc_Bounds a ts)))))
+                      (Xmlt.xml_or
+                        (Xmlt.xml_do "rfcAutomatonClosedBounds"
+                          (Xmlt.xml_take
+                            (rfc_initial_terms xml2name termIndexMap)
+                            (\ ts ->
+                              Xmlt.xml_take (bounds_info xml2name)
+                                (\ a ->
+                                  Xmlt.xml_return
+                                    (Check_Termination.Rfc_Automaton_Closed_Bounds
+                                      a ts)))))
+                        (Xmlt.xml_or
+                          (Xmlt.xml_do "rfcRelativeBounds"
+                            (Xmlt.xml_take
+                              (rfc_initial_terms xml2name termIndexMap)
+                              (\ ts ->
+                                Xmlt.xml_take (bounds_info xml2name)
+                                  (\ a ->
+                                    Xmlt.xml_take
+                                      (Xmlt.xml_do "trs"
+(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+  (\ xa -> Xmlt.xml_return (id xa))))
+                                      (\ b ->
+Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+  (\ c -> Xmlt.xml_return (Check_Termination.Rfc_Relative_Bounds a ts b c)))))))
+                          (Xmlt.xml_or
+                            (Xmlt.xml_do "rfcAutomatonClosedRelativeBounds"
+                              (Xmlt.xml_take
+                                (rfc_initial_terms xml2name termIndexMap)
+                                (\ ts ->
+                                  Xmlt.xml_take (bounds_info xml2name)
+                                    (\ a ->
+                                      Xmlt.xml_take
+(Xmlt.xml_do "trs"
+  (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+    (\ xa -> Xmlt.xml_return (id xa))))
+(\ b ->
+  Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+    (\ c ->
+      Xmlt.xml_return
+        (Check_Termination.Rfc_Automaton_Closed_Relative_Bounds a ts b c)))))))
+                            (Xmlt.xml_or
+                              (Xmlt.xml_do "rfcMatchboxRelativeBounds"
+                                (Xmlt.xml_take
+                                  (rfc_initial_terms xml2name termIndexMap)
+                                  (\ ts ->
+                                    Xmlt.xml_take (bounds_info xml2name)
+                                      (\ a ->
+Xmlt.xml_take
+  (Xmlt.xml_do "trs"
+    (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+      (\ xa -> Xmlt.xml_return (id xa))))
+  (\ b ->
+    Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+      (\ c ->
+        Xmlt.xml_return
+          (Check_Termination.Rfc_Matchbox_Relative_Bounds a ts b c)))))))
+                              (Xmlt.xml_or
+                                (Xmlt.xml_do "rfcNativeMatchboxRelativeBounds"
+                                  (Xmlt.xml_take
+                                    (rfc_initial_terms xml2name termIndexMap)
+                                    (\ ts ->
+                                      Xmlt.xml_take (bounds_info xml2name)
+(\ a ->
+  Xmlt.xml_take
+    (Xmlt.xml_do "trs"
+      (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+        (\ xa -> Xmlt.xml_return (id xa))))
+    (\ b ->
+      Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+        (\ c ->
+          Xmlt.xml_return
+            (Check_Termination.Rfc_Native_Matchbox_Relative_Bounds a ts b
+              c)))))))
+                                (Xmlt.xml_or
+                                  (Xmlt.xml_do "stringReversal"
+                                    (Xmlt.xml_take
+                                      (Xmlt.xml_do "trs"
+(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+  (\ xa -> Xmlt.xml_return (id xa))))
+                                      (\ _ ->
+Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+  (\ prf -> Xmlt.xml_return (Check_Termination.String_Reversal prf)))))
+                                  (Xmlt.xml_or
+                                    (Xmlt.xml_do "equalityRemoval"
+                                      (Xmlt.xml_take
+(xml2trs_termination_proof xml2name termIndexMap ruleMap)
+(\ a -> Xmlt.xml_return (Check_Termination.Drop_Equality a))))
+                                    (Xmlt.xml_or
+                                      (Xmlt.xml_do "rightGroundTermination"
+(Xmlt.xml_return Check_Termination.Right_Ground_Termination))
+                                      (Xmlt.xml_or
+(Xmlt.xml_do "constantToUnary"
+  (Xmlt.xml_take CPF_Input_Parser.plain_var
+    (\ v ->
+      Xmlt.xml_take (renaming xml2name)
+        (\ ren ->
+          Xmlt.xml_take
+            (Xmlt.xml_do "trs"
+              (Xmlt.xml_take
+                (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                (\ xa -> Xmlt.xml_return (id xa))))
+            (\ s ->
+              Xmlt.xml_take
+                (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+                (\ p ->
+                  Xmlt.xml_return
+                    (Check_Termination.Constant_String
+                      (Monadic_Rewriting_Impl.Const_string_sound_proof v ren s)
+                      p)))))))
+(Xmlt.xml_or
+  (Xmlt.xml_do "removeNonApplicableRules"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "trs"
+        (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+          (\ xa -> Xmlt.xml_return (id xa))))
+      (\ a ->
+        Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+          (\ b ->
+            Xmlt.xml_return
+              (Check_Termination.Remove_Nonapplicable_Rules a b)))))
+  (Xmlt.xml_or
+    (Xmlt.xml_do "uncurry"
+      (Xmlt.xml_take (uncurry_info xml2name termIndexMap ruleMap)
+        (\ i ->
+          Xmlt.xml_take
+            (Xmlt.xml_do "trs"
+              (Xmlt.xml_take
+                (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                (\ xa -> Xmlt.xml_return (id xa))))
+            (\ r ->
+              Xmlt.xml_take
+                (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+                (\ p -> Xmlt.xml_return (Check_Termination.Uncurry i r p))))))
+    (Xmlt.xml_or
+      (Xmlt.xml_do "flatContextClosure"
+        (Xmlt.xml_take (flat_contexts xml2name termIndexMap)
+          (\ i ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "trs"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                  (\ xa -> Xmlt.xml_return (id xa))))
+              (\ r ->
+                Xmlt.xml_take
+                  (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+                  (\ p -> Xmlt.xml_return (Check_Termination.Fcc i r p))))))
+      (Xmlt.xml_or
+        (Xmlt.xml_do "switchInnermost"
+          (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
+            (\ a ->
+              Xmlt.xml_take
+                (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+                (\ b ->
+                  Xmlt.xml_return (Check_Termination.Switch_Innermost a b)))))
+        (Xmlt.xml_or
+          (Xmlt.xml_do "permutingArgumentFilter"
+            (Xmlt.xml_take (afs xml2name)
+              (\ a ->
+                Xmlt.xml_take
+                  (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+                  (\ b ->
+                    Xmlt.xml_return (Check_Termination.Permuting_AFS a b)))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "terminationAssumption"
+              (Xmlt.xml_take (xml2inn_trs_assm xml2name)
+                (\ qtrs ->
+                  Xmlt.xml_return (Check_Termination.Assume_SN qtrs []))))
+            (Xmlt.xml_do "unknownProof"
+              (Xmlt.xml_take (Xmlt.xml_text "description")
+                (\ _ ->
+                  Xmlt.xml_take (xml2inn_trs_assm xml2name)
+                    (\ b ->
+                      Xmlt.xml_take_many_sub [] Arith.zero_nat
+                        Extended_Nat.Infinity_enat
+                        (xml2subproof xml2name termIndexMap ruleMap)
+                        (\ c ->
+                          Xmlt.xml_return
+                            (Check_Termination.Assume_SN b
+                              c)))))))))))))))))))))))))))))
+      (\ xa -> Xmlt.xml_return (id xa)))
+    x;
+
 xml2subproof ::
   forall a b.
     (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
@@ -4484,73 +4095,6 @@ xml2fptrs_termination_proof xml2name termIndexMap ruleMap x =
                     (Check_Termination.Assume_FP_SN inp subprfs))))))
       Xmlt.xml_return)
     x;
-
-unraveling_info ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   [(((Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]),
-       [(Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char],
-          Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char])]),
-      [(Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char],
-         Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char])])];
-unraveling_info xml2name termIndexMap ruleMap =
-  Xmlt.xml_do "unravelingInformation"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (Xmlt.xml_do "unravelingEntry"
-        (Xmlt.xml_take
-          (CPF_Input_Parser.crule xml2name termIndexMap "conditionalRule")
-          (\ a ->
-            Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-              (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-              (\ b -> Xmlt.xml_return (a, b)))))
-      (\ a -> Xmlt.xml_return (id a)));
-
-xml2quasi_reductive_proof ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   (Check_Quasi_Reductive.Quasi_reductive_proof a b [Arith.Char]);
-xml2quasi_reductive_proof xml2name termIndexMap ruleMap =
-  Xmlt.xml_do "quasiReductiveProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_do "unraveling"
-        (Xmlt.xml_take (unraveling_info xml2name termIndexMap ruleMap)
-          (\ a ->
-            Xmlt.xml_take
-              (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-              (\ b -> Xmlt.xml_return (Check_Quasi_Reductive.Unravel a b)))))
-      (\ x -> Xmlt.xml_return (id x)));
 
 xml2csr_dp_termination_proof ::
   forall a b.
@@ -4661,6 +4205,701 @@ CSR_Checker.CSR_DP_Gen_Subterm_Criterion_Proc mpi dps prf;
                               b))))))))))
       Xmlt.xml_return)
     x;
+
+xml2conservative_csr_termination_proof ::
+  Mapping.Mapping [Arith.Char]
+    (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+      [Arith.Char]) ->
+    Mapping.Mapping [Arith.Char]
+      (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+         [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+          [Arith.Char]) ->
+      (Xml.Xml,
+        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+          (CSR_Conservative_Checker.Extended_csr_termination_proof [Arith.Char]
+            [Arith.Nat] [Arith.Char]);
+xml2conservative_csr_termination_proof termIndexMap ruleMap =
+  Xmlt.xml_do "nativeConservativeCsrTerminationProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "csrConservativeDependencyPairs"
+        (Xmlt.xml_take
+          (Xmlt.xml_do "unhidingSymbol"
+            (Xmlt.xml_take symbol_parser (\ x -> Xmlt.xml_return (id x))))
+          (\ u ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "dps"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ p ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "auxiliaryRules"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules symbol_parser termIndexMap
+                        ruleMap)
+                      (\ x -> Xmlt.xml_return (id x))))
+                  (\ s ->
+                    Xmlt.xml_take
+                      (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                        ruleMap)
+                      (\ prf ->
+                        Xmlt.xml_return
+                          (CSR_Conservative_Checker.Conservative_CSR_Dependency_Pairs
+                            u p s prf)))))))
+      (\ x -> Xmlt.xml_return (id x)));
+
+xml2dp_nontermination_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (Check_Nontermination.Dp_nontermination_proof a b [Arith.Char]);
+xml2dp_nontermination_proof xml2name termIndexMap ruleMap x =
+  Xmlt.xml_do "dpNonterminationProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "dpRuleRemoval"
+          (Xmlt.xml_take
+            (Xmlt.xml_do "dps"
+              (Xmlt.xml_take
+                (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                (\ xa -> Xmlt.xml_return (id xa))))
+            (\ p ->
+              Xmlt.xml_take
+                (Xmlt.xml_do "trs"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ r ->
+                  Xmlt.xml_take
+                    (xml2dp_nontermination_proof xml2name termIndexMap ruleMap)
+                    (\ prf ->
+                      Xmlt.xml_return
+                        (Check_Nontermination.DP_Rule_Removal
+                          (Nontermination_Impl.Rule_removal_nonterm_dp_prf p r)
+                          prf))))))
+        (Xmlt.xml_or
+          (Xmlt.xml_do "loop"
+            (Xmlt.xml_take (relsteps xml2name termIndexMap ruleMap)
+              (\ (s, rseq) ->
+                Xmlt.xml_take (subst xml2name termIndexMap)
+                  (\ sigma ->
+                    Xmlt.xml_take (ctxt xml2name termIndexMap)
+                      (\ c ->
+                        Xmlt.xml_return
+                          (Check_Nontermination.DP_Loop
+                            (Loops_Impl.DP_loop_prf s rseq sigma c)))))))
+          (Xmlt.xml_or
+            (Xmlt.xml_change (nonloop xml2name termIndexMap ruleMap)
+              (Xmlt.xml_return . Check_Nontermination.DP_Nonloop))
+            (Xmlt.xml_or
+              (Xmlt.xml_do "innermostLhssRemovalProc"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.innermostLhss xml2name termIndexMap)
+                  (\ q ->
+                    Xmlt.xml_take
+                      (xml2dp_nontermination_proof xml2name termIndexMap
+                        ruleMap)
+                      (\ p ->
+                        Xmlt.xml_return
+                          (Check_Nontermination.DP_Q_Reduction
+                            (Q_Reduction_Nonterm_Impl.DP_q_reduction_nonterm_prf
+                              q)
+                            p)))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "innermostLhssIncreaseProc"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.innermostLhss xml2name termIndexMap)
+                    (\ q ->
+                      Xmlt.xml_take
+                        (xml2dp_nontermination_proof xml2name termIndexMap
+                          ruleMap)
+                        (\ p ->
+                          Xmlt.xml_return
+                            (Check_Nontermination.DP_Q_Increase
+                              (Nontermination_Impl.Q_increase_nonterm_dp_prf q)
+                              p)))))
+                (Xmlt.xml_or
+                  (Xmlt.xml_do "instantiationProc"
+                    (Xmlt.xml_take
+                      (Xmlt.xml_do "dps"
+                        (Xmlt.xml_take
+                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                          (\ xa -> Xmlt.xml_return (id xa))))
+                      (\ p ->
+                        Xmlt.xml_take
+                          (xml2dp_nontermination_proof xml2name termIndexMap
+                            ruleMap)
+                          (\ prf ->
+                            Xmlt.xml_return
+                              (Check_Nontermination.DP_Instantiation
+                                (Instantiation_Impl.Instantiation_complete_proc_prf
+                                  p)
+                                prf)))))
+                  (Xmlt.xml_or
+                    (Xmlt.xml_do "narrowingProc"
+                      (Xmlt.xml_take
+                        (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+                        (\ st ->
+                          Xmlt.xml_take CPF_Input_Parser.pos
+                            (\ po ->
+                              Xmlt.xml_take
+                                (Xmlt.xml_do "narrowings"
+                                  (Xmlt.xml_take
+                                    (CPF_Input_Parser.rules xml2name
+                                      termIndexMap ruleMap)
+                                    (\ xa -> Xmlt.xml_return (id xa))))
+                                (\ p ->
+                                  Xmlt.xml_take
+                                    (xml2dp_nontermination_proof xml2name
+                                      termIndexMap ruleMap)
+                                    (\ prf ->
+                                      Xmlt.xml_return
+(Check_Nontermination.DP_Narrowing
+  (Narrowing_Impl.Narrowing_complete_proc_prf st po p) prf)))))))
+                    (Xmlt.xml_or
+                      (Xmlt.xml_do "rewritingProc"
+                        (Xmlt.xml_take
+                          (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+                          (\ (s, t) ->
+                            Xmlt.xml_take (rstep xml2name termIndexMap ruleMap)
+                              (\ (p, (lr, ta)) ->
+                                Xmlt.xml_take
+                                  (CPF_Input_Parser.rule xml2name termIndexMap
+                                    ruleMap)
+                                  (\ st ->
+                                    Xmlt.xml_take
+                                      (Xmlt.xml_do "usableRules"
+(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+  (\ xa -> Xmlt.xml_return (id xa))))
+                                      (\ u ->
+Xmlt.xml_take (xml2dp_nontermination_proof xml2name termIndexMap ruleMap)
+  (\ prf ->
+    Xmlt.xml_return
+      (Check_Nontermination.DP_Rewriting
+        (Rewriting_Impl.Rewriting_complete_proc_prf (Just u) (s, t) (s, ta) st
+          lr p)
+        prf))))))))
+                      (Xmlt.xml_or
+                        (Xmlt.xml_do "switchFullStrategyProc"
+                          (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
+                            (\ a ->
+                              Xmlt.xml_take
+                                (xml2dp_nontermination_proof xml2name
+                                  termIndexMap ruleMap)
+                                (\ b ->
+                                  Xmlt.xml_return
+                                    (Check_Nontermination.DP_Termination_Switch
+                                      a b)))))
+                        (Xmlt.xml_or
+                          (Xmlt.xml_do "infinitenessAssumption"
+                            (Xmlt.xml_take
+                              (xml2dp_input xml2name termIndexMap ruleMap False)
+                              (\ qdp ->
+                                Xmlt.xml_return
+                                  (Check_Nontermination.DP_Assume_Infinite qdp
+                                    []))))
+                          (Xmlt.xml_do "unknownProof"
+                            (Xmlt.xml_take (Xmlt.xml_text "description")
+                              (\ _ ->
+                                Xmlt.xml_take
+                                  (xml2dp_input xml2name termIndexMap ruleMap
+                                    False)
+                                  (\ b ->
+                                    Xmlt.xml_take_many_sub [] Arith.zero_nat
+                                      Extended_Nat.Infinity_enat
+                                      (\ xa -> Strict_Sum.right (fst xa))
+                                      (\ _ ->
+Xmlt.xml_return (Check_Nontermination.DP_Assume_Infinite b []))))))))))))))))
+      (\ xa -> Xmlt.xml_return (id xa)))
+    x;
+
+xml2inn_nt_trs_assm :: forall a. a;
+xml2inn_nt_trs_assm = error "undefined";
+
+xml2trs_nontermination_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (Check_Nontermination.Trs_nontermination_proof a b [Arith.Char]);
+xml2trs_nontermination_proof xml2name termIndexMap ruleMap x =
+  Xmlt.xml_do "trsNonterminationProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "variableConditionViolated"
+          (Xmlt.xml_return Check_Nontermination.TRS_Not_Well_Formed))
+        (Xmlt.xml_or
+          (Xmlt.xml_change (loop xml2name termIndexMap ruleMap)
+            (\ (s, (rseq, (sigma, c))) ->
+              Xmlt.xml_return
+                (Check_Nontermination.TRS_Loop
+                  (Loops_Impl.TRS_loop_prf s
+                    (map (\ (xa, (y, (_, z))) -> (xa, (y, z))) rseq) sigma c))))
+          (Xmlt.xml_or
+            (Xmlt.xml_change (nonloop xml2name termIndexMap ruleMap)
+              (Xmlt.xml_return . Check_Nontermination.TRS_Nonloop))
+            (Xmlt.xml_or
+              (Xmlt.xml_change (nonloop_srs xml2name)
+                (Xmlt.xml_return . Check_Nontermination.TRS_Nonloop_SRS))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "rightGroundNontermination"
+                  (Xmlt.xml_return Check_Nontermination.TRS_Not_RG_Decision))
+                (Xmlt.xml_or
+                  (Xmlt.xml_do "ruleRemoval"
+                    (Xmlt.xml_take
+                      (Xmlt.xml_do "trs"
+                        (Xmlt.xml_take
+                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                          (\ xa -> Xmlt.xml_return (id xa))))
+                      (\ r ->
+                        Xmlt.xml_take
+                          (xml2trs_nontermination_proof xml2name termIndexMap
+                            ruleMap)
+                          (\ p ->
+                            Xmlt.xml_return
+                              (Check_Nontermination.TRS_Rule_Removal
+                                (Nontermination_Impl.Rule_removal_nonterm_trs_prf
+                                  r)
+                                p)))))
+                  (Xmlt.xml_or
+                    (Xmlt.xml_do "dpTrans"
+                      (Xmlt.xml_take
+                        (Xmlt.xml_do "dps"
+                          (Xmlt.xml_take
+                            (CPF_Input_Parser.rules xml2name termIndexMap
+                              ruleMap)
+                            (\ xa -> Xmlt.xml_return (id xa))))
+                        (\ p ->
+                          Xmlt.xml_take
+                            (xml2dp_nontermination_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ c ->
+                              Xmlt.xml_return
+                                (Check_Nontermination.TRS_DP_Trans
+                                  (Nontermination_Impl.DP_trans_nontermination_tt_prf
+                                    p)
+                                  c)))))
+                    (Xmlt.xml_or
+                      (Xmlt.xml_do "stringReversal"
+                        (Xmlt.xml_take
+                          (Xmlt.xml_do "trs"
+                            (Xmlt.xml_take
+                              (CPF_Input_Parser.rules xml2name termIndexMap
+                                ruleMap)
+                              (\ xa -> Xmlt.xml_return (id xa))))
+                          (\ _ ->
+                            Xmlt.xml_take
+                              (xml2trs_nontermination_proof xml2name
+                                termIndexMap ruleMap)
+                              (\ p ->
+                                Xmlt.xml_return
+                                  (Check_Nontermination.TRS_String_Reversal
+                                    p)))))
+                      (Xmlt.xml_or
+                        (Xmlt.xml_do "constantToUnary"
+                          (Xmlt.xml_take CPF_Input_Parser.plain_var
+                            (\ v ->
+                              Xmlt.xml_take (renaming xml2name)
+                                (\ ren ->
+                                  Xmlt.xml_take
+                                    (Xmlt.xml_do "trs"
+                                      (Xmlt.xml_take
+(CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+(\ xa -> Xmlt.xml_return (id xa))))
+                                    (\ s ->
+                                      Xmlt.xml_take
+(xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
+(\ p ->
+  Xmlt.xml_return
+    (Check_Nontermination.TRS_Constant_String
+      (Monadic_Rewriting_Impl.Const_string_complete_proof v ren s) p)))))))
+                        (Xmlt.xml_or
+                          (Xmlt.xml_do "innermostLhssIncrease"
+                            (Xmlt.xml_take
+                              (CPF_Input_Parser.innermostLhss xml2name
+                                termIndexMap)
+                              (\ q ->
+                                Xmlt.xml_take
+                                  (xml2trs_nontermination_proof xml2name
+                                    termIndexMap ruleMap)
+                                  (\ r ->
+                                    Xmlt.xml_return
+                                      (Check_Nontermination.TRS_Q_Increase
+(Nontermination_Impl.Q_increase_nonterm_trs_prf q) r)))))
+                          (Xmlt.xml_or
+                            (Xmlt.xml_do "switchFullStrategy"
+                              (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
+                                (\ a ->
+                                  Xmlt.xml_take
+                                    (xml2trs_nontermination_proof xml2name
+                                      termIndexMap ruleMap)
+                                    (\ b ->
+                                      Xmlt.xml_return
+(Check_Nontermination.TRS_Termination_Switch a b)))))
+                            (Xmlt.xml_or
+                              (Xmlt.xml_do "uncurry"
+                                (Xmlt.xml_take
+                                  (uncurry_info xml2name termIndexMap ruleMap)
+                                  (\ i ->
+                                    Xmlt.xml_take
+                                      (Xmlt.xml_do "trs"
+(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+  (\ xa -> Xmlt.xml_return (id xa))))
+                                      (\ r ->
+Xmlt.xml_take (xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
+  (\ p ->
+    Xmlt.xml_return
+      (Check_Nontermination.TRS_Uncurry (Uncurry_Impl.Uncurry_nt_proof i r)
+        p))))))
+                              (Xmlt.xml_or
+                                (Xmlt.xml_change (not_wn_ta xml2name)
+                                  (Xmlt.xml_return .
+                                    Check_Nontermination.TRS_Not_WN_Tree_Automaton))
+                                (Xmlt.xml_or
+                                  (Xmlt.xml_do "nonterminationAssumption"
+                                    (Xmlt.xml_take xml2inn_nt_trs_assm
+                                      (\ qtrs ->
+Xmlt.xml_return (Check_Nontermination.TRS_Assume_Not_SN qtrs []))))
+                                  (Xmlt.xml_do "unknownProof"
+                                    (Xmlt.xml_take (Xmlt.xml_text "description")
+                                      (\ _ ->
+Xmlt.xml_take xml2inn_nt_trs_assm
+  (\ b ->
+    Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (\ xa -> Strict_Sum.right (fst xa))
+      (\ _ ->
+        Xmlt.xml_return
+          (Check_Nontermination.TRS_Assume_Not_SN b []))))))))))))))))))))
+      (\ xa -> Xmlt.xml_return (id xa)))
+    x;
+
+xml2inn_rel_nt_trs_assm :: forall a. a;
+xml2inn_rel_nt_trs_assm = error "undefined";
+
+xml2reltrs_nontermination_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (Check_Nontermination.Reltrs_nontermination_proof a b [Arith.Char]);
+xml2reltrs_nontermination_proof xml2name termIndexMap ruleMap x =
+  Xmlt.xml_do "relativeNonterminationProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "variableConditionViolated"
+          (Xmlt.xml_return Check_Nontermination.Rel_Not_Well_Formed))
+        (Xmlt.xml_or
+          (Xmlt.xml_change (loop xml2name termIndexMap ruleMap)
+            (\ (s, (rseq, (sigma, c))) ->
+              Xmlt.xml_return
+                (Check_Nontermination.Rel_Loop
+                  (Loops_Impl.Rel_trs_loop_prf s rseq sigma c))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "ignoreRelativePart"
+              (Xmlt.xml_take
+                (xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
+                (\ prf ->
+                  Xmlt.xml_return (Check_Nontermination.Rel_R_Not_SN prf))))
+            (Xmlt.xml_or
+              (Xmlt.xml_do "ruleRemoval"
+                (Xmlt.xml_take
+                  (Xmlt.xml_do "trs"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ xa -> Xmlt.xml_return (id xa))))
+                  (\ r ->
+                    Xmlt.xml_take
+                      (Xmlt.xml_do "trs"
+                        (Xmlt.xml_take
+                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                          (\ xa -> Xmlt.xml_return (id xa))))
+                      (\ s ->
+                        Xmlt.xml_take
+                          (xml2reltrs_nontermination_proof xml2name termIndexMap
+                            ruleMap)
+                          (\ p ->
+                            Xmlt.xml_return
+                              (Check_Nontermination.Rel_Rule_Removal
+                                (Nontermination_Impl.Rule_removal_nonterm_reltrs_prf
+                                  r s)
+                                p))))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "stringReversal"
+                  (Xmlt.xml_take
+                    (Xmlt.xml_do "trs"
+                      (Xmlt.xml_take
+                        (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                        (\ xa -> Xmlt.xml_return (Just xa))))
+                    (\ _ ->
+                      Xmlt.xml_take
+                        (Xmlt.xml_do "trs"
+                          (Xmlt.xml_take
+                            (CPF_Input_Parser.rules xml2name termIndexMap
+                              ruleMap)
+                            (\ xa -> Xmlt.xml_return (Just xa))))
+                        (\ _ ->
+                          Xmlt.xml_take
+                            (xml2reltrs_nontermination_proof xml2name
+                              termIndexMap ruleMap)
+                            (\ p ->
+                              Xmlt.xml_return
+                                (Check_Nontermination.Rel_TRS_String_Reversal
+                                  p))))))
+                (Xmlt.xml_or
+                  (Xmlt.xml_do "nonterminationAssumption"
+                    (Xmlt.xml_take xml2inn_rel_nt_trs_assm
+                      (\ qtrs ->
+                        Xmlt.xml_return
+                          (Check_Nontermination.Rel_TRS_Assume_Not_SN qtrs
+                            []))))
+                  (Xmlt.xml_do "unknownProof"
+                    (Xmlt.xml_take (Xmlt.xml_text "description")
+                      (\ _ ->
+                        Xmlt.xml_take xml2inn_rel_nt_trs_assm
+                          (\ b ->
+                            Xmlt.xml_take_many_sub [] Arith.zero_nat
+                              Extended_Nat.Infinity_enat
+                              (\ xa -> Strict_Sum.right (fst xa))
+                              (\ _ ->
+                                Xmlt.xml_return
+                                  (Check_Nontermination.Rel_TRS_Assume_Not_SN b
+                                    []))))))))))))
+      (\ xa -> Xmlt.xml_return (id xa)))
+    x;
+
+xml2ordered_completion_step ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     (Xml.Xml,
+                                       ([([Arith.Char], [Arith.Char])],
+ (Bool, ([String], [String])))) ->
+                                       Strict_Sum.Sum_bot
+ (Xmlt.Xml_error String)
+ (Ordered_Completion_Impl.Oc_irule (Labelings.Lab a b) [Arith.Char]);
+xml2ordered_completion_step xml2name termIndexMap =
+  Xmlt.xml_or
+    (Xmlt.xml_do "deduce"
+      (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+        (\ a ->
+          Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+            (\ b ->
+              Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                (\ c ->
+                  Xmlt.xml_return (Ordered_Completion_Impl.OC_Deduce a b c))))))
+    (Xmlt.xml_or
+      (Xmlt.xml_do "orientl"
+        (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+          (\ a ->
+            Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+              (\ b ->
+                Xmlt.xml_return (Ordered_Completion_Impl.OC_Orientl a b)))))
+      (Xmlt.xml_or
+        (Xmlt.xml_do "orientr"
+          (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+            (\ a ->
+              Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                (\ b ->
+                  Xmlt.xml_return (Ordered_Completion_Impl.OC_Orientr a b)))))
+        (Xmlt.xml_or
+          (Xmlt.xml_do "delete"
+            (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+              (\ x -> Xmlt.xml_return (Ordered_Completion_Impl.OC_Delete x))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "compose"
+              (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                (\ a ->
+                  Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                    (\ b ->
+                      Xmlt.xml_take
+                        (CPF_Input_Parser.term xml2name termIndexMap)
+                        (\ c ->
+                          Xmlt.xml_return
+                            (Ordered_Completion_Impl.OC_Compose a b c))))))
+            (Xmlt.xml_or
+              (Xmlt.xml_do "simplifyl"
+                (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                  (\ a ->
+                    Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                      (\ b ->
+                        Xmlt.xml_take
+                          (CPF_Input_Parser.term xml2name termIndexMap)
+                          (\ c ->
+                            Xmlt.xml_return
+                              (Ordered_Completion_Impl.OC_Simplifyl a b c))))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "simplifyr"
+                  (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                    (\ a ->
+                      Xmlt.xml_take
+                        (CPF_Input_Parser.term xml2name termIndexMap)
+                        (\ b ->
+                          Xmlt.xml_take
+                            (CPF_Input_Parser.term xml2name termIndexMap)
+                            (\ c ->
+                              Xmlt.xml_return
+                                (Ordered_Completion_Impl.OC_Simplifyr a b
+                                  c))))))
+                (Xmlt.xml_do "collapse"
+                  (Xmlt.xml_take (CPF_Input_Parser.term xml2name termIndexMap)
+                    (\ a ->
+                      Xmlt.xml_take
+                        (CPF_Input_Parser.term xml2name termIndexMap)
+                        (\ b ->
+                          Xmlt.xml_take
+                            (CPF_Input_Parser.term xml2name termIndexMap)
+                            (\ c ->
+                              Xmlt.xml_return
+                                (Ordered_Completion_Impl.OC_Collapse a b
+                                  c))))))))))));
+
+xml2ordered_completion_proof ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     (Xml.Xml,
+                                       ([([Arith.Char], [Arith.Char])],
+ (Bool, ([String], [String])))) ->
+                                       Strict_Sum.Sum_bot
+ (Xmlt.Xml_error String)
+ (Ordered_Completion_Impl.Ordered_completion_proof (Labelings.Lab a b)
+   [Arith.Char]);
+xml2ordered_completion_proof xml2name termIndexMap =
+  Xmlt.xml_do "orderedCompletionProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "run"
+        (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+          (Xmlt.xml_do "orderedCompletionStep"
+            (Xmlt.xml_take (xml2ordered_completion_step xml2name termIndexMap)
+              (\ x -> Xmlt.xml_return (id x))))
+          (\ a -> Xmlt.xml_return (id a))))
+      (\ x -> Xmlt.xml_return (Ordered_Completion_Impl.OKB x)));
+
+unraveling_info ::
+  forall a b.
+    (Compare.Compare_order a, Term_Rewriting.Showl a, Compare.Compare_order b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   [(((Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]),
+       [(Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char],
+          Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char])]),
+      [(Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char],
+         Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char])])];
+unraveling_info xml2name termIndexMap ruleMap =
+  Xmlt.xml_do "unravelingInformation"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (Xmlt.xml_do "unravelingEntry"
+        (Xmlt.xml_take
+          (CPF_Input_Parser.crule xml2name termIndexMap "conditionalRule")
+          (\ a ->
+            Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+              (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+              (\ b -> Xmlt.xml_return (a, b)))))
+      (\ a -> Xmlt.xml_return (id a)));
+
+xml2quasi_reductive_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (Check_Quasi_Reductive.Quasi_reductive_proof a b [Arith.Char]);
+xml2quasi_reductive_proof xml2name termIndexMap ruleMap =
+  Xmlt.xml_do "quasiReductiveProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "unraveling"
+        (Xmlt.xml_take (unraveling_info xml2name termIndexMap ruleMap)
+          (\ a ->
+            Xmlt.xml_take
+              (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+              (\ b -> Xmlt.xml_return (Check_Quasi_Reductive.Unravel a b)))))
+      (\ x -> Xmlt.xml_return (id x)));
 
 xml2csr_termination_proof ::
   forall a b.
@@ -4792,25 +5031,6 @@ xml2nonreachable_etac_info xml2name termIndexMap =
                           (Check_Nonreachability.Nonreachable_ETAC a b c
                             (Exact_Tree_Automata_Completion_Impl.map_states_impl
                               e d))))))));
-
-conversion ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    (Xml.Xml,
-                                      ([([Arith.Char], [Arith.Char])],
-(Bool, ([String], [String])))) ->
-                                      Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-[Term_Rewriting.Term a [Arith.Char]];
-conversion xml2name termIndexMap =
-  Xmlt.xml_do "conversion"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (CPF_Input_Parser.term xml2name termIndexMap) Xmlt.xml_return);
 
 subsumption_proof ::
   forall a.
@@ -6901,36 +7121,6 @@ xml2equational_proof xml2name termIndexMap ruleMap =
 xml2complexity_input :: forall a. a;
 xml2complexity_input = error "undefined";
 
-rule_pairs ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  Mapping.Mapping [Arith.Char]
-                                    (Term_Rewriting.Term a [Arith.Char]) ->
-                                    Mapping.Mapping [Arith.Char]
-                                      (Term_Rewriting.Term a [Arith.Char],
-Term_Rewriting.Term a [Arith.Char]) ->
-                                      String ->
-String ->
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-      [((Term_Rewriting.Term a [Arith.Char],
-          Term_Rewriting.Term a [Arith.Char]),
-         (Term_Rewriting.Term a [Arith.Char],
-           Term_Rewriting.Term a [Arith.Char]))];
-rule_pairs xml2name termIndexMap ruleMap s p =
-  Xmlt.xml_do s
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (Xmlt.xml_do p
-        (Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-          (\ a ->
-            Xmlt.xml_take (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
-              (\ b -> Xmlt.xml_return (a, b)))))
-      Xmlt.xml_return);
-
 xml2complexity_proof ::
   forall a b.
     (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
@@ -7368,7 +7558,7 @@ Xmlt.xml_take
       (\ xa -> Xmlt.xml_return (id xa)))
     x;
 
-proof ::
+proof_content ::
   ((Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
     Strict_Sum.Sum_bot (Xmlt.Xml_error String)
       (Labelings.Lab [Arith.Char] [Arith.Nat])) ->
@@ -7384,169 +7574,120 @@ proof ::
           ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
           Strict_Sum.Sum_bot (Xmlt.Xml_error String)
             (Proof_Checker.Proof [Arith.Char] [Arith.Nat] [Arith.Char]);
-proof xml2name termIndexMap ruleMap =
-  Xmlt.xml_do "proof"
-    (Xmlt.xml_take
+proof_content xml2name termIndexMap ruleMap =
+  Xmlt.xml_or
+    (Xmlt.xml_change (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+      (Xmlt.xml_return . Proof_Checker.TRS_Termination_Proof))
+    (Xmlt.xml_or
+      (Xmlt.xml_change
+        (xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
+        (Xmlt.xml_return . Proof_Checker.TRS_Nontermination_Proof))
       (Xmlt.xml_or
         (Xmlt.xml_change
-          (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-          (Xmlt.xml_return . Proof_Checker.TRS_Termination_Proof))
+          (xml2reltrs_nontermination_proof xml2name termIndexMap ruleMap)
+          (Xmlt.xml_return . Proof_Checker.Relative_TRS_Nontermination_Proof))
         (Xmlt.xml_or
-          (Xmlt.xml_change
-            (xml2trs_nontermination_proof xml2name termIndexMap ruleMap)
-            (Xmlt.xml_return . Proof_Checker.TRS_Nontermination_Proof))
+          (Xmlt.xml_change (xml2cr_proof xml2name termIndexMap ruleMap)
+            (Xmlt.xml_return . Proof_Checker.TRS_Confluence_Proof))
           (Xmlt.xml_or
-            (Xmlt.xml_change
-              (xml2reltrs_nontermination_proof xml2name termIndexMap ruleMap)
-              (Xmlt.xml_return .
-                Proof_Checker.Relative_TRS_Nontermination_Proof))
+            (Xmlt.xml_change (xml2ncr_proof xml2name termIndexMap ruleMap)
+              (Xmlt.xml_return . Proof_Checker.TRS_Non_Confluence_Proof))
             (Xmlt.xml_or
-              (Xmlt.xml_change (xml2cr_proof xml2name termIndexMap ruleMap)
-                (Xmlt.xml_return . Proof_Checker.TRS_Confluence_Proof))
+              (Xmlt.xml_change
+                (xml2dp_termination_proof xml2name termIndexMap ruleMap)
+                (Xmlt.xml_return . Proof_Checker.DP_Termination_Proof))
               (Xmlt.xml_or
-                (Xmlt.xml_change (xml2ncr_proof xml2name termIndexMap ruleMap)
-                  (Xmlt.xml_return . Proof_Checker.TRS_Non_Confluence_Proof))
+                (Xmlt.xml_change
+                  (xml2dp_nontermination_proof xml2name termIndexMap ruleMap)
+                  (Xmlt.xml_return . Proof_Checker.DP_Nontermination_Proof))
                 (Xmlt.xml_or
                   (Xmlt.xml_change
-                    (xml2dp_termination_proof xml2name termIndexMap ruleMap)
-                    (Xmlt.xml_return . Proof_Checker.DP_Termination_Proof))
+                    (xml2csr_termination_proof xml2name termIndexMap ruleMap)
+                    (\ p ->
+                      Xmlt.xml_return
+                        (Proof_Checker.CSR_Termination_Proof
+                          (CSR_Conservative_Checker.Existing_CSR_Proof p))))
                   (Xmlt.xml_or
                     (Xmlt.xml_change
-                      (xml2dp_nontermination_proof xml2name termIndexMap
-                        ruleMap)
-                      (Xmlt.xml_return . Proof_Checker.DP_Nontermination_Proof))
+                      (xml2completion_proof xml2name termIndexMap ruleMap)
+                      (Xmlt.xml_return . Proof_Checker.Completion_Proof))
                     (Xmlt.xml_or
                       (Xmlt.xml_change
-                        (xml2csr_termination_proof xml2name termIndexMap
-                          ruleMap)
-                        (Xmlt.xml_return . Proof_Checker.CSR_Termination_Proof))
+                        (xml2ordered_completion_proof xml2name termIndexMap)
+                        (Xmlt.xml_return .
+                          Proof_Checker.Ordered_Completion_Proof))
                       (Xmlt.xml_or
                         (Xmlt.xml_change
-                          (xml2completion_proof xml2name termIndexMap ruleMap)
-                          (Xmlt.xml_return . Proof_Checker.Completion_Proof))
+                          (xml2equational_proof xml2name termIndexMap ruleMap)
+                          (Xmlt.xml_return . Proof_Checker.Equational_Proof))
                         (Xmlt.xml_or
                           (Xmlt.xml_change
-                            (xml2ordered_completion_proof xml2name termIndexMap)
+                            (xml2equational_disproof xml2name termIndexMap
+                              ruleMap)
                             (Xmlt.xml_return .
-                              Proof_Checker.Ordered_Completion_Proof))
+                              Proof_Checker.Equational_Disproof))
                           (Xmlt.xml_or
                             (Xmlt.xml_change
-                              (xml2equational_proof xml2name termIndexMap
+                              (xml2complexity_proof xml2name termIndexMap
                                 ruleMap)
                               (Xmlt.xml_return .
-                                Proof_Checker.Equational_Proof))
+                                Proof_Checker.Complexity_Proof))
                             (Xmlt.xml_or
                               (Xmlt.xml_change
-                                (xml2equational_disproof xml2name termIndexMap
+                                (xml2quasi_reductive_proof xml2name termIndexMap
                                   ruleMap)
                                 (Xmlt.xml_return .
-                                  Proof_Checker.Equational_Disproof))
+                                  Proof_Checker.Quasi_Reductive_Proof))
                               (Xmlt.xml_or
                                 (Xmlt.xml_change
-                                  (xml2complexity_proof xml2name termIndexMap
-                                    ruleMap)
+                                  (xml2conditional_cr_proof xml2name
+                                    termIndexMap ruleMap)
                                   (Xmlt.xml_return .
-                                    Proof_Checker.Complexity_Proof))
+                                    Proof_Checker.Conditional_CR_Proof))
                                 (Xmlt.xml_or
                                   (Xmlt.xml_change
-                                    (xml2quasi_reductive_proof xml2name
+                                    (xml2conditional_ncr_proof xml2name
                                       termIndexMap ruleMap)
                                     (Xmlt.xml_return .
-                                      Proof_Checker.Quasi_Reductive_Proof))
+                                      Proof_Checker.Conditional_Non_CR_Proof))
                                   (Xmlt.xml_or
                                     (Xmlt.xml_change
-                                      (xml2conditional_cr_proof xml2name
-termIndexMap ruleMap)
+                                      (xml2ncomm_proof xml2name termIndexMap
+ruleMap)
                                       (Xmlt.xml_return .
-Proof_Checker.Conditional_CR_Proof))
+Proof_Checker.TRS_Non_Commutation_Proof))
                                     (Xmlt.xml_or
                                       (Xmlt.xml_change
-(xml2conditional_ncr_proof xml2name termIndexMap ruleMap)
-(Xmlt.xml_return . Proof_Checker.Conditional_Non_CR_Proof))
+(xml2comm_proof xml2name termIndexMap ruleMap)
+(Xmlt.xml_return . Proof_Checker.TRS_Commutation_Proof))
                                       (Xmlt.xml_or
-(Xmlt.xml_change (xml2ncomm_proof xml2name termIndexMap ruleMap)
-  (Xmlt.xml_return . Proof_Checker.TRS_Non_Commutation_Proof))
+(Xmlt.xml_do "treeAutomatonClosedProof"
+  (Xmlt.xml_take closed_criterion
+    (\ x -> Xmlt.xml_return (Proof_Checker.Tree_Automata_Closed_Proof x))))
 (Xmlt.xml_or
-  (Xmlt.xml_change (xml2comm_proof xml2name termIndexMap ruleMap)
-    (Xmlt.xml_return . Proof_Checker.TRS_Commutation_Proof))
+  (Xmlt.xml_change (xml2ac_termination_proof xml2name termIndexMap ruleMap)
+    (Xmlt.xml_return . Proof_Checker.AC_Termination_Proof))
   (Xmlt.xml_or
-    (Xmlt.xml_do "treeAutomatonClosedProof"
-      (Xmlt.xml_take closed_criterion
-        (\ x -> Xmlt.xml_return (Proof_Checker.Tree_Automata_Closed_Proof x))))
+    (Xmlt.xml_do "ltsTerminationProof"
+      (Xmlt.xml_take LTS_Parser.lts_termination_proof_parser
+        (\ x -> Xmlt.xml_return (Proof_Checker.LTS_Termination_Proof x))))
     (Xmlt.xml_or
-      (Xmlt.xml_change (xml2ac_termination_proof xml2name termIndexMap ruleMap)
-        (Xmlt.xml_return . Proof_Checker.AC_Termination_Proof))
+      (Xmlt.xml_do "ltsSafetyProof"
+        (Xmlt.xml_take LTS_Parser.lts_safety_proof_parser
+          (\ x -> Xmlt.xml_return (Proof_Checker.LTS_Safety_Proof x))))
       (Xmlt.xml_or
-        (Xmlt.xml_do "ltsTerminationProof"
-          (Xmlt.xml_take LTS_Parser.lts_termination_proof_parser
-            (\ x -> Xmlt.xml_return (Proof_Checker.LTS_Termination_Proof x))))
+        (Xmlt.xml_change (xml2infeasibility_proof xml2name termIndexMap ruleMap)
+          (Xmlt.xml_return . Proof_Checker.Infeasibility_Proof))
         (Xmlt.xml_or
-          (Xmlt.xml_do "ltsSafetyProof"
-            (Xmlt.xml_take LTS_Parser.lts_safety_proof_parser
-              (\ x -> Xmlt.xml_return (Proof_Checker.LTS_Safety_Proof x))))
+          (Xmlt.xml_change (xml2feasibility_proof xml2name termIndexMap)
+            (Xmlt.xml_return . Proof_Checker.Feasibility_Proof))
           (Xmlt.xml_or
+            (Xmlt.xml_change (xml2unknown_proof xml2name termIndexMap ruleMap)
+              (Xmlt.xml_return . Proof_Checker.Unknown_Proof))
             (Xmlt.xml_change
-              (xml2infeasibility_proof xml2name termIndexMap ruleMap)
-              (Xmlt.xml_return . Proof_Checker.Infeasibility_Proof))
-            (Xmlt.xml_or
-              (Xmlt.xml_change (xml2feasibility_proof xml2name termIndexMap)
-                (Xmlt.xml_return . Proof_Checker.Feasibility_Proof))
-              (Xmlt.xml_or
-                (Xmlt.xml_change
-                  (xml2unknown_proof xml2name termIndexMap ruleMap)
-                  (Xmlt.xml_return . Proof_Checker.Unknown_Proof))
-                (Xmlt.xml_change
-                  (xml2unknown_disproof xml2name termIndexMap ruleMap)
-                  (Xmlt.xml_return .
-                    Proof_Checker.Unknown_Disproof)))))))))))))))))))))))))))
-      Xmlt.xml_return);
-
-symbol_parser ::
-  (Xml.Xml, ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-      (Labelings.Lab [Arith.Char] [Arith.Nat]);
-symbol_parser x =
-  Xmlt.xml_or
-    (Xmlt.xml_change (Xmlt.xml_text "name") (Xmlt.xml_return . Labelings.UnLab))
-    (Xmlt.xml_or
-      (Xmlt.xml_do "sharp"
-        (Xmlt.xml_take symbol_parser
-          (\ xa -> Xmlt.xml_return (Labelings.Sharp xa))))
-      (Xmlt.xml_do "labeledSymbol"
-        (Xmlt.xml_take symbol_parser
-          (\ a ->
-            Xmlt.xml_take
-              (Xmlt.xml_or
-                (Xmlt.xml_do "numberLabel"
-                  (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                    Extended_Nat.Infinity_enat (Xmlt.xml_nat "number")
-                    (\ aa -> Xmlt.xml_return (Sum_Type.Inl aa))))
-                (Xmlt.xml_do "symbolLabel"
-                  (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                    Extended_Nat.Infinity_enat symbol_parser
-                    (\ aa -> Xmlt.xml_return (Sum_Type.Inr aa)))))
-              (\ b ->
-                Xmlt.xml_return (case b of {
-                                  Sum_Type.Inl ba -> Labelings.Lab a ba;
-                                  Sum_Type.Inr ba -> Labelings.FunLab a ba;
-                                }))))))
-    x;
-
-input_parser ::
-  Mapping.Mapping [Arith.Char]
-    (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
-      [Arith.Char]) ->
-    Mapping.Mapping [Arith.Char]
-      (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
-         [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
-          [Arith.Char]) ->
-      (Xml.Xml,
-        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-          (Ceta_Problem_Spec.Input (Labelings.Lab [Arith.Char] [Arith.Nat])
-            [Arith.Char]);
-input_parser = CPF_Input_Parser.input symbol_parser;
+              (xml2unknown_disproof xml2name termIndexMap ruleMap)
+              (Xmlt.xml_return .
+                Proof_Checker.Unknown_Disproof))))))))))))))))))))))))));
 
 proof_parser ::
   Mapping.Mapping [Arith.Char]
@@ -7561,7 +7702,15 @@ proof_parser ::
         ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
         Strict_Sum.Sum_bot (Xmlt.Xml_error String)
           (Proof_Checker.Proof [Arith.Char] [Arith.Nat] [Arith.Char]);
-proof_parser = proof symbol_parser;
+proof_parser termIndexMap ruleMap =
+  Xmlt.xml_do "proof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_change
+          (xml2conservative_csr_termination_proof termIndexMap ruleMap)
+          (\ p -> Xmlt.xml_return (Proof_Checker.CSR_Termination_Proof p)))
+        (proof_content symbol_parser termIndexMap ruleMap))
+      Xmlt.xml_return);
 
 answer_parser ::
   Mapping.Mapping [Arith.Char]

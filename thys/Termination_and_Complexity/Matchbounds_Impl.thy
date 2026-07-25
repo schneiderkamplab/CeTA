@@ -10,6 +10,8 @@ theory Matchbounds_Impl
     First_Order_Rewriting.Trs_Impl
     TRS.Signature_Extension
     Framework.QDP_Framework_Impl
+    Rewriting
+    Right_Forward_Closures.Right_Forward_Closure
     Auxx.Multiset_Code
     Auxx.Map_Choice
     "HOL-Library.Mapping" 
@@ -123,7 +125,7 @@ begin
 lemma create_constant_in_ta_generic: fixes R :: "('f,'v)rules"
   assumes 
       choice: "left_linear_trs (set R) \<or> ta_det TA \<and> state_raise_consistent TA rel"
-  shows "\<exists> q const F F' TA'. G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' \<and>  
+  shows "\<exists> q const F F' TA'. q \<in> qfin \<and> G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' \<and>
        (\<forall> e ee S. S \<subseteq> set R \<longrightarrow>  state_compatible TA rel (cover_bound c e ee S) \<longrightarrow>
        state_compatible TA' rel (cover e ee S)) 
     \<and> lift_term 0 ` ground_terms_of F F' \<subseteq> (ta_lang TA' :: ('f \<times> nat,'v)terms)
@@ -374,14 +376,14 @@ proof -
   qed
   show ?thesis
     by (rule exI[of _ q], rule exI[of _ const], rule exI[of _ "set F"], rule exI[of _ "set F'"], rule exI[of _ TA'],
-    insert \<open>?comp\<close> \<open>?cont\<close> lift main, auto simp: F finG G' TA' F' H')
+    insert \<open>?comp\<close> \<open>?cont\<close> lift main q, auto simp: F finG G' TA' F' H')
 qed
 
 lemma create_constant_in_ta: fixes R :: "('f,'v)rules"
   assumes 
       choice: "left_linear_trs (set R) \<or> ta_det TA \<and> state_raise_consistent TA rel"
   and compat: "state_compatible TA rel (cover_bound c e ee (set R))" (is "state_compatible _ _ ?R")
-  shows "\<exists> q const F F' TA'. G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' 
+  shows "\<exists> q const F F' TA'. q \<in> qfin \<and> G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F'
     \<and> state_compatible TA' rel (cover e ee (set R))
     \<and> lift_term 0 ` ground_terms_of F F' \<subseteq> (ta_lang TA' :: ('f \<times> nat,'v)terms)
     \<and> state_coherent TA' rel
@@ -391,7 +393,7 @@ lemma create_constant_in_ta: fixes R :: "('f,'v)rules"
 proof -
   let ?Q = "\<lambda> TA'. \<forall> e ee S. S \<subseteq> set R \<longrightarrow> state_compatible TA rel (cover_bound c e ee S) \<longrightarrow>
        state_compatible TA' rel (cover e ee S)"
-  define P where "P = (\<lambda> q const F F' TA'. G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' \<and> 
+  define P where "P = (\<lambda> q const F F' TA'. q \<in> qfin \<and> G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' \<and>
        ?Q TA' 
     \<and> lift_term 0 ` ground_terms_of F F' \<subseteq> (ta_lang TA' :: ('f \<times> nat,'v)terms)
     \<and> state_coherent TA' rel
@@ -413,7 +415,7 @@ lemma create_constant_in_ta_two: fixes R1 R2 :: "('f,'v)rules"
       choice: "left_linear_trs (set (R1 @ R2)) \<or> ta_det TA \<and> state_raise_consistent TA rel"
   and compat1: "state_compatible TA rel (cover_bound c e1 ee1 (set R1))" (is "state_compatible _ _ ?R1")
   and compat2: "state_compatible TA rel (cover_bound c e2 ee2 (set R2))" (is "state_compatible _ _ ?R2")
-  shows "\<exists> q const F F' TA'. G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' 
+  shows "\<exists> q const F F' TA'. q \<in> qfin \<and> G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F'
     \<and> state_compatible TA' rel (cover e1 ee1 (set R1))
     \<and> state_compatible TA' rel (cover e2 ee2 (set R2))
     \<and> lift_term 0 ` ground_terms_of F F' \<subseteq> (ta_lang TA' :: ('f \<times> nat,'v)terms)
@@ -424,7 +426,7 @@ lemma create_constant_in_ta_two: fixes R1 R2 :: "('f,'v)rules"
 proof -
   let ?Q = "\<lambda> TA'. \<forall> e ee S. S \<subseteq> set (R1 @ R2) \<longrightarrow> state_compatible TA rel (cover_bound c e ee S) \<longrightarrow>
        state_compatible TA' rel (cover e ee S)"
-  define P where "P = (\<lambda> q const F F' TA'. G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' \<and>
+  define P where "P = (\<lambda> q const F F' TA'. q \<in> qfin \<and> G \<union> {(const,0)} = F \<and> H \<union> {(const,0)} = F' \<and>
        ?Q TA' 
     \<and> lift_term 0 ` ground_terms_of F F' \<subseteq> (ta_lang TA' :: ('f \<times> nat,'v)terms)
     \<and> state_coherent TA' rel
@@ -455,7 +457,11 @@ proof -
   }
   then show ?thesis by auto
 qed
-  
+
+lemma funas_term_const_subst:
+  fixes const :: "'f"
+  shows "funas_term (t \<cdot> (\<lambda>_. Fun const [])) \<subseteq> funas_term t \<union> {(const,0)}"
+  by (induct t) auto
 
 locale bounds_impl = 
   fixes R S :: "('f,'v)rules" and TA and rel :: "'q rel" and e and c and c_opt and G H :: "'f sig" and qfin 
@@ -609,6 +615,7 @@ proof -
     then show "SN_on (rstep (set R)) {t}" using t unfolding SN_on_def by blast
   qed
 qed
+
 end
 
 fun flatten_term_enum_filter :: "(('f,'v)term \<Rightarrow> bool) \<Rightarrow> ('f list,'v)term \<Rightarrow> ('f,'v)term list"
@@ -1016,6 +1023,36 @@ definition check_bounds_generic :: "('f :: {showl,linorder},'q :: {showl,linorde
              \<circ> showsl_lit (STR ''\<newline>which is instantiated by states to '') \<circ> showsl_rule lr_rhs
              \<circ> showsl_lit (STR ''\<newline>the state '') \<circ> showsl q \<circ> showsl_lit (STR '' is only reachable from the lhs\<newline>''))
    } <+? (\<lambda> s. showsl_lit (STR ''problem during checking bounds of automaton\<newline>'') o get_renaming_info ren o showsl_lit (STR ''\<newline>error:\<newline>'') o s))"
+
+definition check_bounds_generic_without_contains :: "('f :: {showl,linorder},'q :: {showl,linorder})bounds_info \<Rightarrow>
+  ('f,'v :: {showl,linorder})rules \<Rightarrow> ('f,'v)rules \<Rightarrow> showsl check" where
+  "check_bounds_generic_without_contains bi R S = (case get_integer_bounds_info bi of (Bounds_Info type c qfin preTA rel, ren) \<Rightarrow> do {
+     let c_opt = construct_c_opt c R;
+     let RS = R @ S;
+     TA \<leftarrow> generate_ta_cond preTA rel;
+     let rell = rel_checker rel;
+     check_wf_trs RS;
+     check (set qfin \<subseteq> rs.\<alpha> (ta_final_impl TA)) (showsl_lit (STR ''explicitly mentioned final states must be final''));
+     (if isOK(check_left_linear_trs RS) then succeed else
+       do {
+         check_det preTA <+? (\<lambda> s. showsl_lit (STR ''for non left-linear TRS we require det. automaton\<newline>'') \<circ> s);
+         rel_list \<leftarrow> relation_as_list rel;
+         check_state_raise_consistent preTA rel_list
+       });
+     bounds_condition type RS;
+     check_ta_bounded TA c;
+     check (Bex (set qfin) (\<lambda> q. rs.memb q (ta_rhs_states_set TA))) (showsl_lit (STR ''did not find mentioned final state in TA''));
+     state_compatible_eff_list TA rell (cover_bound_list_filter (\<lambda> l. \<not> rule_state_compatible_heuristic TA l) (boundstype_fun type) Strict_TRS c R)
+        <+? (\<lambda> (lr,lr_rhs,q). showsl_lit (STR ''TA is not compatible with TRS\<newline>'')
+             \<circ> showsl_lit (STR ''for rule '') \<circ> showsl_rule lr
+             \<circ> showsl_lit (STR ''\<newline>which is instantiated by states to '') \<circ> showsl_rule lr_rhs
+             \<circ> showsl_lit (STR ''\<newline>the state '') \<circ> showsl q \<circ> showsl_lit (STR '' is only reachable from the lhs\<newline>''));
+     state_compatible_eff_list TA rell (cover_bound_list_filter (\<lambda> l. \<not> rule_state_compatible_heuristic TA l) Matchbounds.match (Weak_TRS c_opt) c S)
+        <+? (\<lambda> (lr,lr_rhs,q). showsl_lit (STR ''TA is not compatible with relative TRS\<newline>'')
+             \<circ> showsl_lit (STR ''for rule '') \<circ> showsl_rule lr
+             \<circ> showsl_lit (STR ''\<newline>which is instantiated by states to '') \<circ> showsl_rule lr_rhs
+             \<circ> showsl_lit (STR ''\<newline>the state '') \<circ> showsl q \<circ> showsl_lit (STR '' is only reachable from the lhs\<newline>''))
+   } <+? (\<lambda> s. showsl_lit (STR ''problem during checking local bounds conditions of automaton\<newline>'') o get_renaming_info ren o showsl_lit (STR ''\<newline>error:\<newline>'') o s))"
  
 lemma check_bounds_generic: assumes ok: "isOK(check_bounds_generic 
   (info :: ('f,'q :: {linorder,showl})bounds_info) (R :: ('f :: {linorder,showl},'v :: {linorder, showl})rules) 
@@ -1124,6 +1161,223 @@ proof -
     unfolding bt_info unfolding info by force
   from cond have cond: "isOK (bounds_condition (boundstype info) (R @ S))" using info by simp
   from bounds cond show ?thesis by blast
+qed
+
+lemma check_bounds_generic_exact:
+  assumes ok: "isOK(check_bounds_generic
+    (info :: ('f,'q :: {linorder,showl})bounds_info) (R :: ('f :: {linorder,showl},'v :: {linorder, showl})rules)
+    S F G)"
+    and inf: "infinite (UNIV :: 'f set)"
+    and info_def: "get_integer_bounds_info info = (Bounds_Info type c qfin preTA rel_info, ren)"
+  shows "\<exists> rel c_opt.
+      bounds_impl R S (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel (boundstype_fun (boundstype info)) c c_opt (set F) (set G) (set qfin)
+      \<and> weak_kind_condition c c_opt (set R)
+      \<and> isOK (bounds_condition (boundstype info) (R @ S))"
+proof -
+  from boundstype_get_integer_bounds_info[OF info_def]
+  have bt_info[simp]: "boundstype info = type" by auto
+  let ?c_opt = "construct_c_opt c R"
+  let ?rel = "rel_checker rel_info"
+  let ?rell = "relation_of rel_info"
+  note ok = ok[unfolded info_def check_bounds_generic_def, simplified]
+  from ok obtain TA where TA: "generate_ta_cond preTA rel_info = return TA" by auto
+  from generate_ta_cond[OF this] have inv: "ta_inv TA ?rel ?rell" and TA2: "TA = generate_ta preTA" by auto
+  let ?filt = "\<lambda> l. \<not> rule_state_compatible_heuristic TA l"
+  let ?sfilt = "\<lambda> l. (\<forall> u \<unlhd> l. ?filt u)"
+  let ?relll = "relation_as_list rel_info"
+  let ?e = "(boundstype_fun type)"
+  let ?e2 = Matchbounds.match
+  interpret ta_inv TA ?rel ?rell by fact
+  have [simp]: "ta_of_ta preTA = TA'" unfolding TA2 generate_ta by simp
+  note ok = ok[unfolded TA, simplified]
+  from ok have
+    wf: "wf_trs (set R \<union> set S)"
+    and choice: "left_linear_trs (set (R @ S)) \<or> ta_det (ta_of TA)
+      \<and> isOK ?relll \<and> state_raise_consistent (ta_of TA) (set (projr ?relll))" (is "_ \<or> ?det")
+    and qfin: "\<exists> q \<in> set qfin. rs.memb q (ta_rhs_states_set TA)"
+    and c: "isOK(check_ta_bounded TA c)"
+    and cond: "isOK(bounds_condition type (R @ S))"
+    and contain: "isOK(ta_contains_impl (map (\<lambda>(f,n). (lift 0 f,n)) F) (map (\<lambda>(f,n). (lift 0 f,n)) G) TA qfin)"
+    and compat: "isOK(state_compatible_eff_list TA ?rel (cover_bound_list_filter ?filt ?e Strict_TRS c R))"
+    and compat2: "isOK(state_compatible_eff_list TA ?rel (cover_bound_list_filter ?filt ?e2 (Weak_TRS ?c_opt) c S))"
+    and final: "set qfin \<subseteq> ta_final (ta_of TA)"
+    by (auto simp: ta_final)
+  from choice have choice: "left_linear_trs (set (R @ S)) \<or> ta_det (ta_of TA) \<and> state_raise_consistent (ta_of TA) ?rell"
+  proof
+    assume ?det
+    have "state_raise_consistent (ta_of TA) ?rell"
+    proof (cases rel_info)
+      case Id_Relation
+      with \<open>?det\<close> show ?thesis by (auto simp: state_raise_consistent_def)
+    qed (insert \<open>?det\<close>, auto)
+    with \<open>?det\<close> show ?thesis by simp
+  qed auto
+  from qfin have qfin: "\<exists> q \<in> set qfin. q \<in> ta_rhs_states TA'" using ta_rhs_states_set by (auto simp: rs.correct)
+  let ?C = "cover_bound c ?e Strict_TRS (set R)"
+  let ?Cf = "cover_bound c ?e Strict_TRS (set R) \<inter> {(l,r). ?sfilt l}"
+  from c have c': "\<And> fn. fn \<in> set (rm.to_list (ta_rules_impl TA)) \<Longrightarrow> case fst fn of (f,n) \<Rightarrow> height f \<le> c"
+    unfolding check_ta_bounded_def by auto
+  {
+    fix f n
+    assume "(f,n) \<in> ta_syms TA'"
+    then obtain rule where rule: "rule \<in> ta_rules TA'" and n: "r_sym rule = (f,n)"
+      unfolding ta_syms_def by auto
+    let ?crule = "conv_ta_rule (ta_epss_impl TA) rule"
+    from rule have crule: "?crule \<in> conv_ta_rule (ta_epss_impl TA) ` ta_rules TA'" by auto
+    from n have n: "r_sym_impl ?crule = (f,n)" by (cases rule, auto)
+    let ?rm = "ta_rules_impl TA"
+    from rm_set_lookup3[OF crule, unfolded n]
+    obtain rls where "rm.\<alpha> ?rm (f,n) = Some rls" by (force simp: rm_\<alpha>_to_lookup)
+    then have "map_of (rm.to_list ?rm) (f,n) = Some rls" by (auto simp: rm.correct)
+    from map_of_SomeD[OF this]
+    have "((f,n),rls) \<in> set (rm.to_list ?rm)" .
+    from c'[OF this] have "height f \<le> c" by simp
+  } note c = this
+  then have tab: "ta_bounded TA' c" unfolding ta_bounded_def by auto
+  note var_cond = wf[unfolded wf_trs_def]
+  {
+    fix U e ee
+    assume sub: "set U \<subseteq> set (R @ S)"
+      and compat: "isOK(state_compatible_eff_list TA ?rel (cover_bound_list_filter ?filt e ee c U))"
+    let ?C = "cover_bound c e ee (set U)"
+    let ?Cf = "?C \<inter> {(l, r). \<forall>u\<unlhd>l. \<not> rule_state_compatible_heuristic TA u}"
+    have "state_compatible TA' ?rell ?Cf"
+    proof (rule state_compatible_eff_list[OF _ compat, unfolded cover_bound_list_filter])
+      fix l r
+      assume "(l,r) \<in> ?Cf"
+      then have "(l,r) \<in> cover e ee (set U)" unfolding cover_bound_def by auto
+      from cover_var_condition[OF _ this] var_cond sub
+      show "vars_term r \<subseteq> vars_term l" by auto
+    qed
+    then have compat: "state_compatible TA' ?rell ?C"
+      by (rule remove_compatible_rules, insert rule_state_compatible_heuristic_subteq, blast)
+  } note compat_conv = this
+  from compat_conv[OF _ compat]
+  have compat: "state_compatible TA' ?rell ?C" by auto
+  from compat_conv[OF _ compat2]
+  have compatS: "state_compatible TA' ?rell (cover_bound c Matchbounds.match (Weak_TRS ?c_opt) (set S))" by auto
+  obtain fin rls eps where preTA: "preTA = Tree_Automaton fin rls eps" by (cases preTA, auto)
+  from generate_ta_rules[of fin rls eps] have "ta_rules (ta_of TA) = set rls" using TA2 preTA by auto
+  then have fin: "finite (ta_rules (ta_of TA))" by auto
+  have wkc: "weak_kind_condition c ?c_opt (set R)" by simp
+  have bounds: "bounds_impl R S TA' ?rell ?e c ?c_opt (set F) (set G) (set qfin)"
+    by (unfold_locales, insert final choice fin compat compatS coherent tab qfin inf finite_set wf
+      ta_contains_impl[OF contain], auto)
+  show ?thesis
+  proof (intro exI conjI)
+    show "bounds_impl R S (ta_of (generate_ta preTA)) ?rell (boundstype_fun (boundstype info)) c ?c_opt (set F) (set G) (set qfin)"
+      using bounds unfolding TA2 by simp
+    show "weak_kind_condition c ?c_opt (set R)" by (rule wkc)
+    show "isOK (bounds_condition (boundstype info) (R @ S))" using cond by simp
+  qed
+qed
+
+lemma check_bounds_generic_without_contains_exact:
+  assumes ok: "isOK(check_bounds_generic_without_contains
+    (info :: ('f,'q :: {linorder,showl})bounds_info) (R :: ('f :: {linorder,showl},'v :: {linorder, showl})rules)
+    S)"
+    and info_def: "get_integer_bounds_info info = (Bounds_Info type c qfin preTA rel_info, ren)"
+  shows "\<exists>rel c_opt.
+      (left_linear_trs (set (R @ S)) \<or>
+        ta_det (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) \<and>
+        state_raise_consistent (ta_of (generate_ta preTA)) rel)
+      \<and> finite (ta_rules (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta))
+      \<and> state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel
+        (cover_bound c (boundstype_fun (boundstype info)) Strict_TRS (set R))
+      \<and> state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel
+        (cover_bound c Matchbounds.match (Weak_TRS c_opt) (set S))
+      \<and> state_coherent (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel
+      \<and> ta_bounded (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) c
+      \<and> (\<exists>q\<in>set qfin. q \<in> ta_rhs_states (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta))
+      \<and> set qfin \<subseteq> ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)
+      \<and> wf_trs (set R \<union> set S)
+      \<and> isOK (bounds_condition (boundstype info) (R @ S))"
+proof -
+  from boundstype_get_integer_bounds_info[OF info_def]
+  have bt_info[simp]: "boundstype info = type" by auto
+  let ?c_opt = "construct_c_opt c R"
+  let ?rel = "rel_checker rel_info"
+  let ?rell = "relation_of rel_info"
+  note ok = ok[unfolded info_def check_bounds_generic_without_contains_def, simplified]
+  from ok obtain TA where TA: "generate_ta_cond preTA rel_info = return TA" by auto
+  from generate_ta_cond[OF this] have inv: "ta_inv TA ?rel ?rell" and TA2: "TA = generate_ta preTA" by auto
+  let ?filt = "\<lambda> l. \<not> rule_state_compatible_heuristic TA l"
+  let ?sfilt = "\<lambda> l. (\<forall> u \<unlhd> l. ?filt u)"
+  let ?relll = "relation_as_list rel_info"
+  let ?e = "boundstype_fun type"
+  let ?e2 = Matchbounds.match
+  interpret ta_inv TA ?rel ?rell by fact
+  have [simp]: "ta_of_ta preTA = TA'" unfolding TA2 generate_ta by simp
+  note ok = ok[unfolded TA, simplified]
+  from ok have
+    wf: "wf_trs (set R \<union> set S)"
+    and choice: "left_linear_trs (set (R @ S)) \<or> ta_det (ta_of TA)
+      \<and> isOK ?relll \<and> state_raise_consistent (ta_of TA) (set (projr ?relll))" (is "_ \<or> ?det")
+    and qfin: "\<exists> q \<in> set qfin. rs.memb q (ta_rhs_states_set TA)"
+    and c: "isOK(check_ta_bounded TA c)"
+    and cond: "isOK(bounds_condition type (R @ S))"
+    and compat: "isOK(state_compatible_eff_list TA ?rel (cover_bound_list_filter ?filt ?e Strict_TRS c R))"
+    and compat2: "isOK(state_compatible_eff_list TA ?rel (cover_bound_list_filter ?filt ?e2 (Weak_TRS ?c_opt) c S))"
+    and final: "set qfin \<subseteq> ta_final (ta_of TA)"
+    by (auto simp: ta_final)
+  from choice have choice: "left_linear_trs (set (R @ S)) \<or> ta_det (ta_of TA) \<and> state_raise_consistent (ta_of TA) ?rell"
+  proof
+    assume ?det
+    have "state_raise_consistent (ta_of TA) ?rell"
+    proof (cases rel_info)
+      case Id_Relation
+      with \<open>?det\<close> show ?thesis by (auto simp: state_raise_consistent_def)
+    qed (insert \<open>?det\<close>, auto)
+    with \<open>?det\<close> show ?thesis by simp
+  qed auto
+  from qfin have qfin: "\<exists> q \<in> set qfin. q \<in> ta_rhs_states TA'" using ta_rhs_states_set by (auto simp: rs.correct)
+  from c have c': "\<And> fn. fn \<in> set (rm.to_list (ta_rules_impl TA)) \<Longrightarrow> case fst fn of (f,n) \<Rightarrow> height f \<le> c"
+    unfolding check_ta_bounded_def by auto
+  {
+    fix f n
+    assume "(f,n) \<in> ta_syms TA'"
+    then obtain rule where rule: "rule \<in> ta_rules TA'" and n: "r_sym rule = (f,n)"
+      unfolding ta_syms_def by auto
+    let ?crule = "conv_ta_rule (ta_epss_impl TA) rule"
+    from rule have crule: "?crule \<in> conv_ta_rule (ta_epss_impl TA) ` ta_rules TA'" by auto
+    from n have n: "r_sym_impl ?crule = (f,n)" by (cases rule, auto)
+    let ?rm = "ta_rules_impl TA"
+    from rm_set_lookup3[OF crule, unfolded n]
+    obtain rls where "rm.\<alpha> ?rm (f,n) = Some rls" by (force simp: rm_\<alpha>_to_lookup)
+    then have "map_of (rm.to_list ?rm) (f,n) = Some rls" by (auto simp: rm.correct)
+    from map_of_SomeD[OF this]
+    have "((f,n),rls) \<in> set (rm.to_list ?rm)" .
+    from c'[OF this] have "height f \<le> c" by simp
+  } note c = this
+  then have tab: "ta_bounded TA' c" unfolding ta_bounded_def by auto
+  note var_cond = wf[unfolded wf_trs_def]
+  {
+    fix U e ee
+    assume sub: "set U \<subseteq> set (R @ S)"
+      and compat: "isOK(state_compatible_eff_list TA ?rel (cover_bound_list_filter ?filt e ee c U))"
+    let ?C = "cover_bound c e ee (set U)"
+    let ?Cf = "?C \<inter> {(l, r). \<forall>u\<unlhd>l. \<not> rule_state_compatible_heuristic TA u}"
+    have "state_compatible TA' ?rell ?Cf"
+    proof (rule state_compatible_eff_list[OF _ compat, unfolded cover_bound_list_filter])
+      fix l r
+      assume "(l,r) \<in> ?Cf"
+      then have "(l,r) \<in> cover e ee (set U)" unfolding cover_bound_def by auto
+      from cover_var_condition[OF _ this] var_cond sub
+      show "vars_term r \<subseteq> vars_term l" by auto
+    qed
+    then have "state_compatible TA' ?rell ?C"
+      by (rule remove_compatible_rules, insert rule_state_compatible_heuristic_subteq, blast)
+  } note compat_conv = this
+  from compat_conv[OF _ compat]
+  have compat: "state_compatible TA' ?rell (cover_bound c ?e Strict_TRS (set R))" by auto
+  from compat_conv[OF _ compat2]
+  have compatS: "state_compatible TA' ?rell (cover_bound c Matchbounds.match (Weak_TRS ?c_opt) (set S))" by auto
+  obtain fin rls eps where preTA: "preTA = Tree_Automaton fin rls eps" by (cases preTA, auto)
+  from generate_ta_rules[of fin rls eps] have "ta_rules (ta_of TA) = set rls" using TA2 preTA by auto
+  then have fin: "finite (ta_rules (ta_of TA))" by auto
+  show ?thesis
+    by (intro exI[of _ ?rell] exI[of _ ?c_opt] conjI,
+      insert choice fin compat compatS coherent tab qfin final wf cond TA2, auto)
 qed
 
 lemma check_bounds: assumes ok: "isOK(check_bounds_generic (info :: ('f,'q :: {linorder,showl})bounds_info) 
@@ -1330,6 +1584,888 @@ proof -
 qed
 
 definition
+  rfc_narrows_impl :: "('f,string)rules \<Rightarrow> ('f,string)term \<Rightarrow> ('f,string)term list"
+where
+  "rfc_narrows_impl R t \<equiv> concat (map (\<lambda>p. let tp = t |_ p in
+     if is_Fun tp then [(replace_at (t \<cdot> \<mu>1) p (r \<cdot> \<mu>2)).
+       (l,r) \<leftarrow> R, (\<mu>1,\<mu>2) \<leftarrow> option_to_list (mgu_vd_string tp l)]
+     else []) (poss_list t))"
+
+definition
+  rfc_narrow_step :: "('f,string)rules \<Rightarrow> ('f,string)trs"
+where
+  "rfc_narrow_step R \<equiv> {(t,u). u \<in> set (rfc_narrows_impl R t)}"
+
+definition
+  rfc_forward_closure :: "('f,string)rules \<Rightarrow> ('f,string)terms"
+where
+  "rfc_forward_closure R \<equiv> (rfc_narrow_step R)\<^sup>* `` rhss (set R)"
+
+lemma rfc_narrows_impl:
+  "set (rfc_narrows_impl R t) =
+    {u. \<exists>p l r \<mu>1 \<mu>2. p \<in> poss t \<and> is_Fun (t |_ p) \<and> (l,r) \<in> set R \<and>
+       mgu_vd_string (t |_ p) l = Some (\<mu>1,\<mu>2) \<and>
+       u = replace_at (t \<cdot> \<mu>1) p (r \<cdot> \<mu>2)}"
+  unfolding rfc_narrows_impl_def
+  by (force simp: Let_def poss_list_sound)
+
+lemma rfc_narrow_step_eq:
+  "rfc_narrow_step R = narrow_step string_rename (set R)"
+proof
+  show "rfc_narrow_step R \<subseteq> narrow_step string_rename (set R)"
+  proof
+    fix st
+    assume "st \<in> rfc_narrow_step R"
+    then obtain s u p l r \<mu>1 \<mu>2 where
+      st: "st = (s,u)" and p: "p \<in> poss s" and is_fun: "is_Fun (s |_ p)"
+      and lr: "(l,r) \<in> set R"
+      and mgu: "mgu_vd_string (s |_ p) l = Some (\<mu>1,\<mu>2)"
+      and u: "u = replace_at (s \<cdot> \<mu>1) p (r \<cdot> \<mu>2)"
+      unfolding rfc_narrow_step_def
+      by (auto simp: rfc_narrows_impl)
+    show "st \<in> narrow_step string_rename (set R)"
+      unfolding st narrow_step_def narrows_r_p_s_def
+      using p is_fun lr mgu[unfolded mgu_vd_string_def] u by fastforce
+  qed
+next
+  show "narrow_step string_rename (set R) \<subseteq> rfc_narrow_step R"
+  proof
+    fix st
+    assume "st \<in> narrow_step string_rename (set R)"
+    then obtain s u lr p \<mu>1 \<mu>2 where
+      st: "st = (s,u)" and p: "p \<in> poss s" and is_fun: "is_Fun (s |_ p)"
+      and lr: "lr \<in> set R"
+      and mgu: "mgu_vd string_rename (s |_ p) (fst lr) = Some (\<mu>1,\<mu>2)"
+      and u: "u = replace_at (s \<cdot> \<mu>1) p (snd lr \<cdot> \<mu>2)"
+      unfolding narrow_step_def narrows_r_p_s_def by auto
+    obtain l r where lr_def: "lr = (l,r)" by force
+    have lr': "(l,r) \<in> set R" using lr unfolding lr_def by simp
+    have mgu': "mgu_vd_string (s |_ p) l = Some (\<mu>1,\<mu>2)"
+      using mgu unfolding lr_def mgu_vd_string_def by simp
+    have u': "u = replace_at (s \<cdot> \<mu>1) p (r \<cdot> \<mu>2)"
+      using u unfolding lr_def by simp
+    have "u \<in> {u. \<exists>p l r \<mu>1 \<mu>2. p \<in> poss s \<and> is_Fun (s |_ p) \<and> (l,r) \<in> set R \<and>
+       mgu_vd_string (s |_ p) l = Some (\<mu>1,\<mu>2) \<and>
+       u = replace_at (s \<cdot> \<mu>1) p (r \<cdot> \<mu>2)}"
+      using p is_fun lr' mgu' u' by blast
+    then have "u \<in> set (rfc_narrows_impl R s)"
+      using rfc_narrows_impl[of R s] by simp
+    then show "st \<in> rfc_narrow_step R"
+      unfolding st rfc_narrow_step_def by auto
+  qed
+qed
+
+lemma rfc_forward_closure_eq:
+  "rfc_forward_closure R = right_forw_closure string_rename (set R)"
+  unfolding rfc_forward_closure_def right_forw_closure_def rfc_narrow_step_eq
+  by simp
+
+definition
+  rfc_initial_covers :: "('f,string)rules \<Rightarrow> ('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_covers R I \<equiv> list_all (\<lambda>(l,r). r \<in> set I) R"
+
+definition
+  rfc_initial_closed :: "('f,string)rules \<Rightarrow> ('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_closed R I \<equiv> list_all (\<lambda>t. list_all (\<lambda>u. u \<in> set I) (rfc_narrows_impl R t)) I"
+
+definition
+  rfc_initial_ground :: "('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_ground I \<equiv> list_all ground I"
+
+definition
+  rfc_initial_single_var :: "('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_single_var I \<equiv>
+    list_all (\<lambda>t. length (remdups (vars_term_list t)) \<le> 1) I"
+
+definition
+  rfc_initial_funas :: "('f \<times> nat) list \<Rightarrow> ('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_funas F I \<equiv> list_all (\<lambda>t. funas_term t \<subseteq> set F) I"
+
+definition
+  rfc_term_accepted_with_tail_states_impl ::
+    "'f itself \<Rightarrow> ('q :: linorder,'f :: linorder \<times> nat)ta_impl \<Rightarrow> 'q list \<Rightarrow> ('f,string)term \<Rightarrow> bool"
+where
+  "rfc_term_accepted_with_tail_states_impl _ TA qfin t \<equiv>
+    list_all (\<lambda>q.
+      \<not> rs.isEmpty
+        (rs.inter (ta_final_impl TA)
+          (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
+            (map_vars_term (\<lambda>_. q) (lift_term 0 t))))) qfin"
+
+definition
+  rfc_initial_accepted_with_tail_states_impl ::
+    "'f itself \<Rightarrow> ('q :: linorder,'f :: linorder \<times> nat)ta_impl \<Rightarrow> 'q list \<Rightarrow> ('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_accepted_with_tail_states_impl _ TA qfin I \<equiv>
+    list_all (\<lambda>t. list_all (\<lambda>q.
+      \<not> rs.isEmpty
+        (rs.inter (ta_final_impl TA)
+          (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
+            (map_vars_term (\<lambda>_. q) (lift_term 0 t))))) qfin) I"
+
+definition
+  rfc_term_accepted_impl ::
+    "('q :: linorder, ('f :: linorder) \<times> nat) ta_impl \<Rightarrow> ('f,string)term \<Rightarrow> bool"
+where
+  "rfc_term_accepted_impl TA t \<equiv>
+    ground t \<and>
+    \<not> rs.isEmpty
+      (rs.inter (ta_final_impl TA)
+        (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA) (adapt_vars (lift_term 0 t))))"
+
+definition
+  rfc_initial_accepted_impl ::
+    "('q :: linorder, ('f :: linorder) \<times> nat) ta_impl \<Rightarrow> ('f,string)term list \<Rightarrow> bool"
+where
+  "rfc_initial_accepted_impl TA I \<equiv> list_all (rfc_term_accepted_impl TA) I"
+
+lemma rfc_initial_covers:
+  assumes "rfc_initial_covers R I"
+  shows "rhss (set R) \<subseteq> set I"
+  using assms unfolding rfc_initial_covers_def by (force simp: list_all_iff)
+
+lemma rfc_initial_closed:
+  assumes "rfc_initial_closed R I"
+  shows "rfc_narrow_step R `` set I \<subseteq> set I"
+proof
+  fix u
+  assume "u \<in> rfc_narrow_step R `` set I"
+  then obtain t where t: "t \<in> set I" and step: "u \<in> set (rfc_narrows_impl R t)"
+    unfolding rfc_narrow_step_def by auto
+  from assms t have all: "\<forall>u\<in>set (rfc_narrows_impl R t). u \<in> set I"
+    unfolding rfc_initial_closed_def by (auto simp: list_all_iff)
+  with step show "u \<in> set I" by auto
+qed
+
+lemma rfc_forward_closure_subset_if_initial_closed:
+  assumes rhs: "rfc_initial_covers R I"
+    and closed: "rfc_initial_closed R I"
+  shows "rfc_forward_closure R \<subseteq> set I"
+proof
+  fix t
+  assume "t \<in> rfc_forward_closure R"
+  then obtain s where s: "s \<in> rhss (set R)"
+    and steps: "(s,t) \<in> (rfc_narrow_step R)\<^sup>*"
+    unfolding rfc_forward_closure_def by auto
+  from rfc_initial_covers[OF rhs] s have "s \<in> set I" by auto
+  from steps this show "t \<in> set I"
+  proof (induct)
+    case base
+    then show ?case .
+  next
+    case (step y z)
+    from rfc_initial_closed[OF closed] step have "z \<in> rfc_narrow_step R `` set I" by auto
+    with rfc_initial_closed[OF closed] show ?case by auto
+  qed
+qed
+
+lemma rfc_initial_ground:
+  assumes "rfc_initial_ground I"
+  shows "\<And>t. t \<in> set I \<Longrightarrow> ground t"
+  using assms unfolding rfc_initial_ground_def by (auto simp: list_all_iff)
+
+lemma rfc_initial_single_var:
+  assumes "rfc_initial_single_var I" and "t \<in> set I"
+  shows "length (remdups (vars_term_list t)) \<le> 1"
+  using assms unfolding rfc_initial_single_var_def by (auto simp: list_all_iff)
+
+lemma rfc_initial_funas:
+  assumes "rfc_initial_funas F I"
+  shows "\<Union> (funas_term ` set I) \<subseteq> set F"
+  using assms unfolding rfc_initial_funas_def by (auto simp: list_all_iff)
+
+lemma one_var_term_vars_eq:
+  assumes one: "length (remdups (vars_term_list t)) \<le> 1"
+    and x: "x \<in> vars_term t"
+    and y: "y \<in> vars_term t"
+  shows "x = y"
+proof -
+  let ?vs = "remdups (vars_term_list t)"
+  from x y have xvs: "x \<in> set ?vs" and yvs: "y \<in> set ?vs" by auto
+  show ?thesis
+  proof (cases ?vs)
+    case Nil
+    with xvs show ?thesis by simp
+  next
+    case outer: (Cons z zs)
+    show ?thesis
+    proof (cases zs)
+      case Nil
+      with outer xvs yvs show ?thesis by auto
+    next
+      case inner: (Cons w ws)
+      from one outer inner have False by simp
+      then show ?thesis ..
+    qed
+  qed
+qed
+
+lemma list_all_member:
+  assumes "list_all P xs" and "x \<in> set xs"
+  shows "P x"
+  using assms by (induct xs) (auto simp: list_all_Cons_iff)
+
+lemma lift_term_subst:
+  "lift_term h (t \<cdot> \<sigma>) = lift_term h t \<cdot> (\<lambda>x. lift_term h (\<sigma> x))"
+  by (induct t) auto
+
+lemma ta_contains_stackable_state:
+  assumes contain: "ta_contains F F TA Q"
+    and ground: "ground t"
+    and funas: "funas_term t \<subseteq> F"
+  shows "\<exists>q\<in>Q. q \<in> ta_res TA (adapt_vars t)"
+  using ground funas
+proof (induct t)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  have rec: "\<And>i. i < length ts \<Longrightarrow>
+    \<exists>q\<in>Q. q \<in> ta_res TA (adapt_vars (ts ! i))"
+  proof -
+    fix i
+    assume i: "i < length ts"
+    then have "ts ! i \<in> set ts" by auto
+    with Fun.prems have gt: "ground (ts ! i)" and ft: "funas_term (ts ! i) \<subseteq> F"
+      by auto
+    from Fun(1)[OF \<open>ts ! i \<in> set ts\<close> gt ft] show "\<exists>q\<in>Q. q \<in> ta_res TA (adapt_vars (ts ! i))" .
+  qed
+  have "\<forall>i. \<exists>q. i < length ts \<longrightarrow> q \<in> Q \<and> q \<in> ta_res TA ((map adapt_vars ts) ! i)"
+    using rec by auto
+  from choice[OF this] obtain qs where qs:
+    "\<And>i. i < length ts \<Longrightarrow> qs i \<in> Q \<and> qs i \<in> ta_res TA ((map adapt_vars ts) ! i)"
+    by auto
+  let ?qs = "map qs [0..<length ts]"
+  have set_qs: "set ?qs \<subseteq> Q"
+    unfolding set_conv_nth using qs by auto
+  have sym: "(f, length ?qs) \<in> F"
+    using Fun.prems by auto
+  from contain[unfolded ta_contains_def ta_contains_aux_def] set_qs sym
+  obtain q' q where q: "q \<in> Q" and rule: "(f ?qs \<rightarrow> q') \<in> ta_rules TA"
+    and eps: "(q', q) \<in> (ta_eps TA)\<^sup>*"
+    by blast
+  have "q \<in> ta_res TA (adapt_vars (Fun f ts))"
+    unfolding adapt_vars_simps ta_res.simps
+    by (rule, rule exI[of _ q], rule exI[of _ q'], rule exI[of _ ?qs],
+        insert rule eps qs, auto)
+  with q show ?case by blast
+qed
+
+lemma rfc_term_accepted_impl:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat)ta_impl"
+  assumes inv: "ta_inv TA rel rell"
+    and acc: "rfc_term_accepted_impl TA t"
+  shows "lift_term 0 t \<in> (ta_lang (ta_of TA) :: ('f \<times> nat,string)terms)"
+proof -
+  interpret ta_inv TA rel rell by (rule inv)
+  from acc obtain q where gr: "ground t"
+    and qfin: "q \<in> rs.\<alpha> (ta_final_impl TA)"
+    and qres: "q \<in> rs.\<alpha> (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA) (adapt_vars (lift_term 0 t)))"
+    unfolding rfc_term_accepted_impl_def by (auto simp: rs.correct)
+  have "q \<in> ta_final TA'" using qfin by (simp add: ta_final)
+  moreover have "q \<in> ta_res TA' (adapt_vars (lift_term 0 t))"
+    using qres by (simp add: ta_res_impl)
+  moreover have "ground (lift_term 0 t)" using gr by auto
+  ultimately show ?thesis
+    by (metis ta_langI2)
+qed
+
+lemma rfc_initial_accepted_impl:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat)ta_impl"
+  assumes inv: "ta_inv TA rel rell"
+    and acc: "rfc_initial_accepted_impl TA I"
+  shows "lift_term 0 ` set I \<subseteq> (ta_lang (ta_of TA) :: ('f \<times> nat,string)terms)"
+  using rfc_term_accepted_impl[OF inv] acc
+  unfolding rfc_initial_accepted_impl_def by (auto simp: list_all_iff)
+
+lemma rs_not_isEmpty_alpha_nonempty:
+  assumes "\<not> rs.isEmpty A"
+  shows "rs.\<alpha> A \<noteq> {}"
+  using assms by (auto simp: rs.correct)
+
+lemma rs_inter_memberD:
+  assumes "x \<in> rs.\<alpha> (rs.inter A B)"
+  shows "x \<in> rs.\<alpha> A" "x \<in> rs.\<alpha> B"
+  using assms by (auto simp: rs.correct)
+
+lemma rfc_term_accepted_with_tail_states_impl:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat)ta_impl"
+  assumes inv: "ta_inv TA rel rell"
+    and acc: "rfc_term_accepted_with_tail_states_impl TYPE('f) TA qfin t"
+    and q: "q \<in> set qfin"
+  shows "\<exists>qf\<in>ta_final (ta_of TA).
+    qf \<in> ta_res (ta_of TA) (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+proof -
+  note acc_all = acc[unfolded rfc_term_accepted_with_tail_states_impl_def]
+  note nonempty_impl = list_all_member[OF acc_all q]
+  interpret ta_inv TA rel rell by (rule inv)
+  note inter_ne = rs_not_isEmpty_alpha_nonempty[OF nonempty_impl]
+  note ex_qf = iffD2[OF ex_in_conv inter_ne]
+  from ex_qf show ?thesis
+  proof
+    fix qf
+    assume qf_inter: "qf \<in> rs.\<alpha> (rs.inter (ta_final_impl TA)
+      (ta_res_impl (ta_rules_impl TA) (ta_epss_impl TA)
+        (map_vars_term (\<lambda>_. q) (lift_term 0 t))))"
+    note inter_parts = rs_inter_memberD[OF qf_inter]
+    note qfin = inter_parts(1)
+    note qres = inter_parts(2)
+    show ?thesis
+      using qfin qres by (auto simp: ta_final ta_res_impl)
+  qed
+qed
+
+lemma rfc_initial_accepted_with_tail_states_impl:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat)ta_impl"
+  assumes inv: "ta_inv TA rel rell"
+    and acc: "rfc_initial_accepted_with_tail_states_impl TYPE('f) TA qfin I"
+    and t: "t \<in> set I"
+    and q: "q \<in> set qfin"
+  shows "\<exists>qf\<in>ta_final (ta_of TA).
+    qf \<in> ta_res (ta_of TA) (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+proof -
+  from list_all_member[OF acc[unfolded rfc_initial_accepted_with_tail_states_impl_def] t]
+  have acct: "rfc_term_accepted_with_tail_states_impl TYPE('f) TA qfin t"
+    unfolding rfc_term_accepted_with_tail_states_impl_def .
+  from rfc_term_accepted_with_tail_states_impl[OF inv acct q] show ?thesis .
+qed
+
+lemma adapt_vars_lift_term_subst:
+  "adapt_vars (lift_term h (t \<cdot> \<sigma>)) =
+    lift_term h t \<cdot> (\<lambda>x. adapt_vars (lift_term h (\<sigma> x)))"
+  by (induct t) auto
+
+lemma rfc_term_instance_accepted_with_tail_state:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat)ta_impl"
+    and \<sigma> :: "string \<Rightarrow> ('f,string)term"
+  assumes inv: "ta_inv TA rel rell"
+    and acc: "rfc_term_accepted_with_tail_states_impl TYPE('f) TA qfin t"
+    and q: "q \<in> set qfin"
+    and qvars: "\<And>x. x \<in> vars_term t \<Longrightarrow>
+      q \<in> ta_res (ta_of TA) (adapt_vars (lift_term 0 (\<sigma> x)))"
+    and gvars: "\<And>x. x \<in> vars_term t \<Longrightarrow> ground (\<sigma> x)"
+  shows "lift_term 0 (t \<cdot> \<sigma>) \<in> (ta_lang (ta_of TA) :: ('f \<times> nat,string)terms)"
+proof -
+  interpret ta_inv TA rel rell by (rule inv)
+  from rfc_term_accepted_with_tail_states_impl[OF inv acc q]
+  obtain qf where qfin: "qf \<in> ta_final (ta_of TA)"
+    and qres: "qf \<in> ta_res (ta_of TA) (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+    by auto
+  have vars_lift: "\<And>x. x \<in> vars_term (lift_term 0 t) \<Longrightarrow> x \<in> vars_term t"
+    by (induct t) auto
+  have subst_res: "qf \<in> ta_res (ta_of TA)
+      (lift_term 0 t \<cdot> (\<lambda>x. adapt_vars (lift_term 0 (\<sigma> x))))"
+    by (rule ta_res_subst[OF _ qres], insert qvars vars_lift, auto)
+  have ground_inst: "ground (lift_term 0 (t \<cdot> \<sigma>))"
+    using gvars by (induct t) auto
+  have subst_id: "adapt_vars (lift_term 0 (t \<cdot> \<sigma>)) =
+      lift_term 0 t \<cdot> (\<lambda>x. adapt_vars (lift_term 0 (\<sigma> x)))"
+    by (rule adapt_vars_lift_term_subst)
+  have qres_inst: "qf \<in> ta_res (ta_of TA) (adapt_vars (lift_term 0 (t \<cdot> \<sigma>)))"
+    using subst_res unfolding subst_id .
+  show ?thesis
+    by (rule ta_langI2[OF ground_inst qfin qres_inst])
+qed
+
+lemma ta_contains_stackable_state_aux:
+  assumes contain: "ta_contains_aux F Q TA Q"
+    and ground: "ground t"
+    and funas: "funas_term t \<subseteq> F"
+  shows "\<exists>q\<in>Q. q \<in> ta_res TA (adapt_vars t)"
+  using ground funas
+proof (induct t)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  have rec: "\<And>i. i < length ts \<Longrightarrow>
+    \<exists>q\<in>Q. q \<in> ta_res TA (adapt_vars (ts ! i))"
+  proof -
+    fix i
+    assume i: "i < length ts"
+    then have "ts ! i \<in> set ts" by auto
+    with Fun.prems have gt: "ground (ts ! i)" and ft: "funas_term (ts ! i) \<subseteq> F"
+      by auto
+    from Fun(1)[OF \<open>ts ! i \<in> set ts\<close> gt ft] show "\<exists>q\<in>Q. q \<in> ta_res TA (adapt_vars (ts ! i))" .
+  qed
+  have "\<forall>i. \<exists>q. i < length ts \<longrightarrow> q \<in> Q \<and> q \<in> ta_res TA ((map adapt_vars ts) ! i)"
+    using rec by auto
+  from choice[OF this] obtain qs where qs:
+    "\<And>i. i < length ts \<Longrightarrow> qs i \<in> Q \<and> qs i \<in> ta_res TA ((map adapt_vars ts) ! i)"
+    by auto
+  let ?qs = "map qs [0..<length ts]"
+  have set_qs: "set ?qs \<subseteq> Q"
+    unfolding set_conv_nth using qs by auto
+  have sym: "(f, length ?qs) \<in> F"
+    using Fun.prems by auto
+  from contain[unfolded ta_contains_aux_def] set_qs sym
+  obtain q' q where q: "q \<in> Q" and rule: "(f ?qs \<rightarrow> q') \<in> ta_rules TA"
+    and eps: "(q', q) \<in> (ta_eps TA)\<^sup>*"
+    by blast
+  have "q \<in> ta_res TA (adapt_vars (Fun f ts))"
+    unfolding adapt_vars_simps ta_res.simps
+    by (rule, rule exI[of _ q], rule exI[of _ q'], rule exI[of _ ?qs],
+        insert rule eps qs, auto)
+  with q show ?case by blast
+qed
+
+lemma rfc_term_instance_accepted_stackable:
+  fixes TA :: "('q :: linorder,'f :: linorder \<times> nat)ta_impl"
+    and \<sigma> :: "string \<Rightarrow> ('f,string)term"
+  assumes inv: "ta_inv TA rel rell"
+    and contain: "ta_contains_aux F (set qfin) (ta_of TA) (set qfin)"
+    and qfin_ne: "qfin \<noteq> []"
+    and acc: "rfc_term_accepted_with_tail_states_impl TYPE('f) TA qfin t"
+    and one: "length (remdups (vars_term_list t)) \<le> 1"
+    and gvars: "\<And>x. x \<in> vars_term t \<Longrightarrow> ground (\<sigma> x)"
+    and fvars: "\<And>x. x \<in> vars_term t \<Longrightarrow> funas_term (lift_term 0 (\<sigma> x)) \<subseteq> F"
+  shows "lift_term 0 (t \<cdot> \<sigma>) \<in> (ta_lang (ta_of TA) :: ('f \<times> nat,string)terms)"
+proof (cases "vars_term t = {}")
+  case True
+  then obtain q where q: "q \<in> set qfin"
+    using qfin_ne by (cases qfin) auto
+  have qvars: "\<And>x. x \<in> vars_term t \<Longrightarrow>
+      q \<in> ta_res (ta_of TA) (adapt_vars (lift_term 0 (\<sigma> x)))"
+    using True by auto
+  show ?thesis
+    by (rule rfc_term_instance_accepted_with_tail_state[OF inv acc q qvars gvars])
+next
+  case False
+  then obtain x where x: "x \<in> vars_term t" by auto
+  have gx: "ground (lift_term 0 (\<sigma> x))"
+    using gvars[OF x] by auto
+  from ta_contains_stackable_state_aux[OF contain gx fvars[OF x]]
+  obtain q where q: "q \<in> set qfin"
+    and qx: "q \<in> ta_res (ta_of TA) (adapt_vars (lift_term 0 (\<sigma> x)))"
+    by auto
+  have qvars: "\<And>y. y \<in> vars_term t \<Longrightarrow>
+      q \<in> ta_res (ta_of TA) (adapt_vars (lift_term 0 (\<sigma> y)))"
+  proof -
+    fix y
+    assume y: "y \<in> vars_term t"
+    from one_var_term_vars_eq[OF one y x] have "y = x" .
+    with qx show "q \<in> ta_res (ta_of TA) (adapt_vars (lift_term 0 (\<sigma> y)))" by simp
+  qed
+  show ?thesis
+    by (rule rfc_term_instance_accepted_with_tail_state[OF inv acc q qvars gvars])
+qed
+
+lemma rfc_term_instance_accepted_stackable_sem:
+  fixes TA :: "('q,'f \<times> nat)ta"
+    and \<sigma> :: "string \<Rightarrow> ('f,string)term"
+  assumes contain: "ta_contains_aux F Q TA Q"
+    and final: "Q \<subseteq> ta_final TA"
+    and qfin_ne: "Q \<noteq> {}"
+    and acc: "\<And>q. q \<in> Q \<Longrightarrow>
+      \<exists>qf\<in>ta_final TA. qf \<in> ta_res TA (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+    and one: "length (remdups (vars_term_list t)) \<le> 1"
+    and gvars: "\<And>x. x \<in> vars_term t \<Longrightarrow> ground (\<sigma> x)"
+    and fvars: "\<And>x. x \<in> vars_term t \<Longrightarrow> funas_term (lift_term 0 (\<sigma> x)) \<subseteq> F"
+  shows "lift_term 0 (t \<cdot> \<sigma>) \<in> (ta_lang TA :: ('f \<times> nat,string)terms)"
+proof (cases "vars_term t = {}")
+  case True
+  then obtain q where q: "q \<in> Q" using qfin_ne by auto
+  from acc[OF q] obtain qf where qfin: "qf \<in> ta_final TA"
+    and qres: "qf \<in> ta_res TA (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+    by auto
+  have subst_res: "qf \<in> ta_res TA
+      (lift_term 0 t \<cdot> (\<lambda>x. adapt_vars (lift_term 0 (\<sigma> x))))"
+    by (rule ta_res_subst[OF _ qres], insert True, auto)
+  have ground_inst: "ground (lift_term 0 (t \<cdot> \<sigma>))"
+    using True by (induct t) auto
+  have subst_id: "adapt_vars (lift_term 0 (t \<cdot> \<sigma>)) =
+      lift_term 0 t \<cdot> (\<lambda>x. adapt_vars (lift_term 0 (\<sigma> x)))"
+    by (rule adapt_vars_lift_term_subst)
+  have qres_inst: "qf \<in> ta_res TA (adapt_vars (lift_term 0 (t \<cdot> \<sigma>)))"
+    using subst_res unfolding subst_id .
+  show ?thesis
+    by (rule ta_langI2[OF ground_inst qfin qres_inst])
+next
+  case False
+  then obtain x where x: "x \<in> vars_term t" by auto
+  have gx: "ground (lift_term 0 (\<sigma> x))"
+    using gvars[OF x] by auto
+  from ta_contains_stackable_state_aux[OF contain gx fvars[OF x]]
+  obtain q where q: "q \<in> Q"
+    and qx: "q \<in> ta_res TA (adapt_vars (lift_term 0 (\<sigma> x)))"
+    by auto
+  from acc[OF q] obtain qf where qfin: "qf \<in> ta_final TA"
+    and qres: "qf \<in> ta_res TA (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+    by auto
+  have qvars: "\<And>y. y \<in> vars_term (lift_term 0 t) \<Longrightarrow>
+      q \<in> ta_res TA (adapt_vars (lift_term 0 (\<sigma> y)))"
+  proof -
+    fix y
+    assume y: "y \<in> vars_term (lift_term 0 t)"
+    then have yt: "y \<in> vars_term t" by (induct t) auto
+    from one_var_term_vars_eq[OF one yt x] have "y = x" .
+    with qx show "q \<in> ta_res TA (adapt_vars (lift_term 0 (\<sigma> y)))" by simp
+  qed
+  have subst_res: "qf \<in> ta_res TA
+      (lift_term 0 t \<cdot> (\<lambda>x. adapt_vars (lift_term 0 (\<sigma> x))))"
+    by (rule ta_res_subst[OF qvars qres])
+  have ground_inst: "ground (lift_term 0 (t \<cdot> \<sigma>))"
+    using gvars by (induct t) auto
+  have subst_id: "adapt_vars (lift_term 0 (t \<cdot> \<sigma>)) =
+      lift_term 0 t \<cdot> (\<lambda>x. adapt_vars (lift_term 0 (\<sigma> x)))"
+    by (rule adapt_vars_lift_term_subst)
+  have qres_inst: "qf \<in> ta_res TA (adapt_vars (lift_term 0 (t \<cdot> \<sigma>)))"
+    using subst_res unfolding subst_id .
+  show ?thesis
+    by (rule ta_langI2[OF ground_inst qfin qres_inst])
+qed
+
+lemma rfc_bounds_impl:
+  fixes R S :: "('f,string)rules"
+    and TA :: "('q,'f \<times> nat)ta"
+    and rel :: "'q rel"
+    and I :: "('f,string)term list"
+  assumes choice: "left_linear_trs (set (R @ S)) \<or> ta_det TA \<and> state_raise_consistent TA rel"
+    and fin: "finite (ta_rules TA)"
+    and compat: "state_compatible TA rel (cover_bound c e Strict_TRS (set R))"
+    and compat2: "state_compatible TA rel (cover_bound c Matchbounds.match (Weak_TRS c_opt) (set S))"
+    and coh: "state_coherent TA rel"
+    and tab: "ta_bounded TA c"
+    and qfin: "\<exists>q\<in>qfin. q \<in> ta_rhs_states TA"
+    and qfin_final: "qfin \<subseteq> ta_final TA"
+    and inf: "infinite (UNIV :: 'f set)"
+    and wf: "wf_trs (set R \<union> set S)"
+    and SN: "locally_terminating (cover e Strict_TRS (set R) \<union> Matchbounds.raise)"
+    and rhs_lin: "\<And>lr. lr \<in> set R \<Longrightarrow> linear_term (snd lr)"
+    and initial_covers: "rfc_initial_covers R I"
+    and initial_closed: "rfc_initial_closed R I"
+    and initial_single: "rfc_initial_single_var I"
+    and initial_acc: "\<And>t q. t \<in> set I \<Longrightarrow> q \<in> qfin \<Longrightarrow>
+      \<exists>qf\<in>ta_final TA. qf \<in> ta_res TA (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+  shows "SN (rstep (set R))"
+proof -
+  let ?RR = "set R"
+  let ?RFC = "rfc_forward_closure R"
+  let ?lz = "(\<lambda>(f,n). (lift 0 f,n))"
+  from wf have wf_R: "wf_trs ?RR"
+    unfolding wf_trs_def by auto
+  from wf[unfolded wf_trs_def] have varcond: "\<And>l r. (l,r) \<in> ?RR \<Longrightarrow> vars_term r \<subseteq> vars_term l"
+    by auto
+  from rfc_forward_closure_subset_if_initial_closed[OF initial_covers initial_closed]
+  have RFC_I: "?RFC \<subseteq> set I" .
+  have empty_contain: "ta_contains (?lz ` {}) (?lz ` {}) TA qfin"
+    unfolding ta_contains_def ta_contains_aux_def by auto
+  from create_constant_in_ta_two[
+    where G = "{}" and H = "{}",
+    OF fin coh _ _ empty_contain qfin_final qfin tab inf choice compat compat2]
+  obtain q const F F' TA' where q_in: "q \<in> qfin"
+    and comp: "state_compatible TA' rel (cover e Strict_TRS ?RR)"
+    and coh': "state_coherent TA' rel"
+    and choice': "left_linear_trs (?RR \<union> set S) \<or> ta_det TA' \<and> state_raise_consistent TA' rel"
+    and tab': "ta_bounded TA' c"
+    and TA': "TA' = \<lparr> ta_final = ta_final TA,
+      ta_rules = insert ((const,0) [] \<rightarrow> q) (ta_rules TA), ta_eps = ta_eps TA \<rparr>"
+    by blast
+  have choice_R: "left_linear_trs (cover e Strict_TRS ?RR) \<or> ta_det TA' \<and> state_raise_consistent TA' rel"
+    using choice' cover_left_linear unfolding left_linear_trs_union by blast
+  have finTA': "finite (ta_rules TA')" unfolding TA' using fin by auto
+  have finF: "finite ((\<Union>(funas_term ` set I)) \<union> {(const,0)})"
+    using finite_funas_term by auto
+  have finR: "finite ?RR" by simp
+  let ?\<sigma> = "\<lambda>_. Fun const []"
+  let ?L = "{t \<cdot> ?\<sigma> | t. t \<in> set I}"
+  have final_TA': "qfin \<subseteq> ta_final TA'" using qfin_final unfolding TA' by auto
+  have qfin_ne: "qfin \<noteq> {}" using qfin by auto
+  have acc_TA': "\<And>t q. t \<in> set I \<Longrightarrow> q \<in> qfin \<Longrightarrow>
+      \<exists>qf\<in>ta_final TA'. qf \<in> ta_res TA' (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+  proof -
+    fix t q0
+    assume t: "t \<in> set I" and q0: "q0 \<in> qfin"
+    from initial_acc[OF t q0] obtain qf where qf: "qf \<in> ta_final TA"
+      and res: "qf \<in> ta_res TA (map_vars_term (\<lambda>_. q0) (lift_term 0 t))"
+      by auto
+    have res': "qf \<in> ta_res TA' (map_vars_term (\<lambda>_. q0) (lift_term 0 t))"
+      using ta_res_mono'[of TA TA'] res unfolding TA' by auto
+    show "\<exists>qf\<in>ta_final TA'. qf \<in> ta_res TA' (map_vars_term (\<lambda>_. q0) (lift_term 0 t))"
+      using qf res' unfolding TA' by auto
+  qed
+  have lift_L: "lift_term 0 ` ?L \<subseteq> (ta_lang TA' :: ('f \<times> nat,string)terms)"
+  proof
+    fix lt :: "('f \<times> nat,string)term"
+    assume "lt \<in> lift_term 0 ` ?L"
+    then obtain t where t: "t \<in> set I" and lt: "lt = lift_term 0 (t \<cdot> ?\<sigma>)"
+      by auto
+    from q_in have const_res: "q \<in> ta_res TA' (Fun (const,0) [])"
+      unfolding TA' by auto
+    from acc_TA'[OF t q_in] obtain qf where qf: "qf \<in> ta_final TA'"
+      and qres: "qf \<in> ta_res TA' (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+      by auto
+    have qvars: "\<And>x. x \<in> vars_term (lift_term 0 t) \<Longrightarrow>
+        q \<in> ta_res TA' (Fun (const,0) [])"
+      using const_res by auto
+    have subst_res: "qf \<in> ta_res TA'
+        (lift_term 0 t \<cdot> (\<lambda>x. Fun (const,0) []))"
+      by (rule ta_res_subst[OF qvars qres])
+    have ground_inst: "ground (lift_term 0 (t \<cdot> ?\<sigma>))"
+      by (induct t) auto
+    have subst_id: "adapt_vars (lift_term 0 (t \<cdot> ?\<sigma>)) =
+        lift_term 0 t \<cdot> (\<lambda>x. Fun (const,0) [])"
+      by (simp add: adapt_vars_lift_term_subst)
+    have qres_inst: "qf \<in> ta_res TA' (adapt_vars (lift_term 0 (t \<cdot> ?\<sigma>)))"
+      using subst_res unfolding subst_id .
+    show "lt \<in> (ta_lang TA' :: ('f \<times> nat,string)terms)"
+      unfolding lt by (rule ta_langI2[OF ground_inst qf qres_inst])
+  qed
+  have SN_L: "SN_on (rstep ?RR) ?L"
+  proof (rule Matchbounds_Impl.e_bounds[
+      where TA = TA' and rel = rel and c = c and R = "cover e Strict_TRS ?RR"
+        and L = ?L and F = "(\<Union>(funas_term ` set I)) \<union> {(const,0)}" and RR = ?RR and e = e])
+    show "left_linear_trs (cover e Strict_TRS ?RR) \<or> ta_det TA' \<and> state_raise_consistent TA' rel"
+      by (rule choice_R)
+    show "finite (ta_rules TA')" by (rule finTA')
+    show "state_compatible TA' rel (cover e Strict_TRS ?RR)" by (rule comp)
+    show "state_coherent TA' rel" by (rule coh')
+    show "lift_term 0 ` ?L \<subseteq> (ta_lang TA' :: ('f \<times> nat,string)terms)"
+      using lift_L .
+    show "ta_bounded TA' c" by (rule tab')
+    show "locally_terminating (cover e Strict_TRS ?RR \<union> Matchbounds.raise)" by (rule SN)
+    show "finite ((\<Union>(funas_term ` set I)) \<union> {(const,0)})" by (rule finF)
+    show "finite ?RR" by (rule finR)
+    show "cover e Strict_TRS ?RR = cover e Strict_TRS ?RR" by simp
+    show "\<And>l r. (l, r) \<in> ?RR \<Longrightarrow> vars_term r \<subseteq> vars_term l" by (rule varcond)
+	    show "\<Union> (funas_term ` ?L) \<subseteq> (\<Union>(funas_term ` set I)) \<union> {(const,0)}"
+	    proof (rule Union_least)
+	      fix A
+	      assume A: "A \<in> funas_term ` ?L"
+	      from A show "A \<subseteq> (\<Union>(funas_term ` set I)) \<union> {(const,0)}"
+	      proof (rule imageE)
+	        fix u
+	        assume Aeq: "A = funas_term u" and uL: "u \<in> ?L"
+	        from uL obtain t where u: "u = t \<cdot> ?\<sigma>" and t: "t \<in> set I"
+	          by auto
+	        show "A \<subseteq> (\<Union>(funas_term ` set I)) \<union> {(const,0)}"
+	        proof
+	          fix fn
+	          assume "fn \<in> A"
+	          with Aeq have fn: "fn \<in> funas_term u" by simp
+	          from funas_term_const_subst[of t const] fn t
+	          show "fn \<in> (\<Union>(funas_term ` set I)) \<union> {(const,0)}"
+	            unfolding u by auto
+	        qed
+	      qed
+	    qed
+  qed
+  have SN_RFC: "SN_on (rstep ?RR) ?RFC"
+  proof
+    fix f
+    assume f0: "f 0 \<in> ?RFC" and steps: "\<forall>i. (f i, f (Suc i)) \<in> rstep ?RR"
+    from RFC_I f0 have f0I: "f 0 \<in> set I" by auto
+    have inst: "f 0 \<cdot> ?\<sigma> \<in> ?L" using f0I by auto
+	    have "SN_on (rstep ?RR) {f 0 \<cdot> ?\<sigma>}"
+	      by (rule SN_on_subset2[OF _ SN_L], insert inst, auto)
+    from SNinstance_imp_SN[OF this] steps f0 show False
+      unfolding SN_on_def by auto
+  qed
+  from right_linear_SN_rstep_RFC[OF wf_R rhs_lin, of string_rename]
+  show ?thesis
+    unfolding rfc_forward_closure_eq[symmetric]
+    using SN_RFC by blast
+qed
+
+definition
+  rfc_bounds_tt ::
+    "('tp, 'f, string) tp_ops \<Rightarrow>
+    ('f::{linorder,showl}, 'q::{linorder,showl}) bounds_info \<Rightarrow>
+    ('f,string)term list \<Rightarrow>
+    'tp \<Rightarrow> showsl check"
+where
+  "rfc_bounds_tt I info initial_terms tp \<equiv> (case get_integer_bounds_info info of (Bounds_Info type c qfin preTA rel, ren) \<Rightarrow> do {
+      TA \<leftarrow> generate_ta_cond preTA rel;
+      check (tp_ops.Q_empty I tp) (showsl_lit (STR ''RFC bounds currently require an empty Q component''));
+      check (tp_ops.Rw I tp = []) (showsl_lit (STR ''RFC bounds currently require no weak rules''));
+      check (\<not> tp_ops.nfs I tp) (showsl_lit (STR ''RFC bounds currently certify full rewriting, not innermost rewriting''));
+	      check_wf_trs (tp_ops.R I tp);
+	      check (list_all (\<lambda>(l,r). linear_term r) (tp_ops.R I tp))
+	        (showsl_lit (STR ''RFC bounds require right-linear rules''));
+	      check (rfc_initial_single_var initial_terms)
+	        (showsl_lit (STR ''RFC bounds finite initial language templates must contain at most one variable''));
+	      check (rfc_initial_covers (tp_ops.R I tp) initial_terms)
+	        (showsl_lit (STR ''RFC initial language does not contain all right-hand sides''));
+	      check (rfc_initial_closed (tp_ops.R I tp) initial_terms)
+	        (showsl_lit (STR ''RFC initial language is not closed under one-step right-forward narrowing''));
+	      check (rfc_initial_accepted_with_tail_states_impl TYPE('f) TA qfin initial_terms)
+	        (showsl_lit (STR ''RFC bounds finite initial language is not accepted by the automaton for all tail states''));
+	      check_bounds_generic_without_contains info (tp_ops.R I tp) []
+	   })"
+
+lemma rfc_bounds_tt:
+  fixes info :: "('f::{linorder,showl}, 'q::{linorder,showl}) bounds_info"
+  assumes "tp_spec I" and ok: "isOK (rfc_bounds_tt I info initial_terms tp)"
+  and inf: "infinite (UNIV :: 'f set)"
+  shows "SN_qrel (tp_ops.qreltrs I tp)"
+proof -
+  interpret tp_spec I by fact
+  obtain bi ren where ren: "get_integer_bounds_info info = (bi, ren)"
+    by (cases "get_integer_bounds_info info", auto)
+	  obtain type c qfin preTA rel where info': "bi = Bounds_Info type c qfin preTA rel"
+	    by (cases bi, auto)
+	  have info_eq: "get_integer_bounds_info info = (Bounds_Info type c qfin preTA rel, ren)"
+	    using ren info' by simp
+	  from ok[unfolded rfc_bounds_tt_def ren info' Let_def]
+	  obtain TA where TA: "generate_ta_cond preTA rel = return TA"
+	    and okb: "isOK (check_bounds_generic_without_contains info (R tp) [])"
+	    by auto
+	  from generate_ta_cond[OF TA] have inv: "ta_inv TA (rel_checker rel) (relation_of rel)"
+	    and TA_gen: "TA = generate_ta preTA" by auto
+	  from ok[unfolded rfc_bounds_tt_def ren info' Let_def]
+	  have Q: "set (Q tp) = {}" and Rw: "set (Rw tp) = {}"
+	    and nfs: "\<not> NFS tp"
+	    and rhs_lin_list: "list_all (\<lambda>(l, r). linear_term r) (R tp)"
+	    and initial_single: "rfc_initial_single_var initial_terms"
+	    and initial_covers: "rfc_initial_covers (R tp) initial_terms"
+	    and initial_closed: "rfc_initial_closed (R tp) initial_terms"
+	    and initial_acc_proj: "rfc_initial_accepted_with_tail_states_impl TYPE('f)
+	      (projr (generate_ta_cond preTA rel)) qfin initial_terms"
+	    by (auto simp: Q_empty_sound)
+	  have rhs_lin: "\<And>lr. lr \<in> set (R tp) \<Longrightarrow> linear_term (snd lr)"
+	    using rhs_lin_list by (auto simp: list_all_iff split: prod.splits)
+	  have initial_acc_impl: "rfc_initial_accepted_with_tail_states_impl TYPE('f) TA qfin initial_terms"
+	    using initial_acc_proj TA by simp
+	  from check_bounds_generic_without_contains_exact[
+	    where R = "(R tp :: ('f,string)rules)"
+	      and S = "([] :: ('f,string)rules)"
+	      and info = info
+	      and type = type
+	      and c = c
+	      and qfin = qfin
+	      and preTA = preTA
+	      and rel_info = rel
+	      and ren = ren,
+	    OF okb info_eq]
+	  obtain b_rel where choice_b: "left_linear_trs (set (R tp @ [])) \<or>
+	      ta_det (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) \<and>
+	      state_raise_consistent (ta_of (generate_ta preTA)) b_rel"
+	    and fin_b: "finite (ta_rules (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta))"
+	    and compat_b: "state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel
+	      (cover_bound c (boundstype_fun (boundstype info)) Strict_TRS (set (R tp)))"
+	    and coh_b: "state_coherent (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel"
+	    and tab_b: "ta_bounded (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) c"
+	    and qfin_b: "\<exists>q\<in>set qfin. q \<in> ta_rhs_states (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)"
+	    and qfin_final_b: "set qfin \<subseteq> ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)"
+	    and wf_b: "wf_trs (set (R tp) \<union> set [])"
+	    and cond_raw: "isOK (bounds_condition (boundstype info) (R tp @ []))"
+	  proof -
+	    assume cont: "\<And>b_rel.
+	      left_linear_trs (set (R tp @ [])) \<or>
+	      ta_det (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) \<and>
+	      state_raise_consistent (ta_of (generate_ta preTA)) b_rel \<Longrightarrow>
+	      finite (ta_rules (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)) \<Longrightarrow>
+	      state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel
+	        (cover_bound c (boundstype_fun (boundstype info)) Strict_TRS (set (R tp))) \<Longrightarrow>
+	      state_coherent (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel \<Longrightarrow>
+	      ta_bounded (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) c \<Longrightarrow>
+	      (\<exists>q\<in>set qfin. q \<in> ta_rhs_states (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)) \<Longrightarrow>
+	      set qfin \<subseteq> ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) \<Longrightarrow>
+	      wf_trs (set (R tp) \<union> set []) \<Longrightarrow>
+	      isOK (bounds_condition (boundstype info) (R tp @ [])) \<Longrightarrow> thesis"
+	    from check_bounds_generic_without_contains_exact[
+	      where R = "(R tp :: ('f,string)rules)"
+	        and S = "([] :: ('f,string)rules)"
+	        and info = info
+	        and type = type
+	        and c = c
+	        and qfin = qfin
+	        and preTA = preTA
+	        and rel_info = rel
+	        and ren = ren,
+	      OF okb info_eq]
+	    show thesis
+	    proof (elim exE conjE)
+	      fix rel0 c_opt0
+	      assume choice0: "left_linear_trs (set (R tp @ [])) \<or>
+	        ta_det (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) \<and>
+	        state_raise_consistent (ta_of (generate_ta preTA)) rel0"
+	        and fin0: "finite (ta_rules (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta))"
+	        and compat0: "state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel0
+	          (cover_bound c (boundstype_fun (boundstype info)) Strict_TRS (set (R tp)))"
+	        and coh0: "state_coherent (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel0"
+	        and tab0: "ta_bounded (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) c"
+	        and qfin0: "\<exists>q\<in>set qfin. q \<in> ta_rhs_states (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)"
+	        and qfin_final0: "set qfin \<subseteq> ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)"
+	        and wf0: "wf_trs (set (R tp) \<union> set [])"
+	        and cond0: "isOK (bounds_condition (boundstype info) (R tp @ []))"
+	      show thesis
+	      proof (rule cont[of rel0])
+	        show "left_linear_trs (set (R tp @ [])) \<or>
+	          ta_det (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) \<and>
+	          state_raise_consistent (ta_of (generate_ta preTA)) rel0" by (rule choice0)
+	        show "finite (ta_rules (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta))" by (rule fin0)
+	        show "state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel0
+	          (cover_bound c (boundstype_fun (boundstype info)) Strict_TRS (set (R tp)))" by (rule compat0)
+	        show "state_coherent (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) rel0" by (rule coh0)
+	        show "ta_bounded (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) c" by (rule tab0)
+	        show "\<exists>q\<in>set qfin. q \<in> ta_rhs_states (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)" by (rule qfin0)
+	        show "set qfin \<subseteq> ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)" by (rule qfin_final0)
+	        show "wf_trs (set (R tp) \<union> set [])" by (rule wf0)
+	        show "isOK (bounds_condition (boundstype info) (R tp @ []))" by (rule cond0)
+	      qed
+	    qed
+	  qed
+	  have cond: "isOK (bounds_condition (boundstype info) (R tp))"
+	    using cond_raw by simp
+	  have initial_acc: "\<And>t q. t \<in> set initial_terms \<Longrightarrow> q \<in> set qfin \<Longrightarrow>
+	      \<exists>qf\<in>ta_final (ta_of (generate_ta preTA)).
+	        qf \<in> ta_res (ta_of (generate_ta preTA)) (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+	  proof -
+	    fix t q
+	    assume t: "t \<in> set initial_terms" and q: "q \<in> set qfin"
+	    from rfc_initial_accepted_with_tail_states_impl[OF inv initial_acc_impl t q]
+	    show "\<exists>qf\<in>ta_final (ta_of (generate_ta preTA)).
+	        qf \<in> ta_res (ta_of (generate_ta preTA)) (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+	      unfolding TA_gen .
+	  qed
+	  have wf_R: "wf_trs (set (R tp))" using wf_b by simp
+	  have local_SN: "locally_terminating
+	      (cover (boundstype_fun (boundstype info)) Strict_TRS (set (R tp)) \<union> Matchbounds.raise)"
+	    using bounds_condition[OF cond] wf_R by auto
+	  have SN_r: "SN (rstep (set (R tp)))"
+	  proof (rule rfc_bounds_impl[
+	      where R = "R tp" and S = "[]" and TA = "(ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)"
+	        and rel = b_rel and e = "boundstype_fun (boundstype info)" and c = c and c_opt = None
+	        and qfin = "set qfin" and I = initial_terms])
+	    show "left_linear_trs (set (R tp @ [])) \<or>
+	      ta_det (ta_of (generate_ta preTA)) \<and>
+	      state_raise_consistent (ta_of (generate_ta preTA)) b_rel" by (rule choice_b)
+	    show "finite (ta_rules (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta))" by (rule fin_b)
+	    show "state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel
+	      (cover_bound c (boundstype_fun (boundstype info)) Strict_TRS (set (R tp)))" by (rule compat_b)
+	    show "state_compatible (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel
+	      (cover_bound c Matchbounds.match (Weak_TRS None) (set []))"
+	      unfolding cover_bound_def state_compatible_def by auto
+	    show "state_coherent (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel" by (rule coh_b)
+	    show "ta_bounded (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) c" by (rule tab_b)
+	    show "\<exists>q\<in>set qfin. q \<in> ta_rhs_states (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)" by (rule qfin_b)
+	    show "set qfin \<subseteq> ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta)" by (rule qfin_final_b)
+	    show "infinite (UNIV :: 'f set)" by (rule inf)
+	    show "wf_trs (set (R tp) \<union> set [])" by (rule wf_b)
+	    show "locally_terminating
+	      (cover (boundstype_fun (boundstype info)) Strict_TRS (set (R tp)) \<union> Matchbounds.raise)" by (rule local_SN)
+	    show "\<And>lr. lr \<in> set (R tp) \<Longrightarrow> linear_term (snd lr)" by (rule rhs_lin)
+	    show "rfc_initial_covers (R tp) initial_terms" by (rule initial_covers)
+	    show "rfc_initial_closed (R tp) initial_terms" by (rule initial_closed)
+	    show "rfc_initial_single_var initial_terms" by (rule initial_single)
+	    show "\<And>t q. t \<in> set initial_terms \<Longrightarrow> q \<in> set qfin \<Longrightarrow>
+	      \<exists>qf\<in>ta_final (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta).
+	        qf \<in> ta_res (ta_of (generate_ta preTA)) (map_vars_term (\<lambda>_. q) (lift_term 0 t))"
+	      by (rule initial_acc)
+	  qed
+	  then have SN: "SN_qrel (NFS tp, {}, set (R tp), {})"
+	    using nfs by simp
+	  show ?thesis unfolding qreltrs_sound Q Rw
+	    by (rule SN)
+	qed
+
+definition
   bounds_complexity ::
     "('tp, 'f, 'v :: {linorder,showl}) tp_ops \<Rightarrow>
     ('f::{linorder,showl}, 'q::{linorder,showl}) bounds_info \<Rightarrow>
@@ -1412,8 +2548,20 @@ proof -
    cm cc"
     by (rule deriv_bound_relto_measure_class_union[OF rec[unfolded qrstep_union] 
     deriv_bound_measure_class_mono[OF relto_mono _ cc bnd]], auto)
+  have qr_sub: "qrstep (NFS tp) (set (Q tp)) (set (R tp))
+    \<subseteq> qrstep (NFS tp) (set (Q tp)) (set (R tp) - set Rdelete) \<union>
+        qrstep (NFS tp) (set (Q tp)) (set Rdelete)"
+    unfolding qrstep_union[symmetric]
+    by (rule qrstep_mono, auto)
   show ?thesis unfolding qreltrs_sound split
-    by (rule deriv_bound_measure_class_mono[OF relto_mono subset_refl subset_refl bnd], auto)
+  proof (rule deriv_bound_measure_class_mono[OF _ subset_refl subset_refl bnd])
+    show "relto (qrstep (NFS tp) (set (Q tp)) (set (R tp))) (qrstep (NFS tp) (set (Q tp)) (set (Rw tp)))
+      \<subseteq> relto
+          (qrstep (NFS tp) (set (Q tp)) (set (R tp) - set Rdelete) \<union>
+           qrstep (NFS tp) (set (Q tp)) (set Rdelete))
+          (qrstep (NFS tp) (set (Q tp)) (set (Rw tp)))"
+      by (rule relto_mono[OF qr_sub subset_refl])
+  qed
 qed
 
 end

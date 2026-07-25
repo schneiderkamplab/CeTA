@@ -294,6 +294,7 @@ session Proof_Checker in Proof_Checker = IsaFoR_2 +
     SN
     CTRS
     LTS
+    RFC_Checker_Ext
   theories
     All_of_Proof_Checker
 
@@ -344,6 +345,11 @@ session IsaFoR_3 in "Session_Dirs/IsaFoR_3" = IsaFoR_2 +
     Proof_Checker
   theories
     Proof_Checker.All_of_Proof_Checker
+
+session RFC_Checker_Ext in RFC_Checker_Ext = IsaFoR_2 +
+  options [document = false]
+  theories
+    RFC_Matchbounds_Ext
 
 (* session for paper *)
 session RFC_Core_Matrix in "Session_Dirs/RFC_Core_Matrix" = "HOL-AFP" +
