@@ -20,8 +20,8 @@ TRS signature.
 
 CPF 4.0 adds these top-level proof elements:
 
-- `nativeCsrTerminationProof`
-- `nativeConservativeCsrTerminationProof`
+- `csrTerminationProof`
+- `conservativeCsrTerminationProof`
 
 The first supports CSR rule removal and replacement-map-aware dependency
 pairs. Its `csrDpProof` supports empty problems, ordinary DP suffixes,
@@ -33,6 +33,12 @@ the dependency-pair superset, the auxiliary weak rules, and a
 `csrDpProof`. A checker must validate all coverage, freshness, marking,
 projection, and collapsing-pair obligations; these lists are not trusted
 transformations.
+
+For compatibility with development certificates produced before CPF 4.0
+was finalized, parsers also accept the deprecated aliases
+`nativeCsrTerminationProof` and
+`nativeConservativeCsrTerminationProof`. They have exactly the same
+semantics as their canonical counterparts.
 
 CPF 4.0 does not currently add a context-sensitive nontermination proof.
 

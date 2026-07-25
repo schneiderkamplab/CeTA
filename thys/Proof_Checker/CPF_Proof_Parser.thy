@@ -1166,6 +1166,7 @@ partial_function_mr (sum_bot)
   and xml2trs_termination_proof :: "('f, 'l, string) trs_termination_proof xmlt"
   and xml2fptrs_termination_proof :: "('f, 'l, string) fptrs_termination_proof xmlt"
   and xml2csr_termination_proof :: "('f, 'l, string) csr_termination_proof xmlt"
+  and xml2legacy_csr_termination_proof :: "('f, 'l, string) csr_termination_proof xmlt"
   and xml2csr_dp_termination_proof :: "('f, 'l, string) csr_dp_termination_proof xmlt"
   and xml2unknown_proof :: "('f, 'l, string) unknown_proof xmlt"
   and xml2subproof
@@ -1456,13 +1457,32 @@ where
     }
   ) x"
 | "xml2csr_termination_proof x =
+  xml_singleton (STR ''csrTerminationProof'') (
+    XMLdo (STR ''rIsEmpty'') {
+      xml_return CSR_R_is_Empty
+    } XMLor XMLdo (STR ''csrRuleRemoval'') {
+      ord \<leftarrow> red_triple False;
+      r \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      p \<leftarrow> xml2csr_termination_proof XMLor xml2legacy_csr_termination_proof;
+      xml_return (CSR_Rule_Removal ord r p)
+    } XMLor XMLdo (STR ''csrDependencyPairs'') {
+      dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
+      p \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_Dependency_Pairs dps p)
+    } XMLor XMLdo (STR ''csrSafeDependencyPairs'') {
+      dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
+      p \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_Safe_Dependency_Pairs dps p)
+    }
+  ) id x"
+| "xml2legacy_csr_termination_proof x =
   xml_singleton (STR ''nativeCsrTerminationProof'') (
     XMLdo (STR ''rIsEmpty'') {
       xml_return CSR_R_is_Empty
     } XMLor XMLdo (STR ''csrRuleRemoval'') {
       ord \<leftarrow> red_triple False;
       r \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
-      p \<leftarrow> xml2csr_termination_proof;
+      p \<leftarrow> xml2csr_termination_proof XMLor xml2legacy_csr_termination_proof;
       xml_return (CSR_Rule_Removal ord r p)
     } XMLor XMLdo (STR ''csrDependencyPairs'') {
       dps \<leftarrow> xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id;
@@ -2674,7 +2694,9 @@ where
         XMLor xml_change (xml2dp_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Termination_Proof)
         XMLor xml_change (xml2dp_nontermination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Nontermination_Proof)
         XMLor xml_change (xml2csr_termination_proof xml2name termIndexMap ruleMap)
-          (\<lambda>p. xml_return (CSR_Termination_Proof (Existing_CSR_Proof p)))
+          (\<lambda>p. xml_return (CSR_Termination_Proof (Direct_CSR_Proof p)))
+        XMLor xml_change (xml2legacy_csr_termination_proof xml2name termIndexMap ruleMap)
+          (\<lambda>p. xml_return (CSR_Termination_Proof (Direct_CSR_Proof p)))
         XMLor xml_change (xml2completion_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Completion_Proof)
         XMLor xml_change (xml2ordered_completion_proof xml2name termIndexMap) (xml_return \<circ> Ordered_Completion_Proof)
         XMLor xml_change (xml2equational_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Equational_Proof)
@@ -2720,8 +2742,7 @@ definition xml2conservative_csr_termination_proof ::
     (string, label_type, string) extended_csr_termination_proof xmlt"
 where
   "xml2conservative_csr_termination_proof termIndexMap ruleMap =
-    xml_singleton (STR ''nativeConservativeCsrTerminationProof'')
-      (XMLdo (STR ''csrConservativeDependencyPairs'') {
+    (let p = XMLdo (STR ''csrConservativeDependencyPairs'') {
         U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
         P \<leftarrow> xml_singleton (STR ''dps'')
           (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
@@ -2730,7 +2751,10 @@ where
         prf \<leftarrow> xml2csr_dp_termination_proof
           symbol_parser termIndexMap ruleMap;
         xml_return (Conservative_CSR_Dependency_Pairs U P S prf)
-      }) id"
+      }
+    in xml_singleton (STR ''conservativeCsrTerminationProof'') p id
+      XMLor xml_singleton
+        (STR ''nativeConservativeCsrTerminationProof'') p id)"
 
 definition "proof_parser termIndexMap ruleMap =
   XMLdo (STR ''proof'') {

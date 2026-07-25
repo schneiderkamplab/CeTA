@@ -36,7 +36,7 @@ import qualified Labelings;
 import qualified Term_Rewriting;
 
 data Extended_csr_termination_proof a b c =
-  Existing_CSR_Proof (CSR_Checker.Csr_termination_proof a b c)
+  Direct_CSR_Proof (CSR_Checker.Csr_termination_proof a b c)
   | Conservative_CSR_Dependency_Pairs (Labelings.Lab a b)
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
@@ -60,7 +60,7 @@ check_extended_csr_termination_proof ::
       Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
      Extended_csr_termination_proof b [Arith.Nat] [Arith.Char] ->
        Sum_Type.Sum (String -> String) ();
-check_extended_csr_termination_proof ia j a i mu r (Existing_CSR_Proof prf) =
+check_extended_csr_termination_proof ia j a i mu r (Direct_CSR_Proof prf) =
   CSR_Minimal_CSDP_Proofs.check_csr_termination_proof_min ia j a i mu r prf;
 check_extended_csr_termination_proof ia j a i mu r
   (Conservative_CSR_Dependency_Pairs u p s prf) =

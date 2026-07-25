@@ -9,7 +9,7 @@ theory CSR_Conservative_Checker
 begin
 
 datatype ('f, 'l, 'v) extended_csr_termination_proof =
-    Existing_CSR_Proof "('f, 'l, 'v) csr_termination_proof"
+    Direct_CSR_Proof "('f, 'l, 'v) csr_termination_proof"
   | Conservative_CSR_Dependency_Pairs
       "('f, 'l) lab"
       "('f, 'l, 'v) trsLL"
@@ -24,7 +24,7 @@ fun check_extended_csr_termination_proof ::
    ('f,label_type,string) extended_csr_termination_proof \<Rightarrow> showsl check"
 where
   "check_extended_csr_termination_proof I J a i \<mu> R
-      (Existing_CSR_Proof prf) =
+      (Direct_CSR_Proof prf) =
     check_csr_termination_proof_min I J a i \<mu> R prf"
 | "check_extended_csr_termination_proof I J a i \<mu> R
       (Conservative_CSR_Dependency_Pairs U P S prf) =
@@ -45,8 +45,8 @@ lemma check_extended_csr_termination_proof_sound:
     (csstep (mu_of \<mu>) (set R)))"
   using ok
 proof (cases "prf")
-  case (Existing_CSR_Proof old)
-  from ok Existing_CSR_Proof have old_ok:
+  case (Direct_CSR_Proof old)
+  from ok Direct_CSR_Proof have old_ok:
     "isOK (check_csr_termination_proof_min I J a i \<mu> R old)"
     by simp
   have global: "SN (csstep (mu_of \<mu>) (set R))"
