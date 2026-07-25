@@ -1199,7 +1199,7 @@ check_trs_termination_proof j ia assms i tp
   FOR_Preliminaries.debug i "RFC Native Matchbox Relative Bounds"
     (Error_Monad.bind
       (Error_Monad.catch_error
-        (RFC_Matchbounds_Ext.rfc_native_matchbox_relative_bounds_tt j info
+        (RFC_Matchbounds_Ext.rfc_native_rel_matchbox_relative_bounds_tt j info
           initial_terms rr tp)
         (\ x ->
           Sum_Type.Inl

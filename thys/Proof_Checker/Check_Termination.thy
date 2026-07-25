@@ -878,7 +878,7 @@ where
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below RFC Matchbox-style relative bounds\<newline>'') \<circ> s)
    })"
 | "check_trs_termination_proof i tp (Rfc_Native_Matchbox_Relative_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Native Matchbox Relative Bounds'') (do {
-     tp' \<leftarrow> rfc_native_matchbox_relative_bounds_tt J info initial_terms Rr tp
+     tp' \<leftarrow> rfc_native_rel_matchbox_relative_bounds_tt J info initial_terms Rr tp
        <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error when applying native RFC Matchbox-style relative bounds\<newline>'')
          \<circ> showsl_tp J tp \<circ>
          showsl_lit (STR ''\<newline> to remove the rules \<newline>'') \<circ> showsl_rules Rr \<circ> showsl_nl \<circ> s);
@@ -1943,13 +1943,13 @@ next
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
   from IH(2) obtain tp' where
-    tt: "rfc_native_matchbox_relative_bounds_tt
+    tt: "rfc_native_rel_matchbox_relative_bounds_tt
       J info initial_terms Rr tp = return tp'"
     and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
     by (auto simp: Let_def)
   from IH(3) have fin: "?Q prof" by simp
   show ?case
-    apply (rule RFC_Matchbounds_Ext.rfc_native_matchbox_relative_bounds_tt[
+    apply (rule RFC_Matchbounds_Ext.rfc_native_rel_matchbox_relative_bounds_tt[
       OF J tt infinite_lab])
     apply (rule IH(1)[OF _ rec fin])
     apply (unfold update_error_return)

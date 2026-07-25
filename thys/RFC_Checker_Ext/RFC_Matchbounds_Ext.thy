@@ -1065,6 +1065,16 @@ proof -
   finally show ?thesis .
 qed
 
+lemma rel_checker_complete:
+  assumes "rs.\<alpha> lhs \<subseteq>
+    (relation_of rel)\<inverse> `` rs.\<alpha> rhs"
+  shows "rel_checker rel lhs rhs = None"
+proof (cases rel)
+  case (Some_Relation relation)
+  then show ?thesis
+    using assms by (simp only: rel_checker_some_none) auto
+qed (use assms in \<open>auto simp: rs_\<alpha>_to_RBT_keys\<close>)
+
 lemma rel_checker_alpha_cong:
   assumes "rs.\<alpha> lhs = rs.\<alpha> lhs'"
     and "rs.\<alpha> rhs = rs.\<alpha> rhs'"
@@ -1774,6 +1784,17 @@ where
     list_all (rfc_rule_native_matchbox_ext_right_impl TA rel tails) R"
 
 definition
+  rfc_tail_states_eps_closed_impl ::
+    "('q :: linorder, 'f :: linorder) ta_impl \<Rightarrow> 'q list \<Rightarrow> bool"
+where
+  "rfc_tail_states_eps_closed_impl TA tails \<equiv>
+    (let qset = rs.from_list tails in
+      list_all (\<lambda>q.
+        list_all (\<lambda>p. rs.memb p qset)
+          (rs.to_list (ta_epss_impl TA q)))
+        tails)"
+
+definition
   rfc_rule_native_no_top_redex_impl ::
     "('q :: linorder, 'f :: linorder \<times> nat) ta_impl \<Rightarrow>
       'q list \<Rightarrow> nat \<Rightarrow> ('f,string)rule \<Rightarrow> bool"
@@ -2154,6 +2175,56 @@ where
         check (rfc_native_no_top_redex_impl TA states c Rdelete)
           (showsl_lit (STR ''native RFC removed rule has a top-layer redex''));
         check_bounds_generic_native_rfc_relative info Rdelete Rkeep;
+        return (tp_ops.mk I (tp_ops.nfs I tp) (tp_ops.Q I tp) Rkeep Rdelete)
+      })"
+
+definition
+  rfc_native_rel_matchbox_relative_bounds_tt ::
+    "('tp, 'f, string) tp_ops \<Rightarrow>
+    ('f::{compare_order,showl}, 'q::{compare_order,showl}) bounds_info \<Rightarrow>
+    ('f,string)term list \<Rightarrow>
+    ('f,string)rules \<Rightarrow>
+    'tp \<Rightarrow> 'tp result"
+where
+  "rfc_native_rel_matchbox_relative_bounds_tt
+      I info initial_terms Rdelete tp \<equiv>
+    (case get_integer_bounds_info info of
+      (Bounds_Info type c qfin preTA rel, ren) \<Rightarrow> do {
+        TA \<leftarrow> generate_ta_cond preTA rel;
+        let states = remdups (states_of_tree_automata_dup preTA);
+        let Rstrict = tp_ops.R I tp;
+        let Rkeep = ceta_list_diff Rstrict Rdelete;
+        check (tp_ops.Q_empty I tp)
+          (showsl_lit (STR ''native relational RFC bounds require an empty Q component''));
+        check (tp_ops.Rw I tp = [])
+          (showsl_lit (STR ''native relational RFC bounds require no weak rules''));
+        check (\<not> tp_ops.nfs I tp)
+          (showsl_lit (STR ''native relational RFC bounds certify full rewriting''));
+        check_subseteq Rdelete Rstrict
+          <+? (\<lambda>lr. showsl_lit (STR ''could not find removed rule '')
+            \<circ> showsl_rule lr);
+        check (boundstype info = Match)
+          (showsl_lit (STR ''native relational RFC bounds require boundstype match''));
+        check_wf_trs Rstrict;
+        check (list_all (\<lambda>(l,r). linear_term r) Rstrict)
+          (showsl_lit (STR ''native relational RFC bounds require right-linear rules''));
+        check (rfc_initial_single_var initial_terms)
+          (showsl_lit (STR ''native relational RFC initial templates contain too many variables''));
+        check (rfc_initial_covers Rstrict initial_terms)
+          (showsl_lit (STR ''native relational RFC initial language misses a right-hand side''));
+        check (list_all (\<lambda>q. rs.memb q (ta_rhs_states_set TA)) qfin)
+          (showsl_lit (STR ''native relational RFC tail state is not a right-hand-side state''));
+        check (rfc_initial_paired_accepted_impl TYPE('f) TA qfin initial_terms)
+          (showsl_lit (STR ''native relational RFC initial language is not accepted''));
+        check (rfc_native_matchbox_closed_impl TA rel states Rstrict)
+          (showsl_lit (STR ''native relational RFC merge closure failed''));
+        check (rfc_tail_states_eps_closed_impl TA qfin)
+          (showsl_lit (STR ''native relational RFC tail states are not epsilon-closed''));
+        check (rfc_native_matchbox_ext_right_impl TA rel qfin Rstrict)
+          (showsl_lit (STR ''native relational RFC right-extension closure failed''));
+        check (rfc_no_top_redex_indexed_impl TA states c Rdelete)
+          (showsl_lit (STR ''native relational RFC removed rule has a top-layer redex''));
+        check_bounds_generic_rfc_relative info Rdelete Rkeep;
         return (tp_ops.mk I (tp_ops.nfs I tp) (tp_ops.Q I tp) Rkeep Rdelete)
       })"
 
@@ -2946,6 +3017,135 @@ proof -
     by (simp add: words)
 qed
 
+lemma rfc_rule_native_matchbox_closed_rel_imp:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi (rel_checker rel_info) (relation_of rel_info)"
+    and state_cover: "ta_states (ta_of TAi) \<subseteq> set qs"
+    and coh: "state_coherent (ta_of TAi) (relation_of rel_info)"
+    and closed: "rfc_rule_native_matchbox_closed_impl
+      TAi rel_info qs lr"
+    and words: "rfc_rule_words lr = Some (lw,rw)"
+    and lw_ne: "lw \<noteq> []"
+  shows "rfc_rule_matchbox_closed_impl TAi rel_info qs lr"
+proof -
+  interpret ta_inv TAi "rel_checker rel_info" "relation_of rel_info"
+    by (rule inv)
+  let ?TA = "ta_of TAi"
+  have target: "list_all (\<lambda>q.
+      rel_checker rel_info
+        (rfc_word_res_impl (ta_rules_impl TAi) (ta_epss_impl TAi)
+          q 0 lw)
+        (rfc_word_res_impl (ta_rules_impl TAi) (ta_epss_impl TAi)
+          q 0 rw) = None) qs"
+  proof (simp only: list_all_iff, intro ballI)
+    fix q
+    assume q: "q \<in> set qs"
+    let ?lhs = "rfc_word_res_impl
+      (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 lw"
+    let ?rhs = "rfc_word_res_impl
+      (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 rw"
+    have lhs_alpha: "rs.\<alpha> ?lhs = ta_res ?TA
+        (map_vars_term (\<lambda>_. q) (lift_term 0
+          (rfc_word_term lw ''x'')))"
+      by (simp add: rfc_word_res_impl_eq ta_res_impl)
+    have rhs_alpha: "rs.\<alpha> ?rhs = ta_res ?TA
+        (map_vars_term (\<lambda>_. q) (lift_term 0
+          (rfc_word_term rw ''x'')))"
+      by (simp add: rfc_word_res_impl_eq ta_res_impl)
+    have subset: "rs.\<alpha> ?lhs \<subseteq>
+        (relation_of rel_info)\<inverse> `` rs.\<alpha> ?rhs"
+    proof
+      fix p
+      assume p: "p \<in> rs.\<alpha> ?lhs"
+      from p[unfolded lhs_alpha]
+        rfc_native_labeled_word_res_ta_res[
+          of p ?TA q "map (\<lambda>f. (f,0)) lw"]
+      obtain q0 p0 where
+        q0: "q0 \<in> (ta_eps ?TA)\<^sup>* `` {q}"
+        and p0: "p0 \<in> rfc_native_labeled_word_res ?TA q0
+          (map (\<lambda>f. (f,0)) lw)"
+        and p0p: "(p0,p) \<in> (ta_eps ?TA)\<^sup>*"
+        unfolding lift_term_rfc_word_term by auto
+      have q0_state: "q0 \<in> ta_states ?TA"
+        using rfc_native_labeled_word_res_states[
+          OF _ p0] lw_ne by auto
+      have q0_qs: "q0 \<in> set qs"
+        using state_cover q0_state by auto
+      have p0_rhs_rel: "p0 \<in> (relation_of rel_info)\<inverse> ``
+          rfc_native_word_res ?TA q0 0 rw"
+        by (rule rfc_rule_native_matchbox_closed_implD[
+          OF inv closed words q0_qs])
+          (use p0 in \<open>simp add: rfc_native_labeled_word_res_uniform\<close>)
+      then obtain p1 where
+        p1_rhs: "p1 \<in> rfc_native_word_res ?TA q0 0 rw"
+        and p0p1: "(p0,p1) \<in> relation_of rel_info"
+        by auto
+      have "(p1,p) \<in>
+          (relation_of rel_info)\<inverse> O (ta_eps ?TA)\<^sup>*"
+        using p0p1 p0p by auto
+      with state_coherent_eps_trancl[OF coh]
+      obtain p' where
+        p1p': "(p1,p') \<in> (ta_eps ?TA)\<^sup>*"
+        and pp': "(p,p') \<in> relation_of rel_info"
+        by auto
+      have p'_rhs: "p' \<in> ta_res ?TA
+          (map_vars_term (\<lambda>_. q) (lift_term 0
+            (rfc_word_term rw ''x'')))"
+        using rfc_native_labeled_word_res_ta_res[
+          of p' ?TA q "map (\<lambda>f. (f,0)) rw"]
+          q0 p1_rhs p1p'
+        unfolding rfc_native_labeled_word_res_uniform
+          lift_term_rfc_word_term
+        by auto
+      show "p \<in> (relation_of rel_info)\<inverse> `` rs.\<alpha> ?rhs"
+        using pp' p'_rhs rhs_alpha by auto
+    qed
+    show "rel_checker rel_info ?lhs ?rhs = None"
+      by (rule rel_checker_complete[OF subset])
+  qed
+  show ?thesis
+    using target unfolding rfc_rule_matchbox_closed_impl_def
+    by (simp add: words)
+qed
+
+lemma rfc_native_matchbox_closed_rel_imp:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi (rel_checker rel_info) (relation_of rel_info)"
+    and state_cover: "ta_states (ta_of TAi) \<subseteq> set qs"
+    and coh: "state_coherent (ta_of TAi) (relation_of rel_info)"
+    and closed: "rfc_native_matchbox_closed_impl
+      TAi rel_info qs R"
+    and wf: "wf_trs (set R)"
+  shows "rfc_matchbox_closed_impl TAi rel_info qs R"
+  unfolding rfc_matchbox_closed_impl_def list_all_iff
+proof
+  fix lr
+  assume lr: "lr \<in> set R"
+  from rfc_native_matchbox_closed_impl_rule[OF closed lr]
+  have closed_lr: "rfc_rule_native_matchbox_closed_impl
+      TAi rel_info qs lr" .
+  then obtain lw rw where words: "rfc_rule_words lr = Some (lw,rw)"
+    unfolding rfc_rule_native_matchbox_closed_impl_def
+    by (cases "rfc_rule_words lr") auto
+  from rfc_rule_words_sound[OF words] obtain x where
+    lhs: "fst lr = rfc_word_term lw x"
+    by auto
+  have lw_ne: "lw \<noteq> []"
+  proof
+    assume "lw = []"
+    then have "is_Var (fst lr)"
+      using lhs by simp
+    moreover have "\<exists>f ts. fst lr = Fun f ts"
+      using wf lr unfolding wf_trs_def by (cases lr) auto
+    then obtain f ts where "fst lr = Fun f ts" by blast
+    then have "\<not> is_Var (fst lr)" by simp
+    ultimately show False by simp
+  qed
+  show "rfc_rule_matchbox_closed_impl TAi rel_info qs lr"
+    by (rule rfc_rule_native_matchbox_closed_rel_imp[
+      OF inv state_cover coh closed_lr words lw_ne])
+qed
+
 lemma rfc_native_matchbox_closed_Id_imp:
   fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
   assumes inv: "ta_inv TAi (rel_checker Id_Relation) Id"
@@ -3117,6 +3317,156 @@ proof -
   show ?thesis
     using target lw_ne unfolding rfc_rule_matchbox_ext_right_impl_def
     by (simp add: words)
+qed
+
+lemma rfc_tail_states_eps_closed_implD:
+  fixes TAi :: "('q :: linorder,'f :: linorder) ta_impl"
+  assumes inv: "ta_inv TAi rel rell"
+    and closed: "rfc_tail_states_eps_closed_impl TAi tails"
+  shows "(ta_eps (ta_of TAi))\<^sup>* `` set tails \<subseteq> set tails"
+proof -
+  interpret ta_inv TAi rel rell by (rule inv)
+  show ?thesis
+    using closed
+    unfolding rfc_tail_states_eps_closed_impl_def list_all_iff Let_def
+    by (auto simp: rs.correct ta_epss)
+qed
+
+lemma rfc_rule_native_matchbox_ext_right_rel_imp:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi (rel_checker rel_info) (relation_of rel_info)"
+    and state_cover: "ta_states (ta_of TAi) \<subseteq> set qs"
+    and coh: "state_coherent (ta_of TAi) (relation_of rel_info)"
+    and ext: "rfc_rule_native_matchbox_ext_right_impl
+      TAi rel_info tails lr"
+    and tails_closed:
+      "(ta_eps (ta_of TAi))\<^sup>* `` set tails \<subseteq> set tails"
+    and words: "rfc_rule_words lr = Some (lw,rw)"
+  shows "rfc_rule_matchbox_ext_right_impl
+    TAi rel_info tails qs lr"
+proof -
+  interpret ta_inv TAi "rel_checker rel_info" "relation_of rel_info"
+    by (rule inv)
+  let ?TA = "ta_of TAi"
+  from ext words have lw_ne: "lw \<noteq> []"
+    unfolding rfc_rule_native_matchbox_ext_right_impl_def by simp
+  have target: "list_all (\<lambda>q.
+      let rhs = rfc_word_res_impl (ta_rules_impl TAi)
+        (ta_epss_impl TAi) q 0 rw
+      in list_all (\<lambda>i.
+        let prefix = take i lw
+        in rel_checker rel_info
+          (rfc_word_res_impl (ta_rules_impl TAi)
+            (ta_epss_impl TAi) q 0 prefix) rhs = None)
+        [1..<length lw]) tails"
+  proof (simp only: list_all_iff Let_def, rule ballI)
+    fix q
+    assume q_tail: "q \<in> set tails"
+    show "\<forall>i\<in>set [1..<length lw].
+      rel_checker rel_info
+        (rfc_word_res_impl (ta_rules_impl TAi) (ta_epss_impl TAi)
+          q 0 (take i lw))
+        (rfc_word_res_impl (ta_rules_impl TAi) (ta_epss_impl TAi)
+          q 0 rw) = None"
+    proof (intro ballI)
+      fix i
+      assume i: "i \<in> set [1..<length lw]"
+      let ?lhs = "rfc_word_res_impl
+        (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 (take i lw)"
+      let ?rhs = "rfc_word_res_impl
+        (ta_rules_impl TAi) (ta_epss_impl TAi) q 0 rw"
+      have take_ne: "take i lw \<noteq> []"
+        using i by auto
+      have lhs_alpha: "rs.\<alpha> ?lhs = ta_res ?TA
+          (map_vars_term (\<lambda>_. q) (lift_term 0
+            (rfc_word_term (take i lw) ''x'')))"
+        by (simp add: rfc_word_res_impl_eq ta_res_impl)
+      have rhs_alpha: "rs.\<alpha> ?rhs = ta_res ?TA
+          (map_vars_term (\<lambda>_. q) (lift_term 0
+            (rfc_word_term rw ''x'')))"
+        by (simp add: rfc_word_res_impl_eq ta_res_impl)
+      have subset: "rs.\<alpha> ?lhs \<subseteq>
+          (relation_of rel_info)\<inverse> `` rs.\<alpha> ?rhs"
+      proof
+        fix p
+        assume p: "p \<in> rs.\<alpha> ?lhs"
+        from p[unfolded lhs_alpha]
+          rfc_native_labeled_word_res_ta_res[
+            of p ?TA q "map (\<lambda>f. (f,0)) (take i lw)"]
+        obtain q0 p0 where
+          q0: "q0 \<in> (ta_eps ?TA)\<^sup>* `` {q}"
+          and p0: "p0 \<in> rfc_native_labeled_word_res ?TA q0
+            (map (\<lambda>f. (f,0)) (take i lw))"
+          and p0p: "(p0,p) \<in> (ta_eps ?TA)\<^sup>*"
+          unfolding lift_term_rfc_word_term by auto
+        have q0_state: "q0 \<in> ta_states ?TA"
+          using rfc_native_labeled_word_res_states[
+            OF _ p0] take_ne by auto
+        have q0_tail: "q0 \<in> set tails"
+          using tails_closed q_tail q0 by auto
+        have p0_rhs_rel: "p0 \<in> (relation_of rel_info)\<inverse> ``
+            rfc_native_word_res ?TA q0 0 rw"
+          by (rule rfc_rule_native_matchbox_ext_right_implD[
+            OF inv ext words i q0_tail])
+            (use p0 in \<open>simp add: rfc_native_labeled_word_res_uniform\<close>)
+        then obtain p1 where
+          p1_rhs: "p1 \<in> rfc_native_word_res ?TA q0 0 rw"
+          and p0p1: "(p0,p1) \<in> relation_of rel_info"
+          by auto
+        have "(p1,p) \<in>
+            (relation_of rel_info)\<inverse> O (ta_eps ?TA)\<^sup>*"
+          using p0p1 p0p by auto
+        with state_coherent_eps_trancl[OF coh]
+        obtain p' where
+          p1p': "(p1,p') \<in> (ta_eps ?TA)\<^sup>*"
+          and pp': "(p,p') \<in> relation_of rel_info"
+          by auto
+        have p'_rhs: "p' \<in> ta_res ?TA
+            (map_vars_term (\<lambda>_. q) (lift_term 0
+              (rfc_word_term rw ''x'')))"
+          using rfc_native_labeled_word_res_ta_res[
+            of p' ?TA q "map (\<lambda>f. (f,0)) rw"]
+            q0 p1_rhs p1p'
+          unfolding rfc_native_labeled_word_res_uniform
+            lift_term_rfc_word_term
+          by auto
+        show "p \<in> (relation_of rel_info)\<inverse> `` rs.\<alpha> ?rhs"
+          using pp' p'_rhs rhs_alpha by auto
+      qed
+      show "rel_checker rel_info ?lhs ?rhs = None"
+        by (rule rel_checker_complete[OF subset])
+    qed
+  qed
+  show ?thesis
+    using target lw_ne unfolding rfc_rule_matchbox_ext_right_impl_def
+    by (simp add: words)
+qed
+
+lemma rfc_native_matchbox_ext_right_rel_imp:
+  fixes TAi :: "('q :: linorder,'f :: linorder \<times> nat) ta_impl"
+  assumes inv: "ta_inv TAi (rel_checker rel_info) (relation_of rel_info)"
+    and state_cover: "ta_states (ta_of TAi) \<subseteq> set qs"
+    and coh: "state_coherent (ta_of TAi) (relation_of rel_info)"
+    and ext: "rfc_native_matchbox_ext_right_impl
+      TAi rel_info tails R"
+    and tails_closed:
+      "(ta_eps (ta_of TAi))\<^sup>* `` set tails \<subseteq> set tails"
+  shows "rfc_matchbox_ext_right_impl
+    TAi rel_info tails qs R"
+  unfolding rfc_matchbox_ext_right_impl_def list_all_iff
+proof
+  fix lr
+  assume lr: "lr \<in> set R"
+  from rfc_native_matchbox_ext_right_impl_rule[OF ext lr]
+  have ext_lr: "rfc_rule_native_matchbox_ext_right_impl
+      TAi rel_info tails lr" .
+  then obtain lw rw where words: "rfc_rule_words lr = Some (lw,rw)"
+    unfolding rfc_rule_native_matchbox_ext_right_impl_def
+    by (cases "rfc_rule_words lr") auto
+  show "rfc_rule_matchbox_ext_right_impl
+      TAi rel_info tails qs lr"
+    by (rule rfc_rule_native_matchbox_ext_right_rel_imp[
+      OF inv state_cover coh ext_lr tails_closed words])
 qed
 
 lemma rfc_native_matchbox_ext_right_Id_imp:
@@ -6777,6 +7127,94 @@ proof -
   qed
 qed
 
+lemma rfc_native_rel_matchbox_relative_bounds_imp:
+  fixes info :: "('f::{linorder,showl,compare_order},
+    'q::{compare_order,showl}) bounds_info"
+  assumes res: "rfc_native_rel_matchbox_relative_bounds_tt
+      I info initial_terms Rdelete tp = return tp'"
+  shows "rfc_matchbox_relative_bounds_tt
+      I info initial_terms Rdelete tp = return tp'"
+proof -
+  obtain bi ren where ren: "get_integer_bounds_info info = (bi,ren)"
+    by (cases "get_integer_bounds_info info") auto
+  obtain type c qfin preTA rel where info':
+    "bi = Bounds_Info type c qfin preTA rel"
+    by (cases bi) auto
+  have info_eq: "get_integer_bounds_info info =
+      (Bounds_Info type c qfin preTA rel,ren)"
+    using ren info' by simp
+  let ?Rstrict = "tp_ops.R I tp"
+  let ?Rkeep = "ceta_list_diff ?Rstrict Rdelete"
+  let ?states = "remdups (states_of_tree_automata_dup preTA)"
+  from res[unfolded rfc_native_rel_matchbox_relative_bounds_tt_def
+      ren info' Let_def]
+  obtain TA where TA: "generate_ta_cond preTA rel = return TA"
+    and q_empty: "tp_ops.Q_empty I tp"
+    and rw_empty: "tp_ops.Rw I tp = []"
+    and not_nfs: "\<not> tp_ops.nfs I tp"
+    and delete: "isOK (check_subseteq Rdelete ?Rstrict)"
+    and match: "boundstype info = Match"
+    and wf: "wf_trs (set ?Rstrict)"
+    and right_linear: "list_all (\<lambda>(l,r). linear_term r) ?Rstrict"
+    and initial_single: "rfc_initial_single_var initial_terms"
+    and covers: "rfc_initial_covers ?Rstrict initial_terms"
+    and tails: "list_all
+      (\<lambda>q. rs.memb q (ta_rhs_states_set TA)) qfin"
+    and accepted: "rfc_initial_paired_accepted_impl
+      TYPE('f) TA qfin initial_terms"
+    and okb: "isOK (check_bounds_generic_rfc_relative
+      info Rdelete ?Rkeep)"
+    and native_closed: "rfc_native_matchbox_closed_impl
+      TA rel ?states ?Rstrict"
+    and tails_eps_closed: "rfc_tail_states_eps_closed_impl TA qfin"
+    and native_ext: "rfc_native_matchbox_ext_right_impl
+      TA rel qfin ?Rstrict"
+    and no_top: "rfc_no_top_redex_indexed_impl
+      TA ?states c Rdelete"
+    and tp': "tp' = tp_ops.mk I (tp_ops.nfs I tp)
+      (tp_ops.Q I tp) ?Rkeep Rdelete"
+    by (cases "generate_ta_cond preTA rel") auto
+  from generate_ta_cond[OF TA] have inv:
+    "ta_inv TA (rel_checker rel) (relation_of rel)"
+    and TA_gen: "TA = generate_ta preTA"
+    by auto
+  from check_bounds_generic_rfc_relative_exact[OF okb info_eq]
+  obtain b_rel c_opt where
+    b_rel: "b_rel = relation_of rel"
+    and coh_gen: "state_coherent
+      (ta_of (generate_ta preTA) :: (integer,'f \<times> nat)ta) b_rel"
+    by blast
+  have coh: "state_coherent (ta_of TA) (relation_of rel)"
+    using coh_gen b_rel unfolding TA_gen by simp
+  have state_cover: "ta_states (ta_of TA) \<subseteq> set ?states"
+    using ta_states_generate_ta_states_of_tree_automata_dup
+    unfolding TA_gen by auto
+  have closed: "rfc_matchbox_closed_impl TA rel ?states ?Rstrict"
+    by (rule rfc_native_matchbox_closed_rel_imp[
+      OF inv state_cover coh native_closed wf])
+  have tails_closed:
+    "(ta_eps (ta_of TA))\<^sup>* `` set qfin \<subseteq> set qfin"
+    by (rule rfc_tail_states_eps_closed_implD[
+      OF inv tails_eps_closed])
+  have ext: "rfc_matchbox_ext_right_impl
+      TA rel qfin ?states ?Rstrict"
+    by (rule rfc_native_matchbox_ext_right_rel_imp[
+      OF inv state_cover coh native_ext tails_closed])
+  have closed_indexed: "rfc_matchbox_closed_indexed_impl
+      TA rel ?states ?Rstrict"
+    using closed by (simp add: rfc_matchbox_closed_indexed_impl_eq)
+  have ext_indexed: "rfc_matchbox_ext_right_indexed_impl
+      TA rel qfin ?states ?Rstrict"
+    using ext by (simp add: rfc_matchbox_ext_right_indexed_impl_eq)
+  show ?thesis
+    using TA q_empty rw_empty not_nfs delete match wf right_linear
+      initial_single covers tails accepted closed_indexed ext_indexed
+      no_top okb tp'
+    unfolding rfc_native_rel_matchbox_relative_bounds_tt_def
+      rfc_matchbox_relative_bounds_tt_def ren info' Let_def
+    by auto
+qed
+
 lemma rfc_native_matchbox_relative_bounds_SN_on:
   fixes info :: "('f::{linorder,showl,compare_order},
     'q::{compare_order,showl}) bounds_info"
@@ -7190,6 +7628,24 @@ proof -
   show ?thesis
     using sn_split unfolding qreltrs_sound SN_qrel_def
       split NFS_false qlist rwempty by simp
+qed
+
+lemma rfc_native_rel_matchbox_relative_bounds_tt:
+  fixes info :: "('f::{linorder,showl,compare_order},
+    'q::{compare_order,showl}) bounds_info"
+  assumes spec: "tp_spec I"
+    and res: "rfc_native_rel_matchbox_relative_bounds_tt
+      I info initial_terms Rdelete tp = return tp'"
+    and inf: "infinite (UNIV :: 'f set)"
+    and rec: "SN_qrel (tp_ops.qreltrs I tp')"
+  shows "SN_qrel (tp_ops.qreltrs I tp)"
+proof -
+  from rfc_native_rel_matchbox_relative_bounds_imp[OF res]
+  have old: "rfc_matchbox_relative_bounds_tt
+      I info initial_terms Rdelete tp = return tp'" .
+  show ?thesis
+    by (rule rfc_matchbox_relative_bounds_tt[
+      OF spec old inf rec])
 qed
 
 definition rfc_relative_bounds_tt ::
