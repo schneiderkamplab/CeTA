@@ -2618,10 +2618,10 @@ where [code]: "xml2conditional_ncr_proof x = xml_singleton (STR ''conditionalCrD
       (\<lambda>(s, t, u) ps qs i. Non_Join_CNCR s t u ps qs i)
   ) id x"
 
-definition "proof" :: "(string, label_type, string)proof xmlt"
+definition "proof_content" :: "(string, label_type, string)proof xmlt"
 where
-  "proof = XMLdo (STR ''proof'') {
-      p \<leftarrow> xml_change (xml2trs_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> TRS_Termination_Proof)
+  "proof_content =
+        xml_change (xml2trs_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> TRS_Termination_Proof)
         XMLor xml_change (xml2trs_nontermination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> TRS_Nontermination_Proof)
         XMLor xml_change (xml2reltrs_nontermination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Relative_TRS_Nontermination_Proof)
         XMLor xml_change (xml2cr_proof xml2name termIndexMap ruleMap) (xml_return \<circ> TRS_Confluence_Proof)
@@ -2646,7 +2646,12 @@ where
         XMLor xml_change (xml2infeasibility_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Infeasibility_Proof)
         XMLor xml_change (xml2feasibility_proof xml2name termIndexMap) (xml_return \<circ> Feasibility_Proof)
         XMLor xml_change (xml2unknown_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Unknown_Proof)
-        XMLor xml_change (xml2unknown_disproof xml2name termIndexMap ruleMap) (xml_return \<circ> Unknown_Disproof);
+        XMLor xml_change (xml2unknown_disproof xml2name termIndexMap ruleMap) (xml_return \<circ> Unknown_Disproof)"
+
+definition "proof" :: "(string, label_type, string)proof xmlt"
+where
+  "proof = XMLdo (STR ''proof'') {
+      p \<leftarrow> proof_content;
       xml_return p
     }"
 end

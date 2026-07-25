@@ -6,7 +6,7 @@ License: LGPL (see file COPYING.LESSER)
 -}
 module Main (main) where
 
-import Ceta -- the certifier
+import CSR_Improved_CSDP_Checker(certify_proof_csr) -- the CSR-aware certifier
 import Proof_Checker(Cert_result(..)) 
 import Arith(explode)
 import Version(version)
@@ -83,7 +83,7 @@ parse _ _ _ _ _ = do
   exitWith (ExitFailure 4)
 
 start a inputO propertyO answerO proofString = 
-    do case certify_proof a inputO propertyO answerO proofString of
+    do case certify_proof_csr a inputO propertyO answerO proofString of
          Certified -> 
              do putStrLn ("CERTIFIED")
                 exitWith ExitSuccess
