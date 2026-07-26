@@ -30,6 +30,9 @@ import qualified QDP_Framework_Impl;
 import qualified FOR_Preliminaries;
 import qualified Termination_Problem_Spec;
 import qualified Countable;
+import qualified Shows_Literal_Matrix;
+import qualified Matrix_Carrier_Impl;
+import qualified Complexity_Carrier;
 import qualified Usable_Rules_Impl;
 import qualified Graph;
 import qualified Dependency_Pair_Problem_Spec;
@@ -365,6 +368,34 @@ csr_root_tcap_no_edge mu r (Term_Rewriting.Fun f ts) u =
           u);
 csr_root_tcap_no_edge mu r (Term_Rewriting.Var x) u = False;
 
+csr_int_mat_mu_mono_check ::
+  forall a b.
+    (Eq a, Term_Rewriting.Showl a, Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => HOL.Itself a ->
+                                   HOL.Itself b ->
+                                     Arith.Nat ->
+                                       Arith.Nat ->
+ [((b, Arith.Nat), (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
+   [((b, Arith.Nat), [Arith.Nat])] -> Sum_Type.Sum (String -> String) ();
+csr_int_mat_mu_mono_check HOL.Type uu n sd i mu =
+  csr_mu_mono_check mu
+    (Term_Rewriting.mono_af
+      ((Linear_Poly_Order.create_poly_rel_impl ::
+         Congruence.Partial_object_ext (Matrix.Mat Arith.Int)
+           (Group.Monoid_ext (Matrix.Mat Arith.Int)
+             (Ring.Ring_ext (Matrix.Mat Arith.Int)
+               (Ordered_Semiring.Ordered_semiring_ext (Matrix.Mat Arith.Int)
+                 (Linear_Poly_Complexity.Lpoly_order_semiring_ext
+                   (Matrix.Mat Arith.Int) ())))) ->
+           Sum_Type.Sum (String -> String) () ->
+             [((b, Arith.Nat),
+                (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
+               Term_Rewriting.Rel_impl_ext b a ())
+        (Matrix_Poly.mat_lpoly_order n sd Arith.one_int Term_Rewriting.int_mono
+          (\ x y -> Arith.less_int y x))
+        (Matrix_Poly.check_dimensions n sd (Sum_Type.Inr ())) i))
+    (Arith.remdups (map fst i ++ map fst mu));
+
 csr_rule_removal_af_tt ::
   forall a b.
     (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
@@ -432,6 +463,39 @@ csr_rule_removal_af_tt rp fs mu rremove r =
          Sum_Type.Inr _ -> Sum_Type.Inr rr;
        });
 
+csr_int_mat_rule_removal_tt ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => Arith.Nat ->
+                                   Arith.Nat ->
+                                     [((a, Arith.Nat),
+(Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
+                                       [((a, Arith.Nat), [Arith.Nat])] ->
+ [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
+   [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
+     Sum_Type.Sum (String -> String)
+       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)];
+csr_int_mat_rule_removal_tt n sd i mu rremove r =
+  let {
+    fs = Arith.remdups (map fst i ++ map fst mu);
+    rp = Linear_Poly_Order.create_poly_rel_impl
+           (Matrix_Poly.mat_lpoly_order n sd Arith.one_int
+             Term_Rewriting.int_mono (\ x y -> Arith.less_int y x))
+           (Matrix_Poly.check_dimensions n sd (Sum_Type.Inr ())) i;
+  } in Error_Monad.bind
+         ((csr_int_mat_mu_mono_check ::
+            HOL.Itself a ->
+              HOL.Itself a ->
+                Arith.Nat ->
+                  Arith.Nat ->
+                    [((a, Arith.Nat),
+                       (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
+                      [((a, Arith.Nat), [Arith.Nat])] ->
+                        Sum_Type.Sum (String -> String) ())
+           HOL.Type HOL.Type n sd i mu)
+         (\ _ -> csr_rule_removal_af_tt rp fs mu rremove r);
+
 csr_int_rule_removal_tt ::
   forall a b.
     (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
@@ -475,6 +539,8 @@ Term_Rewriting.Term a [Arith.Char])] ->
    [(Term_Rewriting.Term a [Arith.Char], Term_Rewriting.Term a [Arith.Char])];
 csr_rule_removal_impl (Reduction_Pair_Implementations.Int_carrier i) mu rremove
   r = csr_int_rule_removal_tt i mu rremove r;
+csr_rule_removal_impl (Reduction_Pair_Implementations.Int_mat_carrier n sd i) mu
+  rremove r = csr_int_mat_rule_removal_tt n sd i mu rremove r;
 csr_rule_removal_impl (Reduction_Pair_Implementations.Int_nl_carrier v) mu
   rremove r =
   Sum_Type.Inl
@@ -503,10 +569,6 @@ csr_rule_removal_impl (Reduction_Pair_Implementations.Arctic_carrier v) mu
     (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
 csr_rule_removal_impl (Reduction_Pair_Implementations.Arctic_rat_carrier v) mu
   rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Int_mat_carrier v va vb)
-  mu rremove r =
   Sum_Type.Inl
     (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
 csr_rule_removal_impl (Reduction_Pair_Implementations.Rat_mat_carrier v va vb)

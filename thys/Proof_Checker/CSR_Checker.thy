@@ -421,11 +421,121 @@ proof -
     by (rule csr_rule_removal_af_tt[OF int_rel_impl af_ok af rec])
 qed
 
+definition csr_int_mat_mu_mono_check ::
+  "'f itself \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow>
+   (('f::{showl, compare_order}, int mat) lpoly_interL) \<Rightarrow>
+   'f muL \<Rightarrow> showsl check"
+where
+  "csr_int_mat_mu_mono_check _ n sd I \<mu> =
+    csr_mu_mono_check \<mu> (rel_impl.mono_af (int_mat_rel_impl n sd I))
+      (remdups (map fst I @ map fst \<mu>))"
+
+lemma int_mat_carrier_mu_af_subset:
+  assumes ok: "\<forall>f\<in>set fs. mu_of \<mu> f \<subseteq> rel_impl.mono_af (int_mat_rel_impl n sd I) f"
+    and fs: "set (map fst I @ map fst \<mu>) \<subseteq> set fs"
+  shows "af_subset (mu_of \<mu>) (rel_impl.mono_af (int_mat_rel_impl n sd I))"
+  unfolding af_subset_def
+proof
+  fix f
+  show "mu_of \<mu> f \<subseteq> rel_impl.mono_af (int_mat_rel_impl n sd I) f"
+  proof (cases "f \<in> set fs")
+    case True
+    obtain g m where f: "f = (g, m)"
+      by (cases f)
+    show ?thesis
+    proof
+      fix x
+      assume x: "x \<in> mu_of \<mu> f"
+      have sub: "mu_of \<mu> f \<subseteq> rel_impl.mono_af (int_mat_rel_impl n sd I) f"
+        using ok True
+        unfolding Ball_def
+        apply (drule_tac x=f in spec)
+        apply (drule mp)
+        apply assumption
+        apply (simp add: create_poly_rel_impl_def Let_def)
+        done
+      from sub x show "x \<in> rel_impl.mono_af (int_mat_rel_impl n sd I) f"
+        by (rule subsetD)
+    qed
+  next
+    case False
+    then have f_mu: "f \<notin> set (map fst \<mu>)" and f_i: "f \<notin> set (map fst I)"
+      using fs by auto
+    then have "map_of \<mu> f = None"
+      by (simp add: map_of_eq_None_iff)
+    moreover have "ceta_map_of I f = None"
+      using f_i by (simp add: ceta_map_of map_of_eq_None_iff)
+    ultimately show ?thesis
+      unfolding mu_of_def create_poly_rel_impl_def create_mono_af_def Let_def
+        fun_of_map_fun'.simps mat_lpoly_order_def mat_ordered_semiring_def ring_mat_def
+      by auto
+  qed
+qed
+
+definition csr_int_mat_rule_removal_tt ::
+  "nat \<Rightarrow> nat \<Rightarrow> (('f::{showl, compare_order}, int mat) lpoly_interL) \<Rightarrow>
+   'f muL \<Rightarrow> ('f, 'v::{showl, compare_order}) rules \<Rightarrow>
+   ('f, 'v) rules \<Rightarrow> showsl + ('f, 'v) rules"
+where
+  "csr_int_mat_rule_removal_tt n sd I \<mu> Rremove R =
+    (let fs = remdups (map fst I @ map fst \<mu>); rp = int_mat_rel_impl n sd I in do {
+      _ \<leftarrow> csr_int_mat_mu_mono_check TYPE('f) TYPE('f) n sd I \<mu>;
+      csr_rule_removal_af_tt rp fs \<mu> Rremove R
+    })"
+
+lemma csr_int_mat_rule_removal_tt:
+  fixes I :: "(('f::{showl, compare_order}, int mat) lpoly_interL)"
+    and \<mu> :: "'f muL"
+  assumes ok: "csr_int_mat_rule_removal_tt n sd I \<mu> Rremove R = return R'"
+    and rec: "SN (csstep (mu_of \<mu>) (set R'))"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof -
+  let ?fs = "remdups (map fst I @ map fst \<mu>)"
+  let ?rp = "int_mat_rel_impl n sd I"
+  have mono_ok: "csr_int_mat_mu_mono_check TYPE('f) TYPE('f) n sd I \<mu> = return ()"
+    using ok unfolding csr_int_mat_rule_removal_tt_def Let_def
+    by (cases "csr_int_mat_mu_mono_check TYPE('f) TYPE('f) n sd I \<mu>", simp_all)
+  have af_ok: "csr_rule_removal_af_tt ?rp ?fs \<mu> Rremove R = return R'"
+    using ok mono_ok unfolding csr_int_mat_rule_removal_tt_def Let_def by simp
+  have check_mono: "isOK (csr_int_mat_mu_mono_check TYPE('f) TYPE('f) n sd I \<mu>)"
+    using mono_ok unfolding isOK_def by simp
+  have all: "\<forall>f\<in>set ?fs. mu_of \<mu> f \<subseteq> rel_impl.mono_af ?rp f"
+  proof
+    fix f
+    assume f: "f \<in> set ?fs"
+    show "mu_of \<mu> f \<subseteq> rel_impl.mono_af ?rp f"
+    proof
+      fix x
+      assume x: "x \<in> mu_of \<mu> f"
+      have sub: "mu_of \<mu> f \<subseteq> rel_impl.mono_af ?rp f"
+        using check_mono[
+          unfolded csr_int_mat_mu_mono_check_def csr_mu_mono_check_def
+            isOK_check_allm isOK_check] f
+        unfolding Ball_def
+        apply (drule_tac x=f in spec)
+        apply (drule mp)
+        apply assumption
+        apply (simp add: create_poly_rel_impl_def Let_def)
+        done
+      from sub x show "x \<in> rel_impl.mono_af ?rp f"
+        by (rule subsetD)
+    qed
+  qed
+  have subset_fs: "set (map fst I @ map fst \<mu>) \<subseteq> set ?fs"
+    by auto
+  have af: "af_subset (mu_of \<mu>) (rel_impl.mono_af ?rp)"
+    by (rule int_mat_carrier_mu_af_subset[OF all subset_fs])
+  show ?thesis
+    by (rule csr_rule_removal_af_tt[OF int_mat_rel_impl af_ok af rec])
+qed
+
 fun csr_rule_removal_impl ::
   "('f::{showl, compare_order}) redtriple_impl \<Rightarrow>
    'f muL \<Rightarrow> ('f, string) rules \<Rightarrow> ('f, string) rules \<Rightarrow> showsl + ('f, string) rules"
 where
   "csr_rule_removal_impl (Int_carrier I) \<mu> Rremove R = csr_int_rule_removal_tt I \<mu> Rremove R"
+| "csr_rule_removal_impl (Int_mat_carrier n sd I) \<mu> Rremove R =
+    csr_int_mat_rule_removal_tt n sd I \<mu> Rremove R"
 | "csr_rule_removal_impl redp \<mu> Rremove R =
     error (showsl_lit (STR ''unsupported CSR rule-removal redpair''))"
 
@@ -440,7 +550,7 @@ lemma csr_rule_removal_impl:
     and rec: "SN (csstep (mu_of \<mu>) (set R'))"
   shows "SN (csstep (mu_of \<mu>) (set R))"
   using ok rec
-  by (cases redp; simp add: csr_int_rule_removal_tt)
+  by (cases redp; simp add: csr_int_rule_removal_tt csr_int_mat_rule_removal_tt)
 
 lemma csstep_empty[simp]: "csstep \<mu> {} = {}"
   unfolding csstep_def csstep_p_def rstep_r_p_s_def by auto
