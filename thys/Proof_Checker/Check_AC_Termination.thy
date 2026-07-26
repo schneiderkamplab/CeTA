@@ -5,7 +5,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_AC_Termination
 imports 
-  Check_Termination_Common
+  Proof_Checker_Base.Check_Termination_Common
 begin
 
 subsection \<open>Proving finiteness in the AC-DP Framework\<close>

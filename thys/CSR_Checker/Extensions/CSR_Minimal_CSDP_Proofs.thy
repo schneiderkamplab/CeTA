@@ -3,7 +3,7 @@ Author:  Ferrum contributors
 License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_Minimal_CSDP_Proofs
-  imports CSR_Checker
+  imports CSR_Checker_Core.CSR_Checker
 begin
 
 lemma sharp_csdp_step_imp_csnrstep:

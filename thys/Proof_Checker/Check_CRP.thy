@@ -7,7 +7,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_CRP
   imports
-    Check_Termination
+    Proof_Checker_Base.Check_Termination
     CR.LS_Persistence_Impl
     CR.Equational_Reasoning_Impl
     CR.Orthogonality_Impl

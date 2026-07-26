@@ -13,7 +13,7 @@ imports
   SN.Usable_Replacement_Map_Impl
   Sem_Lab.Labelings_Impl
   SN.Complexity_Impl
-  Check_Termination_Common
+  Proof_Checker_Base.Check_Termination_Common
 begin
 
 subsection \<open>Assumption\<close>

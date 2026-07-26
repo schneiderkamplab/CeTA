@@ -5,7 +5,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Quasi_Reductive
 imports 
-  Check_Termination
+  Proof_Checker_Base.Check_Termination
   CTRS.Unraveling_Impl
 begin
 

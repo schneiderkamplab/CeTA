@@ -288,13 +288,37 @@ session SN in Termination_and_Complexity = IsaFoR_1 +
   theories
     All_of_Termination_and_Complexity
 
-session Proof_Checker in Proof_Checker = IsaFoR_2 +
+session Proof_Checker_Base in Proof_Checker_Base = IsaFoR_2 +
   options [document = false]
   sessions
     SN
     CTRS
     LTS
     RFC_Checker_Ext
+  theories
+    Check_Termination
+
+session CSR_Checker_Base in "CSR_Checker/Base" = Proof_Checker_Base +
+  options [document = false]
+  theories
+    CSR_Checker_Base
+
+session CSR_Checker_Core in "CSR_Checker/Core" = CSR_Checker_Base +
+  options [document = false]
+  theories
+    CSR_Checker
+
+session CSR_Checker_Extensions in "CSR_Checker/Extensions" = CSR_Checker_Core +
+  options [document = false]
+  theories
+    CSR_Minimal_CSDP_Proofs
+    CSR_Improved_CSDP_Proofs
+    CSR_Conservative_Checker
+
+session Proof_Checker in Proof_Checker = CSR_Checker_Extensions +
+  options [document = false]
+  sessions
+    LTS
   theories
     All_of_Proof_Checker
 

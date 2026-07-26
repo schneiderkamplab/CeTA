@@ -5,6 +5,9 @@ STATIC=
 override GHC_ARGS:= -O2 -package array -XRankNTypes  $(GHC_ARGS) $(if $(STATIC), -static -optl-static -optl-pthread, )
 SRC=src
 GENERATED=generated
+ISABELLE?=isabelle
+ISABELLE_JOBS?=16
+ISABELLE_DIRS=$(if $(AFP),-d "$(AFP)") -d thys
 OK=echo -e "\0033[1000D\0033[1A\0033[59C[\0033[32m  OK  \0033[0m]"
 OK_ASS=echo -e "\0033[1000D\0033[1A\0033[59C[\0033[32mOK ASS\0033[0m]"
 ERROR=echo -e "\0033[1000D\0033[1A\0033[59C[\0033[31mFAILED\0033[0m]"
@@ -54,4 +57,20 @@ clean:
 	@rm -f ceta
 	@$(OK)
 
-.PHONY: all clean haskell test
+isabelle-proof-base:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) Proof_Checker_Base
+
+isabelle-csr-base:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) CSR_Checker_Base
+
+isabelle-csr-core:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) CSR_Checker_Core
+
+isabelle-csr-extensions:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) CSR_Checker_Extensions
+
+isabelle-proof-checker:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) Proof_Checker
+
+.PHONY: all clean haskell test isabelle-proof-base isabelle-csr-base \
+	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker

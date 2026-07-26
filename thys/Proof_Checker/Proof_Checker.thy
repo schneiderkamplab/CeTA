@@ -7,8 +7,8 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Proof_Checker
   imports
-    Check_Termination
-    CSR_Conservative_Checker
+    Proof_Checker_Base.Check_Termination
+    CSR_Checker_Extensions.CSR_Conservative_Checker
     Check_Nontermination
     Check_CRP
     Check_Conditional_CRP

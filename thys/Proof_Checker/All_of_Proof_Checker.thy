@@ -7,10 +7,10 @@ theory All_of_Proof_Checker
     Ceta
     Ceta_Problem_Spec
     Ceta_Verifier
-    CSR_Checker
-    CSR_Conservative_Checker
-    CSR_Improved_CSDP_Proofs
-    CSR_Minimal_CSDP_Proofs
+    CSR_Checker_Core.CSR_Checker
+    CSR_Checker_Extensions.CSR_Conservative_Checker
+    CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs
+    CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
     Check_AC_Termination
     Check_AL94
     Check_CRP
@@ -23,8 +23,8 @@ theory All_of_Proof_Checker
     Check_Nonreachability
     Check_Nontermination
     Check_Quasi_Reductive
-    Check_Termination
-    Check_Termination_Common
+    Proof_Checker_Base.Check_Termination
+    Proof_Checker_Base.Check_Termination_Common
     Container_Setup
     Pre_Ceta
     Processors

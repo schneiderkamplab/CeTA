@@ -7,7 +7,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Completion_Proof
   imports
-    Check_Termination
+    Proof_Checker_Base.Check_Termination
     CR.Equational_Reasoning_Impl
 begin
 

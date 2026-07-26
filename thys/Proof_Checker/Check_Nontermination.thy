@@ -5,7 +5,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Nontermination
 imports
-  Check_Termination_Common
+  Proof_Checker_Base.Check_Termination_Common
 begin
 
 datatype (dead 'f, dead 'l, dead 'v) dp_nontermination_proof =
