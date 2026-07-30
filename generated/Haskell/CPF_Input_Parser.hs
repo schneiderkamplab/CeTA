@@ -927,7 +927,10 @@ strategy ::
 strategy xml2name termMap =
   Xmlt.xml_do "strategy"
     (Xmlt.xml_take
-      (Xmlt.xml_or innermost (innermostLhssStrategy xml2name termMap))
+      (Xmlt.xml_or innermost
+        (Xmlt.xml_or (innermostLhssStrategy xml2name termMap)
+          (Xmlt.xml_change (replacement_map xml2name)
+            (\ _ -> Xmlt.xml_return Ceta_Problem_Spec.No_Strategy))))
       Xmlt.xml_return);
 
 dp_input ::

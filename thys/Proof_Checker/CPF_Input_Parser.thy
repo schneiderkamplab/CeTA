@@ -237,9 +237,20 @@ definition innermost :: "('a, string) strategy xmlt"
 where
   "innermost = XMLdo (STR ''innermost'') {nfs \<leftarrow>? xml_bool (STR ''nfs''); xml_return (Innermost (nfs_def nfs))}"
 
+text \<open>
+CPF permits a context-sensitive strategy on a standalone DP input.  The
+generic DP checker has no replacement-map-specific problem type, so we check
+such certificates against the stronger unrestricted DP obligation.  This is
+conservative: every unrestricted chain includes all context-sensitive chains.
+Replacement-map-specific processors remain available through the CSR proof
+formats.
+\<close>
+
 definition strategy :: "('a,string)strategy xmlt" where
   "strategy = XMLdo (STR ''strategy'') {
-    ret \<leftarrow> innermost XMLor innermostLhssStrategy;
+    ret \<leftarrow> innermost
+      XMLor innermostLhssStrategy
+      XMLor xml_change replacement_map (\<lambda>_. xml_return No_Strategy);
     xml_return ret
   }"
 
