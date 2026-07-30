@@ -243,6 +243,17 @@ csr_sct_active_index_check mu (Term_Rewriting.Fun (Labelings.FunLab vb vc) va) i
 csr_sct_active_index_check mu (Term_Rewriting.Fun (Labelings.UnLab vb) va) i =
   False;
 
+csr_sct_index_check ::
+  forall a b c.
+    Term_Rewriting.Term (Labelings.Lab a b) c -> Arith.Nat -> Bool;
+csr_sct_index_check (Term_Rewriting.Fun (Labelings.Sharp f) ts) i =
+  Arith.less_nat Arith.zero_nat i &&
+    Arith.less_eq_nat i (Arith.size_list ts);
+csr_sct_index_check (Term_Rewriting.Var v) i = False;
+csr_sct_index_check (Term_Rewriting.Fun (Labelings.Lab vb vc) va) i = False;
+csr_sct_index_check (Term_Rewriting.Fun (Labelings.FunLab vb vc) va) i = False;
+csr_sct_index_check (Term_Rewriting.Fun (Labelings.UnLab vb) va) i = False;
+
 csr_rules_sharp_fresh_check ::
   forall a b c.
     [(Term_Rewriting.Term (Labelings.Lab a b) c,
@@ -303,12 +314,12 @@ csr_sct_active_subterm_proc j mu gs dpp =
 (\ (i, ja) ->
   Check_Monad.check
     (csr_sct_active_index_check mu s i &&
-      csr_sct_active_index_check mu t ja &&
+      csr_sct_index_check t ja &&
         Arith.membera
           (CSR_Checker_Base.mu_supt_list mu
             (Size_Change_Termination_Processors.get_arg s i))
           (Size_Change_Termination_Processors.get_arg t ja))
-    (Term_Rewriting.showsl_lit "invalid strict active CSR size-change edge"))
+    (Term_Rewriting.showsl_lit "invalid strict CSR size-change edge"))
 stri)
                                       (\ x -> Sum_Type.Inl (snd x)))
                                     (\ _ ->
@@ -316,17 +327,18 @@ stri)
 (Error_Monad.forallM
   (\ (i, ja) ->
     Check_Monad.check
-      (csr_sct_active_index_check mu s i &&
-        csr_sct_active_index_check mu t ja &&
+      (csr_sct_index_check s i &&
+        csr_sct_index_check t ja &&
           (Term_Rewriting.equal_term
              (Size_Change_Termination_Processors.get_arg s i)
              (Size_Change_Termination_Processors.get_arg t ja) ||
-            Arith.membera
-              (CSR_Checker_Base.mu_supt_list mu
-                (Size_Change_Termination_Processors.get_arg s i))
-              (Size_Change_Termination_Processors.get_arg t ja)))
+            csr_sct_active_index_check mu s i &&
+              Arith.membera
+                (CSR_Checker_Base.mu_supt_list mu
+                  (Size_Change_Termination_Processors.get_arg s i))
+                (Size_Change_Termination_Processors.get_arg t ja)))
       (Term_Rewriting.showsl_lit
-        "invalid non-strict active CSR size-change edge"))
+        "invalid non-strict CSR size-change edge"))
   nstri)
 (\ x -> Sum_Type.Inl (snd x)))));
                         })
@@ -349,7 +361,7 @@ stri)
                                       (Missing_List.remdups_sort nstri))
                                gGs))
                            (Term_Rewriting.showsl_lit
-                             "active CSR size-change analysis failed")));
+                             "CSR size-change analysis failed")));
 
 check_csr_dp_termination_proof_min ::
   forall a b c.

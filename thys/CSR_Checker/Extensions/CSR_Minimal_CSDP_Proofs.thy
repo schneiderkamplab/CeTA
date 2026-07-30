@@ -1095,6 +1095,34 @@ fun csr_sct_active_index where
     (i < length ts \<and> i \<in> \<mu> (f, length ts))"
 | "csr_sct_active_index \<mu> t i = False"
 
+fun csr_sct_index where
+  "csr_sct_index (Fun (Sharp f) ts) (Suc i) = (i < length ts)"
+| "csr_sct_index t i = False"
+
+lemma csr_sct_indexE:
+  assumes index: "csr_sct_index t i"
+  obtains f ts j where "t = Fun (Sharp f) ts" "i = Suc j"
+    "j < length ts"
+proof (cases t)
+  case (Var x)
+  with index show thesis by simp
+next
+  case (Fun g us)
+  show thesis
+  proof (cases i)
+    case 0
+    with index Fun show thesis by simp
+  next
+    case (Suc j)
+    show thesis
+    proof (cases g)
+      case (Sharp f)
+      with index Fun Suc have "j < length us" by simp
+      with that[of f us j] Fun Suc Sharp show thesis by simp
+    qed (use index Fun Suc in auto)
+  qed
+qed
+
 lemma csr_sct_active_indexE:
   assumes active: "csr_sct_active_index \<mu> t i"
   obtains f ts j where "t = Fun (Sharp f) ts" "i = Suc j"
@@ -1233,6 +1261,127 @@ next
         using Fun Suc Sharp s j j_s arg us by simp
     qed (use active_t Fun Suc in auto)
   qed
+qed
+
+lemma csr_sct_get_arg_transition:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and index_t: "csr_sct_index t i"
+    and index_s: "csr_sct_index s i"
+    and target_SN: "SN_on (csdp_step Sharp \<mu> R) {t \<cdot> \<sigma>}"
+    and steps: "(t \<cdot> \<sigma>, s \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "(get_arg t i \<cdot> \<sigma>, get_arg s i \<cdot> \<tau>) \<in>
+    restrict_SN ((csstep \<mu> R)\<^sup>*) (csstep \<mu> R) \<union> Id"
+proof -
+  from csr_sct_indexE[OF index_t]
+  obtain f ts j where t: "t = Fun (Sharp f) ts"
+    and i: "i = Suc j" and j: "j < length ts" .
+  from csr_sct_indexE[OF index_s]
+  obtain h ss k where s: "s = Fun (Sharp h) ss"
+    and i': "i = Suc k" and k: "k < length ss" .
+  from i i' have kj: "k = j" by simp
+  have steps':
+    "(Fun (Sharp f) (map (\<lambda>u. u \<cdot> \<sigma>) ts), s \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+    using steps t by simp
+  have undef:
+    "\<not> defined R
+      (Sharp f, length (map (\<lambda>u. u \<cdot> \<sigma>) ts))"
+    by (rule fresh)
+  from cssteps_Fun_undefined_root_preserved[OF wf undef steps']
+  obtain us where finish:
+      "s \<cdot> \<tau> = Fun (Sharp f) us"
+    and len_us:
+      "length us = length (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+    by blast
+  from finish s have hf: "h = f"
+    and maps: "map (\<lambda>u. u \<cdot> \<tau>) ss = us"
+    by auto
+  have len: "length ss = length ts"
+    using arg_cong[OF maps, of length] len_us by simp
+  have j_ss: "j < length ss"
+    using j len by simp
+  show ?thesis
+  proof (cases "j \<in> \<mu> (f, length ts)")
+    case True
+    have active_t: "csr_sct_active_index \<mu> t i"
+      using t i j True by simp
+    have active_s: "csr_sct_active_index \<mu> s i"
+      using s i kj k hf len True by simp
+    have arg_steps:
+      "(get_arg t i \<cdot> \<sigma>, get_arg s i \<cdot> \<tau>) \<in>
+        (csstep \<mu> R)\<^sup>*"
+      by (rule csr_sct_active_get_arg_steps[
+        OF wf fresh active_t active_s steps])
+    have arg_SN:
+      "SN_on (csstep \<mu> R) {get_arg t i \<cdot> \<sigma>}"
+      by (rule csr_sct_active_index_subst_SN[OF active_t target_SN])
+    show ?thesis
+      using arg_steps arg_SN unfolding restrict_SN_def by auto
+  next
+    case False
+    have inactive:
+      "j \<notin> csr_dp_root_mu \<mu>
+        (Sharp f, length (map (\<lambda>u. u \<cdot> \<sigma>) ts))"
+      using False by simp
+    have j_map: "j < length (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+      using j by simp
+    from cssteps_Fun_inactive_arg_preserved[
+      OF wf undef j_map inactive steps']
+    obtain vs where finish':
+        "s \<cdot> \<tau> = Fun (Sharp f) vs"
+      and same:
+        "vs ! j = map (\<lambda>u. u \<cdot> \<sigma>) ts ! j"
+      by blast
+    from finish finish' have vs_us: "vs = us" by simp
+    have left: "get_arg t i \<cdot> \<sigma> = us ! j"
+      using same j t i vs_us by simp
+    have maps_j: "map (\<lambda>u. u \<cdot> \<tau>) ss ! j = us ! j"
+      by (rule arg_cong[OF maps])
+    have right: "get_arg s i \<cdot> \<tau> = us ! j"
+      using maps_j j_ss s i kj by simp
+    have eq:
+      "get_arg t i \<cdot> \<sigma> = get_arg s i \<cdot> \<tau>"
+      using left right by simp
+    with eq show ?thesis by auto
+  qed
+qed
+
+lemma csr_sct_index_steps:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and index_t: "csr_sct_index t i"
+    and shape_s: "\<exists>g ss. s = Fun (Sharp g) ss"
+    and steps: "(t \<cdot> \<sigma>, s \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "csr_sct_index s i"
+proof -
+  from csr_sct_indexE[OF index_t]
+  obtain f ts j where t: "t = Fun (Sharp f) ts"
+    and i: "i = Suc j" and j: "j < length ts" .
+  from shape_s obtain g ss where s: "s = Fun (Sharp g) ss"
+    by auto
+  have start:
+    "t \<cdot> \<sigma> = Fun (Sharp f) (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+    using t by simp
+  have undef:
+    "\<not> defined R
+      (Sharp f, length (map (\<lambda>u. u \<cdot> \<sigma>) ts))"
+    by (rule fresh)
+  from cssteps_Fun_undefined_root_preserved[
+    OF wf undef steps[unfolded start]]
+  obtain us where finish:
+      "s \<cdot> \<tau> = Fun (Sharp f) us"
+    and len_us:
+      "length us = length (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+    by blast
+  from finish s have gf: "g = f"
+    and maps: "map (\<lambda>u. u \<cdot> \<tau>) ss = us"
+    by auto
+  have "length ss = length ts"
+    using arg_cong[OF maps, of length] len_us by simp
+  with s i j show ?thesis by simp
 qed
 
 lemma mu_poss_replace_at_root:
@@ -1444,13 +1593,13 @@ lemma csr_sct_with_active_subterm:
         (remdups_sort stri) (remdups_sort nstri) \<in> set Gs \<and>
       (\<forall>(i, j)\<in>set stri.
         csr_sct_active_index \<mu> u i \<and>
-        csr_sct_active_index \<mu> v j \<and>
+        csr_sct_index v j \<and>
         mu_supt \<mu> (get_arg u i) (get_arg v j)) \<and>
       (\<forall>(i, j)\<in>set nstri.
-        csr_sct_active_index \<mu> u i \<and>
-        csr_sct_active_index \<mu> v j \<and>
+        csr_sct_index u i \<and> csr_sct_index v j \<and>
         (get_arg u i = get_arg v j \<or>
-          mu_supt \<mu> (get_arg u i) (get_arg v j)))"
+          (csr_sct_active_index \<mu> u i \<and>
+            mu_supt \<mu> (get_arg u i) (get_arg v j))))"
     and edge: "\<And>k. edg (info (s k, t k)) (info (s (Suc k), t (Suc k)))"
     and check: "check_SCT edg Gs"
   shows False
@@ -1462,7 +1611,7 @@ proof -
   let ?step = "csstep \<mu> R"
   let ?msupt = "mu_supt_rel \<mu>"
   let ?supt = "restrict_SN ((?msupt \<union> ?step)\<^sup>+) ?step"
-  let ?supteq = "restrict_SN (?step\<^sup>*) ?step"
+  let ?supteq = "restrict_SN (?step\<^sup>*) ?step \<union> Id"
   let ?vals = "\<lambda>k. (?entry k,
     (\<lambda>j. get_arg (?ss k) j \<cdot> ?subst k))"
   let ?rel = "{(?vals k, ?vals (Suc k)) | k. True}"
@@ -1505,33 +1654,42 @@ proof -
       then obtain v where uv: "(u, v) \<in> ?supteq"
         and vw: "(v, w) \<in> ?supt"
         by auto
-      from uv have uv_steps: "(u, v) \<in> ?step\<^sup>*"
-        and sn_u: "SN_on ?step {u}"
-        unfolding restrict_SN_def by auto
-      from vw have vw_steps: "(v, w) \<in> (?msupt \<union> ?step)\<^sup>+"
-        unfolding restrict_SN_def by auto
       show "(u, w) \<in> ?supt"
-        using uv_steps sn_u vw_steps
-      proof (induct)
-        case base
-        then show ?case
-          unfolding restrict_SN_def by simp
+      proof (cases "(u, v) \<in> Id")
+        case True
+        with vw show ?thesis by simp
       next
-        case (step x y)
-        from step.hyps(2) have xy:
-          "(x, y) \<in> (?msupt \<union> ?step)\<^sup>+"
+        case False
+        with uv have uv': "(u, v) \<in> restrict_SN (?step\<^sup>*) ?step"
           by auto
-        from xy step.prems(2) have xw:
-          "(x, w) \<in> (?msupt \<union> ?step)\<^sup>+"
-          by simp
-        from step.hyps(1) have ux:
-          "(u, x) \<in> (?msupt \<union> ?step)\<^sup>*"
-          using rtrancl_mono[of ?step "?msupt \<union> ?step"]
-          by auto
-        have "(u, w) \<in> (?msupt \<union> ?step)\<^sup>+"
-          by (rule rtrancl_trancl_trancl[OF ux xw])
-        with step.prems(1) show ?case
-          unfolding restrict_SN_def by simp
+        from uv' have uv_steps: "(u, v) \<in> ?step\<^sup>*"
+          and sn_u: "SN_on ?step {u}"
+          unfolding restrict_SN_def by auto
+        from vw have vw_steps: "(v, w) \<in> (?msupt \<union> ?step)\<^sup>+"
+          unfolding restrict_SN_def by auto
+        show "(u, w) \<in> ?supt"
+          using uv_steps sn_u vw_steps
+        proof (induct)
+          case base
+          then show ?case
+            unfolding restrict_SN_def by simp
+        next
+          case (step x y)
+          from step.hyps(2) have xy:
+            "(x, y) \<in> (?msupt \<union> ?step)\<^sup>+"
+            by auto
+          from xy step.prems(2) have xw:
+            "(x, w) \<in> (?msupt \<union> ?step)\<^sup>+"
+            by simp
+          from step.hyps(1) have ux:
+            "(u, x) \<in> (?msupt \<union> ?step)\<^sup>*"
+            using rtrancl_mono[of ?step "?msupt \<union> ?step"]
+            by auto
+          have "(u, w) \<in> (?msupt \<union> ?step)\<^sup>+"
+            by (rule rtrancl_trancl_trancl[OF ux xw])
+          with step.prems(1) show ?case
+            unfolding restrict_SN_def by simp
+        qed
       qed
     qed
   qed
@@ -1547,14 +1705,15 @@ proof -
       and strict_edges:
         "\<forall>(i, j)\<in>set stri.
           csr_sct_active_index \<mu> (?ss k) i \<and>
-          csr_sct_active_index \<mu> (?tt k) j \<and>
+          csr_sct_index (?tt k) j \<and>
           mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)"
       and nonstrict_edges:
         "\<forall>(i, j)\<in>set nstri.
-          csr_sct_active_index \<mu> (?ss k) i \<and>
-          csr_sct_active_index \<mu> (?tt k) j \<and>
+          csr_sct_index (?ss k) i \<and>
+          csr_sct_index (?tt k) j \<and>
           (get_arg (?ss k) i = get_arg (?tt k) j \<or>
-            mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j))"
+            (csr_sct_active_index \<mu> (?ss k) i \<and>
+              mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)))"
       by auto
     have whole_source_SN:
       "SN_on (csdp_step Sharp \<mu> R) {?ss k \<cdot> ?subst k}"
@@ -1588,127 +1747,51 @@ proof -
       proof clarify
         fix i j
         assume ij: "(i, j) \<in> set nstri"
-        from nonstrict_edges ij have active_i:
-          "csr_sct_active_index \<mu> (?ss k) i"
-          and active_j: "csr_sct_active_index \<mu> (?tt k) j"
+        from nonstrict_edges ij have index_i:
+          "csr_sct_index (?ss k) i"
+          and index_j: "csr_sct_index (?tt k) j"
           and sub: "get_arg (?ss k) i = get_arg (?tt k) j \<or>
-            mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)"
+            (csr_sct_active_index \<mu> (?ss k) i \<and>
+              mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j))"
           by auto
-        have active_j_next:
-          "csr_sct_active_index \<mu> (?ss (Suc k)) j"
-        proof -
-          from csr_sct_active_indexE[OF active_j]
-          obtain f us q where tt:
-              "?tt k = Fun (Sharp f) us"
-            and j: "j = Suc q" and q: "q < length us"
-            and q_act: "q \<in> \<mu> (f, length us)"
-            by auto
-          from between tt obtain vs where source:
-              "?ss (Suc k) = Fun (Sharp f) vs"
-            and len: "length vs = length us"
-          proof -
-            have start:
-              "?tt k \<cdot> ?subst k =
-                Fun (Sharp f) (map (\<lambda>x. x \<cdot> ?subst k) us)"
-              using tt by simp
-            have q': "q < length (map (\<lambda>x. x \<cdot> ?subst k) us)"
-              using q by simp
-            have q_act':
-              "q \<in> \<mu> (f, length (map (\<lambda>x. x \<cdot> ?subst k) us))"
-              using q_act by simp
-            have between':
-              "(Fun (Sharp f) (map (\<lambda>x. x \<cdot> ?subst k) us),
-                ?ss (Suc k) \<cdot> ?subst (Suc k)) \<in>
-                (csdp_step Sharp \<mu> R)\<^sup>*"
-              using between start by simp
-            have undef:
-              "\<not> defined R
-                (Sharp f, length (map (\<lambda>x. x \<cdot> ?subst k) us))"
-              by (rule fresh)
-            have preserved:
-              "\<exists>ws. ?ss (Suc k) \<cdot> ?subst (Suc k) =
-                  Fun (Sharp f) ws \<and>
-                length ws =
-                  length (map (\<lambda>x. x \<cdot> ?subst k) us)"
-            proof (rule cssteps_Fun_undefined_root_preserved)
-              show "wf_trs R" by fact
-              show "\<not> defined R
-                (Sharp f, length (map (\<lambda>x. x \<cdot> ?subst k) us))"
-                by fact
-              show "(Fun (Sharp f) (map (\<lambda>x. x \<cdot> ?subst k) us),
-                ?ss (Suc k) \<cdot> ?subst (Suc k)) \<in>
-                (csdp_step Sharp \<mu> R)\<^sup>*"
-                by fact
-            qed
-            from preserved obtain ws where finish:
-                "?ss (Suc k) \<cdot> ?subst (Suc k) =
-                  Fun (Sharp f) ws"
-              and len_ws:
-                "length ws = length (map (\<lambda>x. x \<cdot> ?subst k) us)"
-              by auto
-            from pair_shape inP_next obtain h vs where src0:
-                "?ss (Suc k) = Fun (Sharp h) vs"
-              by auto
-            from finish src0 have hf: "h = f"
-              by simp
-            have src: "?ss (Suc k) = Fun (Sharp f) vs"
-              using src0 hf by simp
-            have maps:
-              "map (\<lambda>x. x \<cdot> ?subst (Suc k)) vs = ws"
-              using finish src by simp
-            have vs_ws: "length vs = length ws"
-              using arg_cong[OF maps, of length] by simp
-            have "length vs = length us"
-              using vs_ws len_ws by simp
-            with that[OF src] show thesis .
-          qed
-          show ?thesis
-            using source j q q_act len by simp
-        qed
-        have arg_steps:
-          "(get_arg (?tt k) j \<cdot> ?subst k,
-            get_arg (?ss (Suc k)) j \<cdot> ?subst (Suc k))
-            \<in> ?step\<^sup>*"
-          by (rule csr_sct_active_get_arg_steps[
-            OF wf fresh active_j active_j_next between])
-        have target_arg_SN:
-          "SN_on ?step {get_arg (?tt k) j \<cdot> ?subst k}"
-          by (rule csr_sct_active_index_subst_SN[
-            OF active_j target_SN[of "Suc k", simplified]])
+        from pair_shape inP_next have shape_next:
+          "\<exists>f us. ?ss (Suc k) = Fun (Sharp f) us"
+          by auto
+        have index_j_next: "csr_sct_index (?ss (Suc k)) j"
+          by (rule csr_sct_index_steps[
+            OF wf fresh index_j shape_next between])
         have arg_steps_ns:
           "(get_arg (?tt k) j \<cdot> ?subst k,
             get_arg (?ss (Suc k)) j \<cdot> ?subst (Suc k))
             \<in> ?supteq"
-          using arg_steps target_arg_SN
-          unfolding restrict_SN_def by simp
-        have source_arg_SN:
-          "SN_on ?step {get_arg (?ss k) i \<cdot> ?subst k}"
-          by (rule csr_sct_active_index_subst_SN[
-            OF active_i whole_source_SN])
-        have sub_inst:
-          "get_arg (?ss k) i \<cdot> ?subst k =
-              get_arg (?tt k) j \<cdot> ?subst k \<or>
-            mu_supt \<mu> (get_arg (?ss k) i \<cdot> ?subst k)
-              (get_arg (?tt k) j \<cdot> ?subst k)"
-          using sub mu_supt_subst by auto
+          by (rule csr_sct_get_arg_transition[
+            OF wf fresh index_j index_j_next
+              target_SN[of "Suc k", simplified] between])
         have first:
           "(get_arg (?ss k) i \<cdot> ?subst k,
             get_arg (?tt k) j \<cdot> ?subst k) \<in> ?supteq \<union> ?supt"
-        using sub_inst
+        using sub
         proof
           assume 1:
-            "get_arg (?ss k) i \<cdot> ?subst k =
-              get_arg (?tt k) j \<cdot> ?subst k"
+            "get_arg (?ss k) i = get_arg (?tt k) j"
           then show ?thesis
-            using source_arg_SN unfolding restrict_SN_def by auto
+            by auto
         next
           assume 2:
+            "csr_sct_active_index \<mu> (?ss k) i \<and>
+              mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)"
+          from 2 have source_arg_SN:
+            "SN_on ?step {get_arg (?ss k) i \<cdot> ?subst k}"
+            by (intro csr_sct_active_index_subst_SN[OF _ whole_source_SN],
+              auto)
+          from 2 have sub_inst:
             "mu_supt \<mu> (get_arg (?ss k) i \<cdot> ?subst k)
               (get_arg (?tt k) j \<cdot> ?subst k)"
+            by (auto intro: mu_supt_subst)
           have "(get_arg (?ss k) i \<cdot> ?subst k,
               get_arg (?tt k) j \<cdot> ?subst k) \<in>
               (?msupt \<union> ?step)\<^sup>+"
-            using 2 unfolding mu_supt_rel_def by auto
+            using sub_inst unfolding mu_supt_rel_def by auto
           with source_arg_SN show ?thesis
             unfolding restrict_SN_def by auto
         qed
@@ -1743,91 +1826,23 @@ proof -
         assume ij: "(i, j) \<in> set stri"
         from strict_edges ij have active_i:
           "csr_sct_active_index \<mu> (?ss k) i"
-          and active_j: "csr_sct_active_index \<mu> (?tt k) j"
+          and index_j: "csr_sct_index (?tt k) j"
           and sub: "mu_supt \<mu>
             (get_arg (?ss k) i) (get_arg (?tt k) j)"
           by auto
-        have active_j_next:
-          "csr_sct_active_index \<mu> (?ss (Suc k)) j"
-        proof -
-          from csr_sct_active_indexE[OF active_j]
-          obtain f us q where tt:
-              "?tt k = Fun (Sharp f) us"
-            and j: "j = Suc q" and q: "q < length us"
-            and q_act: "q \<in> \<mu> (f, length us)"
-            by auto
-          have start:
-            "?tt k \<cdot> ?subst k =
-              Fun (Sharp f) (map (\<lambda>x. x \<cdot> ?subst k) us)"
-            using tt by simp
-          have q': "q < length (map (\<lambda>x. x \<cdot> ?subst k) us)"
-            using q by simp
-          have q_act':
-            "q \<in> \<mu> (f, length (map (\<lambda>x. x \<cdot> ?subst k) us))"
-            using q_act by simp
-          have between':
-            "(Fun (Sharp f) (map (\<lambda>x. x \<cdot> ?subst k) us),
-              ?ss (Suc k) \<cdot> ?subst (Suc k)) \<in>
-              (csdp_step Sharp \<mu> R)\<^sup>*"
-            using between start by simp
-          have undef:
-            "\<not> defined R
-              (Sharp f, length (map (\<lambda>x. x \<cdot> ?subst k) us))"
-            by (rule fresh)
-          have preserved:
-            "\<exists>ws. ?ss (Suc k) \<cdot> ?subst (Suc k) =
-                Fun (Sharp f) ws \<and>
-              length ws =
-                length (map (\<lambda>x. x \<cdot> ?subst k) us)"
-          proof (rule cssteps_Fun_undefined_root_preserved)
-            show "wf_trs R" by fact
-            show "\<not> defined R
-              (Sharp f, length (map (\<lambda>x. x \<cdot> ?subst k) us))"
-              by fact
-            show "(Fun (Sharp f) (map (\<lambda>x. x \<cdot> ?subst k) us),
-              ?ss (Suc k) \<cdot> ?subst (Suc k)) \<in>
-              (csdp_step Sharp \<mu> R)\<^sup>*"
-              by fact
-          qed
-          from preserved obtain ws where finish:
-              "?ss (Suc k) \<cdot> ?subst (Suc k) =
-                Fun (Sharp f) ws"
-            and len_ws:
-              "length ws = length (map (\<lambda>x. x \<cdot> ?subst k) us)"
-            by auto
-          from pair_shape inP_next obtain h vs where source0:
-              "?ss (Suc k) = Fun (Sharp h) vs"
-            by auto
-          from finish source0 have hf: "h = f"
-            by simp
-          have source: "?ss (Suc k) = Fun (Sharp f) vs"
-            using source0 hf by simp
-          have maps:
-            "map (\<lambda>x. x \<cdot> ?subst (Suc k)) vs = ws"
-            using finish source by simp
-          have vs_ws: "length vs = length ws"
-            using arg_cong[OF maps, of length] by simp
-          have len: "length vs = length us"
-            using vs_ws len_ws by simp
-          show ?thesis
-            using source j q q_act len by simp
-        qed
-        have arg_steps:
-          "(get_arg (?tt k) j \<cdot> ?subst k,
-            get_arg (?ss (Suc k)) j \<cdot> ?subst (Suc k))
-            \<in> ?step\<^sup>*"
-          by (rule csr_sct_active_get_arg_steps[
-            OF wf fresh active_j active_j_next between])
-        have target_arg_SN:
-          "SN_on ?step {get_arg (?tt k) j \<cdot> ?subst k}"
-          by (rule csr_sct_active_index_subst_SN[
-            OF active_j target_SN[of "Suc k", simplified]])
+        from pair_shape inP_next have shape_next:
+          "\<exists>f us. ?ss (Suc k) = Fun (Sharp f) us"
+          by auto
+        have index_j_next: "csr_sct_index (?ss (Suc k)) j"
+          by (rule csr_sct_index_steps[
+            OF wf fresh index_j shape_next between])
         have arg_steps_ns:
           "(get_arg (?tt k) j \<cdot> ?subst k,
             get_arg (?ss (Suc k)) j \<cdot> ?subst (Suc k))
             \<in> ?supteq"
-          using arg_steps target_arg_SN
-          unfolding restrict_SN_def by simp
+          by (rule csr_sct_get_arg_transition[
+            OF wf fresh index_j index_j_next
+              target_SN[of "Suc k", simplified] between])
         have source_arg_SN:
           "SN_on ?step {get_arg (?ss k) i \<cdot> ?subst k}"
           by (rule csr_sct_active_index_subst_SN[
@@ -2015,13 +2030,13 @@ theorem finite_min_csr_dpp_sct_active_subterm:
         (remdups_sort stri) (remdups_sort nstri) \<in> set Gs \<and>
       (\<forall>(i, j)\<in>set stri.
         csr_sct_active_index \<mu> u i \<and>
-        csr_sct_active_index \<mu> v j \<and>
+        csr_sct_index v j \<and>
         mu_supt \<mu> (get_arg u i) (get_arg v j)) \<and>
       (\<forall>(i, j)\<in>set nstri.
-        csr_sct_active_index \<mu> u i \<and>
-        csr_sct_active_index \<mu> v j \<and>
+        csr_sct_index u i \<and> csr_sct_index v j \<and>
         (get_arg u i = get_arg v j \<or>
-          mu_supt \<mu> (get_arg u i) (get_arg v j)))"
+          (csr_sct_active_index \<mu> u i \<and>
+            mu_supt \<mu> (get_arg u i) (get_arg v j))))"
     and edge: "\<And>s t \<sigma> u v \<tau>.
       (s, t) \<in> P \<Longrightarrow> (u, v) \<in> P \<Longrightarrow>
       (t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in> (csdp_step Sharp \<mu> R)\<^sup>* \<Longrightarrow>
@@ -2063,13 +2078,13 @@ proof (rule ccontr)
         (remdups_sort stri) (remdups_sort nstri) \<in> set Gs \<and>
       (\<forall>(i, j)\<in>set stri.
         csr_sct_active_index \<mu> u i \<and>
-        csr_sct_active_index \<mu> v j \<and>
+        csr_sct_index v j \<and>
         mu_supt \<mu> (get_arg u i) (get_arg v j)) \<and>
       (\<forall>(i, j)\<in>set nstri.
-        csr_sct_active_index \<mu> u i \<and>
-        csr_sct_active_index \<mu> v j \<and>
+        csr_sct_index u i \<and> csr_sct_index v j \<and>
         (get_arg u i = get_arg v j \<or>
-          mu_supt \<mu> (get_arg u i) (get_arg v j)))"
+          (csr_sct_active_index \<mu> u i \<and>
+            mu_supt \<mu> (get_arg u i) (get_arg v j))))"
       by (rule graphs)
     show "\<And>k. edg (info (s k, t k))
       (info (s (Suc k), t (Suc k)))"
@@ -2130,6 +2145,25 @@ fun csr_sct_active_index_check where
       i - 1 \<in> mu_of \<mu> (f, length ts))"
 | "csr_sct_active_index_check \<mu> t i = False"
 
+fun csr_sct_index_check where
+  "csr_sct_index_check (Fun (Sharp f) ts) i =
+    (0 < i \<and> i \<le> length ts)"
+| "csr_sct_index_check t i = False"
+
+lemma csr_sct_index_check_iff [simp]:
+  "csr_sct_index_check t i = csr_sct_index t i"
+proof (cases t)
+  case (Var x)
+  then show ?thesis by simp
+next
+  case (Fun f ts)
+  show ?thesis
+  proof (cases f)
+    case (Sharp g)
+    then show ?thesis using Fun by (cases i, auto)
+  qed (use Fun in auto)
+qed
+
 lemma csr_sct_active_index_check_iff [simp]:
   "csr_sct_active_index_check \<mu> t i =
     csr_sct_active_index (mu_of \<mu>) t i"
@@ -2177,15 +2211,15 @@ where
         (showsl_lit (STR ''CSR size-change pair is not sharp-rooted''));
       check_allm (\<lambda>(i, j). check
         (csr_sct_active_index_check \<mu> s i \<and>
-         csr_sct_active_index_check \<mu> t j \<and>
+         csr_sct_index_check t j \<and>
          get_arg t j \<in> set (mu_supt_list \<mu> (get_arg s i)))
-        (showsl_lit (STR ''invalid strict active CSR size-change edge''))) stri;
+        (showsl_lit (STR ''invalid strict CSR size-change edge''))) stri;
       check_allm (\<lambda>(i, j). check
-        (csr_sct_active_index_check \<mu> s i \<and>
-         csr_sct_active_index_check \<mu> t j \<and>
+        (csr_sct_index_check s i \<and> csr_sct_index_check t j \<and>
          (get_arg s i = get_arg t j \<or>
-          get_arg t j \<in> set (mu_supt_list \<mu> (get_arg s i))))
-        (showsl_lit (STR ''invalid non-strict active CSR size-change edge'')))
+          (csr_sct_active_index_check \<mu> s i \<and>
+           get_arg t j \<in> set (mu_supt_list \<mu> (get_arg s i)))))
+        (showsl_lit (STR ''invalid non-strict CSR size-change edge'')))
         nstri
     }) GGs;
     let conn = (\<lambda>st uv. csr_dep_graph_edge_check
@@ -2193,7 +2227,7 @@ where
     check (check_SCT conn
       (map (\<lambda>(st, (stri, nstri)).
         Scg st st (remdups_sort stri) (remdups_sort nstri)) GGs))
-      (showsl_lit (STR ''active CSR size-change analysis failed''))
+      (showsl_lit (STR ''CSR size-change analysis failed''))
   }"
 
 lemma csr_sct_active_subterm_proc_sound:
@@ -2219,15 +2253,15 @@ proof -
       (showsl_lit (STR ''CSR size-change pair is not sharp-rooted''));
     check_allm (\<lambda>(i, j). check
       (csr_sct_active_index_check \<mu> s i \<and>
-       csr_sct_active_index_check \<mu> t j \<and>
+       csr_sct_index_check t j \<and>
        get_arg t j \<in> set (mu_supt_list \<mu> (get_arg s i)))
-      (showsl_lit (STR ''invalid strict active CSR size-change edge''))) stri;
+      (showsl_lit (STR ''invalid strict CSR size-change edge''))) stri;
     check_allm (\<lambda>(i, j). check
-      (csr_sct_active_index_check \<mu> s i \<and>
-       csr_sct_active_index_check \<mu> t j \<and>
+      (csr_sct_index_check s i \<and> csr_sct_index_check t j \<and>
        (get_arg s i = get_arg t j \<or>
-        get_arg t j \<in> set (mu_supt_list \<mu> (get_arg s i))))
-      (showsl_lit (STR ''invalid non-strict active CSR size-change edge'')))
+        (csr_sct_active_index_check \<mu> s i \<and>
+         get_arg t j \<in> set (mu_supt_list \<mu> (get_arg s i)))))
+      (showsl_lit (STR ''invalid non-strict CSR size-change edge'')))
       nstri
   }"
   note ok' = ok[unfolded csr_sct_active_subterm_proc_def Let_def,
@@ -2240,13 +2274,13 @@ proof -
     "csr_sct_sharp_term s \<and> csr_sct_sharp_term t \<and>
       (\<forall>(i, j)\<in>set stri.
         csr_sct_active_index (mu_of \<mu>) s i \<and>
-        csr_sct_active_index (mu_of \<mu>) t j \<and>
+        csr_sct_index t j \<and>
         mu_supt (mu_of \<mu>) (get_arg s i) (get_arg t j)) \<and>
       (\<forall>(i, j)\<in>set nstri.
-        csr_sct_active_index (mu_of \<mu>) s i \<and>
-        csr_sct_active_index (mu_of \<mu>) t j \<and>
+        csr_sct_index s i \<and> csr_sct_index t j \<and>
         (get_arg s i = get_arg t j \<or>
-         mu_supt (mu_of \<mu>) (get_arg s i) (get_arg t j)))"
+         (csr_sct_active_index (mu_of \<mu>) s i \<and>
+          mu_supt (mu_of \<mu>) (get_arg s i) (get_arg t j))))"
     if mem: "((s, t), (stri, nstri)) \<in> set GGs"
     for s t stri nstri
   proof -
@@ -2263,13 +2297,13 @@ proof -
         csr_sct_sharp_term s \<and> csr_sct_sharp_term t \<and>
         (\<forall>(i, j)\<in>set stri.
           csr_sct_active_index (mu_of \<mu>) s i \<and>
-          csr_sct_active_index (mu_of \<mu>) t j \<and>
+          csr_sct_index t j \<and>
           mu_supt (mu_of \<mu>) (get_arg s i) (get_arg t j)) \<and>
         (\<forall>(i, j)\<in>set nstri.
-          csr_sct_active_index (mu_of \<mu>) s i \<and>
-          csr_sct_active_index (mu_of \<mu>) t j \<and>
+          csr_sct_index s i \<and> csr_sct_index t j \<and>
           (get_arg s i = get_arg t j \<or>
-           mu_supt (mu_of \<mu>) (get_arg s i) (get_arg t j)))"
+           (csr_sct_active_index (mu_of \<mu>) s i \<and>
+            mu_supt (mu_of \<mu>) (get_arg s i) (get_arg t j))))"
     using valid_one by blast
   from ok' have sct: "check_SCT ?conn ?SGs"
     by auto
@@ -2294,13 +2328,13 @@ proof -
       (remdups_sort stri) (remdups_sort nstri) \<in> set ?SGs \<and>
     (\<forall>(i, j)\<in>set stri.
       csr_sct_active_index (mu_of \<mu>) u i \<and>
-      csr_sct_active_index (mu_of \<mu>) v j \<and>
+      csr_sct_index v j \<and>
       mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j)) \<and>
     (\<forall>(i, j)\<in>set nstri.
-      csr_sct_active_index (mu_of \<mu>) u i \<and>
-      csr_sct_active_index (mu_of \<mu>) v j \<and>
+      csr_sct_index u i \<and> csr_sct_index v j \<and>
       (get_arg u i = get_arg v j \<or>
-       mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j)))"
+       (csr_sct_active_index (mu_of \<mu>) u i \<and>
+        mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j))))"
   proof clarify
     fix u v
     assume uv: "(u, v) \<in> ?P"
@@ -2317,27 +2351,27 @@ proof -
     have strict:
       "\<forall>(i, j)\<in>set stri.
         csr_sct_active_index (mu_of \<mu>) u i \<and>
-        csr_sct_active_index (mu_of \<mu>) v j \<and>
+        csr_sct_index v j \<and>
         mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j)"
       and nonstrict:
       "\<forall>(i, j)\<in>set nstri.
-        csr_sct_active_index (mu_of \<mu>) u i \<and>
-        csr_sct_active_index (mu_of \<mu>) v j \<and>
+        csr_sct_index u i \<and> csr_sct_index v j \<and>
         (get_arg u i = get_arg v j \<or>
-         mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j))"
+         (csr_sct_active_index (mu_of \<mu>) u i \<and>
+          mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j)))"
       by auto
     show "\<exists>stri nstri.
       Scg (u, v) (u, v)
         (remdups_sort stri) (remdups_sort nstri) \<in> set ?SGs \<and>
       (\<forall>(i, j)\<in>set stri.
         csr_sct_active_index (mu_of \<mu>) u i \<and>
-        csr_sct_active_index (mu_of \<mu>) v j \<and>
+        csr_sct_index v j \<and>
         mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j)) \<and>
       (\<forall>(i, j)\<in>set nstri.
-        csr_sct_active_index (mu_of \<mu>) u i \<and>
-        csr_sct_active_index (mu_of \<mu>) v j \<and>
+        csr_sct_index u i \<and> csr_sct_index v j \<and>
         (get_arg u i = get_arg v j \<or>
-         mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j)))"
+         (csr_sct_active_index (mu_of \<mu>) u i \<and>
+          mu_supt (mu_of \<mu>) (get_arg u i) (get_arg v j))))"
       by (intro exI[of _ stri] exI[of _ nstri],
         use graph_mem strict nonstrict in auto)
   qed
