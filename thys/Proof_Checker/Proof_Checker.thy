@@ -147,6 +147,17 @@ where "check_cert a input property answer proof \<equiv>
        (Inn_TRS_input Q R S, Termination, Decision False) \<Rightarrow>       
               check (S = []) mismatch \<then>
               check_trs_nontermination_proof I J a (showsl_lit (STR ''1'')) (tp_ops.mk I (strategy_to_nfs Q) (strategy_to_Q Q R) R []) prf
+       | (FP_TRS_input Outermost R, Termination, Decision False) \<Rightarrow>
+              trs_nontermination_proof_to_fp prf \<bind>
+              check_fp_nontermination_proof I J False
+                (showsl_lit (STR ''1''))
+                (fp_strategy_to_fp_impl Outermost R, R)
+       | (FP_TRS_input (Forbidden_Patterns P) R,
+            Termination, Decision False) \<Rightarrow>
+              trs_nontermination_proof_to_fp prf \<bind>
+              check_fp_nontermination_proof I J False
+                (showsl_lit (STR ''1''))
+                (fp_strategy_to_fp_impl (Forbidden_Patterns P) R, R)
        | _ \<Rightarrow> error mismatch)
   | Relative_TRS_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
@@ -408,9 +419,54 @@ proof-
       show ?thesis by auto 
     next
       assume [simp]: "input = FP_TRS_input strat R"
-      from check show ?thesis
-        by (cases property; cases answer;
-          simp add: check_cert_def split: bool.splits)
+      show ?thesis
+      proof (cases strat)
+        case Outermost
+        have [simp]: "property = Termination"
+          using check Outermost by (cases property, auto)
+        have [simp]: "answer = Decision False"
+          using check Outermost by (cases answer, auto split: bool.splits)
+        let ?prf = "trs_nontermination_proof_to_fp pr"
+        from check Outermost obtain prof where [simp]: "?prf = return prof"
+          by (cases ?prf, auto)
+        from check Outermost
+        have checked: "isOK (check_fp_nontermination_proof I J False idx
+          (fp_strategy_to_fp_impl Outermost R, R) prof)"
+          by simp
+        from check_fp_nontermination_proof[OF I J checked]
+        have nSN:
+          "\<not> SN_fpstep
+            (mk_fptp_set (fp_strategy_to_fp_impl Outermost R, R))" .
+        from nSN Outermost show ?thesis
+          using ostep_iff_fpstep_impl[of "map fst R", simplified]
+          by (auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def)
+      next
+        case (Context_Sensitive \<mu>)
+        from check Context_Sensitive show ?thesis
+          by (cases property; cases answer;
+            simp add: check_cert_def split: bool.splits)
+      next
+        case (Forbidden_Patterns P)
+        have [simp]: "property = Termination"
+          using check Forbidden_Patterns by (cases property, auto)
+        have [simp]: "answer = Decision False"
+          using check Forbidden_Patterns
+          by (cases answer, auto split: bool.splits)
+        let ?prf = "trs_nontermination_proof_to_fp pr"
+        from check Forbidden_Patterns
+        obtain prof where [simp]: "?prf = return prof"
+          by (cases ?prf, auto)
+        from check Forbidden_Patterns
+        have checked: "isOK (check_fp_nontermination_proof I J False idx
+          (fp_strategy_to_fp_impl (Forbidden_Patterns P) R, R) prof)"
+          by simp
+        from check_fp_nontermination_proof[OF I J checked]
+        have nSN:
+          "\<not> SN_fpstep (mk_fptp_set
+            (fp_strategy_to_fp_impl (Forbidden_Patterns P) R, R))" .
+        from nSN Forbidden_Patterns show ?thesis
+          by (auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def)
+      qed
     qed
   next
     case [simp]: (FP_Nontermination_Proof pr)

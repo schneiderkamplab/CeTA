@@ -1,9 +1,6 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module
-  Defaults(default_nfs_dp, default_nfs_trs, default_nfs_nt_dp,
-            default_nfs_nt_trs)
-  where {
+module Defaults(default_nfs_dp, default_nfs_trs, default_nfs_nt_trs) where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -27,9 +24,6 @@ default_nfs_dp = True;
 
 default_nfs_trs :: Bool;
 default_nfs_trs = False;
-
-default_nfs_nt_dp :: Bool;
-default_nfs_nt_dp = False;
 
 default_nfs_nt_trs :: Bool;
 default_nfs_nt_trs = False;

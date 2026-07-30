@@ -1,13 +1,8 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  CSR_Checker(Csr_dp_termination_proof(..), Csr_termination_proof(..),
-               is_sharp_lab, mu_supt_list, mu_CSDP_list, csr_dp_root_mu,
-               mu_vars_term_list, csr_sharp_mu_check, csr_rule_removal_impl,
-               csr_dep_graph_edge_check, mu_csr_dependency_pairs_tt,
-               check_csr_dp_termination_proof,
-               check_csr_dp_termination_proof_core,
-               safe_csr_dependency_pairs_tt, check_csr_termination_proof)
+  CSR_Checker(check_csr_dep_graph_proc, check_csr_dp_termination_proof_core,
+               check_csr_termination_proof)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -27,714 +22,27 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified QDP_Framework_Impl;
-import qualified FOR_Preliminaries;
-import qualified Termination_Problem_Spec;
-import qualified Countable;
-import qualified Shows_Literal_Matrix;
-import qualified Matrix_Carrier_Impl;
-import qualified Complexity_Carrier;
-import qualified Usable_Rules_Impl;
-import qualified Graph;
-import qualified Dependency_Pair_Problem_Spec;
-import qualified Mapping;
-import qualified Phantom_Type;
-import qualified Map_Choice;
-import qualified Set_Interval;
-import qualified List_Order_Implementations;
-import qualified Matrix_Core_Order_Impl;
-import qualified Max_Polynomial;
-import qualified Max_Monus;
-import qualified Polynomials;
-import qualified WPO;
-import qualified Matrix;
-import qualified Compare_Order_Instances;
-import qualified Linear_Poly_Order;
-import qualified Matrix_Poly;
-import qualified Linear_Poly_Complexity;
-import qualified Ordered_Semiring;
-import qualified Congruence;
-import qualified Group;
-import qualified Ring;
-import qualified Multi_Map;
-import qualified Usable_Replacement_Map_Impl;
-import qualified Error_Monad;
-import qualified Check_Monad;
-import qualified Sum_Type;
-import qualified Tcap_Impl;
-import qualified Context_Sensitive_Impl;
-import qualified Sharp_Syntax;
-import qualified HOL;
-import qualified Compare;
 import qualified Check_Termination;
 import qualified Subterm_Criterion_Impl;
-import qualified Arith;
+import qualified FOR_Preliminaries;
 import qualified Reduction_Pair_Implementations;
+import qualified Termination_Problem_Spec;
+import qualified Countable;
+import qualified CSR_Checker_Base;
+import qualified Context_Sensitive_Impl;
+import qualified Check_Monad;
+import qualified Graph;
+import qualified Error_Monad;
+import qualified HOL;
+import qualified Dependency_Pair_Problem_Spec;
+import qualified Multi_Map;
+import qualified Sum_Type;
+import qualified Compare;
 import qualified Labelings;
+import qualified Compare_Order_Instances;
 import qualified Term_Rewriting;
-
-data Csr_dp_termination_proof a b c = CSR_DP_P_is_Empty
-  | CSR_DP_Ordinary_Proof (Check_Termination.Dp_termination_proof a b c)
-  | CSR_DP_Subterm_Criterion_Proc
-      (Subterm_Criterion_Impl.ProjL (Labelings.Lab a b))
-      [((Term_Rewriting.Term (Labelings.Lab a b) c,
-          Term_Rewriting.Term (Labelings.Lab a b) c),
-         [([Arith.Nat],
-            ((Term_Rewriting.Term (Labelings.Lab a b) c,
-               Term_Rewriting.Term (Labelings.Lab a b) c),
-              Term_Rewriting.Term (Labelings.Lab a b) c))])]
-      [(Term_Rewriting.Term (Labelings.Lab a b) c,
-         Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Csr_dp_termination_proof a b c)
-  | CSR_DP_Gen_Subterm_Criterion_Proc
-      [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])]
-      [(Term_Rewriting.Term (Labelings.Lab a b) c,
-         Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Csr_dp_termination_proof a b c)
-  | CSR_DP_Usable_Rules_Proc
-      [(Term_Rewriting.Term (Labelings.Lab a b) c,
-         Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Csr_dp_termination_proof a b c)
-  | CSR_DP_Dep_Graph_Proc
-      [(Maybe (Csr_dp_termination_proof a b c),
-         [(Term_Rewriting.Term (Labelings.Lab a b) c,
-            Term_Rewriting.Term (Labelings.Lab a b) c)])]
-  | CSR_DP_Size_Change_Subterm_Proc
-      [((Term_Rewriting.Term (Labelings.Lab a b) c,
-          Term_Rewriting.Term (Labelings.Lab a b) c),
-         ([(Arith.Nat, Arith.Nat)], [(Arith.Nat, Arith.Nat)]))];
-
-data Csr_termination_proof a b c = CSR_R_is_Empty
-  | CSR_Rule_Removal
-      (Reduction_Pair_Implementations.Redtriple_impl (Labelings.Lab a b))
-      [(Term_Rewriting.Term (Labelings.Lab a b) c,
-         Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Csr_termination_proof a b c)
-  | CSR_Dependency_Pairs
-      [(Term_Rewriting.Term (Labelings.Lab a b) c,
-         Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Csr_dp_termination_proof a b c)
-  | CSR_Safe_Dependency_Pairs
-      [(Term_Rewriting.Term (Labelings.Lab a b) c,
-         Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Csr_dp_termination_proof a b c);
-
-term_gctxt ::
-  forall a b c.
-    (Compare.Compare_order a,
-      Term_Rewriting.Showl a) => Term_Rewriting.Term a b ->
-                                   Term_Rewriting.Gctxt a c;
-term_gctxt (Term_Rewriting.Var uu) = Term_Rewriting.GCHole;
-term_gctxt (Term_Rewriting.Fun f ts) =
-  Term_Rewriting.GCFun f (map term_gctxt ts);
-
-is_sharp_lab :: forall a b. Labelings.Lab a b -> Bool;
-is_sharp_lab (Labelings.Sharp f) = True;
-is_sharp_lab (Labelings.UnLab f) = False;
-is_sharp_lab (Labelings.Lab f l) = False;
-is_sharp_lab (Labelings.FunLab f ls) = False;
-
-mu_fun_poss_list ::
-  forall a b.
-    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] ->
-                Term_Rewriting.Term a b -> [[Arith.Nat]];
-mu_fun_poss_list mu (Term_Rewriting.Var x) = [];
-mu_fun_poss_list mu (Term_Rewriting.Fun f ts) =
-  [] : concat
-         (Arith.map_filter
-           (\ x ->
-             (if Arith.member x
-                   (Context_Sensitive_Impl.mu_of mu (f, Arith.size_list ts))
-               then Just (map (\ a -> x : a)
-                           (mu_fun_poss_list mu (Arith.nth ts x)))
-               else Nothing))
-           (Arith.upt Arith.zero_nat (Arith.size_list ts)));
-
-mu_poss_list ::
-  forall a b.
-    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] ->
-                Term_Rewriting.Term a b -> [[Arith.Nat]];
-mu_poss_list mu (Term_Rewriting.Var x) = [[]];
-mu_poss_list mu (Term_Rewriting.Fun f ts) =
-  [] : concat
-         (Arith.map_filter
-           (\ x ->
-             (if Arith.member x
-                   (Context_Sensitive_Impl.mu_of mu (f, Arith.size_list ts))
-               then Just (map (\ a -> x : a) (mu_poss_list mu (Arith.nth ts x)))
-               else Nothing))
-           (Arith.upt Arith.zero_nat (Arith.size_list ts)));
-
-mu_supt_list ::
-  forall a b.
-    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] ->
-                Term_Rewriting.Term a b -> [Term_Rewriting.Term a b];
-mu_supt_list mu s =
-  Arith.map_filter
-    (\ x ->
-      (if not (null x) then Just (Term_Rewriting.subt_at s x) else Nothing))
-    (mu_poss_list mu s);
-
-mu_CSDP_list ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Eq b) => (a -> a) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   [((a, Arith.Nat), [Arith.Nat])] ->
-                     [(a, Arith.Nat)] ->
-                       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)];
-mu_CSDP_list shp r mu d_list =
-  concatMap
-    (\ lr ->
-      let {
-        l = fst lr;
-        ra = snd lr;
-        s = Sharp_Syntax.sharp_term shp l;
-      } in Arith.map_filter
-             (\ x ->
-               (if not (Arith.membera (mu_supt_list mu l)
-                         (Term_Rewriting.subt_at ra x)) &&
-                     (case Term_Rewriting.subt_at ra x of {
-                       Term_Rewriting.Var _ -> False;
-                       Term_Rewriting.Fun f ts ->
-                         Arith.membera d_list (f, Arith.size_list ts);
-                     })
-                 then Just (s, Sharp_Syntax.sharp_term shp
-                                 (Term_Rewriting.subt_at ra x))
-                 else Nothing))
-             (mu_fun_poss_list mu ra))
-    r;
-
-csr_root_tcap ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   Term_Rewriting.Term a b -> Term_Rewriting.Gctxt a b;
-csr_root_tcap mu r (Term_Rewriting.Var x) = Term_Rewriting.GCHole;
-csr_root_tcap mu r (Term_Rewriting.Fun f ts) =
-  Term_Rewriting.GCFun f
-    (map (\ (i, t) ->
-           (if Arith.member i (mu (f, Arith.size_list ts))
-             then Tcap_Impl.tcapI r t else term_gctxt t))
-      (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts));
-
-csr_dp_root_mu ::
-  forall a b.
-    ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
-      (Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat;
-csr_dp_root_mu mu (Labelings.Sharp f, n) = mu (f, n);
-csr_dp_root_mu mu (Labelings.Lab v va, n) = mu (Labelings.Lab v va, n);
-csr_dp_root_mu mu (Labelings.FunLab v va, n) = mu (Labelings.FunLab v va, n);
-csr_dp_root_mu mu (Labelings.UnLab v, n) = mu (Labelings.UnLab v, n);
-
-safe_CSDP_list ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Eq b) => (a -> a) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   [(a, Arith.Nat)] ->
-                     [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)];
-safe_CSDP_list shp r d_list =
-  concatMap
-    (\ lr ->
-      let {
-        l = fst lr;
-        s = Sharp_Syntax.sharp_term shp l;
-      } in Arith.map_filter
-             (\ x ->
-               (if not (Term_Rewriting.supt_impl l x) &&
-                     not (Term_Rewriting.is_Var x) &&
-                       Arith.membera d_list (Arith.the (Term_Rewriting.root x))
-                 then Just (s, Sharp_Syntax.sharp_term shp x) else Nothing))
-             (Term_Rewriting.supteq_list (snd lr)))
-    r;
-
-csr_tcap_no_edge ::
-  forall a b.
-    (Compare.Compare_order a, Eq a,
-      Eq b) => [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                 Term_Rewriting.Term a b -> Term_Rewriting.Term a b -> Bool;
-csr_tcap_no_edge r t u = not (Term_Rewriting.matcha (Tcap_Impl.tcapI r t) u);
-
-csr_mu_mono_check ::
-  forall a.
-    (Compare.Compare_order a, Eq a,
-      Term_Rewriting.Showl a) => [((a, Arith.Nat), [Arith.Nat])] ->
-                                   ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                                     [(a, Arith.Nat)] ->
-                                       Sum_Type.Sum (String -> String) ();
-csr_mu_mono_check mu monof fs =
-  Error_Monad.catch_error
-    (Error_Monad.forallM
-      (\ f ->
-        Check_Monad.check
-          (Arith.less_eq_set (Context_Sensitive_Impl.mu_of mu f) (monof f))
-          (((((Term_Rewriting.showsl_lit
-                 "error in CSR monotonicity: replacement map for " .
-                Term_Rewriting.showsl_prod f) .
-               Term_Rewriting.showsl_lit " is ") .
-              Usable_Replacement_Map_Impl.showsl_position_set f
-                (Context_Sensitive_Impl.mu_of mu f)) .
-             Term_Rewriting.showsl_lit
-               "\nbut the order is monotone only in positions ") .
-            Usable_Replacement_Map_Impl.showsl_position_set f (monof f)))
-      fs)
-    (\ x -> Sum_Type.Inl (snd x));
-
-mu_vars_term_list ::
-  forall a b.
-    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] -> Term_Rewriting.Term a b -> [b];
-mu_vars_term_list mu (Term_Rewriting.Var x) = [x];
-mu_vars_term_list mu (Term_Rewriting.Fun f ts) =
-  concat
-    (Arith.map_filter
-      (\ x ->
-        (if Arith.member x
-              (Context_Sensitive_Impl.mu_of mu (f, Arith.size_list ts))
-          then Just (mu_vars_term_list mu (Arith.nth ts x)) else Nothing))
-      (Arith.upt Arith.zero_nat (Arith.size_list ts)));
-
-csr_sharp_mu_entry_ok ::
-  forall a b. ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
-csr_sharp_mu_entry_ok e =
-  (case e of {
-    ((f, n), is) ->
-      not (is_sharp_lab f) &&
-        Arith.less_eq_set (Arith.set is)
-          (Set_Interval.atLeastLessThan Arith.zero_nat n);
-  });
-
-csr_sharp_mu_check ::
-  forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a,
-      Term_Rewriting.Showl b) => [((Labelings.Lab a b, Arith.Nat),
-                                    [Arith.Nat])] ->
-                                   Sum_Type.Sum (String -> String) ();
-csr_sharp_mu_check mu =
-  Error_Monad.catch_error
-    (Error_Monad.forallM
-      (\ e ->
-        Check_Monad.check (csr_sharp_mu_entry_ok e)
-          (case e of {
-            ((f, n), _) ->
-              ((Term_Rewriting.showsl_lit
-                  "invalid replacement map entry for CSR-DP sharp side steps: " .
-                 Term_Rewriting.showsl_lab f) .
-                Term_Rewriting.showsl_lit "/") .
-                Term_Rewriting.showsl_nat n;
-          }))
-      mu)
-    (\ x -> Sum_Type.Inl (snd x));
-
-graph_approx_csr_rt :: forall a b c. Multi_Map.Multimap a b -> c -> [b];
-graph_approx_csr_rt m uu = Multi_Map.values m;
-
-csr_int_mu_mono_check ::
-  forall a b.
-    (Eq a, Term_Rewriting.Showl a, Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => HOL.Itself a ->
-                                   HOL.Itself b ->
-                                     [((b, Arith.Nat),
-(Arith.Int, [Arith.Int]))] ->
-                                       [((b, Arith.Nat), [Arith.Nat])] ->
- Sum_Type.Sum (String -> String) ();
-csr_int_mu_mono_check HOL.Type uu i mu =
-  csr_mu_mono_check mu
-    (Term_Rewriting.mono_af
-      ((Linear_Poly_Order.create_poly_rel_impl ::
-         Congruence.Partial_object_ext Arith.Int
-           (Group.Monoid_ext Arith.Int
-             (Ring.Ring_ext Arith.Int
-               (Ordered_Semiring.Ordered_semiring_ext Arith.Int
-                 (Linear_Poly_Complexity.Lpoly_order_semiring_ext Arith.Int
-                   ())))) ->
-           Sum_Type.Sum (String -> String) () ->
-             [((b, Arith.Nat), (Arith.Int, [Arith.Int]))] ->
-               Term_Rewriting.Rel_impl_ext b a ())
-        (Matrix_Poly.class_lpoly_order Arith.one_int Term_Rewriting.int_mono
-          (\ x y -> Arith.less_int y x))
-        (Sum_Type.Inr ()) i))
-    (Arith.remdups (map fst i ++ map fst mu));
-
-csr_root_tcap_no_edge ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   Term_Rewriting.Term a b -> Term_Rewriting.Term a b -> Bool;
-csr_root_tcap_no_edge mu r (Term_Rewriting.Fun f ts) u =
-  not (Arith.membera (Term_Rewriting.defined_list r) (f, Arith.size_list ts)) &&
-    not (Term_Rewriting.matcha (csr_root_tcap mu r (Term_Rewriting.Fun f ts))
-          u);
-csr_root_tcap_no_edge mu r (Term_Rewriting.Var x) u = False;
-
-csr_int_mat_mu_mono_check ::
-  forall a b.
-    (Eq a, Term_Rewriting.Showl a, Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => HOL.Itself a ->
-                                   HOL.Itself b ->
-                                     Arith.Nat ->
-                                       Arith.Nat ->
- [((b, Arith.Nat), (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
-   [((b, Arith.Nat), [Arith.Nat])] -> Sum_Type.Sum (String -> String) ();
-csr_int_mat_mu_mono_check HOL.Type uu n sd i mu =
-  csr_mu_mono_check mu
-    (Term_Rewriting.mono_af
-      ((Linear_Poly_Order.create_poly_rel_impl ::
-         Congruence.Partial_object_ext (Matrix.Mat Arith.Int)
-           (Group.Monoid_ext (Matrix.Mat Arith.Int)
-             (Ring.Ring_ext (Matrix.Mat Arith.Int)
-               (Ordered_Semiring.Ordered_semiring_ext (Matrix.Mat Arith.Int)
-                 (Linear_Poly_Complexity.Lpoly_order_semiring_ext
-                   (Matrix.Mat Arith.Int) ())))) ->
-           Sum_Type.Sum (String -> String) () ->
-             [((b, Arith.Nat),
-                (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
-               Term_Rewriting.Rel_impl_ext b a ())
-        (Matrix_Poly.mat_lpoly_order n sd Arith.one_int Term_Rewriting.int_mono
-          (\ x y -> Arith.less_int y x))
-        (Matrix_Poly.check_dimensions n sd (Sum_Type.Inr ())) i))
-    (Arith.remdups (map fst i ++ map fst mu));
-
-csr_rule_removal_af_tt ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b,
-      Term_Rewriting.Showl b) => Term_Rewriting.Rel_impl_ext a b () ->
-                                   [(a, Arith.Nat)] ->
-                                     [((a, Arith.Nat), [Arith.Nat])] ->
-                                       [(Term_Rewriting.Term a b,
-  Term_Rewriting.Term a b)] ->
- [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-   Sum_Type.Sum (String -> String)
-     [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)];
-csr_rule_removal_af_tt rp fs mu rremove r =
-  let {
-    rr = Map_Choice.ceta_list_diff r rremove;
-  } in (case Error_Monad.catch_error
-               (Error_Monad.bind (Term_Rewriting.rel_impl_redpair rp)
-                 (\ _ ->
-                   Error_Monad.bind
-                     (Error_Monad.catch_error
-                       (Error_Monad.forallM
-                         (\ f ->
-                           Check_Monad.check
-                             (Arith.less_eq_set
-                               (Context_Sensitive_Impl.mu_of mu f)
-                               (Term_Rewriting.mono_af rp f))
-                             (((((Term_Rewriting.showsl_lit
-                                    "error in CSR monotonicity: replacement map for " .
-                                   Term_Rewriting.showsl_prod f) .
-                                  Term_Rewriting.showsl_lit " is ") .
-                                 Usable_Replacement_Map_Impl.showsl_position_set
-                                   f (Context_Sensitive_Impl.mu_of mu f)) .
-                                Term_Rewriting.showsl_lit
-                                  "\nbut the order is monotone only in positions ") .
-                               Usable_Replacement_Map_Impl.showsl_position_set f
-                                 (Term_Rewriting.mono_af rp f)))
-                         fs)
-                       (\ x -> Sum_Type.Inl (snd x)))
-                     (\ _ ->
-                       Error_Monad.bind
-                         (Error_Monad.catch_error
-                           (Term_Rewriting.rel_impl_s rp rremove)
-                           (\ x ->
-                             Sum_Type.Inl
-                               (Term_Rewriting.showsl_lit
-                                  "problem when orienting strict CSR rules\n" .
-                                 x)))
-                         (\ _ ->
-                           Error_Monad.catch_error
-                             (Term_Rewriting.rel_impl_ns rp rr)
-                             (\ x ->
-                               Sum_Type.Inl
-                                 (Term_Rewriting.showsl_lit
-                                    "problem when orienting remaining CSR rules\n" .
-                                   x))))))
-               (\ x ->
-                 Sum_Type.Inl
-                   (((Term_Rewriting.showsl_lit
-                        "could not apply the CSR rule removal processor with replacement-map monotonicity and the following\n" .
-                       Term_Rewriting.desc rp) .
-                      Term_Rewriting.showsl_literal "\n") .
-                     x))
-         of {
-         Sum_Type.Inl a -> Sum_Type.Inl a;
-         Sum_Type.Inr _ -> Sum_Type.Inr rr;
-       });
-
-csr_int_mat_rule_removal_tt ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => Arith.Nat ->
-                                   Arith.Nat ->
-                                     [((a, Arith.Nat),
-(Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
-                                       [((a, Arith.Nat), [Arith.Nat])] ->
- [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-   [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-     Sum_Type.Sum (String -> String)
-       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)];
-csr_int_mat_rule_removal_tt n sd i mu rremove r =
-  let {
-    fs = Arith.remdups (map fst i ++ map fst mu);
-    rp = Linear_Poly_Order.create_poly_rel_impl
-           (Matrix_Poly.mat_lpoly_order n sd Arith.one_int
-             Term_Rewriting.int_mono (\ x y -> Arith.less_int y x))
-           (Matrix_Poly.check_dimensions n sd (Sum_Type.Inr ())) i;
-  } in Error_Monad.bind
-         ((csr_int_mat_mu_mono_check ::
-            HOL.Itself a ->
-              HOL.Itself a ->
-                Arith.Nat ->
-                  Arith.Nat ->
-                    [((a, Arith.Nat),
-                       (Matrix.Mat Arith.Int, [Matrix.Mat Arith.Int]))] ->
-                      [((a, Arith.Nat), [Arith.Nat])] ->
-                        Sum_Type.Sum (String -> String) ())
-           HOL.Type HOL.Type n sd i mu)
-         (\ _ -> csr_rule_removal_af_tt rp fs mu rremove r);
-
-csr_int_rule_removal_tt ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => [((a, Arith.Nat), (Arith.Int, [Arith.Int]))] ->
-                                   [((a, Arith.Nat), [Arith.Nat])] ->
-                                     [(Term_Rewriting.Term a b,
-Term_Rewriting.Term a b)] ->
-                                       [(Term_Rewriting.Term a b,
-  Term_Rewriting.Term a b)] ->
- Sum_Type.Sum (String -> String)
-   [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)];
-csr_int_rule_removal_tt i mu rremove r =
-  let {
-    fs = Arith.remdups (map fst i ++ map fst mu);
-    rp = Linear_Poly_Order.create_poly_rel_impl
-           (Matrix_Poly.class_lpoly_order Arith.one_int Term_Rewriting.int_mono
-             (\ x y -> Arith.less_int y x))
-           (Sum_Type.Inr ()) i;
-  } in Error_Monad.bind
-         ((csr_int_mu_mono_check ::
-            HOL.Itself a ->
-              HOL.Itself a ->
-                [((a, Arith.Nat), (Arith.Int, [Arith.Int]))] ->
-                  [((a, Arith.Nat), [Arith.Nat])] ->
-                    Sum_Type.Sum (String -> String) ())
-           HOL.Type HOL.Type i mu)
-         (\ _ -> csr_rule_removal_af_tt rp fs mu rremove r);
-
-csr_rule_removal_impl ::
-  forall a.
-    (Compare.Compare_order a, Eq a,
-      Term_Rewriting.Showl a) => Reduction_Pair_Implementations.Redtriple_impl
-                                   a ->
-                                   [((a, Arith.Nat), [Arith.Nat])] ->
-                                     [(Term_Rewriting.Term a [Arith.Char],
-Term_Rewriting.Term a [Arith.Char])] ->
-                                       [(Term_Rewriting.Term a [Arith.Char],
-  Term_Rewriting.Term a [Arith.Char])] ->
- Sum_Type.Sum (String -> String)
-   [(Term_Rewriting.Term a [Arith.Char], Term_Rewriting.Term a [Arith.Char])];
-csr_rule_removal_impl (Reduction_Pair_Implementations.Int_carrier i) mu rremove
-  r = csr_int_rule_removal_tt i mu rremove r;
-csr_rule_removal_impl (Reduction_Pair_Implementations.Int_mat_carrier n sd i) mu
-  rremove r = csr_int_mat_rule_removal_tt n sd i mu rremove r;
-csr_rule_removal_impl (Reduction_Pair_Implementations.Int_nl_carrier v) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Neg_Integer_Poly v) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Rat_carrier v) mu rremove
-  r = Sum_Type.Inl
-        (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Rat_nl_carrier v va) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Real_carrier v) mu rremove
-  r = Sum_Type.Inl
-        (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Real_nl_carrier v va) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Arctic_carrier v) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Arctic_rat_carrier v) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Rat_mat_carrier v va vb)
-  mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Real_mat_carrier v va vb)
-  mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Core_matrix v) mu rremove
-  r = Sum_Type.Inl
-        (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Core_matrix_delta v va) mu
-  rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Arctic_mat_carrier v va)
-  mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl
-  (Reduction_Pair_Implementations.Arctic_rat_mat_carrier v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.RPO v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.KBO v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.ACKBO v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.WPO v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.GWPO v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.MSPO v) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.COWPO v va) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Max_poly v) mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Max_monus v) mu rremove r
-  = Sum_Type.Inl
-      (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.Filtered_Redtriple v va)
-  mu rremove r =
-  Sum_Type.Inl
-    (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-csr_rule_removal_impl (Reduction_Pair_Implementations.SCNP v va vb) mu rremove r
-  = Sum_Type.Inl
-      (Term_Rewriting.showsl_lit "unsupported CSR rule-removal redpair");
-
-csr_frozen_root_no_edge ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b,
-      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   Term_Rewriting.Term a b -> Term_Rewriting.Term a b -> Bool;
-csr_frozen_root_no_edge mu r (Term_Rewriting.Fun f ts) u =
-  not (Arith.membera (Term_Rewriting.defined_list r) (f, Arith.size_list ts)) &&
-    Arith.set_eq (mu (f, Arith.size_list ts))
-      (Arith.set_empty (Phantom_Type.of_phantom Arith.set_impl_nat)) &&
-      Arith.is_none
-        (Term_Rewriting.mgu
-          (Term_Rewriting.map_term (\ x -> x) Sum_Type.Inl
-            (Term_Rewriting.Fun f ts))
-          (Term_Rewriting.map_term (\ x -> x) Sum_Type.Inr u));
-csr_frozen_root_no_edge mu r (Term_Rewriting.Var x) u = False;
-
-csr_shared_inactive_arg_no_edge ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b,
-      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   Term_Rewriting.Term a b -> Term_Rewriting.Term a b -> Bool;
-csr_shared_inactive_arg_no_edge mu r (Term_Rewriting.Fun f ts)
-  (Term_Rewriting.Fun g us) =
-  not (Arith.membera (Term_Rewriting.defined_list r) (f, Arith.size_list ts)) &&
-    f == g &&
-      Arith.equal_nat (Arith.size_list ts) (Arith.size_list us) &&
-        let {
-          d = Arith.minus_nat (Arith.size_list ts) Arith.one_nat;
-        } in Arith.less_nat d (Arith.size_list ts) &&
-               not (Arith.all_interval
-                     (not .
-                       (\ i ->
-                         let {
-                           da = Arith.minus_nat (Arith.size_list ts)
-                                  Arith.one_nat;
-                         } in Arith.less_nat da (Arith.size_list ts) &&
-                                not (Arith.all_interval
-                                      (not .
-(\ j ->
-  not (Arith.equal_nat i j) &&
-    not (Arith.member i (mu (f, Arith.size_list ts))) &&
-      not (Arith.member j (mu (f, Arith.size_list ts))) &&
-        Term_Rewriting.equal_term (Arith.nth ts i) (Arith.nth ts j) &&
-          Arith.is_none
-            (Term_Rewriting.mgu
-              (Term_Rewriting.map_term (\ x -> x) Sum_Type.Inl (Arith.nth us i))
-              (Term_Rewriting.map_term (\ x -> x) Sum_Type.Inr
-                (Arith.nth us j)))))
-                                      Arith.zero_nat da)))
-                     Arith.zero_nat d);
-csr_shared_inactive_arg_no_edge mu r (Term_Rewriting.Var v) uv = False;
-csr_shared_inactive_arg_no_edge mu r uu (Term_Rewriting.Var v) = False;
-
-csr_reverse_tcap_no_edge ::
-  forall a b.
-    (Compare.Compare_order a, Eq a,
-      Eq b) => [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                 Term_Rewriting.Term a b -> Term_Rewriting.Term a b -> Bool;
-csr_reverse_tcap_no_edge r t u =
-  not (Term_Rewriting.matcha (Tcap_Impl.tcapI (map (\ (l, ra) -> (ra, l)) r) u)
-        t);
-
-csr_inactive_arg_no_edge ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   Term_Rewriting.Term a b -> Term_Rewriting.Term a b -> Bool;
-csr_inactive_arg_no_edge mu r (Term_Rewriting.Fun f ts)
-  (Term_Rewriting.Fun g us) =
-  not (Arith.membera (Term_Rewriting.defined_list r) (f, Arith.size_list ts)) &&
-    (not ((f, Arith.size_list ts) == (g, Arith.size_list us)) ||
-      let {
-        d = Arith.minus_nat (Arith.size_list ts) Arith.one_nat;
-      } in Arith.less_nat d (Arith.size_list ts) &&
-             not (Arith.all_interval
-                   (not .
-                     (\ i ->
-                       not (Arith.member i (mu (f, Arith.size_list ts))) &&
-                         not (Term_Rewriting.matcha
-                               (term_gctxt (Arith.nth ts i)) (Arith.nth us i))))
-                   Arith.zero_nat d));
-csr_inactive_arg_no_edge mu r (Term_Rewriting.Var v) uv = False;
-csr_inactive_arg_no_edge mu r uu (Term_Rewriting.Var v) = False;
-
-csr_dep_graph_edge_check ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b,
-      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
-                   (((Term_Rewriting.Term a b, Term_Rewriting.Term a b), ()),
-                     ((Term_Rewriting.Term a b, Term_Rewriting.Term a b),
-                       ())) ->
-                     Bool;
-csr_dep_graph_edge_check mu r (((s, t), uu), ((u, v), uv)) =
-  not (csr_inactive_arg_no_edge mu r t u) &&
-    not (csr_frozen_root_no_edge mu r t u) &&
-      not (csr_tcap_no_edge r t u) &&
-        not (csr_reverse_tcap_no_edge r t u) &&
-          not (csr_root_tcap_no_edge mu r t u) &&
-            not (csr_shared_inactive_arg_no_edge mu r t u);
+import qualified Mapping;
+import qualified Arith;
 
 check_csr_dep_graph_proc ::
   forall a b c d.
@@ -767,9 +75,11 @@ check_csr_dep_graph_proc j mu dpp dps =
                Error_Monad.catch_error
                  (Graph.check_graph_decomp (Term_Rewriting.showsl_prod . fst)
                    (Multi_Map.empty ((Term_Rewriting.root . fst) . fst))
-                   graph_approx_csr_rt Multi_Map.insert
-                   (csr_dep_graph_edge_check
-                     (csr_dp_root_mu (Context_Sensitive_Impl.mu_of mu)) r)
+                   CSR_Checker_Base.graph_approx_csr_rt Multi_Map.insert
+                   (CSR_Checker_Base.csr_dep_graph_edge_check
+                     (CSR_Checker_Base.csr_dp_root_mu
+                       (Context_Sensitive_Impl.mu_of mu))
+                     r)
                    (map (\ (real, cs) ->
                           (not (Arith.is_none real),
                             map (\ (s, t) -> ((s, t), ())) cs))
@@ -781,160 +91,6 @@ check_csr_dep_graph_proc j mu dpp dps =
                         Term_Rewriting.showsl_lit
                           "due to the following reason\n") .
                        x))));
-
-csr_mu_usable_rules_proc ::
-  forall a b c.
-    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b,
-      Compare.Compare_order c, Eq c,
-      Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a b c
-                                   () ->
-                                   [((b, Arith.Nat), [Arith.Nat])] ->
-                                     [(Term_Rewriting.Term b c,
-Term_Rewriting.Term b c)] ->
-                                       a -> Sum_Type.Sum (String -> String) a;
-csr_mu_usable_rules_proc j mu u dpp =
-  (case Error_Monad.bind
-          (Error_Monad.catch_error
-            (Error_Monad.forallM
-              (\ (l, _) ->
-                Check_Monad.check (not (Term_Rewriting.is_Var l))
-                  (Term_Rewriting.showsl_lit "variables as lhss not allowed"))
-              (Dependency_Pair_Problem_Spec.rules j dpp))
-            (\ x -> Sum_Type.Inl (snd x)))
-          (\ _ ->
-            Error_Monad.catch_error
-              (Usable_Rules_Impl.check_ur_P_closed_rm_af
-                (Dependency_Pair_Problem_Spec.rules_map j dpp) u
-                (Context_Sensitive_Impl.mu_of mu)
-                (Dependency_Pair_Problem_Spec.pairs j dpp))
-              (\ x ->
-                Sum_Type.Inl
-                  (Term_Rewriting.showsl_lit
-                     "error when checking CSR usable-rule closure\n" .
-                    x)))
-    of {
-    Sum_Type.Inl a -> Sum_Type.Inl a;
-    Sum_Type.Inr _ ->
-      Sum_Type.Inr (Dependency_Pair_Problem_Spec.intersect_rules j dpp u);
-  });
-
-rhs_mu_vars_condition_list ::
-  forall a b.
-    (Eq a,
-      Eq b) => [((a, Arith.Nat), [Arith.Nat])] ->
-                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] -> Bool;
-rhs_mu_vars_condition_list mu r =
-  all (\ (l, ra) ->
-        all (Arith.membera (mu_vars_term_list mu l)) (mu_vars_term_list mu ra))
-    r;
-
-mu_csr_dependency_pairs_tt ::
-  forall a b c.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a, Arith.Ccompare c,
-      Compare.Compare_order c, Eq c, Mapping.Mapping_impl c,
-      Term_Rewriting.Showl c) => (a -> a) ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext b a
-                                     c () ->
-                                     [((a, Arith.Nat), [Arith.Nat])] ->
-                                       [(Term_Rewriting.Term a c,
-  Term_Rewriting.Term a c)] ->
- [(Term_Rewriting.Term a c, Term_Rewriting.Term a c)] ->
-   Sum_Type.Sum (String -> String) b;
-mu_csr_dependency_pairs_tt shp j mu r p =
-  let {
-    d = Term_Rewriting.defined_list r;
-  } in (case Error_Monad.catch_error
-               (Error_Monad.bind (Term_Rewriting.check_wf_trs r)
-                 (\ _ ->
-                   Error_Monad.bind
-                     (Check_Monad.check (rhs_mu_vars_condition_list mu r)
-                       (Term_Rewriting.showsl_lit
-                         "the RHS of a CSR rule contains a variable in an active position that is not active in the LHS\n"))
-                     (\ _ ->
-                       Error_Monad.bind
-                         (Error_Monad.catch_error
-                           (Error_Monad.forallM
-                             (\ (f, n) ->
-                               Check_Monad.check
-                                 (not (Arith.membera d (shp f, n)))
-                                 (((Term_Rewriting.showsl_lit "sharping " .
-                                     Term_Rewriting.showsl f) .
-                                    Term_Rewriting.showsl_lit
-                                      " yields the defined symbol ") .
-                                   Term_Rewriting.showsl (shp f)))
-                             d)
-                           (\ x -> Sum_Type.Inl (snd x)))
-                         (\ _ ->
-                           let {
-                             pa = Arith.set p;
-                           } in Error_Monad.catch_error
-                                  (Error_Monad.catch_error
-                                    (Error_Monad.forallM
-                                      (\ x ->
-(if Arith.member x pa || any (Term_Rewriting.eq_rule_mod_vars x) p
-  then Sum_Type.Inr () else Sum_Type.Inl x))
-                                      (mu_CSDP_list shp r mu d))
-                                    (\ x -> Sum_Type.Inl (snd x)))
-                                  (\ x ->
-                                    Sum_Type.Inl
-                                      ((Term_Rewriting.showsl_lit
-  "the replacement-map-specific CS-DP " .
- Term_Rewriting.showsl_rule x) .
-Term_Rewriting.showsl_lit " does not appear in the DP problem\n"))))))
-               (\ x ->
-                 Sum_Type.Inl
-                   (Term_Rewriting.showsl_lit
-                      "the replacement-map-specific CS-DP transformation is not applied correctly.\n" .
-                     x))
-         of {
-         Sum_Type.Inl a -> Sum_Type.Inl a;
-         Sum_Type.Inr _ ->
-           Sum_Type.Inr
-             (Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r);
-       });
-
-dp_proof_of_csr_dp_termination_proof ::
-  forall a b c.
-    Csr_dp_termination_proof a b c ->
-      Check_Termination.Dp_termination_proof a b c;
-dp_proof_of_csr_dp_termination_proof CSR_DP_P_is_Empty =
-  Check_Termination.P_is_Empty;
-dp_proof_of_csr_dp_termination_proof (CSR_DP_Ordinary_Proof prf) = prf;
-dp_proof_of_csr_dp_termination_proof
-  (CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
-  Check_Termination.Subterm_Criterion_Proc p rseq pr
-    (dp_proof_of_csr_dp_termination_proof prf);
-dp_proof_of_csr_dp_termination_proof
-  (CSR_DP_Gen_Subterm_Criterion_Proc p pr prf) =
-  Check_Termination.Gen_Subterm_Criterion_Proc p pr
-    (dp_proof_of_csr_dp_termination_proof prf);
-dp_proof_of_csr_dp_termination_proof (CSR_DP_Usable_Rules_Proc u prf) =
-  Check_Termination.Usable_Rules_Proc u
-    (dp_proof_of_csr_dp_termination_proof prf);
-dp_proof_of_csr_dp_termination_proof (CSR_DP_Dep_Graph_Proc edpts) =
-  Check_Termination.Dep_Graph_Proc
-    (map (\ (prf, a) ->
-           (Arith.map_option dp_proof_of_csr_dp_termination_proof prf, a))
-      edpts);
-dp_proof_of_csr_dp_termination_proof (CSR_DP_Size_Change_Subterm_Proc graphs) =
-  Check_Termination.Size_Change_Subterm_Proc graphs;
-
-check_csr_dp_termination_proof ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     Bool ->
-                                       (String -> String) ->
- c -> Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
-        Sum_Type.Sum (String -> String) ();
-check_csr_dp_termination_proof ia j a i dpp prf =
-  Check_Termination.check_dp_termination_proof ia j a i dpp
-    (dp_proof_of_csr_dp_termination_proof prf);
 
 check_csr_dp_termination_proof_core ::
   forall a b c.
@@ -949,30 +105,34 @@ check_csr_dp_termination_proof_core ::
 [Arith.Nat])] ->
                                        Bool ->
  (String -> String) ->
-   c -> Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+   c -> CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
           Sum_Type.Sum (String -> String) ();
-check_csr_dp_termination_proof_core ia j mu a i dpp CSR_DP_P_is_Empty =
+check_csr_dp_termination_proof_core ia j mu a i dpp
+  CSR_Checker_Base.CSR_DP_P_is_Empty =
   FOR_Preliminaries.debug i "CSR-DP P is empty"
     (if null (Dependency_Pair_Problem_Spec.pairs j dpp) then Sum_Type.Inr ()
       else Sum_Type.Inl
              ((i . Term_Rewriting.showsl_lit
                      ": CSR-DP P is not empty in the following DP-problem\n") .
                QDP_Framework_Impl.showsl_dpp j dpp));
-check_csr_dp_termination_proof_core ia j mu a i dpp (CSR_DP_Ordinary_Proof prf)
-  = check_csr_dp_termination_proof ia j a i dpp (CSR_DP_Ordinary_Proof prf);
 check_csr_dp_termination_proof_core ia j mu a i dpp
-  (CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
-  check_csr_dp_termination_proof ia j a i dpp
-    (CSR_DP_Subterm_Criterion_Proc p rseq pr prf);
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf) =
+  CSR_Checker_Base.check_csr_dp_termination_proof ia j a i dpp
+    (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
 check_csr_dp_termination_proof_core ia j mu a i dpp
-  (CSR_DP_Gen_Subterm_Criterion_Proc p pr prf) =
-  check_csr_dp_termination_proof ia j a i dpp
-    (CSR_DP_Gen_Subterm_Criterion_Proc p pr prf);
+  (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
+  CSR_Checker_Base.check_csr_dp_termination_proof ia j a i dpp
+    (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf);
 check_csr_dp_termination_proof_core ia j mu a i dpp
-  (CSR_DP_Usable_Rules_Proc u prf) =
+  (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc p pr prf) =
+  CSR_Checker_Base.check_csr_dp_termination_proof ia j a i dpp
+    (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc p pr prf);
+check_csr_dp_termination_proof_core ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc u prf) =
   FOR_Preliminaries.debug i "CSR-DP usable rules"
     (Error_Monad.bind
-      (Error_Monad.catch_error (csr_mu_usable_rules_proc j mu u dpp)
+      (Error_Monad.catch_error
+        (CSR_Checker_Base.csr_mu_usable_rules_proc j mu u dpp)
         (\ x ->
           Sum_Type.Inl
             ((i . Term_Rewriting.showsl_lit
@@ -999,82 +159,64 @@ check_csr_dp_termination_proof_core ia j mu a i dpp
                           ": error below CSR usable rules\n") .
                     x)))));
 check_csr_dp_termination_proof_core ia j mu a i dpp
-  (CSR_DP_Dep_Graph_Proc edpts) =
-  (if all (\ (prf, _) -> Arith.is_none prf) edpts
-    then FOR_Preliminaries.debug i "CSR-DP dependency graph"
-           (Error_Monad.catch_error (check_csr_dep_graph_proc j mu dpp edpts)
-             (\ x ->
-               Sum_Type.Inl
-                 ((i . Term_Rewriting.showsl_lit
-                         ": error when applying CSR dependency graph\n") .
-                   x)))
-    else check_csr_dp_termination_proof ia j a i dpp
-           (CSR_DP_Dep_Graph_Proc edpts));
+  (CSR_Checker_Base.CSR_DP_Dep_Graph_Proc edpts) =
+  FOR_Preliminaries.debug i "CSR-DP dependency graph"
+    (Error_Monad.bind
+      (Error_Monad.catch_error (check_csr_dep_graph_proc j mu dpp edpts)
+        (\ x ->
+          Sum_Type.Inl
+            ((i . Term_Rewriting.showsl_lit
+                    ": error when applying CSR dependency graph\n") .
+              x)))
+      (\ _ ->
+        Error_Monad.catch_error
+          (check_csr_dp_graph_components ia j mu a i dpp edpts)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below CSR dependency graph\n") .
+                x))));
 check_csr_dp_termination_proof_core ia j mu a i dpp
-  (CSR_DP_Size_Change_Subterm_Proc graphs) =
-  check_csr_dp_termination_proof ia j a i dpp
-    (CSR_DP_Size_Change_Subterm_Proc graphs);
+  (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": context-sensitive instantiation requires improved CS-DPs");
+check_csr_dp_termination_proof_core ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs) =
+  CSR_Checker_Base.check_csr_dp_termination_proof ia j a i dpp
+    (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs);
 
-safe_csr_dependency_pairs_tt ::
+check_csr_dp_graph_components ::
   forall a b c.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a, Arith.Ccompare c,
-      Compare.Compare_order c, Eq c, Mapping.Mapping_impl c,
-      Term_Rewriting.Showl c) => (a -> a) ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext b a
-                                     c () ->
-                                     [((a, Arith.Nat), [Arith.Nat])] ->
-                                       [(Term_Rewriting.Term a c,
-  Term_Rewriting.Term a c)] ->
- [(Term_Rewriting.Term a c, Term_Rewriting.Term a c)] ->
-   Sum_Type.Sum (String -> String) b;
-safe_csr_dependency_pairs_tt shp j mu r p =
-  let {
-    d = Term_Rewriting.defined_list r;
-  } in (case Error_Monad.catch_error
-               (Error_Monad.bind (Term_Rewriting.check_wf_trs r)
-                 (\ _ ->
-                   Error_Monad.bind
-                     (Error_Monad.catch_error
-                       (Error_Monad.forallM
-                         (\ (f, n) ->
-                           Check_Monad.check (not (Arith.membera d (shp f, n)))
-                             (((Term_Rewriting.showsl_lit "sharping " .
-                                 Term_Rewriting.showsl f) .
-                                Term_Rewriting.showsl_lit
-                                  " yields the defined symbol ") .
-                               Term_Rewriting.showsl (shp f)))
-                         d)
-                       (\ x -> Sum_Type.Inl (snd x)))
-                     (\ _ ->
-                       let {
-                         pa = Arith.set p;
-                       } in Error_Monad.catch_error
-                              (Error_Monad.catch_error
-                                (Error_Monad.forallM
-                                  (\ x ->
-                                    (if Arith.member x pa ||
-  any (Term_Rewriting.eq_rule_mod_vars x) p
-                                      then Sum_Type.Inr () else Sum_Type.Inl x))
-                                  (safe_CSDP_list shp r d))
-                                (\ x -> Sum_Type.Inl (snd x)))
-                              (\ x ->
-                                Sum_Type.Inl
-                                  ((Term_Rewriting.showsl_lit
-                                      "the safe CS-DP " .
-                                     Term_Rewriting.showsl_rule x) .
-                                    Term_Rewriting.showsl_lit
-                                      " does not appear in the DP problem\n")))))
-               (\ x ->
-                 Sum_Type.Inl
-                   (Term_Rewriting.showsl_lit
-                      "the safe CS-DP transformation is not applied correctly.\n" .
-                     x))
-         of {
-         Sum_Type.Inl a -> Sum_Type.Inl a;
-         Sum_Type.Inr _ ->
-           Sum_Type.Inr
-             (Dependency_Pair_Problem_Spec.mk j False True p [] [] [] r);
-       });
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       Bool ->
+ (String -> String) ->
+   c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
+                  [Arith.Char]),
+           [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+              Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+                [Arith.Char])])] ->
+          Sum_Type.Sum (String -> String) ();
+check_csr_dp_graph_components ia j mu a i dpp [] = Sum_Type.Inr ();
+check_csr_dp_graph_components ia j mu a i dpp ((Nothing, p) : rest) =
+  check_csr_dp_graph_components ia j mu a
+    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
+check_csr_dp_graph_components ia j mu a i dpp ((Just prf, p) : rest) =
+  Error_Monad.bind
+    (check_csr_dp_termination_proof_core ia j mu a
+      (Term_Rewriting.add_index i Arith.one_nat)
+      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp p) prf)
+    (\ _ ->
+      check_csr_dp_graph_components ia j mu a
+        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
 
 check_csr_termination_proof ::
   forall a b c.
@@ -1090,33 +232,38 @@ check_csr_termination_proof ::
  [((Labelings.Lab b [Arith.Nat], Arith.Nat), [Arith.Nat])] ->
    [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
       Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     Csr_termination_proof b [Arith.Nat] [Arith.Char] ->
+     CSR_Checker_Base.Csr_termination_proof b [Arith.Nat] [Arith.Char] ->
        Sum_Type.Sum (String -> String) ();
-check_csr_termination_proof ia j a i mu r CSR_R_is_Empty =
+check_csr_termination_proof ia j a i mu r CSR_Checker_Base.CSR_R_is_Empty =
   FOR_Preliminaries.debug i "CSR R is empty"
     (if null r then Sum_Type.Inr ()
       else Sum_Type.Inl (i . Term_Rewriting.showsl_lit ": CSR R is not empty"));
-check_csr_termination_proof ia j a i mu r (CSR_Rule_Removal redp rr prf) =
+check_csr_termination_proof ia j a i mu r
+  (CSR_Checker_Base.CSR_Rule_Removal redp rr prf) =
   FOR_Preliminaries.debug i "CSR rule removal"
-    (case csr_rule_removal_impl redp mu rr r of {
+    (case CSR_Checker_Base.csr_rule_removal_impl redp mu rr r of {
       Sum_Type.Inl aa -> Sum_Type.Inl aa;
       Sum_Type.Inr r2 -> check_csr_termination_proof ia j a i mu r2 prf;
     });
-check_csr_termination_proof ia j a i mu r (CSR_Dependency_Pairs p prf) =
+check_csr_termination_proof ia j a i mu r
+  (CSR_Checker_Base.CSR_Dependency_Pairs p prf) =
   FOR_Preliminaries.debug i "CSR dependency pairs"
     (Error_Monad.bind
-      (Error_Monad.catch_error (csr_sharp_mu_check mu)
+      (Error_Monad.catch_error (CSR_Checker_Base.csr_sharp_mu_check mu)
         (\ x ->
           Sum_Type.Inl
             ((i . Term_Rewriting.showsl_lit
                     ": invalid replacement map for CSR dependency pairs\n") .
               x)))
       (\ _ ->
-        (case mu_csr_dependency_pairs_tt Labelings.Sharp j mu r p of {
+        (case CSR_Checker_Base.mu_csr_dependency_pairs_tt Labelings.Sharp j mu r
+                p
+          of {
           Sum_Type.Inl _ ->
             Error_Monad.bind
               (Error_Monad.catch_error
-                (safe_csr_dependency_pairs_tt Labelings.Sharp j mu r p)
+                (CSR_Checker_Base.safe_csr_dependency_pairs_tt Labelings.Sharp j
+                  mu r p)
                 (\ x ->
                   Sum_Type.Inl
                     ((((((i . Term_Rewriting.showsl_lit
@@ -1128,7 +275,7 @@ check_csr_termination_proof ia j a i mu r (CSR_Dependency_Pairs p prf) =
                       x)))
               (\ dpp ->
                 Error_Monad.catch_error
-                  (check_csr_dp_termination_proof ia j False
+                  (CSR_Checker_Base.check_csr_dp_termination_proof ia j False
                     (Term_Rewriting.add_index i Arith.one_nat) dpp prf)
                   (\ x ->
                     Sum_Type.Inl
@@ -1145,10 +292,11 @@ check_csr_termination_proof ia j a i mu r (CSR_Dependency_Pairs p prf) =
                           ": error below replacement-map-specific CSR dependency pairs\n") .
                     x));
         })));
-check_csr_termination_proof ia j a i mu r (CSR_Safe_Dependency_Pairs p prf) =
+check_csr_termination_proof ia j a i mu r
+  (CSR_Checker_Base.CSR_Safe_Dependency_Pairs p prf) =
   FOR_Preliminaries.debug i "safe CSR dependency pairs"
     (Error_Monad.bind
-      (Error_Monad.catch_error (csr_sharp_mu_check mu)
+      (Error_Monad.catch_error (CSR_Checker_Base.csr_sharp_mu_check mu)
         (\ x ->
           Sum_Type.Inl
             ((i . Term_Rewriting.showsl_lit
@@ -1157,7 +305,8 @@ check_csr_termination_proof ia j a i mu r (CSR_Safe_Dependency_Pairs p prf) =
       (\ _ ->
         Error_Monad.bind
           (Error_Monad.catch_error
-            (safe_csr_dependency_pairs_tt Labelings.Sharp j mu r p)
+            (CSR_Checker_Base.safe_csr_dependency_pairs_tt Labelings.Sharp j mu
+              r p)
             (\ x ->
               Sum_Type.Inl
                 ((((((i . Term_Rewriting.showsl_lit
@@ -1169,7 +318,7 @@ check_csr_termination_proof ia j a i mu r (CSR_Safe_Dependency_Pairs p prf) =
                   x)))
           (\ dpp ->
             Error_Monad.catch_error
-              (check_csr_dp_termination_proof ia j False
+              (CSR_Checker_Base.check_csr_dp_termination_proof ia j False
                 (Term_Rewriting.add_index i Arith.one_nat) dpp prf)
               (\ x ->
                 Sum_Type.Inl

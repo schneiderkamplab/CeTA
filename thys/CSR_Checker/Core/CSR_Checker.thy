@@ -91,6 +91,10 @@ where
           (STR '': error below CSR dependency graph\<newline>'') \<circ> s)
     })"
 | "check_csr_dp_termination_proof_core I J \<mu> a i dpp
+    (CSR_DP_Instantiation_Proc st sts prf) =
+    error (i \<circ> showsl_lit
+      (STR '': context-sensitive instantiation requires improved CS-DPs''))"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp
     (CSR_DP_Size_Change_Subterm_Proc graphs) =
     check_csr_dp_termination_proof I J a i dpp
       (CSR_DP_Size_Change_Subterm_Proc graphs)"
@@ -370,6 +374,9 @@ proof -
          \<not> csr_root_tcap_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
           (t i) (s (Suc i)) \<and>
          \<not> csr_shared_inactive_arg_no_edge (csr_dp_root_mu (mu_of \<mu>)) ?RL
+          (t i) (s (Suc i)) \<and>
+         \<not> csr_shared_source_inactive_arg_no_edge
+          (csr_dp_root_mu (mu_of \<mu>)) ?RL
           (t i) (s (Suc i)))"
         by simp
       show "?echeck (?p i, ?p (Suc i))"
@@ -401,6 +408,12 @@ proof -
         assume no: "csr_shared_inactive_arg_no_edge
           (csr_dp_root_mu (mu_of \<mu>)) ?RL (t i) (s (Suc i))"
         from csr_shared_inactive_arg_no_edge_sound[OF wf no,
+          of "\<sigma> i" "\<sigma> (Suc i)"] steps[of i]
+        show False by blast
+      next
+        assume no: "csr_shared_source_inactive_arg_no_edge
+          (csr_dp_root_mu (mu_of \<mu>)) ?RL (t i) (s (Suc i))"
+        from csr_shared_source_inactive_arg_no_edge_sound[OF wf no,
           of "\<sigma> i" "\<sigma> (Suc i)"] steps[of i]
         show False by blast
       qed
@@ -601,6 +614,9 @@ next
       (set (dpp_ops.rules J dpp))"
       using ih unfolding pairs rules .
   qed
+next
+  case (CSR_DP_Instantiation_Proc st sts subprf)
+  then show ?case by simp
 next
   case (CSR_DP_Size_Change_Subterm_Proc x)
   then have ok': "isOK (check_csr_dp_termination_proof I J False i dpp

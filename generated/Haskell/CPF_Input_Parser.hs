@@ -4,8 +4,8 @@ module
   CPF_Input_Parser(position, pos, plain_var, term, conditions, crule, rule,
                     symbols, cPFsignature, rules, state, final_states,
                     tree_automaton, ta_normal_lhs, kbo_input, unknown_inputa,
-                    dp_input, input, answer, property, lookupTables,
-                    innermostLhss)
+                    trs_input, dp_input, input, answer, property, lookupTables,
+                    innermostLhss, strategy_to_fp)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -25,6 +25,8 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified Tree_Automata_Impl;
+import qualified Outermost_Forbidden_Patterns;
+import qualified Context_Sensitive_Impl;
 import qualified Phantom_Type;
 import qualified HOL;
 import qualified Sum_Type;
@@ -1266,5 +1268,19 @@ innermostLhss xml2name termMap =
   Xmlt.xml_do "innermostLhss"
     (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
       (term xml2name termMap) Xmlt.xml_return);
+
+strategy_to_fp ::
+  forall a.
+    (Eq a) => Ceta_Problem_Spec.Fp_strategy a [Arith.Char] ->
+                [(Term_Rewriting.Term a [Arith.Char],
+                   Term_Rewriting.Term a [Arith.Char])] ->
+                  [(Term_Rewriting.Actxt a (Term_Rewriting.Term a [Arith.Char]),
+                     (Term_Rewriting.Term a [Arith.Char],
+                       Term_Rewriting.Location))];
+strategy_to_fp (Ceta_Problem_Spec.Forbidden_Patterns p) r = p;
+strategy_to_fp Ceta_Problem_Spec.Outermost r =
+  Outermost_Forbidden_Patterns.o_to_fp_impl (map fst r);
+strategy_to_fp (Ceta_Problem_Spec.Context_Sensitive mu) r =
+  Context_Sensitive_Impl.mu_to_fp_impl mu;
 
 }

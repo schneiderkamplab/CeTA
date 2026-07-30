@@ -2111,6 +2111,13 @@ next
     "csr_shared_inactive_arg_no_edge (csr_dp_root_mu \<mu>) R t u"
   from csr_shared_inactive_arg_no_edge_sound[OF wf no, of \<sigma> \<tau>] steps
   show False by contradiction
+next
+  assume no:
+    "csr_shared_source_inactive_arg_no_edge
+      (csr_dp_root_mu \<mu>) R t u"
+  from csr_shared_source_inactive_arg_no_edge_sound[
+    OF wf no, of \<sigma> \<tau>] steps
+  show False by contradiction
 qed
 
 fun csr_sct_sharp_term where
@@ -2347,12 +2354,467 @@ proof -
       OF wf fresh shape graph edge sct])
 qed
 
-primrec check_csr_dp_termination_proof_min ::
+lemma check_csr_dep_graph_proc_min_sound:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and check: "isOK (check_csr_dep_graph_proc J \<mu> dpp edps)"
+    and fin: "\<And>prf C. (Some prf, C) \<in> set edps \<Longrightarrow>
+      finite_min_csr_dpp Sharp (mu_of \<mu>)
+        (set (dpp_ops.pairs J dpp) \<inter> set C)
+        (set (dpp_ops.rules J dpp))"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof (rule ccontr)
+  interpret dpp_spec J by fact
+  let ?P = "set (pairs dpp)"
+  let ?RL = "rules dpp"
+  let ?R = "set ?RL"
+  let ?S = "csdp_step Sharp (mu_of \<mu>) ?R"
+  let ?echeck = "csr_dep_graph_edge_check (csr_dp_root_mu (mu_of \<mu>)) ?RL"
+  let ?conv = "\<lambda>(real, Cs).
+    (real \<noteq> None, map (\<lambda>(s,t). ((s,t), ())) Cs)"
+  assume not_fin: "\<not> finite_min_csr_dpp Sharp (mu_of \<mu>) ?P ?R"
+  from not_finite_min_csr_dpp_obtain_chain[OF not_fin]
+  obtain s t \<sigma> where pair: "\<And>i. (s i, t i) \<in> ?P"
+    and target_SN: "\<And>i. SN_on ?S {t i \<cdot> \<sigma> i}"
+    and steps: "\<And>i. (t i \<cdot> \<sigma> i,
+      s (Suc i) \<cdot> \<sigma> (Suc i)) \<in> ?S\<^sup>*"
+    by blast
+  from check have wf: "wf_trs ?R"
+    and subset: "?P \<subseteq> set (concat (map snd edps))"
+    and scc: "isOK (check_graph_decomp (showsl \<circ> fst)
+      (Multi_Map.empty (root o fst o fst))
+      graph_approx_csr_rt Multi_Map.insert ?echeck (map ?conv edps))"
+    unfolding check_csr_dep_graph_proc_def
+    by (auto simp: Let_def)
+  let ?p = "\<lambda>i. ((s i, t i), ())"
+  have path: "\<And>i. ?echeck (?p i, ?p (Suc i))"
+    by (rule csr_dep_graph_edge_check_steps[OF wf steps])
+  have lift_node: "\<And>l r.
+      (l, r) \<in> set (concat (map snd edps)) \<Longrightarrow>
+      ((l, r), ()) \<in> set (concat (map snd (map ?conv edps)))"
+  proof -
+    fix l r
+    assume lr: "(l, r) \<in> set (concat (map snd edps))"
+    then obtain x where x: "x \<in> set edps"
+      and lrx: "(l, r) \<in> set (snd x)"
+      by auto
+    obtain real Cs where xeq: "x = (real, Cs)"
+      by (cases x, auto)
+    have node: "((l, r), ()) \<in>
+      set (map (\<lambda>(s,t). ((s,t), ())) Cs)"
+      using lrx xeq by force
+    have conv_mem: "?conv (real, Cs) \<in> set (map ?conv edps)"
+      using x xeq by (auto split: prod.splits)
+    have comp_mem: "snd (?conv (real, Cs)) \<in>
+      set (map snd (map ?conv edps))"
+      using conv_mem unfolding set_map by blast
+    have node': "((l, r), ()) \<in> set (snd (?conv (real, Cs)))"
+      using node by simp
+    show "((l, r), ()) \<in> set (concat (map snd (map ?conv edps)))"
+      using comp_mem node' unfolding set_concat by blast
+  qed
+  have nodes: "path_nodes ?p \<subseteq>
+      set (concat (map snd (map ?conv edps)))"
+  proof
+    fix x
+    assume "x \<in> path_nodes ?p"
+    then obtain i where x: "x = ?p i"
+      unfolding path_nodes_def by auto
+    from pair[of i] subset
+    have "(s i, t i) \<in> set (concat (map snd edps))"
+      by auto
+    then show "x \<in> set (concat (map snd (map ?conv edps)))"
+      unfolding x by (rule lift_node)
+  qed
+  have key_insert: "\<And>x m.
+      Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      Multi_Map.key_fun (Multi_Map.insert x m) = root \<circ> fst \<circ> fst"
+    by simp
+  have approx: "\<And>m a b.
+      Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      ?echeck (a, b) \<Longrightarrow> b \<in> set (Multi_Map.values m) \<Longrightarrow>
+      b \<in> set (graph_approx_csr_rt m a)"
+    unfolding graph_approx_csr_rt.simps by simp
+  have component:
+    "\<exists>q C. ?p =\<dots> q \<and>
+      C \<in> set (map snd (filter fst (map ?conv edps))) \<and>
+      path_nodes q \<subseteq> set C"
+    by (rule check_graph_decomp_sound[
+      of "\<lambda>m. set (Multi_Map.values m)",
+      OF values_empty values_insert,
+      of "\<lambda>m. Multi_Map.key_fun m = (root o fst o fst)",
+      OF key_fun_empty key_insert approx scc path nodes])
+  from component obtain q C where suffix: "?p =\<dots> q"
+    and ending: "path_nodes q \<subseteq> set C"
+    and component_mem:
+      "C \<in> set (map snd (filter fst (map ?conv edps)))"
+    by blast
+  from component_mem obtain p0 Cs where
+    mem: "(Some p0, Cs) \<in> set edps"
+    and C: "C = map (\<lambda>(s,t). ((s,t), ())) Cs"
+    by force
+  from suffix obtain n where pq: "\<And>m. ?p (m + n) = q m"
+    unfolding Graph.suffix_def by blast
+  have CP: "\<And>m. (s (m + n), t (m + n)) \<in> ?P \<inter> set Cs"
+  proof -
+    fix m
+    have "?p (m + n) \<in> path_nodes q"
+      using pq[of m] unfolding path_nodes_def by blast
+    with ending C pair[of "m + n"]
+    show "(s (m + n), t (m + n)) \<in> ?P \<inter> set Cs"
+      by force
+  qed
+  let ?tail = "\<lambda>m. s (m + n) \<cdot> \<sigma> (m + n)"
+  let ?A = "csr_min_pair_step Sharp (mu_of \<mu>) (?P \<inter> set Cs) ?R"
+  have tail_chain: "\<And>m. (?tail m, ?tail (Suc m)) \<in>
+      ?S\<^sup>* O ?A O ?S\<^sup>*"
+  proof -
+    fix m
+    have rr: "(s (m + n) \<cdot> \<sigma> (m + n),
+        t (m + n) \<cdot> \<sigma> (m + n)) \<in>
+        rrstep (?P \<inter> set Cs)"
+      by (rule rrstepI[OF CP[of m] refl refl])
+    have strict: "(s (m + n) \<cdot> \<sigma> (m + n),
+        t (m + n) \<cdot> \<sigma> (m + n)) \<in> ?A"
+      using rr target_SN[of "m + n"]
+      unfolding csr_min_pair_step_def by auto
+    have suc_add: "Suc m + n = Suc (m + n)"
+      by simp
+    show "(?tail m, ?tail (Suc m)) \<in> ?S\<^sup>* O ?A O ?S\<^sup>*"
+      using strict steps[of "m + n"] unfolding suc_add by auto
+  qed
+  have tail_is_chain: "chain (?S\<^sup>* O ?A O ?S\<^sup>*) ?tail"
+    using tail_chain by simp
+  have tail_sn: "SN (?S\<^sup>* O ?A O ?S\<^sup>*)"
+    using fin[OF mem]
+    unfolding finite_min_csr_dpp_def SN_rel_on_def .
+  have "\<not> SN (?S\<^sup>* O ?A O ?S\<^sup>*)"
+    by (rule not_SN_onI[of ?tail], simp, rule tail_is_chain)
+  with tail_sn show False by contradiction
+qed
+
+fun csr_instantiation_cap where
+  "csr_instantiation_cap \<mu> R (Var x) = GCHole"
+| "csr_instantiation_cap \<mu> R (Fun f ts) =
+    csr_root_tcap (csr_dp_root_mu \<mu>) R (Fun f ts)"
+
+lemma csr_instantiation_cap_steps:
+  fixes R :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), string) rules"
+  assumes wf: "wf_trs (set R)"
+    and undef: "case root v of None \<Rightarrow> True
+      | Some fn \<Rightarrow> fn \<notin> set (defined_list R)"
+    and steps: "(v \<cdot> \<sigma>, s \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  shows "s \<cdot> \<tau> \<in> Ground_Context.equiv_class
+    (csr_instantiation_cap \<mu> R v)"
+proof (cases v)
+  case (Var x)
+  then show ?thesis by simp
+next
+  case (Fun f ts)
+  from undef Fun have undef':
+    "\<not> defined (set R) (f, length ts)"
+    using set_defined_list by force
+  from csr_root_tcap_steps[
+    where R = R and f = f and ts = ts and \<sigma> = \<sigma>
+      and u = s and \<tau> = \<tau> and \<mu> = \<mu>,
+    OF wf undef' steps[unfolded Fun]]
+  show ?thesis unfolding Fun by simp
+qed
+
+theorem finite_min_csr_dpp_csr_instantiation:
+  fixes P R sts :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), string) trs"
+    and RL :: "((('f, 'l) lab), string) rules"
+  assumes wf: "wf_trs R"
+    and rules: "set RL = R"
+    and undef: "\<And>u v. (u,v) \<in> P \<Longrightarrow>
+      (case root v of None \<Rightarrow> True
+       | Some fn \<Rightarrow> \<not> defined R fn)"
+    and instances: "\<And>st'. st' \<in> sts \<Longrightarrow> instance_rule st' (s,t)"
+    and cover: "\<And>u v \<gamma>. (u,v) \<in> P \<Longrightarrow>
+      gc_matcher (csr_instantiation_cap \<mu> RL v) s =
+        Some \<gamma> \<Longrightarrow>
+      \<exists>st'\<in>sts. instance_rule (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st'"
+    and fin: "finite_min_csr_dpp Sharp \<mu> (replace (s,t) sts P) R"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof (rule ccontr)
+  assume not_fin: "\<not> finite_min_csr_dpp Sharp \<mu> P R"
+  from not_finite_min_csr_dpp_obtain_chain[OF not_fin]
+  obtain si ti \<sigma> where
+    pair: "\<And>k. (si k, ti k) \<in> P"
+    and target_SN: "\<And>k. SN_on (csdp_step Sharp \<mu> R) {ti k \<cdot> \<sigma> k}"
+    and steps: "\<And>k. (ti k \<cdot> \<sigma> k,
+      si (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+    by blast
+  let ?RL = "RL"
+  have replacement:
+    "\<forall>k. \<exists>s' t' \<tau>.
+      (s',t') \<in> replace (s,t) sts P \<and>
+      si (Suc k) \<cdot> \<sigma> (Suc k) = s' \<cdot> \<tau> \<and>
+      ti (Suc k) \<cdot> \<sigma> (Suc k) = t' \<cdot> \<tau>"
+  proof
+    fix k
+    show "\<exists>s' t' \<tau>.
+      (s',t') \<in> replace (s,t) sts P \<and>
+      si (Suc k) \<cdot> \<sigma> (Suc k) = s' \<cdot> \<tau> \<and>
+      ti (Suc k) \<cdot> \<sigma> (Suc k) = t' \<cdot> \<tau>"
+    proof (cases "(si (Suc k), ti (Suc k)) = (s,t)")
+      case False
+      have neq: "(si (Suc k), ti (Suc k)) \<noteq> (s,t)"
+        by fact
+      have not_singleton: "(si (Suc k), ti (Suc k)) \<notin> {(s,t)}"
+        using neq by simp
+      show ?thesis
+      proof (intro exI conjI)
+        show "(si (Suc k), ti (Suc k)) \<in> replace (s,t) sts P"
+        proof (cases "(s,t) \<in> P")
+          case True
+          note selected_mem = True
+          have in_diff:
+            "(si (Suc k), ti (Suc k)) \<in> P - {(s,t)}"
+            using pair[of "Suc k"] not_singleton by blast
+          have rep: "replace (s,t) sts P = P - {(s,t)} \<union> sts"
+            unfolding Util.replace_def
+            apply (rule if_P)
+            apply (rule selected_mem)
+            done
+          show ?thesis
+            unfolding rep by (rule UnI1[OF in_diff])
+        next
+          case False
+          with pair[of "Suc k"] show ?thesis
+            unfolding Util.replace_def by simp
+        qed
+      qed simp_all
+    next
+      case True
+      then have si: "si (Suc k) = s" and ti: "ti (Suc k) = t"
+        by auto
+      have set_RL: "set ?RL = R"
+        by (rule rules)
+      have undef_k:
+        "case root (ti k) of None \<Rightarrow> True
+         | Some fn \<Rightarrow> fn \<notin> set (defined_list ?RL)"
+      proof (cases "root (ti k)")
+        case None
+        then show ?thesis by simp
+      next
+        case (Some fn)
+        from undef[OF pair[of k]] Some
+        have "\<not> defined R fn"
+          by simp
+        with Some set_RL show ?thesis
+          by simp
+      qed
+      have wf_RL: "wf_trs (set ?RL)"
+        using wf set_RL by simp
+      have steps_k:
+        "(ti k \<cdot> \<sigma> k, s \<cdot> \<sigma> (Suc k)) \<in>
+          (csdp_step Sharp \<mu> (set ?RL))\<^sup>*"
+        using steps[of k] unfolding si set_RL .
+      from csr_instantiation_cap_steps[
+        where R = ?RL and v = "ti k" and \<sigma> = "\<sigma> k"
+          and s = s and \<tau> = "\<sigma> (Suc k)" and \<mu> = \<mu>,
+        OF wf_RL undef_k steps_k]
+      have cap_mem:
+        "s \<cdot> \<sigma> (Suc k) \<in> Ground_Context.equiv_class
+          (csr_instantiation_cap \<mu> ?RL (ti k))"
+        .
+      from gc_matcher_complete[OF cap_mem]
+      obtain \<gamma> \<delta> where
+        matcher:
+          "gc_matcher (csr_instantiation_cap \<mu> ?RL (ti k)) s =
+            Some \<gamma>"
+        and sigma: "\<sigma> (Suc k) = \<gamma> \<circ>\<^sub>s \<delta>"
+        by blast
+      from cover[OF pair[of k] matcher]
+      obtain s' t' where st': "(s',t') \<in> sts"
+        and covered: "instance_rule (s \<cdot> \<gamma>, t \<cdot> \<gamma>) (s',t')"
+        by auto
+      from covered[unfolded instance_rule_def]
+      obtain \<rho> where rho:
+        "s \<cdot> \<gamma> = s' \<cdot> \<rho>" "t \<cdot> \<gamma> = t' \<cdot> \<rho>"
+        by auto
+      have selected_mem: "(s,t) \<in> P"
+        using pair[of "Suc k"] True by simp
+      have member: "(s',t') \<in> replace (s,t) sts P"
+        using st' selected_mem unfolding Util.replace_def by simp
+      have eq_s: "si (Suc k) \<cdot> \<sigma> (Suc k) =
+          s' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>)"
+        using rho(1) unfolding si sigma by simp
+      have eq_t: "ti (Suc k) \<cdot> \<sigma> (Suc k) =
+          t' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>)"
+        using rho(2) unfolding ti sigma by simp
+      show ?thesis
+        using member eq_s eq_t by blast
+    qed
+  qed
+  from choice[OF replacement]
+  obtain si' where one:
+    "\<forall>k. \<exists>t' \<tau>.
+      (si' k,t') \<in> replace (s,t) sts P \<and>
+      si (Suc k) \<cdot> \<sigma> (Suc k) = si' k \<cdot> \<tau> \<and>
+      ti (Suc k) \<cdot> \<sigma> (Suc k) = t' \<cdot> \<tau>"
+    by auto
+  from choice[OF one]
+  obtain ti' where two:
+    "\<forall>k. \<exists>\<tau>.
+      (si' k,ti' k) \<in> replace (s,t) sts P \<and>
+      si (Suc k) \<cdot> \<sigma> (Suc k) = si' k \<cdot> \<tau> \<and>
+      ti (Suc k) \<cdot> \<sigma> (Suc k) = ti' k \<cdot> \<tau>"
+    by auto
+  from choice[OF two]
+  obtain \<tau> where transformed:
+    "\<And>k. (si' k,ti' k) \<in> replace (s,t) sts P"
+    "\<And>k. si (Suc k) \<cdot> \<sigma> (Suc k) = si' k \<cdot> \<tau> k"
+    "\<And>k. ti (Suc k) \<cdot> \<sigma> (Suc k) = ti' k \<cdot> \<tau> k"
+    by auto
+  let ?S = "csdp_step Sharp \<mu> R"
+  let ?M = "csr_min_pair_step Sharp \<mu> (replace (s,t) sts P) R"
+  let ?g = "\<lambda>k. si' k \<cdot> \<tau> k"
+  have min_pair: "(si' k \<cdot> \<tau> k, ti' k \<cdot> \<tau> k) \<in> ?M"
+    for k
+    unfolding csr_min_pair_step_def rrstep_def'
+    using transformed(1)[of k] target_SN[of "Suc k"] transformed(3)[of k]
+    by auto
+  have bridge: "(ti' k \<cdot> \<tau> k, si' (Suc k) \<cdot> \<tau> (Suc k))
+      \<in> ?S\<^sup>*"
+    for k
+    using steps[of "Suc k"] transformed(3)[of k]
+      transformed(2)[of "Suc k"] by auto
+  have g_step: "(?g k, ?g (Suc k)) \<in> ?S\<^sup>* O ?M O ?S\<^sup>*"
+    for k
+    using min_pair[of k] bridge[of k] by auto
+  have g_chain: "chain (?S\<^sup>* O ?M O ?S\<^sup>*) ?g"
+    using g_step by simp
+  have not_SN': "\<not> SN_on (?S\<^sup>* O ?M O ?S\<^sup>*) UNIV"
+    by (rule not_SN_onI[OF _ g_chain], simp)
+  from fin have "SN_on (?S\<^sup>* O ?M O ?S\<^sup>*) UNIV"
+    unfolding finite_min_csr_dpp_def SN_rel_on_def .
+  with not_SN' show False by contradiction
+qed
+
+definition csr_instantiation_proc ::
+  "('dpp, ('f::{showl, compare_order}, 'l::{showl, compare_order}) lab, string) dpp_ops \<Rightarrow>
+   (('f, 'l) lab) muL \<Rightarrow>
+   ((('f, 'l) lab), string) rule \<Rightarrow>
+   ((('f, 'l) lab), string) rules \<Rightarrow> 'dpp proc"
+where
+  "csr_instantiation_proc J \<mu> st sts dpp =
+    check_return (do {
+      check (st \<in> set (dpp_ops.pairs J dpp))
+        (showsl_lit (STR ''selected CS-DP is not present''));
+      check_allm (\<lambda>st'. check (instance_rule st' st)
+        (showsl_lit (STR ''supplied CS-DP is not an instance of the selected pair'') \<circ>
+          showsl_rule st')) sts;
+      let (s, t) = st;
+      check_allm (\<lambda>(u, v).
+        do {
+          check (case root v of None \<Rightarrow> True
+            | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp)))
+            (showsl_lit (STR ''predecessor right-hand side has a defined root''));
+          case gc_matcher
+              (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s of
+            None \<Rightarrow> succeed
+          | Some \<sigma> \<Rightarrow>
+              check (\<exists>st'\<in>set sts.
+                instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st')
+                (showsl_lit (STR ''missing replacement-map-aware instance of pair '') \<circ>
+                  showsl_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>))
+        }) (dpp_ops.pairs J dpp)
+    }) (dpp_ops.replace_pair J dpp st sts)"
+
+lemma csr_instantiation_proc_sound:
+  assumes proc: "csr_instantiation_proc J \<mu> st sts dpp = return dpp'"
+  shows "dpp' = dpp_ops.replace_pair J dpp st sts"
+    and "st \<in> set (dpp_ops.pairs J dpp)"
+    and "\<And>st'. st' \<in> set sts \<Longrightarrow> instance_rule st' st"
+    and "\<And>u v. (u,v) \<in> set (dpp_ops.pairs J dpp) \<Longrightarrow>
+      (case root v of None \<Rightarrow> True
+       | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp)))"
+    and "\<And>s t u v \<sigma>. st = (s,t) \<Longrightarrow>
+      (u,v) \<in> set (dpp_ops.pairs J dpp) \<Longrightarrow>
+      gc_matcher
+        (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s =
+          Some \<sigma> \<Longrightarrow>
+      \<exists>st'\<in>set sts. instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st'"
+proof -
+  obtain s t where st: "st = (s,t)"
+    by (cases st)
+  let ?pred_check = "\<lambda>(u, v). do {
+    check (case root v of None \<Rightarrow> True
+      | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp)))
+      (showsl_lit (STR ''predecessor right-hand side has a defined root''));
+    case gc_matcher
+        (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s of
+      None \<Rightarrow> succeed
+    | Some \<sigma> \<Rightarrow>
+        check (\<exists>st'\<in>set sts.
+          instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st')
+          (showsl_lit (STR ''missing replacement-map-aware instance of pair '') \<circ>
+            showsl_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>))
+  }"
+  from proc[unfolded csr_instantiation_proc_def st]
+  have result: "dpp' = dpp_ops.replace_pair J dpp (s,t) sts"
+    and selected: "(s,t) \<in> set (dpp_ops.pairs J dpp)"
+    and instances_ok: "isOK (check_allm (\<lambda>st'. check
+      (instance_rule st' (s,t))
+      (showsl_lit (STR ''supplied CS-DP is not an instance of the selected pair'') \<circ>
+        showsl_rule st')) sts)"
+    and predecessors_ok:
+      "isOK (check_allm ?pred_check (dpp_ops.pairs J dpp))"
+    by auto
+  show "dpp' = dpp_ops.replace_pair J dpp st sts"
+    using result st by simp
+  show "st \<in> set (dpp_ops.pairs J dpp)"
+    using selected st by simp
+  show "\<And>st'. st' \<in> set sts \<Longrightarrow> instance_rule st' st"
+    using instances_ok st
+    by (auto simp: isOK_check_allm isOK_check)
+  {
+    fix u v
+    assume mem: "(u,v) \<in> set (dpp_ops.pairs J dpp)"
+    from predecessors_ok mem
+    have one: "isOK (?pred_check (u,v))"
+      by (auto simp: isOK_check_allm)
+    have undef:
+      "case root v of None \<Rightarrow> True
+       | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp))"
+      using one by (cases "root v"; simp add: isOK_check)
+    show "case root v of None \<Rightarrow> True
+       | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp))"
+      by (rule undef)
+    fix s' t' \<sigma>
+    assume st': "st = (s',t')"
+      and matcher:
+        "gc_matcher
+          (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s' =
+            Some \<sigma>"
+    from st st' have s': "s' = s" and t': "t' = t"
+      by auto
+    from one undef matcher
+    show "\<exists>st'\<in>set sts.
+      instance_rule (s' \<cdot> \<sigma>, t' \<cdot> \<sigma>) st'"
+      unfolding s' t'
+      by (cases "root v"; simp add: isOK_check split: option.splits)
+  }
+qed
+
+fun check_csr_dp_termination_proof_min ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
    (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
    showsl \<Rightarrow> 'dpp \<Rightarrow>
    ('f, label_type, string) csr_dp_termination_proof \<Rightarrow> showsl check"
+and check_csr_dp_graph_components_min ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   (('f, label_type, string) csr_dp_termination_proof option \<times>
+    ('f, label_type, string) trsLL) list \<Rightarrow> showsl check"
 where
   "check_csr_dp_termination_proof_min I J \<mu> a i dpp CSR_DP_P_is_Empty =
     check_csr_dp_termination_proof_core I J \<mu> a i dpp CSR_DP_P_is_Empty"
@@ -2378,14 +2840,67 @@ where
     })"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Dep_Graph_Proc edpts) =
-    check_csr_dp_termination_proof_core I J \<mu> a i dpp
-      (CSR_DP_Dep_Graph_Proc edpts)"
+    debug i (STR ''minimal CSR-DP dependency graph'') (do {
+      _ \<leftarrow> check_csr_dep_graph_proc J \<mu> dpp edpts
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error when applying minimal CSR dependency graph\<newline>'') \<circ> s);
+      check_csr_dp_graph_components_min I J \<mu> a i dpp edpts
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below minimal CSR dependency graph\<newline>'') \<circ> s)
+    })"
+| "check_csr_dp_termination_proof_min I J \<mu> a i dpp
+    (CSR_DP_Instantiation_Proc st sts prf) =
+    error (i \<circ> showsl_lit
+      (STR '': context-sensitive instantiation requires improved CS-DPs''))"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Size_Change_Subterm_Proc graphs) =
     (if isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)
      then debug i (STR ''active CSR size-change'') succeed
      else check_csr_dp_termination_proof_core I J \<mu> a i dpp
        (CSR_DP_Size_Change_Subterm_Proc graphs))"
+| "check_csr_dp_graph_components_min I J \<mu> a i dpp [] = succeed"
+| "check_csr_dp_graph_components_min I J \<mu> a i dpp
+    ((None, P) # rest) =
+    check_csr_dp_graph_components_min I J \<mu> a (add_index i 1) dpp rest"
+| "check_csr_dp_graph_components_min I J \<mu> a i dpp
+    ((Some prf, P) # rest) = do {
+      check_csr_dp_termination_proof_min I J \<mu> a (add_index i 1)
+        (dpp_ops.intersect_pairs J dpp P) prf;
+      check_csr_dp_graph_components_min I J \<mu> a (add_index i 1) dpp rest
+    }"
+
+lemma check_csr_dp_graph_components_min_member:
+  assumes ok:
+      "isOK (check_csr_dp_graph_components_min I J \<mu> a i dpp edps)"
+    and mem: "(Some prf, P) \<in> set edps"
+  shows "\<exists>j. isOK (check_csr_dp_termination_proof_min I J \<mu> a
+    j (dpp_ops.intersect_pairs J dpp P) prf)"
+  using ok mem
+proof (induct edps arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons head rest)
+  obtain po C where head: "head = (po, C)"
+    by (cases head)
+  show ?case
+  proof (cases po)
+    case None
+    from Cons.prems head None show ?thesis
+      by (auto intro: Cons.hyps)
+  next
+    case (Some p)
+    show ?thesis
+    proof (cases "(Some prf, P) = head")
+      case True
+      with Cons.prems head Some show ?thesis by auto
+    next
+      case False
+      from Cons.prems head Some False show ?thesis
+        by (auto intro: Cons.hyps)
+    qed
+  qed
+qed
 
 lemma check_csr_dp_termination_proof_min_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
@@ -2471,12 +2986,66 @@ next
         closed fin'[unfolded P' R']])
 next
   case (CSR_DP_Dep_Graph_Proc edpts)
-  then have core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
-      (CSR_DP_Dep_Graph_Proc edpts))"
-    by simp
-  from check_csr_dp_termination_proof_core_sound[
-      OF I J CSR_DP_Dep_Graph_Proc.prems(2) core]
-  show ?case by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+  from CSR_DP_Dep_Graph_Proc.prems(1) have graph_ok:
+      "isOK (check_csr_dep_graph_proc J \<mu> dpp edpts)"
+    and components_ok:
+      "isOK (check_csr_dp_graph_components_min
+        I J \<mu> False i dpp edpts)"
+    by auto
+  show ?case
+  proof (rule check_csr_dep_graph_proc_min_sound[
+      OF J CSR_DP_Dep_Graph_Proc.prems(2) graph_ok])
+    fix p0 C
+    assume mem: "(Some p0, C) \<in> set edpts"
+    from check_csr_dp_graph_components_min_member[OF components_ok mem]
+    obtain j where rec:
+      "isOK (check_csr_dp_termination_proof_min I J \<mu> False
+        j (dpp_ops.intersect_pairs J dpp C) p0)"
+      by blast
+    let ?d = "dpp_ops.intersect_pairs J dpp C"
+    have plain': "plain_csr_dpp J ?d"
+      by (rule plain_csr_dpp_intersect_pairs[
+        OF J CSR_DP_Dep_Graph_Proc.prems(2)])
+    interpret dpp_spec J by fact
+    have sem: "dpp_ops.dpp J ?d =
+      (NFS dpp, M dpp, set (P dpp) \<inter> set C,
+        set (Pw dpp) \<inter> set C, set (Q dpp),
+        set (R dpp), set (Rw dpp))"
+      by (rule intersect_pairs_sound)
+    have sem': "dpp_ops.dpp J ?d =
+      (NFS ?d, M ?d, set (P ?d), set (Pw ?d), set (Q ?d),
+        set (R ?d), set (Rw ?d))"
+      by (rule dpp_sound)
+    have pairs': "set (pairs ?d) = set (pairs dpp) \<inter> set C"
+      using sem sem' pairs_sound[of dpp] pairs_sound[of ?d] by auto
+    have rules': "set (rules ?d) = set (rules dpp)"
+      using sem sem' rules_sound[of dpp] rules_sound[of ?d] by auto
+    have wf': "wf_trs (set (dpp_ops.rules J ?d))"
+      using CSR_DP_Dep_Graph_Proc.prems(3)
+      unfolding rules' .
+    have fresh': "\<And>f n.
+      \<not> defined (set (dpp_ops.rules J ?d)) (Sharp f, n)"
+      using CSR_DP_Dep_Graph_Proc.prems(4)
+      unfolding rules' .
+    have ih: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.pairs J ?d)) (set (dpp_ops.rules J ?d))"
+      apply (rule CSR_DP_Dep_Graph_Proc.hyps)
+          apply (rule mem)
+         apply simp
+        apply simp
+       apply (rule rec)
+      apply (rule plain')
+      apply (rule wf')
+      apply (rule fresh')
+      done
+    show "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.pairs J dpp) \<inter> set C)
+      (set (dpp_ops.rules J dpp))"
+      using ih unfolding pairs' rules' .
+  qed
+next
+  case (CSR_DP_Instantiation_Proc st sts subprf)
+  then show ?case by simp
 next
   case (CSR_DP_Size_Change_Subterm_Proc graphs)
   show ?case

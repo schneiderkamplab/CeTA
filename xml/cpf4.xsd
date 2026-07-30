@@ -5694,6 +5694,18 @@ important in presence of extra variables in rhss. Default is false.</xs:document
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="instantiationProc">
+          <xs:annotation>
+            <xs:documentation>Replacement-map-aware CS-instantiation (LPAR 2008).</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="rule"/>
+              <xs:element name="instantiations" type="trs"/>
+              <xs:element ref="csrDpProof"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="subtermProc">
           <xs:complexType>
             <xs:sequence>
@@ -5830,6 +5842,27 @@ Deprecated compatibility alias for conservativeCsrTerminationProof.
       </xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:complexType name="csrImprovedDependencyPairsType">
+    <xs:sequence>
+      <xs:element name="unhidingSymbol">
+        <xs:complexType>
+          <xs:group ref="symbol"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="dps" type="trs"/>
+      <xs:element ref="csrDpProof"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="csrImprovedDependencyPairs"
+    type="csrImprovedDependencyPairsType">
+    <xs:annotation>
+      <xs:documentation>
+Exact LPAR 2008 improved Q-CSDP construction. The checker recomputes ordinary,
+collapsing, hidden-term, and unhiding projection pairs; the supplied pair list
+is untrusted.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
   <xs:group name="proof">
     <xs:choice>
       <xs:element ref="acTerminationProof"/>
@@ -5838,6 +5871,7 @@ Deprecated compatibility alias for conservativeCsrTerminationProof.
       <xs:element ref="conservativeCsrTerminationProof"/>
       <xs:element ref="nativeCsrTerminationProof"/>
       <xs:element ref="nativeConservativeCsrTerminationProof"/>
+      <xs:element ref="csrImprovedDependencyPairs"/>
       <xs:element ref="trsNonterminationProof"/>
       <xs:element ref="relativeNonterminationProof"/>
       <xs:element ref="dpProof"/>

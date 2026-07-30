@@ -1,6 +1,10 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module CSR_Minimal_CSDP_Proofs(check_csr_termination_proof_min) where {
+module
+  CSR_Minimal_CSDP_Proofs(csr_instantiation_proc, csr_qcs_usable_rules_proc,
+                           check_csr_dp_termination_proof_min,
+                           check_csr_termination_proof_min)
+  where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -20,25 +24,26 @@ import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified Check_Termination;
 import qualified Subterm_Criterion_Impl;
+import qualified CSR_Checker;
 import qualified FOR_Preliminaries;
 import qualified Reduction_Pair_Implementations;
 import qualified Termination_Problem_Spec;
 import qualified Countable;
-import qualified Mapping;
 import qualified Size_Change_Termination_Processors;
 import qualified Missing_List;
-import qualified HOL;
 import qualified Size_Change_Termination;
 import qualified Product_Lexorder;
 import qualified Compare_Order_Instances;
-import qualified CSR_Checker;
-import qualified Error_Monad;
+import qualified Context_Sensitive_Impl;
 import qualified Check_Monad;
+import qualified Error_Monad;
+import qualified HOL;
 import qualified Dependency_Pair_Problem_Spec;
 import qualified Sum_Type;
-import qualified Compare;
-import qualified Context_Sensitive_Impl;
+import qualified Mapping;
+import qualified CSR_Checker_Base;
 import qualified Arith;
+import qualified Compare;
 import qualified Labelings;
 import qualified Term_Rewriting;
 
@@ -49,6 +54,96 @@ csr_sct_sharp_term (Term_Rewriting.Var v) = False;
 csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.Lab vb vc) va) = False;
 csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.FunLab vb vc) va) = False;
 csr_sct_sharp_term (Term_Rewriting.Fun (Labelings.UnLab vb) va) = False;
+
+csr_instantiation_cap ::
+  forall a b c.
+    (Compare.Compare a, Eq a, Term_Rewriting.Showl a, Compare.Compare b, Eq b,
+      Term_Rewriting.Showl b,
+      Eq c) => ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                 [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) c)] ->
+                   Term_Rewriting.Term (Labelings.Lab a b) c ->
+                     Term_Rewriting.Gctxt (Labelings.Lab a b) c;
+csr_instantiation_cap mu r (Term_Rewriting.Var x) = Term_Rewriting.GCHole;
+csr_instantiation_cap mu r (Term_Rewriting.Fun f ts) =
+  CSR_Checker_Base.csr_root_tcap (CSR_Checker_Base.csr_dp_root_mu mu) r
+    (Term_Rewriting.Fun f ts);
+
+csr_instantiation_proc ::
+  forall a b c.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b,
+      Compare.Compare_order c, Eq c,
+      Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a
+                                   (Labelings.Lab b c) [Arith.Char] () ->
+                                   [((Labelings.Lab b c, Arith.Nat),
+                                      [Arith.Nat])] ->
+                                     (Term_Rewriting.Term (Labelings.Lab b c)
+[Arith.Char],
+                                       Term_Rewriting.Term (Labelings.Lab b c)
+ [Arith.Char]) ->
+                                       [(Term_Rewriting.Term (Labelings.Lab b c)
+   [Arith.Char],
+  Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
+ a -> Sum_Type.Sum (String -> String) a;
+csr_instantiation_proc j mu st sts dpp =
+  (case Error_Monad.bind
+          (Check_Monad.check
+            (Arith.membera (Dependency_Pair_Problem_Spec.pairs j dpp) st)
+            (Term_Rewriting.showsl_lit "selected CS-DP is not present"))
+          (\ _ ->
+            Error_Monad.bind
+              (Error_Monad.catch_error
+                (Error_Monad.forallM
+                  (\ sta ->
+                    Check_Monad.check (Term_Rewriting.instance_rule sta st)
+                      (Term_Rewriting.showsl_lit
+                         "supplied CS-DP is not an instance of the selected pair" .
+                        Term_Rewriting.showsl_rule sta))
+                  sts)
+                (\ x -> Sum_Type.Inl (snd x)))
+              (\ _ ->
+                (case st of {
+                  (s, t) ->
+                    Error_Monad.catch_error
+                      (Error_Monad.forallM
+                        (\ (_, v) ->
+                          Error_Monad.bind
+                            (Check_Monad.check
+                              (case Term_Rewriting.root v of {
+                                Nothing -> True;
+                                Just fn ->
+                                  not (Arith.membera
+(Term_Rewriting.defined_list (Dependency_Pair_Problem_Spec.rules j dpp)) fn);
+                              })
+                              (Term_Rewriting.showsl_lit
+                                "predecessor right-hand side has a defined root"))
+                            (\ _ ->
+                              (case Term_Rewriting.gc_matcher
+                                      (csr_instantiation_cap
+(Context_Sensitive_Impl.mu_of mu) (Dependency_Pair_Problem_Spec.rules j dpp) v)
+                                      s
+                                of {
+                                Nothing -> Sum_Type.Inr ();
+                                Just sigma ->
+                                  Check_Monad.check
+                                    (any (Term_Rewriting.instance_rule
+   (Term_Rewriting.eval_term Term_Rewriting.Fun s sigma,
+     Term_Rewriting.eval_term Term_Rewriting.Fun t sigma))
+                                      sts)
+                                    (Term_Rewriting.showsl_lit
+                                       "missing replacement-map-aware instance of pair " .
+                                      Term_Rewriting.showsl_rule
+(Term_Rewriting.eval_term Term_Rewriting.Fun s sigma,
+  Term_Rewriting.eval_term Term_Rewriting.Fun t sigma));
+                              })))
+                        (Dependency_Pair_Problem_Spec.pairs j dpp))
+                      (\ x -> Sum_Type.Inl (snd x));
+                })))
+    of {
+    Sum_Type.Inl a -> Sum_Type.Inl a;
+    Sum_Type.Inr _ ->
+      Sum_Type.Inr (Dependency_Pair_Problem_Spec.replace_pair j dpp st sts);
+  });
 
 qcs_ur_closed_term_check ::
   forall a b c d.
@@ -157,7 +252,7 @@ csr_rules_sharp_fresh_check r =
   Error_Monad.catch_error
     (Error_Monad.forallM
       (\ (f, _) ->
-        Check_Monad.check (not (CSR_Checker.is_sharp_lab f))
+        Check_Monad.check (not (CSR_Checker_Base.is_sharp_lab f))
           (Term_Rewriting.showsl_lit "source CSR defines a sharp symbol"))
       (Term_Rewriting.defined_list r))
     (\ x -> Sum_Type.Inl (snd x));
@@ -210,7 +305,7 @@ csr_sct_active_subterm_proc j mu gs dpp =
     (csr_sct_active_index_check mu s i &&
       csr_sct_active_index_check mu t ja &&
         Arith.membera
-          (CSR_Checker.mu_supt_list mu
+          (CSR_Checker_Base.mu_supt_list mu
             (Size_Change_Termination_Processors.get_arg s i))
           (Size_Change_Termination_Processors.get_arg t ja))
     (Term_Rewriting.showsl_lit "invalid strict active CSR size-change edge"))
@@ -227,7 +322,7 @@ stri)
              (Size_Change_Termination_Processors.get_arg s i)
              (Size_Change_Termination_Processors.get_arg t ja) ||
             Arith.membera
-              (CSR_Checker.mu_supt_list mu
+              (CSR_Checker_Base.mu_supt_list mu
                 (Size_Change_Termination_Processors.get_arg s i))
               (Size_Change_Termination_Processors.get_arg t ja)))
       (Term_Rewriting.showsl_lit
@@ -242,8 +337,8 @@ stri)
                     let {
                       conn =
                         (\ st uv ->
-                          CSR_Checker.csr_dep_graph_edge_check
-                            (CSR_Checker.csr_dp_root_mu
+                          CSR_Checker_Base.csr_dep_graph_edge_check
+                            (CSR_Checker_Base.csr_dp_root_mu
                               (Context_Sensitive_Impl.mu_of mu))
                             r ((st, ()), (uv, ())));
                     } in Check_Monad.check
@@ -269,25 +364,26 @@ check_csr_dp_termination_proof_min ::
 [Arith.Nat])] ->
                                        Bool ->
  (String -> String) ->
-   c -> CSR_Checker.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+   c -> CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
           Sum_Type.Sum (String -> String) ();
-check_csr_dp_termination_proof_min ia j mu a i dpp CSR_Checker.CSR_DP_P_is_Empty
-  = CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-      CSR_Checker.CSR_DP_P_is_Empty;
 check_csr_dp_termination_proof_min ia j mu a i dpp
-  (CSR_Checker.CSR_DP_Ordinary_Proof prf) =
+  CSR_Checker_Base.CSR_DP_P_is_Empty =
   CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-    (CSR_Checker.CSR_DP_Ordinary_Proof prf);
+    CSR_Checker_Base.CSR_DP_P_is_Empty;
 check_csr_dp_termination_proof_min ia j mu a i dpp
-  (CSR_Checker.CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf) =
   CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-    (CSR_Checker.CSR_DP_Subterm_Criterion_Proc p rseq pr prf);
+    (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
 check_csr_dp_termination_proof_min ia j mu a i dpp
-  (CSR_Checker.CSR_DP_Gen_Subterm_Criterion_Proc p pr prf) =
+  (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
   CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-    (CSR_Checker.CSR_DP_Gen_Subterm_Criterion_Proc p pr prf);
+    (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf);
 check_csr_dp_termination_proof_min ia j mu a i dpp
-  (CSR_Checker.CSR_DP_Usable_Rules_Proc u prf) =
+  (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc p pr prf) =
+  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+    (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc p pr prf);
+check_csr_dp_termination_proof_min ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc u prf) =
   FOR_Preliminaries.debug i "QCS usable rules"
     (Error_Monad.bind
       (Error_Monad.catch_error (csr_qcs_usable_rules_proc j mu u dpp)
@@ -306,15 +402,67 @@ check_csr_dp_termination_proof_min ia j mu a i dpp
                       ": error below QCS usable rules\n") .
                 x))));
 check_csr_dp_termination_proof_min ia j mu a i dpp
-  (CSR_Checker.CSR_DP_Dep_Graph_Proc edpts) =
-  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-    (CSR_Checker.CSR_DP_Dep_Graph_Proc edpts);
+  (CSR_Checker_Base.CSR_DP_Dep_Graph_Proc edpts) =
+  FOR_Preliminaries.debug i "minimal CSR-DP dependency graph"
+    (Error_Monad.bind
+      (Error_Monad.catch_error
+        (CSR_Checker.check_csr_dep_graph_proc j mu dpp edpts)
+        (\ x ->
+          Sum_Type.Inl
+            ((i . Term_Rewriting.showsl_lit
+                    ": error when applying minimal CSR dependency graph\n") .
+              x)))
+      (\ _ ->
+        Error_Monad.catch_error
+          (check_csr_dp_graph_components_min ia j mu a i dpp edpts)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below minimal CSR dependency graph\n") .
+                x))));
 check_csr_dp_termination_proof_min ia j mu a i dpp
-  (CSR_Checker.CSR_DP_Size_Change_Subterm_Proc graphs) =
+  (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": context-sensitive instantiation requires improved CS-DPs");
+check_csr_dp_termination_proof_min ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs) =
   (if Error_Monad.isOK (csr_sct_active_subterm_proc j mu graphs dpp)
     then FOR_Preliminaries.debug i "active CSR size-change" (Sum_Type.Inr ())
     else CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-           (CSR_Checker.CSR_DP_Size_Change_Subterm_Proc graphs));
+           (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs));
+
+check_csr_dp_graph_components_min ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       Bool ->
+ (String -> String) ->
+   c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
+                  [Arith.Char]),
+           [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+              Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+                [Arith.Char])])] ->
+          Sum_Type.Sum (String -> String) ();
+check_csr_dp_graph_components_min ia j mu a i dpp [] = Sum_Type.Inr ();
+check_csr_dp_graph_components_min ia j mu a i dpp ((Nothing, p) : rest) =
+  check_csr_dp_graph_components_min ia j mu a
+    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
+check_csr_dp_graph_components_min ia j mu a i dpp ((Just prf, p) : rest) =
+  Error_Monad.bind
+    (check_csr_dp_termination_proof_min ia j mu a
+      (Term_Rewriting.add_index i Arith.one_nat)
+      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp p) prf)
+    (\ _ ->
+      check_csr_dp_graph_components_min ia j mu a
+        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
 
 check_csr_termination_proof_min ::
   forall a b c.
@@ -330,23 +478,23 @@ check_csr_termination_proof_min ::
  [((Labelings.Lab b [Arith.Nat], Arith.Nat), [Arith.Nat])] ->
    [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
       Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     CSR_Checker.Csr_termination_proof b [Arith.Nat] [Arith.Char] ->
+     CSR_Checker_Base.Csr_termination_proof b [Arith.Nat] [Arith.Char] ->
        Sum_Type.Sum (String -> String) ();
-check_csr_termination_proof_min ia j a i mu r CSR_Checker.CSR_R_is_Empty =
+check_csr_termination_proof_min ia j a i mu r CSR_Checker_Base.CSR_R_is_Empty =
   CSR_Checker.check_csr_termination_proof ia j a i mu r
-    CSR_Checker.CSR_R_is_Empty;
+    CSR_Checker_Base.CSR_R_is_Empty;
 check_csr_termination_proof_min ia j a i mu r
-  (CSR_Checker.CSR_Rule_Removal redp rr prf) =
+  (CSR_Checker_Base.CSR_Rule_Removal redp rr prf) =
   FOR_Preliminaries.debug i "CSR rule removal"
-    (case CSR_Checker.csr_rule_removal_impl redp mu rr r of {
+    (case CSR_Checker_Base.csr_rule_removal_impl redp mu rr r of {
       Sum_Type.Inl aa -> Sum_Type.Inl aa;
       Sum_Type.Inr r2 -> check_csr_termination_proof_min ia j a i mu r2 prf;
     });
 check_csr_termination_proof_min ia j a i mu r
-  (CSR_Checker.CSR_Dependency_Pairs p prf) =
+  (CSR_Checker_Base.CSR_Dependency_Pairs p prf) =
   FOR_Preliminaries.debug i "minimal CSR dependency pairs"
     (Error_Monad.bind
-      (Error_Monad.catch_error (CSR_Checker.csr_sharp_mu_check mu)
+      (Error_Monad.catch_error (CSR_Checker_Base.csr_sharp_mu_check mu)
         (\ x ->
           Sum_Type.Inl
             ((i . Term_Rewriting.showsl_lit
@@ -361,14 +509,14 @@ check_csr_termination_proof_min ia j a i mu r
                         ": invalid sharp symbol in source CSR\n") .
                   x)))
           (\ _ ->
-            (case CSR_Checker.mu_csr_dependency_pairs_tt Labelings.Sharp j mu r
-                    p
+            (case CSR_Checker_Base.mu_csr_dependency_pairs_tt Labelings.Sharp j
+                    mu r p
               of {
               Sum_Type.Inl _ ->
                 Error_Monad.bind
                   (Error_Monad.catch_error
-                    (CSR_Checker.safe_csr_dependency_pairs_tt Labelings.Sharp j
-                      mu r p)
+                    (CSR_Checker_Base.safe_csr_dependency_pairs_tt
+                      Labelings.Sharp j mu r p)
                     (\ x ->
                       Sum_Type.Inl
                         ((i . Term_Rewriting.showsl_lit
@@ -376,8 +524,9 @@ check_csr_termination_proof_min ia j a i mu r
                           x)))
                   (\ dpp ->
                     Error_Monad.catch_error
-                      (CSR_Checker.check_csr_dp_termination_proof ia j False
-                        (Term_Rewriting.add_index i Arith.one_nat) dpp prf)
+                      (CSR_Checker_Base.check_csr_dp_termination_proof ia j
+                        False (Term_Rewriting.add_index i Arith.one_nat) dpp
+                        prf)
                       (\ x ->
                         Sum_Type.Inl
                           ((i . Term_Rewriting.showsl_lit
@@ -394,8 +543,8 @@ check_csr_termination_proof_min ia j a i mu r
                         x));
             }))));
 check_csr_termination_proof_min ia j a i mu r
-  (CSR_Checker.CSR_Safe_Dependency_Pairs p prf) =
+  (CSR_Checker_Base.CSR_Safe_Dependency_Pairs p prf) =
   CSR_Checker.check_csr_termination_proof ia j a i mu r
-    (CSR_Checker.CSR_Safe_Dependency_Pairs p prf);
+    (CSR_Checker_Base.CSR_Safe_Dependency_Pairs p prf);
 
 }

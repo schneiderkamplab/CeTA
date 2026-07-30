@@ -1111,18 +1111,14 @@ where
 definition xml2dp_input' where
   "xml2dp_input' termination = xml_change (dp_input xml2name termIndexMap ruleMap)
     (\<lambda>ret. case ret of DP_input m p q r \<Rightarrow>
-     xml_return (if termination then default_nfs_dp else default_nfs_nt_dp, m, p, [], strategy_to_Q q r, [], r))"
+     xml_return (strategy_to_nfs q, m, p, [], strategy_to_Q q r, [], r))"
 
 
-(* TODO: 
 definition xml2inn_fp_trs_assm where
-  "xml2inn_fp_trs_assm = xml_change (xml2_trs_input xml2name) (\<lambda>inp.
+  "xml2inn_fp_trs_assm = xml_change (trs_input xml2name termIndexMap ruleMap) (\<lambda>inp.
     case inp of
-      Inn_TRS_input inn r s start \<Rightarrow>
-        if start \<noteq> start_term.Full then
-          xml_error (STR ''start term is not allowed here'')
-        else
-          xml_return (Inl (default_nfs_trs, strategy_to_Q inn r, r, s))
+      Inn_TRS_input inn r s \<Rightarrow>
+          xml_return (Inl (strategy_to_nfs inn, strategy_to_Q inn r, r, s))
     | FP_TRS_input fp r \<Rightarrow> xml_return (Inr (strategy_to_fp fp r, r))
     | _ \<Rightarrow> xml_error (STR ''trs as input required'')
   )"
@@ -1141,14 +1137,7 @@ definition xml2fp_trs_assm where
     | _ \<Rightarrow> xml_error (STR ''FP TRS expected at this point'')
    )"
 
-definition xml2complexity_input' where
-  "xml2complexity_input' = xml_change xml2complexity_input
-    (\<lambda> ret. case ret of CPX_input q s w cm cc \<Rightarrow> xml_return (strategy_to_Q q (s @ w), s, w, cm,cc))"
-*)
-definition "xml2inn_trs_assm = undefined"
-definition "xml2fp_trs_assm = undefined"
-definition "xml2inn_fp_trs_assm = undefined" 
-definition "xml2complexity_input' = undefined" 
+definition "xml2complexity_input' = undefined"
 
 
 end
@@ -1434,11 +1423,11 @@ where
       b \<leftarrow> xml2trs_termination_proof;
       xml_return (Permuting_AFS a b)
     } XMLor XMLdo (STR ''terminationAssumption'') {
-      qtrs \<leftarrow> xml2inn_trs_assm xml2name;
+      qtrs \<leftarrow> xml2inn_trs_assm xml2name termIndexMap ruleMap;
       xml_return (Assume_SN qtrs [])
     } XMLor XMLdo (STR ''unknownProof'') {
         a \<leftarrow> xml_text (STR ''description'');
-        b \<leftarrow> xml2inn_trs_assm xml2name;
+        b \<leftarrow> xml2inn_trs_assm xml2name termIndexMap ruleMap;
         c \<leftarrow>* xml2subproof;
         xml_return (Assume_SN b c)
     }
@@ -1446,10 +1435,10 @@ where
 | "xml2fptrs_termination_proof x = (
     XMLdo (STR ''trsTerminationProof'') {
       r \<leftarrow> XMLdo (STR ''terminationAssumption'') {
-        inp \<leftarrow> xml2fp_trs_assm xml2name;
+        inp \<leftarrow> xml2fp_trs_assm xml2name termIndexMap ruleMap;
         xml_return (Assume_FP_SN inp [])
       } XMLor XMLdo (STR ''unknownProof'') {
-        inp \<leftarrow> xml2fp_trs_assm xml2name;
+        inp \<leftarrow> xml2fp_trs_assm xml2name termIndexMap ruleMap;
         subprfs \<leftarrow>* xml2subproof;
         xml_return (Assume_FP_SN inp subprfs)
       };
@@ -1512,6 +1501,12 @@ where
       a \<leftarrow> xml_singleton (STR ''usableRules'') (rules xml2name termIndexMap ruleMap) id;
       b \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (CSR_DP_Usable_Rules_Proc a b)
+    } XMLor XMLdo (STR ''instantiationProc'') {
+      st \<leftarrow> rule xml2name termIndexMap ruleMap;
+      sts \<leftarrow> xml_singleton (STR ''instantiations'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_DP_Instantiation_Proc st sts prf)
     } XMLor XMLdo (STR ''subtermProc'') {
       pi_mpi \<leftarrow> xml_change (CPF_Proof_Parser.proj xml2name) (xml_return \<circ> Inl)
         XMLor xml_change (CPF_Proof_Parser.multiset_af xml2name) (xml_return \<circ> Inr);
@@ -1549,7 +1544,7 @@ where
         prf \<leftarrow> xml2dp_termination_proof;
         xml_return (Finite_assm_proof inp prf)
       } XMLor XMLdo {
-        inp \<leftarrow> xml2inn_fp_trs_assm xml2name;
+        inp \<leftarrow> xml2inn_fp_trs_assm xml2name termIndexMap ruleMap;
         case inp
         of Inl qtrs \<Rightarrow>
           XMLdo {
@@ -2742,7 +2737,15 @@ definition xml2conservative_csr_termination_proof ::
     (string, label_type, string) extended_csr_termination_proof xmlt"
 where
   "xml2conservative_csr_termination_proof termIndexMap ruleMap =
-    (let p = XMLdo (STR ''csrConservativeDependencyPairs'') {
+    (let improved = XMLdo (STR ''csrImprovedDependencyPairs'') {
+        U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Improved_CSR_Dependency_Pairs U P prf)
+      };
+      conservative = XMLdo (STR ''csrConservativeDependencyPairs'') {
         U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
         P \<leftarrow> xml_singleton (STR ''dps'')
           (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
@@ -2752,9 +2755,11 @@ where
           symbol_parser termIndexMap ruleMap;
         xml_return (Conservative_CSR_Dependency_Pairs U P S prf)
       }
-    in xml_singleton (STR ''conservativeCsrTerminationProof'') p id
+    in improved
       XMLor xml_singleton
-        (STR ''nativeConservativeCsrTerminationProof'') p id)"
+        (STR ''conservativeCsrTerminationProof'') conservative id
+      XMLor xml_singleton
+        (STR ''nativeConservativeCsrTerminationProof'') conservative id)"
 
 definition "proof_parser termIndexMap ruleMap =
   XMLdo (STR ''proof'') {
