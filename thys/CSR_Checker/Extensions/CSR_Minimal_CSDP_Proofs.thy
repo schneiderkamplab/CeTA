@@ -3,18 +3,22 @@ Author:  Ferrum contributors
 License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_Minimal_CSDP_Proofs
-  imports CSR_Checker_Core.CSR_Checker
+  imports
+    CSR_Checker_Core.CSR_Checker
+    CSR_Improved_CSDP_Proofs
 begin
 
 lemma sharp_csdp_step_imp_csnrstep:
+  fixes shp :: "'f::{showl, compare_order} \<Rightarrow> 'f"
   assumes wf: "wf_trs R"
-    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
-    and step: "(sharp_term Sharp s, v) \<in> csdp_step Sharp \<mu> R"
-  shows "\<exists>t. v = sharp_term Sharp t \<and> (s, t) \<in> csnrstep \<mu> R"
+    and fresh: "\<And>f n. \<not> defined R (shp f, n)"
+    and marked_inj: "inj shp"
+    and step: "(sharp_term shp s, v) \<in> csdp_step shp \<mu> R"
+  shows "\<exists>t. v = sharp_term shp t \<and> (s, t) \<in> csnrstep \<mu> R"
 proof (cases s)
   case (Var x)
   from step obtain p lr \<sigma> where
-    rewrite: "(sharp_term Sharp s, v) \<in> rstep_r_p_s R lr p \<sigma>"
+    rewrite: "(sharp_term shp s, v) \<in> rstep_r_p_s R lr p \<sigma>"
     unfolding csdp_step_def csdp_step_p_def by auto
   have rewrite': "(Var x, v) \<in> rstep_r_p_s R lr p \<sigma>"
     using rewrite unfolding Var by simp
@@ -30,27 +34,27 @@ proof (cases s)
 next
   case (Fun f ss)
   from step obtain p lr \<sigma> where
-    rewrite0: "(sharp_term Sharp s, v) \<in> rstep_r_p_s R lr p \<sigma>"
-    and cond0: "csdp_step_cond Sharp \<mu> p (sharp_term Sharp s)"
+    rewrite0: "(sharp_term shp s, v) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond0: "csdp_step_cond shp \<mu> p (sharp_term shp s)"
     unfolding csdp_step_def csdp_step_p_def by auto
-  have rewrite: "(Fun (Sharp f) ss, v) \<in> rstep_r_p_s R lr p \<sigma>"
+  have rewrite: "(Fun (shp f) ss, v) \<in> rstep_r_p_s R lr p \<sigma>"
     using rewrite0 unfolding Fun by simp
-  have cond: "csdp_step_cond Sharp \<mu> p (Fun (Sharp f) ss)"
+  have cond: "csdp_step_cond shp \<mu> p (Fun (shp f) ss)"
     using cond0 unfolding Fun by simp
   have p_ne: "p \<noteq> []"
   proof
     assume "p = []"
     with rewrite have lr: "lr \<in> R"
-      and lhs: "fst lr \<cdot> \<sigma> = Fun (Sharp f) ss"
+      and lhs: "fst lr \<cdot> \<sigma> = Fun (shp f) ss"
       unfolding rstep_r_p_s_def' by auto
     from wf lr have "\<exists>g ts. fst lr = Fun g ts"
       unfolding wf_trs_def by (cases lr, auto)
     then obtain g ts where l: "fst lr = Fun g ts"
       by blast
-    from lhs l have g: "g = Sharp f" and len: "length ts = length ss"
+    from lhs l have g: "g = shp f" and len: "length ts = length ss"
       by auto
-    from lr l g len have "defined R (Sharp f, length ss)"
-      unfolding defined_def by (cases lr, auto)
+    from lr l g len have "defined R (shp f, length ss)"
+      unfolding defined_def by (cases "lr", auto)
     with fresh show False by contradiction
   qed
   then obtain i q where p: "p = i # q"
@@ -58,7 +62,7 @@ next
   let ?t = "replace_at (Fun f ss) p (snd lr \<cdot> \<sigma>)"
   have rewrite': "(Fun f ss, ?t) \<in> rstep_r_p_s R lr p \<sigma>"
     using rewrite p unfolding rstep_r_p_s_def' by auto
-  have v: "v = sharp_term Sharp ?t"
+  have v: "v = sharp_term shp ?t"
     using rewrite p unfolding rstep_r_p_s_def' by auto
   have cond': "csstep_cond \<mu> p (Fun f ss)"
   proof (unfold csstep_cond_def, intro allI impI)
@@ -69,7 +73,7 @@ next
       case Nil
       from cond[unfolded csdp_step_cond_def, rule_format,
           of "[]" j p2] A Nil
-      show ?thesis by auto
+      show ?thesis using injD[OF marked_inj] by auto
     next
       case (Cons k qs)
       from cond[unfolded csdp_step_cond_def, rule_format,
@@ -82,6 +86,9 @@ next
     using p rewrite' cond' by (cases lr, blast)
   with v Fun show ?thesis by auto
 qed
+
+lemma inj_Sharp: "inj Sharp"
+  by (rule injI, simp)
 
 lemma sharp_term_Sharp_inject:
   "sharp_term Sharp s = sharp_term Sharp t \<longleftrightarrow> s = t"
@@ -114,7 +121,8 @@ proof -
         case (Suc i)
         then obtain s where tsi: "ts i = sharp_term Sharp s"
           by blast
-        from sharp_csdp_step_imp_csnrstep[OF wf fresh, of s "ts (Suc i)"]
+        from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp,
+            of s "ts (Suc i)"]
           steps[of i] tsi
         show ?case by auto
       qed
@@ -132,7 +140,7 @@ proof -
     have ss_steps: "\<And>i. (ss i, ss (Suc i)) \<in> csnrstep \<mu> R"
     proof -
       fix i
-      from sharp_csdp_step_imp_csnrstep[OF wf fresh,
+      from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp,
           of "ss i" "ts (Suc i)"] steps[of i] shape[of i]
       obtain u where u: "ts (Suc i) = sharp_term Sharp u"
         and step: "(ss i, u) \<in> csnrstep \<mu> R"
@@ -167,6 +175,19 @@ proof -
   show ?thesis
     unfolding finite_min_csr_dpp_def csr_min_pair_step_def
     by (rule SN_rel_mono[OF _ subset_refl fin]) auto
+qed
+
+lemma finite_min_csr_dpp_mono_pairs:
+  assumes sub: "P' \<subseteq> P"
+    and fin: "finite_min_csr_dpp shp \<mu> P R"
+  shows "finite_min_csr_dpp shp \<mu> P' R"
+proof -
+  have pair: "csr_min_pair_step shp \<mu> P' R \<subseteq>
+      csr_min_pair_step shp \<mu> P R"
+    using sub unfolding csr_min_pair_step_def rrstep_def' by blast
+  from fin show ?thesis
+    unfolding finite_min_csr_dpp_def
+    by (rule SN_rel_mono[OF pair subset_refl])
 qed
 
 lemma finite_min_csr_dpp_imp_SN_csstep_if_mu_Tinf_progress:
@@ -371,6 +392,131 @@ proof -
     unfolding csnrstep_def csstep_p_def
     using rewrite' cond' by (cases lr, blast)
 qed
+
+lemma cssteps_Fun_updateI:
+  assumes i: "i < length ss"
+    and active: "i \<in> \<mu> (f, length ss)"
+    and steps: "(ss ! i, u) \<in> (csstep \<mu> R)\<^sup>*"
+  shows "(Fun f ss, Fun f (ss[i := u])) \<in> (csstep \<mu> R)\<^sup>*"
+  using steps
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case
+    using i by simp
+next
+  case (step y z)
+  have len: "i < length (ss[i := y])"
+    using i by simp
+  have active': "i \<in> \<mu> (f, length (ss[i := y]))"
+    using active by simp
+  have sub: "((ss[i := y]) ! i, z) \<in> csstep \<mu> R"
+    using step.hyps(2) i by simp
+  from csstep_FunI[OF len active' sub]
+  have whole:
+    "(Fun f (ss[i := y]), Fun f ((ss[i := y])[i := z]))
+      \<in> csstep \<mu> R"
+    unfolding csstep_root_nonroot by auto
+  from rtrancl_into_rtrancl[OF step.hyps(3) whole]
+  show ?case
+    using i by simp
+qed
+
+lemma cssteps_FunI:
+  assumes len: "length ss = length ts"
+    and args:
+      "\<And>i. i < length ss \<Longrightarrow>
+        (if i \<in> \<mu> (f, length ss)
+         then (ss ! i, ts ! i) \<in> (csstep \<mu> R)\<^sup>*
+         else ts ! i = ss ! i)"
+  shows "(Fun f ss, Fun f ts) \<in> (csstep \<mu> R)\<^sup>*"
+proof -
+  let ?mix = "\<lambda>i. take i ts @ drop i ss"
+  have mix_len: "length (?mix i) = length ss" for i
+    using len by simp
+  have one:
+    "(Fun f (?mix i), Fun f (?mix (Suc i)))
+      \<in> (csstep \<mu> R)\<^sup>*"
+    if i: "i < length ss" for i
+  proof (cases "i \<in> \<mu> (f, length ss)")
+    case True
+    have i_ss: "i < length ss"
+      using i len by simp
+    have i_ts: "i < length ts"
+      using i len by simp
+    have take_len: "length (take i ts) = i"
+      using i len by simp
+    have drop_nth: "drop i ss ! 0 = ss ! i"
+      using i_ss by simp
+    have nth: "?mix i ! i = ss ! i"
+      using take_len drop_nth
+      by (simp add: nth_append)
+    have update: "(?mix i)[i := ts ! i] = ?mix (Suc i)"
+      using take_drop_update_first[OF i_ts len] .
+    have sub: "(?mix i ! i, ts ! i) \<in> (csstep \<mu> R)\<^sup>*"
+      using args[OF i] True
+      by (simp add: nth)
+    have i_mix: "i < length (?mix i)"
+      using i_ss mix_len by simp
+    have active_mix: "i \<in> \<mu> (f, length (?mix i))"
+      using True mix_len by simp
+    from cssteps_Fun_updateI[OF i_mix active_mix sub]
+    show ?thesis
+      using i True mix_len update by simp
+  next
+    case False
+    have same: "ts ! i = ss ! i"
+      using args[OF i] False by simp
+    have i_ts: "i < length ts"
+      using i len by simp
+    have i_mix: "i < length (?mix i)"
+      using i mix_len by simp
+    have take_len: "length (take i ts) = i"
+      using i len by simp
+    have drop_nth: "drop i ss ! 0 = ss ! i"
+      using i by simp
+    have nth: "?mix i ! i = ss ! i"
+      using take_len drop_nth
+      by (simp add: nth_append)
+    have update: "(?mix i)[i := ts ! i] = ?mix (Suc i)"
+      using take_drop_update_first[OF i_ts len] .
+    have same_nth: "ts ! i = ?mix i ! i"
+      using same nth by simp
+    have update_id: "(?mix i)[i := ts ! i] = ?mix i"
+      unfolding same_nth
+      by (rule list_update_id)
+    have "?mix (Suc i) = ?mix i"
+      using update update_id by simp
+    then show ?thesis
+      by simp
+  qed
+  have prefix:
+    "(Fun f ss, Fun f (?mix i)) \<in> (csstep \<mu> R)\<^sup>*"
+    if i: "i \<le> length ss" for i
+    using i
+  proof (induct i)
+    case 0
+    then show ?case by simp
+  next
+    case (Suc i)
+    then have i: "i < length ss"
+      by simp
+    have prefix_i:
+      "(Fun f ss, Fun f (?mix i)) \<in> (csstep \<mu> R)\<^sup>*"
+      by (rule Suc.hyps[OF less_imp_le[OF i]])
+    from rtrancl_trans[OF prefix_i one[OF i]]
+    show ?case .
+  qed
+  from prefix[of "length ss"] len
+  show ?thesis
+    by simp
+qed
+
+lemma csstep_rules_mono:
+  assumes "R \<subseteq> S"
+  shows "csstep \<mu> R \<subseteq> csstep \<mu> S"
+  using assms
+  unfolding csstep_def csstep_p_def rstep_r_p_s_def'
+  by auto
 
 lemma qcs_ur_closed_csstep:
   assumes wf: "wf_trs R"
@@ -604,7 +750,7 @@ lemma qcs_ur_closed_csdp_step:
   shows "(sharp_term Sharp t, v) \<in> csdp_step Sharp \<mu> U \<and>
     qcs_ur_closed_dp_rhs R U \<mu> v"
 proof -
-  from sharp_csdp_step_imp_csnrstep[OF wf fresh step]
+  from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp step]
   obtain u where v: "v = sharp_term Sharp u"
     and nonroot: "(t, u) \<in> csnrstep \<mu> R"
     by blast
@@ -825,6 +971,518 @@ proof (rule ccontr)
   with not_SN_U show False by contradiction
 qed
 
+text \<open>
+  The context-sensitive usable rules @{term "U\<^sub>3"} from Definition 18 of
+  Alarcón et al. (LPAR 2008) use a different closure from ordinary usable
+  rules.  The seeds are all symbols in DP right-hand sides, symbols at inactive
+  positions in DP left-hand sides, and symbols at inactive positions in rule
+  right-hand sides.  A selected root depends on every symbol at an inactive
+  position of its rule left-hand sides and every symbol in their right-hand
+  sides.
+
+  The executable predicate below checks a (possibly proper) superset of this
+  least closure.  Checking a superset is useful for certificates and avoids
+  making the checker compute a fixed point.
+\<close>
+
+definition csr_u3_root_rules_check where
+  "csr_u3_root_rules_check R U t ps =
+    list_all (\<lambda>p. case root (t |_ p) of
+      None \<Rightarrow> True
+    | Some f \<Rightarrow> list_all
+        (\<lambda>lr. root (fst lr) \<noteq> Some f \<or> lr \<in> set U) R) ps"
+
+definition csr_u3_inactive_root_rules_check where
+  "csr_u3_inactive_root_rules_check R U \<mu> t =
+    csr_u3_root_rules_check R U t
+      (filter (\<lambda>p. p \<notin> set (mu_fun_poss_list \<mu> t))
+        (fun_poss_list t))"
+
+definition csr_u3_all_root_rules_check where
+  "csr_u3_all_root_rules_check R U t =
+    csr_u3_root_rules_check R U t (fun_poss_list t)"
+
+definition csr_u3_usable_rules_check where
+  "csr_u3_usable_rules_check R U \<mu> P =
+    (list_all (\<lambda>lr. lr \<in> set R) U \<and>
+     list_all (\<lambda>dp.
+       csr_u3_inactive_root_rules_check R U \<mu> (fst dp) \<and>
+       csr_u3_all_root_rules_check R U (snd dp)) P \<and>
+     list_all (\<lambda>lr.
+       csr_u3_inactive_root_rules_check R U \<mu> (snd lr)) R \<and>
+     list_all (\<lambda>lr.
+       csr_u3_inactive_root_rules_check R U \<mu> (fst lr) \<and>
+       csr_u3_all_root_rules_check R U (snd lr)) U)"
+
+definition csr_u3_root_rules_closed where
+  "csr_u3_root_rules_closed R U t A \<longleftrightarrow>
+    (\<forall>p\<in>A. \<forall>f. root (t |_ p) = Some f \<longrightarrow>
+      (\<forall>lr\<in>R. root (fst lr) = Some f \<longrightarrow> lr \<in> U))"
+
+definition csr_u3_usable_rules_closed where
+  "csr_u3_usable_rules_closed R U \<mu> P \<longleftrightarrow>
+    U \<subseteq> R \<and>
+    (\<forall>dp\<in>P.
+      csr_u3_root_rules_closed R U (fst dp)
+        {p\<in>fun_poss (fst dp). p \<notin> mu_fun_poss \<mu> (fst dp)} \<and>
+      csr_u3_root_rules_closed R U (snd dp) (fun_poss (snd dp))) \<and>
+    (\<forall>lr\<in>R. csr_u3_root_rules_closed R U (snd lr)
+      {p\<in>fun_poss (snd lr). p \<notin> mu_fun_poss \<mu> (snd lr)}) \<and>
+    (\<forall>lr\<in>U.
+      csr_u3_root_rules_closed R U (fst lr)
+        {p\<in>fun_poss (fst lr). p \<notin> mu_fun_poss \<mu> (fst lr)} \<and>
+      csr_u3_root_rules_closed R U (snd lr) (fun_poss (snd lr)))"
+
+definition csr_u3_delta where
+  "csr_u3_delta R U =
+    {f. \<forall>lr\<in>R. root (fst lr) = Some f \<longrightarrow> lr \<in> U}"
+
+definition csr_inactive_funas where
+  "csr_inactive_funas \<mu> t =
+    {f. \<exists>p\<in>fun_poss t - mu_fun_poss \<mu> t.
+      root (t |_ p) = Some f}"
+
+lemma csr_u3_root_rules_closed_delta:
+  assumes closed: "csr_u3_root_rules_closed R U t A"
+    and p: "p \<in> A"
+    and root: "root (t |_ p) = Some f"
+  shows "f \<in> csr_u3_delta R U"
+  using closed p root
+  unfolding csr_u3_root_rules_closed_def csr_u3_delta_def
+  by blast
+
+lemma csr_u3_closed_inactive_rhs_delta:
+  assumes closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and lr: "lr \<in> R"
+  shows "csr_inactive_funas \<mu> (snd lr) \<subseteq> csr_u3_delta R U"
+proof
+  fix f
+  assume "f \<in> csr_inactive_funas \<mu> (snd lr)"
+  then obtain p where
+    p: "p \<in> fun_poss (snd lr) - mu_fun_poss \<mu> (snd lr)"
+    and root: "root (snd lr |_ p) = Some f"
+    unfolding csr_inactive_funas_def by blast
+  from closed lr have roots:
+    "csr_u3_root_rules_closed R U (snd lr)
+      {p\<in>fun_poss (snd lr). p \<notin> mu_fun_poss \<mu> (snd lr)}"
+    unfolding csr_u3_usable_rules_closed_def by blast
+  show "f \<in> csr_u3_delta R U"
+    by (rule csr_u3_root_rules_closed_delta[OF roots _ root], use p in auto)
+qed
+
+lemma csr_u3_closed_selected_rule:
+  assumes root_delta: "f \<in> csr_u3_delta R U"
+    and lr: "lr \<in> R"
+    and root: "root (fst lr) = Some f"
+  shows "lr \<in> U"
+  using root_delta lr root unfolding csr_u3_delta_def by blast
+
+lemma csr_u3_closed_selected_rhs_delta:
+  assumes closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and lr: "lr \<in> R"
+    and root_delta: "the (root (fst lr)) \<in> csr_u3_delta R U"
+    and root_some: "root (fst lr) \<noteq> None"
+  shows "{f. \<exists>p\<in>fun_poss (snd lr). root (snd lr |_ p) = Some f}
+    \<subseteq> csr_u3_delta R U"
+proof -
+  from root_some obtain f where root: "root (fst lr) = Some f"
+    by (cases "root (fst lr)", auto)
+  from root root_delta have f_delta: "f \<in> csr_u3_delta R U"
+    by simp
+  from csr_u3_closed_selected_rule[OF f_delta lr root]
+  have lrU: "lr \<in> U" .
+  from closed lrU have roots:
+    "csr_u3_root_rules_closed R U (snd lr) (fun_poss (snd lr))"
+    unfolding csr_u3_usable_rules_closed_def by blast
+  show ?thesis
+    using roots unfolding csr_u3_root_rules_closed_def csr_u3_delta_def
+    by blast
+qed
+
+lemma csr_u3_closed_selected_lhs_inactive_delta:
+  assumes closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and lr: "lr \<in> R"
+    and root_delta: "the (root (fst lr)) \<in> csr_u3_delta R U"
+    and root_some: "root (fst lr) \<noteq> None"
+  shows "csr_inactive_funas \<mu> (fst lr) \<subseteq> csr_u3_delta R U"
+proof -
+  from root_some obtain f where root: "root (fst lr) = Some f"
+    by (cases "root (fst lr)", auto)
+  from root root_delta have f_delta: "f \<in> csr_u3_delta R U"
+    by simp
+  from csr_u3_closed_selected_rule[OF f_delta lr root]
+  have lrU: "lr \<in> U" .
+  from closed lrU have roots:
+    "csr_u3_root_rules_closed R U (fst lr)
+      {p\<in>fun_poss (fst lr). p \<notin> mu_fun_poss \<mu> (fst lr)}"
+    unfolding csr_u3_usable_rules_closed_def by blast
+  show ?thesis
+    using roots
+    unfolding csr_inactive_funas_def csr_u3_root_rules_closed_def
+      csr_u3_delta_def
+    by blast
+qed
+
+lemma csr_u3_closed_inactive_subterm_delta:
+  assumes closed:
+      "csr_u3_root_rules_closed R U t
+        {p\<in>fun_poss t. p \<notin> mu_fun_poss \<mu> t}"
+    and p_fun: "p \<in> fun_poss t"
+    and p_inactive: "p \<notin> mu_fun_poss \<mu> t"
+  shows "funas_term (t |_ p) \<subseteq> csr_u3_delta R U"
+proof
+  fix f
+  assume "f \<in> funas_term (t |_ p)"
+  then obtain q g ts where
+    f: "f = (g, length ts)"
+    and q: "q \<in> poss (t |_ p)"
+    and sub: "(t |_ p) |_ q = Fun g ts"
+    unfolding funas_term_poss_conv by blast
+  from p_fun have p_poss: "p \<in> poss t"
+    by (rule fun_poss_imp_poss)
+  from q p_poss have pq_poss: "p @ q \<in> poss t"
+    unfolding poss_append_poss by simp
+  from sub p_poss have whole_sub: "t |_ (p @ q) = Fun g ts"
+    by (simp add: subt_at_append)
+  have pq_fun: "p @ q \<in> fun_poss t"
+    by (rule poss_is_Fun_fun_poss[OF pq_poss],
+        use whole_sub in simp)
+  have pq_inactive: "p @ q \<notin> mu_fun_poss \<mu> t"
+  proof
+    assume "p @ q \<in> mu_fun_poss \<mu> t"
+    then have p_active: "p \<in> mu_poss \<mu> t"
+      by (rule mu_fun_poss_append_prefix)
+    have "p \<in> mu_fun_poss \<mu> t"
+      by (rule mu_poss_fun_poss_imp_mu_fun_poss[OF p_active p_fun])
+    with p_inactive show False by contradiction
+  qed
+  show "f \<in> csr_u3_delta R U"
+    unfolding f
+    by (rule csr_u3_root_rules_closed_delta[
+        OF closed _ _], use pq_fun pq_inactive whole_sub in auto)
+qed
+
+lemma csr_u3_closed_pair_lhs_inactive_delta:
+  assumes closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and dp: "dp \<in> P"
+    and p_fun: "p \<in> fun_poss (fst dp)"
+    and p_inactive: "p \<notin> mu_fun_poss \<mu> (fst dp)"
+  shows "funas_term (fst dp |_ p) \<subseteq> csr_u3_delta R U"
+proof -
+  from closed dp have roots:
+    "csr_u3_root_rules_closed R U (fst dp)
+      {p\<in>fun_poss (fst dp). p \<notin> mu_fun_poss \<mu> (fst dp)}"
+    unfolding csr_u3_usable_rules_closed_def by blast
+  show ?thesis
+    by (rule csr_u3_closed_inactive_subterm_delta[
+        OF roots p_fun p_inactive])
+qed
+
+lemma csr_u3_closed_pair_rhs_delta:
+  assumes closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and dp: "dp \<in> P"
+  shows "funas_term (snd dp) \<subseteq> csr_u3_delta R U"
+proof
+  fix f
+  assume "f \<in> funas_term (snd dp)"
+  then obtain p g ts where
+    f: "f = (g, length ts)"
+    and p: "p \<in> poss (snd dp)"
+    and sub: "snd dp |_ p = Fun g ts"
+    unfolding funas_term_poss_conv by blast
+  have p_fun: "p \<in> fun_poss (snd dp)"
+    by (rule poss_is_Fun_fun_poss[OF p],
+        use sub in simp)
+  from closed dp have roots:
+    "csr_u3_root_rules_closed R U (snd dp) (fun_poss (snd dp))"
+    unfolding csr_u3_usable_rules_closed_def by blast
+  show "f \<in> csr_u3_delta R U"
+    unfolding f
+    by (rule csr_u3_root_rules_closed_delta[OF roots p_fun],
+      use sub in simp)
+qed
+
+definition mu_supt_rel where
+  "mu_supt_rel \<mu> = {(s, t). mu_supt \<mu> s t}"
+
+lemma csr_u3_post_step_nondelta_subterm_active:
+  assumes wf: "wf_trs R"
+    and closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and step: "(u, v) \<in> csstep \<mu> R"
+    and sub: "v \<rhd> s"
+    and new: "\<not> u \<rhd> s"
+    and s_fun: "is_Fun s"
+    and nondelta: "the (root s) \<notin> csr_u3_delta R U"
+  shows "mu_supt \<mu> v s"
+proof (rule ccontr)
+  assume inactive: "\<not> mu_supt \<mu> v s"
+  obtain l r \<sigma> p q where
+    lr: "(l, r) \<in> R"
+    and q: "q \<in> fun_poss r"
+    and q_inactive: "q \<notin> mu_fun_poss \<mu> r"
+    and s: "s = (r |_ q) \<cdot> \<sigma>"
+    by (rule csstep_new_inactive_subterm_rhs[
+        OF wf step sub inactive new s_fun])
+  from fun_poss_fun_conv[OF q]
+  obtain f ts where rq: "r |_ q = Fun f ts"
+    by auto
+  have f_inactive: "(f, length ts) \<in> csr_inactive_funas \<mu> r"
+    unfolding csr_inactive_funas_def
+  proof
+    show "\<exists>p\<in>fun_poss r - mu_fun_poss \<mu> r.
+      root (r |_ p) = Some (f, length ts)"
+      by (rule bexI[of _ q], use q q_inactive rq in auto)
+  qed
+  have inactive_subset:
+    "csr_inactive_funas \<mu> r \<subseteq> csr_u3_delta R U"
+    using csr_u3_closed_inactive_rhs_delta[OF closed lr] by simp
+  have f_delta: "(f, length ts) \<in> csr_u3_delta R U"
+    by (rule subsetD[OF inactive_subset f_inactive])
+  have root_s: "root s = Some (f, length ts)"
+    unfolding s rq by simp
+  have f_nondelta: "(f, length ts) \<notin> csr_u3_delta R U"
+    using nondelta root_s by simp
+  from f_delta f_nondelta show False by contradiction
+qed
+
+lemma csr_u3_post_step_nondelta_supteq:
+  assumes wf: "wf_trs R"
+    and closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and step: "(u, v) \<in> csstep \<mu> R"
+    and sub: "v \<unrhd> s"
+    and new: "\<not> u \<rhd> s"
+    and s_fun: "is_Fun s"
+    and nondelta: "the (root s) \<notin> csr_u3_delta R U"
+  shows "(v, s) \<in> Id \<union> mu_supt_rel \<mu>"
+proof (cases "v = s")
+  case True
+  then show ?thesis by simp
+next
+  case False
+  with sub have "v \<rhd> s"
+    unfolding supt_supteq_conv by auto
+  from csr_u3_post_step_nondelta_subterm_active[
+      OF wf closed step this new s_fun nondelta]
+  show ?thesis
+    unfolding mu_supt_rel_def by auto
+qed
+
+lemma csr_u3_rewrite_source_classification:
+  assumes wf: "wf_trs R"
+    and closed: "csr_u3_usable_rules_closed R U \<mu> P"
+    and step: "(u, v) \<in> csstep \<mu> R"
+    and sub: "v \<unrhd> s"
+    and s_fun: "is_Fun s"
+    and nondelta: "the (root s) \<notin> csr_u3_delta R U"
+  shows "u \<rhd> s \<or>
+    ((u, v) \<in> csstep \<mu> R \<and>
+      (v, s) \<in> Id \<union> mu_supt_rel \<mu>)"
+proof (cases "u \<rhd> s")
+  case True
+  then show ?thesis by simp
+next
+  case False
+  from csr_u3_post_step_nondelta_supteq[
+      OF wf closed step sub False s_fun nondelta]
+  show ?thesis
+    using step by blast
+qed
+
+lemma csr_u3_usable_rules_check_subset:
+  assumes "csr_u3_usable_rules_check R U \<mu> P"
+  shows "set U \<subseteq> set R"
+  using assms unfolding csr_u3_usable_rules_check_def
+  by (auto simp: list_all_iff)
+
+lemma csr_u3_root_rules_check_sound:
+  assumes "csr_u3_root_rules_check R U t ps"
+  shows "csr_u3_root_rules_closed (set R) (set U) t (set ps)"
+  using assms
+  unfolding csr_u3_root_rules_check_def csr_u3_root_rules_closed_def
+  by (auto simp: list_all_iff split: option.splits)
+
+lemma set_csr_u3_inactive_fun_poss [simp]:
+  "set (filter (\<lambda>p. p \<notin> set (mu_fun_poss_list \<mu> t))
+      (fun_poss_list t)) =
+    fun_poss t - mu_fun_poss (mu_of \<mu>) t"
+  by auto
+
+lemma csr_u3_inactive_root_rules_check_sound:
+  assumes "csr_u3_inactive_root_rules_check R U \<mu> t"
+  shows "csr_u3_root_rules_closed (set R) (set U) t
+    {p\<in>fun_poss t. p \<notin> mu_fun_poss (mu_of \<mu>) t}"
+  using csr_u3_root_rules_check_sound[OF assms[
+    unfolded csr_u3_inactive_root_rules_check_def]]
+  by simp
+
+lemma csr_u3_all_root_rules_check_sound:
+  assumes "csr_u3_all_root_rules_check R U t"
+  shows "csr_u3_root_rules_closed (set R) (set U) t (fun_poss t)"
+  using csr_u3_root_rules_check_sound[OF assms[
+    unfolded csr_u3_all_root_rules_check_def]]
+  by simp
+
+lemma csr_u3_usable_rules_check_sound:
+  assumes "csr_u3_usable_rules_check R U \<mu> P"
+  shows "csr_u3_usable_rules_closed (set R) (set U) (mu_of \<mu>) (set P)"
+  using assms
+  unfolding csr_u3_usable_rules_check_def
+    csr_u3_usable_rules_closed_def
+  by (auto simp: list_all_iff
+    intro: csr_u3_inactive_root_rules_check_sound
+      csr_u3_all_root_rules_check_sound)
+
+definition csrewrite where
+  "csrewrite \<mu> R t =
+    filter (\<lambda>u. (t, u) \<in> csstep \<mu> (set R)) (rewrite R t)"
+
+lemma csrewrite_sound:
+  assumes "u \<in> set (csrewrite \<mu> R t)"
+  shows "(t, u) \<in> csstep \<mu> (set R)"
+  using assms unfolding csrewrite_def by auto
+
+lemma csrewrite_complete:
+  assumes wf: "wf_trs (set R)"
+    and step: "(t, u) \<in> csstep \<mu> (set R)"
+  shows "u \<in> set (csrewrite \<mu> R t)"
+proof -
+  from wf have vars:
+    "\<And>l r. (l, r) \<in> set R \<Longrightarrow> vars_term r \<subseteq> vars_term l"
+    unfolding wf_trs_def by auto
+  from step csstep_subset_rstep have "(t, u) \<in> rstep (set R)"
+    by blast
+  moreover have "set (rewrite R t) = {v. (t, v) \<in> rstep (set R)}"
+    by (rule rewrite[OF vars])
+  ultimately have "u \<in> set (rewrite R t)"
+    by simp
+  with step show ?thesis
+    unfolding csrewrite_def by simp
+qed
+
+lemma set_csrewrite:
+  assumes "wf_trs (set R)"
+  shows "set (csrewrite \<mu> R t) = csstep \<mu> (set R) `` {t}"
+  using csrewrite_sound csrewrite_complete[OF assms]
+  by auto
+
+lemma finite_csstep_image:
+  assumes "finite R" and "wf_trs R"
+  shows "finite (csstep \<mu> R `` {t})"
+proof -
+  from finite_list[OF assms(1)] obtain Rs where R: "R = set Rs"
+    by auto
+  have "csstep \<mu> R `` {t} = set (csrewrite \<mu> Rs t)"
+    using set_csrewrite[of Rs \<mu> t] assms(2) unfolding R by simp
+  then show ?thesis by simp
+qed
+
+definition csr_i1_struct_call where
+  "csr_i1_struct_call =
+    {(Fun f ts, t) |f ts t. t \<in> set ts}"
+
+definition csr_i1_rewrite_call where
+  "csr_i1_rewrite_call R \<mu> \<Delta> =
+    {(t, u). SN_on (csstep \<mu> R) {t} \<and>
+      the (root t) \<notin> \<Delta> \<and> (t, u) \<in> csstep \<mu> R}"
+
+definition csr_i1_call where
+  "csr_i1_call R \<mu> \<Delta> =
+    csr_i1_struct_call \<union> csr_i1_rewrite_call R \<mu> \<Delta>"
+
+lemma csr_i1_struct_call_supt:
+  "csr_i1_struct_call \<subseteq> {\<rhd>}"
+  unfolding csr_i1_struct_call_def
+  by (auto intro: supt.arg)
+
+lemma SN_csr_i1_struct_call:
+  "SN csr_i1_struct_call"
+  by (rule SN_subset[OF SN_supt csr_i1_struct_call_supt])
+
+lemma csr_i1_rewrite_callD:
+  assumes "(t, u) \<in> csr_i1_rewrite_call R \<mu> \<Delta>"
+  shows "SN_on (csstep \<mu> R) {t}"
+    "the (root t) \<notin> \<Delta>"
+    "(t, u) \<in> csstep \<mu> R"
+  using assms unfolding csr_i1_rewrite_call_def by auto
+
+lemma csr_i1_rewrite_call_finite:
+  assumes "finite R" and "wf_trs R"
+  shows "finite (csr_i1_rewrite_call R \<mu> \<Delta> `` {t})"
+proof -
+  have subset: "csr_i1_rewrite_call R \<mu> \<Delta> `` {t}
+      \<subseteq> csstep \<mu> R `` {t}"
+    unfolding csr_i1_rewrite_call_def by auto
+  from finite_csstep_image[OF assms, of \<mu> t]
+  show ?thesis
+    by (rule finite_subset[OF subset])
+qed
+
+lemma csr_i1_call_finite:
+  assumes "finite R" and "wf_trs R"
+  shows "finite (csr_i1_call R \<mu> \<Delta> `` {t})"
+proof -
+  have struct:
+    "csr_i1_struct_call `` {t} \<subseteq> set (args t)"
+    unfolding csr_i1_struct_call_def
+    by (cases t, auto)
+  have finite_struct: "finite (csr_i1_struct_call `` {t})"
+    by (rule finite_subset[OF struct], simp)
+  have finite_rewrite:
+    "finite (csr_i1_rewrite_call R \<mu> \<Delta> `` {t})"
+    by (rule csr_i1_rewrite_call_finite[OF assms])
+  have image:
+    "csr_i1_call R \<mu> \<Delta> `` {t} =
+      csr_i1_struct_call `` {t} \<union>
+      csr_i1_rewrite_call R \<mu> \<Delta> `` {t}"
+    unfolding csr_i1_call_def by blast
+  show ?thesis
+    unfolding image
+    by (rule finite_UnI[OF finite_struct finite_rewrite])
+qed
+
+lemma ce_trs_sound_csstep:
+  assumes "t \<in> set ts"
+  shows "(comb cn ts, t) \<in> (csstep \<mu> (ce_trs cn))\<^sup>+"
+  using assms
+proof (induct ts)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons s ss)
+  obtain c n where cn: "cn = (c, n)"
+    by force
+  have root_step:
+    "\<And>u v. (u, v) \<in> ce_trs cn \<Longrightarrow>
+      (u, v) \<in> csstep \<mu> (ce_trs cn)"
+  proof -
+    fix u v
+    assume rule: "(u, v) \<in> ce_trs cn"
+    have "(u, v) \<in> rstep_r_p_s (ce_trs cn) (u, v) [] Var"
+      using rule unfolding rstep_r_p_s_def' by simp
+    then have "(u, v) \<in> csrstep \<mu> (ce_trs cn)"
+      unfolding csrstep_iff_rstep_root by blast
+    then show "(u, v) \<in> csstep \<mu> (ce_trs cn)"
+      unfolding csstep_root_nonroot by simp
+  qed
+  show ?case
+  proof (cases "s = t")
+    case True
+    with cn have "(comb cn (s # ss), s) \<in> ce_trs cn"
+      by (simp add: ce_trs.simps comb.simps)
+    from root_step[OF this] True show ?thesis
+      by force
+  next
+    case False
+    with Cons have ind:
+      "(comb cn ss, t) \<in> (csstep \<mu> (ce_trs cn))\<^sup>+"
+      by auto
+    from cn have "(comb cn (s # ss), comb cn ss) \<in> ce_trs cn"
+      by (simp add: ce_trs.simps comb.simps)
+    from root_step[OF this] ind show ?thesis
+      by auto
+  qed
+qed
+
 fun qcs_ur_closed_term_check where
   "qcs_ur_closed_term_check R U \<mu> (Var x) =
     list_all (\<lambda>lr. lr \<in> set U) R"
@@ -986,7 +1644,8 @@ lemma sharp_csdp_step_active_arg:
 proof -
   have sharp: "Fun (Sharp f) ts = sharp_term Sharp (Fun f ts)"
     by simp
-  from sharp_csdp_step_imp_csnrstep[OF wf fresh, of "Fun f ts" v]
+  from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp,
+      of "Fun f ts" v]
     step[unfolded sharp]
   obtain u where v: "v = sharp_term Sharp u"
     and nr: "(Fun f ts, u) \<in> csnrstep \<mu> R"
@@ -1046,9 +1705,10 @@ next
 qed
 
 lemma SN_sharp_csdp_imp_SN_active_arg:
+  fixes shp :: "'f::{showl, compare_order} \<Rightarrow> 'f"
   assumes i: "i < length ts"
     and active: "i \<in> \<mu> (f, length ts)"
-    and SN: "SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts}"
+    and SN: "SN_on (csdp_step shp \<mu> R) {Fun (shp f) ts}"
   shows "SN_on (csstep \<mu> R) {ts ! i}"
 proof (unfold SN_on_def, intro notI)
   assume "\<exists>as. as 0 \<in> {ts ! i} \<and>
@@ -1056,11 +1716,11 @@ proof (unfold SN_on_def, intro notI)
   then obtain as where init: "as 0 = ts ! i"
     and step: "\<And>n. (as n, as (Suc n)) \<in> csstep \<mu> R"
     by auto
-  let ?whole = "\<lambda>n. Fun (Sharp f) (ts[i := as n])"
-  have whole0: "?whole 0 = Fun (Sharp f) ts"
+  let ?whole = "\<lambda>n. Fun (shp f) (ts[i := as n])"
+  have whole0: "?whole 0 = Fun (shp f) ts"
     using init i by simp
   have whole_step:
-    "(?whole n, ?whole (Suc n)) \<in> csdp_step Sharp \<mu> R" for n
+    "(?whole n, ?whole (Suc n)) \<in> csdp_step shp \<mu> R" for n
   proof -
     have len: "i < length (ts[i := as n])"
       using i by simp
@@ -1073,17 +1733,17 @@ proof (unfold SN_on_def, intro notI)
     have nr:
       "(Fun f (ts[i := as n]),
         Fun f ((ts[i := as n])[i := as (Suc n)])) \<in> csnrstep \<mu> R" .
-    from sharp_csnrstep_imp_csdp_step[OF nr, where shp = Sharp]
+    from sharp_csnrstep_imp_csdp_step[OF nr, where shp = shp]
     show ?thesis
       using i by simp
   qed
   have bad:
-    "\<exists>ws. ws 0 \<in> {Fun (Sharp f) ts} \<and>
-      (\<forall>n. (ws n, ws (Suc n)) \<in> csdp_step Sharp \<mu> R)"
+    "\<exists>ws. ws 0 \<in> {Fun (shp f) ts} \<and>
+      (\<forall>n. (ws n, ws (Suc n)) \<in> csdp_step shp \<mu> R)"
   proof (intro exI[of _ ?whole] conjI)
-    show "?whole 0 \<in> {Fun (Sharp f) ts}"
+    show "?whole 0 \<in> {Fun (shp f) ts}"
       using whole0 by simp
-    show "\<forall>n. (?whole n, ?whole (Suc n)) \<in> csdp_step Sharp \<mu> R"
+    show "\<forall>n. (?whole n, ?whole (Suc n)) \<in> csdp_step shp \<mu> R"
       using whole_step by simp
   qed
   from SN bad show False
@@ -1471,9 +2131,6 @@ proof -
   with xw show ?thesis by blast
 qed
 
-definition mu_supt_rel where
-  "mu_supt_rel \<mu> = {(s, t). mu_supt \<mu> s t}"
-
 lemma SN_restrict_SN_mu_supt_csstep:
   assumes wf: "wf_trs R"
   shows "SN (restrict_SN (csstep \<mu> R) (csstep \<mu> R) \<union>
@@ -1562,6 +2219,829 @@ proof (rule ccontr)
   show False
     unfolding SN_defs using restricted by blast
 qed
+
+theorem wf_csr_i1_call:
+  assumes fin: "finite R"
+    and wf: "wf_trs R"
+    and closed: "csr_u3_usable_rules_closed R U \<mu> P"
+  shows "wf ((csr_i1_call R \<mu> (csr_u3_delta R U))\<inverse>)"
+proof (rule ccontr)
+  let ?C = "csr_i1_call R \<mu> (csr_u3_delta R U)"
+  let ?Bad = "UNIV - Wellfounded.acc (?C\<inverse>)"
+  assume not_wf: "\<not> wf (?C\<inverse>)"
+  have acc_ne: "Wellfounded.acc (?C\<inverse>) \<noteq> UNIV"
+  proof
+    assume acc_all: "Wellfounded.acc (?C\<inverse>) = UNIV"
+    have all_acc: "\<forall>x. x \<in> Wellfounded.acc (?C\<inverse>)"
+      using acc_all by simp
+    have "wf (?C\<inverse>)"
+      by (rule wf_iff_acc[THEN iffD2, OF all_acc])
+    with not_wf show False
+      by contradiction
+  qed
+  have "?Bad \<noteq> {}"
+    using acc_ne by auto
+  then obtain a where bad_a: "a \<in> ?Bad"
+    by auto
+  have wf_sub: "wf {\<lhd>}"
+    using SN_supt unfolding SN_iff_wf .
+  obtain t where bad_t: "t \<in> ?Bad"
+    and min_t_raw:
+      "\<And>s. (s, t) \<in> {\<lhd>} \<Longrightarrow>
+        s \<notin> ?Bad"
+  proof (rule wfE_min[OF wf_sub bad_a])
+    fix z
+    assume z_bad: "z \<in> ?Bad"
+      and z_min: "\<And>y. (y, z) \<in> {\<lhd>} \<Longrightarrow>
+        y \<notin> ?Bad"
+    show thesis
+      by (rule that[OF z_bad z_min])
+  qed
+  have min_t: "\<And>s. t \<rhd> s \<Longrightarrow> s \<notin> ?Bad"
+  proof -
+    fix s
+    assume ts: "t \<rhd> s"
+    have "(s, t) \<in> {\<lhd>}"
+      using ts by simp
+    then show "s \<notin> ?Bad"
+      by (rule min_t_raw)
+  qed
+  let ?M = "{x. x \<in> ?Bad \<and> (\<forall>y. x \<rhd> y \<longrightarrow> y \<notin> ?Bad)}"
+  have tM: "t \<in> ?M"
+    using bad_t min_t by simp
+
+  have bad_rewrite:
+    "\<And>x. x \<in> ?M \<Longrightarrow>
+      \<exists>u. u \<in> ?Bad \<and>
+        (x, u) \<in> csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+  proof -
+    fix x
+    assume xM: "x \<in> ?M"
+    then have x_bad: "x \<notin> Wellfounded.acc (?C\<inverse>)"
+      by simp
+    from not_acc_down[OF x_bad]
+    obtain u where call: "(u, x) \<in> ?C\<inverse>"
+      and u_bad: "u \<notin> Wellfounded.acc (?C\<inverse>)" .
+    have xu: "(x, u) \<in> ?C"
+      using call by simp
+    show "\<exists>u. u \<in> ?Bad \<and>
+      (x, u) \<in> csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+    proof (rule exI[of _ u], intro conjI)
+      show "u \<in> ?Bad"
+        using u_bad by simp
+      have xu_cases:
+        "(x, u) \<in> csr_i1_struct_call \<or>
+          (x, u) \<in>
+            csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+        using xu unfolding csr_i1_call_def by simp
+      from xu_cases show
+        "(x, u) \<in> csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+      proof
+        assume "(x, u) \<in> csr_i1_struct_call"
+        then have xu_sub: "x \<rhd> u"
+          by (rule subsetD[OF csr_i1_struct_call_supt])
+        from xM have no_bad_sub:
+          "\<forall>y. x \<rhd> y \<longrightarrow> y \<notin> ?Bad"
+          by simp
+        have "u \<in> ?Bad"
+          using u_bad by simp
+        moreover from no_bad_sub xu_sub have "u \<notin> ?Bad"
+          by simp
+        ultimately show ?thesis
+          by contradiction
+      next
+        assume "(x, u) \<in>
+          csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+        then show ?thesis .
+      qed
+    qed
+  qed
+
+  have minimal_bad_below:
+    "\<And>u. u \<in> ?Bad \<Longrightarrow>
+      \<exists>s. s \<in> ?M \<and> u \<unrhd> s"
+  proof -
+    fix u
+    assume u_bad: "u \<in> ?Bad"
+    let ?Q = "{s. s \<in> ?Bad \<and> u \<unrhd> s}"
+    have uQ: "u \<in> ?Q"
+      using u_bad by simp
+    obtain s where sQ: "s \<in> ?Q"
+      and min_s_raw:
+        "\<And>y. (y, s) \<in> {\<lhd>} \<Longrightarrow>
+          y \<notin> ?Q"
+    proof (rule wfE_min[OF wf_sub uQ])
+      fix z
+      assume zQ: "z \<in> ?Q"
+        and z_min: "\<And>y. (y, z) \<in> {\<lhd>} \<Longrightarrow>
+          y \<notin> ?Q"
+      show thesis
+        by (rule that[OF zQ z_min])
+    qed
+    have min_s: "\<And>y. s \<rhd> y \<Longrightarrow> y \<notin> ?Q"
+    proof -
+      fix y
+      assume sy: "s \<rhd> y"
+      have "(y, s) \<in> {\<lhd>}"
+        using sy by simp
+      then show "y \<notin> ?Q"
+        by (rule min_s_raw)
+    qed
+    have sM: "s \<in> ?M"
+    proof (simp only: mem_Collect_eq, intro conjI allI impI)
+      show "s \<in> ?Bad"
+        using sQ by simp
+    next
+      fix y
+      assume sy: "s \<rhd> y"
+      show "y \<notin> ?Bad"
+      proof
+        assume y_bad: "y \<in> ?Bad"
+        from sQ have us: "u \<unrhd> s"
+          by simp
+        have "u \<rhd> y"
+          by (rule supteq_supt_trans[OF us sy])
+        then have "u \<unrhd> y"
+          by (rule supt_imp_supteq)
+        with y_bad have "y \<in> ?Q"
+          by simp
+        with min_s[OF sy] show False
+          by contradiction
+      qed
+    qed
+    show "\<exists>s. s \<in> ?M \<and> u \<unrhd> s"
+    proof (rule exI[of _ s], intro conjI)
+      show "s \<in> ?M"
+        by (rule sM)
+      show "u \<unrhd> s"
+        using sQ by simp
+    qed
+  qed
+
+  let ?G =
+    "csstep \<mu> R O (Id \<union> mu_supt_rel \<mu>)"
+  have progress:
+    "\<And>x. x \<in> ?M \<Longrightarrow> \<exists>s. s \<in> ?M \<and> (x, s) \<in> ?G"
+  proof -
+    fix x
+    assume xM: "x \<in> ?M"
+    from bad_rewrite[OF xM]
+    obtain u where u_bad: "u \<in> ?Bad"
+      and xu_call:
+        "(x, u) \<in> csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+      by auto
+    from minimal_bad_below[OF u_bad]
+    obtain s where sM: "s \<in> ?M" and us: "u \<unrhd> s"
+      by auto
+    from bad_rewrite[OF sM]
+    obtain z where
+      sz_call:
+        "(s, z) \<in> csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+      by auto
+    have xu: "(x, u) \<in> csstep \<mu> R"
+      by (rule csr_i1_rewrite_callD(3)[OF xu_call])
+    have s_nondelta:
+        "the (root s) \<notin> csr_u3_delta R U"
+      by (rule csr_i1_rewrite_callD(2)[OF sz_call])
+    have sz: "(s, z) \<in> csstep \<mu> R"
+      by (rule csr_i1_rewrite_callD(3)[OF sz_call])
+    have s_fun: "is_Fun s"
+    proof (cases s)
+      case (Var v)
+      from csstep_Var_empty_wf[OF wf, of v z \<mu>]
+        sz[unfolded Var]
+      show ?thesis by contradiction
+    next
+      case (Fun f ts)
+      then show ?thesis by simp
+    qed
+    have not_xs: "\<not> x \<rhd> s"
+    proof
+      assume xs: "x \<rhd> s"
+      from xM have no_bad_sub:
+        "\<forall>y. x \<rhd> y \<longrightarrow> y \<notin> ?Bad"
+        by simp
+      from no_bad_sub xs have "s \<notin> ?Bad"
+        by simp
+      moreover from sM have "s \<in> ?Bad"
+        by simp
+      ultimately show False
+        by contradiction
+    qed
+    from csr_u3_post_step_nondelta_supteq[
+        OF wf closed xu us not_xs s_fun s_nondelta]
+    have "(u, s) \<in> Id \<union> mu_supt_rel \<mu>" .
+    with xu have "(x, s) \<in> ?G"
+      by auto
+    with sM show "\<exists>s. s \<in> ?M \<and> (x, s) \<in> ?G"
+      by (intro exI[of _ s] conjI)
+  qed
+
+  have G_sub:
+    "?G \<subseteq> (mu_supt_rel \<mu> \<union> csstep \<mu> R)\<^sup>+"
+  proof
+    fix x y
+    assume "(x, y) \<in> ?G"
+    then obtain z where xz: "(x, z) \<in> csstep \<mu> R"
+      and zy: "(z, y) \<in> Id \<union> mu_supt_rel \<mu>"
+      by auto
+    from zy show
+      "(x, y) \<in> (mu_supt_rel \<mu> \<union> csstep \<mu> R)\<^sup>+"
+    proof
+      assume "(z, y) \<in> Id"
+      then have "z = y"
+        by simp
+      with xz have xy: "(x, y) \<in> csstep \<mu> R"
+        by simp
+      have "(x, y) \<in> mu_supt_rel \<mu> \<union> csstep \<mu> R"
+        by (rule UnI2[OF xy])
+      then show ?thesis
+        by (rule trancl.r_into_trancl)
+    next
+      assume zy_mu: "(z, y) \<in> mu_supt_rel \<mu>"
+      have xz_step:
+        "(x, z) \<in> (mu_supt_rel \<mu> \<union> csstep \<mu> R)\<^sup>+"
+        by (intro trancl.r_into_trancl UnI2 xz)
+      have zy_step:
+        "(z, y) \<in> mu_supt_rel \<mu> \<union> csstep \<mu> R"
+        by (rule UnI1[OF zy_mu])
+      show ?thesis
+        by (rule trancl_into_trancl[OF xz_step zy_step])
+    qed
+  qed
+  from bad_rewrite[OF tM]
+  obtain u where
+    tu_call:
+      "(t, u) \<in> csr_i1_rewrite_call R \<mu> (csr_u3_delta R U)"
+    by auto
+  have sn_t: "SN_on (csstep \<mu> R) {t}"
+    by (rule csr_i1_rewrite_callD(1)[OF tu_call])
+  from SN_on_csstep_imp_SN_on_mu_supt_union[OF wf sn_t]
+  have sn_active:
+    "SN_on ((mu_supt_rel \<mu> \<union> csstep \<mu> R)\<^sup>+) {t}"
+    by (rule SN_on_trancl)
+  have sn_G: "SN_on ?G {t}"
+    by (rule SN_on_subset1[OF sn_active G_sub])
+  have "t \<notin> ?M"
+  proof (rule SN_on_induct_acc_style[
+      where R="?G" and P="\<lambda>x. x \<notin> ?M", OF sn_G])
+    fix x
+    assume sn_x: "SN_on ?G {x}"
+      and IH: "\<And>y. (x, y) \<in> ?G \<Longrightarrow> y \<notin> ?M"
+    show "x \<notin> ?M"
+    proof
+      assume xM: "x \<in> ?M"
+      from progress[OF xM]
+      obtain y where yM: "y \<in> ?M" and xy: "(x, y) \<in> ?G"
+        by auto
+      from IH[OF xy] yM show False
+        by contradiction
+    qed
+  qed
+  with tM show False
+    by contradiction
+qed
+
+locale csr_u3_i1 =
+  fixes Rs :: "('f::{showl, compare_order}, 'v) rules"
+    and U :: "('f, 'v) trs"
+    and \<mu> :: "('f \<times> nat) \<Rightarrow> nat set"
+    and P :: "('f, 'v) trs"
+    and cn :: "'f \<times> nat"
+  assumes wf: "wf_trs (set Rs)"
+    and closed:
+      "csr_u3_usable_rules_closed (set Rs) U \<mu> P"
+begin
+
+abbreviation \<Delta> where
+  "\<Delta> \<equiv> csr_u3_delta (set Rs) U"
+
+function i1 :: "('f, 'v) term \<Rightarrow> ('f, 'v) term" where
+  "i1 (Var x) = Var x"
+| "i1 (Fun f ts) =
+    (if (f, length ts) \<in> \<Delta> \<or>
+        \<not> SN_on (csstep \<mu> (set Rs)) {Fun f ts}
+      then Fun f (map i1 ts)
+      else comb cn
+        (Fun f (map i1 ts) # map i1 (csrewrite \<mu> Rs (Fun f ts))))"
+  by pat_completeness auto
+
+termination i1
+  apply (relation "(csr_i1_call (set Rs) \<mu> \<Delta>)\<inverse>")
+    apply (rule wf_csr_i1_call[OF finite_set wf closed])
+   apply (auto simp: csr_i1_call_def csr_i1_struct_call_def)
+  apply (auto simp: csr_i1_call_def csr_i1_rewrite_call_def
+    intro: csrewrite_sound)
+  done
+
+abbreviation i1_subst :: "('f, 'v) subst \<Rightarrow> ('f, 'v) subst" where
+  "i1_subst \<sigma> \<equiv> \<lambda>x. i1 (\<sigma> x)"
+
+lemma i1_delta_subst:
+  assumes delta: "funas_term t \<subseteq> \<Delta>"
+  shows "i1 (t \<cdot> \<sigma>) = t \<cdot> i1_subst \<sigma>"
+  using delta
+proof (induct t)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  have root_delta: "(f, length ts) \<in> \<Delta>"
+    using Fun.prems by simp
+  have args_delta: "\<And>t. t \<in> set ts \<Longrightarrow> funas_term t \<subseteq> \<Delta>"
+    using Fun.prems by auto
+  have IH:
+    "\<And>t. t \<in> set ts \<Longrightarrow>
+      i1 (t \<cdot> \<sigma>) = t \<cdot> i1_subst \<sigma>"
+    using Fun(1) args_delta by blast
+  show ?case
+    using root_delta IH by simp
+qed
+
+lemma i1_pattern_subst:
+  assumes inactive:
+    "\<And>p. p \<in> fun_poss t \<Longrightarrow>
+      p \<notin> mu_fun_poss \<mu> t \<Longrightarrow>
+      funas_term (t |_ p) \<subseteq> \<Delta>"
+  shows "(i1 (t \<cdot> \<sigma>), t \<cdot> i1_subst \<sigma>)
+    \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+  using inactive
+proof (induct t)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  let ?ss = "map (\<lambda>s. i1 (s \<cdot> \<sigma>)) ts"
+  let ?us = "map (\<lambda>s. s \<cdot> i1_subst \<sigma>) ts"
+  have len: "length ?ss = length ?us"
+    by simp
+  have arg:
+    "\<And>i. i < length ?ss \<Longrightarrow>
+      (if i \<in> \<mu> (f, length ?ss)
+       then (?ss ! i, ?us ! i)
+         \<in> (csstep \<mu> (ce_trs cn))\<^sup>*
+       else ?us ! i = ?ss ! i)"
+  proof -
+    fix i
+    assume i: "i < length ?ss"
+    then have i_ts: "i < length ts"
+      by simp
+    show "(if i \<in> \<mu> (f, length ?ss)
+      then (?ss ! i, ?us ! i)
+        \<in> (csstep \<mu> (ce_trs cn))\<^sup>*
+      else ?us ! i = ?ss ! i)"
+    proof (cases "i \<in> \<mu> (f, length ts)")
+      case True
+      have inherited:
+        "\<And>p. p \<in> fun_poss (ts ! i) \<Longrightarrow>
+          p \<notin> mu_fun_poss \<mu> (ts ! i) \<Longrightarrow>
+          funas_term (ts ! i |_ p) \<subseteq> \<Delta>"
+      proof -
+        fix p
+        assume p_fun: "p \<in> fun_poss (ts ! i)"
+          and p_inactive: "p \<notin> mu_fun_poss \<mu> (ts ! i)"
+        have ip_fun: "i # p \<in> fun_poss (Fun f ts)"
+          using i_ts p_fun by simp
+        have ip_inactive: "i # p \<notin> mu_fun_poss \<mu> (Fun f ts)"
+          using i_ts True p_inactive by simp
+        show "funas_term (ts ! i |_ p) \<subseteq> \<Delta>"
+          using Fun.prems[OF ip_fun ip_inactive] i_ts p_fun
+          by simp
+      qed
+      have sub:
+        "(i1 ((ts ! i) \<cdot> \<sigma>),
+          (ts ! i) \<cdot> i1_subst \<sigma>)
+          \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+        by (rule Fun.hyps[OF nth_mem[OF i_ts] inherited])
+      show ?thesis
+        using True i_ts sub by simp
+    next
+      case False
+      have delta: "funas_term (ts ! i) \<subseteq> \<Delta>"
+      proof (cases "ts ! i")
+        case (Var x)
+        then show ?thesis by simp
+      next
+        case (Fun g us)
+        have pos: "[i] \<in> fun_poss (Fun f ts)"
+          using i_ts Fun by simp
+        have not_mu: "[i] \<notin> mu_fun_poss \<mu> (Fun f ts)"
+          using i_ts False by simp
+        from Fun.prems[OF pos not_mu]
+        show ?thesis
+          using i_ts Fun by simp
+      qed
+      from i1_delta_subst[OF delta, of \<sigma>]
+      show ?thesis
+        using False i_ts by simp
+    qed
+  qed
+  have base:
+    "(Fun f ?ss, Fun f ?us) \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+    by (rule cssteps_FunI[OF len arg])
+  have ss_comp:
+    "map (i1 \<circ> (\<lambda>s. s \<cdot> \<sigma>)) ts = ?ss"
+    by (rule map_cong, auto)
+  have base_comp:
+    "(Fun f (map (i1 \<circ> (\<lambda>s. s \<cdot> \<sigma>)) ts), Fun f ?us)
+      \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+    by (subst ss_comp, rule base)
+  show ?case
+  proof (cases "(f, length ts) \<in> \<Delta> \<or>
+      \<not> SN_on (csstep \<mu> (set Rs)) {Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts)}")
+    case True
+    then show ?thesis
+      using base_comp by simp
+  next
+    case False
+    let ?xs =
+      "Fun f ?ss #
+        map i1 (csrewrite \<mu> Rs (Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts)))"
+    have member: "Fun f ?ss \<in> set ?xs"
+      by simp
+    from ce_trs_sound_csstep[OF member, where \<mu>=\<mu>]
+    have project:
+      "(comb cn ?xs, Fun f ?ss)
+        \<in> (csstep \<mu> (ce_trs cn))\<^sup>+" .
+    have first:
+      "(comb cn ?xs, Fun f ?ss)
+        \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+      by (rule trancl_into_rtrancl[OF project])
+    have total:
+      "(comb cn ?xs, Fun f ?us)
+        \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+      by (rule rtrancl_trans[OF first base])
+    have total_comp:
+      "(comb cn
+          (Fun f (map (i1 \<circ> (\<lambda>s. s \<cdot> \<sigma>)) ts) #
+           map i1
+             (csrewrite \<mu> Rs
+               (Fun f (map (\<lambda>s. s \<cdot> \<sigma>) ts)))),
+        Fun f ?us) \<in> (csstep \<mu> (ce_trs cn))\<^sup>*"
+      by (subst ss_comp, rule total)
+    show ?thesis
+      using False total_comp by simp
+  qed
+qed
+
+lemma i1_root_csstep:
+  assumes SN: "SN_on (csstep \<mu> (set Rs)) {s}"
+    and step: "(s, t) \<in> csrstep \<mu> (set Rs)"
+  shows "(i1 s, i1 t)
+    \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*"
+proof -
+  from step obtain l r \<sigma> where lr: "(l, r) \<in> set Rs"
+    and s: "s = l \<cdot> \<sigma>" and t: "t = r \<cdot> \<sigma>"
+    by (elim csrstepE)
+  from wf lr obtain f ls where l: "l = Fun f ls"
+    unfolding wf_trs_def by (cases l, auto)
+  have root_l: "root l = Some (f, length ls)"
+    unfolding l by simp
+  have root_s: "root s = Some (f, length ls)"
+    unfolding s l by simp
+  show ?thesis
+  proof (cases "(f, length ls) \<in> \<Delta>")
+    case True
+    from True have selected:
+      "\<And>lr. lr \<in> set Rs \<Longrightarrow>
+        root (fst lr) = Some (f, length ls) \<Longrightarrow> lr \<in> U"
+      unfolding csr_u3_delta_def by auto
+    have lrU: "(l, r) \<in> U"
+      by (rule selected[OF lr], use root_l in simp)
+    from closed have selected_closed:
+      "\<And>lr. lr \<in> U \<Longrightarrow>
+        csr_u3_root_rules_closed (set Rs) U (fst lr)
+          {p\<in>fun_poss (fst lr). p \<notin> mu_fun_poss \<mu> (fst lr)} \<and>
+        csr_u3_root_rules_closed (set Rs) U (snd lr)
+          (fun_poss (snd lr))"
+      unfolding csr_u3_usable_rules_closed_def by auto
+    have lhs_closed:
+      "csr_u3_root_rules_closed (set Rs) U l
+        {p\<in>fun_poss l. p \<notin> mu_fun_poss \<mu> l}"
+      using selected_closed[OF lrU] by simp
+    have lhs_inactive:
+      "\<And>p. p \<in> fun_poss l \<Longrightarrow>
+        p \<notin> mu_fun_poss \<mu> l \<Longrightarrow>
+        funas_term (l |_ p) \<subseteq> \<Delta>"
+      by (rule csr_u3_closed_inactive_subterm_delta[OF lhs_closed])
+    from i1_pattern_subst[OF lhs_inactive, of \<sigma>]
+    have lhs_project:
+      "(i1 (l \<cdot> \<sigma>), l \<cdot> i1_subst \<sigma>)
+        \<in> (csstep \<mu> (ce_trs cn))\<^sup>*" .
+    have C_subset:
+      "csstep \<mu> (ce_trs cn) \<subseteq>
+        csstep \<mu> (U \<union> ce_trs cn)"
+      by (rule csstep_rules_mono, simp)
+    have lhs_project':
+      "(i1 (l \<cdot> \<sigma>), l \<cdot> i1_subst \<sigma>)
+        \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*"
+      by (rule subsetD[OF rtrancl_mono[OF C_subset] lhs_project])
+    have root_U:
+      "(l \<cdot> i1_subst \<sigma>, r \<cdot> i1_subst \<sigma>)
+        \<in> csrstep \<mu> U"
+      unfolding csrstep_iff_rstep_root rstep_r_p_s_def'
+      using lrU by force
+    have root_union:
+      "(l \<cdot> i1_subst \<sigma>, r \<cdot> i1_subst \<sigma>)
+        \<in> csstep \<mu> (U \<union> ce_trs cn)"
+      using root_U csstep_rules_mono[of U "U \<union> ce_trs cn"]
+      unfolding csstep_root_nonroot by auto
+    have root_the:
+      "the (root (fst (l, r))) \<in> \<Delta>"
+      using True root_l by simp
+    have root_some: "root (fst (l, r)) \<noteq> None"
+      using root_l by simp
+    have rhs_roots:
+      "{g. \<exists>p\<in>fun_poss r. root (r |_ p) = Some g}
+        \<subseteq> \<Delta>"
+      by (rule csr_u3_closed_selected_rhs_delta[
+          OF closed lr root_the root_some, simplified])
+    have rhs_delta: "funas_term r \<subseteq> \<Delta>"
+    proof
+      fix g
+      assume "g \<in> funas_term r"
+      then obtain p h us where
+        g: "g = (h, length us)"
+        and p: "p \<in> poss r"
+        and sub: "r |_ p = Fun h us"
+        unfolding funas_term_poss_conv by blast
+      have p_fun: "p \<in> fun_poss r"
+        by (rule poss_is_Fun_fun_poss[OF p], use sub in simp)
+      have "g \<in> {g. \<exists>p\<in>fun_poss r. root (r |_ p) = Some g}"
+      proof
+        show "\<exists>q\<in>fun_poss r. root (r |_ q) = Some g"
+          by (rule bexI[of _ p], use g p_fun sub in simp_all)
+      qed
+      then show "g \<in> \<Delta>"
+        by (rule subsetD[OF rhs_roots])
+    qed
+    from i1_delta_subst[OF rhs_delta, of \<sigma>]
+    have rhs_I: "i1 (r \<cdot> \<sigma>) = r \<cdot> i1_subst \<sigma>" .
+    from rtrancl_into_rtrancl[OF lhs_project' root_union]
+    show ?thesis
+      unfolding s t rhs_I .
+  next
+    case False
+    have cs: "(s, t) \<in> csstep \<mu> (set Rs)"
+      using step unfolding csstep_root_nonroot by auto
+    from csrewrite_complete[OF wf cs]
+    have member:
+      "i1 t \<in>
+        set (Fun f (map i1 (map (\<lambda>x. x \<cdot> \<sigma>) ls)) #
+          map i1 (csrewrite \<mu> Rs s))"
+      using s l t by simp
+    from ce_trs_sound_csstep[OF member, where \<mu>=\<mu>]
+    have project:
+      "(comb cn
+          (Fun f (map i1 (map (\<lambda>x. x \<cdot> \<sigma>) ls)) #
+            map i1 (csrewrite \<mu> Rs s)),
+        i1 t) \<in> (csstep \<mu> (ce_trs cn))\<^sup>+" .
+    have source_I:
+      "i1 s =
+        comb cn
+          (Fun f (map i1 (map (\<lambda>x. x \<cdot> \<sigma>) ls)) #
+            map i1 (csrewrite \<mu> Rs s))"
+      using False SN root_s s l by (simp add: comp_def)
+    have C_subset:
+      "csstep \<mu> (ce_trs cn) \<subseteq>
+        csstep \<mu> (U \<union> ce_trs cn)"
+      by (rule csstep_rules_mono, simp)
+    have project':
+      "(i1 s, i1 t) \<in>
+        (csstep \<mu> (U \<union> ce_trs cn))\<^sup>+"
+      unfolding source_I
+      by (rule trancl_mono[OF project C_subset])
+    show ?thesis
+      by (rule trancl_into_rtrancl[OF project'])
+  qed
+qed
+
+lemma i1_csstep:
+  assumes SN: "SN_on (csstep \<mu> (set Rs)) {s}"
+    and step: "(s, t) \<in> csstep \<mu> (set Rs)"
+  shows "(i1 s, i1 t)
+    \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*"
+  using SN step
+proof (induct s arbitrary: t)
+  case (Var x)
+  from csstep_Var_empty_wf[OF wf, of x t \<mu>] Var.prems(2)
+  show ?case by contradiction
+next
+  case (Fun f ss)
+  let ?A = "csstep \<mu> (U \<union> ce_trs cn)"
+  show ?case
+  proof (cases "(f, length ss) \<in> \<Delta>")
+    case False
+    from csrewrite_complete[OF wf Fun.prems(2)]
+    have member:
+      "i1 t \<in> set
+        (Fun f (map i1 ss) #
+          map i1 (csrewrite \<mu> Rs (Fun f ss)))"
+      by simp
+    from ce_trs_sound_csstep[OF member, where \<mu>=\<mu>]
+    have project:
+      "(comb cn
+          (Fun f (map i1 ss) #
+            map i1 (csrewrite \<mu> Rs (Fun f ss))),
+        i1 t) \<in> (csstep \<mu> (ce_trs cn))\<^sup>+" .
+    have source_I:
+      "i1 (Fun f ss) =
+        comb cn
+          (Fun f (map i1 ss) #
+            map i1 (csrewrite \<mu> Rs (Fun f ss)))"
+      using False Fun.prems(1) by simp
+    have subset:
+      "csstep \<mu> (ce_trs cn) \<subseteq> ?A"
+      by (rule csstep_rules_mono, simp)
+    have "(i1 (Fun f ss), i1 t) \<in> ?A\<^sup>+"
+      unfolding source_I
+      by (rule trancl_mono[OF project subset])
+    then show ?thesis
+      by (rule trancl_into_rtrancl)
+  next
+    case True
+    from Fun.prems(2) have cases:
+      "(Fun f ss, t) \<in> csrstep \<mu> (set Rs) \<or>
+       (Fun f ss, t) \<in> csnrstep \<mu> (set Rs)"
+      unfolding csstep_root_nonroot by auto
+    from cases show ?thesis
+    proof
+      assume root: "(Fun f ss, t) \<in> csrstep \<mu> (set Rs)"
+      show ?thesis
+        by (rule i1_root_csstep[OF Fun.prems(1) root])
+    next
+      assume nonroot: "(Fun f ss, t) \<in> csnrstep \<mu> (set Rs)"
+      from nonroot obtain i ts where
+        i: "i < length ss"
+        and active: "i \<in> \<mu> (f, length ss)"
+        and t: "t = Fun f ts"
+        and len: "length ts = length ss"
+        and substep: "(ss ! i, ts ! i) \<in> csstep \<mu> (set Rs)"
+        and same: "\<And>j. j < length ss \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+          ts ! j = ss ! j"
+        by (elim csnrstep_FunE, blast)
+      have sub_fun: "\<exists>g us. ss ! i = Fun g us"
+      proof (cases "ss ! i")
+        case (Var x)
+        from csstep_Var_empty_wf[OF wf, of x "ts ! i" \<mu>]
+          substep[unfolded Var]
+        show ?thesis by contradiction
+      next
+        case (Fun g us)
+        then show ?thesis by blast
+      qed
+      have pos: "[i] \<in> mu_poss \<mu> (Fun f ss)"
+        using i active sub_fun by auto
+      from SN_on_mu_pos[OF wf pos Fun.prems(1)]
+      have sub_SN: "SN_on (csstep \<mu> (set Rs)) {ss ! i}"
+        using i by simp
+      from Fun.hyps[OF nth_mem[OF i], of "ts ! i",
+          OF sub_SN substep]
+      have sub_I: "(i1 (ss ! i), i1 (ts ! i)) \<in> ?A\<^sup>*" .
+      have ts_update: "ts = ss[i := ts ! i]"
+      proof (rule nth_equalityI)
+        show "length ts = length (ss[i := ts ! i])"
+          using len by simp
+        fix j
+        assume j: "j < length ts"
+        show "ts ! j = (ss[i := ts ! i]) ! j"
+        proof (cases "j = i")
+          case True
+          with i show ?thesis by simp
+        next
+          case False
+          from j len have "j < length ss" by simp
+          from same[OF this False] False i show ?thesis by simp
+        qed
+      qed
+      have i_map: "i < length (map i1 ss)"
+        using i by simp
+      have active_map: "i \<in> \<mu> (f, length (map i1 ss))"
+        using active by simp
+      have sub_map:
+        "((map i1 ss) ! i, i1 (ts ! i)) \<in> ?A\<^sup>*"
+        using sub_I i by simp
+      have whole:
+        "(Fun f (map i1 ss),
+          Fun f ((map i1 ss)[i := i1 (ts ! i)])) \<in> ?A\<^sup>*"
+        by (rule cssteps_Fun_updateI[OF i_map active_map sub_map])
+      have target_delta: "(f, length ts) \<in> \<Delta>"
+        using True len by simp
+      have map_update:
+        "map i1 ts = (map i1 ss)[i := i1 (ts ! i)]"
+        apply (subst (1) ts_update)
+        apply (rule nth_equalityI)
+         apply simp
+        using i
+        apply (auto simp: nth_list_update)
+        done
+      show ?thesis
+        using True target_delta whole t map_update by simp
+    qed
+  qed
+qed
+
+lemma i1_sharp_csdp_step:
+  fixes shp :: "'f \<Rightarrow> 'f"
+  assumes fresh: "\<And>g n. \<not> defined (set Rs) (shp g, n)"
+    and marked_inj: "inj shp"
+    and marked_mu:
+      "\<mu> (f, length ss) \<subseteq> \<mu> (shp f, length ss)"
+    and SN:
+      "SN_on (csdp_step shp \<mu> (set Rs)) {Fun (shp f) ss}"
+    and step:
+      "(Fun (shp f) ss, t) \<in> csdp_step shp \<mu> (set Rs)"
+  shows "(i1 (Fun (shp f) ss), i1 t)
+    \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*"
+proof -
+  have step':
+    "(sharp_term shp (Fun f ss), t)
+      \<in> csdp_step shp \<mu> (set Rs)"
+    using step by simp
+  have converted:
+    "\<exists>u. t = sharp_term shp u \<and>
+      (Fun f ss, u) \<in> csnrstep \<mu> (set Rs)"
+    apply (rule sharp_csdp_step_imp_csnrstep)
+      apply (rule wf)
+     apply (rule fresh)
+    apply (rule marked_inj)
+    apply (rule step')
+    done
+  from converted
+  obtain u where t0: "t = sharp_term shp u"
+    and nonroot: "(Fun f ss, u) \<in> csnrstep \<mu> (set Rs)"
+    by blast
+  from nonroot obtain i us where
+    i: "i < length ss"
+    and active: "i \<in> \<mu> (f, length ss)"
+    and u: "u = Fun f us"
+    and len: "length us = length ss"
+    and substep: "(ss ! i, us ! i) \<in> csstep \<mu> (set Rs)"
+    and same: "\<And>j. j < length ss \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+      us ! j = ss ! j"
+    by (elim csnrstep_FunE, blast)
+  have t: "t = Fun (shp f) us"
+    using t0 u by simp
+  from SN_sharp_csdp_imp_SN_active_arg[OF i active SN]
+  have sub_SN: "SN_on (csstep \<mu> (set Rs)) {ss ! i}" .
+  from i1_csstep[OF sub_SN substep]
+  have sub_I:
+    "(i1 (ss ! i), i1 (us ! i))
+      \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*" .
+  have sharp_delta: "(shp f, length ss) \<in> \<Delta>"
+  proof (unfold csr_u3_delta_def, intro CollectI ballI impI)
+    fix lr
+    assume mem: "lr \<in> set Rs"
+      and root: "root (fst lr) = Some (shp f, length ss)"
+    from mem root have "defined (set Rs) (shp f, length ss)"
+      unfolding defined_def
+      by (intro exI[of _ "fst lr"] exI[of _ "snd lr"], simp)
+    with fresh[of f "length ss"] show "lr \<in> U"
+      by contradiction
+  qed
+  have target_delta: "(shp f, length us) \<in> \<Delta>"
+    using sharp_delta len by simp
+  have us_update: "us = ss[i := us ! i]"
+  proof (rule nth_equalityI)
+    show "length us = length (ss[i := us ! i])"
+      using len by simp
+    fix j
+    assume j: "j < length us"
+    show "us ! j = (ss[i := us ! i]) ! j"
+    proof (cases "j = i")
+      case True
+      with i show ?thesis by simp
+    next
+      case False
+      from j len have "j < length ss" by simp
+      from same[OF this False] False i show ?thesis by simp
+    qed
+  qed
+  have sub_map:
+    "((map i1 ss) ! i, i1 (us ! i))
+      \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*"
+    using sub_I i by simp
+  have marked_active: "i \<in> \<mu> (shp f, length (map i1 ss))"
+    using active marked_mu by auto
+  have whole:
+    "(Fun (shp f) (map i1 ss),
+      Fun (shp f) ((map i1 ss)[i := i1 (us ! i)]))
+      \<in> (csstep \<mu> (U \<union> ce_trs cn))\<^sup>*"
+    by (rule cssteps_Fun_updateI,
+      use i marked_active sub_map in simp_all)
+  have map_update:
+    "map i1 us = (map i1 ss)[i := i1 (us ! i)]"
+    apply (subst (1) us_update)
+    apply (rule nth_equalityI)
+     apply simp
+    using i
+    apply (auto simp: nth_list_update)
+    done
+  show ?thesis
+    using sharp_delta target_delta whole t map_update by simp
+qed
+
+end
 
 lemma mu_supt_subst:
   assumes "mu_supt \<mu> s t"
@@ -2017,6 +3497,784 @@ proof -
   show ?thesis
     by (intro exI[of _ s] exI[of _ t] exI[of _ \<sigma>] conjI allI,
       rule data(1), rule data(2), rule between)
+qed
+
+lemma csr_u3_interpretation_steps:
+  assumes refl: "refl NS"
+    and trans: "trans NS"
+    and step_I:
+      "\<And>x y. SN_on (csdp_step Sharp \<mu> R) {x} \<Longrightarrow>
+        (x, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I x, I y) \<in> NS"
+    and SN: "SN_on (csdp_step Sharp \<mu> R) {x}"
+    and steps: "(x, y) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "(I x, I y) \<in> NS"
+  using steps SN
+proof (induct rule: rtrancl_induct)
+  case base
+  show ?case using refl unfolding refl_on_def by auto
+next
+  case (step y z)
+  from step.hyps(1) step.prems have SN_y:
+    "SN_on (csdp_step Sharp \<mu> R) {y}"
+    by (rule steps_preserve_SN_on)
+  have "(I x, I y) \<in> NS"
+    by (rule step.hyps(3)[OF step.prems])
+  moreover have "(I y, I z) \<in> NS"
+    by (rule step_I[OF SN_y step.hyps(2)])
+  ultimately show ?case
+    using trans unfolding trans_def by blast
+qed
+
+lemma csr_u3_interpretation_steps_marked:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and refl: "refl NS"
+    and trans: "trans NS"
+    and step_I:
+      "\<And>f ts y. SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts} \<Longrightarrow>
+        (Fun (Sharp f) ts, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I (Fun (Sharp f) ts), I y) \<in> NS"
+    and shape: "\<exists>f ts. x = Fun (Sharp f) ts"
+    and SN: "SN_on (csdp_step Sharp \<mu> R) {x}"
+    and steps: "(x, y) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "(I x, I y) \<in> NS \<and> (\<exists>f ts. y = Fun (Sharp f) ts)"
+  using steps SN shape
+proof (induct rule: rtrancl_induct)
+  case base
+  have "(I x, I x) \<in> NS"
+    using refl unfolding refl_on_def by auto
+  then show ?case
+    using base.prems by blast
+next
+  case (step y z)
+  from step.hyps(1) step.prems(1)
+  have SN_y: "SN_on (csdp_step Sharp \<mu> R) {y}"
+    by (rule steps_preserve_SN_on)
+  from step.hyps(3)[OF step.prems]
+  have prefix: "(I x, I y) \<in> NS"
+    and y_shape: "\<exists>f ts. y = Fun (Sharp f) ts"
+    by auto
+  then obtain f ts where y: "y = Fun (Sharp f) ts"
+    by blast
+  have last: "(I y, I z) \<in> NS"
+    unfolding y
+    by (rule step_I[OF SN_y[unfolded y] step.hyps(2)[unfolded y]])
+  have last_step:
+    "(sharp_term Sharp (Fun f ts), z) \<in> csdp_step Sharp \<mu> R"
+    using step.hyps(2) unfolding y by simp
+  have converted:
+    "\<exists>u. z = sharp_term Sharp u \<and>
+      (Fun f ts, u) \<in> csnrstep \<mu> R"
+    apply (rule sharp_csdp_step_imp_csnrstep)
+       apply (rule wf)
+      apply (rule fresh)
+     apply (rule inj_Sharp)
+    apply (rule last_step)
+    done
+  from converted
+  obtain u where z: "z = sharp_term Sharp u"
+    and nr: "(Fun f ts, u) \<in> csnrstep \<mu> R"
+    by auto
+  from nr obtain us where u: "u = Fun f us"
+    by (elim csnrstep_FunE, blast)
+  have z_shape: "\<exists>g vs. z = Fun (Sharp g) vs"
+    using z u by auto
+  have "(I x, I z) \<in> NS"
+    using prefix last trans unfolding trans_def by blast
+  then show ?case
+    using z_shape by blast
+qed
+
+lemma csr_u3_chain_simulation_from_interpretation:
+  assumes refl: "refl NS"
+    and trans: "trans NS"
+    and pair: "\<And>k. (s k, t k) \<in> P"
+    and target_SN:
+      "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+    and steps:
+      "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+        (csdp_step Sharp \<mu> R)\<^sup>*"
+    and rhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        I (snd dp \<cdot> \<rho>) = snd dp \<cdot> (\<lambda>x. I (\<rho> x))"
+    and lhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        (I (fst dp \<cdot> \<rho>),
+          fst dp \<cdot> (\<lambda>x. I (\<rho> x))) \<in> NS"
+    and step_I:
+      "\<And>x y. SN_on (csdp_step Sharp \<mu> R) {x} \<Longrightarrow>
+        (x, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I x, I y) \<in> NS"
+  shows "\<exists>\<tau>. \<forall>k.
+    (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+proof -
+  let ?\<tau> = "\<lambda>k x. I (\<sigma> k x)"
+  have rhs:
+    "t k \<cdot> ?\<tau> k = I (t k \<cdot> \<sigma> k)" for k
+    using rhs_I[OF pair[of k], of "\<sigma> k"] by simp
+  have between:
+    "(I (t k \<cdot> \<sigma> k),
+      I (s (Suc k) \<cdot> \<sigma> (Suc k))) \<in> NS" for k
+    by (rule csr_u3_interpretation_steps[
+        OF refl trans step_I target_SN steps])
+  have lhs:
+    "(I (s (Suc k) \<cdot> \<sigma> (Suc k)),
+      s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS" for k
+    using lhs_I[OF pair[of "Suc k"], of "\<sigma> (Suc k)"] by simp
+  have sim:
+    "(t k \<cdot> ?\<tau> k, s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS"
+    for k
+    unfolding rhs[of k]
+    using between[of k] lhs[of k] trans unfolding trans_def by blast
+  show ?thesis
+  proof (rule exI[of _ ?\<tau>], intro allI)
+    fix k
+    show "(t k \<cdot> ?\<tau> k, s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS"
+      by (rule sim)
+  qed
+qed
+
+lemma csr_u3_chain_simulation_from_marked_interpretation:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and refl: "refl NS"
+    and trans: "trans NS"
+    and pair: "\<And>k. (s k, t k) \<in> P"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      (\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    and target_SN:
+      "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+    and steps:
+      "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+        (csdp_step Sharp \<mu> R)\<^sup>*"
+    and rhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        I (snd dp \<cdot> \<rho>) = snd dp \<cdot> (\<lambda>x. I (\<rho> x))"
+    and lhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        (I (fst dp \<cdot> \<rho>),
+          fst dp \<cdot> (\<lambda>x. I (\<rho> x))) \<in> NS"
+    and step_I:
+      "\<And>f ts y. SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts} \<Longrightarrow>
+        (Fun (Sharp f) ts, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I (Fun (Sharp f) ts), I y) \<in> NS"
+  shows "\<exists>\<tau>. \<forall>k.
+    (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+proof -
+  let ?\<tau> = "\<lambda>k x. I (\<sigma> k x)"
+  have rhs:
+    "t k \<cdot> ?\<tau> k = I (t k \<cdot> \<sigma> k)" for k
+    using rhs_I[OF pair[of k], of "\<sigma> k"] by simp
+  have start_shape:
+    "\<exists>f us. t k \<cdot> \<sigma> k = Fun (Sharp f) us" for k
+  proof -
+    from pair_shape pair[of k]
+    obtain f us where t: "t k = Fun (Sharp f) us"
+      by auto
+    show ?thesis
+      unfolding t by auto
+  qed
+  have between:
+    "(I (t k \<cdot> \<sigma> k),
+      I (s (Suc k) \<cdot> \<sigma> (Suc k))) \<in> NS" for k
+  proof -
+    have both:
+      "(I (t k \<cdot> \<sigma> k),
+          I (s (Suc k) \<cdot> \<sigma> (Suc k))) \<in> NS \<and>
+        (\<exists>f ts. s (Suc k) \<cdot> \<sigma> (Suc k) = Fun (Sharp f) ts)"
+      apply (rule csr_u3_interpretation_steps_marked[
+          where x="t k \<cdot> \<sigma> k"
+            and y="s (Suc k) \<cdot> \<sigma> (Suc k)"
+            and I=I and NS=NS and R=R and \<mu>=\<mu>])
+             apply (rule wf)
+            apply (rule fresh)
+           apply (rule refl)
+         apply (rule trans)
+         apply (rule step_I)
+          apply assumption
+         apply assumption
+        apply (rule start_shape)
+       apply (rule target_SN)
+      apply (rule steps)
+      done
+    show ?thesis
+      using both by simp
+  qed
+  have lhs:
+    "(I (s (Suc k) \<cdot> \<sigma> (Suc k)),
+      s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS" for k
+    using lhs_I[OF pair[of "Suc k"], of "\<sigma> (Suc k)"] by simp
+  have sim:
+    "(t k \<cdot> ?\<tau> k, s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS"
+    for k
+    unfolding rhs[of k]
+    using between[of k] lhs[of k] trans unfolding trans_def by blast
+  show ?thesis
+    by (rule exI[of _ ?\<tau>], use sim in blast)
+qed
+
+theorem finite_min_csr_dpp_redpair_simulation:
+  assumes redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and simulation:
+      "\<And>s t \<sigma>.
+        (\<And>k. (s k, t k) \<in> P) \<Longrightarrow>
+        (\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}) \<Longrightarrow>
+        (\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+          (csdp_step Sharp \<mu> R)\<^sup>*) \<Longrightarrow>
+        \<exists>\<tau>. \<forall>k. (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+    and fin: "finite_min_csr_dpp Sharp \<mu> (P - S) R"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof (rule ccontr)
+  interpret compat_redpair_order S NS by (rule redpair)
+  assume not_fin: "\<not> finite_min_csr_dpp Sharp \<mu> P R"
+  from not_finite_min_csr_dpp_obtain_chain[OF not_fin]
+  obtain s t \<sigma> where
+    pair: "\<And>k. (s k, t k) \<in> P"
+    and target_SN:
+      "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+    and steps:
+      "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+        (csdp_step Sharp \<mu> R)\<^sup>*"
+    by blast
+  from simulation[of s t \<sigma>, OF pair target_SN steps]
+  obtain \<tau> where sim:
+    "\<And>k. (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+    by blast
+  let ?x = "\<lambda>k. s k \<cdot> \<tau> k"
+  let ?y = "\<lambda>k. t k \<cdot> \<tau> k"
+  have pair_ord: "(?x k, ?y k) \<in> S \<union> NS" for k
+  proof -
+    from orient pair[of k] have "(s k, t k) \<in> S \<union> NS"
+      by blast
+    then show ?thesis
+      using subst_S subst_NS by (auto simp: subst.closed_def)
+  qed
+  have x_step: "(?x k, ?x (Suc k)) \<in> S \<union> NS" for k
+  proof (cases "(?x k, ?y k) \<in> S")
+    case True
+    from compat_S_NS True sim[of k]
+    have "(?x k, ?x (Suc k)) \<in> S" by blast
+    then show ?thesis by simp
+  next
+    case False
+    with pair_ord[of k] have "(?x k, ?y k) \<in> NS" by blast
+    from trans_NS_point[OF this sim[of k]]
+    show ?thesis by simp
+  qed
+  have x_chain: "chain (NS \<union> S) ?x"
+    using x_step by (simp add: Un_commute)
+  have sn_x0: "SN_on S {?x 0}"
+    using SN unfolding SN_on_def by auto
+  from non_strict_ending[OF x_chain compat_NS_S sn_x0]
+  obtain j where tail: "\<And>k. k \<ge> j \<Longrightarrow>
+    (?x k, ?x (Suc k)) \<in> NS - S"
+    by auto
+  have pair_tail: "(s (k + j), t (k + j)) \<in> P - S" for k
+  proof (rule DiffI)
+    show "(s (k + j), t (k + j)) \<in> P"
+      by (rule pair)
+    show "(s (k + j), t (k + j)) \<notin> S"
+    proof (rule ccontr)
+      assume "\<not> (s (k + j), t (k + j)) \<notin> S"
+      then have rule_S: "(s (k + j), t (k + j)) \<in> S" by simp
+      from subst.closedD[OF subst_S rule_S]
+      have inst_S: "(?x (k + j), ?y (k + j)) \<in> S" .
+      from compat_S_NS inst_S sim[of "k + j"]
+      have "(?x (k + j), ?x (Suc (k + j))) \<in> S" by blast
+      moreover from tail[of "k + j"] have
+        "(?x (k + j), ?x (Suc (k + j))) \<notin> S" by auto
+      ultimately show False by contradiction
+    qed
+  qed
+  let ?ss = "shift s j"
+  let ?tt = "shift t j"
+  let ?\<sigma>\<sigma> = "shift \<sigma> j"
+  let ?RS = "csdp_step Sharp \<mu> R"
+  let ?RP = "csr_min_pair_step Sharp \<mu> (P - S) R"
+  let ?rel = "?RS\<^sup>* O ?RP O ?RS\<^sup>*"
+  let ?vals = "\<lambda>k. ?ss k \<cdot> ?\<sigma>\<sigma> k"
+  have rel_step: "(?vals k, ?vals (Suc k)) \<in> ?rel" for k
+  proof -
+    have pair_k: "(?ss k, ?tt k) \<in> P - S"
+      using pair_tail[of k] by simp
+    have rr_k:
+      "(?ss k \<cdot> ?\<sigma>\<sigma> k, ?tt k \<cdot> ?\<sigma>\<sigma> k) \<in>
+        rrstep (P - S)"
+      unfolding rrstep_def'
+      apply (rule Quasi_Order.mem_rel_ofI)
+      apply (rule exI[where x = "?ss k"])
+      apply (rule exI[where x = "?tt k"])
+      apply (rule exI[where x = "?\<sigma>\<sigma> k"])
+      using pair_k
+      apply simp
+      done
+    have sn_k:
+      "SN_on ?RS {?tt k \<cdot> ?\<sigma>\<sigma> k}"
+      using target_SN[of "k + j"] by simp
+    have min_k:
+      "(?ss k \<cdot> ?\<sigma>\<sigma> k, ?tt k \<cdot> ?\<sigma>\<sigma> k) \<in> ?RP"
+      unfolding csr_min_pair_step_def
+    proof (rule IntI)
+      show "(?ss k \<cdot> ?\<sigma>\<sigma> k, ?tt k \<cdot> ?\<sigma>\<sigma> k) \<in>
+        rrstep (P - S)"
+        by (rule rr_k)
+      show "(?ss k \<cdot> ?\<sigma>\<sigma> k, ?tt k \<cdot> ?\<sigma>\<sigma> k) \<in>
+        {(u, v). SN_on ?RS {v}}"
+        using sn_k by simp
+    qed
+    have steps_k:
+      "(?tt k \<cdot> ?\<sigma>\<sigma> k, ?ss (Suc k) \<cdot> ?\<sigma>\<sigma> (Suc k)) \<in>
+        ?RS\<^sup>*"
+      using steps[of "k + j"] by simp
+    have prefix:
+      "(?vals k, ?vals k) \<in> ?RS\<^sup>*"
+      by simp
+    have pair_and_suffix:
+      "(?vals k, ?vals (Suc k)) \<in> ?RP O ?RS\<^sup>*"
+      by (rule relcompI[OF min_k steps_k])
+    show ?thesis
+      by (rule relcompI[OF prefix pair_and_suffix])
+  qed
+  have vals_chain: "chain ?rel ?vals"
+    using rel_step by simp
+  have "\<not> SN_on ?rel UNIV"
+    by (rule not_SN_onI[OF _ vals_chain], simp)
+  moreover from fin have "SN_on ?rel UNIV"
+    unfolding finite_min_csr_dpp_def SN_rel_on_def .
+  ultimately show False by contradiction
+qed
+
+theorem finite_min_csr_dpp_redpair_interpretation:
+  assumes redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and rhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        I (snd dp \<cdot> \<rho>) = snd dp \<cdot> (\<lambda>x. I (\<rho> x))"
+    and lhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        (I (fst dp \<cdot> \<rho>),
+          fst dp \<cdot> (\<lambda>x. I (\<rho> x))) \<in> NS"
+    and step_I:
+      "\<And>x y. SN_on (csdp_step Sharp \<mu> R) {x} \<Longrightarrow>
+        (x, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I x, I y) \<in> NS"
+    and fin: "finite_min_csr_dpp Sharp \<mu> (P - S) R"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  show ?thesis
+  proof (rule finite_min_csr_dpp_redpair_simulation[
+      OF redpair orient _ fin])
+    fix s t \<sigma>
+    assume pair: "\<And>k. (s k, t k) \<in> P"
+      and target_SN:
+        "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+      and steps:
+        "\<And>k. (t k \<cdot> \<sigma> k,
+          s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+          (csdp_step Sharp \<mu> R)\<^sup>*"
+    show "\<exists>\<tau>. \<forall>k.
+      (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+      apply (rule csr_u3_chain_simulation_from_interpretation[
+          where NS=NS and P=P and I=I and \<mu>=\<mu> and R=R
+            and s=s and t=t and \<sigma>=\<sigma>])
+      using refl_NS trans_NS pair target_SN steps rhs_I lhs_I step_I
+      apply blast+
+      done
+  qed
+qed
+
+theorem finite_min_csr_dpp_redpair_marked_interpretation:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      (\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    and rhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        I (snd dp \<cdot> \<rho>) = snd dp \<cdot> (\<lambda>x. I (\<rho> x))"
+    and lhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        (I (fst dp \<cdot> \<rho>),
+          fst dp \<cdot> (\<lambda>x. I (\<rho> x))) \<in> NS"
+    and step_I:
+      "\<And>f ts y. SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts} \<Longrightarrow>
+        (Fun (Sharp f) ts, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I (Fun (Sharp f) ts), I y) \<in> NS"
+    and fin: "finite_min_csr_dpp Sharp \<mu> (P - S) R"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  show ?thesis
+  proof (rule finite_min_csr_dpp_redpair_simulation[
+      OF redpair orient _ fin])
+    fix s t \<sigma>
+    assume pair: "\<And>k. (s k, t k) \<in> P"
+      and target_SN:
+        "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+      and steps:
+        "\<And>k. (t k \<cdot> \<sigma> k,
+          s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+          (csdp_step Sharp \<mu> R)\<^sup>*"
+    show "\<exists>\<tau>. \<forall>k.
+      (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+      apply (rule csr_u3_chain_simulation_from_marked_interpretation[
+          where s=s and t=t and \<sigma>=\<sigma> and P=P and I=I
+            and NS=NS and R=R and \<mu>=\<mu>])
+                apply (rule wf)
+               apply (rule fresh)
+              apply (rule refl_NS)
+             apply (rule trans_NS)
+            apply (rule pair)
+           apply (rule pair_shape)
+          apply (rule target_SN)
+         apply (rule steps)
+        apply (rule rhs_I)
+        apply assumption
+       apply (rule lhs_I)
+       apply assumption
+      apply (rule step_I)
+       apply assumption
+      apply assumption
+      done
+  qed
+qed
+
+locale csr_u3_i1_lab =
+  fixes Rs :: "((('f::{showl, compare_order},
+      'l::{showl, compare_order}) lab), 'v) rules"
+    and U :: "((('f, 'l) lab), 'v) trs"
+    and \<mu>\<^sub>0 :: "(('f, 'l) lab) mu"
+    and P :: "((('f, 'l) lab), 'v) trs"
+    and cn :: "(('f, 'l) lab) \<times> nat"
+  assumes wf: "wf_trs (set Rs)"
+    and closed:
+      "csr_u3_usable_rules_closed (set Rs) U \<mu>\<^sub>0 P"
+begin
+
+sublocale I: csr_u3_i1 Rs U \<mu>\<^sub>0 P cn
+  by (unfold_locales, rule wf, rule closed)
+
+theorem finite_min_csr_dpp_u3_redpair:
+  assumes fresh:
+      "\<And>f n. \<not> defined (set Rs) (Sharp f, n)"
+    and marked_mu:
+      "\<And>f n. \<mu>\<^sub>0 (f, n) \<subseteq> \<mu>\<^sub>0 (Sharp f, n)"
+    and redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      (\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    and rewrite_NS:
+      "csstep \<mu>\<^sub>0 (U \<union> ce_trs cn) \<subseteq> NS"
+    and fin:
+      "finite_min_csr_dpp Sharp \<mu>\<^sub>0
+        (P - S) (set Rs)"
+  shows "finite_min_csr_dpp Sharp \<mu>\<^sub>0 P (set Rs)"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  let ?A = "csstep \<mu>\<^sub>0 (U \<union> ce_trs cn)"
+  have closure_NS: "?A\<^sup>* \<subseteq> NS"
+  proof
+    fix p
+    assume p: "p \<in> ?A\<^sup>*"
+    from subsetD[OF rtrancl_mono[OF rewrite_NS] p]
+    have "p \<in> NS\<^sup>*" .
+    then show "p \<in> NS"
+      using refl_NS trans_NS trans_refl_imp_rtrancl_id by auto
+  qed
+  have rhs_I:
+    "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+      I.i1 (snd dp \<cdot> \<rho>) =
+        snd dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))"
+  proof -
+    fix dp \<rho>
+    assume dp: "dp \<in> P"
+    from csr_u3_closed_pair_rhs_delta[OF closed dp]
+    show "I.i1 (snd dp \<cdot> \<rho>) =
+      snd dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))"
+      by (rule I.i1_delta_subst)
+  qed
+  have lhs_I:
+    "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+      (I.i1 (fst dp \<cdot> \<rho>),
+        fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in> NS"
+  proof -
+    fix dp \<rho>
+    assume dp: "dp \<in> P"
+    have inactive:
+      "\<And>p. p \<in> fun_poss (fst dp) \<Longrightarrow>
+        p \<notin> mu_fun_poss \<mu>\<^sub>0 (fst dp) \<Longrightarrow>
+        funas_term (fst dp |_ p) \<subseteq>
+          csr_u3_delta (set Rs) U"
+      by (rule csr_u3_closed_pair_lhs_inactive_delta[OF closed dp])
+    from I.i1_pattern_subst[OF inactive, of \<rho>]
+    have project:
+      "(I.i1 (fst dp \<cdot> \<rho>),
+        fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in>
+        (csstep \<mu>\<^sub>0 (ce_trs cn))\<^sup>*" .
+    have C_subset:
+      "csstep \<mu>\<^sub>0 (ce_trs cn) \<subseteq> ?A"
+      by (rule csstep_rules_mono, simp)
+    have project':
+      "(I.i1 (fst dp \<cdot> \<rho>),
+        fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in> ?A\<^sup>*"
+      by (rule subsetD[OF rtrancl_mono[OF C_subset] project])
+    show "(I.i1 (fst dp \<cdot> \<rho>),
+      fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in> NS"
+      by (rule subsetD[OF closure_NS project'])
+  qed
+  have step_I:
+    "\<And>f ts y.
+      SN_on (csdp_step Sharp \<mu>\<^sub>0 (set Rs))
+        {Fun (Sharp f) ts} \<Longrightarrow>
+      (Fun (Sharp f) ts, y) \<in>
+        csdp_step Sharp \<mu>\<^sub>0 (set Rs) \<Longrightarrow>
+      (I.i1 (Fun (Sharp f) ts), I.i1 y) \<in> NS"
+  proof -
+    fix f ts y
+    assume SN:
+      "SN_on (csdp_step Sharp \<mu>\<^sub>0 (set Rs))
+        {Fun (Sharp f) ts}"
+      and step:
+      "(Fun (Sharp f) ts, y) \<in>
+        csdp_step Sharp \<mu>\<^sub>0 (set Rs)"
+    from I.i1_sharp_csdp_step[
+        OF fresh inj_Sharp marked_mu[of f "length ts"] SN step]
+    show "(I.i1 (Fun (Sharp f) ts), I.i1 y) \<in> NS"
+      by (rule subsetD[OF closure_NS])
+  qed
+  show ?thesis
+    by (rule finite_min_csr_dpp_redpair_marked_interpretation[
+        OF wf fresh redpair orient pair_shape rhs_I lhs_I step_I fin])
+qed
+
+end
+
+theorem finite_min_csr_dpp_u3_redpair:
+  fixes Rs :: "((('f::{showl, compare_order},
+      'l::{showl, compare_order}) lab), 'v) rules"
+    and U :: "((('f, 'l) lab), 'v) trs"
+    and \<mu>\<^sub>0 :: "(('f, 'l) lab) mu"
+    and P :: "((('f, 'l) lab), 'v) trs"
+  assumes wf: "wf_trs (set Rs)"
+    and closed:
+      "csr_u3_usable_rules_closed (set Rs) U
+        \<mu>\<^sub>0 P"
+    and fresh:
+      "\<And>f n. \<not> defined (set Rs) (Sharp f, n)"
+    and marked_mu:
+      "\<And>f n. \<mu>\<^sub>0 (f, n) \<subseteq> \<mu>\<^sub>0 (Sharp f, n)"
+    and redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      (\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    and U_NS: "U \<subseteq> NS"
+    and ce: "ce_compatible NS"
+    and fin:
+      "finite_min_csr_dpp Sharp \<mu>\<^sub>0
+        (P - S) (set Rs)"
+  shows "finite_min_csr_dpp Sharp \<mu>\<^sub>0 P (set Rs)"
+proof (cases "P = {}")
+  case True
+  have diff: "P - S = P"
+    using True by simp
+  from fin show ?thesis
+    unfolding diff .
+next
+  case False
+  then obtain dp where dp: "dp \<in> P"
+    by blast
+  from pair_shape dp obtain f us where lhs: "fst dp = Fun (Sharp f) us"
+    by (cases dp, auto)
+  obtain n where ce_bound:
+    "\<And>c m. m \<ge> n \<Longrightarrow> ce_trs (c, m) \<subseteq> NS"
+  proof (rule ce_compatibleE[OF ce])
+    fix n
+    assume bound: "\<And>c m. m \<ge> n \<Longrightarrow> ce_trs (c, m) \<subseteq> NS"
+    show thesis
+      by (rule that[OF bound])
+  qed
+  have ce_NS: "ce_trs (Sharp f, n) \<subseteq> NS"
+    by (rule ce_bound, simp)
+  let ?cn = "(Sharp f, n)"
+  interpret rp: compat_redpair_order S NS by (rule redpair)
+  have rules_NS: "U \<union> ce_trs ?cn \<subseteq> NS"
+    using U_NS ce_NS by auto
+  have rewrite_NS:
+    "csstep \<mu>\<^sub>0 (U \<union> ce_trs ?cn) \<subseteq> NS"
+  proof (rule subset_trans[OF csstep_subset_rstep])
+    have "rstep (U \<union> ce_trs ?cn) \<subseteq> rstep NS"
+      by (rule rstep_mono[OF rules_NS])
+    also have "... \<subseteq> NS"
+      by (rule rp.rstep_NS)
+    finally show "rstep (U \<union> ce_trs ?cn) \<subseteq> NS" .
+  qed
+  interpret L: csr_u3_i1_lab Rs U \<mu>\<^sub>0 P ?cn
+    by (unfold_locales, rule wf, rule closed)
+  show ?thesis
+    by (rule L.finite_min_csr_dpp_u3_redpair[
+        OF fresh marked_mu redpair orient pair_shape rewrite_NS fin])
+qed
+
+definition csr_sharp_pairs_check where
+  "csr_sharp_pairs_check P = list_all (\<lambda>(l, r).
+    (case root l of Some (Sharp f, n) \<Rightarrow> True | _ \<Rightarrow> False) \<and>
+    (case root r of Some (Sharp f, n) \<Rightarrow> True | _ \<Rightarrow> False)) P"
+
+lemma csr_sharp_pairs_check_sound:
+  assumes "csr_sharp_pairs_check P"
+  shows "\<forall>(u, v)\<in>set P.
+    (\<exists>f us. u = Fun (Sharp f) us) \<and>
+    (\<exists>g vs. v = Fun (Sharp g) vs)"
+proof (intro ballI, clarify)
+  fix u v
+  assume mem: "(u, v) \<in> set P"
+  from assms mem have checks:
+    "(case root u of Some (Sharp f, n) \<Rightarrow> True | _ \<Rightarrow> False) \<and>
+     (case root v of Some (Sharp f, n) \<Rightarrow> True | _ \<Rightarrow> False)"
+    unfolding csr_sharp_pairs_check_def by (auto simp: list_all_iff)
+  from checks obtain f n where uroot: "root u = Some (Sharp f, n)"
+    by (cases "root u"; auto split: lab.splits)
+  then obtain us where u: "u = Fun (Sharp f) us"
+    by (cases u, auto)
+  from checks obtain g m where vroot: "root v = Some (Sharp g, m)"
+    by (cases "root v"; auto split: lab.splits)
+  then obtain vs where v: "v = Fun (Sharp g) vs"
+    by (cases v, auto)
+  show "(\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    using u v by blast
+qed
+
+definition csr_u3_redpair_proc where
+  "csr_u3_redpair_proc J \<mu> rp Premove U dpp = check_return (do {
+    rel_impl_redpair rp;
+    csr_sharp_mu_check \<mu>;
+    let (ps, pns) = dpp_ops.split_pairs J dpp Premove;
+    check (csr_sharp_pairs_check (dpp_ops.pairs J dpp))
+      (showsl_lit (STR ''U3 reduction pair requires marked CS-DPs''));
+    check (csr_u3_usable_rules_check
+        (dpp_ops.rules J dpp) U \<mu> (dpp_ops.pairs J dpp))
+      (showsl_lit (STR ''supplied rules are not a closed U3 set''));
+    rel_impl.ce_compat rp
+      <+? (\<lambda>s. showsl_lit
+        (STR ''U3 reduction pair requires C-epsilon compatibility\<newline>'') \<circ> s);
+    rel_impl_ns rp (U @ pns)
+      <+? (\<lambda>s. showsl_lit
+        (STR ''problem weakly orienting U3 rules or retained CS-DPs\<newline>'') \<circ> s);
+    rel_impl_s rp ps
+      <+? (\<lambda>s. showsl_lit
+        (STR ''problem strictly orienting removed CS-DPs\<newline>'') \<circ> s)
+  }) (dpp_spec.delete_pairs J dpp Premove)"
+
+lemma csr_u3_redpair_proc_sound:
+  fixes J :: "('dpp, ('f::{showl, compare_order},
+      'l::{showl, compare_order}) lab, string) dpp_ops"
+    and \<mu> :: "(('f, 'l) lab) muL"
+    and rp :: "(('f, 'l) lab, string) rel_impl"
+  assumes J: "dpp_spec J" and rp: "rel_impl rp"
+    and proc: "csr_u3_redpair_proc J \<mu> rp Premove U dpp = return dpp'"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fresh: "\<And>f n. \<not> defined (set (dpp_ops.rules J dpp)) (Sharp f, n)"
+    and fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.pairs J dpp')) (set (dpp_ops.rules J dpp'))"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  obtain ps pns where split: "split_pairs dpp Premove = (ps, pns)"
+    by force
+  from split_pairs_sound[OF split]
+  have ps: "set ps = set (pairs dpp) \<inter> set Premove"
+    and pns: "set pns = set (pairs dpp) - set Premove"
+    by auto
+  from proc[unfolded csr_u3_redpair_proc_def Let_def split, simplified]
+  have valid: "isOK (rel_impl_redpair rp)"
+    and sharp_mu: "isOK (csr_sharp_mu_check \<mu>)"
+    and shape: "csr_sharp_pairs_check (pairs dpp)"
+    and closed: "csr_u3_usable_rules_check (rules dpp) U \<mu> (pairs dpp)"
+    and ce: "isOK (rel_impl.ce_compat rp)"
+    and weak: "isOK (rel_impl_ns rp (U @ pns))"
+    and strict: "isOK (rel_impl_s rp ps)"
+    and dpp': "dpp' = delete_pairs dpp Premove"
+    by (auto simp: isOK_check rel_impl_list)
+  from valid[unfolded rel_impl_redpair_def, simplified]
+  have impl_valid: "isOK (rel_impl.valid rp)"
+    and standard: "isOK (rel_impl.standard rp)"
+    and sn: "isOK (rel_impl.SN rp)"
+    and subst: "isOK (rel_impl.subst_s rp)"
+    by auto
+  let ?all = "ps @ U @ pns"
+  from rp[unfolded rel_impl_def] impl_valid
+  have all_rel: "\<forall>V. \<exists>S NS NST. rel_impl_prop rp V S NS NST"
+    by blast
+  have all_rel': "\<exists>S NS NST. rel_impl_prop rp ?all S NS NST"
+    by (rule spec[OF all_rel])
+  obtain S NS NST where rel_prop: "rel_impl_prop rp ?all S NS NST"
+    using all_rel' by presburger
+  from rel_prop strict weak subst sn standard
+  have strict_S: "set ps \<subseteq> S"
+    and U_NS: "set U \<subseteq> NS"
+    and pns_NS: "set pns \<subseteq> NS"
+    and S_NS: "S \<subseteq> NS"
+    and S_NS_comp: "S O NS \<subseteq> S"
+    and NS_S_comp: "NS O S \<subseteq> S"
+    and ctxt_NS: "ctxt.closed NS"
+    and trans_NS: "trans NS"
+    and refl_NS: "refl NS"
+    and subst_NS: "subst.closed NS"
+    and trans_S: "trans S"
+    and irrefl_S: "irrefl S"
+    and subst_S: "subst.closed S"
+    and SN_S: "SN S"
+    and ce_NS: "ce_compatible NS"
+    using ce by (auto simp: rel_impl_list)
+  have redpair: "compat_redpair_order S NS"
+    by (unfold_locales; fact)
+  have orient: "set (pairs dpp) \<subseteq> S \<union> NS"
+    using strict_S pns_NS unfolding ps pns by auto
+  have closed_sem: "csr_u3_usable_rules_closed
+      (set (rules dpp)) (set U) (mu_of \<mu>) (set (pairs dpp))"
+    by (rule csr_u3_usable_rules_check_sound[OF closed])
+  have shape_sem: "\<forall>(u, v)\<in>set (pairs dpp).
+      (\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    by (rule csr_sharp_pairs_check_sound[OF shape])
+  have marked_mu:
+      "\<And>f n. mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
+    by (rule csr_sharp_mu_check_sound[OF sharp_mu])
+  have pairs': "set (pairs dpp') = set (pairs dpp) - set Premove"
+    using dpp' delete_P_Pw_sound[of dpp Premove Premove]
+      pairs_sound[of dpp'] by auto
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using dpp' delete_P_Pw_sound[of dpp Premove Premove]
+      rules_sound[of dpp'] by auto
+  have sub: "set (pairs dpp) - S \<subseteq>
+      set (pairs dpp) - set Premove"
+    using strict_S unfolding ps by auto
+  have fin_S: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp) - S) (set (rules dpp))"
+    by (rule finite_min_csr_dpp_mono_pairs[OF sub fin[unfolded pairs' rules']])
+  show ?thesis
+    apply (rule finite_min_csr_dpp_u3_redpair)
+             apply (rule wf)
+            apply (rule closed_sem)
+           apply (rule fresh)
+          apply (rule marked_mu)
+         apply (rule redpair)
+        apply (rule orient)
+       apply (rule shape_sem)
+      apply (rule U_NS)
+     apply (rule ce_NS)
+    apply (rule fin_S)
+    done
 qed
 
 theorem finite_min_csr_dpp_sct_active_subterm:
@@ -2836,6 +5094,44 @@ proof -
   }
 qed
 
+fun check_csr_dp_ordinary_min ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f, label_type, string) dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
+    (case prf of
+      Redpair_UR_Proc redp Pr U subprf \<Rightarrow>
+        debug i (STR ''CSR U3 reduction pair'') (do {
+          dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp
+            <+? (\<lambda>s. i \<circ> showsl_lit
+              (STR '': error when applying CSR U3 reduction pair\<newline>'') \<circ> s);
+          check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
+            (CSR_DP_Ordinary_Proof subprf)
+            <+? (\<lambda>s. i \<circ> showsl_lit
+              (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
+        })
+    | _ \<Rightarrow> check_csr_dp_termination_proof_core I J \<mu> a i dpp
+        (CSR_DP_Ordinary_Proof prf))"
+
+lemma check_csr_dp_ordinary_min_Redpair_UR_Proc:
+  "check_csr_dp_ordinary_min I J \<mu> a i dpp
+      (Redpair_UR_Proc redp Pr U subprf) =
+    debug i (STR ''CSR U3 reduction pair'') (do {
+      dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error when applying CSR U3 reduction pair\<newline>'') \<circ> s);
+      check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
+        (CSR_DP_Ordinary_Proof subprf)
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
+    })"
+  by (subst check_csr_dp_ordinary_min.simps, simp)
+
+declare check_csr_dp_ordinary_min.simps[simp del]
+
 fun check_csr_dp_termination_proof_min ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
@@ -2854,8 +5150,7 @@ where
     check_csr_dp_termination_proof_core I J \<mu> a i dpp CSR_DP_P_is_Empty"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Ordinary_Proof prf) =
-    check_csr_dp_termination_proof_core I J \<mu> a i dpp
-      (CSR_DP_Ordinary_Proof prf)"
+    check_csr_dp_ordinary_min I J \<mu> a i dpp prf"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf) =
     check_csr_dp_termination_proof_core I J \<mu> a i dpp
@@ -2936,6 +5231,123 @@ next
   qed
 qed
 
+lemma plain_csr_dpp_delete_pairs:
+  assumes J: "dpp_spec J" and plain: "plain_csr_dpp J dpp"
+  shows "plain_csr_dpp J (dpp_spec.delete_pairs J dpp Pr)"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "delete_pairs dpp Pr"
+  have sem: "dpp_ops.dpp J ?d =
+    (NFS dpp, M dpp, set (P dpp) - set Pr,
+      set (Pw dpp) - set Pr, set (Q dpp), set (R dpp), set (Rw dpp))"
+    by (rule delete_P_Pw_sound)
+  have sem': "dpp_ops.dpp J ?d =
+    (NFS ?d, M ?d, set (P ?d), set (Pw ?d),
+      set (Q ?d), set (R ?d), set (Rw ?d))"
+    by (rule dpp_sound)
+  from plain sem sem' show ?thesis
+    unfolding plain_csr_dpp_def by auto
+qed
+
+lemma check_csr_dp_ordinary_min_fallback_sound:
+  assumes eq: "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
+      check_csr_dp_termination_proof_core I J \<mu> a i dpp
+        (CSR_DP_Ordinary_Proof prf)"
+    and I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and mode: "a = False"
+    and ok: "isOK (check_csr_dp_ordinary_min I J \<mu> a i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  from eq mode ok have core:
+    "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+      (CSR_DP_Ordinary_Proof prf))"
+    by simp
+  from check_csr_dp_termination_proof_core_sound[OF I J plain core]
+  show ?thesis by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+qed
+
+lemma check_csr_dp_ordinary_min_fallback_eq:
+  assumes nr: "\<And>redp Pr U subprf.
+    prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
+  shows "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
+    check_csr_dp_termination_proof_core I J \<mu> a i dpp
+      (CSR_DP_Ordinary_Proof prf)"
+  using nr
+  by (cases "prf"; simp add: check_csr_dp_ordinary_min.simps)
+
+lemma check_csr_dp_ordinary_min_non_u3_sound:
+  assumes nr: "\<And>redp Pr U subprf.
+      prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
+    and I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and mode: "a = False"
+    and ok: "isOK (check_csr_dp_ordinary_min I J \<mu> a i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+  apply (rule check_csr_dp_ordinary_min_fallback_sound)
+       apply (rule check_csr_dp_ordinary_min_fallback_eq)
+       apply (rule nr)
+      apply (rule I)
+     apply (rule J)
+    apply (rule plain)
+   apply (rule mode)
+  apply (rule ok)
+  done
+
+lemma check_csr_dp_ordinary_min_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fresh: "\<And>f n. \<not> defined (set (dpp_ops.rules J dpp)) (Sharp f, n)"
+    and mode: "a = False"
+    and ok: "isOK (check_csr_dp_ordinary_min I J \<mu> a i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof (cases "\<exists>redp Pr U subprf.
+    prf = Redpair_UR_Proc redp Pr U subprf")
+  case True
+  then obtain redp Pr U subprf where
+    Redpair_UR_Proc: "prf = Redpair_UR_Proc redp Pr U subprf"
+    by blast
+  from ok mode Redpair_UR_Proc obtain dpp' where
+    proc: "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp = return dpp'"
+    and core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False
+      (add_index i 1) dpp' (CSR_DP_Ordinary_Proof subprf))"
+    by (auto simp add: check_csr_dp_ordinary_min_Redpair_UR_Proc)
+  have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+    using proc unfolding csr_u3_redpair_proc_def by auto
+  have plain': "plain_csr_dpp J dpp'"
+    unfolding dpp'
+    by (rule plain_csr_dpp_delete_pairs[OF J plain])
+  interpret dpp_spec J by (rule J)
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp']
+    by auto
+  from check_csr_dp_termination_proof_core_sound[OF I J plain' core]
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp')) (set (rules dpp'))"
+    by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+  show ?thesis
+    apply (rule csr_u3_redpair_proc_sound)
+         apply (rule J)
+        apply (rule get_rel_impl)
+       apply (rule proc)
+      apply (rule wf)
+     apply (rule fresh)
+    apply (rule fin')
+    done
+next
+  case False
+  have nr: "\<And>redp Pr U subprf.
+      prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
+    using False by blast
+  from check_csr_dp_ordinary_min_non_u3_sound[
+    OF nr I J plain mode ok]
+  show ?thesis .
+qed
+
 lemma check_csr_dp_termination_proof_min_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
     and plain: "plain_csr_dpp J dpp"
@@ -2954,11 +5366,19 @@ proof (induct "prf" arbitrary: dpp i)
   show ?case by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
 next
   case (CSR_DP_Ordinary_Proof x)
-  then have core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
-      (CSR_DP_Ordinary_Proof x))"
+  from CSR_DP_Ordinary_Proof.prems(1) have ordinary_ok:
+    "isOK (check_csr_dp_ordinary_min I J \<mu> False i dpp x)"
     by simp
-  from check_csr_dp_termination_proof_core_sound[OF I J CSR_DP_Ordinary_Proof.prems(2) core]
-  show ?case by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+  show ?case
+    apply (rule check_csr_dp_ordinary_min_sound)
+          apply (rule I)
+         apply (rule J)
+        apply (rule CSR_DP_Ordinary_Proof.prems(2))
+       apply (rule CSR_DP_Ordinary_Proof.prems(3))
+      apply (rule CSR_DP_Ordinary_Proof.prems(4))
+     apply (rule refl)
+    apply (rule ordinary_ok)
+    done
 next
   case (CSR_DP_Subterm_Criterion_Proc p rseq Pr subprf)
   then have core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
