@@ -3586,6 +3586,121 @@ next
     using z_shape by blast
 qed
 
+lemma csr_u3_unhiding_csdp_step_empty:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>n. \<not> defined R (U, n)"
+    and unsharp: "\<not> is_sharp_lab U"
+  shows "(Fun U ts, y) \<notin> csdp_step Sharp \<mu> R"
+proof
+  assume step: "(Fun U ts, y) \<in> csdp_step Sharp \<mu> R"
+  then obtain p lr \<sigma> where
+    rewrite: "(Fun U ts, y) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csdp_step_cond Sharp \<mu> p (Fun U ts)"
+    unfolding csdp_step_def csdp_step_p_def by auto
+  show False
+  proof (cases p)
+    case Nil
+    from rewrite Nil have lr: "lr \<in> R"
+      and lhs: "fst lr \<cdot> \<sigma> = Fun U ts"
+      unfolding rstep_r_p_s_def' by auto
+    from wf lr have "\<exists>f ss. fst lr = Fun f ss"
+      unfolding wf_trs_def by (cases lr, auto)
+    then obtain f ss where l: "fst lr = Fun f ss"
+      by blast
+    from lhs l have f: "f = U" and len: "length ss = length ts"
+      by auto
+    from lr l f len have "defined R (U, length ts)"
+      unfolding defined_def by (cases lr, auto)
+    with fresh show False by contradiction
+  next
+    case (Cons i q)
+    from rewrite Cons have pos: "i # q \<in> poss (Fun U ts)"
+      unfolding rstep_r_p_s_def' by auto
+    from cond[unfolded csdp_step_cond_def, rule_format,
+        of "[]" i q] Cons pos
+    obtain f where "U = Sharp f"
+      by auto
+    with unsharp show False by simp
+  qed
+qed
+
+lemma csr_u3_unhiding_csdp_steps_identity:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>n. \<not> defined R (U, n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and steps: "(Fun U ts, y) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "y = Fun U ts"
+  using steps
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by simp
+next
+  case (step y z)
+  from step.hyps(3) have "y = Fun U ts" .
+  from csr_u3_unhiding_csdp_step_empty[
+      OF wf fresh unsharp, of ts z]
+    step.hyps(2)[unfolded this]
+  show ?case by contradiction
+qed
+
+definition csr_u3_mixed_term_shape where
+  "csr_u3_mixed_term_shape U t \<longleftrightarrow>
+    (\<exists>f ts. t = Fun (Sharp f) ts) \<or> (\<exists>ts. t = Fun U ts)"
+
+lemma csr_u3_mixed_term_shape_subst:
+  assumes "csr_u3_mixed_term_shape U t"
+  shows "csr_u3_mixed_term_shape U (t \<cdot> \<sigma>)"
+  using assms unfolding csr_u3_mixed_term_shape_def by auto
+
+lemma csr_u3_interpretation_steps_mixed:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh_sharp: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and fresh_U: "\<And>n. \<not> defined R (U, n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and refl: "refl NS"
+    and trans: "trans NS"
+    and step_I:
+      "\<And>f ts y. SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts} \<Longrightarrow>
+        (Fun (Sharp f) ts, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I (Fun (Sharp f) ts), I y) \<in> NS"
+    and shape: "csr_u3_mixed_term_shape U x"
+    and SN: "SN_on (csdp_step Sharp \<mu> R) {x}"
+    and steps: "(x, y) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "(I x, I y) \<in> NS \<and> csr_u3_mixed_term_shape U y"
+proof -
+  consider (marked) f ts where "x = Fun (Sharp f) ts"
+    | (hidden) ts where "x = Fun U ts"
+    using shape unfolding csr_u3_mixed_term_shape_def by blast
+  then show ?thesis
+  proof cases
+    case (marked f ts)
+    have marked_shape: "\<exists>g us. x = Fun (Sharp g) us"
+      using marked by blast
+    from csr_u3_interpretation_steps_marked[
+        where R=R and \<mu>=\<mu> and NS=NS and I=I and x=x and y=y,
+        OF wf fresh_sharp refl trans step_I marked_shape SN steps]
+    have sim: "(I x, I y) \<in> NS"
+      and y_marked: "\<exists>f ts. y = Fun (Sharp f) ts"
+      by auto
+    show ?thesis
+      using sim y_marked by (simp add: csr_u3_mixed_term_shape_def)
+  next
+    case (hidden ts)
+    from csr_u3_unhiding_csdp_steps_identity[
+        OF wf fresh_U unsharp steps[unfolded hidden]]
+    have y: "y = Fun U ts" .
+    have "(I x, I y) \<in> NS"
+      unfolding hidden y using refl unfolding refl_on_def by auto
+    moreover have "(\<exists>f us. y = Fun (Sharp f) us) \<or> (\<exists>us. y = Fun U us)"
+      unfolding y by blast
+    ultimately show ?thesis
+      unfolding csr_u3_mixed_term_shape_def by blast
+  qed
+qed
+
 lemma csr_u3_chain_simulation_from_interpretation:
   assumes refl: "refl NS"
     and trans: "trans NS"
@@ -3701,6 +3816,72 @@ proof -
       done
     show ?thesis
       using both by simp
+  qed
+  have lhs:
+    "(I (s (Suc k) \<cdot> \<sigma> (Suc k)),
+      s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS" for k
+    using lhs_I[OF pair[of "Suc k"], of "\<sigma> (Suc k)"] by simp
+  have sim:
+    "(t k \<cdot> ?\<tau> k, s (Suc k) \<cdot> ?\<tau> (Suc k)) \<in> NS"
+    for k
+    unfolding rhs[of k]
+    using between[of k] lhs[of k] trans unfolding trans_def by blast
+  show ?thesis
+    by (rule exI[of _ ?\<tau>], use sim in blast)
+qed
+
+lemma csr_u3_chain_simulation_from_mixed_interpretation:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh_sharp: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and fresh_U: "\<And>n. \<not> defined R (U, n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and refl: "refl NS"
+    and trans: "trans NS"
+    and pair: "\<And>k. (s k, t k) \<in> P"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      csr_u3_mixed_term_shape U u \<and> csr_u3_mixed_term_shape U v"
+    and target_SN:
+      "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+    and steps:
+      "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+        (csdp_step Sharp \<mu> R)\<^sup>*"
+    and rhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        I (snd dp \<cdot> \<rho>) = snd dp \<cdot> (\<lambda>x. I (\<rho> x))"
+    and lhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        (I (fst dp \<cdot> \<rho>),
+          fst dp \<cdot> (\<lambda>x. I (\<rho> x))) \<in> NS"
+    and step_I:
+      "\<And>f ts y. SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts} \<Longrightarrow>
+        (Fun (Sharp f) ts, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I (Fun (Sharp f) ts), I y) \<in> NS"
+  shows "\<exists>\<tau>. \<forall>k.
+    (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+proof -
+  let ?\<tau> = "\<lambda>k x. I (\<sigma> k x)"
+  have rhs:
+    "t k \<cdot> ?\<tau> k = I (t k \<cdot> \<sigma> k)" for k
+    using rhs_I[OF pair[of k], of "\<sigma> k"] by simp
+  have start_shape:
+    "csr_u3_mixed_term_shape U (t k \<cdot> \<sigma> k)" for k
+  proof -
+    from pair_shape pair[of k]
+    have "csr_u3_mixed_term_shape U (t k)" by auto
+    then show ?thesis by (rule csr_u3_mixed_term_shape_subst)
+  qed
+  have between:
+    "(I (t k \<cdot> \<sigma> k),
+      I (s (Suc k) \<cdot> \<sigma> (Suc k))) \<in> NS" for k
+  proof -
+    from csr_u3_interpretation_steps_mixed[
+        where x="t k \<cdot> \<sigma> k"
+          and y="s (Suc k) \<cdot> \<sigma> (Suc k)"
+          and U=U and I=I and NS=NS and R=R and \<mu>=\<mu>,
+        OF wf fresh_sharp fresh_U unsharp refl trans step_I
+          start_shape target_SN steps]
+    show ?thesis by simp
   qed
   have lhs:
     "(I (s (Suc k) \<cdot> \<sigma> (Suc k)),
@@ -3945,6 +4126,68 @@ proof -
   qed
 qed
 
+theorem finite_min_csr_dpp_redpair_mixed_interpretation:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh_sharp: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and fresh_U: "\<And>n. \<not> defined R (U, n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      csr_u3_mixed_term_shape U u \<and> csr_u3_mixed_term_shape U v"
+    and rhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        I (snd dp \<cdot> \<rho>) = snd dp \<cdot> (\<lambda>x. I (\<rho> x))"
+    and lhs_I:
+      "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+        (I (fst dp \<cdot> \<rho>),
+          fst dp \<cdot> (\<lambda>x. I (\<rho> x))) \<in> NS"
+    and step_I:
+      "\<And>f ts y. SN_on (csdp_step Sharp \<mu> R) {Fun (Sharp f) ts} \<Longrightarrow>
+        (Fun (Sharp f) ts, y) \<in> csdp_step Sharp \<mu> R \<Longrightarrow>
+        (I (Fun (Sharp f) ts), I y) \<in> NS"
+    and fin: "finite_min_csr_dpp Sharp \<mu> (P - S) R"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  show ?thesis
+  proof (rule finite_min_csr_dpp_redpair_simulation[
+      OF redpair orient _ fin])
+    fix s t \<sigma>
+    assume pair: "\<And>k. (s k, t k) \<in> P"
+      and target_SN:
+        "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+      and steps:
+        "\<And>k. (t k \<cdot> \<sigma> k,
+          s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+          (csdp_step Sharp \<mu> R)\<^sup>*"
+    show "\<exists>\<tau>. \<forall>k.
+      (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
+      apply (rule csr_u3_chain_simulation_from_mixed_interpretation[
+          where s=s and t=t and \<sigma>=\<sigma> and P=P and I=I
+            and NS=NS and R=R and \<mu>=\<mu> and U=U])
+                 apply (rule wf)
+                apply (rule fresh_sharp)
+               apply (rule fresh_U)
+              apply (rule unsharp)
+             apply (rule refl_NS)
+            apply (rule trans_NS)
+           apply (rule pair)
+          apply (rule pair_shape)
+         apply (rule target_SN)
+        apply (rule steps)
+       apply (rule rhs_I)
+       apply assumption
+      apply (rule lhs_I)
+      apply assumption
+     apply (rule step_I)
+      apply assumption
+     apply assumption
+      done
+  qed
+qed
+
 locale csr_u3_i1_lab =
   fixes Rs :: "((('f::{showl, compare_order},
       'l::{showl, compare_order}) lab), 'v) rules"
@@ -4054,6 +4297,103 @@ proof -
         OF wf fresh redpair orient pair_shape rhs_I lhs_I step_I fin])
 qed
 
+theorem finite_min_csr_dpp_mixed_u3_redpair:
+  fixes H :: "(('f, 'l) lab)"
+  assumes fresh_sharp:
+      "\<And>f n. \<not> defined (set Rs) (Sharp f, n)"
+    and fresh_H: "\<And>n. \<not> defined (set Rs) (H, n)"
+    and unsharp: "\<not> is_sharp_lab H"
+    and marked_mu:
+      "\<And>f n. \<mu>\<^sub>0 (f, n) \<subseteq> \<mu>\<^sub>0 (Sharp f, n)"
+    and redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      csr_u3_mixed_term_shape H u \<and> csr_u3_mixed_term_shape H v"
+    and rewrite_NS:
+      "csstep \<mu>\<^sub>0 (U \<union> ce_trs cn) \<subseteq> NS"
+    and fin:
+      "finite_min_csr_dpp Sharp \<mu>\<^sub>0
+        (P - S) (set Rs)"
+  shows "finite_min_csr_dpp Sharp \<mu>\<^sub>0 P (set Rs)"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  let ?A = "csstep \<mu>\<^sub>0 (U \<union> ce_trs cn)"
+  have closure_NS: "?A\<^sup>* \<subseteq> NS"
+  proof
+    fix p
+    assume p: "p \<in> ?A\<^sup>*"
+    from subsetD[OF rtrancl_mono[OF rewrite_NS] p]
+    have "p \<in> NS\<^sup>*" .
+    then show "p \<in> NS"
+      using refl_NS trans_NS trans_refl_imp_rtrancl_id by auto
+  qed
+  have rhs_I:
+    "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+      I.i1 (snd dp \<cdot> \<rho>) =
+        snd dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))"
+  proof -
+    fix dp \<rho>
+    assume dp: "dp \<in> P"
+    from csr_u3_closed_pair_rhs_delta[OF closed dp]
+    show "I.i1 (snd dp \<cdot> \<rho>) =
+      snd dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))"
+      by (rule I.i1_delta_subst)
+  qed
+  have lhs_I:
+    "\<And>dp \<rho>. dp \<in> P \<Longrightarrow>
+      (I.i1 (fst dp \<cdot> \<rho>),
+        fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in> NS"
+  proof -
+    fix dp \<rho>
+    assume dp: "dp \<in> P"
+    have inactive:
+      "\<And>p. p \<in> fun_poss (fst dp) \<Longrightarrow>
+        p \<notin> mu_fun_poss \<mu>\<^sub>0 (fst dp) \<Longrightarrow>
+        funas_term (fst dp |_ p) \<subseteq>
+          csr_u3_delta (set Rs) U"
+      by (rule csr_u3_closed_pair_lhs_inactive_delta[OF closed dp])
+    from I.i1_pattern_subst[OF inactive, of \<rho>]
+    have project:
+      "(I.i1 (fst dp \<cdot> \<rho>),
+        fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in>
+        (csstep \<mu>\<^sub>0 (ce_trs cn))\<^sup>*" .
+    have C_subset:
+      "csstep \<mu>\<^sub>0 (ce_trs cn) \<subseteq> ?A"
+      by (rule csstep_rules_mono, simp)
+    have project':
+      "(I.i1 (fst dp \<cdot> \<rho>),
+        fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in> ?A\<^sup>*"
+      by (rule subsetD[OF rtrancl_mono[OF C_subset] project])
+    show "(I.i1 (fst dp \<cdot> \<rho>),
+      fst dp \<cdot> (\<lambda>x. I.i1 (\<rho> x))) \<in> NS"
+      by (rule subsetD[OF closure_NS project'])
+  qed
+  have step_I:
+    "\<And>f ts y.
+      SN_on (csdp_step Sharp \<mu>\<^sub>0 (set Rs))
+        {Fun (Sharp f) ts} \<Longrightarrow>
+      (Fun (Sharp f) ts, y) \<in>
+        csdp_step Sharp \<mu>\<^sub>0 (set Rs) \<Longrightarrow>
+      (I.i1 (Fun (Sharp f) ts), I.i1 y) \<in> NS"
+  proof -
+    fix f ts y
+    assume SN:
+      "SN_on (csdp_step Sharp \<mu>\<^sub>0 (set Rs))
+        {Fun (Sharp f) ts}"
+      and step:
+      "(Fun (Sharp f) ts, y) \<in>
+        csdp_step Sharp \<mu>\<^sub>0 (set Rs)"
+    from I.i1_sharp_csdp_step[
+        OF fresh_sharp inj_Sharp marked_mu[of f "length ts"] SN step]
+    show "(I.i1 (Fun (Sharp f) ts), I.i1 y) \<in> NS"
+      by (rule subsetD[OF closure_NS])
+  qed
+  show ?thesis
+    by (rule finite_min_csr_dpp_redpair_mixed_interpretation[
+        OF wf fresh_sharp fresh_H unsharp redpair orient pair_shape
+          rhs_I lhs_I step_I fin])
+qed
+
 end
 
 theorem finite_min_csr_dpp_u3_redpair:
@@ -4123,6 +4463,65 @@ next
         OF fresh marked_mu redpair orient pair_shape rewrite_NS fin])
 qed
 
+theorem finite_min_csr_dpp_mixed_u3_redpair:
+  fixes Rs :: "((('f::{showl, compare_order},
+      'l::{showl, compare_order}) lab), 'v) rules"
+    and Ur :: "((('f, 'l) lab), 'v) trs"
+    and H :: "(('f, 'l) lab)"
+    and \<mu>\<^sub>0 :: "(('f, 'l) lab) mu"
+    and P :: "((('f, 'l) lab), 'v) trs"
+  assumes wf: "wf_trs (set Rs)"
+    and closed:
+      "csr_u3_usable_rules_closed (set Rs) Ur
+        \<mu>\<^sub>0 P"
+    and fresh_sharp:
+      "\<And>f n. \<not> defined (set Rs) (Sharp f, n)"
+    and fresh_H: "\<And>n. \<not> defined (set Rs) (H, n)"
+    and unsharp: "\<not> is_sharp_lab H"
+    and marked_mu:
+      "\<And>f n. \<mu>\<^sub>0 (f, n) \<subseteq> \<mu>\<^sub>0 (Sharp f, n)"
+    and redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      csr_u3_mixed_term_shape H u \<and> csr_u3_mixed_term_shape H v"
+    and Ur_NS: "Ur \<subseteq> NS"
+    and ce: "ce_compatible NS"
+    and fin:
+      "finite_min_csr_dpp Sharp \<mu>\<^sub>0
+        (P - S) (set Rs)"
+  shows "finite_min_csr_dpp Sharp \<mu>\<^sub>0 P (set Rs)"
+proof -
+  obtain n where ce_bound:
+    "\<And>c m. m \<ge> n \<Longrightarrow> ce_trs (c, m) \<subseteq> NS"
+  proof (rule ce_compatibleE[OF ce])
+    fix n
+    assume bound: "\<And>c m. m \<ge> n \<Longrightarrow> ce_trs (c, m) \<subseteq> NS"
+    show thesis
+      by (rule that[OF bound])
+  qed
+  have ce_NS: "ce_trs (H, n) \<subseteq> NS"
+    by (rule ce_bound, simp)
+  let ?cn = "(H, n)"
+  interpret rp: compat_redpair_order S NS by (rule redpair)
+  have rules_NS: "Ur \<union> ce_trs ?cn \<subseteq> NS"
+    using Ur_NS ce_NS by auto
+  have rewrite_NS:
+    "csstep \<mu>\<^sub>0 (Ur \<union> ce_trs ?cn) \<subseteq> NS"
+  proof (rule subset_trans[OF csstep_subset_rstep])
+    have "rstep (Ur \<union> ce_trs ?cn) \<subseteq> rstep NS"
+      by (rule rstep_mono[OF rules_NS])
+    also have "... \<subseteq> NS"
+      by (rule rp.rstep_NS)
+    finally show "rstep (Ur \<union> ce_trs ?cn) \<subseteq> NS" .
+  qed
+  interpret L: csr_u3_i1_lab Rs Ur \<mu>\<^sub>0 P ?cn
+    by (unfold_locales, rule wf, rule closed)
+  show ?thesis
+    by (rule L.finite_min_csr_dpp_mixed_u3_redpair[
+        OF fresh_sharp fresh_H unsharp marked_mu redpair orient
+          pair_shape rewrite_NS fin])
+qed
+
 definition csr_sharp_pairs_check where
   "csr_sharp_pairs_check P = list_all (\<lambda>(l, r).
     (case root l of Some (Sharp f, n) \<Rightarrow> True | _ \<Rightarrow> False) \<and>
@@ -4153,13 +4552,72 @@ proof (intro ballI, clarify)
     using u v by blast
 qed
 
+fun csr_u3_mixed_term_check where
+  "csr_u3_mixed_term_check H (Var x) = False"
+| "csr_u3_mixed_term_check H (Fun f ts) =
+    (is_sharp_lab f \<or> f = H)"
+
+definition csr_u3_mixed_pairs_check where
+  "csr_u3_mixed_pairs_check R P = list_ex (\<lambda>H.
+    \<not> is_sharp_lab H \<and>
+    list_all (\<lambda>(f, n). f \<noteq> H) (funas_trs_list R) \<and>
+    list_all (\<lambda>(l, r). csr_u3_mixed_term_check H l \<and>
+      csr_u3_mixed_term_check H r) P)
+    (map fst (funas_trs_list P))"
+
+lemma csr_u3_mixed_term_check_sound:
+  assumes "csr_u3_mixed_term_check H t"
+  shows "csr_u3_mixed_term_shape H t"
+proof (cases t)
+  case (Var x)
+  with assms show ?thesis by simp
+next
+  case (Fun f ts)
+  with assms show ?thesis
+    by (cases f; auto simp: csr_u3_mixed_term_shape_def)
+qed
+
+lemma csr_u3_mixed_pairs_check_sound:
+  assumes "csr_u3_mixed_pairs_check R P"
+  shows "\<exists>H. (\<forall>n. \<not> defined (set R) (H, n)) \<and>
+    \<not> is_sharp_lab H \<and>
+    (\<forall>(u, v)\<in>set P.
+      csr_u3_mixed_term_shape H u \<and> csr_u3_mixed_term_shape H v)"
+proof -
+  from assms obtain H where unsharp: "\<not> is_sharp_lab H"
+    and fresh: "list_all (\<lambda>(f, n). f \<noteq> H) (funas_trs_list R)"
+    and shape: "list_all (\<lambda>(l, r).
+      csr_u3_mixed_term_check H l \<and>
+      csr_u3_mixed_term_check H r) P"
+    unfolding csr_u3_mixed_pairs_check_def
+    by (auto simp: list_ex_iff)
+  have fresh_sem: "\<And>n. \<not> defined (set R) (H, n)"
+  proof
+    fix n
+    assume "defined (set R) (H, n)"
+    then have "(H, n) \<in> funas_trs (set R)"
+      by (rule defined_funas_trs)
+    then have "(H, n) \<in> set (funas_trs_list R)"
+      by simp
+    with fresh show False
+      by (auto simp: list_all_iff)
+  qed
+  have shape_sem: "\<forall>(u, v)\<in>set P.
+      csr_u3_mixed_term_shape H u \<and> csr_u3_mixed_term_shape H v"
+    using shape
+    by (auto simp: list_all_iff intro: csr_u3_mixed_term_check_sound)
+  show ?thesis using fresh_sem unsharp shape_sem by blast
+qed
+
 definition csr_u3_redpair_proc where
   "csr_u3_redpair_proc J \<mu> rp Premove U dpp = check_return (do {
     rel_impl_redpair rp;
     csr_sharp_mu_check \<mu>;
     let (ps, pns) = dpp_ops.split_pairs J dpp Premove;
-    check (csr_sharp_pairs_check (dpp_ops.pairs J dpp))
-      (showsl_lit (STR ''U3 reduction pair requires marked CS-DPs''));
+    check (csr_sharp_pairs_check (dpp_ops.pairs J dpp) \<or>
+        csr_u3_mixed_pairs_check (dpp_ops.rules J dpp)
+          (dpp_ops.pairs J dpp))
+      (showsl_lit (STR ''U3 reduction pair requires marked or fresh-unhiding CS-DPs''));
     check (csr_u3_usable_rules_check
         (dpp_ops.rules J dpp) U \<mu> (dpp_ops.pairs J dpp))
       (showsl_lit (STR ''supplied rules are not a closed U3 set''));
@@ -4198,7 +4656,8 @@ proof -
   from proc[unfolded csr_u3_redpair_proc_def Let_def split, simplified]
   have valid: "isOK (rel_impl_redpair rp)"
     and sharp_mu: "isOK (csr_sharp_mu_check \<mu>)"
-    and shape: "csr_sharp_pairs_check (pairs dpp)"
+    and shape: "csr_sharp_pairs_check (pairs dpp) \<or>
+      csr_u3_mixed_pairs_check (rules dpp) (pairs dpp)"
     and closed: "csr_u3_usable_rules_check (rules dpp) U \<mu> (pairs dpp)"
     and ce: "isOK (rel_impl.ce_compat rp)"
     and weak: "isOK (rel_impl_ns rp (U @ pns))"
@@ -4243,10 +4702,6 @@ proof -
   have closed_sem: "csr_u3_usable_rules_closed
       (set (rules dpp)) (set U) (mu_of \<mu>) (set (pairs dpp))"
     by (rule csr_u3_usable_rules_check_sound[OF closed])
-  have shape_sem: "\<forall>(u, v)\<in>set (pairs dpp).
-      (\<exists>f us. u = Fun (Sharp f) us) \<and>
-      (\<exists>g vs. v = Fun (Sharp g) vs)"
-    by (rule csr_sharp_pairs_check_sound[OF shape])
   have marked_mu:
       "\<And>f n. mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
     by (rule csr_sharp_mu_check_sound[OF sharp_mu])
@@ -4263,18 +4718,33 @@ proof -
       (set (pairs dpp) - S) (set (rules dpp))"
     by (rule finite_min_csr_dpp_mono_pairs[OF sub fin[unfolded pairs' rules']])
   show ?thesis
-    apply (rule finite_min_csr_dpp_u3_redpair)
-             apply (rule wf)
-            apply (rule closed_sem)
-           apply (rule fresh)
-          apply (rule marked_mu)
-         apply (rule redpair)
-        apply (rule orient)
-       apply (rule shape_sem)
-      apply (rule U_NS)
-     apply (rule ce_NS)
-    apply (rule fin_S)
-    done
+  proof (cases "csr_sharp_pairs_check (pairs dpp)")
+    case True
+    have shape_sem: "\<forall>(u, v)\<in>set (pairs dpp).
+        (\<exists>f us. u = Fun (Sharp f) us) \<and>
+        (\<exists>g vs. v = Fun (Sharp g) vs)"
+      by (rule csr_sharp_pairs_check_sound[OF True])
+    show ?thesis
+      by (rule finite_min_csr_dpp_u3_redpair[
+          OF wf closed_sem fresh marked_mu redpair orient shape_sem
+            U_NS ce_NS fin_S])
+  next
+    case False
+    with shape have mixed: "csr_u3_mixed_pairs_check
+        (rules dpp) (pairs dpp)"
+      by simp
+    from csr_u3_mixed_pairs_check_sound[OF mixed]
+    obtain H where fresh_H: "\<And>n. \<not> defined (set (rules dpp)) (H, n)"
+      and unsharp: "\<not> is_sharp_lab H"
+      and shape_sem: "\<forall>(u, v)\<in>set (pairs dpp).
+        csr_u3_mixed_term_shape H u \<and>
+        csr_u3_mixed_term_shape H v"
+      by blast
+    show ?thesis
+      by (rule finite_min_csr_dpp_mixed_u3_redpair[
+          OF wf closed_sem fresh fresh_H unsharp marked_mu redpair orient
+            shape_sem U_NS ce_NS fin_S])
+  qed
 qed
 
 theorem finite_min_csr_dpp_sct_active_subterm:

@@ -9,7 +9,7 @@ theory Proof_Checker
   imports
     Proof_Checker_Base.Check_Termination
     CSR_Checker_Extensions.CSR_Conservative_Checker
-    Check_Nontermination
+    CSR_Check_Loops
     Check_CRP
     Check_Conditional_CRP
     Check_Completion_Proof
@@ -158,6 +158,10 @@ where "check_cert a input property answer proof \<equiv>
               check_fp_nontermination_proof I J False
                 (showsl_lit (STR ''1''))
                 (fp_strategy_to_fp_impl (Forbidden_Patterns P) R, R)
+       | (FP_TRS_input (Context_Sensitive \<mu>) R,
+            Termination, Decision False) \<Rightarrow>
+              (case prf of TRS_Loop p \<Rightarrow> check_csr_loop \<mu> R p
+               | _ \<Rightarrow> error mismatch)
        | _ \<Rightarrow> error mismatch)
   | Relative_TRS_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
@@ -442,9 +446,17 @@ proof-
           by (auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def)
       next
         case (Context_Sensitive \<mu>)
-        from check Context_Sensitive show ?thesis
-          by (cases property; cases answer;
-            simp add: check_cert_def split: bool.splits)
+        have [simp]: "property = Termination"
+          using check Context_Sensitive by (cases property, auto)
+        have [simp]: "answer = Decision False"
+          using check Context_Sensitive
+          by (cases answer, auto split: bool.splits)
+        from check Context_Sensitive obtain p where [simp]: "pr = TRS_Loop p"
+          by (cases pr, auto simp: check_cert_def)
+        from check Context_Sensitive have checked:
+          "isOK (check_csr_loop \<mu> R p)" by simp
+        from check_csr_loop_sound[OF checked] Context_Sensitive
+        show ?thesis by (simp add: desired_property_def)
       next
         case (Forbidden_Patterns P)
         have [simp]: "property = Termination"
