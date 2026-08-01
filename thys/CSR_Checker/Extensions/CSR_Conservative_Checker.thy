@@ -1020,6 +1020,8 @@ qed
 
 datatype ('f, 'l, 'v) extended_csr_termination_proof =
     Direct_CSR_Proof "('f, 'l, 'v) csr_termination_proof"
+  | Orthogonality_Checked_CSR_Proof
+      "('f, 'l, 'v) csr_termination_proof"
   | Improved_CSR_Dependency_Pairs
       "('f, 'l) lab"
       "('f, 'l, 'v) trsLL"
@@ -1040,6 +1042,16 @@ where
   "check_extended_csr_termination_proof I J a i \<mu> R
       (Direct_CSR_Proof prf) =
     check_csr_termination_proof_min I J a i \<mu> R prf"
+| "check_extended_csr_termination_proof I J a i \<mu> R
+      (Orthogonality_Checked_CSR_Proof prf) =
+    debug i (STR ''CSR orthogonality check'') (do {
+      check_csr_orthogonal R
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': invalid orthogonality witness\<newline>'') \<circ> s);
+      check_csr_termination_proof_min I J a (add_index i 1) \<mu> R prf
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below CSR orthogonality check\<newline>'') \<circ> s)
+    })"
 | "check_extended_csr_termination_proof I J a i \<mu> R
       (Improved_CSR_Dependency_Pairs U P prf) =
     debug i (STR ''improved CSR dependency pairs'') (do {
@@ -1076,6 +1088,15 @@ proof (cases "prf")
     by simp
   have global: "SN (csstep (mu_of \<mu>) (set R))"
     by (rule check_csr_termination_proof_min_sound[OF I J old_ok])
+  show ?thesis
+    by (rule SN_subset[OF global], unfold sig_step_def, auto)
+next
+  case (Orthogonality_Checked_CSR_Proof child)
+  from ok Orthogonality_Checked_CSR_Proof have child_ok:
+    "isOK (check_csr_termination_proof_min I J a (add_index i 1) \<mu> R child)"
+    by auto
+  have global: "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule check_csr_termination_proof_min_sound[OF I J child_ok])
   show ?thesis
     by (rule SN_subset[OF global], unfold sig_step_def, auto)
 next

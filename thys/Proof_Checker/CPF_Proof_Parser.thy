@@ -2737,7 +2737,12 @@ definition xml2conservative_csr_termination_proof ::
     (string, label_type, string) extended_csr_termination_proof xmlt"
 where
   "xml2conservative_csr_termination_proof termIndexMap ruleMap =
-    (let improved = XMLdo (STR ''csrImprovedDependencyPairs'') {
+    (let orthogonality = XMLdo (STR ''csrOrthogonalityCheck'') {
+        prf \<leftarrow> xml2csr_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Orthogonality_Checked_CSR_Proof prf)
+      };
+      improved = XMLdo (STR ''csrImprovedDependencyPairs'') {
         U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
         P \<leftarrow> xml_singleton (STR ''dps'')
           (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
@@ -2755,7 +2760,8 @@ where
           symbol_parser termIndexMap ruleMap;
         xml_return (Conservative_CSR_Dependency_Pairs U P S prf)
       }
-    in improved
+    in orthogonality
+      XMLor improved
       XMLor xml_singleton
         (STR ''conservativeCsrTerminationProof'') conservative id
       XMLor xml_singleton
