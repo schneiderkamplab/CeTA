@@ -1133,4 +1133,73 @@ proof (rule gm_simulation_imp_SN_sig_csstep[OF transformed_SN ground_const,
   qed
 qed
 
+datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
+    Existing_CSR_Proof "('f, 'l, 'v) extended_csr_termination_proof"
+  | GM_CSR_Transformation
+      "('f, 'l) lab"
+      "('f, 'l) lab"
+      "((('f, 'l) lab \<times> nat) \<times> ('f, 'l) lab) list"
+      "('f, 'l, 'v) trs_termination_proof"
+
+fun check_gm_extended_csr_termination_proof ::
+  "('tp, ('f::{showl,compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f,label_type) lab, string) dpp_ops \<Rightarrow>
+   bool \<Rightarrow> showsl \<Rightarrow> (('f,label_type) lab) muL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) gm_extended_csr_termination_proof \<Rightarrow> showsl check"
+where
+  "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (Existing_CSR_Proof prf) =
+    check_extended_csr_termination_proof I J a i \<mu> R prf"
+| "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (GM_CSR_Transformation mark c active prf) =
+    debug i (STR ''Giesl-Middeldorp CSR transformation'') (do {
+      check_wf_trs R;
+      let D = defined_list R;
+      let F = remdups (funas_trs_list R);
+      check (distinct (map fst active) \<and> set (map fst active) = set D)
+        (showsl_lit (STR ''active-symbol map does not cover the defined signature exactly''));
+      check ((c, 0) \<in> set F)
+        (showsl_lit (STR ''ground source-signature constant is missing''));
+      let act = (\<lambda>fn. the (map_of active fn));
+      let T = gm_transformed_rules_list (mu_of \<mu>) (set D) act mark F R D;
+      check_trs_termination_proof I J False (add_index i 1)
+        (tp_ops.mk I False [] T []) prf
+    })"
+
+lemma check_gm_extended_csr_termination_proof_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_gm_extended_csr_termination_proof
+      I J a i \<mu> R p)"
+  shows "SN (sig_step (set (funas_trs_list R))
+    (csstep (mu_of \<mu>) (set R)))"
+proof (cases p)
+  case (Existing_CSR_Proof old)
+  with ok have old_ok:
+    "isOK (check_extended_csr_termination_proof I J a i \<mu> R old)"
+    by simp
+  from check_extended_csr_termination_proof_sound[OF I J old_ok]
+  show ?thesis .
+next
+  case (GM_CSR_Transformation mark c active child)
+  let ?D = "defined_list R"
+  let ?F = "remdups (funas_trs_list R)"
+  let ?act = "\<lambda>fn. the (map_of active fn)"
+  let ?T = "gm_transformed_rules_list (mu_of \<mu>) (set ?D) ?act mark ?F R ?D"
+  from ok GM_CSR_Transformation have wf: "wf_trs (set R)"
+    and keys: "distinct (map fst active) \<and> set (map fst active) = set ?D"
+    and ground_c: "(c, 0) \<in> set ?F"
+    and child_ok: "isOK (check_trs_termination_proof I J False (add_index i 1)
+      (tp_ops.mk I False [] ?T []) child)"
+    by (auto simp: Let_def)
+  from check_trs_termination_proof[OF I J child_ok]
+  have child_SN: "SN (rstep (set ?T))"
+    unfolding tp_spec.mk_sound[OF I] SN_qrel_def by auto
+  have source_sig: "funas_trs (set R) \<subseteq> set ?F" by simp
+  have transformed: "set (gm_transformed_rules_list (mu_of \<mu>) (set ?D)
+      ?act mark ?F R ?D) \<subseteq> set ?T" by simp
+  from gm_transformed_rules_list_sound[OF wf source_sig ground_c transformed child_SN]
+  show ?thesis by simp
+qed
+
 end

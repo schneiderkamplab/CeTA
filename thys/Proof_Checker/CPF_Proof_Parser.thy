@@ -2689,9 +2689,11 @@ where
         XMLor xml_change (xml2dp_termination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Termination_Proof)
         XMLor xml_change (xml2dp_nontermination_proof xml2name termIndexMap ruleMap) (xml_return \<circ> DP_Nontermination_Proof)
         XMLor xml_change (xml2csr_termination_proof xml2name termIndexMap ruleMap)
-          (\<lambda>p. xml_return (CSR_Termination_Proof (Direct_CSR_Proof p)))
+          (\<lambda>p. xml_return (CSR_Termination_Proof
+            (Existing_CSR_Proof (Direct_CSR_Proof p))))
         XMLor xml_change (xml2legacy_csr_termination_proof xml2name termIndexMap ruleMap)
-          (\<lambda>p. xml_return (CSR_Termination_Proof (Direct_CSR_Proof p)))
+          (\<lambda>p. xml_return (CSR_Termination_Proof
+            (Existing_CSR_Proof (Direct_CSR_Proof p))))
         XMLor xml_change (xml2completion_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Completion_Proof)
         XMLor xml_change (xml2ordered_completion_proof xml2name termIndexMap) (xml_return \<circ> Ordered_Completion_Proof)
         XMLor xml_change (xml2equational_proof xml2name termIndexMap ruleMap) (xml_return \<circ> Equational_Proof)
@@ -2734,13 +2736,13 @@ where [code]: "symbol_parser x = (
 
 definition xml2conservative_csr_termination_proof ::
   "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
-    (string, label_type, string) extended_csr_termination_proof xmlt"
+    (string, label_type, string) gm_extended_csr_termination_proof xmlt"
 where
   "xml2conservative_csr_termination_proof termIndexMap ruleMap =
     (let orthogonality = XMLdo (STR ''csrOrthogonalityCheck'') {
         prf \<leftarrow> xml2csr_termination_proof
           symbol_parser termIndexMap ruleMap;
-        xml_return (Orthogonality_Checked_CSR_Proof prf)
+        xml_return (Existing_CSR_Proof (Orthogonality_Checked_CSR_Proof prf))
       };
       improved = XMLdo (STR ''csrImprovedDependencyPairs'') {
         U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
@@ -2748,7 +2750,27 @@ where
           (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
         prf \<leftarrow> xml2csr_dp_termination_proof
           symbol_parser termIndexMap ruleMap;
-        xml_return (Improved_CSR_Dependency_Pairs U P prf)
+        xml_return (Existing_CSR_Proof (Improved_CSR_Dependency_Pairs U P prf))
+      };
+      rta08 = XMLdo (STR ''csrRta08DependencyPairs'') {
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Existing_CSR_Proof
+          (Direct_CSR_Proof (CSR_Dependency_Pairs P prf)))
+      };
+      removed_improved = XMLdo (STR ''csrRuleRemovalThenImproved'') {
+        redp \<leftarrow> CPF_Proof_Parser.redtriple symbol_parser Sharp False;
+        Rr \<leftarrow> xml_singleton (STR ''trs'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Existing_CSR_Proof
+          (CSR_Rule_Removal_Then_Improved redp Rr U P prf))
       };
       conservative = XMLdo (STR ''csrConservativeDependencyPairs'') {
         U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
@@ -2758,14 +2780,31 @@ where
           (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
         prf \<leftarrow> xml2csr_dp_termination_proof
           symbol_parser termIndexMap ruleMap;
-        xml_return (Conservative_CSR_Dependency_Pairs U P S prf)
+        xml_return (Existing_CSR_Proof
+          (Conservative_CSR_Dependency_Pairs U P S prf))
+      };
+      gm = XMLdo (STR ''csrGmTransformation'') {
+        mark \<leftarrow> xml_singleton (STR ''markSymbol'') symbol_parser id;
+        c \<leftarrow> xml_singleton (STR ''groundConstant'') symbol_parser id;
+        active \<leftarrow>* XMLdo (STR ''activeSymbol'') {
+          source \<leftarrow> xml_singleton (STR ''sourceSymbol'') symbol_parser id;
+          arity \<leftarrow> xml_nat (STR ''arity'');
+          target \<leftarrow> xml_singleton (STR ''targetSymbol'') symbol_parser id;
+          xml_return ((source, arity), target)
+        };
+        prf \<leftarrow> xml2trs_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (GM_CSR_Transformation mark c active prf)
       }
     in orthogonality
       XMLor improved
+      XMLor rta08
+      XMLor removed_improved
       XMLor xml_singleton
         (STR ''conservativeCsrTerminationProof'') conservative id
       XMLor xml_singleton
-        (STR ''nativeConservativeCsrTerminationProof'') conservative id)"
+        (STR ''nativeConservativeCsrTerminationProof'') conservative id
+      XMLor gm)"
 
 definition "proof_parser termIndexMap ruleMap =
   XMLdo (STR ''proof'') {

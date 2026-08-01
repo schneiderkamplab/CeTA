@@ -8,7 +8,7 @@ License: LGPL (see file COPYING.LESSER)
 theory Proof_Checker
   imports
     Proof_Checker_Base.Check_Termination
-    CSR_Checker_Extensions.CSR_Conservative_Checker
+    CSR_GM_Ext.CSR_GM_Transformation
     CSR_Check_Loops
     Check_CRP
     Check_Conditional_CRP
@@ -30,7 +30,7 @@ datatype (dead 'f, dead 'l, dead 'v) "proof" =
 | DP_Nontermination_Proof "('f, 'l, 'v) dp_nontermination_proof"
 | TRS_Nontermination_Proof "('f, 'l, 'v) trs_nontermination_proof"
 | FP_Termination_Proof "('f,'l,'v) fptrs_termination_proof"
-| CSR_Termination_Proof "('f,'l,'v) extended_csr_termination_proof"
+| CSR_Termination_Proof "('f,'l,'v) gm_extended_csr_termination_proof"
 | FP_Nontermination_Proof "('f, 'l, 'v) fp_trs_nontermination_proof"
 | Relative_TRS_Nontermination_Proof "('f, 'l, 'v) reltrs_nontermination_proof"
 | TRS_Confluence_Proof "('f, 'l, 'v) cr_proof"
@@ -222,7 +222,7 @@ where "check_cert a input property answer proof \<equiv>
   | CSR_Termination_Proof prf \<Rightarrow>
      (case triple of
        (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision True) \<Rightarrow>
-       check_extended_csr_termination_proof I J a
+       check_gm_extended_csr_termination_proof I J a
          (showsl_lit (STR ''1'')) \<mu> R prf
     | _ \<Rightarrow> error mismatch)
   | FP_Nontermination_Proof prf \<Rightarrow>
@@ -562,9 +562,9 @@ proof-
     have [simp]: "property = Termination" using check by (cases property, auto)
     have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
     from check[simplified] have check:
-      "isOK (check_extended_csr_termination_proof I J a idx \<mu> R pr)"
+      "isOK (check_gm_extended_csr_termination_proof I J a idx \<mu> R pr)"
       by auto
-    from check_extended_csr_termination_proof_sound[OF I J check] show ?thesis
+    from check_gm_extended_csr_termination_proof_sound[OF I J check] show ?thesis
       by (simp add: desired_property_def)
   next
     case [simp]: (Relative_TRS_Nontermination_Proof pr)

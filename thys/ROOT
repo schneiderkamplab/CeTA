@@ -323,7 +323,7 @@ session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Checker_Extensions +
   theories
     CSR_GM_Transformation
 
-session Proof_Checker in Proof_Checker = CSR_Checker_Extensions +
+session Proof_Checker in Proof_Checker = CSR_GM_Ext +
   options [document = false]
   sessions
     LTS

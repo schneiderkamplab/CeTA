@@ -15,7 +15,10 @@ text \<open>
   We formulate the semantic sets independently from their executable list
   implementation.  This lets the checker accept a conservative finite
   superset, as emitted by Ferrum, while the soundness proof only uses the
-  pairs required by the construction.
+  pairs required by the construction.  A variable-derived projection is
+  required only when the variable is frozen in the left-hand side of the
+  witnessing rule.  The stronger two-sided refinement uses a separate
+  unhiding-rule component and is not represented by this direct pair theorem.
 \<close>
 
 definition inactive_fun_subterm_on ::
@@ -39,7 +42,10 @@ where
       fn = (f, length ts) \<and>
       i < length ts \<and> i \<in> \<mu> (f, length ts) \<and>
       (\<exists>q. q \<in> mu_poss \<mu> (ts ! i) \<and>
-        (is_Var ((ts ! i) |_ q) \<or> root ((ts ! i) |_ q) \<in> Some ` D)))"
+        (root ((ts ! i) |_ q) \<in> Some ` D \<or>
+          (\<exists>x. (ts ! i) |_ q = Var x \<and>
+            x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+            x \<notin> mu_vars_term \<mu> l))))"
 
 inductive hiding_context_on ::
   "'f mu \<Rightarrow> 'f sig \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) ctxt \<Rightarrow> bool"
@@ -291,6 +297,50 @@ next
   qed
 qed
 
+lemma mu_poss_replace_at_append:
+  assumes p: "p \<in> mu_fun_poss \<mu> t"
+    and q: "q \<in> mu_poss \<mu> u"
+  shows "p @ q \<in> mu_poss \<mu> (replace_at t p u)"
+  using p
+proof (induct t arbitrary: p)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ss)
+  show ?case
+  proof (cases p)
+    case Nil
+    then show ?thesis using q by simp
+  next
+    case (Cons i p')
+    with Fun.prems have i: "i \<in> \<mu> (f, length ss)" "i < length ss"
+      and p': "p' \<in> mu_fun_poss \<mu> (ss ! i)"
+      by auto
+    have rec: "p' @ q \<in> mu_poss \<mu> (replace_at (ss ! i) p' u)"
+      by (rule Fun.hyps[OF nth_mem[OF i(2)] p'])
+    show ?thesis
+      using i rec Cons by (simp add: nth_append)
+  qed
+qed
+
+lemma mu_vars_term_subst_mu_supt:
+  assumes tfun: "is_Fun t"
+    and x: "x \<in> mu_vars_term \<mu> t"
+  shows "mu_supt \<mu> (t \<cdot> \<sigma>) (\<sigma> x)"
+proof -
+  from x obtain p where p: "p \<in> mu_poss \<mu> t" and at: "t |_ p = Var x"
+    unfolding mu_vars_term_def by blast
+  from tfun at have "p \<noteq> []" by (cases p) auto
+  then obtain i q where p_eq: "p = i # q" by (cases p) auto
+  have active: "i # q \<in> mu_poss \<mu> (t \<cdot> \<sigma>)"
+    using mu_poss_subst_lift[OF p] unfolding p_eq .
+  have sub: "(t \<cdot> \<sigma>) |_ (i # q) = \<sigma> x"
+    using subt_at_subst[OF mu_poss_imp_poss[OF p], of \<sigma>] at
+    unfolding p_eq by simp
+  show ?thesis
+    unfolding mu_supt_def using active sub by blast
+qed
+
 lemma csstep_new_inactive_subterm_rhs:
   assumes wf: "wf_trs R"
     and step: "(u,v) \<in> csstep \<mu> R"
@@ -446,7 +496,9 @@ lemma inactive_rhs_active_context_hiding_claim:
     and inactive: "p \<notin> mu_fun_poss \<mu> r"
     and sub: "r |_ p = h"
     and q: "q \<in> mu_poss \<mu> h"
-    and target: "is_Var (h |_ q) \<or> root (h |_ q) \<in> Some ` D"
+    and target: "root (h |_ q) \<in> Some ` D \<or>
+      (\<exists>x. h |_ q = Var x \<and> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+        x \<notin> mu_vars_term \<mu> l)"
   shows "hiding_context_on \<mu> D R (ctxt_of_pos_term q h)"
   using p_fun inactive sub q target
 proof (induct q arbitrary: h p)
@@ -463,7 +515,9 @@ next
     and q_mu: "q \<in> mu_poss \<mu> (ts ! i)"
     by (cases h) auto
   have target':
-    "is_Var ((ts ! i) |_ q) \<or> root ((ts ! i) |_ q) \<in> Some ` D"
+    "root ((ts ! i) |_ q) \<in> Some ` D \<or>
+      (\<exists>x. (ts ! i) |_ q = Var x \<and> x \<in> vars_term l \<and>
+        x \<in> vars_term r \<and> x \<notin> mu_vars_term \<mu> l)"
     using Cons.prems(5) i unfolding h by simp
   have sub_fun: "r |_ p = Fun f ts"
     by (rule HOL.trans[OF sub h])
@@ -772,10 +826,34 @@ proof -
           and sx: "\<sigma> x = C\<langle>h \<cdot> \<tau>\<rangle>"
           and th: "t = h \<cdot> \<tau>"
           unfolding has_hiding_property_def by blast
+        have x_not_mu_l: "x \<notin> mu_vars_term \<mu> l"
+        proof
+          assume x_mu: "x \<in> mu_vars_term \<mu> l"
+          have lx: "mu_supt \<mu> (l \<cdot> \<sigma>) (\<sigma> x)"
+            by (rule mu_vars_term_subst_mu_supt[OF lhs x_mu])
+          from lx obtain j js where jq: "j # js \<in> mu_poss \<mu> (l \<cdot> \<sigma>)"
+            and at: "(l \<cdot> \<sigma>) |_ (j # js) = \<sigma> x"
+            unfolding mu_supt_def by blast
+          have p_poss: "p \<in> poss u"
+            using p_active mu_fun_poss_imp_fun_poss fun_poss_imp_poss by blast
+          have active: "p @ (j # js) \<in> mu_poss \<mu> u"
+          proof -
+            have "p @ (j # js) \<in> mu_poss \<mu> (replace_at u p (u |_ p))"
+              by (rule mu_poss_replace_at_append[OF p_active], use redex jq in simp)
+            also have "replace_at u p (u |_ p) = u"
+              by (rule replace_at_ident[OF p_poss refl])
+            finally show ?thesis .
+          qed
+          have sub: "u |_ (p @ (j # js)) = \<sigma> x"
+            using p_poss redex at by (simp add: subt_at_append)
+          have "mu_supt \<mu> u (\<sigma> x)"
+            unfolding mu_supt_def using active sub by (cases p, auto)
+          with inactive_x show False by contradiction
+        qed
         have outer: "hiding_context_on \<mu> D R (ctxt_of_pos_term q1 ?h)"
           by (rule inactive_rhs_active_context_hiding_claim[
               OF lr q_fun q_inactive refl q1],
-              use hq1 in auto)
+              use hq1 x_l x_r x_not_mu_l in auto)
         have outer_subst:
           "hiding_context_on \<mu> D R (ctxt_of_pos_term q1 ?h \<cdot>\<^sub>c \<sigma>)"
           by (rule hiding_context_on_subst[OF outer])
@@ -993,9 +1071,16 @@ proof -
       and sx: "\<sigma> x = C\<langle>h \<cdot> \<tau>\<rangle>"
       and th: "t = h \<cdot> \<tau>"
       unfolding has_hiding_property_def by blast
+    have x_not_mu_l: "x \<notin> mu_vars_term \<mu> l"
+    proof
+      assume "x \<in> mu_vars_term \<mu> l"
+      from mu_vars_term_subst_mu_supt[OF lhs this, of \<sigma>] inactive_x
+      show False by contradiction
+    qed
     have outer: "hiding_context_on \<mu> D R (ctxt_of_pos_term q1 ?h)"
       by (rule inactive_rhs_active_context_hiding_claim[
-          OF lr q_fun q_inactive refl q1], use hq1 in auto)
+          OF lr q_fun q_inactive refl q1],
+          use hq1 x_l x_r x_not_mu_l in auto)
     have outer_subst:
       "hiding_context_on \<mu> D R (ctxt_of_pos_term q1 ?h \<cdot>\<^sub>c \<sigma>)"
       by (rule hiding_context_on_subst[OF outer])
@@ -1195,7 +1280,9 @@ lemma inactive_rhs_active_context_hiding:
     and inactive: "p \<notin> mu_fun_poss \<mu> r"
     and sub: "r |_ p = h"
     and q: "q \<in> mu_poss \<mu> h"
-    and target: "is_Var (h |_ q) \<or> root (h |_ q) \<in> Some ` D"
+    and target: "root (h |_ q) \<in> Some ` D \<or>
+      (\<exists>x. h |_ q = Var x \<and> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+        x \<notin> mu_vars_term \<mu> l)"
   shows "hiding_context_on \<mu> D R (ctxt_of_pos_term q h)"
   using p_fun inactive sub q target
 proof (induct q arbitrary: h p)
@@ -1212,7 +1299,9 @@ next
     and q_mu: "q \<in> mu_poss \<mu> (ts ! i)"
     by (cases h) auto
   have target':
-    "is_Var ((ts ! i) |_ q) \<or> root ((ts ! i) |_ q) \<in> Some ` D"
+    "root ((ts ! i) |_ q) \<in> Some ` D \<or>
+      (\<exists>x. (ts ! i) |_ q = Var x \<and> x \<in> vars_term l \<and>
+        x \<in> vars_term r \<and> x \<notin> mu_vars_term \<mu> l)"
     using Cons.prems(5) i unfolding h by simp
   have sub_fun: "r |_ p = Fun f ts"
     by (rule HOL.trans[OF sub h])
@@ -2082,8 +2171,11 @@ where
           g = f \<and> length ts = n \<and>
           i < length ts \<and> i \<in> mu_of \<mu> (g,length ts) \<and>
           list_ex (\<lambda>q.
-            is_Var ((ts ! i) |_ q) \<or>
-            root ((ts ! i) |_ q) \<in> Some ` set D)
+            root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+            (case (ts ! i) |_ q of
+              Var x \<Rightarrow> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+                x \<notin> set (mu_vars_term_list \<mu> l)
+            | Fun h us \<Rightarrow> False))
             (mu_poss_list \<mu> (ts ! i))))
       (fun_poss_list r)) R"
 
@@ -2098,7 +2190,7 @@ where
         [i \<leftarrow> [0..<n]. hides_position_list \<mu> D R f n i])
       (remdups (funas_trs_list R)))"
 
-lemma hides_position_list:
+lemma hides_position_list_correct:
   "hides_position_list \<mu> D R f n i =
     hides_position_on (mu_of \<mu>) (set D) (set R) (f,n) i"
 proof
@@ -2112,34 +2204,57 @@ proof
           g = f \<and> length ts = n \<and>
           i < length ts \<and> i \<in> mu_of \<mu> (g,length ts) \<and>
           list_ex (\<lambda>q.
-            is_Var ((ts ! i) |_ q) \<or>
-            root ((ts ! i) |_ q) \<in> Some ` set D)
+            root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+            (case (ts ! i) |_ q of
+              Var x \<Rightarrow> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+                x \<notin> set (mu_vars_term_list \<mu> l)
+            | Fun h us \<Rightarrow> False))
             (mu_poss_list \<mu> (ts ! i))))
       (fun_poss_list r)"
     unfolding hides_position_list_def
     by (auto simp: list_ex_iff split: prod.splits)
-  from inner obtain p where p: "p \<in> fun_poss r"
-    and inactive: "p \<notin> mu_fun_poss (mu_of \<mu>) r"
+  from inner obtain p where p_list: "p \<in> set (fun_poss_list r)"
+    and inactive_list: "p \<notin> set (mu_fun_poss_list \<mu> r)"
     and shape: "(case r |_ p of
         Var x \<Rightarrow> False
       | Fun g ts \<Rightarrow>
           g = f \<and> length ts = n \<and>
           i < length ts \<and> i \<in> mu_of \<mu> (g,length ts) \<and>
           list_ex (\<lambda>q.
-            is_Var ((ts ! i) |_ q) \<or>
-            root ((ts ! i) |_ q) \<in> Some ` set D)
+            root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+            (case (ts ! i) |_ q of
+              Var x \<Rightarrow> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+                x \<notin> set (mu_vars_term_list \<mu> l)
+            | Fun h us \<Rightarrow> False))
             (mu_poss_list \<mu> (ts ! i)))"
-    by (auto simp: list_ex_iff)
-  from shape obtain ts q where sub: "r |_ p = Fun f ts"
+    by (auto simp only: list_ex_iff)
+  have p: "p \<in> fun_poss r"
+    using p_list by auto
+  have inactive: "p \<notin> mu_fun_poss (mu_of \<mu>) r"
+    using inactive_list by auto
+  obtain g ts where at: "r |_ p = Fun g ts"
+    using shape by (cases "r |_ p") auto
+  from shape at obtain q where gf: "g = f"
     and n: "length ts = n"
     and i: "i < length ts" "i \<in> mu_of \<mu> (f,length ts)"
-    and q: "q \<in> mu_poss (mu_of \<mu>) (ts ! i)"
-    and target: "is_Var ((ts ! i) |_ q) \<or>
-      root ((ts ! i) |_ q) \<in> Some ` set D"
-    by (cases "r |_ p") (auto simp: list_ex_iff)
+    and q_list: "q \<in> set (mu_poss_list \<mu> (ts ! i))"
+    and target: "root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+      (case (ts ! i) |_ q of
+        Var x \<Rightarrow> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+          x \<notin> set (mu_vars_term_list \<mu> l)
+      | Fun h us \<Rightarrow> False)"
+    by (auto simp: list_ex_iff split: term.splits)
+  have sub: "r |_ p = Fun f ts"
+    using at gf by simp
+  have q: "q \<in> mu_poss (mu_of \<mu>) (ts ! i)"
+    using q_list by auto
+  have target_sem: "root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+      (\<exists>x. (ts ! i) |_ q = Var x \<and> x \<in> vars_term l \<and>
+        x \<in> vars_term r \<and> x \<notin> mu_vars_term (mu_of \<mu>) l)"
+    using target by (cases "(ts ! i) |_ q") auto
   show "hides_position_on (mu_of \<mu>) (set D) (set R) (f,n) i"
     unfolding hides_position_on_def
-    using lr p inactive sub n i q target by blast
+    using lr p inactive sub n i q target_sem by blast
 next
   assume hide: "hides_position_on (mu_of \<mu>) (set D) (set R) (f,n) i"
   then obtain l r p ts q where
@@ -2150,16 +2265,23 @@ next
     and n: "length ts = n"
     and i: "i < length ts" "i \<in> mu_of \<mu> (f,length ts)"
     and q: "q \<in> mu_poss (mu_of \<mu>) (ts ! i)"
-    and target: "is_Var ((ts ! i) |_ q) \<or>
-      root ((ts ! i) |_ q) \<in> Some ` set D"
+    and target: "root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+      (\<exists>x. (ts ! i) |_ q = Var x \<and> x \<in> vars_term l \<and>
+        x \<in> vars_term r \<and> x \<notin> mu_vars_term (mu_of \<mu>) l)"
     unfolding hides_position_on_def by blast
+  have target_list: "root ((ts ! i) |_ q) \<in> Some ` set D \<or>
+      (case (ts ! i) |_ q of
+        Var x \<Rightarrow> x \<in> vars_term l \<and> x \<in> vars_term r \<and>
+          x \<notin> set (mu_vars_term_list \<mu> l)
+      | Fun h us \<Rightarrow> False)"
+    using target by (cases "(ts ! i) |_ q") auto
   show "hides_position_list \<mu> D R f n i"
     unfolding hides_position_list_def
     apply (simp only: list_ex_iff)
     apply (rule bexI[of _ "(l,r)"])
      apply simp
      apply (rule bexI[of _ p])
-      using lr p inactive sub n i q target by auto
+      using lr p inactive sub n i q target_list by auto
 qed
 
 lemma inactive_rhs_active_defined_hidden:
@@ -2291,7 +2413,7 @@ proof -
   have fn: "(f,length ts) \<in> set (remdups (funas_trs_list R))"
     using hides_position_on_funas[OF hide] by simp
   have hide_list: "hides_position_list \<mu> D R f (length ts) i"
-    by (subst hides_position_list, rule hide)
+    by (subst hides_position_list_correct, rule hide)
   show ?thesis
     by (rule improved_projection_pairs_list_step[
         OF fn hide_list refl i])
