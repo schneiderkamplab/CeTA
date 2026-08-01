@@ -318,6 +318,11 @@ session CSR_Checker_Extensions in "CSR_Checker/Extensions" = CSR_Checker_Core +
     CSR_Innermost_Switch
     CSR_Conservative_Checker
 
+session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Checker_Extensions +
+  options [document = false]
+  theories
+    CSR_GM_Transformation
+
 session Proof_Checker in Proof_Checker = CSR_Checker_Extensions +
   options [document = false]
   sessions
