@@ -137,6 +137,7 @@ proof (rule ccontr)
     from ortho cp show False
       unfolding csr_switch_overlay_def by blast
   qed
+qed
 
 text \<open>
   Innermost context-sensitive rewriting is represented separately from both
@@ -1286,7 +1287,8 @@ next
   from linear have partition: "is_partition (map vars_term ts)"
     and linear_ts: "\<forall>s\<in>set ts. linear_term s"
     unfolding Fun by auto
-  from member obtain us where len: "length us = length ts"
+  from member obtain us where u: "u = Fun f us"
+    and len: "length us = length ts"
     and us: "\<forall>i<length ts. us ! i \<in>
       csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
     unfolding Fun by auto
@@ -1335,15 +1337,18 @@ next
     finally show "ts ! i \<cdot> \<tau> = us ! i" .
   qed
   have inst: "u = Fun f ts \<cdot> \<tau>"
-    using member len terms unfolding Fun
+    using u len terms unfolding Fun
     by (auto intro!: nth_equalityI)
   have vars: "\<forall>x\<in>vars_term (Fun f ts).
       \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
   proof (intro ballI)
     fix x
-    assume "x \<in> vars_term (Fun f ts)"
-    then obtain i where i: "i < length ts"
-      and x: "x \<in> vars_term (ts ! i)" by auto
+    assume x_fun: "x \<in> vars_term (Fun f ts)"
+    then obtain q where q: "q \<in> set ts" and xq: "x \<in> vars_term q"
+      by auto
+    from q obtain i where i: "i < length ts" and qi: "ts ! i = q"
+      by (metis in_set_conv_nth)
+    have x: "x \<in> vars_term (ts ! i)" using xq unfolding qi .
     show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
       using merge local_member i x by auto
   qed
@@ -1362,7 +1367,7 @@ theorem csr_switch_overlay_proper_lhs_variants_instance:
     (\<forall>x\<in>vars_term t.
       \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
   using proper linear member
-proof (induct t arbitrary: \<sigma> u)
+proof (induct t arbitrary: \<sigma> u rule: term.induct)
   case (Var x)
   let ?\<tau> = "\<sigma>(x := u)"
   show ?case
@@ -1395,8 +1400,8 @@ next
         (\<forall>x\<in>vars_term (ss ! i).
           \<tau> x \<in> csr_innermost_variants \<mu> R (\<rho> x))"
         unfolding ss
-        by (rule Fun.hyps[OF nth_mem[OF i[unfolded ss]] child_l lin
-              w[unfolded ss]])
+        by (rule Fun.hyps[OF nth_mem[OF i[unfolded ss]] child_l
+              lin[unfolded ss] w[unfolded ss]])
     next
       show "v \<in> csr_innermost_variants0 \<mu> R
           (Fun f ts \<cdot> \<sigma>)" by (rule v)
@@ -1429,13 +1434,13 @@ next
       and u_NF: "u \<in> NF (csstep \<mu> R)" unfolding u by auto
     from csr_switch_overlay_proper_lhs_instance_innermost_steps_vars[
       OF ortho source Fun.prems(1) Fun.prems(2),
-      of \<sigma>' u \<mu>, unfolded v]
+      of \<sigma>' u \<mu>]
     obtain \<tau> where u_instance: "u = Fun f ts \<cdot> \<tau>"
       and sigma_steps: "\<forall>x\<in>vars_term (Fun f ts).
         (\<sigma>' x,\<tau> x) \<in> (innermost_csstep \<mu> R)\<^sup>*"
       and inactive: "\<forall>x\<in>vars_term (Fun f ts) -
         mu_vars_term \<mu> (Fun f ts). \<tau> x = \<sigma>' x"
-      using vu by blast
+      using vu[unfolded v] by blast
     have tau_member: "\<forall>x\<in>vars_term (Fun f ts).
       \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
     proof (intro ballI)
@@ -1454,10 +1459,12 @@ next
           by (rule mu_poss_subst_lift[OF p])
         have p_sigma: "p \<in> mu_poss \<mu> (Fun f ts \<cdot> \<sigma>)"
           by (rule mu_poss_subst_lift[OF p])
+        have p_pos: "p \<in> poss (Fun f ts)"
+          using p mu_poss_imp_poss by blast
         have at_sigma': "(Fun f ts \<cdot> \<sigma>') |_ p = \<sigma>' x"
-          using p at by simp
+          using subt_at_subst[OF p_pos, of \<sigma>'] at by simp
         have at_sigma: "(Fun f ts \<cdot> \<sigma>) |_ p = \<sigma> x"
-          using p at by simp
+          using subt_at_subst[OF p_pos, of \<sigma>] at by simp
         have local_SN: "SN_on (innermost_csstep \<mu> R) {\<sigma>' x}"
           using SN_on_innermost_csstep_mu_pos[OF wf p_sigma' v_SN[unfolded v]]
           unfolding at_sigma' .
@@ -1467,7 +1474,7 @@ next
         have p_tau: "p \<in> mu_poss \<mu> (Fun f ts \<cdot> \<tau>)"
           by (rule mu_poss_subst_lift[OF p])
         have at_tau: "(Fun f ts \<cdot> \<tau>) |_ p = \<tau> x"
-          using p at by simp
+          using subt_at_subst[OF p_pos, of \<tau>] at by simp
         have tau_NF: "\<tau> x \<in> NF (csstep \<mu> R)"
           using NF_csstep_mu_pos[OF u_NF[unfolded u_instance] p_tau]
           unfolding at_tau .
@@ -1480,8 +1487,9 @@ next
           have chosen: "innermost_csnf \<mu> R (\<sigma>' x) = \<tau> x"
             by (rule innermost_csnf_unique[OF ortho wf local_SN
                   sigma_steps[rule_format, OF x] tau_NF])
-          unfolding csr_innermost_variants_cases
-          using original_SN sigma0 local_SN chosen by blast
+          show ?thesis
+            unfolding csr_innermost_variants_cases
+            using original_SN sigma0 local_SN chosen by blast
         next
           assume normalized_x: "SN_on (csstep \<mu> R) {\<sigma> x} \<and>
             (\<exists>w. w \<in> csr_innermost_variants0 \<mu> R (\<sigma> x) \<and>
@@ -1523,9 +1531,9 @@ next
       csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
     proof (rule Fun.hyps[OF nth_mem[OF i]])
       fix x
-      assume "x \<in> vars_term (ts ! i)"
-      with i show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
-        by (rule Fun.prems, auto)
+      assume x: "x \<in> vars_term (ts ! i)"
+      show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+        by (rule Fun.prems, use i x in auto)
     qed
   qed
   show ?case
@@ -1546,8 +1554,12 @@ proof -
     assume i: "i < length ts"
     show "ts ! i \<cdot> \<tau> \<in>
       csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
-      by (rule csr_innermost_variants_substitution,
-          use vars i in auto)
+    proof (rule csr_innermost_variants_substitution)
+      fix x
+      assume x: "x \<in> vars_term (ts ! i)"
+      show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+        by (rule vars, use i x in auto)
+    qed
   qed
   then show ?thesis by auto
 qed
