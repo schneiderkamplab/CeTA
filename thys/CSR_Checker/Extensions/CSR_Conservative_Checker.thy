@@ -4,7 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_Conservative_Checker
   imports
-    CSR_Minimal_CSDP_Proofs
+    CSR_Innermost_Switch
     CSR_Improved_CSDP_Proofs
 begin
 

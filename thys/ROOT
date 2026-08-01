@@ -310,9 +310,12 @@ session CSR_Checker_Core in "CSR_Checker/Core" = CSR_Checker_Base +
 
 session CSR_Checker_Extensions in "CSR_Checker/Extensions" = CSR_Checker_Core +
   options [document = false]
+  sessions
+    CR
   theories
     CSR_Minimal_CSDP_Proofs
     CSR_Improved_CSDP_Proofs
+    CSR_Innermost_Switch
     CSR_Conservative_Checker
 
 session Proof_Checker in Proof_Checker = CSR_Checker_Extensions +
