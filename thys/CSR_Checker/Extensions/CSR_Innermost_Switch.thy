@@ -558,6 +558,87 @@ proof -
     using rw' cond' inner by blast
 qed
 
+lemma innermost_cssteps_active_argI:
+  assumes i: "i < length ss" "i \<in> \<mu> (f, length ss)"
+    and steps: "(ss ! i,u) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+  shows "(Fun f ss, Fun f (ss[i := u])) \<in>
+    (innermost_csstep \<mu> R)\<^sup>*"
+  using steps
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case using i by simp
+next
+  case (step y z)
+  have len: "length (ss[i := y]) = length ss" by simp
+  have nth: "(ss[i := y]) ! i = y" using i by simp
+  have lifted: "(Fun f (ss[i := y]), Fun f ((ss[i := y])[i := z]))
+      \<in> innermost_csstep \<mu> R"
+    by (rule innermost_csstep_active_argI,
+        use i len nth step.hyps(2) in auto)
+  have updates: "(ss[i := y])[i := z] = ss[i := z]"
+    using i by simp
+  from step.hyps(3) lifted show ?case
+    unfolding updates by auto
+qed
+
+lemma innermost_cssteps_active_argsI:
+  assumes len: "length us = length ss"
+    and active: "\<And>i. i < length ss \<Longrightarrow>
+      i \<in> \<mu> (f, length ss) \<Longrightarrow>
+      (ss ! i,us ! i) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    and inactive: "\<And>i. i < length ss \<Longrightarrow>
+      i \<notin> \<mu> (f, length ss) \<Longrightarrow> us ! i = ss ! i"
+  shows "(Fun f ss,Fun f us) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+proof -
+  have prefix: "n \<le> length ss \<Longrightarrow>
+      (Fun f ss,Fun f (take n us @ drop n ss)) \<in>
+        (innermost_csstep \<mu> R)\<^sup>*" for n
+  proof (induct n)
+    case 0
+    then show ?case by simp
+  next
+    case (Suc n)
+    then have n: "n < length ss" by simp
+    let ?vs = "take n us @ drop n ss"
+    let ?ws = "take (Suc n) us @ drop (Suc n) ss"
+    have lens: "length ?vs = length ss"
+      using len n by simp
+    have nth: "?vs ! n = ss ! n"
+      using n len by (simp add: nth_append)
+    have update: "?vs[n := us ! n] = ?ws"
+      using n len
+      by (subst upd_conv_take_nth_drop,
+          simp_all add: take_Suc_conv_app_nth)
+    show ?case
+    proof (cases "n \<in> \<mu> (f,length ss)")
+      case True
+      from active[OF n True] have local:
+        "(?vs ! n,us ! n) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+        unfolding nth .
+      have n_vs: "n < length ?vs" using n lens by simp
+      have active_vs: "n \<in> \<mu> (f,length ?vs)"
+        using True lens by simp
+      from innermost_cssteps_active_argI[OF n_vs active_vs local]
+      have "(Fun f ?vs,Fun f (?vs[n := us ! n])) \<in>
+          (innermost_csstep \<mu> R)\<^sup>*"
+        by simp
+      with Suc.hyps Suc.prems show ?thesis
+        unfolding update by auto
+    next
+      case False
+      have nth_value: "us ! n = ?vs ! n"
+        using inactive[OF n False] nth by simp
+      have same_update: "?vs[n := us ! n] = ?vs"
+        using n lens nth_value by simp
+      have eq: "?vs = ?ws"
+        using update same_update by simp
+      with Suc.hyps Suc.prems show ?thesis by simp
+    qed
+  qed
+  from prefix[of "length ss"] show ?thesis
+    using len by simp
+qed
+
 lemma innermost_csstep_mu_pos_lift:
   assumes p: "p \<in> mu_poss \<mu> t"
     and step: "(t |_ p,u) \<in> innermost_csstep \<mu> R"
@@ -635,6 +716,31 @@ proof (rule ccontr)
     ultimately show ?thesis by simp
   qed
   from SN[unfolded SN_on_def] g0 gstep show False by blast
+qed
+
+lemma terminating_or_mu_Tinf_active_arg_SN:
+  assumes wf: "wf_trs R"
+    and i: "i < length ss" "i \<in> \<mu> (f,length ss)"
+    and redex: "SN_on (csstep \<mu> R) {Fun f ss} \<or>
+      Fun f ss \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+  shows "SN_on (csstep \<mu> R) {ss ! i}"
+proof (rule disjE[OF redex])
+  assume SN: "SN_on (csstep \<mu> R) {Fun f ss}"
+  have root_pos: "[] \<in> mu_poss \<mu> (ss ! i)"
+    by (cases "ss ! i", auto)
+  have pos: "[i] \<in> mu_poss \<mu> (Fun f ss)"
+    using i root_pos by auto
+  from SN_on_mu_pos[OF wf pos SN] show ?thesis
+    using i by simp
+next
+  assume T: "Fun f ss \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+  have root_pos: "[] \<in> mu_poss \<mu> (ss ! i)"
+    by (cases "ss ! i", auto)
+  have proper: "mu_supt \<mu> (Fun f ss) (ss ! i)"
+    unfolding mu_supt_def
+    by (intro exI[of _ i] exI[of _ "[]"], use i root_pos in auto)
+  from T proper show ?thesis
+    unfolding mu_Tinf_def by blast
 qed
 
 lemma csstep_at_mu_posI:
@@ -1137,23 +1243,13 @@ proof -
   have chosen_nf_inner: "innermost_csnf \<mu> R s \<in>
       NF (innermost_csstep \<mu> R)"
     using chosen_nf unfolding NF_innermost_csstep_csstep[OF wf] .
-  have conv: "(innermost_csnf \<mu> R s,t) \<in>
-      (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
-  proof -
-    have forward: "(s,innermost_csnf \<mu> R s) \<in>
-        (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
-      by (rule conversionI'[OF chosen_steps])
-    have backward: "(innermost_csnf \<mu> R s,s) \<in>
-        (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
-      using conversion_sym forward unfolding sym_def by blast
-    have onward: "(s,t) \<in> (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
-      by (rule conversionI'[OF steps])
-    show ?thesis
-      using conversion_trans backward onward unfolding trans_def by blast
-  qed
-  from CR_NF_conv[OF csr_switch_overlay_innermost_csstep_CR[OF ortho wf]
-      nf_inner conv]
-  show ?thesis using chosen_nf_inner by simp
+  have joined: "(innermost_csnf \<mu> R s,t) \<in>
+      (innermost_csstep \<mu> R)\<^sup>\<down>"
+    by (rule CR_divergence_imp_join[
+        OF csr_switch_overlay_innermost_csstep_CR[OF ortho wf]
+          chosen_steps steps])
+  show ?thesis
+    by (rule join_NF_imp_eq[OF joined chosen_nf_inner nf_inner])
 qed
 
 lemma innermost_csnf_step_invariant:
@@ -1239,6 +1335,36 @@ lemma csr_innermost_variants_cases:
         SN_on (innermost_csstep \<mu> R) {v} \<and>
         u = innermost_csnf \<mu> R v))"
   by (cases s, auto simp: csr_innermost_variants0_def Let_def)
+
+lemma csr_innermost_variants_csnf_closed:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and source_SN: "SN_on (csstep \<mu> R) {s}"
+    and member: "v \<in> csr_innermost_variants \<mu> R s"
+    and v_SN: "SN_on (innermost_csstep \<mu> R) {v}"
+  shows "innermost_csnf \<mu> R v \<in>
+    csr_innermost_variants \<mu> R s"
+  using member[unfolded csr_innermost_variants_cases]
+proof
+  assume base: "v \<in> csr_innermost_variants0 \<mu> R s"
+  show ?thesis
+    unfolding csr_innermost_variants_cases
+    using source_SN base v_SN by blast
+next
+  assume normalized: "SN_on (csstep \<mu> R) {s} \<and>
+    (\<exists>w. w \<in> csr_innermost_variants0 \<mu> R s \<and>
+      SN_on (innermost_csstep \<mu> R) {w} \<and>
+      v = innermost_csnf \<mu> R w)"
+  then obtain w where w_SN: "SN_on (innermost_csstep \<mu> R) {w}"
+    and v: "v = innermost_csnf \<mu> R w" by blast
+  from innermost_csnf_from_SN[OF wf w_SN]
+  have v_NF: "v \<in> NF (csstep \<mu> R)"
+    unfolding v by blast
+  have fixed: "innermost_csnf \<mu> R v = v"
+    by (rule innermost_csnf_unique[OF ortho wf v_SN],
+        use v_NF in auto)
+  show ?thesis unfolding fixed using member .
+qed
 
 lemma csr_innermost_variants_self:
   "s \<in> csr_innermost_variants \<mu> R s"
@@ -1489,15 +1615,24 @@ next
                   sigma_steps[rule_format, OF x] tau_NF])
           show ?thesis
             unfolding csr_innermost_variants_cases
-            using original_SN sigma0 local_SN chosen by blast
+          proof (rule disjI2, intro conjI)
+            show "SN_on (csstep \<mu> R) {\<sigma> x}" by (rule original_SN)
+            show "\<exists>w. w \<in> csr_innermost_variants0 \<mu> R (\<sigma> x) \<and>
+                SN_on (innermost_csstep \<mu> R) {w} \<and>
+                \<tau> x = innermost_csnf \<mu> R w"
+              by (intro exI[of _ "\<sigma>' x"], use sigma0 local_SN chosen in auto)
+          qed
         next
           assume normalized_x: "SN_on (csstep \<mu> R) {\<sigma> x} \<and>
             (\<exists>w. w \<in> csr_innermost_variants0 \<mu> R (\<sigma> x) \<and>
               SN_on (innermost_csstep \<mu> R) {w} \<and>
               \<sigma>' x = innermost_csnf \<mu> R w)"
           then obtain w where w_SN: "SN_on (innermost_csstep \<mu> R) {w}"
-            and sigma'_NF: "\<sigma>' x \<in> NF (csstep \<mu> R)" by (metis
-              innermost_csnf_from_SN)
+            and sigma'_eq: "\<sigma>' x = innermost_csnf \<mu> R w"
+            by blast
+          have sigma'_NF: "\<sigma>' x \<in> NF (csstep \<mu> R)"
+            unfolding sigma'_eq
+            using innermost_csnf_from_SN[OF wf w_SN] by blast
           have sigma'_NF_inner: "\<sigma>' x \<in>
               NF (innermost_csstep \<mu> R)"
             using sigma'_NF innermost_csstep_subset_csstep
@@ -1511,6 +1646,39 @@ next
     qed
     show ?thesis using u_instance tau_member by blast
   qed
+qed
+
+lemma csr_switch_overlay_lhs_variants0_instance:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and lr: "(l,r) \<in> R"
+    and member: "u \<in> csr_innermost_variants0 \<mu> R (l \<cdot> \<sigma>)"
+  shows "\<exists>\<tau>. u = l \<cdot> \<tau> \<and>
+    (\<forall>x\<in>vars_term l.
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+proof -
+  have linear: "linear_term l"
+    using ortho lr
+    unfolding csr_switch_overlay_def left_linear_trs_def by blast
+  from wf lr obtain f ts where lhs: "l = Fun f ts"
+    unfolding wf_trs_def by blast
+  then have lhs_fun: "is_Fun l" by simp
+  show ?thesis
+  proof (rule csr_innermost_variants0_linear_instance[
+      OF linear _ member])
+    fix f ts i \<rho> v
+    assume l: "l = Fun f ts" and i: "i < length ts"
+      and linear_i: "linear_term (ts ! i)"
+      and v: "v \<in> csr_innermost_variants \<mu> R (ts ! i \<cdot> \<rho>)"
+    have proper: "l \<rhd> ts ! i"
+      unfolding l using i by auto
+    show "\<exists>\<tau>. v = ts ! i \<cdot> \<tau> \<and>
+      (\<forall>x\<in>vars_term (ts ! i).
+        \<tau> x \<in> csr_innermost_variants \<mu> R (\<rho> x))"
+      by (rule csr_switch_overlay_proper_lhs_variants_instance[
+          OF ortho wf lr proper linear_i v])
+  qed
+qed
 
 lemma csr_innermost_variants_substitution:
   assumes vars: "\<And>x. x \<in> vars_term t \<Longrightarrow>
@@ -1562,6 +1730,145 @@ proof -
     qed
   qed
   then show ?thesis by auto
+qed
+
+lemma csr_root_step_variants0_simulation:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and root: "(s,t) \<in> csrstep \<mu> R"
+    and redex: "SN_on (csstep \<mu> R) {s} \<or>
+      s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and member: "s' \<in> csr_innermost_variants0 \<mu> R s"
+    and inner_SN: "SN_on (innermost_csstep \<mu> R) {s'}"
+  shows "\<exists>t'. t' \<in> csr_innermost_variants \<mu> R t \<and>
+    (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+proof -
+  from root obtain l r \<sigma> where lr: "(l,r) \<in> R"
+    and s: "s = l \<cdot> \<sigma>" and t: "t = r \<cdot> \<sigma>"
+    by (elim csrstepE)
+  from wf_trs_imp_lhs_Fun[OF wf lr]
+  obtain f ls where l: "l = Fun f ls" by blast
+  from wf lr have vars_r: "vars_term r \<subseteq> vars_term l"
+    unfolding wf_trs_def by blast
+  from csr_switch_overlay_lhs_variants0_instance[
+      OF ortho wf lr member[unfolded s]]
+  obtain \<tau> where s': "s' = l \<cdot> \<tau>"
+    and tau_member: "\<forall>x\<in>vars_term l.
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+    by blast
+  let ?as = "map (\<lambda>q. q \<cdot> \<tau>) ls"
+  let ?bs = "map_index (\<lambda>i a.
+    if i \<in> \<mu> (f,length ls) then innermost_csnf \<mu> R a else a) ?as"
+  have s'_as: "s' = Fun f ?as" unfolding s' l by simp
+  have len_as: "length ?as = length ls" by simp
+  have len_bs: "length ?bs = length ?as" by simp
+  have as_member: "i < length ls \<Longrightarrow>
+      ?as ! i \<in> csr_innermost_variants \<mu> R (ls ! i \<cdot> \<sigma>)"
+      for i
+  proof -
+    assume i: "i < length ls"
+    have local_vars: "\<And>x. x \<in> vars_term (ls ! i) \<Longrightarrow>
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+      using tau_member i unfolding l by auto
+    show ?thesis
+      by (simp add: i, rule csr_innermost_variants_substitution[OF local_vars])
+  qed
+  have as_SN: "i < length ls \<Longrightarrow>
+      i \<in> \<mu> (f,length ls) \<Longrightarrow>
+      SN_on (innermost_csstep \<mu> R) {?as ! i}" for i
+  proof -
+    assume i: "i < length ls" and active: "i \<in> \<mu> (f,length ls)"
+    have root_pos: "[] \<in> mu_poss \<mu> (?as ! i)"
+      by (cases "?as ! i", auto)
+    have pos: "[i] \<in> mu_poss \<mu> (Fun f ?as)"
+      using i active root_pos by auto
+    from SN_on_innermost_csstep_mu_pos[OF wf pos inner_SN[unfolded s'_as]]
+    show ?thesis using i by simp
+  qed
+  have original_SN: "i < length ls \<Longrightarrow>
+      i \<in> \<mu> (f,length ls) \<Longrightarrow>
+      SN_on (csstep \<mu> R) {ls ! i \<cdot> \<sigma>}" for i
+  proof -
+    assume i: "i < length ls" and active: "i \<in> \<mu> (f,length ls)"
+    have source: "s = Fun f (map (\<lambda>q. q \<cdot> \<sigma>) ls)"
+      unfolding s l by simp
+    have source_redex:
+        "SN_on (csstep \<mu> R) {Fun f (map (\<lambda>q. q \<cdot> \<sigma>) ls)} \<or>
+         Fun f (map (\<lambda>q. q \<cdot> \<sigma>) ls) \<in>
+           mu_Tinf \<mu> (csstep \<mu> R)"
+      using redex unfolding source .
+    from terminating_or_mu_Tinf_active_arg_SN[
+      where ss="map (\<lambda>q. q \<cdot> \<sigma>) ls" and f=f and i=i,
+      OF wf _ _ source_redex]
+    show ?thesis using i active by simp
+  qed
+  have local_steps: "i < length ?as \<Longrightarrow>
+      i \<in> \<mu> (f,length ?as) \<Longrightarrow>
+      (?as ! i,?bs ! i) \<in> (innermost_csstep \<mu> R)\<^sup>*" for i
+  proof -
+    assume i: "i < length ?as" and active: "i \<in> \<mu> (f,length ?as)"
+    have i': "i < length ls" using i by simp
+    have active': "i \<in> \<mu> (f,length ls)" using active by simp
+    from innermost_csnf_from_SN[OF wf as_SN[OF i' active']]
+    show ?thesis using i active by simp
+  qed
+  have local_inactive: "i < length ?as \<Longrightarrow>
+      i \<notin> \<mu> (f,length ?as) \<Longrightarrow> ?bs ! i = ?as ! i" for i
+    by simp
+  have lifted: "(s',Fun f ?bs) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    unfolding s'_as
+    by (rule innermost_cssteps_active_argsI[OF len_bs local_steps
+          local_inactive])
+  have bs_member: "i < length ls \<Longrightarrow>
+      ?bs ! i \<in> csr_innermost_variants \<mu> R (ls ! i \<cdot> \<sigma>)"
+      for i
+  proof -
+    assume i: "i < length ls"
+    show ?thesis
+    proof (cases "i \<in> \<mu> (f,length ls)")
+      case True
+      from csr_innermost_variants_csnf_closed[
+        OF ortho wf original_SN[OF i True] as_member[OF i]
+          as_SN[OF i True]]
+      show ?thesis using i True by simp
+    next
+      case False
+      show ?thesis using as_member[OF i] i False by simp
+    qed
+  qed
+  have bs0: "Fun f ?bs \<in>
+      csr_innermost_variants0 \<mu> R (l \<cdot> \<sigma>)"
+    unfolding l using len_bs bs_member by auto
+  from csr_switch_overlay_lhs_variants0_instance[OF ortho wf lr bs0]
+  obtain \<delta> where lhs: "Fun f ?bs = l \<cdot> \<delta>"
+    and delta_member: "\<forall>x\<in>vars_term l.
+      \<delta> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+    by blast
+  have target_member: "r \<cdot> \<delta> \<in>
+      csr_innermost_variants \<mu> R (r \<cdot> \<sigma>)"
+    by (rule csr_innermost_variants_substitution,
+        use delta_member vars_r in blast)
+  have root_delta: "(l \<cdot> \<delta>,r \<cdot> \<delta>) \<in> csrstep \<mu> R"
+    unfolding csrstep_iff_rstep_root rstep_r_p_s_def'
+    using lr by (intro exI[of _ "(l,r)"] exI[of _ \<delta>], auto)
+  have bs_NF: "i < length ?bs \<Longrightarrow>
+      i \<in> \<mu> (f,length ?bs) \<Longrightarrow>
+      ?bs ! i \<in> NF (csstep \<mu> R)" for i
+  proof -
+    assume i: "i < length ?bs" and active: "i \<in> \<mu> (f,length ?bs)"
+    have i': "i < length ls" using i len_bs by simp
+    have active': "i \<in> \<mu> (f,length ls)"
+      using active len_bs by simp
+    from innermost_csnf_from_SN[OF wf as_SN[OF i' active']]
+    show ?thesis using i i' active active' len_bs by simp
+  qed
+  have final_step: "(Fun f ?bs,r \<cdot> \<delta>) \<in>
+      innermost_csstep \<mu> R"
+    by (rule csrstep_active_args_NF_imp_innermost[
+        OF root_delta[folded lhs] bs_NF])
+  have plus: "(s',r \<cdot> \<delta>) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+    by (rule rtrancl_into_trancl1[OF lifted final_step])
+  show ?thesis unfolding t using target_member plus by blast
 qed
 
 text \<open>
