@@ -2143,10 +2143,9 @@ definition csr_switch_selected_step ::
   "'f mu \<Rightarrow> ('f,string) trs \<Rightarrow> (('f,string) term \<times>
     ('f,string) term) set"
 where
-  "csr_switch_selected_step \<mu> R = {(s,t). \<exists>p lr \<sigma>.
-    (s,t) \<in> rstep_r_p_s R lr p \<sigma> \<and>
-    csstep_cond \<mu> p s \<and>
-    (SN_on (csstep \<mu> R) {s |_ p} \<or>
+  "csr_switch_selected_step \<mu> R = {st. \<exists>s t p lr \<sigma>.
+    st = (s,t) \<and> (s,t) \<in> rstep_r_p_s R lr p \<sigma> \<and>
+    csstep_cond \<mu> p s \<and> (SN_on (csstep \<mu> R) {s |_ p} \<or>
       s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R))}"
 
 lemma csr_switch_selected_step_subset:
@@ -2157,14 +2156,135 @@ definition csr_switch_minimal_step ::
   "'f mu \<Rightarrow> ('f,string) trs \<Rightarrow> (('f,string) term \<times>
     ('f,string) term) set"
 where
-  "csr_switch_minimal_step \<mu> R = {(s,t). \<exists>p lr \<sigma>.
-    (s,t) \<in> rstep_r_p_s R lr p \<sigma> \<and>
+  "csr_switch_minimal_step \<mu> R = {st. \<exists>s t p lr \<sigma>.
+    st = (s,t) \<and> (s,t) \<in> rstep_r_p_s R lr p \<sigma> \<and>
     csstep_cond \<mu> p s \<and>
     s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)}"
 
 lemma csr_switch_minimal_step_subset_selected:
   "csr_switch_minimal_step \<mu> R \<subseteq> csr_switch_selected_step \<mu> R"
   unfolding csr_switch_minimal_step_def csr_switch_selected_step_def by blast
+
+lemma csr_switch_selected_step_active_argI:
+  assumes i: "i < length ss" "i \<in> \<mu> (f,length ss)"
+    and step: "(ss ! i,u) \<in> csr_switch_selected_step \<mu> R"
+  shows "(Fun f ss,Fun f (ss[i := u])) \<in>
+    csr_switch_selected_step \<mu> R"
+proof -
+  from step obtain q lr \<sigma> where
+    rw: "(ss ! i,u) \<in> rstep_r_p_s R lr q \<sigma>"
+    and cond: "csstep_cond \<mu> q (ss ! i)"
+    and redex: "SN_on (csstep \<mu> R) {ss ! i |_ q} \<or>
+      ss ! i |_ q \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    unfolding csr_switch_selected_step_def by blast
+  have rw': "(Fun f ss,Fun f (ss[i := u])) \<in>
+      rstep_r_p_s R lr (i # q) \<sigma>"
+    using rw i unfolding rstep_r_p_s_def'
+    by (auto simp: upd_conv_take_nth_drop)
+  have cond': "csstep_cond \<mu> (i # q) (Fun f ss)"
+    by (rule csstep_cond_Cons_FunI[OF i cond])
+  show ?thesis
+  unfolding csr_switch_selected_step_def
+  apply (rule CollectI)
+  apply (rule exI[of _ "Fun f ss"])
+  apply (rule exI[of _ "Fun f (ss[i := u])"])
+  apply (rule exI[of _ "i # q"])
+  apply (rule exI[of _ lr])
+  apply (rule exI[of _ \<sigma>])
+  using rw' cond' redex i
+  apply simp
+  done
+qed
+
+lemma csr_switch_minimal_step_active_argI:
+  assumes i: "i < length ss" "i \<in> \<mu> (f,length ss)"
+    and step: "(ss ! i,u) \<in> csr_switch_minimal_step \<mu> R"
+  shows "(Fun f ss,Fun f (ss[i := u])) \<in>
+    csr_switch_minimal_step \<mu> R"
+proof -
+  from step obtain q lr \<sigma> where
+    rw: "(ss ! i,u) \<in> rstep_r_p_s R lr q \<sigma>"
+    and cond: "csstep_cond \<mu> q (ss ! i)"
+    and minimal: "ss ! i |_ q \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    unfolding csr_switch_minimal_step_def by blast
+  have rw': "(Fun f ss,Fun f (ss[i := u])) \<in>
+      rstep_r_p_s R lr (i # q) \<sigma>"
+    using rw i unfolding rstep_r_p_s_def'
+    by (auto simp: upd_conv_take_nth_drop)
+  have cond': "csstep_cond \<mu> (i # q) (Fun f ss)"
+    by (rule csstep_cond_Cons_FunI[OF i cond])
+  show ?thesis
+  unfolding csr_switch_minimal_step_def
+  apply (rule CollectI)
+  apply (rule exI[of _ "Fun f ss"])
+  apply (rule exI[of _ "Fun f (ss[i := u])"])
+  apply (rule exI[of _ "i # q"])
+  apply (rule exI[of _ lr])
+  apply (rule exI[of _ \<sigma>])
+  using rw' cond' minimal i
+  apply simp
+  done
+qed
+
+lemma csr_switch_selected_step_mu_pos_lift:
+  assumes p: "p \<in> mu_poss \<mu> s"
+    and step: "(s |_ p,u) \<in> csr_switch_selected_step \<mu> R"
+  shows "(s,replace_at s p u) \<in> csr_switch_selected_step \<mu> R"
+  using p step
+proof (induct s arbitrary: p u)
+  case (Var x)
+  then show ?case by auto
+next
+  case (Fun f ss)
+  show ?case
+  proof (cases p)
+    case Nil
+    with Fun show ?thesis by simp
+  next
+    case (Cons i q)
+    from Fun.prems Cons have i: "i < length ss"
+      and active: "i \<in> \<mu> (f,length ss)"
+      and q: "q \<in> mu_poss \<mu> (ss ! i)"
+      and local: "(ss ! i |_ q,u) \<in> csr_switch_selected_step \<mu> R"
+      by auto
+    from Fun.hyps[OF nth_mem[OF i] q local]
+    have child: "(ss ! i,replace_at (ss ! i) q u) \<in>
+      csr_switch_selected_step \<mu> R" .
+    from csr_switch_selected_step_active_argI[OF i active child]
+    show ?thesis unfolding Cons using i q
+      by (simp add: upd_conv_take_nth_drop)
+  qed
+qed
+
+lemma csr_switch_minimal_step_mu_pos_lift:
+  assumes p: "p \<in> mu_poss \<mu> s"
+    and step: "(s |_ p,u) \<in> csr_switch_minimal_step \<mu> R"
+  shows "(s,replace_at s p u) \<in> csr_switch_minimal_step \<mu> R"
+  using p step
+proof (induct s arbitrary: p u)
+  case (Var x)
+  then show ?case by auto
+next
+  case (Fun f ss)
+  show ?case
+  proof (cases p)
+    case Nil
+    with Fun show ?thesis by simp
+  next
+    case (Cons i q)
+    from Fun.prems Cons have i: "i < length ss"
+      and active: "i \<in> \<mu> (f,length ss)"
+      and q: "q \<in> mu_poss \<mu> (ss ! i)"
+      and local: "(ss ! i |_ q,u) \<in> csr_switch_minimal_step \<mu> R"
+      by auto
+    from Fun.hyps[OF nth_mem[OF i] q local]
+    have child: "(ss ! i,replace_at (ss ! i) q u) \<in>
+      csr_switch_minimal_step \<mu> R" .
+    from csr_switch_minimal_step_active_argI[OF i active child]
+    show ?thesis unfolding Cons using i q
+      by (simp add: upd_conv_take_nth_drop)
+  qed
+qed
 
 lemma csr_switch_selected_step_variants_simulation:
   fixes R :: "('f,string) trs"
