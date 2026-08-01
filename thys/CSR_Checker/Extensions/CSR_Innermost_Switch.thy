@@ -2139,6 +2139,78 @@ next
   qed
 qed
 
+definition csr_switch_selected_step ::
+  "'f mu \<Rightarrow> ('f,string) trs \<Rightarrow> (('f,string) term \<times>
+    ('f,string) term) set"
+where
+  "csr_switch_selected_step \<mu> R = {(s,t). \<exists>p lr \<sigma>.
+    (s,t) \<in> rstep_r_p_s R lr p \<sigma> \<and>
+    csstep_cond \<mu> p s \<and>
+    (SN_on (csstep \<mu> R) {s |_ p} \<or>
+      s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R))}"
+
+lemma csr_switch_selected_step_subset:
+  "csr_switch_selected_step \<mu> R \<subseteq> csstep \<mu> R"
+  unfolding csr_switch_selected_step_def csstep_def csstep_p_def by blast
+
+definition csr_switch_minimal_step ::
+  "'f mu \<Rightarrow> ('f,string) trs \<Rightarrow> (('f,string) term \<times>
+    ('f,string) term) set"
+where
+  "csr_switch_minimal_step \<mu> R = {(s,t). \<exists>p lr \<sigma>.
+    (s,t) \<in> rstep_r_p_s R lr p \<sigma> \<and>
+    csstep_cond \<mu> p s \<and>
+    s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)}"
+
+lemma csr_switch_minimal_step_subset_selected:
+  "csr_switch_minimal_step \<mu> R \<subseteq> csr_switch_selected_step \<mu> R"
+  unfolding csr_switch_minimal_step_def csr_switch_selected_step_def by blast
+
+lemma csr_switch_selected_step_variants_simulation:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and step: "(s,t) \<in> csr_switch_selected_step \<mu> R"
+    and member: "s' \<in> csr_innermost_variants \<mu> R s"
+    and inner_SN: "SN_on (innermost_csstep \<mu> R) {s'}"
+  shows "\<exists>t'. t' \<in> csr_innermost_variants \<mu> R t \<and>
+    (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>* \<and>
+    ((s,t) \<in> csr_switch_minimal_step \<mu> R \<longrightarrow>
+      (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+)"
+proof (cases "(s,t) \<in> csr_switch_minimal_step \<mu> R")
+  case True
+  then obtain p lr \<sigma> where
+    rewrite: "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    and minimal: "s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    unfolding csr_switch_minimal_step_def by blast
+  have redex: "SN_on (csstep \<mu> R) {s |_ p} \<or>
+      s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    using minimal by blast
+  from csr_position_step_variants_simulation[
+    OF ortho wf rewrite cond redex member inner_SN]
+  obtain t' where target: "t' \<in> csr_innermost_variants \<mu> R t"
+    and star: "(s',t') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    and plus: "(s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+    using minimal unfolding mu_Tinf_def by blast
+  show ?thesis
+    by (intro exI[of _ t'], use target star plus in auto)
+next
+  case False
+  from step obtain p lr \<sigma> where
+    rewrite: "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    and redex: "SN_on (csstep \<mu> R) {s |_ p} \<or>
+      s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    unfolding csr_switch_selected_step_def by blast
+  from csr_position_step_variants_simulation[
+    OF ortho wf rewrite cond redex member inner_SN]
+  obtain t' where target: "t' \<in> csr_innermost_variants \<mu> R t"
+    and star: "(s',t') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    by blast
+  show ?thesis
+    by (intro exI[of _ t'], use target star False in auto)
+qed
+
 text \<open>
   The later executable innermost processor reuses the separately named
   named RTA'08 CS-DP construction.  Keeping that construction in the
