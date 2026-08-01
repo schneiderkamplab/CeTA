@@ -717,6 +717,64 @@ lemma innermost_csnf_from_SN:
   by (rule innermost_csnf[OF
       SN_innermost_csstep_reaches_csnf[OF wf SN]])
 
+lemma innermost_csnf_unique:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and SN: "SN_on (innermost_csstep \<mu> R) {s}"
+    and steps: "(s,t) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    and nf: "t \<in> NF (csstep \<mu> R)"
+  shows "innermost_csnf \<mu> R s = t"
+proof -
+  from innermost_csnf_from_SN[OF wf SN]
+  have chosen_steps: "(s,innermost_csnf \<mu> R s) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*"
+    and chosen_nf: "innermost_csnf \<mu> R s \<in>
+      NF (csstep \<mu> R)" by auto
+  have nf_inner: "t \<in> NF (innermost_csstep \<mu> R)"
+    using nf unfolding NF_innermost_csstep_csstep[OF wf] .
+  have chosen_nf_inner: "innermost_csnf \<mu> R s \<in>
+      NF (innermost_csstep \<mu> R)"
+    using chosen_nf unfolding NF_innermost_csstep_csstep[OF wf] .
+  have conv: "(innermost_csnf \<mu> R s,t) \<in>
+      (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
+  proof -
+    have forward: "(s,innermost_csnf \<mu> R s) \<in>
+        (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
+      by (rule conversionI'[OF chosen_steps])
+    have backward: "(innermost_csnf \<mu> R s,s) \<in>
+        (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
+      using conversion_sym forward unfolding sym_def by blast
+    have onward: "(s,t) \<in> (innermost_csstep \<mu> R)\<^sup>\<leftrightarrow>\<^sup>*"
+      by (rule conversionI'[OF steps])
+    show ?thesis
+      using conversion_trans backward onward unfolding trans_def by blast
+  qed
+  from CR_NF_conv[OF csr_switch_overlay_innermost_csstep_CR[OF ortho wf]
+      nf_inner conv]
+  show ?thesis using chosen_nf_inner by simp
+qed
+
+lemma innermost_csnf_step_invariant:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and SN: "SN_on (innermost_csstep \<mu> R) {s}"
+    and steps: "(s,t) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+  shows "innermost_csnf \<mu> R s = innermost_csnf \<mu> R t"
+proof -
+  from steps_preserve_SN_on[OF steps SN]
+  have SN_t: "SN_on (innermost_csstep \<mu> R) {t}" .
+  from innermost_csnf_from_SN[OF wf SN_t]
+  have t_nf_steps: "(t,innermost_csnf \<mu> R t) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*"
+    and t_nf: "innermost_csnf \<mu> R t \<in> NF (csstep \<mu> R)"
+    by auto
+  have "(s,innermost_csnf \<mu> R t) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*"
+    using steps t_nf_steps by auto
+  from innermost_csnf_unique[OF ortho wf SN this t_nf]
+  show ?thesis .
+qed
+
 fun csr_innermost_variants ::
   "'f mu \<Rightarrow> ('f, 'v) trs \<Rightarrow> ('f, 'v) term \<Rightarrow>
     ('f, 'v) term set"
