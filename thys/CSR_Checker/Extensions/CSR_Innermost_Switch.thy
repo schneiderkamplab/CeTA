@@ -137,7 +137,6 @@ proof (rule ccontr)
     from ortho cp show False
       unfolding csr_switch_overlay_def by blast
   qed
-qed
 
 text \<open>
   Innermost context-sensitive rewriting is represented separately from both
@@ -156,6 +155,329 @@ where
     csstep_cond \<mu> p s \<and>
     (\<forall>u. mu_supt \<mu> (fst lr \<cdot> \<sigma>) u \<longrightarrow>
       u \<in> NF (csstep \<mu> R))}"
+
+lemma af_regarded_pos_subst_prefix:
+  assumes "p \<in> poss t"
+  shows "af_regarded_pos \<mu> (t \<cdot> \<sigma>) p =
+    af_regarded_pos \<mu> t p"
+  using assms
+proof (induct p arbitrary: t)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons i p)
+  then obtain f ss where t: "t = Fun f ss" and i: "i < length ss"
+    and p: "p \<in> poss (ss ! i)" by (cases t, auto)
+  from Cons show ?case unfolding t using i p by auto
+qed
+
+lemma af_regarded_pos_imp_mu_poss_local:
+  assumes p: "p \<in> poss t"
+    and active: "af_regarded_pos \<mu> t p"
+  shows "p \<in> mu_poss \<mu> t"
+  using p active
+proof (induct p arbitrary: t)
+  case Nil
+  then show ?case by (cases t, auto)
+next
+  case (Cons i p)
+  then obtain f ss where t: "t = Fun f ss" and i: "i < length ss"
+    and active_i: "i \<in> \<mu> (f,length ss)"
+    and p_pos: "p \<in> poss (ss ! i)"
+    and active_p: "af_regarded_pos \<mu> (ss ! i) p"
+    by (cases t, auto)
+  from Cons.hyps[OF p_pos active_p] t i active_i
+  show ?case by auto
+qed
+
+lemma af_regarded_pos_imp_csstep_cond_local:
+  assumes pos: "p \<in> poss s" and active: "af_regarded_pos \<mu> s p"
+  shows "csstep_cond \<mu> p s"
+  using pos active
+proof (induct p arbitrary: s)
+  case Nil
+  then show ?case unfolding csstep_cond_def by simp
+next
+  case (Cons i p)
+  then obtain f ss where s: "s = Fun f ss"
+    and i: "i < length ss" "i \<in> \<mu> (f,length ss)"
+    and p: "p \<in> poss (ss ! i)"
+    and active: "af_regarded_pos \<mu> (ss ! i) p"
+    by (cases s, auto)
+  from Cons.hyps[OF p active]
+  have cond: "csstep_cond \<mu> p (ss ! i)" .
+  show ?case unfolding s csstep_cond_def
+  proof (intro allI impI)
+    fix p1 j p2
+    assume decomp: "i # p = p1 @ j # p2 \<and>
+      i # p \<in> poss (Fun f ss)"
+    show "\<exists>g us. Fun f ss |_ p1 = Fun g us \<and>
+      j \<in> \<mu> (g,length us)"
+    proof (cases p1)
+      case Nil
+      with decomp i show ?thesis by auto
+    next
+      case (Cons k q)
+      with decomp have k: "k = i" and p_decomp: "p = q @ j # p2"
+        and p_pos: "p \<in> poss (ss ! i)" using i by auto
+      from cond[unfolded csstep_cond_def, rule_format, of q j p2]
+        p_decomp p_pos
+      obtain g us where sub: "ss ! i |_ q = Fun g us"
+        and selected: "j \<in> \<mu> (g,length us)" by auto
+      with Cons k i show ?thesis by auto
+    qed
+  qed
+qed
+
+lemma csr_switch_overlay_proper_lhs_instance_no_root:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R"
+    and lr: "(l,r) \<in> R"
+    and proper: "l \<rhd> t"
+    and tfun: "is_Fun t"
+  shows "(t \<cdot> \<sigma>,u) \<notin> csrstep \<mu> R"
+proof
+  assume step: "(t \<cdot> \<sigma>,u) \<in> csrstep \<mu> R"
+  then obtain lr' \<tau> where
+    root': "(t \<cdot> \<sigma>,u) \<in> rstep_r_p_s R lr' [] \<tau>"
+    unfolding csrstep_iff_rstep_root by blast
+  obtain l' r' where lr'_eq: "lr' = (l',r')" by (cases lr', auto)
+  have root: "(t \<cdot> \<sigma>,u) \<in> rstep_r_p_s R (l',r') [] \<tau>"
+    using root' unfolding lr'_eq .
+  from root have lr': "(l',r') \<in> R"
+    and match: "t \<cdot> \<sigma> = l' \<cdot> \<tau>"
+    unfolding rstep_r_p_s_def' by auto
+  from mgu_vd_complete[OF match, of string_rename]
+  obtain \<mu>1 \<mu>2 where
+    mgu: "mgu_vd string_rename t l' = Some (\<mu>1,\<mu>2)"
+    by auto
+  from proper obtain D where lD: "l = D\<langle>t\<rangle>" and D_ne: "D \<noteq> \<box>"
+    by auto
+  have cp: "(False,
+      (D \<cdot>\<^sub>c \<mu>1)\<langle>r' \<cdot> \<mu>2\<rangle>,
+      r \<cdot> \<mu>1) \<in> critical_pairs string_rename R R"
+    by (rule critical_pairsI[OF lr lr' lD tfun mgu refl refl],
+        simp add: D_ne)
+  from ortho cp show False
+    unfolding csr_switch_overlay_def by blast
+qed
+
+lemma csr_switch_overlay_proper_lhs_instance_rstep:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R"
+    and source: "(l,r) \<in> R"
+    and proper: "l \<rhd> t"
+    and linear: "linear_term t"
+    and step: "(t \<cdot> \<sigma>,u) \<in> rstep_r_p_s R lr' p \<rho>"
+  shows "\<exists>\<tau>. u = t \<cdot> \<tau>"
+proof -
+  from step have p_pos: "p \<in> poss (t \<cdot> \<sigma>)"
+    and lr': "lr' \<in> R"
+    and redex: "(t \<cdot> \<sigma>) |_ p = fst lr' \<cdot> \<rho>"
+    and u: "u = replace_at (t \<cdot> \<sigma>) p (snd lr' \<cdot> \<rho>)"
+    unfolding rstep_r_p_s_def' by auto
+  from poss_subst_choice[OF p_pos]
+  show ?thesis
+  proof
+    assume pattern: "p \<in> poss t \<and> is_Fun (t |_ p)"
+    then have p_t: "p \<in> poss t" and p_fun: "is_Fun (t |_ p)"
+      by auto
+    have sub: "l \<rhd> t |_ p"
+      by (rule supt_supteq_trans[OF proper subt_at_imp_supteq[OF p_t]])
+    obtain l' r' where lr'_eq: "lr' = (l',r')" by (cases lr', auto)
+    have root: "((t |_ p) \<cdot> \<sigma>,r' \<cdot> \<rho>)
+        \<in> csrstep \<mu> R"
+      unfolding csrstep_iff_rstep_root rstep_r_p_s_def'
+      using lr' redex p_t unfolding lr'_eq
+      by (intro exI[of _ "(l',r')"] exI[of _ \<rho>], auto)
+    from csr_switch_overlay_proper_lhs_instance_no_root[
+      OF ortho source sub p_fun, of \<sigma> "r' \<cdot> \<rho>" \<mu>] root
+    show ?thesis by contradiction
+  next
+    assume "\<exists>x q1 q2. q1 \<in> poss t \<and> q2 \<in> poss (\<sigma> x) \<and>
+      t |_ q1 = Var x \<and> x \<in> vars_term t \<and> p = q1 @ q2 \<and>
+      (t \<cdot> \<sigma>) |_ p = \<sigma> x |_ q2"
+    then obtain x q1 q2 where
+      q1: "q1 \<in> poss t" "t |_ q1 = Var x" "x \<in> vars_term t"
+      and q2: "q2 \<in> poss (\<sigma> x)"
+      and p: "p = q1 @ q2"
+      by blast
+    let ?v = "replace_at (\<sigma> x) q2 (snd lr' \<cdot> \<rho>)"
+    let ?\<tau> = "\<sigma>(x := ?v)"
+    have nested: "replace_at (t \<cdot> \<sigma>) p (snd lr' \<cdot> \<rho>) =
+        replace_at (t \<cdot> \<sigma>) q1 ?v"
+      unfolding p ctxt_of_pos_term_append[OF poss_imp_subst_poss[OF q1(1)]]
+      using q1 q2 by simp
+    have replaced: "replace_at (t \<cdot> \<sigma>) q1 ?v = t \<cdot> ?\<tau>"
+      by (rule linear_term_replace_in_subst[OF linear q1(1) q1(2)], auto)
+    have "u = t \<cdot> ?\<tau>" using u nested replaced by simp
+    then show ?thesis by blast
+  qed
+qed
+
+lemma csr_switch_overlay_proper_lhs_instance_innermost_steps:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R"
+    and source: "(l,r) \<in> R"
+    and proper: "l \<rhd> t"
+    and linear: "linear_term t"
+    and steps: "(t \<cdot> \<sigma>,u) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+  shows "\<exists>\<tau>. u = t \<cdot> \<tau>"
+  using steps
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by blast
+next
+  case (step y z)
+  from step.hyps(2) obtain p lr' \<rho> where
+    rw: "(y,z) \<in> rstep_r_p_s R lr' p \<rho>"
+    unfolding innermost_csstep_def by blast
+  from step.hyps(3) obtain \<tau> where y: "y = t \<cdot> \<tau>" by blast
+  from csr_switch_overlay_proper_lhs_instance_rstep[
+    OF ortho source proper linear rw[unfolded y]]
+  show ?case .
+qed
+
+lemma csr_switch_overlay_proper_lhs_instance_innermost_step:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R"
+    and source: "(l,r) \<in> R"
+    and proper: "l \<rhd> t"
+    and linear: "linear_term t"
+    and step: "(t \<cdot> \<sigma>,u) \<in> innermost_csstep \<mu> R"
+  shows "\<exists>\<tau>. u = t \<cdot> \<tau> \<and>
+    (\<forall>x\<in>vars_term t. (\<sigma> x,\<tau> x) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*) \<and>
+    (\<forall>x\<in>vars_term t - mu_vars_term \<mu> t. \<tau> x = \<sigma> x)"
+proof -
+  from step obtain p lr' \<rho> where
+    rw: "(t \<cdot> \<sigma>,u) \<in> rstep_r_p_s R lr' p \<rho>"
+    and cond: "csstep_cond \<mu> p (t \<cdot> \<sigma>)"
+    and inner: "\<forall>w. mu_supt \<mu> (fst lr' \<cdot> \<rho>) w
+      \<longrightarrow> w \<in> NF (csstep \<mu> R)"
+    unfolding innermost_csstep_def by blast
+  from rw have p_pos: "p \<in> poss (t \<cdot> \<sigma>)"
+    and lr': "lr' \<in> R"
+    and redex: "(t \<cdot> \<sigma>) |_ p = fst lr' \<cdot> \<rho>"
+    and u: "u = replace_at (t \<cdot> \<sigma>) p (snd lr' \<cdot> \<rho>)"
+    unfolding rstep_r_p_s_def' by auto
+  from poss_subst_choice[OF p_pos]
+  show ?thesis
+  proof
+    assume pattern: "p \<in> poss t \<and> is_Fun (t |_ p)"
+    then have p_t: "p \<in> poss t" and p_fun: "is_Fun (t |_ p)"
+      by auto
+    have sub: "l \<rhd> t |_ p"
+      by (rule supt_supteq_trans[OF proper subt_at_imp_supteq[OF p_t]])
+    obtain l' r' where lr'_eq: "lr' = (l',r')" by (cases lr', auto)
+    have root: "((t |_ p) \<cdot> \<sigma>,r' \<cdot> \<rho>)
+        \<in> csrstep \<mu> R"
+      unfolding csrstep_iff_rstep_root rstep_r_p_s_def'
+      using lr' redex p_t unfolding lr'_eq
+      by (intro exI[of _ "(l',r')"] exI[of _ \<rho>], auto)
+    from csr_switch_overlay_proper_lhs_instance_no_root[
+      OF ortho source sub p_fun, of \<sigma> "r' \<cdot> \<rho>" \<mu>] root
+    show ?thesis by contradiction
+  next
+    assume "\<exists>x q1 q2. q1 \<in> poss t \<and> q2 \<in> poss (\<sigma> x) \<and>
+      t |_ q1 = Var x \<and> x \<in> vars_term t \<and> p = q1 @ q2 \<and>
+      (t \<cdot> \<sigma>) |_ p = \<sigma> x |_ q2"
+    then obtain x q1 q2 where
+      q1: "q1 \<in> poss t" "t |_ q1 = Var x" "x \<in> vars_term t"
+      and q2: "q2 \<in> poss (\<sigma> x)"
+      and p: "p = q1 @ q2"
+      by blast
+    let ?v = "replace_at (\<sigma> x) q2 (snd lr' \<cdot> \<rho>)"
+    let ?\<tau> = "\<sigma>(x := ?v)"
+    have local_rw: "(\<sigma> x,?v) \<in> rstep_r_p_s R lr' q2 \<rho>"
+      unfolding rstep_r_p_s_def'
+      using lr' redex q1 q2 unfolding p
+      by (auto simp: subt_at_append)
+    have active_p: "af_regarded_pos \<mu> (t \<cdot> \<sigma>) p"
+      by (rule csstep_cond_imp_af_regarded_pos[OF cond p_pos])
+    have local_active: "af_regarded_pos \<mu> (\<sigma> x) q2"
+      using active_p q1 unfolding p af_regarded_pos_append by simp
+    have active_q1_subst: "af_regarded_pos \<mu> (t \<cdot> \<sigma>) q1"
+      using active_p unfolding p af_regarded_pos_append by blast
+    have active_q1: "af_regarded_pos \<mu> t q1"
+      using active_q1_subst
+      unfolding af_regarded_pos_subst_prefix[OF q1(1)] .
+    have q1_mu: "q1 \<in> mu_poss \<mu> t"
+      by (rule af_regarded_pos_imp_mu_poss_local[OF q1(1) active_q1])
+    have x_active: "x \<in> mu_vars_term \<mu> t"
+      using q1_mu q1(2) unfolding mu_vars_term_def by blast
+    have local_cond: "csstep_cond \<mu> q2 (\<sigma> x)"
+      by (rule af_regarded_pos_imp_csstep_cond_local[OF q2 local_active])
+    have local_step: "(\<sigma> x,?v) \<in> innermost_csstep \<mu> R"
+      unfolding innermost_csstep_def using local_rw local_cond inner by blast
+    have nested: "replace_at (t \<cdot> \<sigma>) p (snd lr' \<cdot> \<rho>) =
+        replace_at (t \<cdot> \<sigma>) q1 ?v"
+      unfolding p ctxt_of_pos_term_append[OF poss_imp_subst_poss[OF q1(1)]]
+      using q1 q2 by simp
+    have replaced: "replace_at (t \<cdot> \<sigma>) q1 ?v = t \<cdot> ?\<tau>"
+      by (rule linear_term_replace_in_subst[OF linear q1(1) q1(2)], auto)
+    have vars: "\<forall>y\<in>vars_term t. (\<sigma> y,?\<tau> y) \<in>
+        (innermost_csstep \<mu> R)\<^sup>*"
+    proof (intro ballI)
+      fix y
+      assume "y \<in> vars_term t"
+      show "(\<sigma> y,?\<tau> y) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+      proof (cases "y = x")
+        case True
+        with local_step show ?thesis by simp
+      next
+        case False
+        then show ?thesis by simp
+      qed
+    qed
+    have inactive: "\<forall>y\<in>vars_term t - mu_vars_term \<mu> t.
+        ?\<tau> y = \<sigma> y"
+      using x_active by auto
+    have result: "u = t \<cdot> ?\<tau>" using u nested replaced by simp
+    show ?thesis
+      by (rule exI[of _ ?\<tau>], use result vars inactive in auto)
+  qed
+qed
+
+lemma csr_switch_overlay_proper_lhs_instance_innermost_steps_vars:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R"
+    and source: "(l,r) \<in> R"
+    and proper: "l \<rhd> t"
+    and linear: "linear_term t"
+    and steps: "(t \<cdot> \<sigma>,u) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+  shows "\<exists>\<tau>. u = t \<cdot> \<tau> \<and>
+    (\<forall>x\<in>vars_term t. (\<sigma> x,\<tau> x) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*) \<and>
+    (\<forall>x\<in>vars_term t - mu_vars_term \<mu> t. \<tau> x = \<sigma> x)"
+  using steps
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by blast
+next
+  case (step y z)
+  from step.hyps(3) obtain \<tau> where y: "y = t \<cdot> \<tau>"
+    and old: "\<forall>x\<in>vars_term t. (\<sigma> x,\<tau> x) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*"
+    and old_inactive: "\<forall>x\<in>vars_term t - mu_vars_term \<mu> t.
+      \<tau> x = \<sigma> x"
+    by blast
+  from csr_switch_overlay_proper_lhs_instance_innermost_step[
+    OF ortho source proper linear step.hyps(2)[unfolded y]]
+  obtain \<delta> where z: "z = t \<cdot> \<delta>"
+    and new: "\<forall>x\<in>vars_term t. (\<tau> x,\<delta> x) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*"
+    and new_inactive: "\<forall>x\<in>vars_term t - mu_vars_term \<mu> t.
+      \<delta> x = \<tau> x"
+    by blast
+  have composed: "\<forall>x\<in>vars_term t. (\<sigma> x,\<delta> x) \<in>
+      (innermost_csstep \<mu> R)\<^sup>*"
+    using old new by (meson rtrancl_trans)
+  have inactive: "\<forall>x\<in>vars_term t - mu_vars_term \<mu> t.
+      \<delta> x = \<sigma> x"
+    using old_inactive new_inactive by auto
+  show ?case using z composed inactive by blast
+qed
 
 lemma innermost_csstep_subset_csstep:
   "innermost_csstep \<mu> R \<subseteq> csstep \<mu> R"
@@ -233,6 +555,85 @@ proof -
   show ?thesis
     unfolding innermost_csstep_def
     using rw' cond' inner by blast
+qed
+
+lemma innermost_csstep_mu_pos_lift:
+  assumes p: "p \<in> mu_poss \<mu> t"
+    and step: "(t |_ p,u) \<in> innermost_csstep \<mu> R"
+  shows "(t,replace_at t p u) \<in> innermost_csstep \<mu> R"
+  using p step
+proof (induct t arbitrary: p u)
+  case (Var x)
+  then show ?case by auto
+next
+  case (Fun f ss)
+  show ?case
+  proof (cases p)
+    case Nil
+    with Fun show ?thesis by simp
+  next
+    case (Cons i q)
+    from Fun.prems Cons have i: "i < length ss"
+      and active: "i \<in> \<mu> (f,length ss)"
+      and q: "q \<in> mu_poss \<mu> (ss ! i)"
+      and local: "(ss ! i |_ q,u) \<in> innermost_csstep \<mu> R"
+      by auto
+    from Fun.hyps[OF nth_mem[OF i] q local]
+    have lifted: "(ss ! i,replace_at (ss ! i) q u) \<in>
+        innermost_csstep \<mu> R" .
+    have outer: "(Fun f ss,
+        Fun f (ss[i := replace_at (ss ! i) q u])) \<in>
+        innermost_csstep \<mu> R"
+      by (rule innermost_csstep_active_argI[OF i active lifted])
+    have target: "replace_at (Fun f ss) (i # q) u =
+        Fun f (ss[i := replace_at (ss ! i) q u])"
+      using i q by (simp add: upd_conv_take_nth_drop)
+    show ?thesis unfolding Cons target using outer .
+  qed
+qed
+
+lemma SN_on_innermost_csstep_mu_pos:
+  assumes wf: "wf_trs R"
+    and p: "p \<in> mu_poss \<mu> t"
+    and SN: "SN_on (innermost_csstep \<mu> R) {t}"
+  shows "SN_on (innermost_csstep \<mu> R) {t |_ p}"
+proof (rule ccontr)
+  assume not_SN: "\<not> SN_on (innermost_csstep \<mu> R) {t |_ p}"
+  then obtain f where f0: "f 0 = t |_ p"
+    and chain: "\<And>i. (f i,f (Suc i)) \<in> innermost_csstep \<mu> R"
+    unfolding SN_on_def by auto
+  define g where "g i = replace_at t p (f i)" for i
+  have p_pos: "p \<in> poss t" using p mu_poss_imp_poss by blast
+  have g0: "g 0 = t"
+    unfolding g_def f0 by (rule replace_at_ident[OF p_pos refl])
+  have gstep: "(g i,g (Suc i)) \<in> innermost_csstep \<mu> R" for i
+  proof -
+    have f_fun: "is_Fun (f i)"
+    proof (cases "f i")
+      case (Var x)
+      from chain[of i] innermost_csstep_subset_csstep
+      have "(Var x,f (Suc i)) \<in> csstep \<mu> R"
+        unfolding Var by blast
+      with csstep_Var_empty_wf[OF wf, of x "f (Suc i)" \<mu>]
+      show ?thesis by blast
+    next
+      case (Fun f ss)
+      then show ?thesis by simp
+    qed
+    have p_mu: "p \<in> mu_poss \<mu> (g i)"
+      unfolding g_def
+      by (rule mu_poss_replace_at_below[OF p _ p_pos], auto simp: f_fun)
+    have sub: "g i |_ p = f i"
+      unfolding g_def by (rule replace_at_subt_at[OF p_pos])
+    have "(g i,replace_at (g i) p (f (Suc i))) \<in>
+        innermost_csstep \<mu> R"
+      by (rule innermost_csstep_mu_pos_lift[OF p_mu],
+          unfold sub, rule chain)
+    moreover have "replace_at (g i) p (f (Suc i)) = g (Suc i)"
+      unfolding g_def by (rule replace_at_overwrite[OF p_pos])
+    ultimately show ?thesis by simp
+  qed
+  from SN[unfolded SN_on_def] g0 gstep show False by blast
 qed
 
 lemma csstep_at_mu_posI:
@@ -859,6 +1260,249 @@ qed
 lemma csr_innermost_variants_nonempty:
   "csr_innermost_variants \<mu> R s \<noteq> {}"
   using csr_innermost_variants_self[of s \<mu> R] by blast
+
+lemma csr_innermost_variants0_linear_instance:
+  assumes linear: "linear_term t"
+    and children: "\<And>f ts i \<rho> v. t = Fun f ts \<Longrightarrow>
+      i < length ts \<Longrightarrow> linear_term (ts ! i) \<Longrightarrow>
+      v \<in> csr_innermost_variants \<mu> R (ts ! i \<cdot> \<rho>) \<Longrightarrow>
+      \<exists>\<tau>. v = ts ! i \<cdot> \<tau> \<and>
+        (\<forall>x\<in>vars_term (ts ! i).
+          \<tau> x \<in> csr_innermost_variants \<mu> R (\<rho> x))"
+    and member: "u \<in> csr_innermost_variants0 \<mu> R (t \<cdot> \<sigma>)"
+  shows "\<exists>\<tau>. u = t \<cdot> \<tau> \<and>
+    (\<forall>x\<in>vars_term t.
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+proof (cases t)
+  case (Var x)
+  with member have u_member:
+      "u \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+    using csr_innermost_variants0_subset by auto
+  let ?\<tau> = "\<sigma>(x := u)"
+  show ?thesis
+    unfolding Var using u_member by (intro exI[of _ ?\<tau>], auto)
+next
+  case (Fun f ts)
+  from linear have partition: "is_partition (map vars_term ts)"
+    and linear_ts: "\<forall>s\<in>set ts. linear_term s"
+    unfolding Fun by auto
+  from member obtain us where len: "length us = length ts"
+    and us: "\<forall>i<length ts. us ! i \<in>
+      csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
+    unfolding Fun by auto
+  have local: "\<forall>i<length ts. \<exists>\<tau>.
+      us ! i = ts ! i \<cdot> \<tau> \<and>
+      (\<forall>x\<in>vars_term (ts ! i).
+        \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ts"
+    have linear_i: "linear_term (ts ! i)"
+      using linear_ts i by auto
+    show "\<exists>\<tau>. us ! i = ts ! i \<cdot> \<tau> \<and>
+      (\<forall>x\<in>vars_term (ts ! i).
+        \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+      by (rule children[where f=f and ts=ts and i=i and \<rho>=\<sigma>
+            and v="us ! i"],
+          use Fun i linear_i us in auto)
+  qed
+  have local': "\<forall>i. \<exists>\<tau>. i < length ts \<longrightarrow>
+      (us ! i = ts ! i \<cdot> \<tau> \<and>
+       (\<forall>x\<in>vars_term (ts ! i).
+        \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)))"
+    using local by blast
+  from choice[OF local'] obtain \<tau>s where chosen: "\<forall>i.
+      i < length ts \<longrightarrow>
+      (us ! i = ts ! i \<cdot> \<tau>s i \<and>
+       (\<forall>x\<in>vars_term (ts ! i).
+        \<tau>s i x \<in> csr_innermost_variants \<mu> R (\<sigma> x)))"
+    by blast
+  have local_eq: "\<forall>i<length ts. us ! i = ts ! i \<cdot> \<tau>s i"
+    using chosen by blast
+  have local_member: "\<forall>i<length ts. \<forall>x\<in>vars_term (ts ! i).
+      \<tau>s i x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+    using chosen by blast
+  from subst_merge[OF partition, of \<tau>s]
+  obtain \<tau> where merge: "\<forall>i<length ts. \<forall>x\<in>vars_term (ts ! i).
+      \<tau> x = \<tau>s i x" by blast
+  have terms: "\<forall>i<length ts. ts ! i \<cdot> \<tau> = us ! i"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ts"
+    have "ts ! i \<cdot> \<tau> = ts ! i \<cdot> \<tau>s i"
+      unfolding term_subst_eq_conv using merge i by blast
+    also have "... = us ! i" using local_eq i by auto
+    finally show "ts ! i \<cdot> \<tau> = us ! i" .
+  qed
+  have inst: "u = Fun f ts \<cdot> \<tau>"
+    using member len terms unfolding Fun
+    by (auto intro!: nth_equalityI)
+  have vars: "\<forall>x\<in>vars_term (Fun f ts).
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+  proof (intro ballI)
+    fix x
+    assume "x \<in> vars_term (Fun f ts)"
+    then obtain i where i: "i < length ts"
+      and x: "x \<in> vars_term (ts ! i)" by auto
+    show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+      using merge local_member i x by auto
+  qed
+  show ?thesis unfolding Fun using inst vars by blast
+qed
+
+theorem csr_switch_overlay_proper_lhs_variants_instance:
+  fixes R :: "('f, string) trs"
+  assumes ortho: "csr_switch_overlay R"
+    and wf: "wf_trs R"
+    and source: "(l,r) \<in> R"
+    and proper: "l \<rhd> t"
+    and linear: "linear_term t"
+    and member: "u \<in> csr_innermost_variants \<mu> R (t \<cdot> \<sigma>)"
+  shows "\<exists>\<tau>. u = t \<cdot> \<tau> \<and>
+    (\<forall>x\<in>vars_term t.
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+  using proper linear member
+proof (induct t arbitrary: \<sigma> u)
+  case (Var x)
+  let ?\<tau> = "\<sigma>(x := u)"
+  show ?case
+    by (rule exI[of _ ?\<tau>], use Var in auto)
+next
+  case (Fun f ts)
+  have base: "\<And>v. v \<in> csr_innermost_variants0 \<mu> R
+      (Fun f ts \<cdot> \<sigma>) \<Longrightarrow>
+      \<exists>\<tau>. v = Fun f ts \<cdot> \<tau> \<and>
+        (\<forall>x\<in>vars_term (Fun f ts).
+          \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+  proof -
+    fix v
+    assume v: "v \<in> csr_innermost_variants0 \<mu> R
+      (Fun f ts \<cdot> \<sigma>)"
+    show "\<exists>\<tau>. v = Fun f ts \<cdot> \<tau> \<and>
+      (\<forall>x\<in>vars_term (Fun f ts).
+        \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x))"
+    proof (rule csr_innermost_variants0_linear_instance[OF Fun.prems(2)])
+      fix g ss i \<rho> w
+      assume eq: "Fun f ts = Fun g ss"
+        and i: "i < length ss"
+        and lin: "linear_term (ss ! i)"
+        and w: "w \<in> csr_innermost_variants \<mu> R (ss ! i \<cdot> \<rho>)"
+      from eq have g: "g = f" and ss: "ss = ts" by auto
+      have child: "Fun f ts \<rhd> ts ! i" using i unfolding ss by auto
+      have child_l: "l \<rhd> ts ! i"
+        by (rule supt_trans[OF Fun.prems(1) child])
+      show "\<exists>\<tau>. w = ss ! i \<cdot> \<tau> \<and>
+        (\<forall>x\<in>vars_term (ss ! i).
+          \<tau> x \<in> csr_innermost_variants \<mu> R (\<rho> x))"
+        unfolding ss
+        by (rule Fun.hyps[OF nth_mem[OF i[unfolded ss]] child_l lin
+              w[unfolded ss]])
+    next
+      show "v \<in> csr_innermost_variants0 \<mu> R
+          (Fun f ts \<cdot> \<sigma>)" by (rule v)
+    qed
+  qed
+  from Fun.prems(3)[unfolded csr_innermost_variants_cases]
+  show ?case
+  proof
+    assume "u \<in> csr_innermost_variants0 \<mu> R
+      (Fun f ts \<cdot> \<sigma>)"
+    from base[OF this] show ?thesis .
+  next
+    assume normalized: "SN_on (csstep \<mu> R) {Fun f ts \<cdot> \<sigma>} \<and>
+      (\<exists>v. v \<in> csr_innermost_variants0 \<mu> R
+          (Fun f ts \<cdot> \<sigma>) \<and>
+        SN_on (innermost_csstep \<mu> R) {v} \<and>
+        u = innermost_csnf \<mu> R v)"
+    then obtain v where source_SN:
+        "SN_on (csstep \<mu> R) {Fun f ts \<cdot> \<sigma>}"
+      and v0: "v \<in> csr_innermost_variants0 \<mu> R
+        (Fun f ts \<cdot> \<sigma>)"
+      and v_SN: "SN_on (innermost_csstep \<mu> R) {v}"
+      and u: "u = innermost_csnf \<mu> R v" by blast
+    from base[OF v0] obtain \<sigma>' where v: "v = Fun f ts \<cdot> \<sigma>'"
+      and sigma_member: "\<forall>x\<in>vars_term (Fun f ts).
+        \<sigma>' x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+      by blast
+    from innermost_csnf_from_SN[OF wf v_SN]
+    have vu: "(v,u) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+      and u_NF: "u \<in> NF (csstep \<mu> R)" unfolding u by auto
+    from csr_switch_overlay_proper_lhs_instance_innermost_steps_vars[
+      OF ortho source Fun.prems(1) Fun.prems(2),
+      of \<sigma>' u \<mu>, unfolded v]
+    obtain \<tau> where u_instance: "u = Fun f ts \<cdot> \<tau>"
+      and sigma_steps: "\<forall>x\<in>vars_term (Fun f ts).
+        (\<sigma>' x,\<tau> x) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+      and inactive: "\<forall>x\<in>vars_term (Fun f ts) -
+        mu_vars_term \<mu> (Fun f ts). \<tau> x = \<sigma>' x"
+      using vu by blast
+    have tau_member: "\<forall>x\<in>vars_term (Fun f ts).
+      \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+    proof (intro ballI)
+      fix x
+      assume x: "x \<in> vars_term (Fun f ts)"
+      show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+      proof (cases "x \<in> mu_vars_term \<mu> (Fun f ts)")
+        case False
+        with inactive x sigma_member show ?thesis by auto
+      next
+        case True
+        then obtain p where p: "p \<in> mu_poss \<mu> (Fun f ts)"
+          and at: "Fun f ts |_ p = Var x"
+          unfolding mu_vars_term_def by blast
+        have p_sigma': "p \<in> mu_poss \<mu> (Fun f ts \<cdot> \<sigma>')"
+          by (rule mu_poss_subst_lift[OF p])
+        have p_sigma: "p \<in> mu_poss \<mu> (Fun f ts \<cdot> \<sigma>)"
+          by (rule mu_poss_subst_lift[OF p])
+        have at_sigma': "(Fun f ts \<cdot> \<sigma>') |_ p = \<sigma>' x"
+          using p at by simp
+        have at_sigma: "(Fun f ts \<cdot> \<sigma>) |_ p = \<sigma> x"
+          using p at by simp
+        have local_SN: "SN_on (innermost_csstep \<mu> R) {\<sigma>' x}"
+          using SN_on_innermost_csstep_mu_pos[OF wf p_sigma' v_SN[unfolded v]]
+          unfolding at_sigma' .
+        have original_SN: "SN_on (csstep \<mu> R) {\<sigma> x}"
+          using SN_on_mu_pos[OF wf p_sigma source_SN]
+          unfolding at_sigma .
+        have p_tau: "p \<in> mu_poss \<mu> (Fun f ts \<cdot> \<tau>)"
+          by (rule mu_poss_subst_lift[OF p])
+        have at_tau: "(Fun f ts \<cdot> \<tau>) |_ p = \<tau> x"
+          using p at by simp
+        have tau_NF: "\<tau> x \<in> NF (csstep \<mu> R)"
+          using NF_csstep_mu_pos[OF u_NF[unfolded u_instance] p_tau]
+          unfolding at_tau .
+        from sigma_member[rule_format, OF x, unfolded
+            csr_innermost_variants_cases]
+        show ?thesis
+        proof
+          assume sigma0: "\<sigma>' x \<in>
+            csr_innermost_variants0 \<mu> R (\<sigma> x)"
+          have chosen: "innermost_csnf \<mu> R (\<sigma>' x) = \<tau> x"
+            by (rule innermost_csnf_unique[OF ortho wf local_SN
+                  sigma_steps[rule_format, OF x] tau_NF])
+          unfolding csr_innermost_variants_cases
+          using original_SN sigma0 local_SN chosen by blast
+        next
+          assume normalized_x: "SN_on (csstep \<mu> R) {\<sigma> x} \<and>
+            (\<exists>w. w \<in> csr_innermost_variants0 \<mu> R (\<sigma> x) \<and>
+              SN_on (innermost_csstep \<mu> R) {w} \<and>
+              \<sigma>' x = innermost_csnf \<mu> R w)"
+          then obtain w where w_SN: "SN_on (innermost_csstep \<mu> R) {w}"
+            and sigma'_NF: "\<sigma>' x \<in> NF (csstep \<mu> R)" by (metis
+              innermost_csnf_from_SN)
+          have sigma'_NF_inner: "\<sigma>' x \<in>
+              NF (innermost_csstep \<mu> R)"
+            using sigma'_NF innermost_csstep_subset_csstep
+            unfolding NF_iff_no_step by blast
+          have eq: "\<tau> x = \<sigma>' x"
+            using sigma_steps[rule_format, OF x] sigma'_NF_inner
+            by (induct rule: rtrancl_induct, auto simp: NF_iff_no_step)
+          show ?thesis using sigma_member x unfolding eq by auto
+        qed
+      qed
+    qed
+    show ?thesis using u_instance tau_member by blast
+  qed
 
 text \<open>
   The later executable innermost processor reuses the separately named
