@@ -1996,9 +1996,11 @@ next
             using local_cond csstep_cond_iff_af_regarded_pos[OF q] by blast
           have q_mu: "q \<in> mu_poss \<mu> (ss ! i)"
             by (rule af_regarded_pos_imp_mu_poss[OF q q_active])
-          from SN_on_mu_pos[OF wf q_mu source_SN]
-          show "(us ! i,us ! i) \<in> (innermost_csstep \<mu> R)\<^sup>+"
-            using nonterm by simp
+          have local_SN: "SN_on (csstep \<mu> R) {ss ! i |_ q}"
+            by (rule SN_on_mu_pos[OF wf q_mu source_SN])
+          from local_SN nonterm show
+            "(us ! i,us ! i) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+            by contradiction
         qed
       qed
     qed
@@ -2329,6 +2331,343 @@ next
     by blast
   show ?thesis
     by (intro exI[of _ t'], use target star False in auto)
+qed
+
+lemma csnrstep_from_mu_Tinf_is_csr_switch_selected:
+  assumes step: "(s,t) \<in> csnrstep \<mu> R"
+    and source: "s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+  shows "(s,t) \<in> csr_switch_selected_step \<mu> R"
+proof -
+  from step obtain p lr \<sigma> where p: "p \<noteq> []"
+    and rw: "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    unfolding csnrstep_def csstep_p_def by blast
+  have p_pos: "p \<in> poss s"
+    using rw unfolding rstep_r_p_s_def' by blast
+  have p_active: "af_regarded_pos \<mu> s p"
+    using cond csstep_cond_iff_af_regarded_pos[OF p_pos] by blast
+  have p_mu: "p \<in> mu_poss \<mu> s"
+    by (rule af_regarded_pos_imp_mu_poss[OF p_pos p_active])
+  from p obtain i q where pq: "p = i # q"
+    by (cases p, auto)
+  have proper: "mu_supt \<mu> s (s |_ p)"
+    unfolding mu_supt_def using p_mu pq by blast
+  have redex_SN: "SN_on (csstep \<mu> R) {s |_ p}"
+    using source proper unfolding mu_Tinf_def by blast
+  show ?thesis
+    unfolding csr_switch_selected_step_def
+    by (intro CollectI exI[of _ s] exI[of _ t] exI[of _ p]
+        exI[of _ lr] exI[of _ \<sigma>], use rw cond redex_SN in auto)
+qed
+
+lemma csrstep_from_mu_Tinf_is_csr_switch_minimal:
+  assumes step: "(s,t) \<in> csrstep \<mu> R"
+    and source: "s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+  shows "(s,t) \<in> csr_switch_minimal_step \<mu> R"
+proof -
+  from step obtain lr \<sigma> where
+    rw: "(s,t) \<in> rstep_r_p_s R lr [] \<sigma>"
+    unfolding csrstep_iff_rstep_root by blast
+  have cond: "csstep_cond \<mu> [] s"
+    unfolding csstep_cond_def by auto
+  show ?thesis
+  unfolding csr_switch_minimal_step_def
+  apply (rule CollectI)
+  apply (rule exI[of _ s])
+  apply (rule exI[of _ t])
+  apply (rule exI[of _ "[]"])
+  apply (rule exI[of _ lr])
+  apply (rule exI[of _ \<sigma>])
+  using rw source cond
+  apply simp
+  done
+qed
+
+lemma csnrsteps_from_mu_Tinf_are_csr_switch_selected:
+  assumes wf: "wf_trs R"
+    and steps: "(s,t) \<in> (csnrstep \<mu> R)\<^sup>*"
+    and source: "s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and target: "\<not> SN_on (csstep \<mu> R) {t}"
+  shows "(s,t) \<in> (csr_switch_selected_step \<mu> R)\<^sup>* \<and>
+    t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+  using steps source target
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by simp
+next
+  case (step y z)
+  have yz_cs: "(y,z) \<in> csstep \<mu> R"
+    using step.hyps(2) unfolding csstep_root_nonroot by blast
+  have y_notSN: "\<not> SN_on (csstep \<mu> R) {y}"
+    by (rule step_notSN_on_source[OF yz_cs step.prems(2)])
+  from step.hyps(3)[OF step.prems(1) y_notSN]
+  have selected: "(s,y) \<in> (csr_switch_selected_step \<mu> R)\<^sup>*"
+    and yT: "y \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    by auto
+  have yz_selected: "(y,z) \<in> csr_switch_selected_step \<mu> R"
+    by (rule csnrstep_from_mu_Tinf_is_csr_switch_selected[
+        OF step.hyps(2) yT])
+  have zT: "z \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    by (rule csnrstep_mu_Tinf_preserve[
+        OF wf step.hyps(2) yT step.prems(2)])
+  show ?case using selected yz_selected zT by auto
+qed
+
+definition csr_switch_block ::
+  "'f mu \<Rightarrow> ('f,string) trs \<Rightarrow> (('f,string) term \<times>
+    ('f,string) term) set"
+where
+  "csr_switch_block \<mu> R =
+    (csr_switch_selected_step \<mu> R)\<^sup>* O
+      csr_switch_minimal_step \<mu> R"
+
+lemma mu_Tinf_has_csr_switch_block_successor:
+  assumes wf: "wf_trs R"
+    and source: "s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+  shows "\<exists>t. (s,t) \<in> csr_switch_block \<mu> R \<and>
+    \<not> SN_on (csstep \<mu> R) {t}"
+proof -
+  from mu_Tinf_imp_SN_csnr_first_csrstep[OF wf source]
+  obtain u t where prefix: "(s,u) \<in> (csnrstep \<mu> R)\<^sup>*"
+    and root: "(u,t) \<in> csrstep \<mu> R"
+    and target: "\<not> SN_on (csstep \<mu> R) {t}" by blast
+  have root_cs: "(u,t) \<in> csstep \<mu> R"
+    using root unfolding csstep_root_nonroot by blast
+  have u_notSN: "\<not> SN_on (csstep \<mu> R) {u}"
+    by (rule step_notSN_on_source[OF root_cs target])
+  from csnrsteps_from_mu_Tinf_are_csr_switch_selected[
+      OF wf prefix source u_notSN]
+  have selected: "(s,u) \<in> (csr_switch_selected_step \<mu> R)\<^sup>*"
+    and uT: "u \<in> mu_Tinf \<mu> (csstep \<mu> R)" by auto
+  have minimal: "(u,t) \<in> csr_switch_minimal_step \<mu> R"
+    by (rule csrstep_from_mu_Tinf_is_csr_switch_minimal[OF root uT])
+  show ?thesis
+    unfolding csr_switch_block_def
+    by (intro exI[of _ t], use selected minimal target in auto)
+qed
+
+lemma csr_switch_selected_steps_mu_pos_lift:
+  assumes p: "p \<in> mu_fun_poss \<mu> s"
+    and steps: "(s |_ p,u) \<in> (csr_switch_selected_step \<mu> R)\<^sup>*"
+  shows "(s,replace_at s p u) \<in>
+    (csr_switch_selected_step \<mu> R)\<^sup>*"
+  using steps
+proof (induct rule: rtrancl_induct)
+  case base
+  have p_pos: "p \<in> poss s"
+    using p mu_fun_poss_imp_fun_poss fun_poss_imp_poss by blast
+  show ?case using replace_at_ident[OF p_pos refl] by simp
+next
+  case (step x y)
+  have p_pos: "p \<in> poss s"
+    using p mu_fun_poss_imp_fun_poss fun_poss_imp_poss by blast
+  have p_current: "p \<in> mu_poss \<mu> (replace_at s p x)"
+    by (rule mu_poss_replace_at_root[OF p])
+  have current_sub: "replace_at s p x |_ p = x"
+    by (rule replace_at_subt_at[OF p_pos])
+  have local: "(replace_at s p x |_ p,y) \<in>
+      csr_switch_selected_step \<mu> R"
+    unfolding current_sub by (rule step.hyps(2))
+  have lifted: "(replace_at s p x,
+      replace_at (replace_at s p x) p y) \<in>
+      csr_switch_selected_step \<mu> R"
+    by (rule csr_switch_selected_step_mu_pos_lift[OF p_current local])
+  have overwrite: "replace_at (replace_at s p x) p y = replace_at s p y"
+    by (rule replace_at_overwrite[OF p_pos])
+  show ?case
+    using step.hyps(3) lifted unfolding overwrite by auto
+qed
+
+lemma csr_switch_block_mu_pos_lift:
+  assumes p: "p \<in> mu_fun_poss \<mu> s"
+    and block: "(s |_ p,u) \<in> csr_switch_block \<mu> R"
+  shows "(s,replace_at s p u) \<in> csr_switch_block \<mu> R"
+proof -
+  from block obtain v where selected:
+      "(s |_ p,v) \<in> (csr_switch_selected_step \<mu> R)\<^sup>*"
+    and minimal: "(v,u) \<in> csr_switch_minimal_step \<mu> R"
+    unfolding csr_switch_block_def by blast
+  have p_pos: "p \<in> poss s"
+    using p mu_fun_poss_imp_fun_poss fun_poss_imp_poss by blast
+  have selected_lift: "(s,replace_at s p v) \<in>
+      (csr_switch_selected_step \<mu> R)\<^sup>*"
+    by (rule csr_switch_selected_steps_mu_pos_lift[OF p selected])
+  have p_current: "p \<in> mu_poss \<mu> (replace_at s p v)"
+    by (rule mu_poss_replace_at_root[OF p])
+  have current_sub: "replace_at s p v |_ p = v"
+    by (rule replace_at_subt_at[OF p_pos])
+  have local_minimal: "(replace_at s p v |_ p,u) \<in>
+      csr_switch_minimal_step \<mu> R"
+    unfolding current_sub by (rule minimal)
+  have minimal_lift: "(replace_at s p v,
+      replace_at (replace_at s p v) p u) \<in>
+      csr_switch_minimal_step \<mu> R"
+    by (rule csr_switch_minimal_step_mu_pos_lift[
+        OF p_current local_minimal])
+  have overwrite: "replace_at (replace_at s p v) p u = replace_at s p u"
+    by (rule replace_at_overwrite[OF p_pos])
+  show ?thesis
+    using selected_lift minimal_lift
+    unfolding csr_switch_block_def overwrite
+    by blast
+qed
+
+lemma notSN_has_csr_switch_block_successor:
+  assumes wf: "wf_trs R"
+    and source: "\<not> SN_on (csstep \<mu> R) {s}"
+  shows "\<exists>t. (s,t) \<in> csr_switch_block \<mu> R \<and>
+    \<not> SN_on (csstep \<mu> R) {t}"
+proof -
+  from csstep_notSN_imp_mu_Tinf_defined_subterm[OF wf source]
+  obtain p f ts where p: "p \<in> mu_fun_poss \<mu> s"
+    and sub: "s |_ p = Fun f ts"
+    and minimal: "s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    by blast
+  from mu_Tinf_has_csr_switch_block_successor[OF wf minimal]
+  obtain u where local_block: "(s |_ p,u) \<in> csr_switch_block \<mu> R"
+    and u_notSN: "\<not> SN_on (csstep \<mu> R) {u}" by blast
+  have u_fun: "is_Fun u"
+  proof (cases u)
+    case (Var x)
+    from SN_on_csstep_Var[OF wf, of \<mu> x] u_notSN
+    show ?thesis unfolding Var by simp
+  next
+    case (Fun g us)
+    then show ?thesis by simp
+  qed
+  let ?t = "replace_at s p u"
+  have global_block: "(s,?t) \<in> csr_switch_block \<mu> R"
+    by (rule csr_switch_block_mu_pos_lift[OF p local_block])
+  have p_target: "p \<in> mu_fun_poss \<mu> ?t"
+    by (rule mu_fun_poss_replace_at_root[OF p u_fun])
+  have p_pos: "p \<in> poss s"
+    using p mu_fun_poss_imp_fun_poss fun_poss_imp_poss by blast
+  have target_sub: "?t |_ p = u"
+    by (rule replace_at_subt_at[OF p_pos])
+  have local_notSN: "\<not> SN_on (csstep \<mu> R) {?t |_ p}"
+    unfolding target_sub by (rule u_notSN)
+  have target_notSN: "\<not> SN_on (csstep \<mu> R) {?t}"
+    by (rule notSN_mu_subterm_imp_notSN[
+        OF wf p_target local_notSN])
+  show ?thesis using global_block target_notSN by blast
+qed
+
+lemma csr_switch_selected_steps_variants_simulation:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and inner_SN: "SN (innermost_csstep \<mu> R)"
+    and steps: "(s,t) \<in> (csr_switch_selected_step \<mu> R)\<^sup>*"
+    and member: "s' \<in> csr_innermost_variants \<mu> R s"
+  shows "\<exists>t'. t' \<in> csr_innermost_variants \<mu> R t \<and>
+    (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+  using steps member
+proof (induct rule: rtrancl_induct)
+  case base
+  show ?case by (intro exI[of _ s'], use base in auto)
+next
+  case (step x y)
+  from step.hyps(3)[OF step.prems]
+  obtain x' where x'_member:
+      "x' \<in> csr_innermost_variants \<mu> R x"
+    and prefix: "(s',x') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    by blast
+  have x'_SN: "SN_on (innermost_csstep \<mu> R) {x'}"
+    using inner_SN unfolding SN_on_def by blast
+  from csr_switch_selected_step_variants_simulation[
+      OF ortho wf step.hyps(2) x'_member x'_SN]
+  obtain y' where y'_member:
+      "y' \<in> csr_innermost_variants \<mu> R y"
+    and suffix: "(x',y') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    by blast
+  have path: "(s',y') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    by (rule rtrancl_trans[OF prefix suffix])
+  show ?case using y'_member path by blast
+qed
+
+lemma csr_switch_block_variants_simulation:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and inner_SN: "SN (innermost_csstep \<mu> R)"
+    and block: "(s,t) \<in> csr_switch_block \<mu> R"
+    and member: "s' \<in> csr_innermost_variants \<mu> R s"
+  shows "\<exists>t'. t' \<in> csr_innermost_variants \<mu> R t \<and>
+    (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+proof -
+  from block obtain u where selected:
+      "(s,u) \<in> (csr_switch_selected_step \<mu> R)\<^sup>*"
+    and minimal: "(u,t) \<in> csr_switch_minimal_step \<mu> R"
+    unfolding csr_switch_block_def by blast
+  from csr_switch_selected_steps_variants_simulation[
+      OF ortho wf inner_SN selected member]
+  obtain u' where u'_member:
+      "u' \<in> csr_innermost_variants \<mu> R u"
+    and prefix: "(s',u') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    by blast
+  have u'_SN: "SN_on (innermost_csstep \<mu> R) {u'}"
+    using inner_SN unfolding SN_on_def by blast
+  have minimal_selected: "(u,t) \<in> csr_switch_selected_step \<mu> R"
+    using csr_switch_minimal_step_subset_selected minimal by blast
+  from csr_switch_selected_step_variants_simulation[
+      OF ortho wf minimal_selected u'_member u'_SN]
+  obtain t' where t'_member:
+      "t' \<in> csr_innermost_variants \<mu> R t"
+    and suffix: "(u',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+    using minimal by blast
+  have path: "(s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+    using prefix suffix by (rule rtrancl_trancl_trancl)
+  show ?thesis using t'_member path by blast
+qed
+
+theorem csr_switch_overlay_innermost_termination:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and inner_SN: "SN (innermost_csstep \<mu> R)"
+  shows "SN (csstep \<mu> R)"
+proof (rule ccontr)
+  assume notSN: "\<not> SN (csstep \<mu> R)"
+  from not_SN_imp_Tinf[OF notSN]
+  obtain t0 where t0: "t0 \<in> Tinf (csstep \<mu> R)" by blast
+  have t0_notSN: "\<not> SN_on (csstep \<mu> R) {t0}"
+    using t0 unfolding Tinf_def by blast
+  let ?P = "\<lambda>(_ :: nat) t.
+    \<not> SN_on (csstep \<mu> R) {t}"
+  let ?Q = "\<lambda>(_ :: nat) s t. (s,t) \<in> csr_switch_block \<mu> R"
+  have initial: "\<exists>t. ?P 0 t" using t0_notSN by blast
+  have successor: "\<And>t n. ?P n t \<Longrightarrow>
+      \<exists>u. ?P (Suc n) u \<and> ?Q n t u"
+    using notSN_has_csr_switch_block_successor[OF wf] by blast
+  from dependent_nat_choice[OF initial successor]
+  obtain ts where ts_choice:
+      "\<forall>n. ?P n (ts n) \<and> ?Q n (ts n) (ts (Suc n))" ..
+  have ts_notSN: "\<And>n. ?P n (ts n)"
+    using ts_choice by auto
+  have blocks: "\<And>n. ?Q n (ts n) (ts (Suc n))"
+    using ts_choice by auto
+  let ?PV = "\<lambda>n u. u \<in> csr_innermost_variants \<mu> R (ts n)"
+  let ?QV = "\<lambda>(_ :: nat) u v.
+    (u,v) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+  have variants_initial: "\<exists>u. ?PV 0 u"
+    using csr_innermost_variants_self[of "ts 0" \<mu> R] by blast
+  have variants_successor: "\<And>u n. ?PV n u \<Longrightarrow>
+      \<exists>v. ?PV (Suc n) v \<and> ?QV n u v"
+  proof -
+    fix u n
+    assume member: "?PV n u"
+    from csr_switch_block_variants_simulation[
+        OF ortho wf inner_SN blocks[of n] member]
+    show "\<exists>v. ?PV (Suc n) v \<and> ?QV n u v" by blast
+  qed
+  from dependent_nat_choice[OF variants_initial variants_successor]
+  obtain us where us_choice:
+      "\<forall>n. ?PV n (us n) \<and> ?QV n (us n) (us (Suc n))" ..
+  have us_member: "\<And>n. ?PV n (us n)"
+    using us_choice by auto
+  have us_steps: "\<And>n. ?QV n (us n) (us (Suc n))"
+    using us_choice by auto
+  have inner_plus_SN: "SN ((innermost_csstep \<mu> R)\<^sup>+)"
+    by (rule SN_imp_SN_trancl[OF inner_SN])
+  from inner_plus_SN[unfolded SN_on_def]
+  show False using us_steps by blast
 qed
 
 text \<open>
