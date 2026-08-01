@@ -1504,6 +1504,54 @@ next
     show ?thesis using u_instance tau_member by blast
   qed
 
+lemma csr_innermost_variants_substitution:
+  assumes vars: "\<And>x. x \<in> vars_term t \<Longrightarrow>
+    \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+  shows "t \<cdot> \<tau> \<in> csr_innermost_variants \<mu> R (t \<cdot> \<sigma>)"
+  using vars
+proof (induct t)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  have args: "\<forall>i<length ts. ts ! i \<cdot> \<tau> \<in>
+      csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ts"
+    show "ts ! i \<cdot> \<tau> \<in>
+      csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
+    proof (rule Fun.hyps[OF nth_mem[OF i]])
+      fix x
+      assume "x \<in> vars_term (ts ! i)"
+      with i show "\<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+        by (rule Fun.prems, auto)
+    qed
+  qed
+  show ?case
+    by (rule csr_innermost_variants0_subset[THEN subsetD],
+        auto simp: args)
+qed
+
+lemma csr_innermost_variants0_substitution_Fun:
+  assumes vars: "\<And>x. x \<in> vars_term (Fun f ts) \<Longrightarrow>
+    \<tau> x \<in> csr_innermost_variants \<mu> R (\<sigma> x)"
+  shows "Fun f ts \<cdot> \<tau> \<in>
+    csr_innermost_variants0 \<mu> R (Fun f ts \<cdot> \<sigma>)"
+proof -
+  have "\<forall>i<length ts. ts ! i \<cdot> \<tau> \<in>
+      csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ts"
+    show "ts ! i \<cdot> \<tau> \<in>
+      csr_innermost_variants \<mu> R (ts ! i \<cdot> \<sigma>)"
+      by (rule csr_innermost_variants_substitution,
+          use vars i in auto)
+  qed
+  then show ?thesis by auto
+qed
+
 text \<open>
   The later executable innermost processor reuses the separately named
   named RTA'08 CS-DP construction.  Keeping that construction in the
