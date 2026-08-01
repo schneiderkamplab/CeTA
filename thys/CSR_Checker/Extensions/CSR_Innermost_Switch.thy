@@ -2075,6 +2075,70 @@ next
   qed
 qed
 
+lemma csr_position_step_variants_simulation:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and rewrite: "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    and redex: "SN_on (csstep \<mu> R) {s |_ p} \<or>
+      s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and member: "s' \<in> csr_innermost_variants \<mu> R s"
+    and inner_SN: "SN_on (innermost_csstep \<mu> R) {s'}"
+  shows "\<exists>t'. t' \<in> csr_innermost_variants \<mu> R t \<and>
+    (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>* \<and>
+    (\<not> SN_on (csstep \<mu> R) {s |_ p} \<longrightarrow>
+      (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+)"
+  using member[unfolded csr_innermost_variants_cases]
+proof
+  assume base: "s' \<in> csr_innermost_variants0 \<mu> R s"
+  from csr_position_step_variants0_simulation[
+    OF ortho wf rewrite cond redex base inner_SN]
+  show ?thesis .
+next
+  assume normalized: "SN_on (csstep \<mu> R) {s} \<and>
+    (\<exists>v. v \<in> csr_innermost_variants0 \<mu> R s \<and>
+      SN_on (innermost_csstep \<mu> R) {v} \<and>
+      s' = innermost_csnf \<mu> R v)"
+  then obtain v where source_SN: "SN_on (csstep \<mu> R) {s}"
+    and v0: "v \<in> csr_innermost_variants0 \<mu> R s"
+    and v_SN: "SN_on (innermost_csstep \<mu> R) {v}"
+    and s': "s' = innermost_csnf \<mu> R v" by blast
+  from csr_position_step_variants0_simulation[
+    OF ortho wf rewrite cond redex v0 v_SN]
+  obtain w where w_member: "w \<in> csr_innermost_variants \<mu> R t"
+    and vw: "(v,w) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+    by blast
+  have step: "(s,t) \<in> csstep \<mu> R"
+    unfolding csstep_def csstep_p_def using rewrite cond by blast
+  have target_SN: "SN_on (csstep \<mu> R) {t}"
+    by (rule steps_preserve_SN_on[
+      OF r_into_rtrancl[OF step] source_SN])
+  have w_SN: "SN_on (innermost_csstep \<mu> R) {w}"
+    by (rule steps_preserve_SN_on[OF vw v_SN])
+  have same_nf: "innermost_csnf \<mu> R v = innermost_csnf \<mu> R w"
+    by (rule innermost_csnf_step_invariant[OF ortho wf v_SN vw])
+  have target: "s' \<in> csr_innermost_variants \<mu> R t"
+    unfolding s' same_nf
+    by (rule csr_innermost_variants_csnf_closed[
+      OF ortho wf target_SN w_member w_SN])
+  have p_pos: "p \<in> poss s"
+    using rewrite unfolding rstep_r_p_s_def' by blast
+  have p_active: "af_regarded_pos \<mu> s p"
+    using cond csstep_cond_iff_af_regarded_pos[OF p_pos] by blast
+  have p_mu: "p \<in> mu_poss \<mu> s"
+    by (rule af_regarded_pos_imp_mu_poss[OF p_pos p_active])
+  have redex_SN: "SN_on (csstep \<mu> R) {s |_ p}"
+    by (rule SN_on_mu_pos[OF wf p_mu source_SN])
+  show ?thesis
+  proof (intro exI[of _ s'] conjI)
+    show "s' \<in> csr_innermost_variants \<mu> R t" by (rule target)
+    show "(s',s') \<in> (innermost_csstep \<mu> R)\<^sup>*" by simp
+    show "\<not> SN_on (csstep \<mu> R) {s |_ p} \<longrightarrow>
+        (s',s') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+      using redex_SN by simp
+  qed
+qed
+
 text \<open>
   The later executable innermost processor reuses the separately named
   named RTA'08 CS-DP construction.  Keeping that construction in the
