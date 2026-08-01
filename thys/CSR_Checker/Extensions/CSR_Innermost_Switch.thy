@@ -1871,6 +1871,210 @@ proof -
   show ?thesis unfolding t using target_member plus by blast
 qed
 
+lemma csr_position_step_variants0_simulation:
+  fixes R :: "('f,string) trs"
+  assumes ortho: "csr_switch_overlay R" and wf: "wf_trs R"
+    and rewrite: "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    and cond: "csstep_cond \<mu> p s"
+    and redex: "SN_on (csstep \<mu> R) {s |_ p} \<or>
+      s |_ p \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    and member: "s' \<in> csr_innermost_variants0 \<mu> R s"
+    and inner_SN: "SN_on (innermost_csstep \<mu> R) {s'}"
+  shows "\<exists>t'. t' \<in> csr_innermost_variants \<mu> R t \<and>
+    (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>* \<and>
+    (\<not> SN_on (csstep \<mu> R) {s |_ p} \<longrightarrow>
+      (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+)"
+  using rewrite cond redex member inner_SN
+proof (induct p arbitrary: s t s')
+  case Nil
+  have root: "(s,t) \<in> csrstep \<mu> R"
+    unfolding csrstep_iff_rstep_root using Nil.prems(1) by blast
+  have root_redex: "SN_on (csstep \<mu> R) {s} \<or>
+      s \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    using Nil.prems(3) by simp
+  from csr_root_step_variants0_simulation[
+      OF ortho wf root root_redex Nil.prems(4) Nil.prems(5)]
+  obtain t' where target: "t' \<in> csr_innermost_variants \<mu> R t"
+    and plus: "(s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+    by blast
+  show ?case
+  proof (intro exI[of _ t'] conjI)
+    show "t' \<in> csr_innermost_variants \<mu> R t" by (rule target)
+    show "(s',t') \<in> (innermost_csstep \<mu> R)\<^sup>*"
+      by (rule trancl_into_rtrancl[OF plus])
+    show "\<not> SN_on (csstep \<mu> R) {s |_ []} \<longrightarrow>
+        (s',t') \<in> (innermost_csstep \<mu> R)\<^sup>+"
+      by (intro impI, rule plus)
+  qed
+next
+  case (Cons i q)
+  show ?case
+  proof (cases s)
+    case (Var x)
+    with Cons.prems(1) show ?thesis
+      unfolding rstep_r_p_s_def' by auto
+  next
+    case (Fun f ss)
+    from Cons.prems(1)[unfolded Fun rstep_r_p_s_def' Cons]
+    have i: "i < length ss" and q: "q \<in> poss (ss ! i)"
+      and lr: "lr \<in> R"
+      and at: "ss ! i |_ q = fst lr \<cdot> \<sigma>"
+      and t: "t = Fun f (ss[i := replace_at (ss ! i) q
+        (snd lr \<cdot> \<sigma>)])"
+      by (auto simp: upd_conv_take_nth_drop)
+    let ?u = "replace_at (ss ! i) q (snd lr \<cdot> \<sigma>)"
+    have local_rw: "(ss ! i,?u) \<in> rstep_r_p_s R lr q \<sigma>"
+      unfolding rstep_r_p_s_def' using q lr at by auto
+    from csstep_cond_Cons_FunD[
+      OF Cons.prems(2)[unfolded Fun Cons] _]
+    have active: "i \<in> \<mu> (f,length ss)"
+      and local_cond: "csstep_cond \<mu> q (ss ! i)"
+      using i q by auto
+    from Cons.prems(4)[unfolded Fun]
+    obtain us where s': "s' = Fun f us" and len: "length us = length ss"
+      and members: "\<forall>j<length ss. us ! j \<in>
+        csr_innermost_variants \<mu> R (ss ! j)"
+      by auto
+    have root_pos: "[] \<in> mu_poss \<mu> (us ! i)"
+      using i len by (cases "us ! i", auto)
+    have pos: "[i] \<in> mu_poss \<mu> (Fun f us)"
+      using i active len root_pos by auto
+    have local_SN: "SN_on (innermost_csstep \<mu> R) {us ! i}"
+      using SN_on_innermost_csstep_mu_pos[
+        OF wf pos Cons.prems(5)[unfolded s']] i len by simp
+    have local_redex: "SN_on (csstep \<mu> R) {ss ! i |_ q} \<or>
+      ss ! i |_ q \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+      using Cons.prems(3) i q unfolding Fun Cons by simp
+    have local_result: "\<exists>v.
+        v \<in> csr_innermost_variants \<mu> R ?u \<and>
+        (us ! i,v) \<in> (innermost_csstep \<mu> R)\<^sup>* \<and>
+        (\<not> SN_on (csstep \<mu> R) {ss ! i |_ q} \<longrightarrow>
+          (us ! i,v) \<in> (innermost_csstep \<mu> R)\<^sup>+)"
+      using members[rule_format, OF i, unfolded csr_innermost_variants_cases]
+    proof
+      assume base: "us ! i \<in>
+        csr_innermost_variants0 \<mu> R (ss ! i)"
+      from Cons.hyps[OF local_rw local_cond local_redex base local_SN]
+      show ?thesis .
+    next
+      assume normalized: "SN_on (csstep \<mu> R) {ss ! i} \<and>
+        (\<exists>w. w \<in> csr_innermost_variants0 \<mu> R (ss ! i) \<and>
+          SN_on (innermost_csstep \<mu> R) {w} \<and>
+          us ! i = innermost_csnf \<mu> R w)"
+      then obtain w where source_SN: "SN_on (csstep \<mu> R) {ss ! i}"
+        and w0: "w \<in> csr_innermost_variants0 \<mu> R (ss ! i)"
+        and w_SN: "SN_on (innermost_csstep \<mu> R) {w}"
+        and ui: "us ! i = innermost_csnf \<mu> R w" by blast
+      from Cons.hyps[OF local_rw local_cond local_redex w0 w_SN]
+      obtain z where z_member: "z \<in> csr_innermost_variants \<mu> R ?u"
+        and wz: "(w,z) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+        by blast
+      have local_step: "(ss ! i,?u) \<in> csstep \<mu> R"
+        unfolding csstep_def csstep_p_def using local_rw local_cond by blast
+      have target_SN: "SN_on (csstep \<mu> R) {?u}"
+        by (rule steps_preserve_SN_on[
+          OF r_into_rtrancl[OF local_step] source_SN])
+      have z_SN: "SN_on (innermost_csstep \<mu> R) {z}"
+        by (rule steps_preserve_SN_on[OF wz w_SN])
+      have same_nf: "innermost_csnf \<mu> R w = innermost_csnf \<mu> R z"
+        by (rule innermost_csnf_step_invariant[OF ortho wf w_SN wz])
+      have ui_target: "us ! i \<in> csr_innermost_variants \<mu> R ?u"
+        unfolding ui same_nf
+        by (rule csr_innermost_variants_csnf_closed[
+          OF ortho wf target_SN z_member z_SN])
+      show ?thesis
+      proof (intro exI[of _ "us ! i"] conjI)
+        show "us ! i \<in> csr_innermost_variants \<mu> R ?u"
+          by (rule ui_target)
+        show "(us ! i,us ! i) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+          by simp
+        show "\<not> SN_on (csstep \<mu> R) {ss ! i |_ q} \<longrightarrow>
+            (us ! i,us ! i) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+        proof
+          assume nonterm: "\<not> SN_on (csstep \<mu> R) {ss ! i |_ q}"
+          have q_active: "af_regarded_pos \<mu> (ss ! i) q"
+            using local_cond csstep_cond_iff_af_regarded_pos[OF q] by blast
+          have q_mu: "q \<in> mu_poss \<mu> (ss ! i)"
+            by (rule af_regarded_pos_imp_mu_poss[OF q q_active])
+          from SN_on_mu_pos[OF wf q_mu source_SN]
+          show "(us ! i,us ! i) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+            using nonterm by simp
+        qed
+      qed
+    qed
+    from local_result obtain v where
+      v_member: "v \<in> csr_innermost_variants \<mu> R ?u"
+      and local_star: "(us ! i,v) \<in>
+        (innermost_csstep \<mu> R)\<^sup>*"
+      and local_plus: "\<not> SN_on (csstep \<mu> R) {ss ! i |_ q} \<longrightarrow>
+        (us ! i,v) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+      by blast
+    let ?vs = "us[i := v]"
+    have target0: "Fun f ?vs \<in>
+        csr_innermost_variants0 \<mu> R t"
+      unfolding t
+    proof (simp add: len i, intro allI impI)
+      fix j
+      assume j: "j < length ss"
+      show "us[i := v] ! j \<in>
+        csr_innermost_variants \<mu> R (ss[i := ?u] ! j)"
+      proof (cases "j = i")
+        case True
+        then show ?thesis using i len v_member by simp
+      next
+        case False
+        then show ?thesis using members j i len by simp
+      qed
+    qed
+    have target: "Fun f ?vs \<in> csr_innermost_variants \<mu> R t"
+      by (rule csr_innermost_variants0_subset[THEN subsetD, OF target0])
+    have star: "(s',Fun f ?vs) \<in>
+        (innermost_csstep \<mu> R)\<^sup>*"
+      unfolding s'
+      by (rule innermost_cssteps_active_argI,
+          use i active len local_star in auto)
+    have plus_if: "\<not> SN_on (csstep \<mu> R) {s |_ (i # q)} \<longrightarrow>
+        (s',Fun f ?vs) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+    proof
+      assume nonterm: "\<not> SN_on (csstep \<mu> R) {s |_ (i # q)}"
+      have local_nonterm:
+          "\<not> SN_on (csstep \<mu> R) {ss ! i |_ q}"
+        using nonterm i q unfolding Fun by simp
+      have lp: "(us ! i,v) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+        by (rule local_plus[rule_format, OF local_nonterm])
+      show "(s',Fun f ?vs) \<in> (innermost_csstep \<mu> R)\<^sup>+"
+        unfolding s'
+      proof -
+        from tranclD[OF lp] obtain y where
+          first: "(us ! i,y) \<in> innermost_csstep \<mu> R"
+          and rest: "(y,v) \<in> (innermost_csstep \<mu> R)\<^sup>*"
+          by blast
+        have first_lift: "(Fun f us,Fun f (us[i := y])) \<in>
+            innermost_csstep \<mu> R"
+          by (rule innermost_csstep_active_argI,
+              use i active len first in auto)
+        have rest_lift: "(Fun f (us[i := y]),Fun f (us[i := v])) \<in>
+            (innermost_csstep \<mu> R)\<^sup>*"
+        proof -
+          have i': "i < length (us[i := y])" using i len by simp
+          have active': "i \<in> \<mu> (f,length (us[i := y]))"
+            using active len by simp
+          have local': "(us[i := y] ! i,v) \<in>
+              (innermost_csstep \<mu> R)\<^sup>*"
+            using rest i len by simp
+          from innermost_cssteps_active_argI[OF i' active' local']
+          show ?thesis using i len by simp
+        qed
+        show "(Fun f us,Fun f (us[i := v])) \<in>
+            (innermost_csstep \<mu> R)\<^sup>+"
+          by (rule rtrancl_into_trancl2[OF first_lift rest_lift])
+      qed
+    qed
+    show ?thesis
+      by (intro exI[of _ "Fun f ?vs"], use target star plus_if in auto)
+  qed
+qed
+
 text \<open>
   The later executable innermost processor reuses the separately named
   named RTA'08 CS-DP construction.  Keeping that construction in the
