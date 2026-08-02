@@ -4626,6 +4626,201 @@ next
   show ?case by contradiction
 qed
 
+definition csr_min_unhiding_subterm_pairs where
+  "csr_min_unhiding_subterm_pairs U P \<longleftrightarrow>
+    (\<forall>(l,r)\<in>P. \<exists>s t. l = Fun U [s] \<and> r = Fun U [t] \<and> s \<rhd> t)"
+
+theorem finite_csr_dpp_unhiding_subterm_nested:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>n. \<not> defined R (U,n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and pairs: "csr_min_unhiding_subterm_pairs U P"
+  shows "finite_csr_dpp Sharp \<mu> P R"
+proof (unfold finite_csr_dpp_def SN_rel_on_def SN_on_def, intro notI)
+  assume "\<exists>f. f 0 \<in> UNIV \<and>
+    (\<forall>i. (f i, f (Suc i)) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>* O
+      rrstep P O
+      (csdp_step Sharp \<mu> R)\<^sup>*)"
+  then obtain f where chain:
+    "\<And>i. (f i, f (Suc i)) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>* O
+      rrstep P O
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+    by auto
+  have shaped: "\<exists>t. f (Suc n) = Fun U [t]" for n
+  proof (induct n)
+    case 0
+    from chain[of 0] obtain a b where
+      pair: "(a,b) \<in> rrstep P"
+      and suffix: "(b,f (Suc 0)) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+      by auto
+    from pair obtain l r \<sigma> where lr: "(l,r) \<in> P"
+      and a: "a = l \<cdot> \<sigma>" and b: "b = r \<cdot> \<sigma>"
+      unfolding rrstep_def' by auto
+    from pairs lr obtain s t where l: "l = Fun U [s]"
+      and r: "r = Fun U [t]" and sub: "s \<rhd> t"
+      unfolding csr_min_unhiding_subterm_pairs_def by blast
+    have suffix': "(Fun U [t \<cdot> \<sigma>], f (Suc 0)) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+      using suffix unfolding b r by simp
+    from csr_u3_unhiding_csdp_steps_identity[
+        OF wf fresh unsharp suffix']
+    show ?case by auto
+  next
+    case (Suc n)
+    then obtain x where start: "f (Suc n) = Fun U [x]" by auto
+    from chain[of "Suc n"] obtain a b where
+      prefix: "(f (Suc n),a) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+      and pair: "(a,b) \<in> rrstep P"
+      and suffix: "(b,f (Suc (Suc n))) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+      by auto
+    from csr_u3_unhiding_csdp_steps_identity[
+        OF wf fresh unsharp prefix[unfolded start]]
+    have a: "a = Fun U [x]" .
+    from pair obtain l r \<sigma> where lr: "(l,r) \<in> P"
+      and a': "a = l \<cdot> \<sigma>" and b: "b = r \<cdot> \<sigma>"
+      unfolding rrstep_def' by auto
+    from pairs lr obtain s t where l: "l = Fun U [s]"
+      and r: "r = Fun U [t]" and sub: "s \<rhd> t"
+      unfolding csr_min_unhiding_subterm_pairs_def by blast
+    have suffix': "(Fun U [t \<cdot> \<sigma>], f (Suc (Suc n))) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+      using suffix unfolding b r by simp
+    from csr_u3_unhiding_csdp_steps_identity[
+        OF wf fresh unsharp suffix']
+    show ?case by auto
+  qed
+  define args where "args n = (SOME t. f (Suc n) = Fun U [t])" for n
+  have args: "f (Suc n) = Fun U [args n]" for n
+    unfolding args_def by (rule someI_ex[OF shaped])
+  have descent: "args n \<rhd> args (Suc n)" for n
+  proof -
+    from chain[of "Suc n"] obtain a b where
+      prefix: "(f (Suc n),a) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+      and pair: "(a,b) \<in> rrstep P"
+      and suffix: "(b,f (Suc (Suc n))) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+      by auto
+    from csr_u3_unhiding_csdp_steps_identity[
+        OF wf fresh unsharp prefix[unfolded args]]
+    have a: "a = Fun U [args n]" .
+    from pair obtain l r \<sigma> where lr: "(l,r) \<in> P"
+      and a': "a = l \<cdot> \<sigma>" and b: "b = r \<cdot> \<sigma>"
+      unfolding rrstep_def' by auto
+    from pairs lr obtain s t where l: "l = Fun U [s]"
+      and r: "r = Fun U [t]" and sub: "s \<rhd> t"
+      unfolding csr_min_unhiding_subterm_pairs_def by blast
+    from a a' l have source: "args n = s \<cdot> \<sigma>" by simp
+    have suffix': "(Fun U [t \<cdot> \<sigma>], f (Suc (Suc n))) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+      using suffix unfolding b r by simp
+    from csr_u3_unhiding_csdp_steps_identity[
+        OF wf fresh unsharp suffix'] args[of "Suc n"]
+    have target: "args (Suc n) = t \<cdot> \<sigma>" by simp
+    show ?thesis unfolding source target by (rule supt_subst[OF sub])
+  qed
+  from SN_supt descent show False unfolding SN_defs by blast
+qed
+
+corollary finite_min_csr_dpp_unhiding_subterm_nested:
+  fixes U :: "(('f::{showl, compare_order}, 'l::{showl, compare_order}) lab)"
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>n. \<not> defined R (U,n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and pairs: "csr_min_unhiding_subterm_pairs U P"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+  by (rule finite_csr_dpp_imp_finite_min_csr_dpp,
+      rule finite_csr_dpp_unhiding_subterm_nested[OF wf fresh unsharp pairs])
+
+fun csr_nested_unhiding_subterm_check where
+  "csr_nested_unhiding_subterm_check R
+      [(Fun U [s], Fun V [t])] =
+    (U = V \<and> \<not> is_sharp_lab U \<and> supt_impl s t \<and>
+      list_all (\<lambda>(f,n). f \<noteq> U) (defined_list R))"
+| "csr_nested_unhiding_subterm_check R P = False"
+
+lemma csr_nested_unhiding_subterm_check_sound:
+  assumes check: "csr_nested_unhiding_subterm_check R P"
+  obtains U where "\<And>n. \<not> defined (set R) (U,n)"
+    "\<not> is_sharp_lab U" "csr_min_unhiding_subterm_pairs U (set P)"
+proof (cases P)
+  case Nil
+  then show thesis using check by simp
+next
+  case (Cons lr rest)
+  note P_Cons = Cons
+  show thesis
+  proof (cases rest)
+    case (Cons lr' rest')
+    then show thesis using check P_Cons by simp
+  next
+    case Nil
+    show thesis
+    proof (cases lr)
+      case (Pair l r)
+      show thesis
+      proof (cases l)
+        case (Var x)
+        then show thesis using check P_Cons Nil Pair by simp
+      next
+        case (Fun U ss)
+        note l_shape = Fun
+        show thesis
+        proof (cases ss rule: list.exhaust)
+          case Nil2: Nil
+          then show thesis using check P_Cons Nil Pair l_shape by simp
+        next
+          case (Cons s tail)
+          show thesis
+          proof (cases tail)
+            case (Cons s' tail')
+            then show thesis using check P_Cons Nil Pair l_shape `ss = s # tail` by simp
+          next
+            case Nil3: Nil
+            show thesis
+            proof (cases r)
+              case (Var y)
+              then show thesis using check P_Cons Nil Pair l_shape `ss = s # tail` Nil3 by simp
+            next
+              case (Fun V ts)
+              note r_shape = Fun
+              show thesis
+              proof (cases ts rule: list.exhaust)
+                case Nil4: Nil
+                then show thesis using check P_Cons Nil Pair l_shape `ss = s # tail` Nil3 r_shape by simp
+              next
+                case (Cons t restt)
+                show thesis
+                proof (cases restt)
+                  case (Cons t' rest')
+                  then show thesis using check P_Cons Nil Pair l_shape `ss = s # tail` Nil3 r_shape `ts = t # restt` by simp
+                next
+                  case Nil5: Nil
+                  from check P_Cons Nil Pair l_shape `ss = s # tail` Nil3
+                    r_shape `ts = t # restt` Nil5
+                  have UV: "U = V" and unsharp: "\<not> is_sharp_lab U"
+                    and sub: "s \<rhd> t"
+                    and fresh_list: "list_all (\<lambda>(f,n). f \<noteq> U)
+                      (defined_list R)"
+                    by (auto simp: supt_impl)
+                  have fresh: "\<And>n. \<not> defined (set R) (U,n)"
+                    using fresh_list by (auto simp: list_all_iff)
+                  have pairs: "csr_min_unhiding_subterm_pairs U (set P)"
+                    using P_Cons Nil Pair l_shape `ss = s # tail` Nil3
+                      r_shape `ts = t # restt` Nil5 UV sub
+                    unfolding csr_min_unhiding_subterm_pairs_def by auto
+                  show thesis by (rule that[OF fresh unsharp pairs])
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
 definition csr_u3_mixed_term_shape where
   "csr_u3_mixed_term_shape U t \<longleftrightarrow>
     (\<exists>f ts. t = Fun (Sharp f) ts) \<or> (\<exists>ts. t = Fun U ts)"
@@ -6460,6 +6655,141 @@ fun csr_instantiation_cap where
 | "csr_instantiation_cap \<mu> R (Fun f ts) =
     csr_root_tcap (csr_dp_root_mu \<mu>) R (Fun f ts)"
 
+fun csr_shared_instantiation_cap where
+  "csr_shared_instantiation_cap \<mu> (Var x) = Var (Inl ())"
+| "csr_shared_instantiation_cap \<mu> (Fun f ts) = Fun f
+    (map (\<lambda>(i,t). if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+       then Var (Inl ()) else map_vars_term (Inr \<circ> x_var) t)
+      (zip [0..<length ts] ts))"
+
+lemma vars_csr_shared_instantiation_cap:
+  "Inr x \<in> vars_term (csr_shared_instantiation_cap \<mu> v) \<Longrightarrow>
+    x \<in> range x_var"
+proof -
+  have mapped: "Inr x \<in>
+      vars_term (map_vars_term (Inr \<circ> x_var) t) \<Longrightarrow>
+      x \<in> range x_var" for t
+    by (induction t) auto
+  assume mem: "Inr x \<in>
+    vars_term (csr_shared_instantiation_cap \<mu> v)"
+  show "x \<in> range x_var"
+  proof (cases v)
+    case (Var y)
+    with mem show ?thesis by simp
+  next
+    case (Fun f ts)
+    from mem Fun obtain i where i: "i < length ts"
+      and member_if: "Inr x \<in> vars_term
+        (if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+         then Var (Inl ())
+         else map_vars_term (Inr \<circ> x_var) (ts ! i))"
+      by (auto simp: in_set_conv_nth)
+    have inactive: "i \<notin> csr_dp_root_mu \<mu> (f, length ts)"
+    proof
+      assume "i \<in> csr_dp_root_mu \<mu> (f, length ts)"
+      with member_if show False by simp
+    qed
+    have branch: "(if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+         then Var (Inl ())
+         else map_vars_term (Inr \<circ> x_var) (ts ! i)) =
+        map_vars_term (Inr \<circ> x_var) (ts ! i)"
+      using inactive by simp
+    note member = member_if[unfolded branch]
+    from mapped[OF member] show ?thesis .
+  qed
+qed
+
+lemma csr_shared_frozen_instance:
+  "t \<cdot> \<sigma> \<in>
+    \<lbrace>map_vars_term (Inr \<circ> x_var) t\<rbrace>_(mv_subst \<sigma>)"
+proof (induction t)
+  case (Var x)
+  then show ?case by (simp add: o_def mv_xvar)
+next
+  case (Fun f ts)
+  have args: "\<forall>i<length ts. ts ! i \<cdot> \<sigma> \<in>
+      \<lbrace>map_vars_term (Inr \<circ> x_var) (ts ! i)\<rbrace>_(mv_subst \<sigma>)"
+    using Fun.IH by (meson nth_mem)
+  then show ?case by (simp add: o_def)
+qed
+
+lemma csr_shared_instantiation_cap_steps:
+  fixes R :: "(((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), string) rules)"
+  assumes wf: "wf_trs (set R)"
+    and undef: "case root v of None \<Rightarrow> True
+      | Some fn \<Rightarrow> fn \<notin> set (defined_list R)"
+    and steps: "(v \<cdot> \<sigma>, s \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> (set R))\<^sup>*"
+  shows "s \<cdot> \<tau> \<in>
+    \<lbrace>csr_shared_instantiation_cap \<mu> v\<rbrace>_(mv_subst \<sigma>)"
+proof (cases v)
+  case (Var x)
+  then show ?thesis by simp
+next
+  case (Fun f ts)
+  from undef Fun have undef':
+    "\<not> defined (set R) (f, length ts)"
+    using set_defined_list by force
+  have steps':
+    "(Fun f (map (\<lambda>t. t \<cdot> \<sigma>) ts), s \<cdot> \<tau>) \<in>
+      (csdp_step Sharp \<mu> (set R))\<^sup>*"
+    using steps unfolding Fun by simp
+  have undef'': "\<not> defined (set R)
+      (f, length (map (\<lambda>t. t \<cdot> \<sigma>) ts))"
+    using undef' by simp
+  from cssteps_Fun_undefined_root_preserved[OF wf undef'' steps']
+  obtain us where target: "s \<cdot> \<tau> = Fun f us"
+    and len': "length us = length (map (\<lambda>t. t \<cdot> \<sigma>) ts)"
+    by blast
+  from len' have len: "length us = length ts" by simp
+  have args: "\<forall>i<length ts.
+      us ! i \<in> \<lbrace>(map (\<lambda>(i,t).
+        if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+        then Var (Inl ()) else map_vars_term (Inr \<circ> x_var) t)
+        (zip [0..<length ts] ts)) ! i\<rbrace>_(mv_subst \<sigma>)"
+  proof (intro allI impI)
+    fix i
+    assume i: "i < length ts"
+    show "us ! i \<in> \<lbrace>(map (\<lambda>(i,t).
+        if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+        then Var (Inl ()) else map_vars_term (Inr \<circ> x_var) t)
+        (zip [0..<length ts] ts)) ! i\<rbrace>_(mv_subst \<sigma>)"
+    proof (cases "i \<in> csr_dp_root_mu \<mu> (f, length ts)")
+      case True
+      with i show ?thesis by simp
+    next
+      case False
+      have steps':
+        "(Fun f (map (\<lambda>t. t \<cdot> \<sigma>) ts), s \<cdot> \<tau>) \<in>
+          (csdp_step Sharp \<mu> (set R))\<^sup>*"
+        using steps unfolding Fun by simp
+      have undef'': "\<not> defined (set R)
+          (f, length (map (\<lambda>t. t \<cdot> \<sigma>) ts))"
+        using undef' by simp
+      from cssteps_Fun_inactive_arg_preserved[
+        OF wf undef'' _ _ steps']
+      obtain us' where target': "s \<cdot> \<tau> = Fun f us'"
+        and same: "us' ! i = map (\<lambda>t. t \<cdot> \<sigma>) ts ! i"
+        using i False by auto
+      from target target' have us: "us = us'" by simp
+      have cap_nth: "(map (\<lambda>(i,t).
+          if i \<in> csr_dp_root_mu \<mu> (f, length ts)
+          then Var (Inl ()) else map_vars_term (Inr \<circ> x_var) t)
+          (zip [0..<length ts] ts)) ! i =
+          map_vars_term (Inr \<circ> x_var) (ts ! i)"
+        using i False by simp
+      have same': "us ! i = ts ! i \<cdot> \<sigma>"
+        using same i unfolding us by simp
+      show ?thesis
+        unfolding cap_nth same'
+        by (rule csr_shared_frozen_instance)
+    qed
+  qed
+  show ?thesis
+    unfolding Fun target csr_shared_instantiation_cap.simps
+    using len args by auto
+qed
+
 lemma csr_instantiation_cap_steps:
   fixes R :: "((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab), string) rules"
   assumes wf: "wf_trs (set R)"
@@ -6493,10 +6823,15 @@ theorem finite_min_csr_dpp_csr_instantiation:
       (case root v of None \<Rightarrow> True
        | Some fn \<Rightarrow> \<not> defined R fn)"
     and instances: "\<And>st'. st' \<in> sts \<Longrightarrow> instance_rule st' (s,t)"
-    and cover: "\<And>u v \<gamma>. (u,v) \<in> P \<Longrightarrow>
-      gc_matcher (csr_instantiation_cap \<mu> RL v) s =
-        Some \<gamma> \<Longrightarrow>
-      \<exists>st'\<in>sts. instance_rule (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st'"
+    and cover: "\<And>u v. (u,v) \<in> P \<Longrightarrow>
+      ((\<forall>\<gamma>. gc_matcher (csr_instantiation_cap \<mu> RL v) s =
+          Some \<gamma> \<longrightarrow>
+        (\<exists>st'\<in>sts. instance_rule (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st'))
+       \<or>
+       (\<forall>\<gamma>. mgu_class (csr_shared_instantiation_cap \<mu> v) s =
+          Some \<gamma> \<longrightarrow>
+        (\<exists>st'\<in>sts. instance_rule
+          (mv_yvar s \<cdot> \<gamma>, mv_yvar t \<cdot> \<gamma>) st')))"
     and fin: "finite_min_csr_dpp Sharp \<mu> (replace (s,t) sts P) R"
   shows "finite_min_csr_dpp Sharp \<mu> P R"
 proof (rule ccontr)
@@ -6579,35 +6914,102 @@ proof (rule ccontr)
         where R = ?RL and v = "ti k" and \<sigma> = "\<sigma> k"
           and s = s and \<tau> = "\<sigma> (Suc k)" and \<mu> = \<mu>,
         OF wf_RL undef_k steps_k]
-      have cap_mem:
+      have old_cap_mem:
         "s \<cdot> \<sigma> (Suc k) \<in> Ground_Context.equiv_class
-          (csr_instantiation_cap \<mu> ?RL (ti k))"
-        .
-      from gc_matcher_complete[OF cap_mem]
-      obtain \<gamma> \<delta> where
-        matcher:
+          (csr_instantiation_cap \<mu> ?RL (ti k))" .
+      from gc_matcher_complete[OF old_cap_mem]
+      obtain \<gamma>old \<delta>old where
+        old_matcher:
           "gc_matcher (csr_instantiation_cap \<mu> ?RL (ti k)) s =
-            Some \<gamma>"
-        and sigma: "\<sigma> (Suc k) = \<gamma> \<circ>\<^sub>s \<delta>"
+            Some \<gamma>old"
+        and old_sigma: "\<sigma> (Suc k) = \<gamma>old \<circ>\<^sub>s \<delta>old"
         by blast
-      from cover[OF pair[of k] matcher]
-      obtain s' t' where st': "(s',t') \<in> sts"
-        and covered: "instance_rule (s \<cdot> \<gamma>, t \<cdot> \<gamma>) (s',t')"
-        by auto
-      from covered[unfolded instance_rule_def]
-      obtain \<rho> where rho:
-        "s \<cdot> \<gamma> = s' \<cdot> \<rho>" "t \<cdot> \<gamma> = t' \<cdot> \<rho>"
-        by auto
+      from csr_shared_instantiation_cap_steps[
+        where R = ?RL and v = "ti k" and \<sigma> = "\<sigma> k"
+          and s = s and \<tau> = "\<sigma> (Suc k)" and \<mu> = \<mu>,
+        OF wf_RL undef_k steps_k]
+      have cap_mem:
+        "s \<cdot> \<sigma> (Suc k) \<in>
+          \<lbrace>csr_shared_instantiation_cap \<mu> (ti k)\<rbrace>_(mv_subst (\<sigma> k))"
+        .
+      have range: "\<And>x. Inr x \<in>
+          vars_term (csr_shared_instantiation_cap \<mu> (ti k)) \<Longrightarrow>
+          x \<in> range x_var"
+        by (rule vars_csr_shared_instantiation_cap)
+      from mgu_class_complete[OF cap_mem range]
+      obtain \<gamma>shared \<delta>shared where
+        shared_matcher:
+          "mgu_class (csr_shared_instantiation_cap \<mu> (ti k)) s =
+            Some \<gamma>shared"
+        and shared_sigma: "\<And>q. q \<cdot> \<sigma> (Suc k) =
+          mv_yvar q \<cdot> \<gamma>shared \<cdot> \<delta>shared"
+        by blast
+      have covered_instance: "\<exists>s' t' \<delta>.
+          (s',t') \<in> sts \<and>
+          s \<cdot> \<sigma> (Suc k) = s' \<cdot> \<delta> \<and>
+          t \<cdot> \<sigma> (Suc k) = t' \<cdot> \<delta>"
+      proof -
+        note cov = cover[OF pair[of k]]
+        from cov show ?thesis
+        proof
+          assume old: "\<forall>\<gamma>. gc_matcher
+              (csr_instantiation_cap \<mu> ?RL (ti k)) s = Some \<gamma> \<longrightarrow>
+              (\<exists>st'\<in>sts. instance_rule
+                (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st')"
+          from old old_matcher obtain s' t' where st': "(s',t') \<in> sts"
+            and covered: "instance_rule
+              (s \<cdot> \<gamma>old, t \<cdot> \<gamma>old) (s',t')"
+            by auto
+          from covered[unfolded instance_rule_def]
+          obtain \<rho> where rho:
+            "s \<cdot> \<gamma>old = s' \<cdot> \<rho>"
+            "t \<cdot> \<gamma>old = t' \<cdot> \<rho>"
+            by auto
+          have eq_s: "s \<cdot> \<sigma> (Suc k) =
+              s' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>old)"
+            using rho(1) unfolding old_sigma by (simp add: subst_compose)
+          have eq_t: "t \<cdot> \<sigma> (Suc k) =
+              t' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>old)"
+            using rho(2) unfolding old_sigma by (simp add: subst_compose)
+          show ?thesis using st' eq_s eq_t by blast
+        next
+          assume shared: "\<forall>\<gamma>. mgu_class
+              (csr_shared_instantiation_cap \<mu> (ti k)) s = Some \<gamma> \<longrightarrow>
+              (\<exists>st'\<in>sts. instance_rule
+                (mv_yvar s \<cdot> \<gamma>, mv_yvar t \<cdot> \<gamma>) st')"
+          from shared shared_matcher obtain s' t' where st': "(s',t') \<in> sts"
+            and covered: "instance_rule
+              (mv_yvar s \<cdot> \<gamma>shared,
+               mv_yvar t \<cdot> \<gamma>shared) (s',t')"
+            by auto
+          from covered[unfolded instance_rule_def]
+          obtain \<rho> where rho:
+            "mv_yvar s \<cdot> \<gamma>shared = s' \<cdot> \<rho>"
+            "mv_yvar t \<cdot> \<gamma>shared = t' \<cdot> \<rho>"
+            by auto
+          have eq_s: "s \<cdot> \<sigma> (Suc k) =
+              s' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>shared)"
+            using rho(1) shared_sigma[of s] by (simp add: subst_compose)
+          have eq_t: "t \<cdot> \<sigma> (Suc k) =
+              t' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>shared)"
+            using rho(2) shared_sigma[of t] by (simp add: subst_compose)
+          show ?thesis using st' eq_s eq_t by blast
+        qed
+      qed
+      then obtain s' t' \<delta> where st': "(s',t') \<in> sts"
+        and eq_s': "s \<cdot> \<sigma> (Suc k) = s' \<cdot> \<delta>"
+        and eq_t': "t \<cdot> \<sigma> (Suc k) = t' \<cdot> \<delta>"
+        by blast
       have selected_mem: "(s,t) \<in> P"
         using pair[of "Suc k"] True by simp
       have member: "(s',t') \<in> replace (s,t) sts P"
         using st' selected_mem unfolding Util.replace_def by simp
       have eq_s: "si (Suc k) \<cdot> \<sigma> (Suc k) =
-          s' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>)"
-        using rho(1) unfolding si sigma by simp
+          s' \<cdot> \<delta>"
+        using eq_s' unfolding si .
       have eq_t: "ti (Suc k) \<cdot> \<sigma> (Suc k) =
-          t' \<cdot> (\<rho> \<circ>\<^sub>s \<delta>)"
-        using rho(2) unfolding ti sigma by simp
+          t' \<cdot> \<delta>"
+        using eq_t' unfolding ti .
       show ?thesis
         using member eq_s eq_t by blast
     qed
@@ -6657,6 +7059,33 @@ proof (rule ccontr)
   with not_SN' show False by contradiction
 qed
 
+definition csr_instantiation_coverage where
+  "csr_instantiation_coverage \<mu> R v s t sts =
+    ((case gc_matcher (csr_instantiation_cap \<mu> R v) s of
+        None \<Rightarrow> True
+      | Some \<sigma> \<Rightarrow> (\<exists>st'\<in>sts.
+          instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st'))
+     \<or>
+     (case mgu_class (csr_shared_instantiation_cap \<mu> v) s of
+        None \<Rightarrow> True
+      | Some \<sigma> \<Rightarrow> (\<exists>st'\<in>sts.
+          instance_rule
+            (mv_yvar s \<cdot> \<sigma>, mv_yvar t \<cdot> \<sigma>) st')))"
+
+lemma csr_instantiation_coverage_sound:
+  assumes "csr_instantiation_coverage \<mu> R v s t sts"
+  shows "((\<forall>\<sigma>. gc_matcher (csr_instantiation_cap \<mu> R v) s =
+          Some \<sigma> \<longrightarrow>
+        (\<exists>st'\<in>sts. instance_rule
+          (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st'))
+     \<or>
+     (\<forall>\<sigma>. mgu_class (csr_shared_instantiation_cap \<mu> v) s =
+          Some \<sigma> \<longrightarrow>
+        (\<exists>st'\<in>sts. instance_rule
+          (mv_yvar s \<cdot> \<sigma>, mv_yvar t \<cdot> \<sigma>) st')))"
+  using assms unfolding csr_instantiation_coverage_def
+  by (auto split: option.splits)
+
 definition csr_instantiation_proc ::
   "('dpp, ('f::{showl, compare_order}, 'l::{showl, compare_order}) lab, string) dpp_ops \<Rightarrow>
    (('f, 'l) lab) muL \<Rightarrow>
@@ -6676,14 +7105,9 @@ where
           check (case root v of None \<Rightarrow> True
             | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp)))
             (showsl_lit (STR ''predecessor right-hand side has a defined root''));
-          case gc_matcher
-              (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s of
-            None \<Rightarrow> succeed
-          | Some \<sigma> \<Rightarrow>
-              check (\<exists>st'\<in>set sts.
-                instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st')
-                (showsl_lit (STR ''missing replacement-map-aware instance of pair '') \<circ>
-                  showsl_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>))
+          check (csr_instantiation_coverage (mu_of \<mu>)
+              (dpp_ops.rules J dpp) v s t (set sts))
+            (showsl_lit (STR ''missing replacement-map-aware instance under both CSR caps''))
         }) (dpp_ops.pairs J dpp)
     }) (dpp_ops.replace_pair J dpp st sts)"
 
@@ -6695,12 +7119,19 @@ lemma csr_instantiation_proc_sound:
     and "\<And>u v. (u,v) \<in> set (dpp_ops.pairs J dpp) \<Longrightarrow>
       (case root v of None \<Rightarrow> True
        | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp)))"
-    and "\<And>s t u v \<sigma>. st = (s,t) \<Longrightarrow>
+    and "\<And>s t u v. st = (s,t) \<Longrightarrow>
       (u,v) \<in> set (dpp_ops.pairs J dpp) \<Longrightarrow>
-      gc_matcher
-        (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s =
-          Some \<sigma> \<Longrightarrow>
-      \<exists>st'\<in>set sts. instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st'"
+      ((\<forall>\<sigma>. gc_matcher
+          (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s =
+            Some \<sigma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st'))
+       \<or>
+       (\<forall>\<sigma>. mgu_class
+          (csr_shared_instantiation_cap (mu_of \<mu>) v) s =
+            Some \<sigma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (mv_yvar s \<cdot> \<sigma>, mv_yvar t \<cdot> \<sigma>) st')))"
 proof -
   obtain s t where st: "st = (s,t)"
     by (cases st)
@@ -6708,14 +7139,9 @@ proof -
     check (case root v of None \<Rightarrow> True
       | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp)))
       (showsl_lit (STR ''predecessor right-hand side has a defined root''));
-    case gc_matcher
-        (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s of
-      None \<Rightarrow> succeed
-    | Some \<sigma> \<Rightarrow>
-        check (\<exists>st'\<in>set sts.
-          instance_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>) st')
-          (showsl_lit (STR ''missing replacement-map-aware instance of pair '') \<circ>
-            showsl_rule (s \<cdot> \<sigma>, t \<cdot> \<sigma>))
+    check (csr_instantiation_coverage (mu_of \<mu>)
+        (dpp_ops.rules J dpp) v s t (set sts))
+      (showsl_lit (STR ''missing replacement-map-aware instance under both CSR caps''))
   }"
   from proc[unfolded csr_instantiation_proc_def st]
   have result: "dpp' = dpp_ops.replace_pair J dpp (s,t) sts"
@@ -6747,20 +7173,307 @@ proof -
     show "case root v of None \<Rightarrow> True
        | Some fn \<Rightarrow> fn \<notin> set (defined_list (dpp_ops.rules J dpp))"
       by (rule undef)
-    fix s' t' \<sigma>
+    have coverage: "csr_instantiation_coverage (mu_of \<mu>)
+        (dpp_ops.rules J dpp) v s t (set sts)"
+      using one undef
+      by (cases "root v"; simp add: isOK_check)
+    fix s' t'
     assume st': "st = (s',t')"
-      and matcher:
-        "gc_matcher
-          (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s' =
-            Some \<sigma>"
     from st st' have s': "s' = s" and t': "t' = t"
       by auto
-    from one undef matcher
-    show "\<exists>st'\<in>set sts.
-      instance_rule (s' \<cdot> \<sigma>, t' \<cdot> \<sigma>) st'"
+    from csr_instantiation_coverage_sound[OF coverage]
+    show "((\<forall>\<sigma>. gc_matcher
+          (csr_instantiation_cap (mu_of \<mu>) (dpp_ops.rules J dpp) v) s' =
+            Some \<sigma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (s' \<cdot> \<sigma>, t' \<cdot> \<sigma>) st'))
+       \<or>
+       (\<forall>\<sigma>. mgu_class
+          (csr_shared_instantiation_cap (mu_of \<mu>) v) s' =
+            Some \<sigma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (mv_yvar s' \<cdot> \<sigma>, mv_yvar t' \<cdot> \<sigma>) st')))"
       unfolding s' t'
-      by (cases "root v"; simp add: isOK_check split: option.splits)
+      .
   }
+qed
+
+definition check_csr_dp_component_core ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f, label_type, string) dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_csr_dp_component_core I J \<mu> a i dpp prf =
+    (case prf of
+      Redpair_UR_Proc redp Pr U subprf \<Rightarrow> debug i
+        (STR ''CSR U3 reduction pair in graph component'') (do {
+          dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp;
+          (case subprf of Dep_Graph_Proc edpts \<Rightarrow> do {
+            _ \<leftarrow> check_csr_dep_graph_proc J \<mu> dpp' edpts;
+            check (list_all (\<lambda>(po, _). po = None) edpts)
+              (showsl_lit (STR ''cyclic component remains below nested U3 reduction pair''))
+          } | _ \<Rightarrow> error (showsl_lit
+            (STR ''dependency graph required below nested U3 reduction pair'')))
+        })
+    | Size_Change_Subterm_Proc graphs \<Rightarrow>
+        (if csr_nested_unhiding_subterm_check
+              (dpp_ops.rules J dpp) (dpp_ops.pairs J dpp)
+         then debug i (STR ''fresh unhiding subterm component'') succeed
+         else check_csr_dp_termination_proof_core I J \<mu> a i dpp
+           (CSR_DP_Ordinary_Proof prf))
+    | _ \<Rightarrow> check_csr_dp_termination_proof_core I J \<mu> a i dpp
+        (CSR_DP_Ordinary_Proof prf))"
+
+lemma check_csr_dp_component_core_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fresh: "\<And>f n. \<not> defined
+      (set (dpp_ops.rules J dpp)) (Sharp f, n)"
+    and ok: "isOK (check_csr_dp_component_core I J \<mu> False i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof (cases "\<exists>redp Pr U subprf.
+    prf = Redpair_UR_Proc redp Pr U subprf")
+  case True
+  then obtain redp Pr U subprf where prf_shape:
+    "prf = Redpair_UR_Proc redp Pr U subprf" by blast
+  let ?proc = "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp"
+  from ok prf_shape obtain dpp' edpts where proc: "?proc = return dpp'"
+    and subprf: "subprf = Dep_Graph_Proc edpts"
+    and graph_ok: "isOK (check_csr_dep_graph_proc J \<mu> dpp' edpts)"
+    and acyclic: "list_all (\<lambda>(po, _). po = None) edpts"
+    unfolding check_csr_dp_component_core_def
+    by (cases ?proc; cases subprf; auto simp: isOK_check)
+  have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+    using proc unfolding csr_u3_redpair_proc_def by auto
+  interpret dpp_spec J by (rule J)
+  have sem: "dpp_ops.dpp J dpp' =
+    (NFS dpp, M dpp, set (P dpp) - set Pr,
+      set (Pw dpp) - set Pr, set (Q dpp), set (R dpp), set (Rw dpp))"
+    unfolding dpp' by (rule delete_P_Pw_sound)
+  have sem': "dpp_ops.dpp J dpp' =
+    (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'),
+      set (Q dpp'), set (R dpp'), set (Rw dpp'))"
+    by (rule dpp_sound)
+  have plain': "plain_csr_dpp J dpp'"
+    using plain sem sem' unfolding plain_csr_dpp_def by auto
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp')) (set (rules dpp'))"
+  proof (rule check_csr_dep_graph_proc_min_sound[OF J plain' graph_ok])
+    fix p C
+    assume "(Some p, C) \<in> set edpts"
+    with acyclic show "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp') \<inter> set C) (set (rules dpp'))"
+      by (auto simp: list_all_iff)
+  qed
+  show ?thesis
+    by (rule csr_u3_redpair_proc_sound[
+      OF J get_rel_impl proc wf fresh fin'])
+next
+  case no_redpair: False
+  show ?thesis
+  proof (cases "\<exists>graphs. prf = Size_Change_Subterm_Proc graphs")
+  case True
+  then obtain graphs where prf_shape:
+    "prf = Size_Change_Subterm_Proc graphs" by blast
+  show ?thesis
+  proof (cases "csr_nested_unhiding_subterm_check
+      (dpp_ops.rules J dpp) (dpp_ops.pairs J dpp)")
+    case True
+    show ?thesis
+    proof (rule csr_nested_unhiding_subterm_check_sound[OF True])
+      fix U
+      assume fresh: "\<And>n. \<not> defined
+          (set (dpp_ops.rules J dpp)) (U,n)"
+        and unsharp: "\<not> is_sharp_lab U"
+        and pairs: "csr_min_unhiding_subterm_pairs U
+          (set (dpp_ops.pairs J dpp))"
+      show ?thesis
+        by (rule finite_csr_dpp_imp_finite_min_csr_dpp,
+          rule finite_csr_dpp_unhiding_subterm_nested[OF wf fresh unsharp pairs])
+    qed
+  next
+    case False
+    from ok False prf_shape have core:
+      "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+        (CSR_DP_Ordinary_Proof prf))"
+      unfolding check_csr_dp_component_core_def by simp
+    show ?thesis
+      by (rule finite_csr_dpp_imp_finite_min_csr_dpp,
+        rule check_csr_dp_termination_proof_core_sound[OF I J plain core])
+  qed
+next
+  case False
+  from ok no_redpair False have core:
+    "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+      (CSR_DP_Ordinary_Proof prf))"
+    unfolding check_csr_dp_component_core_def
+    by (cases "prf"; auto)
+  show ?thesis
+    by (rule finite_csr_dpp_imp_finite_min_csr_dpp,
+      rule check_csr_dp_termination_proof_core_sound[OF I J plain core])
+qed
+qed
+
+fun check_csr_dp_graph_components_core ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   (('f, label_type, string) dp_termination_proof option \<times>
+    ('f, label_type, string) trsLL) list \<Rightarrow> showsl check"
+where
+  "check_csr_dp_graph_components_core I J \<mu> a i dpp [] = succeed"
+| "check_csr_dp_graph_components_core I J \<mu> a i dpp
+    ((None, P) # rest) =
+    check_csr_dp_graph_components_core I J \<mu> a (add_index i 1) dpp rest"
+| "check_csr_dp_graph_components_core I J \<mu> a i dpp
+    ((Some prf, P) # rest) = do {
+      check_csr_dp_component_core I J \<mu> a (add_index i 1)
+        (dpp_ops.intersect_pairs J dpp P) prf;
+      check_csr_dp_graph_components_core I J \<mu> a (add_index i 1) dpp rest
+    }"
+
+definition check_csr_dp_after_u3_tail ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f, label_type, string) dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_csr_dp_after_u3_tail I J \<mu> a i dpp prf =
+    (case prf of
+      Dep_Graph_Proc edpts \<Rightarrow> debug i
+        (STR ''minimal CSR-DP dependency graph in ordinary continuation'') (do {
+          _ \<leftarrow> check_csr_dep_graph_proc J \<mu> dpp edpts;
+          check_csr_dp_graph_components_core I J \<mu> a i dpp edpts
+        })
+    | _ \<Rightarrow> check_csr_dp_component_core I J \<mu> a i dpp prf)"
+
+definition check_csr_dp_tail_core ::
+  "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
+   (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
+   showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f, label_type, string) dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_csr_dp_tail_core I J \<mu> a i dpp prf =
+    (case prf of
+      Redpair_UR_Proc redp Pr U subprf \<Rightarrow> debug i
+        (STR ''nested CSR U3 reduction pair in ordinary continuation'') (do {
+          dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp;
+          check_csr_dp_after_u3_tail I J \<mu> a (add_index i 1) dpp' subprf
+        })
+    | _ \<Rightarrow> check_csr_dp_after_u3_tail I J \<mu> a i dpp prf)"
+
+lemma check_csr_dp_graph_components_core_member:
+  assumes ok: "isOK (check_csr_dp_graph_components_core
+      I J \<mu> a i dpp edps)"
+    and mem: "(Some prf, P) \<in> set edps"
+  shows "\<exists>j. isOK (check_csr_dp_component_core I J \<mu> a j
+    (dpp_ops.intersect_pairs J dpp P) prf)"
+  using ok mem
+proof (induct edps arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons head rest)
+  obtain po C where head: "head = (po, C)" by (cases head)
+  show ?case
+  proof (cases po)
+    case None
+    have rest_ok: "isOK (check_csr_dp_graph_components_core
+        I J \<mu> a (add_index i 1) dpp rest)"
+      using Cons.prems(1) unfolding head None by simp
+    have mem_rest: "(Some prf, P) \<in> set rest"
+      using Cons.prems(2) unfolding head None by simp
+    show ?thesis by (rule Cons.hyps[OF rest_ok mem_rest])
+  next
+    case (Some p)
+    show ?thesis
+    proof (cases "(Some prf, P) = head")
+      case True
+      with Cons.prems head Some show ?thesis by auto
+    next
+      case False
+      have rest_ok: "isOK (check_csr_dp_graph_components_core
+          I J \<mu> a (add_index i 1) dpp rest)"
+        using Cons.prems(1) unfolding head Some by simp
+      have mem_rest: "(Some prf, P) \<in> set rest"
+        using Cons.prems(2) False by simp
+      show ?thesis by (rule Cons.hyps[OF rest_ok mem_rest])
+    qed
+  qed
+qed
+
+lemma check_csr_dp_after_u3_tail_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fresh: "\<And>f n. \<not> defined
+      (set (dpp_ops.rules J dpp)) (Sharp f, n)"
+    and ok: "isOK (check_csr_dp_after_u3_tail I J \<mu> False i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof (cases "\<exists>edpts. prf = Dep_Graph_Proc edpts")
+  case True
+  then obtain edpts where graph: "prf = Dep_Graph_Proc edpts" by blast
+  from ok graph have graph_ok:
+      "isOK (check_csr_dep_graph_proc J \<mu> dpp edpts)"
+    and components_ok:
+      "isOK (check_csr_dp_graph_components_core
+        I J \<mu> False i dpp edpts)"
+    unfolding check_csr_dp_after_u3_tail_def by auto
+  show ?thesis
+  proof (rule check_csr_dep_graph_proc_min_sound[OF J plain graph_ok])
+    fix p0 C
+    assume mem: "(Some p0, C) \<in> set edpts"
+    from check_csr_dp_graph_components_core_member[OF components_ok mem]
+    obtain j where component: "isOK (check_csr_dp_component_core
+      I J \<mu> False j (dpp_ops.intersect_pairs J dpp C) p0)" by blast
+    let ?d = "dpp_ops.intersect_pairs J dpp C"
+    have plain': "plain_csr_dpp J ?d"
+      by (rule plain_csr_dpp_intersect_pairs[OF J plain])
+    interpret dpp_spec J by fact
+    have sem: "dpp_ops.dpp J ?d =
+      (NFS dpp, M dpp, set (P dpp) \<inter> set C,
+        set (Pw dpp) \<inter> set C, set (Q dpp),
+        set (R dpp), set (Rw dpp))"
+      by (rule intersect_pairs_sound)
+    have sem': "dpp_ops.dpp J ?d =
+      (NFS ?d, M ?d, set (P ?d), set (Pw ?d), set (Q ?d),
+        set (R ?d), set (Rw ?d))"
+      by (rule dpp_sound)
+    have pairs': "set (pairs ?d) = set (pairs dpp) \<inter> set C"
+      using sem sem' pairs_sound[of dpp] pairs_sound[of ?d] by auto
+    have rules': "set (rules ?d) = set (rules dpp)"
+      using sem sem' rules_sound[of dpp] rules_sound[of ?d] by auto
+    have wf': "wf_trs (set (rules ?d))"
+      using wf unfolding rules' .
+    have fresh': "\<And>f n. \<not> defined
+        (set (rules ?d)) (Sharp f, n)"
+      using fresh unfolding rules' .
+    from check_csr_dp_component_core_sound[
+      OF I J plain' wf' fresh' component]
+    have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs ?d)) (set (rules ?d))" .
+    show "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp) \<inter> set C) (set (rules dpp))"
+      using fin unfolding pairs' rules' .
+  qed
+next
+  case False
+  from ok False have component: "isOK (check_csr_dp_component_core
+    I J \<mu> False i dpp prf)"
+    unfolding check_csr_dp_after_u3_tail_def
+    by (cases "prf"; auto)
+  from check_csr_dp_component_core_sound[OF I J plain wf fresh component]
+  show ?thesis .
 qed
 
 fun check_csr_dp_ordinary_min ::
@@ -6777,10 +7490,30 @@ where
           dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp
             <+? (\<lambda>s. i \<circ> showsl_lit
               (STR '': error when applying CSR U3 reduction pair\<newline>'') \<circ> s);
-          check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
-            (CSR_DP_Ordinary_Proof subprf)
-            <+? (\<lambda>s. i \<circ> showsl_lit
-              (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
+          (case subprf of
+            Instantiation_Proc st sts tail \<Rightarrow> do {
+              dpp'' \<leftarrow> csr_instantiation_proc J \<mu> st sts dpp'
+                <+? (\<lambda>s. i \<circ> showsl_lit
+                  (STR '': error when applying CSR instantiation below U3\<newline>'') \<circ> s);
+              (case tail of
+                Redpair_UR_Proc redp2 Pr2 U2 tail2 \<Rightarrow> do {
+                  dpp''' \<leftarrow> csr_u3_redpair_proc J \<mu>
+                    (get_rel_impl redp2) Pr2 U2 dpp''
+                    <+? (\<lambda>s. i \<circ> showsl_lit
+                      (STR '': error when applying nested CSR U3 reduction pair\<newline>'') \<circ> s);
+                  check_csr_dp_tail_core I J \<mu> a
+                    (add_index (add_index (add_index i 1) 1) 1) dpp''' tail2
+                }
+              | _ \<Rightarrow>
+                  check_csr_dp_termination_proof_core I J \<mu> a
+                    (add_index (add_index i 1) 1) dpp''
+                    (CSR_DP_Ordinary_Proof tail))
+            }
+          | _ \<Rightarrow>
+              check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
+                (CSR_DP_Ordinary_Proof subprf))
+          <+? (\<lambda>s. i \<circ> showsl_lit
+            (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
         })
     | _ \<Rightarrow> check_csr_dp_termination_proof_core I J \<mu> a i dpp
         (CSR_DP_Ordinary_Proof prf))"
@@ -6792,10 +7525,30 @@ lemma check_csr_dp_ordinary_min_Redpair_UR_Proc:
       dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp
         <+? (\<lambda>s. i \<circ> showsl_lit
           (STR '': error when applying CSR U3 reduction pair\<newline>'') \<circ> s);
-      check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
-        (CSR_DP_Ordinary_Proof subprf)
-        <+? (\<lambda>s. i \<circ> showsl_lit
-          (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
+      (case subprf of
+        Instantiation_Proc st sts tail \<Rightarrow> do {
+          dpp'' \<leftarrow> csr_instantiation_proc J \<mu> st sts dpp'
+            <+? (\<lambda>s. i \<circ> showsl_lit
+              (STR '': error when applying CSR instantiation below U3\<newline>'') \<circ> s);
+          (case tail of
+            Redpair_UR_Proc redp2 Pr2 U2 tail2 \<Rightarrow> do {
+              dpp''' \<leftarrow> csr_u3_redpair_proc J \<mu>
+                (get_rel_impl redp2) Pr2 U2 dpp''
+                <+? (\<lambda>s. i \<circ> showsl_lit
+                  (STR '': error when applying nested CSR U3 reduction pair\<newline>'') \<circ> s);
+              check_csr_dp_tail_core I J \<mu> a
+                (add_index (add_index (add_index i 1) 1) 1) dpp''' tail2
+            }
+          | _ \<Rightarrow>
+              check_csr_dp_termination_proof_core I J \<mu> a
+                (add_index (add_index i 1) 1) dpp''
+                (CSR_DP_Ordinary_Proof tail))
+        }
+      | _ \<Rightarrow>
+          check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
+            (CSR_DP_Ordinary_Proof subprf))
+      <+? (\<lambda>s. i \<circ> showsl_lit
+        (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
     })"
   by (subst check_csr_dp_ordinary_min.simps, simp)
 
@@ -6852,7 +7605,10 @@ where
       (STR '': context-sensitive instantiation requires improved CS-DPs''))"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Size_Change_Subterm_Proc graphs) =
-    (if isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)
+    (if csr_nested_unhiding_subterm_check
+          (dpp_ops.rules J dpp) (dpp_ops.pairs J dpp)
+     then debug i (STR ''nested U3 unhiding subterm'') succeed
+     else if isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)
      then debug i (STR ''active CSR size-change'') succeed
      else check_csr_dp_termination_proof_core I J \<mu> a i dpp
        (CSR_DP_Size_Change_Subterm_Proc graphs))"
@@ -6918,6 +7674,159 @@ proof -
     unfolding plain_csr_dpp_def by auto
 qed
 
+lemma plain_csr_dpp_replace_pair:
+  assumes J: "dpp_spec J" and plain: "plain_csr_dpp J dpp"
+  shows "plain_csr_dpp J (dpp_ops.replace_pair J dpp st sts)"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "replace_pair dpp st sts"
+  have sem: "dpp_ops.dpp J ?d =
+    (NFS dpp, M dpp, replace st (set sts) (set (P dpp)),
+      replace st (set sts) (set (Pw dpp)), set (Q dpp),
+      set (R dpp), set (Rw dpp))"
+    by (cases st, rule replace_pair_sound)
+  have sem': "dpp_ops.dpp J ?d =
+    (NFS ?d, M ?d, set (P ?d), set (Pw ?d),
+      set (Q ?d), set (R ?d), set (Rw ?d))"
+    by (rule dpp_sound)
+  from plain sem sem' show ?thesis
+    unfolding plain_csr_dpp_def Util.replace_def by auto
+qed
+
+lemma rules_csr_dpp_replace_pair:
+  assumes J: "dpp_spec J"
+  shows "set (dpp_ops.rules J (dpp_ops.replace_pair J dpp st sts)) =
+    set (dpp_ops.rules J dpp)"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "replace_pair dpp st sts"
+  have sem: "dpp_ops.dpp J ?d =
+    (NFS dpp, M dpp, replace st (set sts) (set (P dpp)),
+      replace st (set sts) (set (Pw dpp)), set (Q dpp),
+      set (R dpp), set (Rw dpp))"
+    by (cases st, rule replace_pair_sound)
+  have sem': "dpp_ops.dpp J ?d =
+    (NFS ?d, M ?d, set (P ?d), set (Pw ?d),
+      set (Q ?d), set (R ?d), set (Rw ?d))"
+    by (rule dpp_sound)
+  show ?thesis using sem sem' rules_sound[of dpp] rules_sound[of ?d]
+    by auto
+qed
+
+lemma check_csr_dp_tail_core_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fresh: "\<And>f n. \<not> defined
+      (set (dpp_ops.rules J dpp)) (Sharp f, n)"
+    and ok: "isOK (check_csr_dp_tail_core I J \<mu> False i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof (cases "\<exists>redp Pr U subprf.
+    prf = Redpair_UR_Proc redp Pr U subprf")
+  case True
+  then obtain redp Pr U subprf where prf_shape:
+    "prf = Redpair_UR_Proc redp Pr U subprf" by blast
+  let ?proc = "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp"
+  from ok prf_shape obtain dpp' where proc: "?proc = return dpp'"
+    and tail: "isOK (check_csr_dp_after_u3_tail I J \<mu> False
+      (add_index i 1) dpp' subprf)"
+    unfolding check_csr_dp_tail_core_def by (cases ?proc; auto)
+  have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+    using proc unfolding csr_u3_redpair_proc_def by auto
+  have plain': "plain_csr_dpp J dpp'"
+    unfolding dpp' by (rule plain_csr_dpp_delete_pairs[OF J plain])
+  interpret dpp_spec J by (rule J)
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp'] by auto
+  have wf': "wf_trs (set (rules dpp'))" using wf unfolding rules' .
+  have fresh': "\<And>f n. \<not> defined
+      (set (rules dpp')) (Sharp f, n)"
+    using fresh unfolding rules' .
+  from check_csr_dp_after_u3_tail_sound[OF I J plain' wf' fresh' tail]
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (pairs dpp')) (set (rules dpp'))" .
+  show ?thesis by (rule csr_u3_redpair_proc_sound[
+    OF J get_rel_impl proc wf fresh fin'])
+next
+  case False
+  from ok False have tail:
+    "isOK (check_csr_dp_after_u3_tail I J \<mu> False i dpp prf)"
+    unfolding check_csr_dp_tail_core_def by (cases "prf"; auto)
+  show ?thesis by (rule check_csr_dp_after_u3_tail_sound[
+    OF I J plain wf fresh tail])
+qed
+
+lemma csr_instantiation_proc_finite_sound:
+  assumes J: "dpp_spec J"
+    and proc: "csr_instantiation_proc J \<mu> st sts dpp = return dpp'"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.pairs J dpp')) (set (dpp_ops.rules J dpp'))"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  note proc_sound = csr_instantiation_proc_sound[OF proc]
+  obtain s t where st: "st = (s,t)" by (cases st)
+  interpret dpp_spec J by fact
+  have selected: "(s,t) \<in> set (pairs dpp)"
+    using proc_sound(2) st by simp
+  have dpp'_def: "dpp' = replace_pair dpp (s,t) sts"
+    using proc_sound(1) st by simp
+  have sem: "dpp_ops.dpp J dpp' =
+    (NFS dpp, M dpp, replace (s,t) (set sts) (set (P dpp)),
+      replace (s,t) (set sts) (set (Pw dpp)), set (Q dpp),
+      set (R dpp), set (Rw dpp))"
+    unfolding dpp'_def by (rule replace_pair_sound)
+  have sem': "dpp_ops.dpp J dpp' =
+    (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'), set (Q dpp'),
+      set (R dpp'), set (Rw dpp'))"
+    by (rule dpp_sound)
+  have pairs': "set (pairs dpp') =
+      replace (s,t) (set sts) (set (pairs dpp))"
+    using sem sem' pairs_sound[of dpp] pairs_sound[of dpp'] selected
+    unfolding Util.replace_def by auto
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
+  show ?thesis
+  proof (rule finite_min_csr_dpp_csr_instantiation[
+      where RL = "rules dpp" and s = s and t = t and sts = "set sts"])
+    show "wf_trs (set (rules dpp))" by (rule wf)
+    show "set (rules dpp) = set (rules dpp)" by simp
+    fix u v
+    assume uv: "(u,v) \<in> set (pairs dpp)"
+    from proc_sound(4)[OF uv]
+    show "case root v of None \<Rightarrow> True
+      | Some fn \<Rightarrow> \<not> defined (set (rules dpp)) fn"
+      by (cases "root v"; simp add: set_defined_list)
+  next
+    fix st'
+    assume "st' \<in> set sts"
+    from proc_sound(3)[OF this] show "instance_rule st' (s,t)"
+      unfolding st .
+  next
+    fix u v
+    assume uv: "(u,v) \<in> set (pairs dpp)"
+    from proc_sound(5)[OF st uv]
+    show "((\<forall>\<gamma>. gc_matcher
+          (csr_instantiation_cap (mu_of \<mu>) (rules dpp) v) s =
+            Some \<gamma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st'))
+       \<or>
+       (\<forall>\<gamma>. mgu_class
+          (csr_shared_instantiation_cap (mu_of \<mu>) v) s =
+            Some \<gamma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (mv_yvar s \<cdot> \<gamma>, mv_yvar t \<cdot> \<gamma>) st')))" .
+  next
+    show "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (replace (s,t) (set sts) (set (pairs dpp)))
+      (set (rules dpp))"
+      using fin unfolding pairs' rules' .
+  qed
+qed
+
 lemma check_csr_dp_ordinary_min_fallback_sound:
   assumes eq: "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
       check_csr_dp_termination_proof_core I J \<mu> a i dpp
@@ -6980,33 +7889,119 @@ proof (cases "\<exists>redp Pr U subprf.
   then obtain redp Pr U subprf where
     Redpair_UR_Proc: "prf = Redpair_UR_Proc redp Pr U subprf"
     by blast
-  from ok mode Redpair_UR_Proc obtain dpp' where
-    proc: "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp = return dpp'"
-    and core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False
-      (add_index i 1) dpp' (CSR_DP_Ordinary_Proof subprf))"
-    by (auto simp add: check_csr_dp_ordinary_min_Redpair_UR_Proc)
-  have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
-    using proc unfolding csr_u3_redpair_proc_def by auto
-  have plain': "plain_csr_dpp J dpp'"
-    unfolding dpp'
-    by (rule plain_csr_dpp_delete_pairs[OF J plain])
-  interpret dpp_spec J by (rule J)
-  have rules': "set (rules dpp') = set (rules dpp)"
-    using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp']
-    by auto
-  from check_csr_dp_termination_proof_core_sound[OF I J plain' core]
-  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
-      (set (pairs dpp')) (set (rules dpp'))"
-    by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
   show ?thesis
-    apply (rule csr_u3_redpair_proc_sound)
-         apply (rule J)
-        apply (rule get_rel_impl)
-       apply (rule proc)
-      apply (rule wf)
-     apply (rule fresh)
-    apply (rule fin')
-    done
+  proof (cases "\<exists>st sts tail.
+      subprf = Instantiation_Proc st sts tail")
+    case True
+    then obtain st sts tail where inst:
+      "subprf = Instantiation_Proc st sts tail" by blast
+    let ?u3 = "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp"
+    from ok mode Redpair_UR_Proc inst have u3_ok: "isOK ?u3"
+      by (simp add: check_csr_dp_ordinary_min_Redpair_UR_Proc)
+    from u3_ok obtain dpp' where proc: "?u3 = return dpp'"
+      by (cases ?u3, auto)
+    let ?inst = "csr_instantiation_proc J \<mu> st sts dpp'"
+    from ok mode Redpair_UR_Proc inst proc have inst_ok: "isOK ?inst"
+      by (simp add: check_csr_dp_ordinary_min_Redpair_UR_Proc)
+    from inst_ok obtain dpp'' where inst_proc: "?inst = return dpp''"
+      by (cases ?inst, auto)
+    have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+      using proc unfolding csr_u3_redpair_proc_def by auto
+    have plain': "plain_csr_dpp J dpp'"
+      unfolding dpp'
+      by (rule plain_csr_dpp_delete_pairs[OF J plain])
+    have dpp''_def: "dpp'' = dpp_ops.replace_pair J dpp' st sts"
+      by (rule csr_instantiation_proc_sound(1)[OF inst_proc])
+    have plain'': "plain_csr_dpp J dpp''"
+      unfolding dpp''_def
+      by (rule plain_csr_dpp_replace_pair[OF J plain'])
+    interpret dpp_spec J by (rule J)
+    have rules': "set (rules dpp') = set (rules dpp)"
+      using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp']
+      by auto
+    have rules'': "set (rules dpp'') = set (rules dpp')"
+      unfolding dpp''_def
+      by (rule rules_csr_dpp_replace_pair[OF J])
+    have wf': "wf_trs (set (rules dpp'))"
+      using wf unfolding rules' .
+    have fin'': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+        (set (pairs dpp'')) (set (rules dpp''))"
+    proof (cases "\<exists>redp2 Pr2 U2 tail2.
+        tail = Redpair_UR_Proc redp2 Pr2 U2 tail2")
+      case True
+      then obtain redp2 Pr2 U2 tail2 where tail:
+        "tail = Redpair_UR_Proc redp2 Pr2 U2 tail2" by blast
+      let ?u32 = "csr_u3_redpair_proc J \<mu>
+        (get_rel_impl redp2) Pr2 U2 dpp''"
+      from ok mode Redpair_UR_Proc inst proc inst_proc tail
+      obtain dpp''' where proc2: "?u32 = return dpp'''"
+        and core2: "isOK (check_csr_dp_tail_core I J \<mu> False
+          (add_index (add_index (add_index i 1) 1) 1) dpp''' tail2)"
+        by (cases ?u32; auto simp add:
+          check_csr_dp_ordinary_min_Redpair_UR_Proc)
+      have dpp''': "dpp''' = delete_pairs dpp'' Pr2"
+        using proc2 unfolding csr_u3_redpair_proc_def by auto
+      have plain''': "plain_csr_dpp J dpp'''"
+        unfolding dpp'''
+        by (rule plain_csr_dpp_delete_pairs[OF J plain''])
+      have wf'': "wf_trs (set (rules dpp''))"
+        using wf' unfolding rules'' .
+      have rules''': "set (rules dpp''') = set (rules dpp'')"
+        using dpp''' delete_P_Pw_sound[of dpp'' Pr2 Pr2]
+          rules_sound[of dpp'''] by auto
+      have wf''': "wf_trs (set (rules dpp'''))"
+        using wf'' unfolding rules''' .
+      have fresh''': "\<And>f n. \<not> defined
+          (set (rules dpp''')) (Sharp f, n)"
+        using fresh unfolding rules''' rules'' rules' .
+      from check_csr_dp_tail_core_sound[OF I J plain''' wf''' fresh''' core2]
+      have fin''': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+          (set (pairs dpp''')) (set (rules dpp'''))" .
+      have fresh'': "\<And>f n. \<not> defined (set (rules dpp'')) (Sharp f, n)"
+        using fresh unfolding rules'' rules' .
+      show ?thesis
+        by (rule csr_u3_redpair_proc_sound[
+          OF J get_rel_impl proc2 wf'' fresh'' fin'''])
+    next
+      case False
+      from ok mode Redpair_UR_Proc inst proc inst_proc False have core:
+        "isOK (check_csr_dp_termination_proof_core I J \<mu> False
+          (add_index (add_index i 1) 1) dpp''
+          (CSR_DP_Ordinary_Proof tail))"
+        by (cases tail; auto simp add:
+          check_csr_dp_ordinary_min_Redpair_UR_Proc)
+      from check_csr_dp_termination_proof_core_sound[OF I J plain'' core]
+      show ?thesis
+        by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+    qed
+    from csr_instantiation_proc_finite_sound[
+      OF J inst_proc wf' fin'']
+    have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+        (set (pairs dpp')) (set (rules dpp'))" .
+    show ?thesis
+      by (rule csr_u3_redpair_proc_sound[
+        OF J get_rel_impl proc wf fresh fin'])
+  next
+    case False
+    from ok mode Redpair_UR_Proc False obtain dpp' where
+      proc: "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp = return dpp'"
+      and core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False
+        (add_index i 1) dpp' (CSR_DP_Ordinary_Proof subprf))"
+      by (cases subprf; auto simp add: check_csr_dp_ordinary_min_Redpair_UR_Proc)
+    have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+      using proc unfolding csr_u3_redpair_proc_def by auto
+    have plain': "plain_csr_dpp J dpp'"
+      unfolding dpp'
+      by (rule plain_csr_dpp_delete_pairs[OF J plain])
+    interpret dpp_spec J by (rule J)
+    from check_csr_dp_termination_proof_core_sound[OF I J plain' core]
+    have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+        (set (pairs dpp')) (set (rules dpp'))"
+      by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+    show ?thesis
+      by (rule csr_u3_redpair_proc_sound[
+        OF J get_rel_impl proc wf fresh fin'])
+  qed
 next
   case False
   have nr: "\<And>redp Pr U subprf.
@@ -7172,22 +8167,43 @@ next
 next
   case (CSR_DP_Size_Change_Subterm_Proc graphs)
   show ?case
-  proof (cases "isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)")
+  proof (cases "csr_nested_unhiding_subterm_check
+      (dpp_ops.rules J dpp) (dpp_ops.pairs J dpp)")
     case True
     show ?thesis
-      by (rule csr_sct_active_subterm_proc_sound[
-        OF J CSR_DP_Size_Change_Subterm_Proc.prems(3)
-          CSR_DP_Size_Change_Subterm_Proc.prems(4) True])
+    proof (rule csr_nested_unhiding_subterm_check_sound[OF True])
+      fix U
+      assume fresh: "\<And>n. \<not> defined
+          (set (dpp_ops.rules J dpp)) (U,n)"
+        and unsharp: "\<not> is_sharp_lab U"
+        and pairs: "csr_min_unhiding_subterm_pairs U
+          (set (dpp_ops.pairs J dpp))"
+      show ?thesis
+        by (rule finite_min_csr_dpp_unhiding_subterm_nested[
+          OF CSR_DP_Size_Change_Subterm_Proc.prems(3)
+            fresh unsharp pairs])
+    qed
   next
     case False
-    from CSR_DP_Size_Change_Subterm_Proc.prems(1) False
-    have core:
-      "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
-        (CSR_DP_Size_Change_Subterm_Proc graphs))"
-      by simp
-    from check_csr_dp_termination_proof_core_sound[
-        OF I J CSR_DP_Size_Change_Subterm_Proc.prems(2) core]
-    show ?thesis by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+    note nested_False = False
+    show ?thesis
+    proof (cases "isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)")
+      case True
+      show ?thesis
+        by (rule csr_sct_active_subterm_proc_sound[
+          OF J CSR_DP_Size_Change_Subterm_Proc.prems(3)
+            CSR_DP_Size_Change_Subterm_Proc.prems(4) True])
+    next
+      case False
+      from CSR_DP_Size_Change_Subterm_Proc.prems(1) nested_False False
+      have core:
+        "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+          (CSR_DP_Size_Change_Subterm_Proc graphs))"
+        by simp
+      from check_csr_dp_termination_proof_core_sound[
+          OF I J CSR_DP_Size_Change_Subterm_Proc.prems(2) core]
+      show ?thesis by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+    qed
   qed
 qed
 

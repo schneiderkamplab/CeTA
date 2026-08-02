@@ -29,8 +29,11 @@ import qualified Size_Change_Termination_Processors;
 import qualified Missing_List;
 import qualified Size_Change_Termination;
 import qualified Product_Lexorder;
+import qualified Icap;
 import qualified Compare_Order_Instances;
 import qualified CSR_Checker;
+import qualified Context_Sensitive_Impl;
+import qualified Mapping;
 import qualified FOR_Preliminaries;
 import qualified Complex_Constant_Removal_Impl;
 import qualified Reduction_Pair_Implementations;
@@ -42,8 +45,6 @@ import qualified Check_Termination;
 import qualified Critical_Pairs_Impl;
 import qualified Subterm_Criterion_Impl;
 import qualified Countable;
-import qualified Context_Sensitive_Impl;
-import qualified Mapping;
 import qualified Check_Monad;
 import qualified Error_Monad;
 import qualified HOL;
@@ -300,6 +301,493 @@ csr_instantiation_cap mu r (Term_Rewriting.Fun f ts) =
   CSR_Checker_Base.csr_root_tcap (CSR_Checker_Base.csr_dp_root_mu mu) r
     (Term_Rewriting.Fun f ts);
 
+csr_nested_unhiding_subterm_check ::
+  forall a b c d.
+    (Eq a, Eq b,
+      Eq d) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                  Term_Rewriting.Term (Labelings.Lab a b) c)] ->
+                 [(Term_Rewriting.Term (Labelings.Lab a b) d,
+                    Term_Rewriting.Term (Labelings.Lab a b) d)] ->
+                   Bool;
+csr_nested_unhiding_subterm_check r
+  [(Term_Rewriting.Fun u [s], Term_Rewriting.Fun v [t])] =
+  Labelings.equal_lab u v &&
+    not (CSR_Checker_Base.is_sharp_lab u) &&
+      Term_Rewriting.supt_impl s t &&
+        all (\ (f, _) -> not (Labelings.equal_lab f u))
+          (Term_Rewriting.defined_list r);
+csr_nested_unhiding_subterm_check r [] = False;
+csr_nested_unhiding_subterm_check r ((Term_Rewriting.Var vd, vc) : va) = False;
+csr_nested_unhiding_subterm_check r ((Term_Rewriting.Fun vd [], vc) : va) =
+  False;
+csr_nested_unhiding_subterm_check r
+  ((Term_Rewriting.Fun vd (vf : vh : vi), vc) : va) = False;
+csr_nested_unhiding_subterm_check r ((vb, Term_Rewriting.Var vd) : va) = False;
+csr_nested_unhiding_subterm_check r ((vb, Term_Rewriting.Fun vd []) : va) =
+  False;
+csr_nested_unhiding_subterm_check r
+  ((vb, Term_Rewriting.Fun vd (vf : vh : vi)) : va) = False;
+csr_nested_unhiding_subterm_check r (v : vb : vc) = False;
+
+check_csr_dp_component_core ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       Bool ->
+ (String -> String) ->
+   c -> Check_Termination.Dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+          Sum_Type.Sum (String -> String) ();
+check_csr_dp_component_core ia j mu a i dpp prf =
+  (case prf of {
+    Check_Termination.P_is_Empty ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Subterm_Criterion_Proc _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Gen_Subterm_Criterion_Proc _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Redpair_Proc _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Redpair_UR_Proc redp pr u subprf ->
+      FOR_Preliminaries.debug i "CSR U3 reduction pair in graph component"
+        (Error_Monad.bind
+          (csr_u3_redpair_proc j mu
+            (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
+          (\ dppa ->
+            (case subprf of {
+              Check_Termination.P_is_Empty ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Subterm_Criterion_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Gen_Subterm_Criterion_Proc _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Redpair_Proc _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Redpair_UR_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Usable_Rules_Proc _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Dep_Graph_Proc edpts ->
+                Error_Monad.bind
+                  (CSR_Checker.check_csr_dep_graph_proc j mu dppa edpts)
+                  (\ _ ->
+                    Check_Monad.check
+                      (all (\ (po, _) -> Arith.is_none po) edpts)
+                      (Term_Rewriting.showsl_lit
+                        "cyclic component remains below nested U3 reduction pair"));
+              Check_Termination.Mono_Redpair_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Mono_URM_Redpair_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Mono_Redpair_UR_Proc _ _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Size_Change_Subterm_Proc _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Size_Change_Redpair_Proc _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Uncurry_Proc _ _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Fcc_Proc _ _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Split_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Semlab_Proc _ _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Switch_Innermost_Proc _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Rewriting_Proc _ _ _ _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Instantiation_Proc _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Narrowing_Proc _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Assume_Finite _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Q_Reduction_Proc _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Complex_Constant_Removal_Proc _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+              Check_Termination.To_Trs_Proc _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
+            })));
+    Check_Termination.Usable_Rules_Proc _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Dep_Graph_Proc _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Mono_Redpair_Proc _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Mono_URM_Redpair_Proc _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Mono_Redpair_UR_Proc _ _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Size_Change_Subterm_Proc _ ->
+      (if csr_nested_unhiding_subterm_check
+            (Dependency_Pair_Problem_Spec.rules j dpp)
+            (Dependency_Pair_Problem_Spec.pairs j dpp)
+        then FOR_Preliminaries.debug i "fresh unhiding subterm component"
+               (Sum_Type.Inr ())
+        else CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+               (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf));
+    Check_Termination.Size_Change_Redpair_Proc _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Uncurry_Proc _ _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Fcc_Proc _ _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Split_Proc _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Semlab_Proc _ _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Switch_Innermost_Proc _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Rewriting_Proc _ _ _ _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Instantiation_Proc _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Narrowing_Proc _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Assume_Finite _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Q_Reduction_Proc _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Complex_Constant_Removal_Proc _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.To_Trs_Proc _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+  });
+
+check_csr_dp_graph_components_core ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       Bool ->
+ (String -> String) ->
+   c -> [(Maybe (Check_Termination.Dp_termination_proof b [Arith.Nat]
+                  [Arith.Char]),
+           [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+              Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+                [Arith.Char])])] ->
+          Sum_Type.Sum (String -> String) ();
+check_csr_dp_graph_components_core ia j mu a i dpp [] = Sum_Type.Inr ();
+check_csr_dp_graph_components_core ia j mu a i dpp ((Nothing, p) : rest) =
+  check_csr_dp_graph_components_core ia j mu a
+    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
+check_csr_dp_graph_components_core ia j mu a i dpp ((Just prf, p) : rest) =
+  Error_Monad.bind
+    (check_csr_dp_component_core ia j mu a
+      (Term_Rewriting.add_index i Arith.one_nat)
+      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp p) prf)
+    (\ _ ->
+      check_csr_dp_graph_components_core ia j mu a
+        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
+
+check_csr_dp_after_u3_tail ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       Bool ->
+ (String -> String) ->
+   c -> Check_Termination.Dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+          Sum_Type.Sum (String -> String) ();
+check_csr_dp_after_u3_tail ia j mu a i dpp prf =
+  (case prf of {
+    Check_Termination.P_is_Empty ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Subterm_Criterion_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Gen_Subterm_Criterion_Proc _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Redpair_Proc _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Redpair_UR_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Usable_Rules_Proc _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Dep_Graph_Proc edpts ->
+      FOR_Preliminaries.debug i
+        "minimal CSR-DP dependency graph in ordinary continuation"
+        (Error_Monad.bind (CSR_Checker.check_csr_dep_graph_proc j mu dpp edpts)
+          (\ _ -> check_csr_dp_graph_components_core ia j mu a i dpp edpts));
+    Check_Termination.Mono_Redpair_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Mono_URM_Redpair_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Mono_Redpair_UR_Proc _ _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Size_Change_Subterm_Proc _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Size_Change_Redpair_Proc _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Uncurry_Proc _ _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Fcc_Proc _ _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Split_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Semlab_Proc _ _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Switch_Innermost_Proc _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Rewriting_Proc _ _ _ _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Instantiation_Proc _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Narrowing_Proc _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Assume_Finite _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Q_Reduction_Proc _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Complex_Constant_Removal_Proc _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.To_Trs_Proc _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+  });
+
+check_csr_dp_tail_core ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       Bool ->
+ (String -> String) ->
+   c -> Check_Termination.Dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+          Sum_Type.Sum (String -> String) ();
+check_csr_dp_tail_core ia j mu a i dpp prf =
+  (case prf of {
+    Check_Termination.P_is_Empty ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Subterm_Criterion_Proc _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Gen_Subterm_Criterion_Proc _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Redpair_Proc _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Redpair_UR_Proc redp pr u subprf ->
+      FOR_Preliminaries.debug i
+        "nested CSR U3 reduction pair in ordinary continuation"
+        (Error_Monad.bind
+          (csr_u3_redpair_proc j mu
+            (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
+          (\ dppa ->
+            check_csr_dp_after_u3_tail ia j mu a
+              (Term_Rewriting.add_index i Arith.one_nat) dppa subprf));
+    Check_Termination.Usable_Rules_Proc _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Dep_Graph_Proc _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Mono_Redpair_Proc _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Mono_URM_Redpair_Proc _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Mono_Redpair_UR_Proc _ _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Size_Change_Subterm_Proc _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Size_Change_Redpair_Proc _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Uncurry_Proc _ _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Fcc_Proc _ _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Split_Proc _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Semlab_Proc _ _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Switch_Innermost_Proc _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Rewriting_Proc _ _ _ _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Instantiation_Proc _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Narrowing_Proc _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Assume_Finite _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Q_Reduction_Proc _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.Complex_Constant_Removal_Proc _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+    Check_Termination.To_Trs_Proc _ ->
+      check_csr_dp_after_u3_tail ia j mu a i dpp prf;
+  });
+
+csr_shared_instantiation_cap ::
+  forall a b.
+    ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+      Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char] ->
+        Term_Rewriting.Term (Labelings.Lab a b) (Sum_Type.Sum () [Arith.Char]);
+csr_shared_instantiation_cap mu (Term_Rewriting.Var x) =
+  Term_Rewriting.Var (Sum_Type.Inl ());
+csr_shared_instantiation_cap mu (Term_Rewriting.Fun f ts) =
+  Term_Rewriting.Fun f
+    (map (\ (i, t) ->
+           (if Arith.member i
+                 (CSR_Checker_Base.csr_dp_root_mu mu (f, Arith.size_list ts))
+             then Term_Rewriting.Var (Sum_Type.Inl ())
+             else Term_Rewriting.map_term (\ x -> x)
+                    (Sum_Type.Inr . (\ a -> Arith.char_0x78 : a)) t))
+      (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts));
+
+csr_instantiation_coverage ::
+  forall a b c.
+    (Compare.Compare a, Eq a, Term_Rewriting.Showl a, Compare.Compare b, Eq b,
+      Term_Rewriting.Showl b, Arith.Ccompare c, Compare.Compare c, Eq c,
+      Mapping.Mapping_impl c) => ((Labelings.Lab a b, Arith.Nat) ->
+                                   Arith.Set Arith.Nat) ->
+                                   [(Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char],
+                                      Term_Rewriting.Term (Labelings.Lab a b)
+[Arith.Char])] ->
+                                     Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char] ->
+                                       Term_Rewriting.Term (Labelings.Lab a b)
+ [Arith.Char] ->
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char] ->
+   Arith.Set
+     (Term_Rewriting.Term (Labelings.Lab a b) c,
+       Term_Rewriting.Term (Labelings.Lab a b) c) ->
+     Bool;
+csr_instantiation_coverage mu r v s t sts =
+  (case Term_Rewriting.gc_matcher (csr_instantiation_cap mu r v) s of {
+    Nothing -> True;
+    Just sigma ->
+      Arith.bex sts
+        (Term_Rewriting.instance_rule
+          (Term_Rewriting.eval_term Term_Rewriting.Fun s sigma,
+            Term_Rewriting.eval_term Term_Rewriting.Fun t sigma));
+  }) ||
+    (case Icap.mgu_class (csr_shared_instantiation_cap mu v) s of {
+      Nothing -> True;
+      Just sigma ->
+        Arith.bex sts
+          (Term_Rewriting.instance_rule
+            (Term_Rewriting.eval_term Term_Rewriting.Fun
+               (Term_Rewriting.map_term (\ x -> x) (\ a -> Arith.char_0x79 : a)
+                 s)
+               sigma,
+              Term_Rewriting.eval_term Term_Rewriting.Fun
+                (Term_Rewriting.map_term (\ x -> x) (\ a -> Arith.char_0x79 : a)
+                  t)
+                sigma));
+    });
+
 csr_instantiation_proc ::
   forall a b c.
     (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b,
@@ -349,24 +837,13 @@ csr_instantiation_proc j mu st sts dpp =
                               (Term_Rewriting.showsl_lit
                                 "predecessor right-hand side has a defined root"))
                             (\ _ ->
-                              (case Term_Rewriting.gc_matcher
-                                      (csr_instantiation_cap
-(Context_Sensitive_Impl.mu_of mu) (Dependency_Pair_Problem_Spec.rules j dpp) v)
-                                      s
-                                of {
-                                Nothing -> Sum_Type.Inr ();
-                                Just sigma ->
-                                  Check_Monad.check
-                                    (any (Term_Rewriting.instance_rule
-   (Term_Rewriting.eval_term Term_Rewriting.Fun s sigma,
-     Term_Rewriting.eval_term Term_Rewriting.Fun t sigma))
-                                      sts)
-                                    (Term_Rewriting.showsl_lit
-                                       "missing replacement-map-aware instance of pair " .
-                                      Term_Rewriting.showsl_rule
-(Term_Rewriting.eval_term Term_Rewriting.Fun s sigma,
-  Term_Rewriting.eval_term Term_Rewriting.Fun t sigma));
-                              })))
+                              Check_Monad.check
+                                (csr_instantiation_coverage
+                                  (Context_Sensitive_Impl.mu_of mu)
+                                  (Dependency_Pair_Problem_Spec.rules j dpp) v s
+                                  t (Arith.set sts))
+                                (Term_Rewriting.showsl_lit
+                                  "missing replacement-map-aware instance under both CSR caps")))
                         (Dependency_Pair_Problem_Spec.pairs j dpp))
                       (\ x -> Sum_Type.Inl (snd x));
                 })))
@@ -800,9 +1277,315 @@ check_csr_dp_ordinary_min ia j mu a i dpp prf =
                   x)))
           (\ dppa ->
             Error_Monad.catch_error
-              (CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
-                (Term_Rewriting.add_index i Arith.one_nat) dppa
-                (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf))
+              (case subprf of {
+                Check_Termination.P_is_Empty ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Subterm_Criterion_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Gen_Subterm_Criterion_Proc _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Redpair_Proc _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Redpair_UR_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Usable_Rules_Proc _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Dep_Graph_Proc _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Mono_Redpair_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Mono_URM_Redpair_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Mono_Redpair_UR_Proc _ _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Size_Change_Subterm_Proc _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Size_Change_Redpair_Proc _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Uncurry_Proc _ _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Fcc_Proc _ _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Split_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Semlab_Proc _ _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Switch_Innermost_Proc _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Rewriting_Proc _ _ _ _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Instantiation_Proc st sts tail ->
+                  Error_Monad.bind
+                    (Error_Monad.catch_error
+                      (csr_instantiation_proc j mu st sts dppa)
+                      (\ x ->
+                        Sum_Type.Inl
+                          ((i . Term_Rewriting.showsl_lit
+                                  ": error when applying CSR instantiation below U3\n") .
+                            x)))
+                    (\ dppb ->
+                      (case tail of {
+                        Check_Termination.P_is_Empty ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Subterm_Criterion_Proc _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Gen_Subterm_Criterion_Proc _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Redpair_Proc _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Redpair_UR_Proc redp2 pr2 u2 tail2 ->
+                          Error_Monad.bind
+                            (Error_Monad.catch_error
+                              (csr_u3_redpair_proc j mu
+                                (Reduction_Pair_Implementations.get_rel_impl
+                                  redp2)
+                                pr2 u2 dppb)
+                              (\ x ->
+                                Sum_Type.Inl
+                                  ((i . Term_Rewriting.showsl_lit
+  ": error when applying nested CSR U3 reduction pair\n") .
+                                    x)))
+                            (\ dppc ->
+                              check_csr_dp_tail_core ia j mu a
+                                (Term_Rewriting.add_index
+                                  (Term_Rewriting.add_index
+                                    (Term_Rewriting.add_index i Arith.one_nat)
+                                    Arith.one_nat)
+                                  Arith.one_nat)
+                                dppc tail2);
+                        Check_Termination.Usable_Rules_Proc _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Dep_Graph_Proc _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Mono_Redpair_Proc _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Mono_URM_Redpair_Proc _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Mono_Redpair_UR_Proc _ _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Size_Change_Subterm_Proc _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Size_Change_Redpair_Proc _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Uncurry_Proc _ _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Fcc_Proc _ _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Split_Proc _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Semlab_Proc _ _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Switch_Innermost_Proc _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Rewriting_Proc _ _ _ _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Instantiation_Proc _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Narrowing_Proc _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Assume_Finite _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Q_Reduction_Proc _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Complex_Constant_Removal_Proc _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.To_Trs_Proc _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                      }));
+                Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Narrowing_Proc _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Assume_Finite _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Q_Reduction_Proc _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.Complex_Constant_Removal_Proc _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+                Check_Termination.To_Trs_Proc _ ->
+                  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa
+                    (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf);
+              })
               (\ x ->
                 Sum_Type.Inl
                   ((i . Term_Rewriting.showsl_lit
@@ -1164,10 +1947,16 @@ check_csr_dp_termination_proof_min ia j mu a i dpp
            ": context-sensitive instantiation requires improved CS-DPs");
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs) =
-  (if Error_Monad.isOK (csr_sct_active_subterm_proc j mu graphs dpp)
-    then FOR_Preliminaries.debug i "active CSR size-change" (Sum_Type.Inr ())
-    else CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
-           (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs));
+  (if csr_nested_unhiding_subterm_check
+        (Dependency_Pair_Problem_Spec.rules j dpp)
+        (Dependency_Pair_Problem_Spec.pairs j dpp)
+    then FOR_Preliminaries.debug i "nested U3 unhiding subterm"
+           (Sum_Type.Inr ())
+    else (if Error_Monad.isOK (csr_sct_active_subterm_proc j mu graphs dpp)
+           then FOR_Preliminaries.debug i "active CSR size-change"
+                  (Sum_Type.Inr ())
+           else CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+                  (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs)));
 
 check_csr_dp_graph_components_min ::
   forall a b c.

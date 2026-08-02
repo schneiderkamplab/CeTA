@@ -529,15 +529,20 @@ next
     show "instance_rule st' (s,t)"
       unfolding st .
   next
-    fix u v \<gamma>
+    fix u v
     assume uv: "(u,v) \<in> set (pairs dpp)"
-      and matcher:
-        "gc_matcher
+    from proc_sound(5)[OF st uv]
+    show "((\<forall>\<gamma>. gc_matcher
           (csr_instantiation_cap (mu_of \<mu>) (rules dpp) v) s =
-          Some \<gamma>"
-    from proc_sound(5)[OF st uv matcher]
-    show "\<exists>st'\<in>set sts.
-      instance_rule (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st'" .
+            Some \<gamma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (s \<cdot> \<gamma>, t \<cdot> \<gamma>) st'))
+       \<or>
+       (\<forall>\<gamma>. mgu_class
+          (csr_shared_instantiation_cap (mu_of \<mu>) v) s =
+            Some \<gamma> \<longrightarrow>
+          (\<exists>st'\<in>set sts. instance_rule
+            (mv_yvar s \<cdot> \<gamma>, mv_yvar t \<cdot> \<gamma>) st')))" .
   next
     show "finite_min_csr_dpp Sharp (mu_of \<mu>)
       (replace (s,t) (set sts) (set (pairs dpp)))
