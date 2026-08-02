@@ -44,6 +44,7 @@ import qualified Ordered_Semiring;
 import qualified Non_Confluence_Impl;
 import qualified Map;
 import qualified LTS_Parser;
+import qualified CSR_Conservative_Checker;
 import qualified Ordered_Completion_Impl;
 import qualified Check_Quasi_Reductive;
 import qualified Check_Conditional_CRP;
@@ -64,7 +65,7 @@ import qualified Parallel_Critical_Pairs_Impl;
 import qualified Check_Termination;
 import qualified Check_CRP;
 import qualified Compare_Order_Instances;
-import qualified CSR_Conservative_Checker;
+import qualified CSR_GM_Transformation;
 import qualified Proof_Checker;
 import qualified Ceta_Problem_Spec;
 import qualified HOL;
@@ -4342,73 +4343,79 @@ Sum_Type.Inr mpi ->
       Xmlt.xml_return)
     x;
 
-xml2conservative_csr_termination_proof ::
-  Mapping.Mapping [Arith.Char]
-    (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
-      [Arith.Char]) ->
-    Mapping.Mapping [Arith.Char]
-      (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
-         [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
-          [Arith.Char]) ->
-      (Xml.Xml,
-        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
-        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-          (CSR_Conservative_Checker.Extended_csr_termination_proof [Arith.Char]
-            [Arith.Nat] [Arith.Char]);
-xml2conservative_csr_termination_proof termIndexMap ruleMap =
-  let {
-    improved =
-      Xmlt.xml_do "csrImprovedDependencyPairs"
-        (Xmlt.xml_take
-          (Xmlt.xml_do "unhidingSymbol"
-            (Xmlt.xml_take symbol_parser (\ x -> Xmlt.xml_return (id x))))
-          (\ u ->
-            Xmlt.xml_take
-              (Xmlt.xml_do "dps"
-                (Xmlt.xml_take
-                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
-                  (\ x -> Xmlt.xml_return (id x))))
-              (\ p ->
+xml2csr_termination_proof ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b, Eq b,
+      Term_Rewriting.Showl b) => ((Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                     (Labelings.Lab a b)) ->
+                                   Mapping.Mapping [Arith.Char]
+                                     (Term_Rewriting.Term (Labelings.Lab a b)
+                                       [Arith.Char]) ->
+                                     Mapping.Mapping [Arith.Char]
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  [Arith.Char],
+ Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
+                                       (Xml.Xml,
+ ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+ Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+   (CSR_Checker_Base.Csr_termination_proof a b [Arith.Char]);
+xml2csr_termination_proof xml2name termIndexMap ruleMap x =
+  Xmlt.xml_do "csrTerminationProof"
+    (Xmlt.xml_take
+      (Xmlt.xml_or
+        (Xmlt.xml_do "rIsEmpty"
+          (Xmlt.xml_return CSR_Checker_Base.CSR_R_is_Empty))
+        (Xmlt.xml_or
+          (Xmlt.xml_do "csrRuleRemoval"
+            (Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
+              (\ ord ->
                 Xmlt.xml_take
-                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
-                    ruleMap)
-                  (\ prf ->
-                    Xmlt.xml_return
-                      (CSR_Conservative_Checker.Improved_CSR_Dependency_Pairs u
-                        p prf)))));
-    conservative =
-      Xmlt.xml_do "csrConservativeDependencyPairs"
-        (Xmlt.xml_take
-          (Xmlt.xml_do "unhidingSymbol"
-            (Xmlt.xml_take symbol_parser (\ x -> Xmlt.xml_return (id x))))
-          (\ u ->
-            Xmlt.xml_take
-              (Xmlt.xml_do "dps"
-                (Xmlt.xml_take
-                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
-                  (\ x -> Xmlt.xml_return (id x))))
-              (\ p ->
-                Xmlt.xml_take
-                  (Xmlt.xml_do "auxiliaryRules"
+                  (Xmlt.xml_do "trs"
                     (Xmlt.xml_take
-                      (CPF_Input_Parser.rules symbol_parser termIndexMap
-                        ruleMap)
-                      (\ x -> Xmlt.xml_return (id x))))
-                  (\ s ->
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ xa -> Xmlt.xml_return (id xa))))
+                  (\ r ->
                     Xmlt.xml_take
-                      (xml2csr_dp_termination_proof symbol_parser termIndexMap
-                        ruleMap)
-                      (\ prf ->
+                      (Xmlt.xml_or
+                        (xml2csr_termination_proof xml2name termIndexMap
+                          ruleMap)
+                        (xml2legacy_csr_termination_proof xml2name termIndexMap
+                          ruleMap))
+                      (\ p ->
                         Xmlt.xml_return
-                          (CSR_Conservative_Checker.Conservative_CSR_Dependency_Pairs
-                            u p s prf))))));
-  } in Xmlt.xml_or improved
-         (Xmlt.xml_or
-           (Xmlt.xml_do "conservativeCsrTerminationProof"
-             (Xmlt.xml_take conservative (\ x -> Xmlt.xml_return (id x))))
-           (Xmlt.xml_do "nativeConservativeCsrTerminationProof"
-             (Xmlt.xml_take conservative (\ x -> Xmlt.xml_return (id x)))));
+                          (CSR_Checker_Base.CSR_Rule_Removal ord r p))))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "csrDependencyPairs"
+              (Xmlt.xml_take
+                (Xmlt.xml_do "dps"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ dps ->
+                  Xmlt.xml_take
+                    (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
+                    (\ p ->
+                      Xmlt.xml_return
+                        (CSR_Checker_Base.CSR_Dependency_Pairs dps p)))))
+            (Xmlt.xml_do "csrSafeDependencyPairs"
+              (Xmlt.xml_take
+                (Xmlt.xml_do "dps"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ dps ->
+                  Xmlt.xml_take
+                    (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
+                    (\ p ->
+                      Xmlt.xml_return
+                        (CSR_Checker_Base.CSR_Safe_Dependency_Pairs dps
+                          p))))))))
+      (\ xa -> Xmlt.xml_return (id xa)))
+    x;
 
 xml2legacy_csr_termination_proof ::
   forall a b.
@@ -4484,79 +4491,170 @@ xml2legacy_csr_termination_proof xml2name termIndexMap ruleMap x =
       (\ xa -> Xmlt.xml_return (id xa)))
     x;
 
-xml2csr_termination_proof ::
-  forall a b.
-    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
-      Compare.Compare_order b, Eq b,
-      Term_Rewriting.Showl b) => ((Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                   Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                     (Labelings.Lab a b)) ->
-                                   Mapping.Mapping [Arith.Char]
-                                     (Term_Rewriting.Term (Labelings.Lab a b)
-                                       [Arith.Char]) ->
-                                     Mapping.Mapping [Arith.Char]
-                                       (Term_Rewriting.Term (Labelings.Lab a b)
-  [Arith.Char],
- Term_Rewriting.Term (Labelings.Lab a b) [Arith.Char]) ->
-                                       (Xml.Xml,
- ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
- Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-   (CSR_Checker_Base.Csr_termination_proof a b [Arith.Char]);
-xml2csr_termination_proof xml2name termIndexMap ruleMap x =
-  Xmlt.xml_do "csrTerminationProof"
-    (Xmlt.xml_take
-      (Xmlt.xml_or
-        (Xmlt.xml_do "rIsEmpty"
-          (Xmlt.xml_return CSR_Checker_Base.CSR_R_is_Empty))
-        (Xmlt.xml_or
-          (Xmlt.xml_do "csrRuleRemoval"
-            (Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
-              (\ ord ->
+xml2conservative_csr_termination_proof ::
+  Mapping.Mapping [Arith.Char]
+    (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+      [Arith.Char]) ->
+    Mapping.Mapping [Arith.Char]
+      (Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+         [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab [Arith.Char] [Arith.Nat])
+          [Arith.Char]) ->
+      (Xml.Xml,
+        ([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+        Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+          (CSR_GM_Transformation.Gm_extended_csr_termination_proof [Arith.Char]
+            [Arith.Nat] [Arith.Char]);
+xml2conservative_csr_termination_proof termIndexMap ruleMap =
+  let {
+    orthogonality =
+      Xmlt.xml_do "csrOrthogonalityCheck"
+        (Xmlt.xml_take
+          (xml2csr_termination_proof symbol_parser termIndexMap ruleMap)
+          (\ prf ->
+            Xmlt.xml_return
+              (CSR_GM_Transformation.Existing_CSR_Proof
+                (CSR_Conservative_Checker.Orthogonality_Checked_CSR_Proof
+                  prf))));
+    improved =
+      Xmlt.xml_do "csrImprovedDependencyPairs"
+        (Xmlt.xml_take
+          (Xmlt.xml_do "unhidingSymbol"
+            (Xmlt.xml_take symbol_parser (\ x -> Xmlt.xml_return (id x))))
+          (\ u ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "dps"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ p ->
                 Xmlt.xml_take
-                  (Xmlt.xml_do "trs"
-                    (Xmlt.xml_take
-                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                      (\ xa -> Xmlt.xml_return (id xa))))
-                  (\ r ->
+                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                    ruleMap)
+                  (\ prf ->
+                    Xmlt.xml_return
+                      (CSR_GM_Transformation.Existing_CSR_Proof
+                        (CSR_Conservative_Checker.Improved_CSR_Dependency_Pairs
+                          u p prf))))));
+    rta08 =
+      Xmlt.xml_do "csrRta08DependencyPairs"
+        (Xmlt.xml_take
+          (Xmlt.xml_do "dps"
+            (Xmlt.xml_take
+              (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+              (\ x -> Xmlt.xml_return (id x))))
+          (\ p ->
+            Xmlt.xml_take
+              (xml2csr_dp_termination_proof symbol_parser termIndexMap ruleMap)
+              (\ prf ->
+                Xmlt.xml_return
+                  (CSR_GM_Transformation.Existing_CSR_Proof
+                    (CSR_Conservative_Checker.Direct_CSR_Proof
+                      (CSR_Checker_Base.CSR_Dependency_Pairs p prf))))));
+    removed_improved =
+      Xmlt.xml_do "csrRuleRemovalThenImproved"
+        (Xmlt.xml_take (redtriple symbol_parser Labelings.Sharp False)
+          (\ redp ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "trs"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ rr ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "unhidingSymbol"
+                    (Xmlt.xml_take symbol_parser
+                      (\ x -> Xmlt.xml_return (id x))))
+                  (\ u ->
                     Xmlt.xml_take
-                      (Xmlt.xml_or
-                        (xml2csr_termination_proof xml2name termIndexMap
-                          ruleMap)
-                        (xml2legacy_csr_termination_proof xml2name termIndexMap
-                          ruleMap))
+                      (Xmlt.xml_do "dps"
+                        (Xmlt.xml_take
+                          (CPF_Input_Parser.rules symbol_parser termIndexMap
+                            ruleMap)
+                          (\ x -> Xmlt.xml_return (id x))))
                       (\ p ->
+                        Xmlt.xml_take
+                          (xml2csr_dp_termination_proof symbol_parser
+                            termIndexMap ruleMap)
+                          (\ prf ->
+                            Xmlt.xml_return
+                              (CSR_GM_Transformation.Existing_CSR_Proof
+                                (CSR_Conservative_Checker.CSR_Rule_Removal_Then_Improved
+                                  redp rr u p prf))))))));
+    conservative =
+      Xmlt.xml_do "csrConservativeDependencyPairs"
+        (Xmlt.xml_take
+          (Xmlt.xml_do "unhidingSymbol"
+            (Xmlt.xml_take symbol_parser (\ x -> Xmlt.xml_return (id x))))
+          (\ u ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "dps"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ p ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "auxiliaryRules"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules symbol_parser termIndexMap
+                        ruleMap)
+                      (\ x -> Xmlt.xml_return (id x))))
+                  (\ s ->
+                    Xmlt.xml_take
+                      (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                        ruleMap)
+                      (\ prf ->
                         Xmlt.xml_return
-                          (CSR_Checker_Base.CSR_Rule_Removal ord r p))))))
-          (Xmlt.xml_or
-            (Xmlt.xml_do "csrDependencyPairs"
-              (Xmlt.xml_take
-                (Xmlt.xml_do "dps"
-                  (Xmlt.xml_take
-                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                    (\ xa -> Xmlt.xml_return (id xa))))
-                (\ dps ->
-                  Xmlt.xml_take
-                    (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
-                    (\ p ->
-                      Xmlt.xml_return
-                        (CSR_Checker_Base.CSR_Dependency_Pairs dps p)))))
-            (Xmlt.xml_do "csrSafeDependencyPairs"
-              (Xmlt.xml_take
-                (Xmlt.xml_do "dps"
-                  (Xmlt.xml_take
-                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                    (\ xa -> Xmlt.xml_return (id xa))))
-                (\ dps ->
-                  Xmlt.xml_take
-                    (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
-                    (\ p ->
-                      Xmlt.xml_return
-                        (CSR_Checker_Base.CSR_Safe_Dependency_Pairs dps
-                          p))))))))
-      (\ xa -> Xmlt.xml_return (id xa)))
-    x;
+                          (CSR_GM_Transformation.Existing_CSR_Proof
+                            (CSR_Conservative_Checker.Conservative_CSR_Dependency_Pairs
+                              u p s prf)))))));
+    gm = Xmlt.xml_do "csrGmTransformation"
+           (Xmlt.xml_take
+             (Xmlt.xml_do "markSymbol"
+               (Xmlt.xml_take symbol_parser (\ x -> Xmlt.xml_return (id x))))
+             (\ mark ->
+               Xmlt.xml_take
+                 (Xmlt.xml_do "groundConstant"
+                   (Xmlt.xml_take symbol_parser
+                     (\ x -> Xmlt.xml_return (id x))))
+                 (\ c ->
+                   Xmlt.xml_take_many_sub [] Arith.zero_nat
+                     Extended_Nat.Infinity_enat
+                     (Xmlt.xml_do "activeSymbol"
+                       (Xmlt.xml_take
+                         (Xmlt.xml_do "sourceSymbol"
+                           (Xmlt.xml_take symbol_parser
+                             (\ x -> Xmlt.xml_return (id x))))
+                         (\ source ->
+                           Xmlt.xml_take (Xmlt.xml_nat "arity")
+                             (\ arity ->
+                               Xmlt.xml_take
+                                 (Xmlt.xml_do "targetSymbol"
+                                   (Xmlt.xml_take symbol_parser
+                                     (\ x -> Xmlt.xml_return (id x))))
+                                 (\ target ->
+                                   Xmlt.xml_return
+                                     ((source, arity), target))))))
+                     (\ active ->
+                       Xmlt.xml_take
+                         (xml2trs_termination_proof symbol_parser termIndexMap
+                           ruleMap)
+                         (\ prf ->
+                           Xmlt.xml_return
+                             (CSR_GM_Transformation.GM_CSR_Transformation mark c
+                               active prf))))));
+  } in Xmlt.xml_or orthogonality
+         (Xmlt.xml_or improved
+           (Xmlt.xml_or rta08
+             (Xmlt.xml_or removed_improved
+               (Xmlt.xml_or
+                 (Xmlt.xml_do "conservativeCsrTerminationProof"
+                   (Xmlt.xml_take conservative (\ x -> Xmlt.xml_return (id x))))
+                 (Xmlt.xml_or
+                   (Xmlt.xml_do "nativeConservativeCsrTerminationProof"
+                     (Xmlt.xml_take conservative
+                       (\ x -> Xmlt.xml_return (id x))))
+                   gm)))));
 
 xml2dp_nontermination_proof ::
   forall a b.
@@ -7846,7 +7944,8 @@ proof_content xml2name termIndexMap ruleMap =
                     (\ p ->
                       Xmlt.xml_return
                         (Proof_Checker.CSR_Termination_Proof
-                          (CSR_Conservative_Checker.Direct_CSR_Proof p))))
+                          (CSR_GM_Transformation.Existing_CSR_Proof
+                            (CSR_Conservative_Checker.Direct_CSR_Proof p)))))
                   (Xmlt.xml_or
                     (Xmlt.xml_change
                       (xml2legacy_csr_termination_proof xml2name termIndexMap
@@ -7854,7 +7953,8 @@ proof_content xml2name termIndexMap ruleMap =
                       (\ p ->
                         Xmlt.xml_return
                           (Proof_Checker.CSR_Termination_Proof
-                            (CSR_Conservative_Checker.Direct_CSR_Proof p))))
+                            (CSR_GM_Transformation.Existing_CSR_Proof
+                              (CSR_Conservative_Checker.Direct_CSR_Proof p)))))
                     (Xmlt.xml_or
                       (Xmlt.xml_change
                         (xml2completion_proof xml2name termIndexMap ruleMap)

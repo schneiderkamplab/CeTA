@@ -61,14 +61,13 @@ hidden_mu_CSDP_list shp u mu d r =
 
 hides_position_list ::
   forall a b.
-    (Arith.Ceq a, Arith.Ccompare a, Eq a,
-      Arith.Set_impl a) => [((a, Arith.Nat), [Arith.Nat])] ->
-                             [(a, Arith.Nat)] ->
-                               [(Term_Rewriting.Term a b,
-                                  Term_Rewriting.Term a b)] ->
-                                 a -> Arith.Nat -> Arith.Nat -> Bool;
+    (Arith.Ceq a, Arith.Ccompare a, Eq a, Arith.Set_impl a,
+      Eq b) => [((a, Arith.Nat), [Arith.Nat])] ->
+                 [(a, Arith.Nat)] ->
+                   [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
+                     a -> Arith.Nat -> Arith.Nat -> Bool;
 hides_position_list mu d r f n i =
-  any (\ (_, ra) ->
+  any (\ (l, ra) ->
         any (\ p ->
               not (Arith.membera (CSR_Checker_Base.mu_fun_poss_list mu ra) p) &&
                 (case Term_Rewriting.subt_at ra p of {
@@ -81,13 +80,20 @@ hides_position_list mu d r f n i =
                             (Context_Sensitive_Impl.mu_of mu
                               (g, Arith.size_list ts)) &&
                             any (\ q ->
-                                  Term_Rewriting.is_Var
-                                    (Term_Rewriting.subt_at (Arith.nth ts i)
-                                      q) ||
-                                    Arith.member
-                                      (Term_Rewriting.root
-(Term_Rewriting.subt_at (Arith.nth ts i) q))
-                                      (Arith.image Just (Arith.set d)))
+                                  Arith.member
+                                    (Term_Rewriting.root
+                                      (Term_Rewriting.subt_at (Arith.nth ts i)
+q))
+                                    (Arith.image Just (Arith.set d)) ||
+                                    (case Term_Rewriting.subt_at
+    (Arith.nth ts i) q
+                                      of {
+                                      Term_Rewriting.Var x ->
+Term_Rewriting.contains_var_term x l &&
+  Term_Rewriting.contains_var_term x ra &&
+    not (Arith.membera (CSR_Checker_Base.mu_vars_term_list mu l) x);
+                                      Term_Rewriting.Fun _ _ -> False;
+                                    }))
                               (CSR_Checker_Base.mu_poss_list mu
                                 (Arith.nth ts i));
                 }))
@@ -115,13 +121,12 @@ collapsing_mu_CSDP_list shp u mu r =
 
 improved_projection_pairs_list ::
   forall a b.
-    (Arith.Ceq a, Arith.Ccompare a, Eq a,
-      Arith.Set_impl a) => a -> [((a, Arith.Nat), [Arith.Nat])] ->
-                                  [(a, Arith.Nat)] ->
-                                    [(Term_Rewriting.Term a b,
-                                       Term_Rewriting.Term a b)] ->
-                                      [(Term_Rewriting.Term a [Arith.Char],
- Term_Rewriting.Term a [Arith.Char])];
+    (Arith.Ceq a, Arith.Ccompare a, Eq a, Arith.Set_impl a,
+      Eq b) => a -> [((a, Arith.Nat), [Arith.Nat])] ->
+                      [(a, Arith.Nat)] ->
+                        [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
+                          [(Term_Rewriting.Term a [Arith.Char],
+                             Term_Rewriting.Term a [Arith.Char])];
 improved_projection_pairs_list u mu d r =
   concatMap
     (\ (f, n) ->

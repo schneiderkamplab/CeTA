@@ -19,12 +19,21 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified IA_Instance;
+import qualified CSR_Check_Loops;
 import qualified Check_Monad;
 import qualified Error_Monad;
 import qualified AC_Dependency_Pair_Problem_Spec;
 import qualified AC_Termination_Problem_Spec;
+import qualified Monadic_Rewriting_Impl;
 import qualified Dependency_Pair_Problem_Spec;
+import qualified Nontermination_Impl;
 import qualified Termination_Problem_Spec;
+import qualified Not_WN_Tree_Automaton_Impl;
+import qualified Nonloop_SRS;
+import qualified Uncurry_Impl;
+import qualified Critical_Pairs_Impl;
+import qualified Nonloop_Impl;
+import qualified Loops_Impl;
 import qualified Ceta_Problem_Spec;
 import qualified Phantom_Type;
 import qualified Sum_Type;
@@ -36,7 +45,7 @@ import qualified Mapping;
 import qualified Compare_Order_Instances;
 import qualified List_Lexorder;
 import qualified Lists_are_Infinite;
-import qualified CSR_Conservative_Checker;
+import qualified CSR_GM_Transformation;
 import qualified Ordered_Completion_Impl;
 import qualified Reduction_Pair_Implementations;
 import qualified Check_Quasi_Reductive;
@@ -66,7 +75,7 @@ data Proof a b c =
       (Check_Nontermination.Trs_nontermination_proof a b c)
   | FP_Termination_Proof (Check_Termination.Fptrs_termination_proof a b c)
   | CSR_Termination_Proof
-      (CSR_Conservative_Checker.Extended_csr_termination_proof a b c)
+      (CSR_GM_Transformation.Gm_extended_csr_termination_proof a b c)
   | FP_Nontermination_Proof
       (Check_Nontermination.Fp_trs_nontermination_proof a b c)
   | Relative_TRS_Nontermination_Proof
@@ -572,7 +581,91 @@ check_cert i j k l a input property answer proof =
                -> Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.FP_TRS_input
                 (Ceta_Problem_Spec.Context_Sensitive _) _,
-               _)
+               (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive mu) r,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Decision False))
+               -> (case prf of {
+                    Check_Nontermination.TRS_Loop aa ->
+                      CSR_Check_Loops.check_csr_loop mu r aa;
+                    Check_Nontermination.TRS_Not_Well_Formed ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Rule_Removal _ _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_String_Reversal _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Constant_String _ _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_DP_Trans _ _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Termination_Switch _ _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Nonloop _ -> Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Nonloop_SRS _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Q_Increase _ _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Uncurry _ _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Not_WN_Tree_Automaton _ ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Not_RG_Decision ->
+                      Sum_Type.Inl mismatch;
+                    Check_Nontermination.TRS_Assume_Not_SN _ _ ->
+                      Sum_Type.Inl mismatch;
+                  });
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Upperbound_Poly _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Completed_System _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Order_Completed_System _ _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Confluence, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Commutation, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Completion, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Safety, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Entailment, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Complexity _, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Closed_Under_Rewriting, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Infeasibility, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input
+                (Ceta_Problem_Spec.Context_Sensitive _) _,
+               (Ceta_Problem_Spec.Unknown_Property, _))
                -> Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.FP_TRS_input
                 (Ceta_Problem_Spec.Forbidden_Patterns _) _,
@@ -738,7 +831,7 @@ check_cert i j k l a input property answer proof =
              (Ceta_Problem_Spec.FP_TRS_input
                 (Ceta_Problem_Spec.Context_Sensitive mu) r,
                (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
-               -> CSR_Conservative_Checker.check_extended_csr_termination_proof
+               -> CSR_GM_Transformation.check_gm_extended_csr_termination_proof
                     i j a (Term_Rewriting.showsl_lit "1") mu r prf;
              (Ceta_Problem_Spec.FP_TRS_input
                 (Ceta_Problem_Spec.Context_Sensitive _) _,

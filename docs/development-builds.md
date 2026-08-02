@@ -32,3 +32,31 @@ Measured on 2026-07-26 after warming the dependency heaps:
 - `CSR_Checker_Core`: 39 seconds with standard options.
 - `CSR_Checker_Extensions`: 13 seconds with the core cached.
 - `Proof_Checker`: 3 minutes 7 seconds for the full production gate.
+
+## Temporary feature layers
+
+For a new checker feature, do not iterate through `Proof_Checker` and `Code`.
+Create a temporary `ROOT` under `target/` with three uniquely named sessions:
+
+1. an extension-baseline session containing the unchanged extension theories;
+2. a semantic child session containing only the new definitions and soundness
+   theorem;
+3. an executable child session containing the processor/checker adapter.
+
+Build these sessions with a dedicated `ISABELLE_IDENTIFIER` and identical
+thread/options settings.  Edits to executable plumbing then reuse both cached
+parent heaps, while edits to the semantic theorem avoid rebuilding parsers and
+code generation.  Never run two builds that write the same identifier.  Once
+both temporary children pass, move the theories into the production session
+and run the final gates exactly once:
+
+```sh
+isabelle build -d thys CSR_Checker_Extensions
+isabelle build -d thys Proof_Checker Code
+isabelle export -n -x 'Code.Code_Haskell:**' -O target/feature-export \
+  -d "$AFP" -d thys Code
+make haskell
+```
+
+The production checker and generated Haskell must always come from that final
+production build, never directly from a temporary development heap.
