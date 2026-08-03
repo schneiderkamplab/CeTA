@@ -5,6 +5,8 @@ License: LGPL (see file COPYING.LESSER)
 theory CSR_GM_Transformation
   imports
     CSR_Checker_Extensions.CSR_Conservative_Checker
+    CSR_Checker_Extensions.CSR_Innermost_DP_Checker
+    CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker
 begin
 
 text \<open>
@@ -1135,6 +1137,10 @@ qed
 
 datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
     Existing_CSR_Proof "('f, 'l, 'v) extended_csr_termination_proof"
+  | Innermost_CSR_Dependency_Pairs
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) csr_dp_termination_proof"
   | GM_CSR_Transformation
       "('f, 'l) lab"
       "('f, 'l) lab"
@@ -1151,6 +1157,12 @@ where
   "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Existing_CSR_Proof prf) =
     check_extended_csr_termination_proof I J a i \<mu> R prf"
+| "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (Innermost_CSR_Dependency_Pairs P S prf) =
+    debug i (STR ''direct innermost CSR dependency pairs'') (do {
+      dpp \<leftarrow> direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S);
+      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+    })"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (GM_CSR_Transformation mark c active prf) =
     debug i (STR ''Giesl-Middeldorp CSR transformation'') (do {
@@ -1180,6 +1192,20 @@ proof (cases p)
     by simp
   from check_extended_csr_termination_proof_sound[OF I J old_ok]
   show ?thesis .
+next
+  case (Innermost_CSR_Dependency_Pairs P S child)
+  from ok Innermost_CSR_Dependency_Pairs obtain dpp where tt:
+      "direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S) = Inr dpp"
+    and rec: "isOK (check_csr_dp_termination_proof
+      I J False (add_index i 1) dpp child)"
+    by auto
+  have fin: "finite_dpp (dpp_ops.dpp J dpp)"
+    by (rule check_csr_dp_termination_proof_sound[OF I J rec])
+  have "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule direct_innermost_csr_dependency_pairs_tt_finite_imp_SN[
+      OF J tt fin])
+  then show ?thesis
+    by (rule SN_subset, unfold sig_step_def, auto)
 next
   case (GM_CSR_Transformation mark c active child)
   let ?D = "defined_list R"

@@ -21,6 +21,7 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
+import qualified CSR_Innermost_Unhiding_Checker;
 import qualified Context_Sensitive_Impl;
 import qualified FOR_Preliminaries;
 import qualified Check_Monad;
@@ -33,15 +34,22 @@ import qualified Countable;
 import qualified Compare;
 import qualified HOL;
 import qualified Name;
-import qualified Term_Rewriting;
 import qualified CSR_Conservative_Checker;
+import qualified CSR_Checker_Base;
 import qualified Check_Termination;
 import qualified Labelings;
+import qualified Term_Rewriting;
 import qualified Arith;
 
 data Gm_extended_csr_termination_proof a b c =
   Existing_CSR_Proof
     (CSR_Conservative_Checker.Extended_csr_termination_proof a b c)
+  | Innermost_CSR_Dependency_Pairs
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (CSR_Checker_Base.Csr_dp_termination_proof a b c)
   | GM_CSR_Transformation (Labelings.Lab a b) (Labelings.Lab a b)
       [((Labelings.Lab a b, Arith.Nat), Labelings.Lab a b)]
       (Check_Termination.Trs_termination_proof a b c);
@@ -167,6 +175,15 @@ check_gm_extended_csr_termination_proof ::
 check_gm_extended_csr_termination_proof ia j a i mu r (Existing_CSR_Proof prf) =
   CSR_Conservative_Checker.check_extended_csr_termination_proof ia j a i mu r
     prf;
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Innermost_CSR_Dependency_Pairs p s prf) =
+  FOR_Preliminaries.debug i "direct innermost CSR dependency pairs"
+    (Error_Monad.bind
+      (CSR_Innermost_Unhiding_Checker.direct_innermost_csr_dependency_pairs_tt j
+        mu r p (r ++ s))
+      (\ dpp ->
+        CSR_Checker_Base.check_csr_dp_termination_proof ia j False
+          (Term_Rewriting.add_index i Arith.one_nat) dpp prf));
 check_gm_extended_csr_termination_proof ia j a i mu r
   (GM_CSR_Transformation mark c active prf) =
   FOR_Preliminaries.debug i "Giesl-Middeldorp CSR transformation"

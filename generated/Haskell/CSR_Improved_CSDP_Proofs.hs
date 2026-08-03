@@ -1,7 +1,8 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  CSR_Improved_CSDP_Proofs(improved_csr_dependency_pairs_tt,
+  CSR_Improved_CSDP_Proofs(hides_position_list,
+                            improved_csr_dependency_pairs_tt,
                             conservative_csr_dependency_pairs_tt)
   where {
 

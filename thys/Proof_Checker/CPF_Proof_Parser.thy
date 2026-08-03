@@ -2739,7 +2739,21 @@ definition xml2conservative_csr_termination_proof ::
     (string, label_type, string) gm_extended_csr_termination_proof xmlt"
 where
   "xml2conservative_csr_termination_proof termIndexMap ruleMap =
-    (let orthogonality = XMLdo (STR ''csrOrthogonalityCheck'') {
+    (let innermost = XMLdo (STR ''csrInnermostDependencyPairs'') {
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        S \<leftarrow> xml_singleton (STR ''auxiliaryRules'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+            symbol_parser termIndexMap ruleMap
+          XMLor xml_change
+            (xml2dp_termination_proof symbol_parser termIndexMap ruleMap)
+            (xml_return \<circ> CSR_DP_Ordinary_Proof);
+        xml_return (Innermost_CSR_Dependency_Pairs P S prf)
+      };
+      orthogonality = xml_singleton
+        (STR ''csrOrthogonalityCheck'') innermost id
+        XMLor XMLdo (STR ''csrOrthogonalityCheck'') {
         prf \<leftarrow> xml2csr_termination_proof
           symbol_parser termIndexMap ruleMap;
         xml_return (Existing_CSR_Proof (Orthogonality_Checked_CSR_Proof prf))
@@ -2799,6 +2813,7 @@ where
     in orthogonality
       XMLor improved
       XMLor rta08
+      XMLor innermost
       XMLor removed_improved
       XMLor xml_singleton
         (STR ''conservativeCsrTerminationProof'') conservative id

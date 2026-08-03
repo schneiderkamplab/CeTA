@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<certificationProblem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cpf4.xsd">
+  <cpfVersion>4.0</cpfVersion>
+  <lookupTables/>
+  <input>
+    <trsInput>
+      <trs>
+        <rules>
+          <rule>
+            <funapp><name>a</name></funapp>
+            <funapp><name>b</name></funapp>
+          </rule>
+        </rules>
+      </trs>
+      <strategy>
+        <contextSensitive>
+          <replacementMapEntry><name>a</name><arity>0</arity></replacementMapEntry>
+          <replacementMapEntry><name>b</name><arity>0</arity></replacementMapEntry>
+        </contextSensitive>
+      </strategy>
+    </trsInput>
+  </input>
+  <property><termination/></property>
+  <answer><yes/></answer>
+  <proof>
+    <csrInnermostDependencyPairs>
+      <dps><rules/></dps>
+      <auxiliaryRules>
+        <rules>
+          <rule>
+            <funapp><name>a</name></funapp>
+            <funapp><name>b</name></funapp>
+          </rule>
+        </rules>
+      </auxiliaryRules>
+      <dpProof><depGraphProc/></dpProof>
+    </csrInnermostDependencyPairs>
+  </proof>
+  <metaInformation>
+    <toolInfos><toolInfo>CeTA CSR innermost regression</toolInfo></toolInfos>
+  </metaInformation>
+</certificationProblem>

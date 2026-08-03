@@ -3938,7 +3938,9 @@ xml2trs_termination_proof xml2name termIndexMap ruleMap x =
                             Xmlt.xml_take (bounds_info xml2name)
                               (\ a ->
                                 Xmlt.xml_return
-                                  (Check_Termination.Rfc_Bounds a ts)))))
+                                  (Check_Termination.Rfc_Bounds_Proc
+                                    Check_Termination.RFC_Explicit a ts
+                                    Nothing)))))
                       (Xmlt.xml_or
                         (Xmlt.xml_do "rfcAutomatonClosedBounds"
                           (Xmlt.xml_take
@@ -3947,8 +3949,9 @@ xml2trs_termination_proof xml2name termIndexMap ruleMap x =
                               Xmlt.xml_take (bounds_info xml2name)
                                 (\ a ->
                                   Xmlt.xml_return
-                                    (Check_Termination.Rfc_Automaton_Closed_Bounds
-                                      a ts)))))
+                                    (Check_Termination.Rfc_Bounds_Proc
+                                      Check_Termination.RFC_Automaton_Closed a
+                                      ts Nothing)))))
                         (Xmlt.xml_or
                           (Xmlt.xml_do "rfcRelativeBounds"
                             (Xmlt.xml_take
@@ -3962,7 +3965,10 @@ xml2trs_termination_proof xml2name termIndexMap ruleMap x =
   (\ xa -> Xmlt.xml_return (id xa))))
                                       (\ b ->
 Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-  (\ c -> Xmlt.xml_return (Check_Termination.Rfc_Relative_Bounds a ts b c)))))))
+  (\ c ->
+    Xmlt.xml_return
+      (Check_Termination.Rfc_Bounds_Proc Check_Termination.RFC_Explicit a ts
+        (Just (b, c)))))))))
                           (Xmlt.xml_or
                             (Xmlt.xml_do "rfcAutomatonClosedRelativeBounds"
                               (Xmlt.xml_take
@@ -3978,7 +3984,8 @@ Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
   Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
     (\ c ->
       Xmlt.xml_return
-        (Check_Termination.Rfc_Automaton_Closed_Relative_Bounds a ts b c)))))))
+        (Check_Termination.Rfc_Bounds_Proc
+          Check_Termination.RFC_Automaton_Closed a ts (Just (b, c)))))))))
                             (Xmlt.xml_or
                               (Xmlt.xml_do "rfcMatchboxRelativeBounds"
                                 (Xmlt.xml_take
@@ -3994,7 +4001,8 @@ Xmlt.xml_take
     Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
       (\ c ->
         Xmlt.xml_return
-          (Check_Termination.Rfc_Matchbox_Relative_Bounds a ts b c)))))))
+          (Check_Termination.Rfc_Bounds_Proc Check_Termination.RFC_Matchbox a ts
+            (Just (b, c)))))))))
                               (Xmlt.xml_or
                                 (Xmlt.xml_do "rfcNativeMatchboxRelativeBounds"
                                   (Xmlt.xml_take
@@ -4010,8 +4018,8 @@ Xmlt.xml_take
       Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
         (\ c ->
           Xmlt.xml_return
-            (Check_Termination.Rfc_Native_Matchbox_Relative_Bounds a ts b
-              c)))))))
+            (Check_Termination.Rfc_Bounds_Proc Check_Termination.RFC_Matchbox a
+              ts (Just (b, c)))))))))
                                 (Xmlt.xml_or
                                   (Xmlt.xml_do "stringReversal"
                                     (Xmlt.xml_take
@@ -4507,15 +4515,45 @@ xml2conservative_csr_termination_proof ::
             [Arith.Nat] [Arith.Char]);
 xml2conservative_csr_termination_proof termIndexMap ruleMap =
   let {
-    orthogonality =
-      Xmlt.xml_do "csrOrthogonalityCheck"
+    innermost =
+      Xmlt.xml_do "csrInnermostDependencyPairs"
         (Xmlt.xml_take
-          (xml2csr_termination_proof symbol_parser termIndexMap ruleMap)
-          (\ prf ->
-            Xmlt.xml_return
-              (CSR_GM_Transformation.Existing_CSR_Proof
-                (CSR_Conservative_Checker.Orthogonality_Checked_CSR_Proof
-                  prf))));
+          (Xmlt.xml_do "dps"
+            (Xmlt.xml_take
+              (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+              (\ x -> Xmlt.xml_return (id x))))
+          (\ p ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "auxiliaryRules"
+                (Xmlt.xml_take
+                  (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> Xmlt.xml_return (id x))))
+              (\ s ->
+                Xmlt.xml_take
+                  (Xmlt.xml_or
+                    (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                      ruleMap)
+                    (Xmlt.xml_change
+                      (xml2dp_termination_proof symbol_parser termIndexMap
+                        ruleMap)
+                      (Xmlt.xml_return .
+                        CSR_Checker_Base.CSR_DP_Ordinary_Proof)))
+                  (\ prf ->
+                    Xmlt.xml_return
+                      (CSR_GM_Transformation.Innermost_CSR_Dependency_Pairs p s
+                        prf)))));
+    orthogonality =
+      Xmlt.xml_or
+        (Xmlt.xml_do "csrOrthogonalityCheck"
+          (Xmlt.xml_take innermost (\ x -> Xmlt.xml_return (id x))))
+        (Xmlt.xml_do "csrOrthogonalityCheck"
+          (Xmlt.xml_take
+            (xml2csr_termination_proof symbol_parser termIndexMap ruleMap)
+            (\ prf ->
+              Xmlt.xml_return
+                (CSR_GM_Transformation.Existing_CSR_Proof
+                  (CSR_Conservative_Checker.Orthogonality_Checked_CSR_Proof
+                    prf)))));
     improved =
       Xmlt.xml_do "csrImprovedDependencyPairs"
         (Xmlt.xml_take
@@ -4646,15 +4684,17 @@ xml2conservative_csr_termination_proof termIndexMap ruleMap =
   } in Xmlt.xml_or orthogonality
          (Xmlt.xml_or improved
            (Xmlt.xml_or rta08
-             (Xmlt.xml_or removed_improved
-               (Xmlt.xml_or
-                 (Xmlt.xml_do "conservativeCsrTerminationProof"
-                   (Xmlt.xml_take conservative (\ x -> Xmlt.xml_return (id x))))
+             (Xmlt.xml_or innermost
+               (Xmlt.xml_or removed_improved
                  (Xmlt.xml_or
-                   (Xmlt.xml_do "nativeConservativeCsrTerminationProof"
+                   (Xmlt.xml_do "conservativeCsrTerminationProof"
                      (Xmlt.xml_take conservative
                        (\ x -> Xmlt.xml_return (id x))))
-                   gm)))));
+                   (Xmlt.xml_or
+                     (Xmlt.xml_do "nativeConservativeCsrTerminationProof"
+                       (Xmlt.xml_take conservative
+                         (\ x -> Xmlt.xml_return (id x))))
+                     gm))))));
 
 xml2dp_nontermination_proof ::
   forall a b.
