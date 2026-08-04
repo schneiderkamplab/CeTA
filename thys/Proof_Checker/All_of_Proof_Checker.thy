@@ -11,6 +11,7 @@ theory All_of_Proof_Checker
     CSR_Checker_Extensions.CSR_Conservative_Checker
     CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs
     CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
+    Outermost_RZ_Ext.Outermost_RZ_Checker
     Check_AC_Termination
     Check_AL94
     Check_CRP

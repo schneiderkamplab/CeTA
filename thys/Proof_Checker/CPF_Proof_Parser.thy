@@ -1153,6 +1153,7 @@ abbreviation "red_triple \<equiv> redtriple xml2name Sharp"
 partial_function_mr (sum_bot)
   xml2dp_termination_proof :: "('f, 'l, string) dp_termination_proof xmlt"
   and xml2trs_termination_proof :: "('f, 'l, string) trs_termination_proof xmlt"
+  and xml2trs_termination_proof_body :: "('f, 'l, string) trs_termination_proof xmlt"
   and xml2fptrs_termination_proof :: "('f, 'l, string) fptrs_termination_proof xmlt"
   and xml2csr_termination_proof :: "('f, 'l, string) csr_termination_proof xmlt"
   and xml2legacy_csr_termination_proof :: "('f, 'l, string) csr_termination_proof xmlt"
@@ -1317,7 +1318,9 @@ where
         | Some redp_ur \<Rightarrow> xml_return (Size_Change_Redpair_Proc (fst redp_ur) (snd redp_ur) b)
     }
   ) id x"
-| "xml2trs_termination_proof x = xml_singleton (STR ''trsTerminationProof'') (
+| "xml2trs_termination_proof x = xml_singleton (STR ''trsTerminationProof'')
+    xml2trs_termination_proof_body id x"
+| "xml2trs_termination_proof_body x = (
     XMLdo (STR ''rIsEmpty'') {
       xml_return R_is_Empty
     } XMLor XMLdo (STR ''semlab'') {
@@ -1431,7 +1434,7 @@ where
         c \<leftarrow>* xml2subproof;
         xml_return (Assume_SN b c)
     }
-  ) id x"
+  ) x"
 | "xml2fptrs_termination_proof x = (
     XMLdo (STR ''trsTerminationProof'') {
       r \<leftarrow> XMLdo (STR ''terminationAssumption'') {
@@ -2821,10 +2824,39 @@ where
         (STR ''nativeConservativeCsrTerminationProof'') conservative id
       XMLor gm)"
 
+definition xml2outermost_rz_termination_proof ::
+  "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
+    (string, label_type, string) outermost_rz_termination_proof xmlt"
+where
+  "xml2outermost_rz_termination_proof termIndexMap ruleMap =
+    XMLdo (STR ''outermostRaffelsieperZantemaTransformation'') {
+      top_sym \<leftarrow> xml_singleton (STR ''topSymbol'') symbol_parser id;
+      up_sym \<leftarrow> xml_singleton (STR ''upSymbol'') symbol_parser id;
+      down \<leftarrow> xml_singleton (STR ''downSymbol'') symbol_parser id;
+      block \<leftarrow> xml_singleton (STR ''blockSymbol'') symbol_parser id;
+      c \<leftarrow> xml_singleton (STR ''groundConstant'') symbol_parser id;
+      flats \<leftarrow>* XMLdo (STR ''flatSymbol'') {
+        source \<leftarrow> xml_singleton (STR ''sourceSymbol'') symbol_parser id;
+        target \<leftarrow> xml_singleton (STR ''targetSymbol'') symbol_parser id;
+        xml_return (source, target)
+      };
+      patterns \<leftarrow>* xml_singleton (STR ''nonRedexPattern'')
+        (CPF_Input_Parser.term symbol_parser termIndexMap) id;
+      child \<leftarrow> xml2trs_termination_proof symbol_parser termIndexMap ruleMap;
+      xml_return (Outermost_RZ_Transformation top_sym up_sym down block c
+        flats patterns child)
+    }"
+
 definition "proof_parser termIndexMap ruleMap =
   XMLdo (STR ''proof'') {
     p \<leftarrow>
-      xml_change
+      xml_singleton (STR ''trsTerminationProof'')
+        (xml_change (xml2outermost_rz_termination_proof termIndexMap ruleMap)
+          (\<lambda>p. xml_return (Outermost_RZ_Termination_Proof p))
+        XMLor xml_change
+          (xml2trs_termination_proof_body symbol_parser termIndexMap ruleMap)
+          (\<lambda>p. xml_return (TRS_Termination_Proof p))) id
+      XMLor xml_change
         (xml2conservative_csr_termination_proof termIndexMap ruleMap)
         (\<lambda>p. xml_return (CSR_Termination_Proof p))
       XMLor proof_content symbol_parser termIndexMap ruleMap;

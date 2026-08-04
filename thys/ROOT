@@ -325,10 +325,20 @@ session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Checker_Extensions +
   theories
     CSR_GM_Transformation
 
+session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
+  options [document = false, timeout = 600]
+  sessions
+    TA
+  theories
+    Outermost_RZ_Transformation
+    Outermost_Signature_Extension
+    Outermost_RZ_Checker
+
 session Proof_Checker in Proof_Checker = CSR_GM_Ext +
   options [document = false]
   sessions
     LTS
+    Outermost_RZ_Ext
   theories
     All_of_Proof_Checker
 
