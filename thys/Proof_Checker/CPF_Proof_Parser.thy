@@ -1510,6 +1510,20 @@ where
         (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (CSR_DP_Instantiation_Proc st sts prf)
+    } XMLor XMLdo (STR ''csrForwardInstantiationProc'') {
+      st \<leftarrow> rule xml2name termIndexMap ruleMap;
+      sts \<leftarrow> xml_singleton (STR ''instantiations'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_DP_Forward_Instantiation_Proc st sts prf)
+    } XMLor XMLdo (STR ''csrRedPairUrProc'') {
+      redp \<leftarrow> red_triple False;
+      Pr \<leftarrow> xml_singleton (STR ''dps'')
+        (rules xml2name termIndexMap ruleMap) id;
+      U \<leftarrow> xml_singleton (STR ''usableRules'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (CSR_DP_Redpair_UR_Proc redp Pr U prf)
     } XMLor XMLdo (STR ''subtermProc'') {
       pi_mpi \<leftarrow> xml_change (CPF_Proof_Parser.proj xml2name) (xml_return \<circ> Inl)
         XMLor xml_change (CPF_Proof_Parser.multiset_af xml2name) (xml_return \<circ> Inr);

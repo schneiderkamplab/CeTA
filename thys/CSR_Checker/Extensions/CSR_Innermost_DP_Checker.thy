@@ -1696,6 +1696,24 @@ next
   show ?case by (rule check_csr_dp_core_imp_finite_innermost[
     OF I J CSR_DP_Instantiation_Proc.prems(2) core])
 next
+  case (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof)
+  from CSR_DP_Forward_Instantiation_Proc.prems(1) have core:
+    "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+      (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof))"
+    using CSR_DP_Forward_Instantiation_Proc.prems(1)
+    by (simp only: check_innermost_csr_dp_termination_proof.simps)
+  show ?case by (rule check_csr_dp_core_imp_finite_innermost[
+    OF I J CSR_DP_Forward_Instantiation_Proc.prems(2) core])
+next
+  case (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof)
+  from CSR_DP_Redpair_UR_Proc.prems(1) have core:
+    "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+      (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof))"
+    using CSR_DP_Redpair_UR_Proc.prems(1)
+    by (simp only: check_innermost_csr_dp_termination_proof.simps)
+  show ?case by (rule check_csr_dp_core_imp_finite_innermost[
+    OF I J CSR_DP_Redpair_UR_Proc.prems(2) core])
+next
   case (CSR_DP_Size_Change_Subterm_Proc x)
   from CSR_DP_Size_Change_Subterm_Proc.prems(1) have core:
     "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp

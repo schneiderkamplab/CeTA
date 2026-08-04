@@ -95,6 +95,14 @@ where
     error (i \<circ> showsl_lit
       (STR '': context-sensitive instantiation requires improved CS-DPs''))"
 | "check_csr_dp_termination_proof_core I J \<mu> a i dpp
+    (CSR_DP_Forward_Instantiation_Proc st sts prf) =
+    error (i \<circ> showsl_lit
+      (STR '': context-sensitive forward instantiation requires improved CS-DPs''))"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp
+    (CSR_DP_Redpair_UR_Proc redp Pr U prf) =
+    error (i \<circ> showsl_lit
+      (STR '': context-sensitive U3 reduction pairs require minimal CS-DPs''))"
+| "check_csr_dp_termination_proof_core I J \<mu> a i dpp
     (CSR_DP_Size_Change_Subterm_Proc graphs) =
     check_csr_dp_termination_proof I J a i dpp
       (CSR_DP_Size_Change_Subterm_Proc graphs)"
@@ -616,6 +624,12 @@ next
   qed
 next
   case (CSR_DP_Instantiation_Proc st sts subprf)
+  then show ?case by simp
+next
+  case (CSR_DP_Forward_Instantiation_Proc st sts subprf)
+  then show ?case by simp
+next
+  case (CSR_DP_Redpair_UR_Proc redp Pr U subprf)
   then show ?case by simp
 next
   case (CSR_DP_Size_Change_Subterm_Proc x)

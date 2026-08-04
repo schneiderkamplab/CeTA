@@ -308,6 +308,20 @@ where
         (add_index i 1) dpp' prf
     })"
 | "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp
+      (CSR_DP_Forward_Instantiation_Proc st sts prf) =
+    debug i (STR ''CSR forward instantiation'') (do {
+      dpp' \<leftarrow> csr_forward_instantiation_proc J \<mu> st sts dpp;
+      check_improved_csr_dp_termination_proof I J U \<mu> a
+        (add_index i 1) dpp' prf
+    })"
+| "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp
+      (CSR_DP_Redpair_UR_Proc redp Pr Us prf) =
+    debug i (STR ''LPAR08 U3 reduction pair'') (do {
+      dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr Us dpp;
+      check_improved_csr_dp_termination_proof I J U \<mu> a
+        (add_index i 1) dpp' prf
+    })"
+| "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp
       (CSR_DP_Size_Change_Subterm_Proc graphs) =
     (if unhiding_subterm_pairs_check U (dpp_ops.pairs J dpp)
      then debug i (STR ''LPAR08 unhiding subterm'') succeed
@@ -549,6 +563,119 @@ next
       (set (rules dpp))"
       using fin' unfolding pairs' rules' .
   qed
+next
+  case (CSR_DP_Forward_Instantiation_Proc st sts sub)
+  from CSR_DP_Forward_Instantiation_Proc.prems(1)
+  obtain dpp' where proc:
+      "csr_forward_instantiation_proc J \<mu> st sts dpp = return dpp'"
+    and rec: "isOK (check_improved_csr_dp_termination_proof
+      I J U \<mu> False (add_index i 1) dpp' sub)"
+    by auto
+  note proc_sound = csr_forward_instantiation_proc_sound[OF proc]
+  obtain s t where st: "st = (s,t)" by (cases st)
+  interpret dpp_spec J by fact
+  have dpp'_def: "dpp' = replace_pair dpp (s,t) sts"
+    using proc_sound(1) st by simp
+  have sem: "dpp_ops.dpp J dpp' =
+      (NFS dpp, M dpp, replace (s,t) (set sts) (set (P dpp)),
+       replace (s,t) (set sts) (set (Pw dpp)), set (Q dpp),
+       set (R dpp), set (Rw dpp))"
+    unfolding dpp'_def by (rule replace_pair_sound)
+  have sem': "dpp_ops.dpp J dpp' =
+      (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'), set (Q dpp'),
+       set (R dpp'), set (Rw dpp'))"
+    by (rule dpp_sound)
+  from CSR_DP_Forward_Instantiation_Proc.prems(2)
+  have plain_fields:
+      "\<not> NFS dpp" "\<not> M dpp" "Pw dpp = []" "Q dpp = []" "R dpp = []"
+    unfolding plain_csr_dpp_def by auto
+  have selected: "(s,t) \<in> set (pairs dpp)"
+    using proc_sound(2) st by simp
+  have selected_P: "(s,t) \<in> set (P dpp)"
+    using selected pairs_sound plain_fields by auto
+  have pairs': "set (pairs dpp') =
+      replace (s,t) (set sts) (set (pairs dpp))"
+    using sem sem' pairs_sound[of dpp] pairs_sound[of dpp']
+      plain_fields selected_P unfolding Util.replace_def by auto
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
+  have plain': "plain_csr_dpp J dpp'"
+    using sem sem' plain_fields
+    unfolding plain_csr_dpp_def Util.replace_def by auto
+  have wf': "wf_trs (set (rules dpp'))"
+    using CSR_DP_Forward_Instantiation_Proc.prems(3) unfolding rules' .
+  have fresh_sharp': "\<And>f n.
+      \<not> defined (set (rules dpp')) (Sharp f, n)"
+    using CSR_DP_Forward_Instantiation_Proc.prems(4) unfolding rules' .
+  have fresh_U': "\<And>n. \<not> defined (set (rules dpp')) (U, n)"
+    using CSR_DP_Forward_Instantiation_Proc.prems(5) unfolding rules' .
+  from CSR_DP_Forward_Instantiation_Proc.hyps[
+      OF rec plain' wf' fresh_sharp' fresh_U']
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp')) (set (rules dpp'))" .
+  show ?case
+  proof (rule finite_min_csr_dpp_csr_forward_instantiation[
+      where s = s and t = t and sts = "set sts"])
+    fix st'
+    assume "st' \<in> set sts"
+    from proc_sound(3)[OF this]
+    show "instance_rule st' (s,t)" unfolding st .
+  next
+    fix u v \<sigma> \<tau>
+    assume uv: "(u,v) \<in> set (pairs dpp)"
+      and steps: "(t \<cdot> \<sigma>, u \<cdot> \<tau>) \<in>
+        (csdp_step Sharp (mu_of \<mu>) (set (rules dpp)))\<^sup>*"
+    show "csr_dep_graph_edge_check (csr_dp_root_mu (mu_of \<mu>))
+      (rules dpp) ((((s,t),()),((u,v),())))"
+      by (rule csr_dep_graph_edge_check_steps[
+        OF CSR_DP_Forward_Instantiation_Proc.prems(3) steps])
+  next
+    fix u v \<gamma>
+    assume uv: "(u,v) \<in> set (pairs dpp)"
+      and edge: "csr_dep_graph_edge_check (csr_dp_root_mu (mu_of \<mu>))
+        (rules dpp) ((((s,t),()),((u,v),())))"
+      and mgu: "mgu_class
+        (icap_mv ((set (rules dpp))\<inverse>) {} {} u) t = Some \<gamma>"
+    show "\<exists>st'\<in>set sts. instance_rule
+      (mv_yvar s \<cdot> \<gamma>, mv_yvar t \<cdot> \<gamma>) st'"
+      by (rule proc_sound(4)[OF st uv edge mgu])
+  next
+    show "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (replace (s,t) (set sts) (set (pairs dpp)))
+      (set (rules dpp))"
+      using fin' unfolding pairs' rules' .
+  qed
+next
+  case (CSR_DP_Redpair_UR_Proc redp Pr Us sub)
+  from CSR_DP_Redpair_UR_Proc.prems(1)
+  obtain dpp' where proc:
+      "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr Us dpp = return dpp'"
+    and rec: "isOK (check_improved_csr_dp_termination_proof
+      I J U \<mu> False (add_index i 1) dpp' sub)"
+    by auto
+  have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+    using proc unfolding csr_u3_redpair_proc_def by auto
+  have plain': "plain_csr_dpp J dpp'"
+    unfolding dpp' by (rule plain_csr_dpp_delete_pairs[
+      OF J CSR_DP_Redpair_UR_Proc.prems(2)])
+  interpret dpp_spec J by fact
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp']
+    by auto
+  have wf': "wf_trs (set (rules dpp'))"
+    using CSR_DP_Redpair_UR_Proc.prems(3) unfolding rules' .
+  have fresh_sharp': "\<And>f n. \<not> defined
+      (set (rules dpp')) (Sharp f, n)"
+    using CSR_DP_Redpair_UR_Proc.prems(4) unfolding rules' .
+  have fresh_U': "\<And>n. \<not> defined (set (rules dpp')) (U, n)"
+    using CSR_DP_Redpair_UR_Proc.prems(5) unfolding rules' .
+  from CSR_DP_Redpair_UR_Proc.hyps[
+      OF rec plain' wf' fresh_sharp' fresh_U']
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp')) (set (rules dpp'))" .
+  show ?case by (rule csr_u3_redpair_proc_sound[
+    OF J get_rel_impl proc CSR_DP_Redpair_UR_Proc.prems(3)
+      CSR_DP_Redpair_UR_Proc.prems(4) fin'])
 next
   case (CSR_DP_Size_Change_Subterm_Proc graphs)
   show ?case

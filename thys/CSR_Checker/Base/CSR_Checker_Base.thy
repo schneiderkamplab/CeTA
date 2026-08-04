@@ -3441,6 +3441,11 @@ datatype (dead 'f, dead 'l, dead 'v) csr_dp_termination_proof =
 | CSR_DP_Dep_Graph_Proc "(('f, 'l, 'v) csr_dp_termination_proof option \<times> ('f, 'l, 'v) trsLL) list"
 | CSR_DP_Instantiation_Proc "(('f, 'l) lab, 'v) rule"
     "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+| CSR_DP_Forward_Instantiation_Proc "(('f, 'l) lab, 'v) rule"
+    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) csr_dp_termination_proof"
+| CSR_DP_Redpair_UR_Proc "('f, 'l) lab redtriple_impl"
+    "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trsLL"
+    "('f, 'l, 'v) csr_dp_termination_proof"
 | CSR_DP_Size_Change_Subterm_Proc
     "((('f, 'l) lab, 'v) rule \<times> ((nat \<times> nat) list \<times> (nat \<times> nat) list)) list"
 
@@ -3473,6 +3478,13 @@ where
 | "dp_proof_of_csr_dp_termination_proof
     (CSR_DP_Instantiation_Proc st sts prf) =
     Instantiation_Proc st sts (dp_proof_of_csr_dp_termination_proof prf)"
+| "dp_proof_of_csr_dp_termination_proof
+    (CSR_DP_Forward_Instantiation_Proc st sts prf) =
+    Forward_Instantiation_Proc st sts None
+      (dp_proof_of_csr_dp_termination_proof prf)"
+| "dp_proof_of_csr_dp_termination_proof
+    (CSR_DP_Redpair_UR_Proc redp Pr U prf) =
+    Redpair_UR_Proc redp Pr U (dp_proof_of_csr_dp_termination_proof prf)"
 | "dp_proof_of_csr_dp_termination_proof (CSR_DP_Size_Change_Subterm_Proc graphs) =
     Size_Change_Subterm_Proc graphs"
 
