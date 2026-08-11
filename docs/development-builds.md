@@ -224,3 +224,16 @@ of recursive graph decomposition. What remains is finite-graph selection:
 specialize the generic chain theorem to the eventual main component and to a
 recurring minimal lasso, then validate that the executable certificate lists
 all children required by that dichotomy.
+
+The eventual-main-component checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test191`; the full theory checked in 5.61
+seconds. The proof starts at the first enumerated label in the eventual SCC,
+shifts the original derivation and fixed selected witnesses by that finite
+prefix, and applies the projected-chain theorem. Every subsequent labeled
+redex belongs to the SCC by monotonicity of label enumeration. Every
+unlabeled origin is away from the selected redex by the previously verified
+origin-shape lemma, so flattening its ADP cannot remove the tracked origin.
+Infinitely many main events therefore become strict steps in the SCC child.
+This completes the semantic main-SCC branch of Theorem 33 without changing or
+weakening dependency-graph estimation. The minimal-lasso branch and the
+executable certificate coverage theorem remain before XML exposure.

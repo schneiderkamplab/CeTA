@@ -2402,6 +2402,47 @@ lemma relative_adp_selected_chain_labeled_has_node_label:
     relative_adp_selected_chain_node_label_def
   by (cases node) (auto simp: Let_def)
 
+lemma relative_adp_selected_chain_label_is_node_label:
+  assumes "relative_adp_selected_chain_label P A terms node pair"
+  shows "relative_adp_selected_chain_node_label P A terms node = pair"
+  using assms
+  unfolding relative_adp_selected_chain_label_def
+    relative_adp_selected_chain_node_label_def
+  by (cases node) (auto simp: Let_def)
+
+lemma relative_adp_selected_label_after_enumerated_index:
+  assumes infinite: "infinite
+      (relative_adp_selected_label_indices P A terms path)"
+    and eventual: "\<And>n. N \<le> n \<Longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in> Q"
+    and lower: "enumerate
+      (relative_adp_selected_label_indices P A terms path) N \<le> k"
+    and label: "relative_adp_selected_chain_label P A terms (path k) pair"
+  shows "pair \<in> Q"
+proof -
+  let ?I = "relative_adp_selected_label_indices P A terms path"
+  from label have kI: "k \<in> ?I"
+    unfolding relative_adp_selected_label_indices_def
+      relative_adp_selected_chain_labeled_def by blast
+  from range_enumerate[OF infinite] kI obtain m where
+      k: "k = enumerate ?I m" by blast
+  have mono: "strict_mono (enumerate ?I)"
+    by (rule strict_mono_enumerate[OF infinite])
+  have Nm: "N \<le> m"
+  proof (rule ccontr)
+    assume "\<not> N \<le> m"
+    then have mN: "m < N" by simp
+    have "enumerate ?I m < enumerate ?I N"
+      by (rule strict_monoD[OF mono mN])
+    with lower show False unfolding k by simp
+  qed
+  have pair: "relative_adp_selected_chain_node_label P A terms (path k) = pair"
+    by (rule relative_adp_selected_chain_label_is_node_label[OF label])
+  have stream: "relative_adp_selected_label_stream P A terms path m = pair"
+    unfolding relative_adp_selected_label_stream_def k[symmetric] pair by simp
+  show ?thesis using eventual[OF Nm] unfolding stream .
+qed
+
 lemma relative_adp_selected_chain_main_event_iff_node_label:
   "relative_adp_selected_chain_main_event P A terms node \<longleftrightarrow>
     relative_adp_selected_chain_labeled P A terms node \<and>
@@ -4270,6 +4311,215 @@ proof -
   have intersects: "relative_adp_dependency_component A anchor \<inter> P \<noteq> {}"
     using in_component in_P by blast
   show thesis by (rule that[OF anchor intersects eventual])
+qed
+
+lemma relative_adp_selected_origin_path_time:
+  assumes path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+    relative_adp_selected_chain_origin_edge P A terms"
+  shows "fst (path n) = fst (path 0) + n"
+proof (induct n)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n)
+  obtain i q where current: "path n = (i,q)" by (cases "path n") auto
+  obtain j q' where following: "path (Suc n) = (j,q')"
+    by (cases "path (Suc n)") auto
+  have edge: "((i,q),(j,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using path_edge[of n] unfolding current following .
+  have j: "j = Suc i"
+    by (rule relative_adp_selected_chain_origin_edge_time[OF edge])
+  have next_time: "fst (path (Suc n)) = Suc (fst (path n))"
+    using j unfolding current following by simp
+  show ?case using next_time Suc by simp
+qed
+
+theorem relative_adp_selected_main_component_child_not_SN:
+  assumes main: "INFM n.
+      relative_adp_selected_chain_main_event P A terms (path n)"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>n. (terms n, terms (Suc n)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and infinite: "infinite
+      (relative_adp_selected_label_indices P A terms path)"
+    and eventual: "\<And>n. N \<le> n \<Longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in> Q"
+  shows "\<not> adp_problem_SN
+    (P \<inter> Q,
+      (Q \<union> erase_annotations_adp ` (A - Q)) - (P \<inter> Q))"
+proof -
+  let ?I = "relative_adp_selected_label_indices P A terms path"
+  let ?K = "enumerate ?I N"
+  let ?time = "fst (path ?K)"
+  let ?shifted_terms = "\<lambda>n. terms (?time + n)"
+  let ?witnesses = "\<lambda>n.
+    relative_adp_selected_step_witness P A terms (?time + n)"
+  let ?markers = "\<lambda>n. snd (path (?K + n))"
+  have path_time: "\<And>m. fst (path m) = fst (path 0) + m"
+    by (rule relative_adp_selected_origin_path_time[
+        where path=path and P=P and A=A and terms=terms, OF path_edge])
+  have time: "\<And>n. fst (path (?K + n)) = ?time + n"
+  proof -
+    fix n
+    show "fst (path (?K + n)) = ?time + n"
+      using path_time[of "?K + n"] path_time[of ?K]
+      by (simp add: add.assoc add.left_commute add.commute)
+  qed
+  have valid: "\<And>n. relative_adp_step_witness_valid A
+      (?shifted_terms n) (?shifted_terms (Suc n)) (?witnesses n)"
+  proof -
+    fix n
+    have preferred: "relative_adp_preferred_step_witness_valid P A
+        (terms (?time+n)) (terms (Suc (?time+n)))
+        (relative_adp_selected_step_witness P A terms (?time+n))"
+      by (rule relative_adp_selected_step_witness_valid[
+          where i="?time+n" and terms=terms and P=P and A=A,
+          OF steps subset])
+    show "relative_adp_step_witness_valid A
+        (?shifted_terms n) (?shifted_terms (Suc n)) (?witnesses n)"
+      using preferred
+      unfolding relative_adp_preferred_step_witness_valid_def
+      by simp
+  qed
+  have origin: "\<And>n. relative_adp_step_witness_origin_edge
+      (?witnesses n) (?markers n) (?markers (Suc n))"
+  proof -
+    fix n
+    have edge: "(path (?K+n), path (Suc (?K+n))) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+      by (rule path_edge)
+    have next_index: "Suc (?K+n) = ?K + Suc n" by simp
+    from edge have raw: "relative_adp_step_witness_origin_edge
+        (relative_adp_selected_step_witness P A terms
+          (fst (path (?K+n))))
+        (snd (path (?K+n))) (snd (path (Suc (?K+n))))"
+      unfolding relative_adp_selected_chain_origin_edge_def
+      by (cases "path (?K+n)"; cases "path (Suc (?K+n))")
+         (auto simp: Let_def)
+    show "relative_adp_step_witness_origin_edge
+        (?witnesses n) (?markers n) (?markers (Suc n))"
+      using raw time[of n] unfolding next_index by simp
+  qed
+  have initial_marked: "?markers 0 \<in> sharp_positions (?shifted_terms 0)"
+  proof -
+    have edge: "(path ?K, path (Suc ?K)) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+      by (rule path_edge)
+    from edge have marked: "snd (path ?K) \<in>
+        sharp_positions (terms (fst (path ?K)))"
+      unfolding relative_adp_selected_chain_origin_edge_def
+      by (cases "path ?K"; cases "path (Suc ?K)") auto
+    show ?thesis using marked by simp
+  qed
+  have retained: "\<And>n. radp_witness_pair (?witnesses n) \<in> Q \<or>
+      ?markers n \<noteq> radp_witness_redex (?witnesses n)"
+  proof -
+    fix n
+    let ?k = "?K+n"
+    have edge_raw: "(path ?k, path (Suc ?k)) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+      by (rule path_edge)
+    obtain i q where source_node: "path ?k = (i,q)"
+      by (cases "path ?k") auto
+    obtain j q' where target_node: "path (Suc ?k) = (j,q')"
+      by (cases "path (Suc ?k)") auto
+    have edge0: "((i,q),(j,q')) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+      using edge_raw unfolding source_node target_node .
+    have j: "j = Suc i"
+      by (rule relative_adp_selected_chain_origin_edge_time[OF edge0])
+    have edge: "((i,q),(Suc i,q')) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+      using edge0 unfolding j .
+    show "radp_witness_pair (?witnesses n) \<in> Q \<or>
+        ?markers n \<noteq> radp_witness_redex (?witnesses n)"
+    proof (cases "relative_adp_selected_chain_labeled P A terms (path ?k)")
+      case True
+      have node_label: "relative_adp_selected_chain_label P A terms (path ?k)
+          (relative_adp_selected_chain_node_label P A terms (path ?k))"
+        by (rule relative_adp_selected_chain_labeled_has_node_label[OF True])
+      have node_label_eq: "relative_adp_selected_chain_node_label P A terms
+          (path ?k) = radp_witness_pair
+            (relative_adp_selected_step_witness P A terms (fst (path ?k)))"
+        unfolding relative_adp_selected_chain_node_label_def
+          relative_adp_selected_application_def
+        by (cases "path ?k") (simp add: Let_def)
+      have label: "relative_adp_selected_chain_label P A terms (path ?k)
+          (radp_witness_pair
+            (relative_adp_selected_step_witness P A terms (fst (path ?k))))"
+        using node_label unfolding node_label_eq .
+      have in_Q: "radp_witness_pair
+          (relative_adp_selected_step_witness P A terms (fst (path ?k))) \<in> Q"
+        apply (rule relative_adp_selected_label_after_enumerated_index[
+            where P=P and A=A and terms=terms and path=path and N=N and Q=Q
+              and k="?k" and pair="radp_witness_pair
+                (relative_adp_selected_step_witness P A terms (fst (path ?k)))"])
+        subgoal by (fact infinite)
+        subgoal by (fact eventual)
+        subgoal by arith
+        subgoal by (fact label)
+        done
+      show ?thesis using in_Q time[of n] by simp
+    next
+      case False
+      have away: "snd (snd (relative_adp_selected_application P A terms
+          i)) \<noteq> q"
+        by (rule relative_adp_selected_unlabeled_edge_not_at_redex[
+            OF edge steps subset])
+           (use False source_node in simp)
+      show ?thesis
+        using away time[of n] source_node
+        unfolding relative_adp_selected_application_def
+        by (simp add: Let_def)
+    qed
+  qed
+  have shifted_main: "INFM n.
+      relative_adp_selected_chain_main_event P A terms (path (?K+n))"
+    unfolding INFM_nat_le
+  proof
+    fix M
+    from main[unfolded INFM_nat_le, rule_format, of "?K+M"]
+    obtain k where large: "?K+M \<le> k"
+      and event: "relative_adp_selected_chain_main_event P A terms (path k)"
+      by blast
+    let ?n = "k - ?K"
+    have Kk: "?K \<le> k" using large by simp
+    have index: "?K + ?n = k" using Kk by simp
+    have Mn: "M \<le> ?n" using large by arith
+    show "\<exists>n\<ge>M.
+        relative_adp_selected_chain_main_event P A terms (path (?K+n))"
+      apply (rule exI[of _ ?n])
+      using Mn event index by auto
+  qed
+  have strict: "INFM n. radp_witness_pair (?witnesses n) \<in> P \<inter> Q \<and>
+      ?markers n = radp_witness_redex (?witnesses n)"
+  proof (rule INFM_mono[OF shifted_main])
+    fix n
+    assume event: "relative_adp_selected_chain_main_event P A terms
+      (path (?K+n))"
+    have props: "radp_witness_pair
+          (relative_adp_selected_step_witness P A terms
+            (fst (path (?K+n)))) \<in> P \<and>
+        snd (path (?K+n)) = radp_witness_redex
+          (relative_adp_selected_step_witness P A terms
+            (fst (path (?K+n))))"
+      using event
+      unfolding relative_adp_selected_chain_main_event_def
+        relative_adp_selected_application_def
+      by (cases "path (?K+n)") (auto simp: Let_def)
+    have in_Q: "radp_witness_pair (?witnesses n) \<in> Q"
+      using retained[of n] props time[of n] by auto
+    show "radp_witness_pair (?witnesses n) \<in> P \<inter> Q \<and>
+        ?markers n = radp_witness_redex (?witnesses n)"
+      using props in_Q time[of n] by simp
+  qed
+  show ?thesis
+    by (rule relative_adp_projected_chain_not_SN[
+        where terms="?shifted_terms" and witnesses="?witnesses"
+          and source="?shifted_terms 0" and markers="?markers",
+        OF valid _ initial_marked origin retained strict]) simp
 qed
 
 lemma finite_relative_adp_selected_chain_origin_successors:
