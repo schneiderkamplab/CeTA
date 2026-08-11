@@ -188,6 +188,173 @@ proof -
     by (rule csr_rta08_dep_graph_edge_check_steps[OF wf inst steps'])
 qed
 
+lemma check_csr_rta08_dep_graph_proc_innermost_sound:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and check: "isOK (check_csr_rta08_dep_graph_proc J \<mu> dpp edps)"
+    and fin: "\<And>prf C. (Some prf,C) \<in> set edps \<Longrightarrow>
+      finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+        (set (dpp_ops.rules J dpp)) A
+        (set (dpp_ops.pairs J dpp) \<inter> set C)"
+  shows "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.rules J dpp)) A (set (dpp_ops.pairs J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  let ?P = "set (pairs dpp)"
+  let ?RL = "rules dpp"
+  let ?R = "set ?RL"
+  let ?S = "innermost_csdp_step Sharp (mu_of \<mu>) ?R"
+  let ?T = "innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?P"
+  let ?echeck = "csr_rta08_dep_graph_edge_check
+    (csr_dp_root_mu (mu_of \<mu>)) ?RL"
+  let ?conv = "\<lambda>(real,Cs).
+    (real \<noteq> None,map (\<lambda>(s,t). ((s,t),())) Cs)"
+  from check have wf: "wf_trs ?R"
+    and subset: "?P \<subseteq> set (concat (map snd edps))"
+    and scc: "isOK (check_graph_decomp (showsl \<circ> fst)
+      (Multi_Map.empty (root o fst o fst))
+      graph_approx_csr_rt Multi_Map.insert ?echeck (map ?conv edps))"
+    unfolding check_csr_rta08_dep_graph_proc_def
+    by (auto simp: Let_def)
+  show ?thesis
+    unfolding finite_innermost_csr_rta08_dpp_def SN_rel_defs SN_defs
+  proof (rule notI)
+    assume infinite: "\<exists>f. f 0 \<in> UNIV \<and>
+      (\<forall>i. (f i,f (Suc i)) \<in> relto ?T ?S)"
+    then obtain ch where chain: "\<And>i.
+      (ch i,ch (Suc i)) \<in> relto ?T ?S" by auto
+    from chain have chain': "\<And>i. (ch i,ch (Suc i)) \<in>
+      ?S\<^sup>* O ?T O ?S\<^sup>*" by auto
+    have ex_step: "\<forall>i. \<exists>l r \<sigma> b.
+      (l,r) \<in> ?P \<and>
+      (ch i,l \<cdot> \<sigma>) \<in> ?S\<^sup>* \<and>
+      csr_rta08_pair_instance Sharp (mu_of \<mu>) A l r \<sigma> b \<and>
+      (l \<cdot> \<sigma>,b) \<in> ?T \<and>
+      (b,ch (Suc i)) \<in> ?S\<^sup>*"
+    proof
+      fix i
+      from chain'[of i] obtain x y where pre: "(ch i,x) \<in> ?S\<^sup>*"
+        and strict: "(x,y) \<in> ?T"
+        and post: "(y,ch (Suc i)) \<in> ?S\<^sup>*" by auto
+      from strict have raw:
+        "(x,y) \<in> csr_rta08_pair_step Sharp (mu_of \<mu>) A ?P"
+        unfolding innermost_csr_rta08_pair_step_def by blast
+      from raw[unfolded csr_rta08_pair_step_iff_instance]
+      obtain l r \<sigma> where pair: "(l,r) \<in> ?P"
+        and x: "x = l \<cdot> \<sigma>"
+        and inst: "csr_rta08_pair_instance Sharp (mu_of \<mu>) A
+          l r \<sigma> y" by blast
+      show "\<exists>l r \<sigma> b. (l,r) \<in> ?P \<and>
+        (ch i,l \<cdot> \<sigma>) \<in> ?S\<^sup>* \<and>
+        csr_rta08_pair_instance Sharp (mu_of \<mu>) A l r \<sigma> b \<and>
+        (l \<cdot> \<sigma>,b) \<in> ?T \<and>
+        (b,ch (Suc i)) \<in> ?S\<^sup>*"
+        using pair pre inst strict post unfolding x by blast
+    qed
+    then obtain s t \<sigma> b where pair: "\<And>i. (s i,t i) \<in> ?P"
+      and pre: "\<And>i. (ch i,s i \<cdot> \<sigma> i) \<in> ?S\<^sup>*"
+      and inst: "\<And>i. csr_rta08_pair_instance Sharp (mu_of \<mu>) A
+        (s i) (t i) (\<sigma> i) (b i)"
+      and strict: "\<And>i. (s i \<cdot> \<sigma> i,b i) \<in> ?T"
+      and post: "\<And>i. (b i,ch (Suc i)) \<in> ?S\<^sup>*"
+      by metis
+    have steps: "\<And>i. (b i,s (Suc i) \<cdot> \<sigma> (Suc i)) \<in> ?S\<^sup>*"
+      using post pre by (meson rtrancl_trans)
+    let ?p = "\<lambda>i. ((s i,t i),())"
+    have path: "\<And>i. ?echeck (?p i,?p (Suc i))"
+      by (rule innermost_csr_rta08_dep_graph_edge_check_steps[
+        OF wf inst steps])
+    have lift_node: "\<And>l r.
+      (l,r) \<in> set (concat (map snd edps)) \<Longrightarrow>
+      ((l,r),()) \<in> set (concat (map snd (map ?conv edps)))"
+      by (auto split: prod.splits) fastforce
+    have nodes: "path_nodes ?p \<subseteq>
+        set (concat (map snd (map ?conv edps)))"
+    proof
+      fix x
+      assume "x \<in> path_nodes ?p"
+      then obtain i where x: "x = ?p i"
+        unfolding path_nodes_def by auto
+      from pair[of i] subset have
+        "(s i,t i) \<in> set (concat (map snd edps))" by auto
+      then show "x \<in> set (concat (map snd (map ?conv edps)))"
+        unfolding x by (rule lift_node)
+    qed
+    have key_insert: "\<And>x m.
+      Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      Multi_Map.key_fun (Multi_Map.insert x m) = root \<circ> fst \<circ> fst"
+      by simp
+    have approx: "\<And>m a b.
+      Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      ?echeck (a,b) \<Longrightarrow> b \<in> set (Multi_Map.values m) \<Longrightarrow>
+      b \<in> set (graph_approx_csr_rt m a)"
+      unfolding graph_approx_csr_rt.simps by simp
+    have component: "\<exists>q C. ?p =\<dots> q \<and>
+      C \<in> set (map snd (filter fst (map ?conv edps))) \<and>
+      path_nodes q \<subseteq> set C"
+      by (rule check_graph_decomp_sound[of
+        "\<lambda>m. set (Multi_Map.values m)", OF values_empty values_insert,
+        of "\<lambda>m. Multi_Map.key_fun m = (root o fst o fst)",
+        OF key_fun_empty key_insert approx scc path nodes])
+    then obtain q C where suffix: "?p =\<dots> q"
+      and ending: "path_nodes q \<subseteq> set C"
+      and component_mem:
+        "C \<in> set (map snd (filter fst (map ?conv edps)))" by blast
+    from component_mem obtain proof_id Cs where mem:
+      "(Some proof_id,Cs) \<in> set edps"
+      and C: "C = map (\<lambda>(s,t). ((s,t),())) Cs" by force
+    from suffix obtain n where pq: "\<And>m. ?p (m+n) = q m"
+      unfolding Graph.suffix_def by blast
+    have CP: "(s (m+n),t (m+n)) \<in> ?P \<inter> set Cs" for m
+    proof -
+      have "?p (m+n) \<in> path_nodes q"
+        using pq[of m] unfolding path_nodes_def by blast
+      with ending C pair[of "m+n"] show
+        "(s (m+n),t (m+n)) \<in> ?P \<inter> set Cs" by force
+    qed
+    let ?tail = "\<lambda>m. ch (m+n)"
+    let ?PT = "?P \<inter> set Cs"
+    have strict_tail: "
+      (s (m+n) \<cdot> \<sigma> (m+n),b (m+n)) \<in>
+      innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT" for m
+    proof -
+      from strict[of "m+n"] have source:
+        "innermost_pair_source Sharp (mu_of \<mu>) ?R
+          (s (m+n) \<cdot> \<sigma> (m+n))"
+        unfolding innermost_csr_rta08_pair_step_def by blast
+      have raw: "(s (m+n) \<cdot> \<sigma> (m+n),b (m+n)) \<in>
+        csr_rta08_pair_step Sharp (mu_of \<mu>) A ?PT"
+        unfolding csr_rta08_pair_step_iff_instance
+        by (intro exI[of _ "s (m+n)"] exI[of _ "t (m+n)"]
+            exI[of _ "\<sigma> (m+n)"],
+          use CP[of m] inst[of "m+n"] in auto)
+      show "(s (m+n) \<cdot> \<sigma> (m+n),b (m+n)) \<in>
+        innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT"
+        unfolding innermost_csr_rta08_pair_step_def using raw source by blast
+    qed
+    have tail_chain: "(?tail m,?tail (Suc m)) \<in>
+      relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S" for m
+    proof -
+      have suc_add: "Suc m+n = Suc (m+n)" by simp
+      from pre[of "m+n"] post[of "m+n"] strict_tail[of m]
+      show "(?tail m,?tail (Suc m)) \<in>
+        relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S"
+        unfolding suc_add by auto
+    qed
+    have tail_is_chain: "chain
+      (relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S)
+      ?tail" using tail_chain by simp
+    have tail_sn: "SN
+      (relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S)"
+      using fin[OF mem]
+      unfolding finite_innermost_csr_rta08_dpp_def SN_rel_on_def by simp
+    have not_tail_sn: "\<not> SN
+      (relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S)"
+      by (rule not_SN_onI[of ?tail], simp, rule tail_is_chain)
+    from tail_sn not_tail_sn show False by contradiction
+  qed
+qed
+
 lemma finite_innermost_csr_rta08_dpp_redpair_terminal:
   fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
     and P S NS R :: "('f,'v) trs"
@@ -488,6 +655,179 @@ proof (cases "prf")
   qed (use ok CSR_DP_Ordinary_Proof in simp_all)
 qed (use ok in simp_all)
 
+fun check_innermost_csr_rta08_dp_proof ::
+  "('dpp, ('f::{showl,compare_order}, 'l::{showl,compare_order}) lab,
+      string) dpp_ops \<Rightarrow>
+   (('f,'l) lab) muL \<Rightarrow> showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f,'l,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+and check_innermost_csr_rta08_graph_components ::
+  "('dpp, ('f::{showl,compare_order}, 'l::{showl,compare_order}) lab,
+      string) dpp_ops \<Rightarrow>
+   (('f,'l) lab) muL \<Rightarrow> showsl \<Rightarrow> 'dpp \<Rightarrow>
+   (('f,'l,string) csr_dp_termination_proof option \<times>
+    ('f,'l,string) trsLL) list \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_rta08_dp_proof J \<mu> i dpp
+      (CSR_DP_Dep_Graph_Proc edps) =
+    debug i (STR ''innermost RTA08 CSR dependency graph'') (do {
+      _ \<leftarrow> check_csr_rta08_dep_graph_proc J \<mu> dpp edps;
+      check_innermost_csr_rta08_graph_components J \<mu> i dpp edps
+    })"
+| "check_innermost_csr_rta08_dp_proof J \<mu> i dpp prf =
+    check_innermost_csr_rta08_terminal J \<mu> i dpp prf"
+| "check_innermost_csr_rta08_graph_components J \<mu> i dpp [] = succeed"
+| "check_innermost_csr_rta08_graph_components J \<mu> i dpp
+      ((None,C)#rest) =
+    check_innermost_csr_rta08_graph_components J \<mu>
+      (add_index i 1) dpp rest"
+| "check_innermost_csr_rta08_graph_components J \<mu> i dpp
+      ((Some prf,C)#rest) = do {
+    check_innermost_csr_rta08_dp_proof J \<mu> (add_index i 1)
+      (dpp_ops.intersect_pairs J dpp C) prf;
+    check_innermost_csr_rta08_graph_components J \<mu>
+      (add_index i 1) dpp rest
+  }"
+
+lemma check_innermost_csr_rta08_graph_components_member:
+  assumes ok: "isOK (check_innermost_csr_rta08_graph_components
+      J \<mu> i dpp edps)"
+    and mem: "(Some prf,C) \<in> set edps"
+  shows "\<exists>j. isOK (check_innermost_csr_rta08_dp_proof
+    J \<mu> j (dpp_ops.intersect_pairs J dpp C) prf)"
+  using ok mem
+proof (induct edps arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons head rest)
+  obtain po D where head: "head = (po,D)" by (cases head)
+  show ?case
+  proof (cases po)
+    case None
+    from Cons.prems(1) head None have tail:
+      "isOK (check_innermost_csr_rta08_graph_components
+        J \<mu> (add_index i 1) dpp rest)" by simp
+    from Cons.prems(2) head None have mem': "(Some prf,C) \<in> set rest"
+      by auto
+    show ?thesis by (rule Cons.hyps[OF tail mem'])
+  next
+    case (Some p)
+    show ?thesis
+    proof (cases "(Some prf,C) = head")
+      case True
+      from Cons.prems(1) head Some True show ?thesis by auto
+    next
+      case False
+      from Cons.prems(1) head Some have tail:
+        "isOK (check_innermost_csr_rta08_graph_components
+          J \<mu> (add_index i 1) dpp rest)" by simp
+      from Cons.prems(2) False have mem': "(Some prf,C) \<in> set rest"
+        by auto
+      show ?thesis by (rule Cons.hyps[OF tail mem'])
+    qed
+  qed
+qed
+
+lemma check_innermost_csr_rta08_dp_proof_sound:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and ok: "isOK (check_innermost_csr_rta08_dp_proof J \<mu> i dpp prf)"
+  shows "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.rules J dpp))
+    (csr_rta08_defined_target
+      (set (defined_list (dpp_ops.rules J dpp))))
+    (set (dpp_ops.pairs J dpp))"
+  using ok plain
+proof (induct "prf" arbitrary: dpp i)
+  case (CSR_DP_Dep_Graph_Proc edps)
+  from CSR_DP_Dep_Graph_Proc.prems(1) have graph_ok:
+      "isOK (check_csr_rta08_dep_graph_proc J \<mu> dpp edps)"
+    and components_ok:
+      "isOK (check_innermost_csr_rta08_graph_components
+        J \<mu> i dpp edps)" by auto
+  show ?case
+  proof (rule check_csr_rta08_dep_graph_proc_innermost_sound[
+      OF J CSR_DP_Dep_Graph_Proc.prems(2) graph_ok])
+    fix proof_id C
+    assume mem: "(Some proof_id,C) \<in> set edps"
+    let ?d = "dpp_ops.intersect_pairs J dpp C"
+    from check_innermost_csr_rta08_graph_components_member[
+      OF components_ok mem]
+    obtain j where rec: "isOK (check_innermost_csr_rta08_dp_proof
+      J \<mu> j ?d proof_id)" by blast
+    have plain': "plain_csr_dpp J ?d"
+      by (rule plain_csr_dpp_intersect_pairs[
+        OF J CSR_DP_Dep_Graph_Proc.prems(2)])
+    have ih: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J ?d))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J ?d))))
+      (set (dpp_ops.pairs J ?d))"
+      apply (rule CSR_DP_Dep_Graph_Proc.hyps)
+          apply (rule mem)
+         apply simp
+        apply simp
+       apply (rule rec)
+      apply (rule plain')
+      done
+    interpret dpp_spec J by fact
+    have sem: "dpp_ops.dpp J ?d =
+      (NFS dpp,M dpp,set (P dpp) \<inter> set C,
+        set (Pw dpp) \<inter> set C,set (Q dpp),set (R dpp),set (Rw dpp))"
+      by (rule intersect_pairs_sound)
+    have sem': "dpp_ops.dpp J ?d =
+      (NFS ?d,M ?d,set (P ?d),set (Pw ?d),set (Q ?d),
+        set (R ?d),set (Rw ?d))"
+      by (rule dpp_sound)
+    have pairs: "set (pairs ?d) = set (pairs dpp) \<inter> set C"
+      using sem sem' pairs_sound[of dpp] pairs_sound[of ?d] by auto
+    have rules: "set (rules ?d) = set (rules dpp)"
+      using sem sem' rules_sound[of dpp] rules_sound[of ?d] by auto
+    show "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp) \<inter> set C)"
+      using ih unfolding pairs rules .
+  qed
+next
+  case CSR_DP_P_is_Empty
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Ordinary_Proof x)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Subterm_Criterion_Proc x1 x2 x3 subproof)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Gen_Subterm_Criterion_Proc x1 x2 subproof)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Usable_Rules_Proc x1 subproof)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Instantiation_Proc x1 x2 subproof)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+next
+  case (CSR_DP_Size_Change_Subterm_Proc x)
+  then show ?case
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+qed
+
 lemma innermost_csr_progress_relation_imp_SN:
   fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
   assumes progress:
@@ -637,7 +977,7 @@ where
       check_csr_orthogonal R;
       csr_sharp_mu_check \<mu>;
       dpp \<leftarrow> csr_rta08_dependency_pairs_tt J \<mu> R P;
-      check_innermost_csr_rta08_terminal J \<mu> (add_index i 1) dpp prf
+      check_innermost_csr_rta08_dp_proof J \<mu> (add_index i 1) dpp prf
     })"
 
 lemma check_innermost_csr_rta08_termination_proof_sound:
@@ -649,7 +989,7 @@ lemma check_innermost_csr_rta08_termination_proof_sound:
 proof -
   from ok obtain dpp where ortho_ok: "isOK (check_csr_orthogonal R)"
     and tt: "csr_rta08_dependency_pairs_tt J \<mu> R P = return dpp"
-    and rec: "isOK (check_innermost_csr_rta08_terminal
+    and rec: "isOK (check_innermost_csr_rta08_dp_proof
       J \<mu> (add_index i 1) dpp prf)"
     unfolding check_innermost_csr_rta08_termination_proof_def by auto
   from csr_rta08_dependency_pairs_tt_sound[OF J tt]
@@ -662,7 +1002,8 @@ proof -
       (csr_rta08_defined_target
         (set (defined_list (dpp_ops.rules J dpp))))
       (set (dpp_ops.pairs J dpp))"
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J rec])
+    by (rule check_innermost_csr_rta08_dp_proof_sound[OF J _ rec],
+      rule plain_csr_dpp_mk[OF J])
   interpret dpp_spec J by fact
   from csr_rta08_dependency_pairs_tt_sound[OF J tt]
   have dpp: "dpp = dpp_ops.mk J False False P [] [] [] R" by auto
