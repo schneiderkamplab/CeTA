@@ -4,7 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_Innermost_Unhiding_RTA08
   imports
-    CSR_Checker_Extensions.CSR_Innermost_DP_Checker
+    CSR_Checker_Extensions.CSR_Innermost_Active_SCT
     CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
 begin
 
@@ -1091,7 +1091,7 @@ definition check_innermost_csr_or_rta08_termination_proof ::
    ('f,label_type,string) csr_dp_termination_proof \<Rightarrow> showsl check"
 where
   "check_innermost_csr_or_rta08_termination_proof I J i \<mu> R P prf =
-    (case check_innermost_csr_termination_proof I J i \<mu> R P prf of
+    (case check_innermost_csr_termination_proof_active_sct I J i \<mu> R P prf of
        Inr x \<Rightarrow> Inr x
      | Inl _ \<Rightarrow> check_innermost_csr_rta08_termination_proof
          J i \<mu> R P prf)"
@@ -1101,7 +1101,8 @@ lemma check_innermost_csr_or_rta08_termination_proof_sound:
     and ok: "isOK (check_innermost_csr_or_rta08_termination_proof
       I J i \<mu> R P prf)"
   shows "SN (csstep (mu_of \<mu>) (set R))"
-proof (cases "check_innermost_csr_termination_proof I J i \<mu> R P prf")
+proof (cases "check_innermost_csr_termination_proof_active_sct
+    I J i \<mu> R P prf")
   case (Inl e)
   with ok have "isOK (check_innermost_csr_rta08_termination_proof
       J i \<mu> R P prf)"
@@ -1110,10 +1111,10 @@ proof (cases "check_innermost_csr_termination_proof I J i \<mu> R P prf")
     by (rule check_innermost_csr_rta08_termination_proof_sound[OF J])
 next
   case (Inr x)
-  then have "isOK (check_innermost_csr_termination_proof
+  then have "isOK (check_innermost_csr_termination_proof_active_sct
       I J i \<mu> R P prf)" by simp
   then show ?thesis
-    by (rule check_innermost_csr_termination_proof_sound[OF I J])
+    by (rule check_innermost_csr_termination_proof_active_sct_sound[OF I J])
 qed
 
 end
