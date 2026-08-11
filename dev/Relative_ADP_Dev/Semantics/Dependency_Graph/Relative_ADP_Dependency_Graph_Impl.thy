@@ -707,11 +707,11 @@ definition relative_adp_estimated_lasso_candidates_for_component ::
   "relative_adp_estimated_lasso_candidates_for_component P B component =
     (let problem = relative_adp_problem_list P B;
          lasso_problem = relative_adp_lasso_problem_list P B;
-         component_pairs = ((!) lasso_problem) ` set component
+         component_pairs = map ((!) lasso_problem) component
      in [relative_adp_estimated_lasso_candidate P B component source target.
           source <- [0..<length problem],
           problem ! source \<in> set B \<and>
-            problem ! source \<in> component_pairs \<and>
+            problem ! source \<in> set component_pairs \<and>
             relative_adp_branching_pair_list (problem ! source),
           target <- [0..<length problem],
           problem ! target \<in> set P \<and>
@@ -733,14 +733,15 @@ definition relative_adp_estimated_main_scc_candidates ::
     (let problem = relative_adp_problem_list P B
      in [map ((!) problem) component.
           component <- relative_adp_estimated_sccs problem,
-          set (map ((!) problem) component) \<inter> set P \<noteq> {}])"
+          list_ex (\<lambda>pair. pair \<in> set P)
+            (map ((!) problem) component)])"
 
 definition relative_adp_estimated_graph_candidates ::
   "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
     ('f, 'v) adp list list" where
   "relative_adp_estimated_graph_candidates P B =
-    relative_adp_estimated_main_scc_candidates P B @
-    relative_adp_estimated_lasso_candidates P B"
+    remdups (relative_adp_estimated_main_scc_candidates P B @
+      relative_adp_estimated_lasso_candidates P B)"
 
 lemma relative_adp_estimated_lasso_candidate_set:
   "set (relative_adp_estimated_lasso_candidate P B component source target) =
@@ -1615,9 +1616,11 @@ proof -
       by blast
     let ?Q = "map ((!) ?problem) component"
     have Q_set: "set ?Q = (\<lambda>i. ?problem ! i) ` set component" by simp
+    have overlap: "list_ex (\<lambda>pair. pair \<in> set P_list) ?Q"
+      using intersects Q_set unfolding list_ex_iff by blast
     have main_candidate: "?Q \<in>
         set (relative_adp_estimated_main_scc_candidates P_list B_list)"
-      using component intersects Q_set
+      using component overlap
       unfolding relative_adp_estimated_main_scc_candidates_def
       by (auto simp: Let_def)
     have candidate: "?Q \<in>

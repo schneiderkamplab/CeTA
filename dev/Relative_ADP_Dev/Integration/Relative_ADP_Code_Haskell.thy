@@ -1,5 +1,7 @@
 theory Relative_ADP_Code_Haskell
-  imports Relative_ADP_Ceta
+  imports
+    Relative_ADP_Ceta
+    Proof_Checker.Ceta
 begin
 
 ML \<open>

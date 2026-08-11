@@ -301,7 +301,8 @@ definition annotated_rhs_subterms ::
 definition annotated_rhs_subterms_list ::
   "('f, 'v) adp \<Rightarrow> ('f adp_symbol, 'v) term list" where
   "annotated_rhs_subterms_list pair = map (\<lambda>q. snd pair |_ q)
-    (filter (\<lambda>q. q \<in> sharp_positions (snd pair))
+    (filter (\<lambda>q. case Term.root (snd pair |_ q) of
+        None \<Rightarrow> False | Some (f,n) \<Rightarrow> is_sharp_symbol f)
       (poss_list (snd pair)))"
 
 lemma annotated_rhs_subterms_list_sound:
@@ -437,14 +438,17 @@ definition relative_adp_branching_pair ::
 definition relative_adp_branching_pair_list ::
   "('f, 'v) adp \<Rightarrow> bool" where
   "relative_adp_branching_pair_list pair \<longleftrightarrow>
-    length (remdups (filter (\<lambda>q. q \<in> sharp_positions (snd pair))
+    length (remdups (filter (\<lambda>q. case Term.root (snd pair |_ q) of
+        None \<Rightarrow> False | Some (f,n) \<Rightarrow> is_sharp_symbol f)
       (poss_list (snd pair)))) > 1"
 
 lemma relative_adp_branching_pair_list_sound:
   "relative_adp_branching_pair_list pair = relative_adp_branching_pair pair"
 proof -
   let ?positions = "remdups (filter
-    (\<lambda>q. q \<in> sharp_positions (snd pair)) (poss_list (snd pair)))"
+    (\<lambda>q. case Term.root (snd pair |_ q) of
+      None \<Rightarrow> False | Some (f,n) \<Rightarrow> is_sharp_symbol f)
+    (poss_list (snd pair)))"
   have positions: "set ?positions = sharp_positions (snd pair)"
     unfolding sharp_positions_def by (auto simp: poss_list_sound)
   have distinct: "distinct ?positions" by simp

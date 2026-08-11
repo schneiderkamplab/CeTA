@@ -340,3 +340,19 @@ the theorem-level checker tests in 0.69 seconds, and the recursive XML/CPF
 integration as `Draft.Relative_ADP_Ceta_Test1` in 23.70 seconds. The XML node
 is named `relativeAdpDependencyGraph`; its children are nested
 `relativeAdpTerminationProof` elements in checker candidate order.
+
+The generated-code replay exposed and removed three non-executable remnants:
+sharp-position tests now inspect term roots directly, main-SCC overlap uses
+list membership, and lasso component membership uses a mapped list instead of
+a finite set. The complete candidate list is normalized with `remdups`; this
+preserves the candidate set used by the soundness theorem while avoiding
+duplicate recursive checker obligations. The final executable theory replayed
+as `Draft.Relative_ADP_Dependency_Graph_Impl_Test64`, and the checker/parser
+layers replayed as Tests 9 and 6. `Draft.Relative_ADP_Code_Haskell_Test7`
+generated the verified Haskell checker in 226.94 seconds.
+
+The extracted checker was compiled and applied to Ferrum's retained
+`TRS_Relative/Relative_05/rt1-3.ari` graph certificate. It independently
+reconstructed two graph children and returned `CERTIFIED`. An earlier
+five-child certificate is rejected with a child-count mismatch, confirming
+that Ferrum cannot choose a smaller graph than the verified estimator.
