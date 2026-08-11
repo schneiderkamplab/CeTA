@@ -213,3 +213,14 @@ chain and proves erased-term equality, a valid child step at every index, and
 inductive preservation of a chosen origin path. The remaining semantic task
 is to extract infinitely many strict child steps for each checked main SCC or
 minimal-lasso child and package that result as the graph processor theorem.
+
+The strict-chain checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test178` in 5.45 seconds. Whenever the
+tracked origin is the redex of a selected main ADP in `Q`, the projected
+witness is a strict step of `P intersection Q`. Isabelle lifts infinitely many
+such events to an explicit `ideriv` over the graph child and proves that child
+ADP problem nonterminating. This establishes the contrapositive semantic core
+of recursive graph decomposition. What remains is finite-graph selection:
+specialize the generic chain theorem to the eventual main component and to a
+recurring minimal lasso, then validate that the executable certificate lists
+all children required by that dichotomy.

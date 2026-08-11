@@ -2087,6 +2087,104 @@ next
         OF valid erased origin Suc retained])
 qed
 
+lemma relative_adp_projected_chain_strict_step:
+  assumes valid: "\<And>n. relative_adp_step_witness_valid A
+      (terms n) (terms (Suc n)) (witnesses n)"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and initial_marked: "markers 0 \<in> sharp_positions source"
+    and origin: "\<And>n. relative_adp_step_witness_origin_edge
+      (witnesses n) (markers n) (markers (Suc n))"
+    and retained: "\<And>n. radp_witness_pair (witnesses n) \<in> Q \<or>
+      markers n \<noteq> radp_witness_redex (witnesses n)"
+    and pair: "radp_witness_pair (witnesses n) \<in> P \<inter> Q"
+    and redex: "markers n = radp_witness_redex (witnesses n)"
+  shows "(relative_adp_projected_chain Q source witnesses n,
+      relative_adp_projected_chain Q source witnesses (Suc n)) \<in>
+    adp_step_case_rel (P \<inter> Q) True"
+proof -
+  let ?projected_source =
+    "relative_adp_projected_chain Q source witnesses n"
+  let ?projected_witness =
+    "relative_adp_projected_witness Q ?projected_source (witnesses n)"
+  have erased: "erase_adp_term ?projected_source = erase_adp_term (terms n)"
+    by (rule relative_adp_projected_chain_erases[OF valid initial_erased])
+  have projected_valid: "relative_adp_step_witness_valid
+      (Q \<union> erase_annotations_adp ` (A - Q)) ?projected_source
+      (relative_adp_projected_chain Q source witnesses (Suc n))
+      ?projected_witness"
+    by simp (rule relative_adp_projected_witness_valid[OF valid erased])
+  have marker: "markers n \<in> sharp_positions ?projected_source"
+    by (rule relative_adp_projected_chain_marker[
+        OF valid initial_erased initial_marked origin retained])
+  have original_in_Q: "radp_witness_pair (witnesses n) \<in> Q"
+    using pair by simp
+  have projected_pair:
+      "radp_witness_pair ?projected_witness =
+        radp_witness_pair (witnesses n)"
+    using original_in_Q
+    by (simp add: relative_adp_projected_witness_def
+        relative_adp_projected_witness_pair_def)
+  have projected_pair_in: "radp_witness_pair ?projected_witness \<in> P \<inter> Q"
+    using pair projected_pair by simp
+  have projected_sharp: "radp_witness_at_sharp ?projected_witness"
+    using marker redex
+    by (simp add: relative_adp_projected_witness_def)
+  show ?thesis
+    by (rule relative_adp_step_witness_valid_is_strict_step[
+        OF projected_valid projected_sharp projected_pair_in])
+qed
+
+theorem relative_adp_projected_chain_not_SN:
+  assumes valid: "\<And>n. relative_adp_step_witness_valid A
+      (terms n) (terms (Suc n)) (witnesses n)"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and initial_marked: "markers 0 \<in> sharp_positions source"
+    and origin: "\<And>n. relative_adp_step_witness_origin_edge
+      (witnesses n) (markers n) (markers (Suc n))"
+    and retained: "\<And>n. radp_witness_pair (witnesses n) \<in> Q \<or>
+      markers n \<noteq> radp_witness_redex (witnesses n)"
+    and strict: "INFM n. radp_witness_pair (witnesses n) \<in> P \<inter> Q \<and>
+      markers n = radp_witness_redex (witnesses n)"
+  shows "\<not> adp_problem_SN
+    (P \<inter> Q,
+      (Q \<union> erase_annotations_adp ` (A - Q)) - (P \<inter> Q))"
+proof -
+  let ?child = "Q \<union> erase_annotations_adp ` (A - Q)"
+  let ?projected = "relative_adp_projected_chain Q source witnesses"
+  have main_subset: "P \<inter> Q \<subseteq> ?child" by blast
+  have total: "(P \<inter> Q) \<union> (?child - (P \<inter> Q)) = ?child"
+    using main_subset by blast
+  have steps: "\<And>n. (?projected n, ?projected (Suc n)) \<in> adp_step ?child"
+    by (rule relative_adp_projected_chain_step[OF valid initial_erased])
+  have strict_steps: "INFM n.
+      (?projected n, ?projected (Suc n)) \<in>
+        adp_step_case_rel (P \<inter> Q) True"
+  proof (rule INFM_mono[OF strict])
+    fix n
+    assume event: "radp_witness_pair (witnesses n) \<in> P \<inter> Q \<and>
+      markers n = radp_witness_redex (witnesses n)"
+    show "(?projected n, ?projected (Suc n)) \<in>
+        adp_step_case_rel (P \<inter> Q) True"
+      by (rule relative_adp_projected_chain_strict_step[
+          OF valid initial_erased initial_marked origin retained])
+         (use event in auto)
+  qed
+  have deriv: "ideriv (adp_step_case_rel (P \<inter> Q) True)
+      (adp_step ?child) ?projected"
+    using steps strict_steps unfolding ideriv_def by blast
+  show ?thesis
+  proof (unfold adp_problem_SN_def, intro notI)
+    assume sn: "SN_rel
+      (adp_step_case_rel (fst
+        (P \<inter> Q, ?child - (P \<inter> Q))) True)
+      (adp_step (fst (P \<inter> Q, ?child - (P \<inter> Q)) \<union>
+        snd (P \<inter> Q, ?child - (P \<inter> Q))))"
+    have "SN_rel (adp_step_case_rel (P \<inter> Q) True) (adp_step ?child)"
+      using sn total by simp
+    then show False unfolding SN_rel_ideriv using deriv by blast
+  qed
+qed
+
 lemma relative_adp_step_witness_sharp_position_has_predecessor:
   assumes valid: "relative_adp_step_witness_valid A s t witness"
     and target: "q' \<in> sharp_positions t"
