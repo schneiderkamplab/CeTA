@@ -270,3 +270,23 @@ is the coverage interface the executable checker must discharge. It permits a
 later optimized SCC-DAG enumeration without changing the term-level proof,
 while ruling out an under-approximating family that misses cyclic offshoot
 stems.
+
+The executable Gabow checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Impl_Test11`; the child implementation
+theory checked in 1.59 seconds against the warm semantic heap. The checker
+builds the finite indexed estimated graph, adds reflexive edges solely so that
+Gabow's nontrivial-SCC interface also returns isolated vertices, and invokes
+IsaFoR's verified `scc_decomp`. Isabelle proves exact SCC characterization,
+index bounds, coverage and disjointness, and eventual capture of every
+infinite estimated path by one emitted SCC.
+
+A proof-only occurrence index then connects semantic ADP labels to the
+executable graph. It is deliberately absent from generated code and handles
+duplicate ADPs without assuming list distinctness. The theorem
+`relative_adp_selected_estimated_main_scc_child_not_SN` proves that every
+nonterminating selected chain with infinitely many main events is captured by
+an emitted SCC containing a main ADP, and that the corresponding projected
+child is nonterminating. This discharges executable coverage for the main-SCC
+branch. The branching-base branch still requires a verified finite family of
+SCC-condensation paths that satisfies the previously proved lasso-family
+coverage interface.
