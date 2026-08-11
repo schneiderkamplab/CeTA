@@ -169,6 +169,25 @@ definition finite_innermost_csr_rta08_dpp where
     SN_rel (innermost_csr_rta08_pair_step shp \<mu> R A P)
       (innermost_csdp_step shp \<mu> R)"
 
+lemma innermost_csr_rta08_dep_graph_edge_check_steps:
+  fixes R :: "(((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab),
+    'v::compare_order) rules)"
+  assumes wf: "wf_trs (set R)"
+    and inst: "csr_rta08_pair_instance Sharp (mu_of \<mu>) A s t \<sigma> b"
+    and steps: "(b, u \<cdot> \<tau>) \<in>
+      (innermost_csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+  shows "csr_rta08_dep_graph_edge_check
+    (csr_dp_root_mu (mu_of \<mu>)) R
+    ((((s,t),()),((u,v),())))"
+proof -
+  have steps': "(b, u \<cdot> \<tau>) \<in>
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+    using steps innermost_csdp_step_subset_csdp_step
+    by (meson rtrancl_mono subset_eq)
+  show ?thesis
+    by (rule csr_rta08_dep_graph_edge_check_steps[OF wf inst steps'])
+qed
+
 lemma finite_innermost_csr_rta08_dpp_redpair_terminal:
   fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
     and P S NS R :: "('f,'v) trs"
