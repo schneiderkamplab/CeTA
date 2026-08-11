@@ -225,4 +225,136 @@ proof (intro conjI)
   qed
 qed
 
+lemma ipath_interval_rtrancl:
+  assumes path: "\<And>n. (p n, p (Suc n)) \<in> E"
+    and order: "i \<le> j"
+  shows "(p i, p j) \<in> E\<^sup>*"
+proof -
+  obtain d where j: "j = i + d" using order by (auto simp: le_iff_add)
+  show ?thesis unfolding j
+  proof (induction d)
+    case 0
+    show ?case by simp
+  next
+    case (Suc d)
+    have edge: "(p (i+d), p (Suc (i+d))) \<in> E" by (rule path)
+    show ?case
+      by (rule rtrancl_into_rtrancl[OF Suc.IH])
+         (use edge in simp)
+  qed
+qed
+
+lemma ipath_interval_restricted_rtrancl:
+  assumes path: "\<And>n. (p n, p (Suc n)) \<in> E"
+    and order: "i \<le> j"
+    and allowed: "\<And>k. i \<le> k \<Longrightarrow> k < j \<Longrightarrow> allowed (p k)"
+  shows "(p i, p j) \<in> {(x,y). (x,y) \<in> E \<and> allowed x}\<^sup>*"
+proof -
+  obtain d where j: "j = i + d" using order by (auto simp: le_iff_add)
+  have segment: "\<And>d. (\<And>k. k < d \<Longrightarrow> allowed (p (i+k))) \<Longrightarrow>
+      (p i, p (i+d)) \<in> {(x,y). (x,y) \<in> E \<and> allowed x}\<^sup>*"
+  proof -
+    fix d
+    assume permitted: "\<And>k. k < d \<Longrightarrow> allowed (p (i+k))"
+    show "(p i, p (i+d)) \<in>
+        {(x,y). (x,y) \<in> E \<and> allowed x}\<^sup>*"
+    using permitted
+  proof (induction d)
+    case 0
+    show ?case by simp
+  next
+    case (Suc d)
+    have edge: "(p (i+d), p (Suc (i+d))) \<in> E" by (rule path)
+    have permitted: "allowed (p (i+d))"
+      by (rule Suc.prems) simp
+    have prefix: "(p i, p (i+d)) \<in>
+        {(x,y). (x,y) \<in> E \<and> allowed x}\<^sup>*"
+      by (rule Suc.IH) (use Suc.prems in auto)
+    show ?case
+      by (rule rtrancl_into_rtrancl[OF prefix])
+         (use edge permitted in auto)
+  qed
+  qed
+  show ?thesis unfolding j
+    by (rule segment) (use allowed j in auto)
+qed
+
+lemma between_consecutive_enumerated_events:
+  fixes p :: "nat \<Rightarrow> 'a"
+    and event :: "'a \<Rightarrow> bool"
+  defines "I \<equiv> {n. event (p n)}"
+  assumes infinite: "infinite I"
+    and lower: "enumerate I n < k"
+    and upper: "k < enumerate I (Suc n)"
+  shows "\<not> event (p k)"
+proof
+  assume event: "event (p k)"
+  then have kI: "k \<in> I" unfolding I_def by simp
+  from range_enumerate[OF infinite] kI obtain m where k: "k = enumerate I m"
+    by blast
+  have mono: "strict_mono (enumerate I)" by (rule strict_mono_enumerate[OF infinite])
+  consider "m \<le> n" | "Suc n \<le> m" by arith
+  then show False
+  proof cases
+    case 1
+    have "enumerate I m \<le> enumerate I n"
+      by (rule monoD[OF strict_mono_mono[OF mono] 1])
+    with lower k show False by simp
+  next
+    case 2
+    have "enumerate I (Suc n) \<le> enumerate I m"
+      by (rule monoD[OF strict_mono_mono[OF mono] 2])
+    with upper k show False by simp
+  qed
+qed
+
+lemma finite_ipath_has_eventual_mutual_anchor:
+  assumes finite_nodes: "finite V"
+    and nodes: "range p \<subseteq> V"
+    and path: "\<And>n. (p n, p (Suc n)) \<in> E"
+  obtains x N where
+    "x \<in> V"
+    "\<And>n. N \<le> n \<Longrightarrow> (x, p n) \<in> E\<^sup>*"
+    "\<And>n. N \<le> n \<Longrightarrow> (p n, x) \<in> E\<^sup>*"
+proof -
+  have recurring: "\<exists>x \<in> V. infinite {n. p n = x}"
+  proof (rule ccontr)
+    assume none: "\<not> (\<exists>x \<in> V. infinite {n. p n = x})"
+    have finite_each: "\<And>x. x \<in> V \<Longrightarrow> finite {n. p n = x}"
+      using none by blast
+    have finite_union: "finite (\<Union>x\<in>V. {n. p n = x})"
+      using finite_nodes finite_each by simp
+    have cover: "(UNIV :: nat set) = (\<Union>x\<in>V. {n. p n = x})"
+      using nodes by auto
+    from finite_union have "finite (UNIV :: nat set)" unfolding cover .
+    then show False by simp
+  qed
+  from recurring obtain x where xV: "x \<in> V"
+    and often: "infinite {n. p n = x}" by blast
+  have "{n. p n = x} \<noteq> {}" by (rule infinite_imp_nonempty[OF often])
+  then obtain N where at_N: "p N = x" by blast
+  have forward: "\<And>n. N \<le> n \<Longrightarrow> (x, p n) \<in> E\<^sup>*"
+  proof -
+    fix n
+    assume "N \<le> n"
+    have "(p N, p n) \<in> E\<^sup>*"
+      by (rule ipath_interval_rtrancl[
+          where p=p and E=E and i=N and j=n, OF path `N \<le> n`])
+    then show "(x, p n) \<in> E\<^sup>*" unfolding at_N .
+  qed
+  have backward: "\<And>n. N \<le> n \<Longrightarrow> (p n, x) \<in> E\<^sup>*"
+  proof -
+    fix n
+    assume "N \<le> n"
+    from often[unfolded infinite_nat_iff_unbounded]
+    obtain m where nm: "n < m" and at_m: "p m = x" by blast
+    have "(p n, p m) \<in> E\<^sup>*"
+      by (rule ipath_interval_rtrancl[
+          where p=p and E=E and i=n and j=m,
+          OF path less_imp_le[OF nm]])
+    then show "(p n, x) \<in> E\<^sup>*" unfolding at_m .
+  qed
+  show thesis by (rule that[OF xV forward backward])
+qed
+
 end

@@ -304,6 +304,18 @@ definition relative_adp_dependency_edge ::
       (mark_adp_root u \<cdot> sigma, mark_adp_root (fst q) \<cdot> tau) \<in>
         (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*)"
 
+definition relative_adp_dependency_graph ::
+  "('f, 'v) adp set \<Rightarrow> (('f, 'v) adp) rel" where
+  "relative_adp_dependency_graph A =
+    {(p,q). p \<in> A \<and> q \<in> A \<and> relative_adp_dependency_edge A p q}"
+
+definition relative_adp_dependency_component ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp \<Rightarrow> ('f, 'v) adp set" where
+  "relative_adp_dependency_component A anchor =
+    {pair \<in> A.
+      (anchor,pair) \<in> (relative_adp_dependency_graph A)\<^sup>* \<and>
+      (pair,anchor) \<in> (relative_adp_dependency_graph A)\<^sup>*}"
+
 lemma finite_annotated_rhs_subterms [simp]:
   "finite (annotated_rhs_subterms p)"
 proof -
@@ -1522,6 +1534,29 @@ definition relative_adp_selected_chain_labeled ::
   "relative_adp_selected_chain_labeled P A terms node \<longleftrightarrow>
     (\<exists>pair. relative_adp_selected_chain_label P A terms node pair)"
 
+definition relative_adp_selected_chain_node_label ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow>
+    nat \<times> pos \<Rightarrow> ('f, 'v) adp" where
+  "relative_adp_selected_chain_node_label P A terms node =
+    (case node of (i,_) \<Rightarrow>
+      fst (snd (relative_adp_selected_application P A terms i)))"
+
+definition relative_adp_selected_label_indices ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow>
+    (nat \<Rightarrow> nat \<times> pos) \<Rightarrow> nat set" where
+  "relative_adp_selected_label_indices P A terms path =
+    {n. relative_adp_selected_chain_labeled P A terms (path n)}"
+
+definition relative_adp_selected_label_stream ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow>
+    (nat \<Rightarrow> nat \<times> pos) \<Rightarrow> nat \<Rightarrow> ('f, 'v) adp" where
+  "relative_adp_selected_label_stream P A terms path n =
+    relative_adp_selected_chain_node_label P A terms
+      (path (enumerate (relative_adp_selected_label_indices P A terms path) n))"
+
 lemma relative_adp_selected_chain_labeled_iff:
   "relative_adp_selected_chain_labeled P A terms (i,q) \<longleftrightarrow>
     (let application = relative_adp_selected_application P A terms i in
@@ -1529,6 +1564,26 @@ lemma relative_adp_selected_chain_labeled_iff:
   unfolding relative_adp_selected_chain_labeled_def
     relative_adp_selected_chain_label_def
   by (auto simp: Let_def)
+
+lemma relative_adp_selected_chain_labeled_has_node_label:
+  assumes "relative_adp_selected_chain_labeled P A terms node"
+  shows "relative_adp_selected_chain_label P A terms node
+    (relative_adp_selected_chain_node_label P A terms node)"
+  using assms
+  unfolding relative_adp_selected_chain_labeled_def
+    relative_adp_selected_chain_label_def
+    relative_adp_selected_chain_node_label_def
+  by (cases node) (auto simp: Let_def)
+
+lemma relative_adp_selected_chain_main_event_iff_node_label:
+  "relative_adp_selected_chain_main_event P A terms node \<longleftrightarrow>
+    relative_adp_selected_chain_labeled P A terms node \<and>
+    relative_adp_selected_chain_node_label P A terms node \<in> P"
+  unfolding relative_adp_selected_chain_main_event_def
+    relative_adp_selected_chain_labeled_def
+    relative_adp_selected_chain_label_def
+    relative_adp_selected_chain_node_label_def
+  by (cases node) (auto simp: Let_def)
 
 lemma relative_adp_selected_main_event_has_label:
   assumes "relative_adp_selected_chain_main_event P A terms node"
@@ -1857,6 +1912,48 @@ next
   qed
 qed
 
+lemma origin_edge_from_redex_is_root_target:
+  assumes edge: "origin_edge l r p sigma roots phi p q'"
+    and lhs_fun: "is_Fun l"
+  obtains alpha where "alpha \<in> roots" "q' = p @ alpha"
+  using edge
+proof cases
+  case preserved
+  then show thesis by auto
+next
+  case (root_target alpha)
+  show thesis by (rule that[of alpha]) (use root_target in auto)
+next
+  case (variable_transport rho alpha beta)
+  from variable_transport have "rho @ beta = []" by simp
+  then have "rho = []" by simp
+  with variable_transport lhs_fun show thesis by (cases l) auto
+qed
+
+lemma distinct_origin_edges_from_redex_have_distinct_roots:
+  assumes first: "origin_edge l r p sigma roots phi p q1"
+    and second: "origin_edge l r p sigma roots phi p q2"
+    and distinct: "q1 \<noteq> q2"
+    and lhs_fun: "is_Fun l"
+  obtains alpha1 alpha2 where
+    "alpha1 \<in> roots" "alpha2 \<in> roots" "alpha1 \<noteq> alpha2"
+proof -
+  from origin_edge_from_redex_is_root_target[OF first lhs_fun]
+  obtain alpha1 where alpha1: "alpha1 \<in> roots"
+    and q1: "q1 = p @ alpha1" .
+  from origin_edge_from_redex_is_root_target[OF second lhs_fun]
+  obtain alpha2 where alpha2: "alpha2 \<in> roots"
+    and q2: "q2 = p @ alpha2" .
+  have "alpha1 \<noteq> alpha2" using distinct q1 q2 by auto
+  show thesis by (rule that[OF alpha1 alpha2 `alpha1 \<noteq> alpha2`])
+qed
+
+lemma relative_adp_selected_chain_origin_edge_time:
+  assumes "((i,q),(j,q')) \<in>
+    relative_adp_selected_chain_origin_edge P A terms"
+  shows "j = Suc i"
+  using assms unfolding relative_adp_selected_chain_origin_edge_def by auto
+
 lemma relative_adp_selected_unlabeled_successor_unique:
   assumes first: "((i,q),(Suc i,q1)) \<in>
       relative_adp_selected_chain_origin_edge P A terms"
@@ -1969,6 +2066,163 @@ proof (rule ccontr)
     by (rule relative_adp_selected_unlabeled_node_successor_unique[
         OF edge path_edge steps subset unlabeled])
   with distinct show False by contradiction
+qed
+
+lemma relative_adp_selected_labeled_distinct_successors_have_multiple_rhs_marks:
+  assumes label:
+      "relative_adp_selected_chain_label P A terms (i,q) pair"
+    and first: "((i,q),(Suc i,q1)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and second: "((i,q),(Suc i,q2)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and distinct: "q1 \<noteq> q2"
+    and lhs_fun: "is_Fun (fst pair)"
+  obtains alpha1 alpha2 where
+    "alpha1 \<in> sharp_positions (snd pair)"
+    "alpha2 \<in> sharp_positions (snd pair)"
+    "alpha1 \<noteq> alpha2"
+proof -
+  let ?witness = "relative_adp_selected_step_witness P A terms i"
+  obtain l r where pair: "pair = (l,r)" by (cases pair) auto
+  from label have at: "radp_witness_at_sharp ?witness"
+    and witness_pair: "radp_witness_pair ?witness = (l,r)"
+    and redex: "radp_witness_redex ?witness = q"
+    unfolding relative_adp_selected_chain_label_def
+      relative_adp_selected_application_def pair Let_def
+    by auto
+  from first have first_exact:
+      "relative_adp_step_witness_origin_edge ?witness q q1"
+    unfolding relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  from second have second_exact:
+      "relative_adp_step_witness_origin_edge ?witness q q2"
+    unfolding relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  from first_exact witness_pair at redex have edge1:
+      "origin_edge (erase_adp_term l) (erase_adp_term r) q
+        (radp_witness_subst ?witness) (sharp_positions r)
+        (radp_witness_vrf ?witness) q q1"
+    unfolding relative_adp_step_witness_origin_edge_def by auto
+  from second_exact witness_pair at redex have edge2:
+      "origin_edge (erase_adp_term l) (erase_adp_term r) q
+        (radp_witness_subst ?witness) (sharp_positions r)
+        (radp_witness_vrf ?witness) q q2"
+    unfolding relative_adp_step_witness_origin_edge_def by auto
+  have erased_lhs_fun: "is_Fun (erase_adp_term l)"
+    using lhs_fun unfolding pair by (cases l) auto
+  from distinct_origin_edges_from_redex_have_distinct_roots[
+      OF edge1 edge2 distinct erased_lhs_fun]
+  obtain alpha1 alpha2 where alpha1: "alpha1 \<in> sharp_positions r"
+    and alpha2: "alpha2 \<in> sharp_positions r"
+    and different: "alpha1 \<noteq> alpha2" .
+  show thesis
+    by (rule that[of alpha1 alpha2])
+       (use alpha1 alpha2 different pair in auto)
+qed
+
+lemma relative_adp_selected_label_in_problem:
+  assumes step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and label: "relative_adp_selected_chain_label P A terms (i,q) pair"
+  shows "pair \<in> A"
+proof -
+  let ?application = "relative_adp_selected_application P A terms i"
+  have preferred: "relative_adp_preferred_application_valid P A
+      (terms i) (terms (Suc i)) ?application"
+    by (rule relative_adp_selected_application_valid[OF step subset])
+  then have applied: "relative_adp_applied_at A (fst ?application)
+      (terms i) (terms (Suc i)) (fst (snd ?application))
+      (snd (snd ?application))"
+    unfolding relative_adp_preferred_application_valid_def
+      relative_adp_application_valid_def by simp
+  from label have "fst (snd ?application) = pair"
+    unfolding relative_adp_selected_chain_label_def Let_def by simp
+  with applied show ?thesis unfolding relative_adp_applied_at_def by auto
+qed
+
+lemma relative_adp_selected_label_in_main_is_main_event:
+  assumes label: "relative_adp_selected_chain_label P A terms node pair"
+    and main: "pair \<in> P"
+  shows "relative_adp_selected_chain_main_event P A terms node"
+  using label main unfolding relative_adp_selected_chain_label_def
+    relative_adp_selected_chain_main_event_def
+  by (cases node) (auto simp: Let_def)
+
+lemma relative_adp_selected_nonmain_offshoot_has_branching_base_label:
+  assumes offshoot: "event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n"
+    and path_edge: "(path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+    and nonmain:
+      "\<not> relative_adp_selected_chain_main_event P A terms (path n)"
+  obtains pair alpha1 alpha2 where
+    "pair \<in> A - P"
+    "relative_adp_selected_chain_label P A terms (path n) pair"
+    "alpha1 \<in> sharp_positions (snd pair)"
+    "alpha2 \<in> sharp_positions (snd pair)"
+    "alpha1 \<noteq> alpha2"
+proof -
+  have labeled:
+      "relative_adp_selected_chain_labeled P A terms (path n)"
+    by (rule relative_adp_selected_event_offshoot_is_labeled[
+        OF offshoot path_edge steps subset])
+  from labeled
+  obtain pair where label:
+      "relative_adp_selected_chain_label P A terms (path n) pair"
+    unfolding relative_adp_selected_chain_labeled_def by blast
+  obtain i q where source: "path n = (i,q)" by (cases "path n") auto
+  obtain j q1 where next_node: "path (Suc n) = (j,q1)"
+    by (cases "path (Suc n)") auto
+  have path_edge': "((i,q),(j,q1)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using path_edge unfolding source next_node .
+  have j: "j = Suc i"
+    by (rule relative_adp_selected_chain_origin_edge_time[OF path_edge'])
+  have step: "(terms i, terms (Suc i)) \<in> adp_step A" by (rule steps)
+  have in_A: "pair \<in> A"
+    by (rule relative_adp_selected_label_in_problem[OF step subset])
+       (use label in \<open>simp only: source\<close>)
+  have not_P: "pair \<notin> P"
+  proof
+    assume "pair \<in> P"
+    then have "relative_adp_selected_chain_main_event P A terms (path n)"
+      by (rule relative_adp_selected_label_in_main_is_main_event[OF label])
+    with nonmain show False by contradiction
+  qed
+  from offshoot obtain branch where branch_edge:
+      "(path n,branch) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+    and distinct: "branch \<noteq> path (Suc n)"
+    unfolding event_offshoot_def by blast
+  obtain k q2 where branch: "branch = (k,q2)" by (cases branch) auto
+  have branch_edge': "((i,q),(k,q2)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using branch_edge unfolding source branch .
+  have k: "k = Suc i"
+    by (rule relative_adp_selected_chain_origin_edge_time[OF branch_edge'])
+  have position_distinct: "q1 \<noteq> q2"
+    using distinct unfolding next_node branch j k by auto
+  have first: "((i,q),(Suc i,q1)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using path_edge' unfolding j .
+  have second: "((i,q),(Suc i,q2)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using branch_edge' unfolding k .
+  have label_at:
+      "relative_adp_selected_chain_label P A terms (i,q) pair"
+    using label unfolding source .
+  from relative_adp_selected_labeled_distinct_successors_have_multiple_rhs_marks[
+      OF label_at first second position_distinct lhs_fun[OF in_A]]
+  obtain alpha1 alpha2 where alpha1: "alpha1 \<in> sharp_positions (snd pair)"
+    and alpha2: "alpha2 \<in> sharp_positions (snd pair)"
+    and different: "alpha1 \<noteq> alpha2" .
+  show thesis
+    by (rule that[of pair alpha1 alpha2])
+       (use in_A not_P label alpha1 alpha2 different in auto)
 qed
 
 lemma relative_adp_selected_unlabeled_moving_projection:
@@ -2395,6 +2649,361 @@ proof -
     by (rule bexI[OF _ witness], rule exI[of _ sigma],
         rule exI[of _ tau])
        (use projected source_instance target_instance in simp)
+qed
+
+lemma relative_adp_selected_labeled_path_dependency_edge:
+  assumes infinite: "infinite
+      {n. relative_adp_selected_chain_labeled P A terms (path n)}"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  shows "relative_adp_dependency_edge A
+    (relative_adp_selected_chain_node_label P A terms
+      (path (enumerate
+        {n. relative_adp_selected_chain_labeled P A terms (path n)} n)))
+    (relative_adp_selected_chain_node_label P A terms
+      (path (enumerate
+        {n. relative_adp_selected_chain_labeled P A terms (path n)} (Suc n))))"
+proof -
+  let ?I = "{n. relative_adp_selected_chain_labeled P A terms (path n)}"
+  let ?labels = "\<lambda>n. relative_adp_selected_chain_node_label P A terms
+      (path (enumerate ?I n))"
+  let ?i = "enumerate ?I n"
+  let ?j = "enumerate ?I (Suc n)"
+  have iI: "?i \<in> ?I" by (rule enumerate_in_set[OF infinite])
+  have jI: "?j \<in> ?I" by (rule enumerate_in_set[OF infinite])
+  have ij: "?i < ?j"
+    by (rule enumerate_mono[OF _ infinite]) simp
+  have source_labeled:
+      "relative_adp_selected_chain_labeled P A terms (path ?i)"
+    using iI by simp
+  have target_labeled:
+      "relative_adp_selected_chain_labeled P A terms (path ?j)"
+    using jI by simp
+  have source_label:
+      "relative_adp_selected_chain_label P A terms (path ?i) (?labels n)"
+    using relative_adp_selected_chain_labeled_has_node_label[OF source_labeled]
+    by simp
+  have target_label:
+      "relative_adp_selected_chain_label P A terms (path ?j) (?labels (Suc n))"
+    using relative_adp_selected_chain_labeled_has_node_label[OF target_labeled]
+    by simp
+  obtain time q where source: "path ?i = (time,q)" by (cases "path ?i") auto
+  obtain next_time q' where next_node: "path (Suc ?i) = (next_time,q')"
+    by (cases "path (Suc ?i)") auto
+  obtain target_time rho where target: "path ?j = (target_time,rho)"
+    by (cases "path ?j") auto
+  have first_raw: "((time,q),(next_time,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using path_edge[of ?i] unfolding source next_node .
+  have next_time: "next_time = Suc time"
+    by (rule relative_adp_selected_chain_origin_edge_time[OF first_raw])
+  have first: "((time,q),(Suc time,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using first_raw unfolding next_time .
+  have no_labels: "\<And>k. Suc ?i \<le> k \<Longrightarrow> k < ?j \<Longrightarrow>
+      \<not> relative_adp_selected_chain_labeled P A terms (path k)"
+  proof -
+    fix k
+    assume lower: "Suc ?i \<le> k" and upper: "k < ?j"
+    have strict_lower: "?i < k" using lower by simp
+    show "\<not> relative_adp_selected_chain_labeled P A terms (path k)"
+      by (rule between_consecutive_enumerated_events[
+          of "relative_adp_selected_chain_labeled P A terms" path n k,
+          OF infinite strict_lower upper])
+  qed
+  have segment_raw: "(path (Suc ?i), path ?j) \<in>
+      {(source,target). (source,target) \<in>
+          relative_adp_selected_chain_origin_edge P A terms \<and>
+        \<not> relative_adp_selected_chain_labeled P A terms source}\<^sup>*"
+    by (rule ipath_interval_restricted_rtrancl[
+        where p=path
+          and E="relative_adp_selected_chain_origin_edge P A terms"
+          and i="Suc ?i" and j="?j"
+          and allowed="\<lambda>source.
+            \<not> relative_adp_selected_chain_labeled P A terms source"])
+       (use path_edge ij no_labels in auto)
+  have segment: "((Suc time,q'),(target_time,rho)) \<in>
+      {(source,target). (source,target) \<in>
+          relative_adp_selected_chain_origin_edge P A terms \<and>
+        \<not> relative_adp_selected_chain_labeled P A terms source}\<^sup>*"
+    using segment_raw unfolding next_node target next_time .
+  have source_in_A: "?labels n \<in> A"
+    by (rule relative_adp_selected_label_in_problem[
+        where i=time and q=q, OF steps[of time] subset])
+       (use source_label in \<open>simp only: source\<close>)
+  have target_in_A: "?labels (Suc n) \<in> A"
+    by (rule relative_adp_selected_label_in_problem[
+        where i=target_time and q=rho, OF steps[of target_time] subset])
+       (use target_label in \<open>simp only: target\<close>)
+  show ?thesis
+    by (rule relative_adp_selected_labeled_segment_dependency_edge[
+        OF first _ segment _ steps subset lhs_fun[OF source_in_A]
+          lhs_fun[OF target_in_A]])
+       (use source_label target_label in
+        \<open>simp only: source target\<close>)+
+qed
+
+lemma relative_adp_selected_label_stream_in_problem:
+  assumes infinite: "infinite (relative_adp_selected_label_indices P A terms path)"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  shows "relative_adp_selected_label_stream P A terms path n \<in> A"
+proof -
+  let ?index = "enumerate (relative_adp_selected_label_indices P A terms path) n"
+  have index: "?index \<in> relative_adp_selected_label_indices P A terms path"
+    by (rule enumerate_in_set[OF infinite])
+  then have labeled:
+      "relative_adp_selected_chain_labeled P A terms (path ?index)"
+    unfolding relative_adp_selected_label_indices_def by simp
+  have label: "relative_adp_selected_chain_label P A terms (path ?index)
+      (relative_adp_selected_label_stream P A terms path n)"
+    using relative_adp_selected_chain_labeled_has_node_label[OF labeled]
+    unfolding relative_adp_selected_label_stream_def by simp
+  obtain i q where node: "path ?index = (i,q)" by (cases "path ?index") auto
+  show ?thesis
+    by (rule relative_adp_selected_label_in_problem[
+        where i=i and q=q, OF steps[of i] subset])
+       (use label in \<open>simp only: node\<close>)
+qed
+
+lemma relative_adp_selected_label_stream_dependency_edge:
+  assumes infinite: "infinite (relative_adp_selected_label_indices P A terms path)"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  shows "relative_adp_dependency_edge A
+    (relative_adp_selected_label_stream P A terms path n)
+    (relative_adp_selected_label_stream P A terms path (Suc n))"
+proof -
+  have raw: "relative_adp_dependency_edge A
+      (relative_adp_selected_chain_node_label P A terms
+        (path (enumerate
+          {n. relative_adp_selected_chain_labeled P A terms (path n)} n)))
+      (relative_adp_selected_chain_node_label P A terms
+        (path (enumerate
+          {n. relative_adp_selected_chain_labeled P A terms (path n)} (Suc n))))"
+    by (rule relative_adp_selected_labeled_path_dependency_edge[
+        where P=P and A=A and terms=terms and path=path and n=n,
+        OF _ path_edge steps subset lhs_fun])
+       (use infinite in
+        \<open>simp add: relative_adp_selected_label_indices_def\<close>)
+  show ?thesis using raw
+    unfolding relative_adp_selected_label_stream_def
+      relative_adp_selected_label_indices_def .
+qed
+
+lemma relative_adp_selected_main_events_give_main_label_stream:
+  assumes main: "INFM n.
+      relative_adp_selected_chain_main_event P A terms (path n)"
+  shows "INFM n. relative_adp_selected_label_stream P A terms path n \<in> P"
+proof -
+  let ?I = "relative_adp_selected_label_indices P A terms path"
+  have infinite: "infinite ?I"
+  proof -
+    have main_infinite:
+        "infinite {n. relative_adp_selected_chain_main_event P A terms (path n)}"
+      using main unfolding INFM_iff_infinite .
+    have inclusion:
+        "{n. relative_adp_selected_chain_main_event P A terms (path n)}
+        \<subseteq> ?I"
+      unfolding relative_adp_selected_label_indices_def
+        relative_adp_selected_chain_main_event_iff_node_label by blast
+    show ?thesis by (rule infinite_super[OF inclusion main_infinite])
+  qed
+  show ?thesis unfolding INFM_nat
+  proof
+    fix N
+    from main[unfolded INFM_nat]
+    obtain k where large: "enumerate ?I N < k"
+      and main_k: "relative_adp_selected_chain_main_event P A terms (path k)"
+      by blast
+    from main_k have kI: "k \<in> ?I"
+      unfolding relative_adp_selected_chain_main_event_iff_node_label
+        relative_adp_selected_label_indices_def by blast
+    from range_enumerate[OF infinite] kI obtain m where k: "k = enumerate ?I m"
+      by blast
+    have mono: "strict_mono (enumerate ?I)" by (rule strict_mono_enumerate[OF infinite])
+    have Nm: "N < m"
+    proof (rule ccontr)
+      assume "\<not> N < m"
+      then have "m \<le> N" by simp
+      then have "enumerate ?I m \<le> enumerate ?I N"
+        by (rule monoD[OF strict_mono_mono[OF mono]])
+      with large k show False by simp
+    qed
+    have stream_main:
+        "relative_adp_selected_label_stream P A terms path m \<in> P"
+      using main_k unfolding k
+        relative_adp_selected_chain_main_event_iff_node_label
+        relative_adp_selected_label_stream_def by simp
+    show "\<exists>n>N. relative_adp_selected_label_stream P A terms path n \<in> P"
+      by (rule exI[of _ m]) (use Nm stream_main in simp)
+  qed
+qed
+
+lemma relative_adp_selected_label_stream_eventual_component:
+  assumes finite: "finite A"
+    and infinite: "infinite (relative_adp_selected_label_indices P A terms path)"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  obtains anchor N where
+    "anchor \<in> A"
+    "\<And>n. N \<le> n \<Longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in>
+        relative_adp_dependency_component A anchor"
+proof -
+  let ?labels = "relative_adp_selected_label_stream P A terms path"
+  let ?E = "relative_adp_dependency_graph A"
+  have range: "range ?labels \<subseteq> A"
+    using relative_adp_selected_label_stream_in_problem[OF infinite steps subset]
+    by blast
+  have edge: "\<And>n. (?labels n, ?labels (Suc n)) \<in> ?E"
+  proof -
+    fix n
+    have source: "?labels n \<in> A" using range by blast
+    have target: "?labels (Suc n) \<in> A" using range by blast
+    have dependency: "relative_adp_dependency_edge A
+        (?labels n) (?labels (Suc n))"
+      by (rule relative_adp_selected_label_stream_dependency_edge[
+          OF infinite path_edge steps subset lhs_fun])
+    show "(?labels n, ?labels (Suc n)) \<in> ?E"
+      using source target dependency
+      unfolding relative_adp_dependency_graph_def by simp
+  qed
+  have witness: "\<exists>anchor N. anchor \<in> A \<and>
+      (\<forall>n. N \<le> n \<longrightarrow> (anchor, ?labels n) \<in> ?E\<^sup>*) \<and>
+      (\<forall>n. N \<le> n \<longrightarrow> (?labels n, anchor) \<in> ?E\<^sup>*)"
+  proof (rule finite_ipath_has_eventual_mutual_anchor[
+      where V=A and p="?labels" and E="?E", OF finite range edge])
+    fix anchor N
+    assume anchor: "anchor \<in> A"
+      and forward: "\<And>n. N \<le> n \<Longrightarrow> (anchor, ?labels n) \<in> ?E\<^sup>*"
+      and backward: "\<And>n. N \<le> n \<Longrightarrow> (?labels n, anchor) \<in> ?E\<^sup>*"
+    show "\<exists>anchor N. anchor \<in> A \<and>
+        (\<forall>n. N \<le> n \<longrightarrow> (anchor, ?labels n) \<in> ?E\<^sup>*) \<and>
+        (\<forall>n. N \<le> n \<longrightarrow> (?labels n, anchor) \<in> ?E\<^sup>*)"
+      by (rule exI[of _ anchor], rule exI[of _ N])
+         (use anchor forward backward in blast)
+  qed
+  from witness obtain anchor N where anchor: "anchor \<in> A"
+    and forward: "\<And>n. N \<le> n \<Longrightarrow> (anchor, ?labels n) \<in> ?E\<^sup>*"
+    and backward: "\<And>n. N \<le> n \<Longrightarrow> (?labels n, anchor) \<in> ?E\<^sup>*"
+    by blast
+  have component: "\<And>n. N \<le> n \<Longrightarrow>
+      ?labels n \<in> relative_adp_dependency_component A anchor"
+    using range forward backward
+    unfolding relative_adp_dependency_component_def by blast
+  show thesis by (rule that[OF anchor component])
+qed
+
+lemma relative_adp_dependency_component_subset:
+  "relative_adp_dependency_component A anchor \<subseteq> A"
+  unfolding relative_adp_dependency_component_def by blast
+
+lemma relative_adp_dependency_component_contains_anchor:
+  assumes "anchor \<in> A"
+  shows "anchor \<in> relative_adp_dependency_component A anchor"
+  using assms unfolding relative_adp_dependency_component_def by simp
+
+lemma relative_adp_dependency_component_connected:
+  assumes p: "p \<in> relative_adp_dependency_component A anchor"
+    and q: "q \<in> relative_adp_dependency_component A anchor"
+  shows "(p,q) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    and "(q,p) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+proof -
+  from p have p_to: "(p,anchor) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    and to_p: "(anchor,p) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    unfolding relative_adp_dependency_component_def by auto
+  from q have q_to: "(q,anchor) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    and to_q: "(anchor,q) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    unfolding relative_adp_dependency_component_def by auto
+  show "(p,q) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    by (rule rtrancl_trans[OF p_to to_q])
+  show "(q,p) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    by (rule rtrancl_trans[OF q_to to_p])
+qed
+
+lemma relative_adp_dependency_component_maximal:
+  assumes anchor: "anchor \<in> A"
+    and pair: "pair \<in> A"
+    and forward: "(anchor,pair) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+    and backward: "(pair,anchor) \<in> (relative_adp_dependency_graph A)\<^sup>*"
+  shows "pair \<in> relative_adp_dependency_component A anchor"
+  using assms unfolding relative_adp_dependency_component_def by simp
+
+lemma relative_adp_selected_main_path_has_main_component:
+  assumes finite: "finite A"
+    and main: "INFM n.
+      relative_adp_selected_chain_main_event P A terms (path n)"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  obtains anchor N where
+    "anchor \<in> A"
+    "relative_adp_dependency_component A anchor \<inter> P \<noteq> {}"
+    "\<And>n. N \<le> n \<Longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in>
+        relative_adp_dependency_component A anchor"
+proof -
+  have label_infinite:
+      "infinite (relative_adp_selected_label_indices P A terms path)"
+  proof -
+    have main_infinite:
+        "infinite {n. relative_adp_selected_chain_main_event P A terms (path n)}"
+      using main unfolding INFM_iff_infinite .
+    have inclusion:
+        "{n. relative_adp_selected_chain_main_event P A terms (path n)}
+          \<subseteq> relative_adp_selected_label_indices P A terms path"
+      unfolding relative_adp_selected_chain_main_event_iff_node_label
+        relative_adp_selected_label_indices_def by blast
+    show ?thesis by (rule infinite_super[OF inclusion main_infinite])
+  qed
+  have witness: "\<exists>anchor N. anchor \<in> A \<and> (\<forall>n. N \<le> n \<longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in>
+        relative_adp_dependency_component A anchor)"
+  proof (rule relative_adp_selected_label_stream_eventual_component[
+      where P=P and A=A and terms=terms and path=path,
+      OF finite label_infinite path_edge steps subset lhs_fun])
+    fix anchor N
+    assume anchor: "anchor \<in> A"
+      and eventual: "\<And>n. N \<le> n \<Longrightarrow>
+        relative_adp_selected_label_stream P A terms path n \<in>
+          relative_adp_dependency_component A anchor"
+    show "\<exists>anchor N. anchor \<in> A \<and> (\<forall>n. N \<le> n \<longrightarrow>
+        relative_adp_selected_label_stream P A terms path n \<in>
+          relative_adp_dependency_component A anchor)"
+      by (rule exI[of _ anchor], rule exI[of _ N])
+         (use anchor eventual in blast)
+  qed
+  from witness obtain anchor N where anchor: "anchor \<in> A"
+    and eventual: "\<And>n. N \<le> n \<Longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in>
+        relative_adp_dependency_component A anchor"
+    by blast
+  have main_stream: "INFM n.
+      relative_adp_selected_label_stream P A terms path n \<in> P"
+    by (rule relative_adp_selected_main_events_give_main_label_stream[OF main])
+  from main_stream[unfolded INFM_nat]
+  obtain n where Nn: "N < n"
+    and in_P: "relative_adp_selected_label_stream P A terms path n \<in> P"
+    by blast
+  have in_component:
+      "relative_adp_selected_label_stream P A terms path n \<in>
+        relative_adp_dependency_component A anchor"
+    by (rule eventual) (use Nn in simp)
+  have intersects: "relative_adp_dependency_component A anchor \<inter> P \<noteq> {}"
+    using in_component in_P by blast
+  show thesis by (rule that[OF anchor intersects eventual])
 qed
 
 lemma finite_relative_adp_selected_chain_origin_successors:

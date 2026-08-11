@@ -126,3 +126,23 @@ the selected heavy path starts at a labeled ADP application. This is the local
 branching fact needed for the minimal-lasso half of Theorem 33; the remaining
 work identifies late offshoot labels as base ADPs with multiple annotations
 and lifts the infinite path to the finite estimated dependency graph.
+
+The 2026-08-11 finite-graph checkpoint was replayed as
+`Draft.Finite_Branching_Dichotomy_Test14` and
+`Draft.Relative_ADP_Dependency_Graph_Test125`; the latter completed in 3.28
+seconds in the warm console. The generic layer now enumerates infinitely many
+events on a path, proves that the intervals between consecutive events contain
+only non-events, and extracts an eventual mutual-reachability class from every
+infinite path over a finite node set.
+
+The ADP layer specializes this construction to selected labels. Consecutive
+labels on the canonical origin path induce genuine semantic dependency edges,
+and every label belongs to the finite ADP problem. Reachability is explicitly
+restricted to graph nodes in that problem; paths through arbitrary external
+terms are not admitted. The resulting component is the maximal
+mutual-reachability class of its anchor, is pairwise connected, and contains a
+main ADP whenever the origin path has infinitely many main events. This
+finishes the main-containing SCC half of the soundness argument for Theorem 33.
+The remaining semantic step is the minimal-lasso half: after main events cease,
+project the recurring branching base labels in the graph over flattened main
+ADPs plus base ADPs, and project one offshoot to its first main label.
