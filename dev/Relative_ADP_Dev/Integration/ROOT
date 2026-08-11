@@ -1,0 +1,7 @@
+session Relative_ADP_Ceta_Dev in "." = Relative_ADP_Checker_Dev +
+  options [document = false]
+  sessions
+    Proof_Checker
+  theories
+    Relative_ADP_Ceta
+    Relative_ADP_Code_Haskell

@@ -43,6 +43,17 @@ test: ceta
 ceta:
 	@$(MAKE) haskell
 
+ceta-relative-adp:
+	@echo "Compiling integrated relative-ADP checker"
+	@cd $(GENERATED)/$(HASKELL) && ghc $(GHC_ARGS) --make Main_Relative_ADP.hs -o ceta-relative-adp > /dev/null 2>&1
+	@$(OK)
+	@mv $(GENERATED)/$(HASKELL)/ceta-relative-adp ceta
+	@$(OK)
+
+test-relative-adp: ceta-relative-adp
+	@./ceta examples/relative_adp_rt1_3.cpf.xml > /dev/null
+	@$(OK)
+
 haskell:
 	@echo "Compiling Haskell sources"
 	@cd $(GENERATED)/$(HASKELL) && ghc $(GHC_ARGS) --make Main -o ceta > /dev/null 2>&1
@@ -72,5 +83,5 @@ isabelle-csr-extensions:
 isabelle-proof-checker:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) Proof_Checker
 
-.PHONY: all clean haskell test isabelle-proof-base isabelle-csr-base \
+.PHONY: all clean haskell ceta-relative-adp test-relative-adp test isabelle-proof-base isabelle-csr-base \
 	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker
