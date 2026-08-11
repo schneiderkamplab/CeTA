@@ -2889,6 +2889,79 @@ proof -
         OF steps subset initial_erased strict])
 qed
 
+definition relative_adp_selected_retained_main_reachable ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow>
+    nat \<times> pos \<Rightarrow> bool" where
+  "relative_adp_selected_retained_main_reachable Q P A terms source \<longleftrightarrow>
+    (\<exists>target.
+      (source,target) \<in>
+        (relative_adp_selected_retained_origin_edge Q P A terms)\<^sup>* \<and>
+      relative_adp_selected_chain_main_event P A terms target \<and>
+      relative_adp_selected_chain_node_label P A terms target \<in> Q)"
+
+lemma finite_family_covers_infinite_indices:
+  fixes family :: "'a set" and covered :: "'a \<Rightarrow> nat \<Rightarrow> bool"
+  assumes finite: "finite family"
+    and infinite: "INFM n. \<exists>x \<in> family. covered x n"
+  obtains x where "x \<in> family" "INFM n. covered x n"
+proof (rule ccontr)
+  assume none: "\<not> thesis"
+  have finite_each: "\<And>x. x \<in> family \<Longrightarrow> finite {n. covered x n}"
+  proof -
+    fix x
+    assume x: "x \<in> family"
+    have "\<not> (INFM n. covered x n)" using none x that by blast
+    then show "finite {n. covered x n}" unfolding INFM_iff_infinite by simp
+  qed
+  have finite_union: "finite (\<Union>x \<in> family. {n. covered x n})"
+    using finite finite_each by simp
+  have equality: "{n. \<exists>x \<in> family. covered x n} =
+      (\<Union>x \<in> family. {n. covered x n})" by blast
+  have "finite {n. \<exists>x \<in> family. covered x n}"
+    unfolding equality by (fact finite_union)
+  with infinite show False unfolding INFM_iff_infinite by simp
+qed
+
+theorem relative_adp_selected_finite_lasso_family_has_non_SN_child:
+  assumes steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and finite: "finite family"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and path_root: "path 0 = (0,root_pos)"
+    and root_marked: "root_pos \<in> sharp_positions source"
+    and path_retained: "\<And>Q n. Q \<in> family \<Longrightarrow>
+      (path n, path (Suc n)) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms"
+    and covered: "INFM n. \<exists>Q \<in> family.
+      relative_adp_selected_retained_main_reachable Q P A terms (path n)"
+  obtains Q where
+    "Q \<in> family"
+    "\<not> adp_problem_SN
+      (P \<inter> Q,
+        (Q \<union> erase_annotations_adp ` (A - Q)) - (P \<inter> Q))"
+proof -
+  from finite_family_covers_infinite_indices[
+      where family=family and covered=
+        "\<lambda>Q n. relative_adp_selected_retained_main_reachable
+          Q P A terms (path n)", OF finite covered]
+  obtain Q where Q: "Q \<in> family"
+    and recurring: "INFM n.
+      relative_adp_selected_retained_main_reachable Q P A terms (path n)" .
+  have edges: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_retained_origin_edge Q P A terms"
+    by (rule path_retained[OF Q])
+  have non_SN: "\<not> adp_problem_SN
+      (P \<inter> Q,
+        (Q \<union> erase_annotations_adp ` (A - Q)) - (P \<inter> Q))"
+    by (rule relative_adp_selected_recurring_retained_main_paths_not_SN[
+        OF steps subset initial_erased path_root root_marked edges])
+       (use recurring in
+        \<open>simp add: relative_adp_selected_retained_main_reachable_def\<close>)
+  show thesis by (rule that[OF Q non_SN])
+qed
+
 lemma relative_adp_selected_unlabeled_edge_shape:
   assumes edge: "((i,q),(Suc i,q')) \<in>
       relative_adp_selected_chain_origin_edge P A terms"

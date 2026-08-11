@@ -258,3 +258,15 @@ selection step must extract one such finite lasso node set from infinitely
 many canonical-origin offshoots. The executable checker must then cover every
 possible recurring set; it must not silently restrict this to simple graph
 paths unless a separate theorem justifies that restriction.
+
+The finite-family checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test205`; the full theory checked in 5.96
+seconds. It separates the semantic proof from the eventual graph enumeration.
+For any finite family of checked lasso sets, if every late generated main
+redex is reachable through at least one retained family member, Isabelle's
+finite pigeonhole argument selects one member that recurs infinitely often.
+The fixed-lasso theorem then proves that member's child nonterminating. This
+is the coverage interface the executable checker must discharge. It permits a
+later optimized SCC-DAG enumeration without changing the term-level proof,
+while ruling out an under-approximating family that misses cyclic offshoot
+stems.
