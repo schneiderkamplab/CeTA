@@ -49,6 +49,250 @@ definition mark_adp_root ::
   "('f adp_symbol, 'v) term \<Rightarrow> ('f adp_symbol, 'v) term" where
   "mark_adp_root t = annotate_term {[]} (erase_adp_term t)"
 
+lemma annotate_outside_plain:
+  fixes t :: "('f, 'v) term" and ts :: "('f, 'v) term list"
+  shows "(\<forall>q. p @ q \<notin> A) \<Longrightarrow>
+    annotate_term_at A p t = plain_adp_term t"
+  and "(\<forall>q. p @ q \<notin> A) \<Longrightarrow>
+    annotate_terms_at A p i ts = map plain_adp_term ts"
+proof (induct t and ts arbitrary: A p and A p i
+    rule: annotate_term_at_annotate_terms_at.induct)
+  case (1 A p x)
+  then show ?case by simp
+next
+  case (2 A p f ts)
+  have p_notin: "p \<notin> A"
+    using "2.prems"[rule_format, of "[]"] by simp
+  have children: "annotate_terms_at A p 0 ts = map plain_adp_term ts"
+    by (rule "2.hyps"[OF "2.prems"])
+  show ?case using p_notin children by simp
+next
+  case (3 A p i)
+  then show ?case by simp
+next
+  case (4 A p i t ts)
+  have below: "\<forall>q. (p @ [i]) @ q \<notin> A"
+    using "4.prems" by (simp add: append_assoc)
+  have head: "annotate_term_at A (p @ [i]) t = plain_adp_term t"
+    by (rule "4.hyps"(1)[OF below])
+  have tail: "annotate_terms_at A p (Suc i) ts = map plain_adp_term ts"
+    by (rule "4.hyps"(2)[OF "4.prems"])
+  show ?case using head tail by simp
+qed
+
+lemma annotate_single_root_plain:
+  "p \<noteq> [] \<Longrightarrow>
+    annotate_term_at {[]} p t = plain_adp_term t"
+  by (rule annotate_outside_plain) auto
+
+lemma annotate_empty_plain [simp]:
+  "annotate_term {} t = plain_adp_term t"
+  unfolding annotate_term_def
+  by (rule annotate_outside_plain) simp
+
+lemma annotate_single_root_children:
+  "annotate_terms_at {[]} [] i ts = map plain_adp_term ts"
+  by (induct ts arbitrary: i) (auto simp: annotate_single_root_plain)
+
+lemma annotate_single_root_fun [simp]:
+  "annotate_term {[]} (Fun f ts) =
+    Fun (Sharp f) (map plain_adp_term ts)"
+  unfolding annotate_term_def
+  by (simp add: annotate_single_root_children)
+
+lemma plain_adp_term_subst:
+  "plain_adp_term (t \<cdot> sigma) =
+    plain_adp_term t \<cdot> (plain_adp_term \<circ> sigma)"
+  by (induct t) (auto simp: map_idI)
+
+lemma erase_adp_term_subst:
+  "erase_adp_term (t \<cdot> sigma) =
+    erase_adp_term t \<cdot> (erase_adp_term \<circ> sigma)"
+  by (induct t) (auto simp: map_idI)
+
+lemma mark_adp_root_subst:
+  assumes "is_Fun t"
+  shows "mark_adp_root (t \<cdot> sigma) =
+    mark_adp_root t \<cdot>
+      (plain_adp_term \<circ> erase_adp_term \<circ> sigma)"
+  using assms
+  by (cases t) (simp_all add: mark_adp_root_def plain_adp_term_subst
+      erase_adp_term_subst comp_def)
+
+lemma mark_adp_root_erased_instance:
+  assumes t_fun: "is_Fun t"
+    and erased: "erase_adp_term u = erase_adp_term t \<cdot> sigma"
+  shows "mark_adp_root u =
+    mark_adp_root t \<cdot> (plain_adp_term \<circ> sigma)"
+  using t_fun erased
+  by (cases t) (simp_all add: mark_adp_root_def plain_adp_term_subst
+      comp_def)
+
+lemma poss_plain_adp_term [simp]:
+  "poss (plain_adp_term t) = poss t"
+  by (induct t) auto
+
+lemma plain_adp_term_replace_at:
+  assumes p: "p \<in> poss t"
+  shows "plain_adp_term (replace_at t p u) =
+    replace_at (plain_adp_term t) p (plain_adp_term u)"
+  using p
+proof (induct p arbitrary: t)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons i p)
+  then obtain f ts where t: "t = Fun f ts"
+    and i: "i < length ts" and p: "p \<in> poss (ts ! i)"
+    by (cases t) auto
+  show ?case unfolding t
+    using i Cons.hyps[OF p]
+    by (simp add: take_map drop_map)
+qed
+
+lemma annotate_single_root_replace_below:
+  assumes p: "p \<in> poss t" and nonroot: "p \<noteq> []"
+  shows "annotate_term {[]} (replace_at t p u) =
+    replace_at (annotate_term {[]} t) p (plain_adp_term u)"
+proof -
+  from nonroot obtain i ps where p_shape: "p = i # ps"
+    by (cases p) auto
+  from p[unfolded p_shape] obtain f ts where t: "t = Fun f ts"
+    and i: "i < length ts" and ps: "ps \<in> poss (ts ! i)"
+    by (cases t) auto
+  show ?thesis unfolding t p_shape
+    using i plain_adp_term_replace_at[OF ps, of u]
+    by (simp add: map_update take_map drop_map)
+qed
+
+lemma annotate_term_at_subt_at:
+  assumes p: "p \<in> poss t"
+  shows "annotate_term_at A base t |_ p =
+    annotate_term_at A (base @ p) (t |_ p)"
+  using p
+proof (induct p arbitrary: t base)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons i p)
+  then obtain f ts where t: "t = Fun f ts"
+    and i: "i < length ts" and p: "p \<in> poss (ts ! i)"
+    by (cases t) auto
+  have nth: "annotate_terms_at A base 0 ts ! i =
+      annotate_term_at A (base @ [i]) (ts ! i)"
+    using annotate_terms_at_nth[OF i, of A base 0] by simp
+  show ?case
+    unfolding t using i nth Cons.hyps[OF p, of "base @ [i]"]
+    by (simp add: append_assoc)
+qed
+
+lemma mark_adp_root_nonroot_subt_at:
+  assumes p: "p \<in> poss t" and nonroot: "p \<noteq> []"
+  shows "mark_adp_root t |_ p = plain_adp_term (erase_adp_term t |_ p)"
+proof -
+  have p_erased: "p \<in> poss (erase_adp_term t)" using p by simp
+  have annotated: "annotate_term {[]} (erase_adp_term t) |_ p =
+      annotate_term_at {[]} p (erase_adp_term t |_ p)"
+    unfolding annotate_term_def
+    using annotate_term_at_subt_at[OF p_erased, of "{[]}" "[]"] by simp
+  show ?thesis unfolding mark_adp_root_def annotated
+    by (rule annotate_single_root_plain[OF nonroot])
+qed
+
+lemma sharp_positions_plain_adp_term [simp]:
+  "sharp_positions (plain_adp_term t) = {}"
+proof (rule ccontr)
+  assume "sharp_positions (plain_adp_term t) \<noteq> {}"
+  then obtain p where sharp: "p \<in> sharp_positions (plain_adp_term t)"
+    by blast
+  then have p: "p \<in> poss t" unfolding sharp_positions_def by simp
+  from sharp have marked:
+      "case root (plain_adp_term t |_ p) of
+        Some (f, _) \<Rightarrow> is_sharp_symbol f | None \<Rightarrow> False"
+    unfolding sharp_positions_def by blast
+  have at: "plain_adp_term t |_ p = plain_adp_term (t |_ p)"
+    by (rule plain_adp_term_subt_at[OF p])
+  show False using marked at by (cases "t |_ p") auto
+qed
+
+lemma annotate_single_root_below_adp_step:
+  assumes rule: "(l,r) \<in> A"
+    and valid: "valid_vrf (l,r) phi"
+    and delta_fun: "delta \<in> fun_poss u"
+    and nonroot: "delta \<noteq> []"
+    and redex: "u |_ delta = erase_adp_term l \<cdot> sigma"
+  shows "(annotate_term {[]} u,
+      annotate_term {[]} (replace_at u delta
+        (erase_adp_term r \<cdot> sigma))) \<in>
+    adp_step_case_rel (erase_annotations_adp ` A) False"
+proof -
+  let ?source = "annotate_term {[]} u"
+  let ?plain_pair = "erase_annotations_adp (l,r)"
+  have pair: "?plain_pair \<in> erase_annotations_adp ` A"
+    using rule by blast
+  have pair_expanded:
+      "(fst ?plain_pair, snd ?plain_pair) \<in> erase_annotations_adp ` A"
+    using pair by simp
+  have lhs_plain: "plain_adp_term_pred (fst ?plain_pair)"
+    unfolding erase_annotations_adp_def by simp
+  have vrf: "valid_vrf ?plain_pair (\<lambda>_. None)"
+    by (rule empty_vrf_valid)
+  have vrf_expanded:
+      "valid_vrf (fst ?plain_pair, snd ?plain_pair) (\<lambda>_. None)"
+    using vrf by simp
+  have delta_poss: "delta \<in> poss u"
+    by (rule fun_poss_imp_poss[OF delta_fun])
+  have source_delta: "?source |_ delta = plain_adp_term (u |_ delta)"
+  proof -
+    have "?source = mark_adp_root (plain_adp_term u)"
+      unfolding mark_adp_root_def by simp
+    moreover have "delta \<in> poss (plain_adp_term u)" using delta_poss by simp
+    ultimately show ?thesis
+      using mark_adp_root_nonroot_subt_at[OF _ nonroot,
+          of "plain_adp_term u"] by simp
+  qed
+  have delta_source_fun: "delta \<in> fun_poss ?source"
+    using delta_fun fun_poss_erase_adp_term[of ?source] by simp
+  have unsharp: "delta \<notin> sharp_positions ?source"
+    using sharp_positions_annotate_term[OF delta_fun, of "{[]}"] nonroot
+    by simp
+  have erase_plain_sigma:
+      "erase_adp_term \<circ> (plain_adp_term \<circ> sigma) = sigma"
+    by (rule ext) simp
+  have lhs_match: "erase_adp_term (?source |_ delta) =
+      erase_adp_term (fst ?plain_pair) \<cdot> sigma"
+    using source_delta redex
+    unfolding erase_annotations_adp_def
+    by (simp add: plain_adp_term_subst erase_adp_term_subst
+        erase_plain_sigma)
+  have no_transport:
+      "transported_annotations (\<lambda>_. None)
+        (fst ?plain_pair) (?source |_ delta) = {}"
+    unfolding transported_annotations_def by simp
+  have target_shape:
+      "replace_at ?source delta
+        (annotate_term {}
+          (erase_adp_term (snd ?plain_pair) \<cdot> sigma)) =
+       annotate_term {[]} (replace_at u delta
+         (erase_adp_term r \<cdot> sigma))"
+    unfolding erase_annotations_adp_def
+    using annotate_single_root_replace_below[OF delta_poss nonroot,
+        of "erase_adp_term r \<cdot> sigma"]
+    by (simp add: plain_adp_term_subst)
+  have "adp_step_case (erase_annotations_adp ` A) False ?source
+      (annotate_term {[]} (replace_at u delta
+        (erase_adp_term r \<cdot> sigma)))"
+    apply (rule adp_step_case.adp_stepI[
+          where sigma=sigma and A="{}",
+          OF pair_expanded lhs_plain vrf_expanded delta_source_fun])
+    subgoal using unsharp by simp
+    subgoal by (fact lhs_match)
+    subgoal using no_transport by simp
+    subgoal by (rule sym[OF target_shape])
+    done
+  then show ?thesis unfolding adp_step_case_rel_def by simp
+qed
+
 definition annotated_rhs_subterms ::
   "('f, 'v) adp \<Rightarrow> ('f adp_symbol, 'v) term set" where
   "annotated_rhs_subterms p = {snd p |_ q | q. q \<in> sharp_positions (snd p)}"
@@ -1209,6 +1453,221 @@ proof -
   show ?thesis using projection unfolding mark_adp_root_def by simp
 qed
 
+lemma relative_adp_selected_unlabeled_projection:
+  assumes edge: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and unlabeled:
+      "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+  shows "(mark_adp_root (terms i |_ q),
+      mark_adp_root (terms (Suc i) |_ q')) \<in>
+    (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+proof -
+  let ?application = "relative_adp_selected_application P A terms i"
+  from edge have source_sharp: "q \<in> sharp_positions (terms i)"
+    and origin: "relative_adp_canonical_origin_edge A
+      (fst ?application) (terms i) (terms (Suc i))
+      (fst (snd ?application)) (snd (snd ?application)) q q'"
+    unfolding relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  have q_poss: "q \<in> poss (terms i)"
+    using source_sharp unfolding sharp_positions_def by auto
+  have not_redex: "snd (snd ?application) \<noteq> q"
+    by (rule relative_adp_selected_unlabeled_edge_not_at_redex[
+        OF edge step subset unlabeled])
+  have alternative:
+      "(q' = q \<and> (q <\<^sub>p snd (snd ?application) \<or>
+        q \<bottom> snd (snd ?application))) \<or>
+       erase_adp_term (terms i |_ q) =
+         erase_adp_term (terms (Suc i) |_ q')"
+    by (rule relative_adp_canonical_origin_projection[OF origin not_redex])
+  from origin obtain l r phi sigma annotations where
+      rule: "(l,r) \<in> A"
+    and valid: "valid_vrf (l,r) phi"
+    and redex_fun: "snd (snd ?application) \<in> fun_poss (terms i)"
+    and lhs: "erase_adp_term (terms i |_ snd (snd ?application)) =
+      erase_adp_term l \<cdot> sigma"
+    and target: "terms (Suc i) = replace_at (terms i)
+      (snd (snd ?application))
+      (annotate_term annotations (erase_adp_term r \<cdot> sigma))"
+    unfolding relative_adp_canonical_origin_edge_def by blast
+  from alternative show ?thesis
+  proof
+    assume preserved:
+        "q' = q \<and> (q <\<^sub>p snd (snd ?application) \<or>
+          q \<bottom> snd (snd ?application))"
+    then have q': "q' = q" and outside:
+        "q <\<^sub>p snd (snd ?application) \<or>
+          q \<bottom> snd (snd ?application)"
+      by auto
+    from outside show ?thesis
+    proof
+      assume above: "q <\<^sub>p snd (snd ?application)"
+      from prefixE[OF prefix_order.less_imp_le[OF above]]
+      obtain delta where redex: "snd (snd ?application) = q @ delta"
+        by blast
+      have nonroot: "delta \<noteq> []" using above redex by auto
+      have delta_fun: "delta \<in> fun_poss (terms i |_ q)"
+      proof -
+        have delta_poss: "delta \<in> poss (terms i |_ q)"
+          using fun_poss_imp_poss[OF redex_fun] q_poss redex by simp
+        from fun_poss_fun_conv[OF redex_fun]
+        obtain f ts where at:
+            "terms i |_ snd (snd ?application) = Fun f ts" by blast
+        have local_at: "terms i |_ q |_ delta = Fun f ts"
+          using at redex q_poss by simp
+        show ?thesis
+          by (rule poss_is_Fun_fun_poss[OF delta_poss])
+             (use local_at in simp)
+      qed
+      have delta_fun_erased:
+          "delta \<in> fun_poss (erase_adp_term (terms i |_ q))"
+        using delta_fun fun_poss_erase_adp_term[of "terms i |_ q"] by simp
+      have delta_poss: "delta \<in> poss (terms i |_ q)"
+        by (rule fun_poss_imp_poss[OF delta_fun])
+      have local_redex:
+          "erase_adp_term (terms i |_ q) |_ delta =
+            erase_adp_term l \<cdot> sigma"
+        using lhs redex q_poss delta_poss
+          erase_adp_term_subt_at[OF q_poss]
+          erase_adp_term_subt_at[OF delta_poss] by simp
+      have weak_step:
+          "(mark_adp_root (terms i |_ q),
+            annotate_term {[]} (replace_at
+              (erase_adp_term (terms i |_ q)) delta
+              (erase_adp_term r \<cdot> sigma))) \<in>
+            adp_step_case_rel (erase_annotations_adp ` A) False"
+        unfolding mark_adp_root_def
+        by (rule annotate_single_root_below_adp_step[
+            OF rule valid delta_fun_erased nonroot local_redex])
+      have target_nested:
+          "terms (Suc i) = replace_at (terms i) q
+            (replace_at (terms i |_ q) delta
+              (annotate_term annotations (erase_adp_term r \<cdot> sigma)))"
+        using target redex replace_at_append_context[OF q_poss,
+            of delta "annotate_term annotations
+              (erase_adp_term r \<cdot> sigma)"]
+        by simp
+      have target_q_annotated:
+          "terms (Suc i) |_ q = replace_at (terms i |_ q) delta
+            (annotate_term annotations (erase_adp_term r \<cdot> sigma))"
+        unfolding target_nested
+        by (rule replace_at_subt_at[OF q_poss])
+      have target_q_erased:
+          "erase_adp_term (terms (Suc i) |_ q) =
+            replace_at (erase_adp_term (terms i |_ q)) delta
+              (erase_adp_term r \<cdot> sigma)"
+        using arg_cong[OF target_q_annotated,
+            of erase_adp_term] delta_poss
+        by (simp add: erase_adp_term_replace_at)
+      have target_mark:
+          "mark_adp_root (terms (Suc i) |_ q) =
+            annotate_term {[]} (replace_at
+              (erase_adp_term (terms i |_ q)) delta
+              (erase_adp_term r \<cdot> sigma))"
+        unfolding mark_adp_root_def target_q_erased by simp
+      show ?thesis unfolding q' target_mark
+        by (rule r_into_rtrancl[OF weak_step])
+    next
+      assume parallel: "q \<bottom> snd (snd ?application)"
+      have same: "terms (Suc i) |_ q = terms i |_ q"
+        unfolding target
+        by (rule parallel_replace_at_subt_at[
+            OF parallel_pos_sym[OF parallel]
+              fun_poss_imp_poss[OF redex_fun] q_poss])
+      show ?thesis unfolding q' same by simp
+    qed
+  next
+    assume projection: "erase_adp_term (terms i |_ q) =
+        erase_adp_term (terms (Suc i) |_ q')"
+    then have "mark_adp_root (terms i |_ q) =
+        mark_adp_root (terms (Suc i) |_ q')"
+      unfolding mark_adp_root_def by simp
+    then show ?thesis by simp
+  qed
+qed
+
+lemma relative_adp_selected_unlabeled_rtrancl_projection:
+  assumes path: "(source,target) \<in>
+      {(source,target). (source,target) \<in>
+          relative_adp_selected_chain_origin_edge P A terms \<and>
+        \<not> relative_adp_selected_chain_labeled P A terms source}\<^sup>*"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  shows "(mark_adp_root (terms (fst source) |_ snd source),
+      mark_adp_root (terms (fst target) |_ snd target)) \<in>
+    (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+  using path
+proof (induct rule: rtrancl_induct)
+  case base
+  then show ?case by simp
+next
+  case (step middle target)
+  from step.hyps(2) have edge: "(middle,target) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and unlabeled:
+      "\<not> relative_adp_selected_chain_labeled P A terms middle"
+    by auto
+  obtain i q where middle: "middle = (i,q)" by (cases middle) auto
+  from edge obtain q' where target: "target = (Suc i,q')"
+    unfolding middle relative_adp_selected_chain_origin_edge_def by auto
+  have edge': "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using edge unfolding middle target .
+  have unlabeled':
+      "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+    using unlabeled unfolding middle .
+  have projection':
+      "(mark_adp_root (terms i |_ q),
+        mark_adp_root (terms (Suc i) |_ q')) \<in>
+      (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+    by (rule relative_adp_selected_unlabeled_projection[
+        OF edge' steps subset unlabeled'])
+  have projection:
+      "(mark_adp_root (terms (fst middle) |_ snd middle),
+        mark_adp_root (terms (fst target) |_ snd target)) \<in>
+      (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+    using projection' unfolding middle target by simp
+  show ?case
+    by (rule rtrancl_trans[OF step.hyps(3) projection])
+qed
+
+lemma relative_adp_selected_labeled_source_instance:
+  assumes step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and label: "relative_adp_selected_chain_label P A terms (i,q) pair"
+    and lhs_fun: "is_Fun (fst pair)"
+  obtains tau where
+    "mark_adp_root (terms i |_ q) = mark_adp_root (fst pair) \<cdot> tau"
+proof -
+  let ?application = "relative_adp_selected_application P A terms i"
+  have preferred: "relative_adp_preferred_application_valid P A
+      (terms i) (terms (Suc i)) ?application"
+    by (rule relative_adp_selected_application_valid[OF step subset])
+  then have applied: "relative_adp_applied_at A (fst ?application)
+      (terms i) (terms (Suc i)) (fst (snd ?application))
+      (snd (snd ?application))"
+    unfolding relative_adp_preferred_application_valid_def
+      relative_adp_application_valid_def by simp
+  from label have pair: "fst (snd ?application) = pair"
+    and redex: "snd (snd ?application) = q"
+    unfolding relative_adp_selected_chain_label_def by (auto simp: Let_def)
+  from applied obtain l r phi sigma annotations where
+      pair_lr: "fst (snd ?application) = (l,r)"
+    and lhs: "erase_adp_term (terms i |_
+        snd (snd ?application)) = erase_adp_term l \<cdot> sigma"
+    unfolding relative_adp_applied_at_def by blast
+  have pair_eq: "pair = (l,r)" using pair pair_lr by simp
+  have erased_instance: "erase_adp_term (terms i |_ q) =
+      erase_adp_term (fst pair) \<cdot> sigma"
+    using lhs redex pair_eq by simp
+  have marked: "mark_adp_root (terms i |_ q) =
+      mark_adp_root (fst pair) \<cdot> (plain_adp_term \<circ> sigma)"
+    by (rule mark_adp_root_erased_instance[OF lhs_fun erased_instance])
+  show thesis by (rule that[OF marked])
+qed
+
 lemma relative_adp_selected_labeled_edge_enters_rhs:
   assumes edge: "((i,q),(Suc i,q')) \<in>
       relative_adp_selected_chain_origin_edge P A terms"
@@ -1267,6 +1726,126 @@ proof -
     moreover have "q = q @ rho @ beta" using variable_transport by simp
     ultimately show thesis by simp
   qed
+qed
+
+lemma relative_adp_selected_labeled_edge_rhs_instance:
+  assumes edge: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and label: "relative_adp_selected_chain_label P A terms (i,q) pair"
+    and lhs_fun: "is_Fun (fst pair)"
+  obtains alpha tau where
+    "alpha \<in> sharp_positions (snd pair)"
+    "mark_adp_root (terms (Suc i) |_ q') =
+      mark_adp_root (snd pair |_ alpha) \<cdot> tau"
+proof -
+  from relative_adp_selected_labeled_edge_enters_rhs[
+      OF edge label lhs_fun]
+  obtain alpha where alpha: "alpha \<in> sharp_positions (snd pair)"
+    and q': "q' = q @ alpha" .
+  let ?application = "relative_adp_selected_application P A terms i"
+  from edge have source_sharp: "q \<in> sharp_positions (terms i)"
+    and origin: "relative_adp_canonical_origin_edge A (fst ?application)
+      (terms i) (terms (Suc i)) (fst (snd ?application))
+      (snd (snd ?application)) q q'"
+    unfolding relative_adp_selected_chain_origin_edge_def by (auto simp: Let_def)
+  from label have at: "fst ?application"
+    and pair: "fst (snd ?application) = pair"
+    and redex: "snd (snd ?application) = q"
+    unfolding relative_adp_selected_chain_label_def by (auto simp: Let_def)
+  from origin obtain l r phi sigma annotations where
+      pair_lr: "fst (snd ?application) = (l,r)"
+    and target: "terms (Suc i) = replace_at (terms i)
+      (snd (snd ?application))
+      (annotate_term annotations (erase_adp_term r \<cdot> sigma))"
+    unfolding relative_adp_canonical_origin_edge_def by blast
+  have pair_eq: "pair = (l,r)" using pair pair_lr by simp
+  have q_poss: "q \<in> poss (terms i)"
+    using source_sharp unfolding sharp_positions_def by auto
+  have q_after: "q \<in> poss (terms (Suc i))"
+    unfolding target redex
+    by (rule replace_at_below_poss[OF q_poss]) simp
+  have local_target: "terms (Suc i) |_ q =
+      annotate_term annotations (erase_adp_term r \<cdot> sigma)"
+    unfolding target redex
+    by (rule replace_at_subt_at[OF q_poss])
+  have alpha_poss: "alpha \<in> poss r"
+    using alpha pair_eq unfolding sharp_positions_def by auto
+  have alpha_erased_poss: "alpha \<in> poss (erase_adp_term r)"
+    using alpha_poss by simp
+  have alpha_subst_poss:
+      "alpha \<in> poss (erase_adp_term r \<cdot> sigma)"
+    using alpha_erased_poss by simp
+  have alpha_annotated_poss:
+      "alpha \<in> poss
+        (annotate_term annotations (erase_adp_term r \<cdot> sigma))"
+    using alpha_subst_poss poss_annotate_term_at[
+        of annotations "[]" "erase_adp_term r \<cdot> sigma"]
+    unfolding annotate_term_def by simp
+  have erased_instance:
+      "erase_adp_term (terms (Suc i) |_ q') =
+        erase_adp_term (snd pair |_ alpha) \<cdot> sigma"
+    using subt_at_append[OF q_after, of alpha] local_target
+      subt_at_subst[OF alpha_erased_poss, of sigma]
+      erase_adp_term_subt_at[OF alpha_poss]
+      erase_adp_term_subt_at[OF alpha_annotated_poss]
+    unfolding q' pair_eq by simp
+  have rhs_fun: "is_Fun (snd pair |_ alpha)"
+    using alpha unfolding sharp_positions_def by (auto split: option.splits)
+  have marked: "mark_adp_root (terms (Suc i) |_ q') =
+      mark_adp_root (snd pair |_ alpha) \<cdot> (plain_adp_term \<circ> sigma)"
+    by (rule mark_adp_root_erased_instance[OF rhs_fun erased_instance])
+  show thesis by (rule that[OF alpha marked])
+qed
+
+lemma relative_adp_selected_labeled_segment_dependency_edge:
+  assumes entry: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and source_label:
+      "relative_adp_selected_chain_label P A terms (i,q) pair"
+    and path: "((Suc i,q'),(j,rho)) \<in>
+      {(source,target). (source,target) \<in>
+          relative_adp_selected_chain_origin_edge P A terms \<and>
+        \<not> relative_adp_selected_chain_labeled P A terms source}\<^sup>*"
+    and target_label:
+      "relative_adp_selected_chain_label P A terms (j,rho) next_pair"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and source_lhs_fun: "is_Fun (fst pair)"
+    and target_lhs_fun: "is_Fun (fst next_pair)"
+  shows "relative_adp_dependency_edge A pair next_pair"
+proof -
+  from relative_adp_selected_labeled_edge_rhs_instance[
+      OF entry source_label source_lhs_fun]
+  obtain alpha sigma where
+      alpha: "alpha \<in> sharp_positions (snd pair)"
+    and source_instance:
+      "mark_adp_root (terms (Suc i) |_ q') =
+        mark_adp_root (snd pair |_ alpha) \<cdot> sigma" .
+  have projected_raw:
+      "(mark_adp_root (terms (fst (Suc i,q')) |_ snd (Suc i,q')),
+        mark_adp_root (terms (fst (j,rho)) |_ snd (j,rho))) \<in>
+      (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+    by (rule relative_adp_selected_unlabeled_rtrancl_projection[
+        where source="(Suc i,q')" and target="(j,rho)"
+          and P=P and A=A and terms=terms,
+        OF path steps subset])
+  have projected:
+      "(mark_adp_root (terms (Suc i) |_ q'),
+        mark_adp_root (terms j |_ rho)) \<in>
+      (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+    using projected_raw by simp
+  from relative_adp_selected_labeled_source_instance[
+      OF steps subset target_label target_lhs_fun]
+  obtain tau where target_instance:
+      "mark_adp_root (terms j |_ rho) =
+        mark_adp_root (fst next_pair) \<cdot> tau" .
+  have witness: "snd pair |_ alpha \<in> annotated_rhs_subterms pair"
+    using alpha unfolding annotated_rhs_subterms_def by blast
+  show ?thesis
+    unfolding relative_adp_dependency_edge_def
+    by (rule bexI[OF _ witness], rule exI[of _ sigma],
+        rule exI[of _ tau])
+       (use projected source_instance target_instance in simp)
 qed
 
 lemma finite_relative_adp_selected_chain_origin_successors:

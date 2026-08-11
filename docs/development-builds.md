@@ -92,3 +92,19 @@ The variable-transport case is proved directly from the valid VRF and the
 substitution positions; it does not assume that source and target positions
 are different. The corresponding selected unlabeled moving-edge theorem then
 gives equality of the root-marked projections.
+
+The 2026-08-11 dependency-edge checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test74` from the same warm parent heap in
+2.44 seconds. It strengthens the moving-edge result to every unlabeled edge:
+rewrites parallel to or below the tracked marker preserve its root-marked
+projection, while a rewrite strictly below it is simulated by one weak step
+over the erased ADPs. The simulation composes over arbitrary unlabeled origin
+paths. Labeled source and target projections are then reconstructed as
+instances of the selected ADP left-hand side and annotated right-hand-side
+subterm, respectively. Consequently, a labeled edge followed by an unlabeled
+segment to the next label is a genuine `relative_adp_dependency_edge`.
+
+The proof deliberately uses the existing `replace_at_append_context` law for
+nested replacement. A broad simplifier call at this point diverged; retaining
+the explicit law keeps the replay deterministic and avoids accidental changes
+to graph estimation or origin semantics.
