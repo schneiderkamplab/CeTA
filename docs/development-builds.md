@@ -328,3 +328,15 @@ termination of all emitted children implies termination of the parent. The
 combined proof replayed as Test57 in 3.46 seconds, and the final direct theorem
 as `Draft.Relative_ADP_Dependency_Graph_Impl_Test58` in 3.51 seconds. The next
 step is to expose this finite child family in CPF/CeTA and emit it from Ferrum.
+
+The checker exposure is implemented in the next thin layer. A
+`Relative_ADP_Dependency_Graph` proof node carries exactly one recursive proof
+per checker-computed candidate. CeTA recomputes the complete ordered candidate
+list, checks function-rooted left-hand sides, rejects a child-count mismatch,
+constructs each child problem itself, and recursively checks every proof. The
+adapter soundness proof applies `relative_adp_estimated_graph_processor`
+directly. `Draft.Relative_ADP_Checker_Adapter_Test4` replayed in 14.51 seconds,
+the theorem-level checker tests in 0.69 seconds, and the recursive XML/CPF
+integration as `Draft.Relative_ADP_Ceta_Test1` in 23.70 seconds. The XML node
+is named `relativeAdpDependencyGraph`; its children are nested
+`relativeAdpTerminationProof` elements in checker candidate order.

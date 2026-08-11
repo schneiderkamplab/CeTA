@@ -23,6 +23,9 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
         continuation \<leftarrow> xml2relative_adp_termination_proof;
         xml_return (Relative_ADP_Erasure_Redpair redp
           main_indices base_indices continuation)
+      } XMLor XMLdo (STR ''relativeAdpDependencyGraph'') {
+        proofs \<leftarrow>* xml2relative_adp_termination_proof;
+        xml_return (Relative_ADP_Dependency_Graph proofs)
       }) id x"
 
 definition relative_adp_certification_problem_parser ::

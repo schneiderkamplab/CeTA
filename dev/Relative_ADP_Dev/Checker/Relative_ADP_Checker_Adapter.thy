@@ -1,6 +1,6 @@
 theory Relative_ADP_Checker_Adapter
   imports
-    Relative_ADP_Processors_Dev.Relative_ADP_Processors
+    Relative_ADP_Dependency_Graph_Dev.Relative_ADP_Dependency_Graph_Impl
     Ord.Reduction_Pair_Implementations
     Auxx.Map_Choice
 begin
@@ -253,12 +253,32 @@ datatype 'f relative_adp_termination_proof =
       "nat list"
       "nat list"
       "'f relative_adp_termination_proof"
+  | Relative_ADP_Dependency_Graph
+      "'f relative_adp_termination_proof list"
 
 definition relative_adps_at_indices ::
   "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
    nat list \<Rightarrow> nat list \<Rightarrow> ('f, 'v) adp list" where
   "relative_adps_at_indices P B main_indices base_indices =
     map (List.nth P) main_indices @ map (List.nth B) base_indices"
+
+definition relative_adp_graph_child ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+   ('f, 'v) adp list \<Rightarrow> ('f, 'v) relative_adp_problem_list" where
+  "relative_adp_graph_child P B Q = (let
+      P' = filter (\<lambda>p. p \<in> set Q) P;
+      B' = filter (\<lambda>p. p \<notin> set P')
+        (remdups (Q @ map erase_annotations_adp
+          (filter (\<lambda>p. p \<notin> set Q) (P @ B))))
+    in (P',B'))"
+
+lemma relative_adp_graph_child_sets:
+  "case relative_adp_graph_child P B Q of (P',B') \<Rightarrow>
+    (set P',set B') =
+      (set P \<inter> set Q,
+       (set Q \<union> erase_annotations_adp `
+          ((set P \<union> set B) - set Q)) - (set P \<inter> set Q))"
+  by (auto simp: relative_adp_graph_child_def Let_def)
 
 fun check_relative_adp_termination_proof ::
   "(('f::{compare_order,showl}) adp_symbol, string) rule list \<Rightarrow>
@@ -278,6 +298,21 @@ fun check_relative_adp_termination_proof ::
     let residual = relative_adp_erasure_residual P B selected;
     check_relative_adp_termination_proof (fst residual) (snd residual) proof
   }"
+| "check_relative_adp_termination_proof P B
+      (Relative_ADP_Dependency_Graph proofs) = (let
+    candidates = relative_adp_estimated_graph_candidates P B
+  in do {
+    check_all (\<lambda>pair. is_Fun (fst pair)) (P @ B)
+      <+? (\<lambda>pair. showsl_lit
+        (STR ''relative ADP graph requires function-rooted left-hand sides''));
+    check (length proofs = length candidates)
+      (showsl_lit (STR ''relative ADP graph child count mismatch''));
+    check_allm (\<lambda>(Q,proof).
+      let child = relative_adp_graph_child P B Q
+      in check_relative_adp_termination_proof
+        (fst child) (snd child) proof)
+      (zip candidates proofs)
+  })"
 
 theorem check_relative_adp_termination_proof_sound:
   fixes certificate :: "('f::{compare_order,showl}) relative_adp_termination_proof"
@@ -311,6 +346,55 @@ next
   show ?case
     by (rule check_relative_adp_erasure_redpair_sound[
           OF step residual_SN])
+next
+  case (Relative_ADP_Dependency_Graph proofs)
+  let ?candidates = "relative_adp_estimated_graph_candidates P B"
+  from Relative_ADP_Dependency_Graph.prems have lhs_fun:
+      "\<And>pair. pair \<in> set P \<union> set B \<Longrightarrow> is_Fun (fst pair)"
+    by (auto simp: isOK_check_allm)
+  from Relative_ADP_Dependency_Graph.prems have length:
+      "length proofs = length ?candidates" by simp
+  have children: "\<And>Q. Q \<in> set ?candidates \<Longrightarrow>
+      adp_problem_SN
+        (set P \<inter> set Q,
+         (set Q \<union> erase_annotations_adp `
+           ((set P \<union> set B) - set Q)) - (set P \<inter> set Q))"
+  proof -
+    fix Q
+    assume Q: "Q \<in> set ?candidates"
+    from Q obtain i where i: "i < length ?candidates"
+      and Q_nth: "Q = ?candidates ! i"
+      by (metis in_set_conv_nth)
+    let ?proof = "proofs ! i"
+    have proof_index: "i < length proofs" using i length by simp
+    have proof_member: "?proof \<in> set proofs"
+      using proof_index by simp
+    have zipped: "(Q,?proof) \<in> set (zip ?candidates proofs)"
+      using i proof_index Q_nth by (auto simp: in_set_zip)
+    from Relative_ADP_Dependency_Graph.prems zipped have checked:
+        "isOK (check_relative_adp_termination_proof
+          (fst (relative_adp_graph_child P B Q))
+          (snd (relative_adp_graph_child P B Q)) ?proof)"
+      by (auto simp: isOK_check_allm Let_def)
+    have child_SN: "adp_problem_SN
+        (set (fst (relative_adp_graph_child P B Q)),
+         set (snd (relative_adp_graph_child P B Q)))"
+      using Relative_ADP_Dependency_Graph.IH[OF proof_member checked] .
+    have child_sets: "case relative_adp_graph_child P B Q of (P',B') \<Rightarrow>
+        (set P',set B') =
+          (set P \<inter> set Q,
+           (set Q \<union> erase_annotations_adp `
+             ((set P \<union> set B) - set Q)) - (set P \<inter> set Q))"
+      by (rule relative_adp_graph_child_sets)
+    show "adp_problem_SN
+        (set P \<inter> set Q,
+         (set Q \<union> erase_annotations_adp `
+           ((set P \<union> set B) - set Q)) - (set P \<inter> set Q))"
+      using child_SN child_sets
+      by (cases "relative_adp_graph_child P B Q") simp
+  qed
+  show ?case
+    by (rule relative_adp_estimated_graph_processor[OF lhs_fun children])
 qed
 
 definition check_nonduplicating_rules ::
