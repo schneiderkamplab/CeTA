@@ -169,6 +169,87 @@ definition finite_innermost_csr_rta08_dpp where
     SN_rel (innermost_csr_rta08_pair_step shp \<mu> R A P)
       (innermost_csdp_step shp \<mu> R)"
 
+lemma finite_innermost_csr_rta08_dpp_redpair_terminal:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and P S NS R :: "('f,'v) trs"
+  assumes redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and noncoll_S: "csr_rta08_noncollapsing_pairs P \<subseteq> S"
+    and rewrite_NS: "innermost_csdp_step shp \<mu> R \<subseteq> NS"
+    and active_NS: "{(s,t). mu_supt \<mu> s t} \<subseteq> NS"
+    and mark_S: "{(t,sharp_term shp t) |t. is_Fun t \<and> A t} \<subseteq> S"
+  shows "finite_innermost_csr_rta08_dpp shp \<mu> R A P"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  have raw_S: "csr_rta08_pair_step shp \<mu> A P \<subseteq> S"
+  proof
+    fix st
+    assume step: "st \<in> csr_rta08_pair_step shp \<mu> A P"
+    obtain a b where st: "st = (a,b)" by (cases st)
+    from step[unfolded csr_rta08_pair_step_def st]
+    show "st \<in> S"
+    proof
+      assume "(a,b) \<in> {(l \<cdot> \<sigma>,r \<cdot> \<sigma>) |l r \<sigma>.
+        (l,r) \<in> P \<and> is_Fun r}"
+      then obtain l r \<sigma> where a: "a = l \<cdot> \<sigma>"
+        and b: "b = r \<cdot> \<sigma>" and pair: "(l,r) \<in> P"
+        and rhs: "is_Fun r" by blast
+      have "(l,r) \<in> csr_rta08_noncollapsing_pairs P"
+        using pair rhs unfolding csr_rta08_noncollapsing_pairs_def by simp
+      with noncoll_S have "(l,r) \<in> S" by blast
+      then show ?thesis using subst_S unfolding st a b
+        by (auto simp: subst.closed_def)
+    next
+      assume collapse: "(a,b) \<in>
+        {(l \<cdot> \<sigma>,sharp_term shp (\<sigma> x |_ q)) |l x \<sigma> q.
+          (l,Var x) \<in> P \<and> q \<in> mu_fun_poss \<mu> (\<sigma> x) \<and>
+          is_Fun (\<sigma> x |_ q) \<and> A (\<sigma> x |_ q)}"
+      then obtain l x \<sigma> q where a: "a = l \<cdot> \<sigma>"
+        and b: "b = sharp_term shp (\<sigma> x |_ q)"
+        and pair: "(l,Var x) \<in> P"
+        and q: "q \<in> mu_fun_poss \<mu> (\<sigma> x)"
+        and target: "is_Fun (\<sigma> x |_ q)"
+        and admitted: "A (\<sigma> x |_ q)" by blast
+      from orient pair have pair_ord: "(l,Var x) \<in> S \<union> NS" by blast
+      have inst_ord: "(l \<cdot> \<sigma>,\<sigma> x) \<in> S \<union> NS"
+        using pair_ord subst_S subst_NS by (auto simp: subst.closed_def)
+      from csr_rta08_active_subterm_bridge[OF q]
+      have active: "(\<sigma> x,\<sigma> x |_ q) \<in> NS"
+        using active_NS refl_NS unfolding refl_on_def by auto
+      from mark_S target admitted have mark:
+        "(\<sigma> x |_ q,sharp_term shp (\<sigma> x |_ q)) \<in> S" by blast
+      show ?thesis
+      proof (cases "(l \<cdot> \<sigma>,\<sigma> x) \<in> S")
+        case True
+        from compat_S_NS True active have prefix:
+          "(l \<cdot> \<sigma>,\<sigma> x |_ q) \<in> S" by blast
+        from trans_S_point[OF prefix mark] show ?thesis unfolding st a b .
+      next
+        case False
+        with inst_ord have weak: "(l \<cdot> \<sigma>,\<sigma> x) \<in> NS"
+          by blast
+        from trans_NS_point[OF weak active] have prefix:
+          "(l \<cdot> \<sigma>,\<sigma> x |_ q) \<in> NS" .
+        from compat_NS_S prefix mark show ?thesis unfolding st a b by blast
+      qed
+    qed
+  qed
+  have pair_S: "innermost_csr_rta08_pair_step shp \<mu> R A P \<subseteq> S"
+    using raw_S unfolding innermost_csr_rta08_pair_step_def by blast
+  have pair_ord: "innermost_csr_rta08_pair_step shp \<mu> R A P
+      \<subseteq> S \<union> NS" using pair_S by blast
+  have residual: "innermost_csr_rta08_pair_step shp \<mu> R A P - S
+      \<subseteq> {}" using pair_S by blast
+  have empty: "SN_rel {} (innermost_csdp_step shp \<mu> R)"
+    by (rule SN_rel_empty1)
+  have "SN_rel
+      (innermost_csr_rta08_pair_step shp \<mu> R A P)
+      (innermost_csdp_step shp \<mu> R)"
+    by (rule SN_rel_compat_redpair_residual[
+      OF redpair rewrite_NS pair_ord residual empty])
+  then show ?thesis unfolding finite_innermost_csr_rta08_dpp_def .
+qed
+
 lemma innermost_csr_progress_relation_imp_SN:
   fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
   assumes progress:
