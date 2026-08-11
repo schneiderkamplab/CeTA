@@ -443,7 +443,7 @@ lemma csr_rta08_redpair_proc_innermost_terminal_sound:
     and rp :: "(('f, 'l) lab, string) rel_impl"
   assumes J: "dpp_spec J" and rp: "rel_impl rp"
     and proc: "csr_rta08_redpair_proc J \<mu> rp Premove dpp = return dpp'"
-    and empty: "dpp_ops.pairs J dpp' = []"
+    and collapsing: "\<forall>dp\<in>set (dpp_ops.pairs J dpp'). is_Var (snd dp)"
   shows "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
     (set (dpp_ops.rules J dpp))
     (csr_rta08_defined_target
@@ -577,19 +577,6 @@ proof -
   have pairs': "set (pairs dpp') = set (pairs dpp) - set Premove"
     using dpp' delete_P_Pw_sound[of dpp Premove Premove]
       pairs_sound[of dpp'] by auto
-  have empty_set: "set (pairs dpp') = {}" using empty by simp
-  have removed: "set (pairs dpp) \<subseteq> set Premove"
-  proof
-    fix dp
-    assume pair: "dp \<in> set (pairs dpp)"
-    show "dp \<in> set Premove"
-    proof (rule ccontr)
-      assume "dp \<notin> set Premove"
-      with pair have "dp \<in> set (pairs dpp) - set Premove" by simp
-      with pairs' have "dp \<in> set (pairs dpp')" by simp
-      with empty_set show False by simp
-    qed
-  qed
   have noncoll_S:
       "csr_rta08_noncollapsing_pairs (set (pairs dpp)) \<subseteq> S"
   proof
@@ -598,6 +585,13 @@ proof -
     then have pair: "dp \<in> set (pairs dpp)"
       and rhs_fun: "is_Fun (snd dp)"
       unfolding csr_rta08_noncollapsing_pairs_def by auto
+    have removed: "dp \<in> set Premove"
+    proof (rule ccontr)
+      assume "dp \<notin> set Premove"
+      with pair pairs' have "dp \<in> set (pairs dpp')" by auto
+      with collapsing have "is_Var (snd dp)" by auto
+      with rhs_fun show False by (cases "snd dp", auto)
+    qed
     from pair removed have "dp \<in> set ps" unfolding ps by auto
     with rhs_fun have "dp \<in> set ?nps" by auto
     with nps_S show "dp \<in> S" by blast
@@ -617,9 +611,9 @@ where
       (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp Pr U P_is_Empty)) =
     debug i (STR ''terminal innermost RTA08 reduction pair'') (do {
       dpp' \<leftarrow> csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp;
-      check (dpp_ops.pairs J dpp' = [])
+      check (list_all (is_Var \<circ> snd) (dpp_ops.pairs J dpp'))
         (i \<circ> showsl_lit
-          (STR '': terminal innermost RTA08 reduction pair leaves dependency pairs''))
+          (STR '': terminal innermost RTA08 reduction pair leaves a non-collapsing dependency pair''))
     })"
 | "check_innermost_csr_rta08_terminal J \<mu> i dpp prf =
     error (i \<circ> showsl_lit
@@ -645,12 +639,32 @@ proof (cases "prf")
     proof (cases tail)
       case P_is_Empty
       from ok CSR_DP_Ordinary_Proof Redpair_UR_Proc P_is_Empty
-      obtain dpp' where proc:
+      have proc_ok:
+        "isOK (csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp)"
+        by auto
+      then obtain dpp' where proc:
           "csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp = return dpp'"
-        and empty: "dpp_ops.pairs J dpp' = []" by auto
+        by (cases "csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp", auto)
+      from ok CSR_DP_Ordinary_Proof Redpair_UR_Proc P_is_Empty proc
+      have collapsing_list:
+          "list_all (is_Var \<circ> snd) (dpp_ops.pairs J dpp')"
+        by simp
+      from collapsing_list
+      have collapsing_ball:
+          "Ball (set (dpp_ops.pairs J dpp')) (is_Var \<circ> snd)"
+        by (metis list_all_iff)
+      have collapsing:
+          "\<forall>dp\<in>set (dpp_ops.pairs J dpp'). is_Var (snd dp)"
+      proof (intro ballI)
+        fix dp
+        assume mem: "dp \<in> set (dpp_ops.pairs J dpp')"
+        from collapsing_ball mem have "(is_Var \<circ> snd) dp"
+          by (rule bspec)
+        then show "is_Var (snd dp)" by simp
+      qed
       show ?thesis
         by (rule csr_rta08_redpair_proc_innermost_terminal_sound[
-          OF J get_rel_impl proc empty])
+          OF J get_rel_impl proc collapsing])
     qed (use ok CSR_DP_Ordinary_Proof Redpair_UR_Proc in simp_all)
   qed (use ok CSR_DP_Ordinary_Proof in simp_all)
 qed (use ok in simp_all)
