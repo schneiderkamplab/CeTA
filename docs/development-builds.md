@@ -198,3 +198,18 @@ variables and was rejected before checker integration. The theory also proves
 that validity of a VRF is preserved by full ADP annotation erasure. The next
 bridge specializes this construction to the selected fixed witness and proves
 that every retained origin marker remains retained in the projected target.
+
+The fixed-witness projection and chain checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test175`; the complete theory checked in
+5.35 seconds in the warm child session. The executable projected witness
+retains the parent substitution and VRF, recomputes annotations from its
+projected source, and flattens exactly the pairs outside `Q`. Isabelle proves
+that this witness is a valid step of `Q union flat(A - Q)` and has the same
+erased target as the parent witness. It also proves the key origin invariant:
+a marked origin survives when its applied ADP lies in `Q`, or when the origin
+is not the applied redex (the latter excludes exactly the root-target case
+destroyed by flattening). Primitive recursion then builds the projected child
+chain and proves erased-term equality, a valid child step at every index, and
+inductive preservation of a chosen origin path. The remaining semantic task
+is to extract infinitely many strict child steps for each checked main SCC or
+minimal-lasso child and package that result as the graph processor theorem.

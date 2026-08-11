@@ -1665,6 +1665,202 @@ definition relative_adp_step_witness_origin_edge ::
         (if radp_witness_at_sharp witness then sharp_positions r else {})
         (radp_witness_vrf witness) q q')"
 
+definition relative_adp_projected_witness_pair ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) relative_adp_step_witness \<Rightarrow>
+    ('f, 'v) adp" where
+  "relative_adp_projected_witness_pair Q witness =
+    (if radp_witness_pair witness \<in> Q then radp_witness_pair witness
+     else erase_annotations_adp (radp_witness_pair witness))"
+
+definition relative_adp_projected_witness_annotations ::
+  "('f, 'v) adp set \<Rightarrow> ('f adp_symbol, 'v) term \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness \<Rightarrow> pos set" where
+  "relative_adp_projected_witness_annotations Q source witness = (let
+      pair = relative_adp_projected_witness_pair Q witness;
+      at_sharp = radp_witness_redex witness \<in> sharp_positions source
+    in (if at_sharp then sharp_positions (snd pair) else {}) \<union>
+      transported_annotations (radp_witness_vrf witness) (fst pair)
+        (source |_ radp_witness_redex witness))"
+
+definition relative_adp_projected_witness_target ::
+  "('f, 'v) adp set \<Rightarrow> ('f adp_symbol, 'v) term \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness \<Rightarrow>
+    ('f adp_symbol, 'v) term" where
+  "relative_adp_projected_witness_target Q source witness = (let
+      pair = relative_adp_projected_witness_pair Q witness
+    in replace_at source (radp_witness_redex witness)
+      (annotate_term (relative_adp_projected_witness_annotations Q source witness)
+        (erase_adp_term (snd pair) \<cdot> radp_witness_subst witness)))"
+
+definition relative_adp_projected_witness ::
+  "('f, 'v) adp set \<Rightarrow> ('f adp_symbol, 'v) term \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness" where
+  "relative_adp_projected_witness Q source witness = \<lparr>
+      radp_witness_at_sharp =
+        (radp_witness_redex witness \<in> sharp_positions source),
+      radp_witness_pair = relative_adp_projected_witness_pair Q witness,
+      radp_witness_redex = radp_witness_redex witness,
+      radp_witness_vrf = radp_witness_vrf witness,
+      radp_witness_subst = radp_witness_subst witness,
+      radp_witness_annotations =
+        relative_adp_projected_witness_annotations Q source witness
+    \<rparr>"
+
+lemma relative_adp_projected_witness_valid:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+    and erased_source: "erase_adp_term source = erase_adp_term s"
+  shows "relative_adp_step_witness_valid
+      (Q \<union> erase_annotations_adp ` (A - Q)) source
+      (relative_adp_projected_witness_target Q source witness)
+      (relative_adp_projected_witness Q source witness)"
+proof -
+  from valid obtain l r where
+      pair: "radp_witness_pair witness = (l,r)"
+    and rule: "(l,r) \<in> A"
+    and plain: "plain_adp_term_pred l"
+    and vrf: "valid_vrf (l,r) (radp_witness_vrf witness)"
+    and redex: "radp_witness_redex witness \<in> fun_poss s"
+    and lhs: "erase_adp_term (s |_ radp_witness_redex witness) =
+      erase_adp_term l \<cdot> radp_witness_subst witness"
+    unfolding relative_adp_step_witness_valid_def by blast
+  let ?p = "radp_witness_redex witness"
+  have redex_source: "?p \<in> fun_poss source"
+    using redex erased_source fun_poss_erase_adp_term[of s]
+      fun_poss_erase_adp_term[of source] by simp
+  have p_s: "?p \<in> poss s" by (rule fun_poss_imp_poss[OF redex])
+  have p_source: "?p \<in> poss source"
+    by (rule fun_poss_imp_poss[OF redex_source])
+  have lhs_source: "erase_adp_term (source |_ ?p) =
+      erase_adp_term l \<cdot> radp_witness_subst witness"
+    using lhs erased_source erase_adp_term_subt_at[OF p_s]
+      erase_adp_term_subt_at[OF p_source] by simp
+  show ?thesis
+  proof (cases "(l,r) \<in> Q")
+    case True
+    have projected_pair:
+        "relative_adp_projected_witness_pair Q witness = (l,r)"
+      using pair True
+      by (simp add: relative_adp_projected_witness_pair_def)
+    have child: "(l,r) \<in> Q \<union> erase_annotations_adp ` (A - Q)"
+      using True by blast
+    show ?thesis
+      unfolding relative_adp_step_witness_valid_def
+        relative_adp_projected_witness_def
+        relative_adp_projected_witness_target_def
+        relative_adp_projected_witness_annotations_def Let_def
+      using child plain vrf redex_source lhs_source projected_pair
+      by (intro exI[of _ l] exI[of _ r]) auto
+  next
+    case False
+    let ?flat = "erase_annotations_adp (l,r)"
+    have projected_pair:
+        "relative_adp_projected_witness_pair Q witness = ?flat"
+      using pair False
+      by (simp add: relative_adp_projected_witness_pair_def)
+    have child: "?flat \<in> Q \<union> erase_annotations_adp ` (A - Q)"
+      using rule False by blast
+    have flat_plain: "plain_adp_term_pred (fst ?flat)"
+      by (simp add: erase_annotations_adp_def)
+    have flat_vrf: "valid_vrf ?flat (radp_witness_vrf witness)"
+      by (rule valid_vrf_erase_annotations_adp[OF vrf])
+    have flat_lhs: "erase_adp_term (source |_ ?p) =
+        erase_adp_term (fst ?flat) \<cdot> radp_witness_subst witness"
+      using lhs_source by (simp add: erase_annotations_adp_def)
+    show ?thesis
+      unfolding relative_adp_step_witness_valid_def
+        relative_adp_projected_witness_def
+        relative_adp_projected_witness_target_def
+        relative_adp_projected_witness_annotations_def Let_def
+      using child flat_plain flat_vrf redex_source flat_lhs projected_pair
+      by (intro exI[of _ "fst ?flat"] exI[of _ "snd ?flat"]) auto
+  qed
+qed
+
+lemma relative_adp_projected_witness_preserves_origin:
+  assumes origin: "relative_adp_step_witness_origin_edge witness q q'"
+    and marked: "q \<in> sharp_positions source"
+    and retained: "radp_witness_pair witness \<in> Q \<or>
+      q \<noteq> radp_witness_redex witness"
+  shows "relative_adp_step_witness_origin_edge
+    (relative_adp_projected_witness Q source witness) q q'"
+proof -
+  from origin obtain l r where
+      pair: "radp_witness_pair witness = (l,r)"
+    and edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+      (radp_witness_redex witness) (radp_witness_subst witness)
+      (if radp_witness_at_sharp witness then sharp_positions r else {})
+      (radp_witness_vrf witness) q q'"
+    unfolding relative_adp_step_witness_origin_edge_def by blast
+  let ?p = "radp_witness_redex witness"
+  let ?sigma = "radp_witness_subst witness"
+  let ?phi = "radp_witness_vrf witness"
+  show ?thesis
+  proof (cases "(l,r) \<in> Q")
+    case True
+    have projected_pair:
+        "relative_adp_projected_witness_pair Q witness = (l,r)"
+      using pair True
+      by (simp add: relative_adp_projected_witness_pair_def)
+    have projected_edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+        ?p ?sigma
+        (if ?p \<in> sharp_positions source then sharp_positions r else {})
+        ?phi q q'"
+      using edge
+    proof cases
+      case preserved
+      then show ?thesis by (auto intro: origin_edge.preserved)
+    next
+      case (root_target alpha)
+      have p_marked: "?p \<in> sharp_positions source"
+        using marked root_target by simp
+      from root_target p_marked show ?thesis
+        by (cases "radp_witness_at_sharp witness")
+           (auto intro: origin_edge.root_target)
+    next
+      case (variable_transport rho alpha beta)
+      then show ?thesis by (auto intro: origin_edge.variable_transport)
+    qed
+    show ?thesis
+      unfolding relative_adp_step_witness_origin_edge_def
+        relative_adp_projected_witness_def
+      apply (rule exI[where x=l])
+      apply (rule exI[where x=r])
+      using projected_pair projected_edge by simp
+  next
+    case False
+    let ?flat = "erase_annotations_adp (l,r)"
+    have projected_pair:
+        "relative_adp_projected_witness_pair Q witness = ?flat"
+      using pair False
+      by (simp add: relative_adp_projected_witness_pair_def)
+    have q_not_p: "q \<noteq> ?p" using retained pair False by auto
+    have projected_edge:
+      "origin_edge (erase_adp_term (fst ?flat))
+        (erase_adp_term (snd ?flat)) ?p ?sigma {} ?phi q q'"
+      using edge
+    proof cases
+      case preserved
+      then show ?thesis by (auto intro: origin_edge.preserved)
+    next
+      case (root_target alpha)
+      then show ?thesis using q_not_p by simp
+    next
+      case (variable_transport rho alpha beta)
+      then show ?thesis
+        by (auto simp: erase_annotations_adp_def
+            intro: origin_edge.variable_transport)
+    qed
+    show ?thesis
+      unfolding relative_adp_step_witness_origin_edge_def
+        relative_adp_projected_witness_def
+      apply (rule exI[where x="fst ?flat"])
+      apply (rule exI[where x="snd ?flat"])
+      using projected_pair projected_edge
+      by (simp add: erase_annotations_adp_def)
+  qed
+qed
+
 lemma relative_adp_step_witness_origin_is_canonical:
   assumes valid: "relative_adp_step_witness_valid A s t witness"
     and origin: "relative_adp_step_witness_origin_edge witness q q'"
@@ -1703,6 +1899,192 @@ proof -
         rule exI[of _ "radp_witness_subst witness"],
         rule exI[of _ "radp_witness_annotations witness"])
        (use pair rule plain vrf redex sharp lhs annotations target edge in auto)
+qed
+
+lemma relative_adp_projected_witness_preserves_sharp:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+    and erased_source: "erase_adp_term source = erase_adp_term s"
+    and origin: "relative_adp_step_witness_origin_edge witness q q'"
+    and marked: "q \<in> sharp_positions source"
+    and retained: "radp_witness_pair witness \<in> Q \<or>
+      q \<noteq> radp_witness_redex witness"
+  shows "q' \<in> sharp_positions
+    (relative_adp_projected_witness_target Q source witness)"
+proof -
+  have projected_valid: "relative_adp_step_witness_valid
+      (Q \<union> erase_annotations_adp ` (A - Q)) source
+      (relative_adp_projected_witness_target Q source witness)
+      (relative_adp_projected_witness Q source witness)"
+    by (rule relative_adp_projected_witness_valid[OF valid erased_source])
+  have projected_origin: "relative_adp_step_witness_origin_edge
+      (relative_adp_projected_witness Q source witness) q q'"
+    by (rule relative_adp_projected_witness_preserves_origin[
+        OF origin marked retained])
+  from relative_adp_step_witness_origin_is_canonical[
+      OF projected_valid projected_origin]
+  show ?thesis
+    by (rule relative_adp_canonical_origin_edge_preserves_sharp[OF _ marked])
+qed
+
+lemma relative_adp_step_witness_valid_is_step:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+  shows "(s,t) \<in> adp_step A"
+proof -
+  from valid obtain l r where
+      pair: "radp_witness_pair witness = (l,r)" and rule: "(l,r) \<in> A"
+    and plain: "plain_adp_term_pred l"
+    and vrf: "valid_vrf (l,r) (radp_witness_vrf witness)"
+    and redex: "radp_witness_redex witness \<in> fun_poss s"
+    and sharp: "radp_witness_at_sharp witness =
+      (radp_witness_redex witness \<in> sharp_positions s)"
+    and lhs: "erase_adp_term (s |_ radp_witness_redex witness) =
+      erase_adp_term l \<cdot> radp_witness_subst witness"
+    and annotations: "radp_witness_annotations witness =
+      (if radp_witness_at_sharp witness then sharp_positions r else {}) \<union>
+        transported_annotations (radp_witness_vrf witness) l
+          (s |_ radp_witness_redex witness)"
+    and target: "t = replace_at s (radp_witness_redex witness)
+      (annotate_term (radp_witness_annotations witness)
+        (erase_adp_term r \<cdot> radp_witness_subst witness))"
+    unfolding relative_adp_step_witness_valid_def by blast
+  have case_step: "adp_step_case A (radp_witness_at_sharp witness) s t"
+    by (rule adp_step_case.adp_stepI[OF rule plain vrf redex sharp lhs
+          annotations target])
+  show ?thesis
+    unfolding adp_step_def adp_step_case_rel_def
+    using case_step by (cases "radp_witness_at_sharp witness") auto
+qed
+
+lemma relative_adp_step_witness_valid_is_strict_step:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+    and sharp: "radp_witness_at_sharp witness"
+    and pair: "radp_witness_pair witness \<in> P"
+  shows "(s,t) \<in> adp_step_case_rel P True"
+proof -
+  from valid obtain l r where
+      witness_pair: "radp_witness_pair witness = (l,r)"
+    and plain: "plain_adp_term_pred l"
+    and vrf: "valid_vrf (l,r) (radp_witness_vrf witness)"
+    and redex: "radp_witness_redex witness \<in> fun_poss s"
+    and at: "radp_witness_at_sharp witness =
+      (radp_witness_redex witness \<in> sharp_positions s)"
+    and lhs: "erase_adp_term (s |_ radp_witness_redex witness) =
+      erase_adp_term l \<cdot> radp_witness_subst witness"
+    and annotations: "radp_witness_annotations witness =
+      (if radp_witness_at_sharp witness then sharp_positions r else {}) \<union>
+        transported_annotations (radp_witness_vrf witness) l
+          (s |_ radp_witness_redex witness)"
+    and target: "t = replace_at s (radp_witness_redex witness)
+      (annotate_term (radp_witness_annotations witness)
+        (erase_adp_term r \<cdot> radp_witness_subst witness))"
+    unfolding relative_adp_step_witness_valid_def by blast
+  have rule: "(l,r) \<in> P" using pair witness_pair by simp
+  have "adp_step_case P True s t"
+    by (rule adp_step_case.adp_stepI[OF rule plain vrf redex])
+       (use sharp at lhs annotations target in auto)
+  then show ?thesis unfolding adp_step_case_rel_def by simp
+qed
+
+lemma relative_adp_projected_witness_target_erases:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+    and erased_source: "erase_adp_term source = erase_adp_term s"
+  shows "erase_adp_term
+      (relative_adp_projected_witness_target Q source witness) =
+    erase_adp_term t"
+proof -
+  from valid obtain l r where
+      pair: "radp_witness_pair witness = (l,r)"
+    and redex: "radp_witness_redex witness \<in> fun_poss s"
+    and target: "t = replace_at s (radp_witness_redex witness)
+      (annotate_term (radp_witness_annotations witness)
+        (erase_adp_term r \<cdot> radp_witness_subst witness))"
+    unfolding relative_adp_step_witness_valid_def by blast
+  let ?p = "radp_witness_redex witness"
+  have p_s: "?p \<in> poss s" by (rule fun_poss_imp_poss[OF redex])
+  have redex_source: "?p \<in> fun_poss source"
+    using redex erased_source fun_poss_erase_adp_term[of s]
+      fun_poss_erase_adp_term[of source] by simp
+  have p_source: "?p \<in> poss source"
+    by (rule fun_poss_imp_poss[OF redex_source])
+  show ?thesis
+    unfolding relative_adp_projected_witness_target_def Let_def target
+    using pair erased_source p_s p_source
+    by (cases "(l,r) \<in> Q")
+       (simp_all add: relative_adp_projected_witness_pair_def
+          erase_annotations_adp_def erase_adp_term_replace_at)
+qed
+
+primrec relative_adp_projected_chain ::
+  "('f, 'v) adp set \<Rightarrow> ('f adp_symbol, 'v) term \<Rightarrow>
+    (nat \<Rightarrow> ('f, 'v) relative_adp_step_witness) \<Rightarrow> nat \<Rightarrow>
+    ('f adp_symbol, 'v) term" where
+  "relative_adp_projected_chain Q source witnesses 0 = source"
+| "relative_adp_projected_chain Q source witnesses (Suc n) =
+    relative_adp_projected_witness_target Q
+      (relative_adp_projected_chain Q source witnesses n) (witnesses n)"
+
+lemma relative_adp_projected_chain_erases:
+  assumes valid: "\<And>n. relative_adp_step_witness_valid A
+      (terms n) (terms (Suc n)) (witnesses n)"
+    and initial: "erase_adp_term source = erase_adp_term (terms 0)"
+  shows "erase_adp_term (relative_adp_projected_chain Q source witnesses n) =
+    erase_adp_term (terms n)"
+proof (induct n)
+  case 0
+  then show ?case using initial by simp
+next
+  case (Suc n)
+  show ?case
+    by simp (rule relative_adp_projected_witness_target_erases[
+        OF valid Suc])
+qed
+
+lemma relative_adp_projected_chain_step:
+  assumes valid: "\<And>n. relative_adp_step_witness_valid A
+      (terms n) (terms (Suc n)) (witnesses n)"
+    and initial: "erase_adp_term source = erase_adp_term (terms 0)"
+  shows "(relative_adp_projected_chain Q source witnesses n,
+      relative_adp_projected_chain Q source witnesses (Suc n)) \<in>
+    adp_step (Q \<union> erase_annotations_adp ` (A - Q))"
+proof -
+  have erased: "erase_adp_term
+      (relative_adp_projected_chain Q source witnesses n) =
+    erase_adp_term (terms n)"
+    by (rule relative_adp_projected_chain_erases[OF valid initial])
+  have projected_valid: "relative_adp_step_witness_valid
+      (Q \<union> erase_annotations_adp ` (A - Q))
+      (relative_adp_projected_chain Q source witnesses n)
+      (relative_adp_projected_chain Q source witnesses (Suc n))
+      (relative_adp_projected_witness Q
+        (relative_adp_projected_chain Q source witnesses n) (witnesses n))"
+    by simp (rule relative_adp_projected_witness_valid[OF valid erased])
+  show ?thesis
+    by (rule relative_adp_step_witness_valid_is_step[OF projected_valid])
+qed
+
+lemma relative_adp_projected_chain_marker:
+  assumes valid: "\<And>n. relative_adp_step_witness_valid A
+      (terms n) (terms (Suc n)) (witnesses n)"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and initial_marked: "markers 0 \<in> sharp_positions source"
+    and origin: "\<And>n. relative_adp_step_witness_origin_edge
+      (witnesses n) (markers n) (markers (Suc n))"
+    and retained: "\<And>n. radp_witness_pair (witnesses n) \<in> Q \<or>
+      markers n \<noteq> radp_witness_redex (witnesses n)"
+  shows "markers n \<in> sharp_positions
+    (relative_adp_projected_chain Q source witnesses n)"
+proof (induct n)
+  case 0
+  then show ?case using initial_marked by simp
+next
+  case (Suc n)
+  have erased: "erase_adp_term
+      (relative_adp_projected_chain Q source witnesses n) =
+    erase_adp_term (terms n)"
+    by (rule relative_adp_projected_chain_erases[OF valid initial_erased])
+  show ?case
+    by simp (rule relative_adp_projected_witness_preserves_sharp[
+        OF valid erased origin Suc retained])
 qed
 
 lemma relative_adp_step_witness_sharp_position_has_predecessor:
