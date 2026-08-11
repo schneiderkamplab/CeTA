@@ -177,3 +177,8 @@ session Relative_ADP_Direct_Criterion_Dev in "Direct_Criterion" = Relative_ADP_C
   options [document = false]
   theories
     Relative_ADP_Direct_Criterion
+
+session Relative_ADP_Processors_Dev in "Processors" = Relative_ADP_Direct_Criterion_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Processors
