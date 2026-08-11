@@ -1,0 +1,179 @@
+session Relative_ADP_Semantics_Dev in "." = Proof_Checker_Base +
+  options [document = false]
+  theories
+    Relative_ADP_Semantics
+
+session Relative_ADP_Chain_Dev in "Chain" = Relative_ADP_Semantics_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Chain_Criterion
+
+session Relative_ADP_Origin_Dev in "Origin" = Relative_ADP_Chain_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Origin
+
+session Relative_ADP_Path_Dev in "Path" = Relative_ADP_Origin_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Path
+
+session Relative_ADP_NT_Dev in "NT" = Relative_ADP_Path_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Nontermination
+
+session Relative_ADP_Block_Dev in "Block" = Relative_ADP_NT_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Block
+
+session Relative_ADP_Global_Dev in "Global" = Relative_ADP_Block_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Global
+
+session Relative_ADP_Context_Dev in "Context" = Relative_ADP_Global_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Context
+
+session Relative_ADP_Trace_Dev in "Trace" = Relative_ADP_Context_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Trace
+
+session Relative_ADP_Lift_Dev in "Lift" = Relative_ADP_Trace_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Lift
+
+session Relative_ADP_Bridge_Dev in "Bridge" = Relative_ADP_Lift_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Bridge
+
+session Relative_ADP_Base_Dev in "Base" = Relative_ADP_Bridge_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Base
+
+session Relative_ADP_Prefix_Dev in "Prefix" = Relative_ADP_Base_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Prefix
+
+session Relative_ADP_Root_Case_Dev in "Root_Case" = Relative_ADP_Prefix_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Root_Case
+
+session Relative_ADP_Multihole_Dev in "Multihole" = Relative_ADP_Root_Case_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Multihole
+
+session Relative_ADP_Carrier_Dev in "Carrier" = Relative_ADP_Multihole_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Carrier
+
+session Relative_ADP_Context_State_Dev in "Context_State" = Relative_ADP_Carrier_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Context_State
+
+session Relative_ADP_Inner_State_Dev in "Inner_State" = Relative_ADP_Context_State_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Inner_State
+
+session Relative_ADP_Outer_State_Dev in "Outer_State" = Relative_ADP_Inner_State_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Outer_State
+
+session Relative_ADP_RHS_Context_Dev in "RHS_Context" = Relative_ADP_Outer_State_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_RHS_Context
+
+session Relative_ADP_Context_Update_Dev in "Context_Update" = Relative_ADP_RHS_Context_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Context_Update
+
+session Relative_ADP_Concrete_Transfer_Dev in "Concrete_Transfer" = Relative_ADP_Context_Update_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Concrete_Transfer
+
+session Relative_ADP_Target_Decomposition_Dev in "Target_Decomposition" = Relative_ADP_Concrete_Transfer_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Target_Decomposition
+
+session Relative_ADP_Root_Base_State_Dev in "Root_Base_State" = Relative_ADP_Target_Decomposition_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Root_Base_State
+
+session Relative_ADP_Carrier_Refinement_Dev in "Carrier_Refinement" = Relative_ADP_Root_Base_State_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Carrier_Refinement
+
+session Relative_ADP_Hole_Transport_Dev in "Hole_Transport" = Relative_ADP_Carrier_Refinement_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Hole_Transport
+
+session Relative_ADP_Hole_Descendant_Dev in "Hole_Descendant" = Relative_ADP_Hole_Transport_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Hole_Descendant
+
+session Relative_ADP_Hole_Witness_Dev in "Hole_Witness" = Relative_ADP_Hole_Descendant_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Hole_Witness
+
+session Relative_ADP_Witness_Parallel_Dev in "Witness_Parallel" = Relative_ADP_Hole_Witness_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Witness_Parallel
+
+session Relative_ADP_Concrete_Refinement_Dev in "Concrete_Refinement" = Relative_ADP_Witness_Parallel_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Concrete_Refinement
+
+session Relative_ADP_Root_Base_Carrier_Dev in "Root_Base_Carrier" = Relative_ADP_Concrete_Refinement_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Root_Base_Carrier
+
+session Relative_ADP_Construction_State_Dev in "Construction_State" = Relative_ADP_Root_Base_Carrier_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Construction_State
+
+session Relative_ADP_Carrier_Step_Dev in "Carrier_Step" = Relative_ADP_Construction_State_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Carrier_Step
+
+session Relative_ADP_Construction_Transition_Dev in "Construction_Transition" = Relative_ADP_Carrier_Step_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Construction_Transition
+
+session Relative_ADP_Carrier_Run_Dev in "Carrier_Run" = Relative_ADP_Construction_Transition_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Carrier_Run
+
+session Relative_ADP_Direct_Criterion_Dev in "Direct_Criterion" = Relative_ADP_Carrier_Run_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Direct_Criterion

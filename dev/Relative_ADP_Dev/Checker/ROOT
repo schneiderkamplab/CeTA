@@ -1,0 +1,4 @@
+session Relative_ADP_Checker_Dev in "." = Relative_ADP_Direct_Criterion_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Checker_Adapter
