@@ -174,3 +174,15 @@ semantic lasso witness now has all substantive Definition 32 ingredients:
 the base-graph SCC, a base ADP with more than one annotation, and a finite stem
 to a main ADP. The executable layer may choose the first main node on that
 finite stem to obtain the required minimal representative.
+
+The first executable graph checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test148`. It defines the checker-owned
+list of annotated right-hand-side candidates, a conservative `tcap` edge
+test, indexed successor lists, and an executable test for base ADPs with more
+than one annotation. Isabelle proves that every semantic relative-ADP
+dependency edge is present in this estimated graph and that the branching
+test is exactly Definition 32's branching predicate. The full theory replayed
+in 4.22 seconds from the warm child session. These functions are not yet
+exposed through XML or `Certified`: the remaining processor theorem must
+first prove that selective removal of annotations outside the checked SCC or
+lasso preserves the required infinite child chain.

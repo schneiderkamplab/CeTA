@@ -2,6 +2,7 @@ theory Relative_ADP_Dependency_Graph
   imports
     Relative_ADP_Processors_Dev.Relative_ADP_Processors
     Finite_Branching_Dichotomy
+    TRS.Tcap_Impl
 begin
 
 text \<open>
@@ -297,12 +298,123 @@ definition annotated_rhs_subterms ::
   "('f, 'v) adp \<Rightarrow> ('f adp_symbol, 'v) term set" where
   "annotated_rhs_subterms p = {snd p |_ q | q. q \<in> sharp_positions (snd p)}"
 
+definition annotated_rhs_subterms_list ::
+  "('f, 'v) adp \<Rightarrow> ('f adp_symbol, 'v) term list" where
+  "annotated_rhs_subterms_list pair = map (\<lambda>q. snd pair |_ q)
+    (filter (\<lambda>q. q \<in> sharp_positions (snd pair))
+      (poss_list (snd pair)))"
+
+lemma annotated_rhs_subterms_list_sound:
+  "set (annotated_rhs_subterms_list pair) = annotated_rhs_subterms pair"
+  unfolding annotated_rhs_subterms_list_def annotated_rhs_subterms_def
+  by (auto simp: poss_list_sound sharp_positions_def)
+
 definition relative_adp_dependency_edge ::
   "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp \<Rightarrow> ('f, 'v) adp \<Rightarrow> bool" where
   "relative_adp_dependency_edge A p q \<longleftrightarrow>
     (\<exists>u \<in> annotated_rhs_subterms p. \<exists>sigma tau.
       (mark_adp_root u \<cdot> sigma, mark_adp_root (fst q) \<cdot> tau) \<in>
         (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*)"
+
+definition relative_adp_estimated_dependency_edge_list ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp \<Rightarrow>
+    ('f, 'v) adp \<Rightarrow> bool" where
+  "relative_adp_estimated_dependency_edge_list problem source target \<longleftrightarrow>
+    list_ex (\<lambda>u. Ground_Context.match
+      (tcapI (map erase_adp problem) (erase_adp_term u))
+      (erase_adp_term (fst target)))
+      (annotated_rhs_subterms_list source)"
+
+lemma adp_step_case_rel_rtrancl_erases:
+  assumes steps: "(s,t) \<in> (adp_step_case_rel P at_sharp)\<^sup>*"
+  shows "(erase_adp_term s, erase_adp_term t) \<in>
+    (rstep (erase_adp ` P))\<^sup>*"
+proof -
+  show ?thesis
+  proof (rule rtrancl_induct[OF steps])
+    show "(erase_adp_term s, erase_adp_term s) \<in>
+        (rstep (erase_adp ` P))\<^sup>*" by simp
+  next
+    fix middle target
+    assume prefix: "(erase_adp_term s, erase_adp_term middle) \<in>
+        (rstep (erase_adp ` P))\<^sup>*"
+      and step: "(middle,target) \<in> adp_step_case_rel P at_sharp"
+    have erased: "(erase_adp_term middle, erase_adp_term target) \<in>
+        rstep (erase_adp ` P)"
+      by (rule adp_step_case_rel_erases[OF step])
+    show "(erase_adp_term s, erase_adp_term target) \<in>
+        (rstep (erase_adp ` P))\<^sup>*"
+      by (rule rtrancl_into_rtrancl[OF prefix erased])
+  qed
+qed
+
+lemma relative_adp_estimated_dependency_edge_list_sound:
+  assumes problem: "set problem = A"
+    and edge: "relative_adp_dependency_edge A source target"
+  shows "relative_adp_estimated_dependency_edge_list problem source target"
+proof -
+  from edge obtain u sigma tau where
+      u: "u \<in> annotated_rhs_subterms source"
+    and steps: "(mark_adp_root u \<cdot> sigma,
+        mark_adp_root (fst target) \<cdot> tau) \<in>
+      (adp_step_case_rel (erase_annotations_adp ` A) False)\<^sup>*"
+    unfolding relative_adp_dependency_edge_def by blast
+  have erased_steps:
+      "(erase_adp_term (mark_adp_root u \<cdot> sigma),
+        erase_adp_term (mark_adp_root (fst target) \<cdot> tau)) \<in>
+      (rstep (erase_adp ` (erase_annotations_adp ` A)))\<^sup>*"
+    by (rule adp_step_case_rel_rtrancl_erases[OF steps])
+  have rules: "erase_adp ` (erase_annotations_adp ` A) = erase_adp ` A"
+    by (simp add: image_image)
+  have instances:
+      "(erase_adp_term u \<cdot> (erase_adp_term \<circ> sigma),
+        erase_adp_term (fst target) \<cdot> (erase_adp_term \<circ> tau)) \<in>
+      (rstep (erase_adp ` A))\<^sup>*"
+    using erased_steps unfolding rules
+    by (simp add: erase_adp_term_subst mark_adp_root_def comp_def)
+  have match: "Ground_Context.match
+      (tcap (erase_adp ` A) (erase_adp_term u))
+      (erase_adp_term (fst target))"
+    by (rule match_tcap_sound[OF instances])
+  have u_list: "u \<in> set (annotated_rhs_subterms_list source)"
+    using u annotated_rhs_subterms_list_sound[of source] by simp
+  have match_list: "Ground_Context.match
+      (tcap (erase_adp ` set problem) (erase_adp_term u))
+      (erase_adp_term (fst target))"
+    using match problem by simp
+  show ?thesis
+    unfolding relative_adp_estimated_dependency_edge_list_def
+      tcapI_sound
+    using u_list match_list by (auto simp: list_ex_iff)
+qed
+
+definition relative_adp_estimated_successors ::
+  "('f, 'v) adp list \<Rightarrow> nat \<Rightarrow> nat list" where
+  "relative_adp_estimated_successors problem source = filter
+    (\<lambda>target. relative_adp_estimated_dependency_edge_list problem
+      (problem ! source) (problem ! target)) [0..<length problem]"
+
+lemma relative_adp_estimated_successors_bounds:
+  assumes "target \<in> set (relative_adp_estimated_successors problem source)"
+  shows "target < length problem"
+  using assms unfolding relative_adp_estimated_successors_def by auto
+
+lemma relative_adp_estimated_successors_sound:
+  assumes source: "source < length problem"
+    and target: "target < length problem"
+    and semantic_edge: "relative_adp_dependency_edge (set problem)
+      (problem ! source) (problem ! target)"
+  shows "target \<in> set (relative_adp_estimated_successors problem source)"
+proof -
+  have set_problem: "set problem = set problem" by simp
+  have estimated: "relative_adp_estimated_dependency_edge_list problem
+      (problem ! source) (problem ! target)"
+    by (rule relative_adp_estimated_dependency_edge_list_sound[
+        OF set_problem semantic_edge])
+  show ?thesis
+    unfolding relative_adp_estimated_successors_def
+    using target estimated by auto
+qed
 
 definition relative_adp_dependency_graph ::
   "('f, 'v) adp set \<Rightarrow> (('f, 'v) adp) rel" where
@@ -321,6 +433,31 @@ definition relative_adp_branching_pair ::
   "relative_adp_branching_pair pair \<longleftrightarrow>
     (\<exists>alpha beta. alpha \<in> sharp_positions (snd pair) \<and>
       beta \<in> sharp_positions (snd pair) \<and> alpha \<noteq> beta)"
+
+definition relative_adp_branching_pair_list ::
+  "('f, 'v) adp \<Rightarrow> bool" where
+  "relative_adp_branching_pair_list pair \<longleftrightarrow>
+    length (remdups (filter (\<lambda>q. q \<in> sharp_positions (snd pair))
+      (poss_list (snd pair)))) > 1"
+
+lemma relative_adp_branching_pair_list_sound:
+  "relative_adp_branching_pair_list pair = relative_adp_branching_pair pair"
+proof -
+  let ?positions = "remdups (filter
+    (\<lambda>q. q \<in> sharp_positions (snd pair)) (poss_list (snd pair)))"
+  have positions: "set ?positions = sharp_positions (snd pair)"
+    unfolding sharp_positions_def by (auto simp: poss_list_sound)
+  have distinct: "distinct ?positions" by simp
+  have more_than_one: "length ?positions > 1 \<longleftrightarrow>
+      (\<exists>alpha \<in> set ?positions. \<exists>beta \<in> set ?positions.
+        alpha \<noteq> beta)"
+    using distinct
+    by (cases ?positions; cases "tl ?positions") auto
+  show ?thesis
+    unfolding relative_adp_branching_pair_list_def
+      relative_adp_branching_pair_def
+    using positions more_than_one by blast
+qed
 
 definition relative_adp_lasso_graph_problem ::
   "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set" where
