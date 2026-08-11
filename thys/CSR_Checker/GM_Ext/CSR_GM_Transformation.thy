@@ -1159,10 +1159,13 @@ where
     check_extended_csr_termination_proof I J a i \<mu> R prf"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Innermost_CSR_Dependency_Pairs P S prf) =
-    debug i (STR ''direct innermost CSR dependency pairs'') (do {
-      dpp \<leftarrow> direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S);
-      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
-    })"
+    (if S = [] then
+       check_innermost_csr_termination_proof I J i \<mu> R P prf
+     else
+       debug i (STR ''direct innermost CSR dependency pairs'') (do {
+         dpp \<leftarrow> direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S);
+         check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+       }))"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (GM_CSR_Transformation mark c active prf) =
     debug i (STR ''Giesl-Middeldorp CSR transformation'') (do {
@@ -1194,18 +1197,31 @@ proof (cases p)
   show ?thesis .
 next
   case (Innermost_CSR_Dependency_Pairs P S child)
-  from ok Innermost_CSR_Dependency_Pairs obtain dpp where tt:
-      "direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S) = Inr dpp"
-    and rec: "isOK (check_csr_dp_termination_proof
-      I J False (add_index i 1) dpp child)"
-    by auto
-  have fin: "finite_dpp (dpp_ops.dpp J dpp)"
-    by (rule check_csr_dp_termination_proof_sound[OF I J rec])
-  have "SN (csstep (mu_of \<mu>) (set R))"
-    by (rule direct_innermost_csr_dependency_pairs_tt_finite_imp_SN[
-      OF J tt fin])
-  then show ?thesis
-    by (rule SN_subset, unfold sig_step_def, auto)
+  show ?thesis
+  proof (cases "S = []")
+    case True
+    from ok Innermost_CSR_Dependency_Pairs True have rec:
+        "isOK (check_innermost_csr_termination_proof I J i \<mu> R P child)"
+      by simp
+    have "SN (csstep (mu_of \<mu>) (set R))"
+      by (rule check_innermost_csr_termination_proof_sound[OF I J rec])
+    then show ?thesis
+      by (rule SN_subset, unfold sig_step_def, auto)
+  next
+    case False
+    from ok Innermost_CSR_Dependency_Pairs False obtain dpp where tt:
+        "direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S) = Inr dpp"
+      and rec: "isOK (check_csr_dp_termination_proof
+        I J False (add_index i 1) dpp child)"
+      by auto
+    have fin: "finite_dpp (dpp_ops.dpp J dpp)"
+      by (rule check_csr_dp_termination_proof_sound[OF I J rec])
+    have "SN (csstep (mu_of \<mu>) (set R))"
+      by (rule direct_innermost_csr_dependency_pairs_tt_finite_imp_SN[
+        OF J tt fin])
+    then show ?thesis
+      by (rule SN_subset, unfold sig_step_def, auto)
+  qed
 next
   case (GM_CSR_Transformation mark c active child)
   let ?D = "defined_list R"
