@@ -290,3 +290,22 @@ child is nonterminating. This discharges executable coverage for the main-SCC
 branch. The branching-base branch still requires a verified finite family of
 SCC-condensation paths that satisfies the previously proved lasso-family
 coverage interface.
+
+The executable corridor checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Impl_Test31`; the expanded child theory
+checked in 2.38 seconds in the warm session. IsaFoR's verified work-list
+closure now computes forward and reverse reachability in the finite estimated
+graph. A corridor is the intersection of nodes reachable from a branching
+base pair with nodes from which a chosen main pair is reachable. Isabelle
+proves the exact closure equations and lifts every semantic dependency-graph
+path, including every intermediate pair, into the executable corridor.
+
+For every SCC of `flat(P) union B`, the generator emits the SCC plus one such
+corridor for each branching base pair in the SCC and each reachable main pair.
+This is intentionally a corridor rather than an enumeration of simple paths:
+it contains cyclic detours inside and between SCCs and therefore cannot miss
+an offshoot merely because its finite stem repeats a graph node. The candidate
+membership theorem verifies that every guarded SCC/source/target tuple occurs
+in the global finite family. The remaining lasso theorem must connect selected
+origin offshoots to these candidates and discharge the retained-edge and
+coverage premises of `relative_adp_selected_finite_lasso_family_has_non_SN_child`.

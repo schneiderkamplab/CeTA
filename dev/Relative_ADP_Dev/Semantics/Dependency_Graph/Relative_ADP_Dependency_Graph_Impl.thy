@@ -2,6 +2,7 @@ theory Relative_ADP_Dependency_Graph_Impl
   imports
     Relative_ADP_Dependency_Graph
     Auxx.Gabow_SCC_RBT
+    "Transitive-Closure-II.RTrancl"
 begin
 
 text \<open>
@@ -39,6 +40,173 @@ lemma relative_adp_estimated_edge_bounds:
   shows "source < length problem" "target < length problem"
   using assms relative_adp_estimated_successors_bounds
   unfolding relative_adp_estimated_edges_iff by auto
+
+definition relative_adp_index_successors ::
+  "(nat \<times> nat) list \<Rightarrow> nat \<Rightarrow> nat list" where
+  "relative_adp_index_successors edges source =
+    map snd (filter (\<lambda>edge. fst edge = source) edges)"
+
+lemma relative_adp_index_successors_set:
+  "set (relative_adp_index_successors edges source) =
+    {target. (source,target) \<in> set edges}"
+  unfolding relative_adp_index_successors_def by auto
+
+definition relative_adp_estimated_reachable ::
+  "('f, 'v) adp list \<Rightarrow> nat \<Rightarrow> nat list" where
+  "relative_adp_estimated_reachable problem source =
+    mk_rtrancl_list (=)
+      (relative_adp_index_successors
+        (relative_adp_estimated_edges problem)) [source]"
+
+lemma relative_adp_estimated_reachable_set:
+  "set (relative_adp_estimated_reachable problem source) =
+    (set (relative_adp_estimated_edges problem))\<^sup>* `` {source}"
+proof -
+  let ?successors = "relative_adp_index_successors
+    (relative_adp_estimated_edges problem)"
+  let ?E = "{(source,target). target \<in> set (?successors source)}"
+  have E: "?E = set (relative_adp_estimated_edges problem)"
+    unfolding relative_adp_index_successors_set by auto
+  have finite_reachable: "\<And>source. finite {target. (source,target) \<in> ?E\<^sup>*}"
+  proof -
+    fix source
+    have subset: "{target. (source,target) \<in> ?E\<^sup>*} \<subseteq>
+        insert source {target. target < length problem}"
+    proof
+      fix target
+      assume target: "target \<in> {target. (source,target) \<in> ?E\<^sup>*}"
+      then have reach: "(source,target) \<in> ?E\<^sup>*" by simp
+      show "target \<in> insert source {target. target < length problem}"
+        using reach
+      proof (induction rule: rtrancl_induct)
+        case base
+        then show ?case by simp
+      next
+        case (step middle successor)
+        have "(middle,successor) \<in>
+            set (relative_adp_estimated_edges problem)"
+          using step.hyps(2) unfolding E .
+        then have "successor < length problem"
+          by (rule relative_adp_estimated_edge_bounds(2))
+        then show ?case by simp
+      qed
+    qed
+    show "finite {target. (source,target) \<in> ?E\<^sup>*}"
+      by (rule finite_subset[OF subset]) simp
+  qed
+  interpret reach: relation_subsumption_list ?successors "(=)"
+  proof
+    fix source
+    show "finite {target. (source,target) \<in> ?E\<^sup>*}"
+      by (rule finite_reachable)
+  qed auto
+  show ?thesis
+    unfolding relative_adp_estimated_reachable_def
+      reach.mk_rtrancl_list reach.mk_rtrancl_no_subsumption[OF HOL.refl] E
+    by simp
+qed
+
+definition relative_adp_index_predecessors ::
+  "(nat \<times> nat) list \<Rightarrow> nat \<Rightarrow> nat list" where
+  "relative_adp_index_predecessors edges target =
+    map fst (filter (\<lambda>edge. snd edge = target) edges)"
+
+lemma relative_adp_index_predecessors_set:
+  "set (relative_adp_index_predecessors edges target) =
+    {source. (source,target) \<in> set edges}"
+  unfolding relative_adp_index_predecessors_def by auto
+
+definition relative_adp_estimated_coreachable ::
+  "('f, 'v) adp list \<Rightarrow> nat \<Rightarrow> nat list" where
+  "relative_adp_estimated_coreachable problem target =
+    mk_rtrancl_list (=)
+      (relative_adp_index_predecessors
+        (relative_adp_estimated_edges problem)) [target]"
+
+lemma relative_adp_estimated_coreachable_set:
+  "set (relative_adp_estimated_coreachable problem target) =
+    {(source,target). (target,source) \<in>
+      set (relative_adp_estimated_edges problem)}\<^sup>* `` {target}"
+proof -
+  let ?predecessors = "relative_adp_index_predecessors
+    (relative_adp_estimated_edges problem)"
+  let ?E = "{(target,source). source \<in> set (?predecessors target)}"
+  have E: "?E = {(target,source). (source,target) \<in>
+      set (relative_adp_estimated_edges problem)}"
+    unfolding relative_adp_index_predecessors_set by auto
+  have finite_reachable: "\<And>target.
+      finite {source. (target,source) \<in> ?E\<^sup>*}"
+  proof -
+    fix target
+    have subset: "{source. (target,source) \<in> ?E\<^sup>*} \<subseteq>
+        insert target {source. source < length problem}"
+    proof
+      fix source
+      assume source: "source \<in> {source. (target,source) \<in> ?E\<^sup>*}"
+      then have reach: "(target,source) \<in> ?E\<^sup>*" by simp
+      show "source \<in> insert target {source. source < length problem}"
+        using reach
+      proof (induction rule: rtrancl_induct)
+        case base
+        then show ?case by simp
+      next
+        case (step middle predecessor)
+        have "(predecessor,middle) \<in>
+            set (relative_adp_estimated_edges problem)"
+          using step.hyps(2) unfolding E by simp
+        then have "predecessor < length problem"
+          by (rule relative_adp_estimated_edge_bounds(1))
+        then show ?case by simp
+      qed
+    qed
+    show "finite {source. (target,source) \<in> ?E\<^sup>*}"
+      by (rule finite_subset[OF subset]) simp
+  qed
+  interpret reach: relation_subsumption_list ?predecessors "(=)"
+  proof
+    fix target
+    show "finite {source. (target,source) \<in> ?E\<^sup>*}"
+      by (rule finite_reachable)
+  qed auto
+  show ?thesis
+    unfolding relative_adp_estimated_coreachable_def
+      reach.mk_rtrancl_list reach.mk_rtrancl_no_subsumption[OF HOL.refl] E
+    by simp
+qed
+
+definition relative_adp_estimated_corridor ::
+  "('f, 'v) adp list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list" where
+  "relative_adp_estimated_corridor problem source target =
+    filter (\<lambda>middle.
+      middle \<in> set (relative_adp_estimated_reachable problem source) \<and>
+      middle \<in> set (relative_adp_estimated_coreachable problem target))
+      [0..<length problem]"
+
+lemma relative_adp_estimated_corridor_set:
+  "set (relative_adp_estimated_corridor problem source target) =
+    {node_index. node_index < length problem \<and>
+      (source,node_index) \<in>
+        (set (relative_adp_estimated_edges problem))\<^sup>* \<and>
+      (node_index,target) \<in>
+        (set (relative_adp_estimated_edges problem))\<^sup>*}"
+proof -
+  have reverse_edges:
+      "{(source,target). (target,source) \<in>
+        set (relative_adp_estimated_edges problem)} =
+       (set (relative_adp_estimated_edges problem))\<inverse>"
+    by auto
+  have converse_rtrancl: "(target,node_index) \<in>
+        {(source,target). (target,source) \<in>
+          set (relative_adp_estimated_edges problem)}\<^sup>* \<longleftrightarrow>
+      (node_index,target) \<in>
+        (set (relative_adp_estimated_edges problem))\<^sup>*" for node_index
+    unfolding reverse_edges by (simp add: rtrancl_converse)
+  show ?thesis
+    unfolding relative_adp_estimated_corridor_def
+      relative_adp_estimated_reachable_set
+      relative_adp_estimated_coreachable_set
+    using converse_rtrancl by auto
+qed
 
 lemma relative_adp_semantic_edge_in_estimated_edges:
   assumes source: "source < length problem"
@@ -238,6 +406,187 @@ proof -
     unfolding relative_adp_pair_index_def by (rule someI_ex[OF exists])
   then show "relative_adp_pair_index problem pair < length problem"
     "problem ! relative_adp_pair_index problem pair = pair" by auto
+qed
+
+lemma relative_adp_semantic_path_in_estimated_path:
+  assumes source: "source_pair \<in> set problem"
+    and path: "(source_pair,target_pair) \<in>
+      (relative_adp_dependency_graph (set problem))\<^sup>*"
+  shows "(relative_adp_pair_index problem source_pair,
+      relative_adp_pair_index problem target_pair) \<in>
+    (set (relative_adp_estimated_edges problem))\<^sup>*"
+  using path source
+proof (induction rule: rtrancl_induct)
+  case base
+  then show ?case by simp
+next
+  case (step middle successor)
+  have middle: "middle \<in> set problem"
+    using step.hyps(2) unfolding relative_adp_dependency_graph_def by blast
+  have successor: "successor \<in> set problem"
+    using step.hyps(2) unfolding relative_adp_dependency_graph_def by blast
+  have estimated: "(relative_adp_pair_index problem middle,
+      relative_adp_pair_index problem successor) \<in>
+      set (relative_adp_estimated_edges problem)"
+    by (rule relative_adp_semantic_edge_in_estimated_edges[
+        OF relative_adp_pair_index_correct(1)[OF middle]
+          relative_adp_pair_index_correct(1)[OF successor]])
+       (use step.hyps(2) relative_adp_pair_index_correct(2)[OF middle]
+          relative_adp_pair_index_correct(2)[OF successor] in
+          \<open>simp add: relative_adp_dependency_graph_def\<close>)
+  show ?case
+    by (rule rtrancl_into_rtrancl[OF step.IH[OF step.prems] estimated])
+qed
+
+lemma relative_adp_semantic_corridor_in_estimated_corridor:
+  assumes source: "source_pair \<in> set problem"
+    and middle: "middle_pair \<in> set problem"
+    and target: "target_pair \<in> set problem"
+    and prefix: "(source_pair,middle_pair) \<in>
+      (relative_adp_dependency_graph (set problem))\<^sup>*"
+    and suffix: "(middle_pair,target_pair) \<in>
+      (relative_adp_dependency_graph (set problem))\<^sup>*"
+  shows "middle_pair \<in> (\<lambda>i. problem ! i) `
+    set (relative_adp_estimated_corridor problem
+      (relative_adp_pair_index problem source_pair)
+      (relative_adp_pair_index problem target_pair))"
+proof -
+  let ?middle = "relative_adp_pair_index problem middle_pair"
+  have bound: "?middle < length problem"
+    by (rule relative_adp_pair_index_correct(1)[OF middle])
+  have prefix_estimated:
+      "(relative_adp_pair_index problem source_pair,?middle) \<in>
+        (set (relative_adp_estimated_edges problem))\<^sup>*"
+    by (rule relative_adp_semantic_path_in_estimated_path[OF source prefix])
+  have suffix_estimated:
+      "(?middle,relative_adp_pair_index problem target_pair) \<in>
+        (set (relative_adp_estimated_edges problem))\<^sup>*"
+    by (rule relative_adp_semantic_path_in_estimated_path[OF middle suffix])
+  have in_corridor: "?middle \<in>
+      set (relative_adp_estimated_corridor problem
+        (relative_adp_pair_index problem source_pair)
+        (relative_adp_pair_index problem target_pair))"
+    unfolding relative_adp_estimated_corridor_set
+    using bound prefix_estimated suffix_estimated by blast
+  have nth: "problem ! ?middle = middle_pair"
+    by (rule relative_adp_pair_index_correct(2)[OF middle])
+  have "problem ! ?middle \<in> (\<lambda>i. problem ! i) `
+      set (relative_adp_estimated_corridor problem
+        (relative_adp_pair_index problem source_pair)
+        (relative_adp_pair_index problem target_pair))"
+    by (rule imageI[OF in_corridor])
+  then show ?thesis unfolding nth .
+qed
+
+definition relative_adp_problem_list ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+    ('f, 'v) adp list" where
+  "relative_adp_problem_list P B = remdups (P @ B)"
+
+definition relative_adp_lasso_problem_list ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+    ('f, 'v) adp list" where
+  "relative_adp_lasso_problem_list P B =
+    remdups (map erase_annotations_adp P @ B)"
+
+lemma relative_adp_problem_list_set:
+  "set (relative_adp_problem_list P B) = set P \<union> set B"
+  unfolding relative_adp_problem_list_def by simp
+
+lemma relative_adp_lasso_problem_list_set:
+  "set (relative_adp_lasso_problem_list P B) =
+    relative_adp_lasso_graph_problem (set P) (set B)"
+  unfolding relative_adp_lasso_problem_list_def
+    relative_adp_lasso_graph_problem_def by auto
+
+definition relative_adp_estimated_lasso_candidate ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+    nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('f, 'v) adp list" where
+  "relative_adp_estimated_lasso_candidate P B component source target =
+    (let problem = relative_adp_problem_list P B;
+         lasso_problem = relative_adp_lasso_problem_list P B
+     in remdups
+       (map ((!) lasso_problem) component @
+        map ((!) problem)
+          (relative_adp_estimated_corridor problem source target)))"
+
+definition relative_adp_estimated_lasso_candidates_for_component ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+    nat list \<Rightarrow> ('f, 'v) adp list list" where
+  "relative_adp_estimated_lasso_candidates_for_component P B component =
+    (let problem = relative_adp_problem_list P B;
+         lasso_problem = relative_adp_lasso_problem_list P B;
+         component_pairs = ((!) lasso_problem) ` set component
+     in [relative_adp_estimated_lasso_candidate P B component source target.
+          source <- [0..<length problem],
+          problem ! source \<in> set B \<and>
+            problem ! source \<in> component_pairs \<and>
+            relative_adp_branching_pair_list (problem ! source),
+          target <- [0..<length problem],
+          problem ! target \<in> set P \<and>
+            target \<in> set (relative_adp_estimated_reachable problem source)])"
+
+definition relative_adp_estimated_lasso_candidates ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+    ('f, 'v) adp list list" where
+  "relative_adp_estimated_lasso_candidates P B =
+    concat (map
+      (relative_adp_estimated_lasso_candidates_for_component P B)
+      (relative_adp_estimated_sccs
+        (relative_adp_lasso_problem_list P B)))"
+
+lemma relative_adp_estimated_lasso_candidate_set:
+  "set (relative_adp_estimated_lasso_candidate P B component source target) =
+    ((\<lambda>i. relative_adp_lasso_problem_list P B ! i) ` set component) \<union>
+    ((\<lambda>i. relative_adp_problem_list P B ! i) `
+      set (relative_adp_estimated_corridor
+        (relative_adp_problem_list P B) source target))"
+  unfolding relative_adp_estimated_lasso_candidate_def by (simp add: Let_def)
+
+lemma relative_adp_estimated_lasso_candidate_in_global:
+  assumes component: "component \<in> set (relative_adp_estimated_sccs
+      (relative_adp_lasso_problem_list P B))"
+    and source: "source < length (relative_adp_problem_list P B)"
+      "relative_adp_problem_list P B ! source \<in> set B"
+      "relative_adp_problem_list P B ! source \<in>
+        (\<lambda>i. relative_adp_lasso_problem_list P B ! i) ` set component"
+      "relative_adp_branching_pair
+        (relative_adp_problem_list P B ! source)"
+    and target: "target < length (relative_adp_problem_list P B)"
+      "relative_adp_problem_list P B ! target \<in> set P"
+      "target \<in> set (relative_adp_estimated_reachable
+        (relative_adp_problem_list P B) source)"
+  shows "relative_adp_estimated_lasso_candidate P B component source target
+    \<in> set (relative_adp_estimated_lasso_candidates P B)"
+proof -
+  have source_guard: "source \<in>
+      set [0..<length (relative_adp_problem_list P B)] \<and>
+      relative_adp_problem_list P B ! source \<in> set B \<and>
+      relative_adp_problem_list P B ! source \<in>
+        (\<lambda>i. relative_adp_lasso_problem_list P B ! i) ` set component \<and>
+      relative_adp_branching_pair_list
+        (relative_adp_problem_list P B ! source)"
+    using source unfolding relative_adp_branching_pair_list_sound by simp
+  have target_guard: "target \<in>
+      set [0..<length (relative_adp_problem_list P B)] \<and>
+      relative_adp_problem_list P B ! target \<in> set P \<and>
+      target \<in> set (relative_adp_estimated_reachable
+        (relative_adp_problem_list P B) source)"
+    using target by simp
+  have local: "relative_adp_estimated_lasso_candidate P B component source target
+      \<in> set (relative_adp_estimated_lasso_candidates_for_component
+        P B component)"
+    unfolding relative_adp_estimated_lasso_candidates_for_component_def
+    apply (simp add: Let_def)
+    apply (rule bexI[where x=source])
+     apply (rule bexI[where x=target])
+      apply simp
+     apply (use target_guard in auto)
+    apply (use source_guard in auto)
+    done
+  show ?thesis
+    unfolding relative_adp_estimated_lasso_candidates_def
+    using component local by auto
 qed
 
 theorem relative_adp_pair_stream_eventual_estimated_scc:
