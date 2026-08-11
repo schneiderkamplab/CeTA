@@ -130,6 +130,102 @@ definition event_offshoot ::
     (\<exists>y. (path n,y) \<in> E \<and> y \<noteq> path (Suc n) \<and>
       reachable_events E event y \<noteq> {})"
 
+definition event_segment ::
+  "'a rel \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a rel" where
+  "event_segment E event = {(source,target). event source \<and> event target \<and>
+    (\<exists>first. (source,first) \<in> E \<and>
+      (first,target) \<in> {(x,y). (x,y) \<in> E \<and> \<not> event x}\<^sup>*)}"
+
+lemma rtrancl_between_events_compresses:
+  assumes path: "(source,target) \<in> E\<^sup>*"
+    and source_event: "event source"
+    and target_event: "event target"
+  shows "(source,target) \<in> (event_segment E event)\<^sup>*"
+proof -
+  let ?U = "{(x,y). (x,y) \<in> E \<and> \<not> event x}"
+  let ?S = "event_segment E event"
+  have invariant: "\<And>target. (source,target) \<in> E\<^sup>* \<Longrightarrow>
+      \<exists>last. event last \<and> (source,last) \<in> ?S\<^sup>* \<and>
+        (last = target \<or> (\<not> event target \<and>
+          (\<exists>first. (last,first) \<in> E \<and> (first,target) \<in> ?U\<^sup>*)))"
+  proof -
+    fix target
+    assume reach: "(source,target) \<in> E\<^sup>*"
+    from reach show "\<exists>last. event last \<and> (source,last) \<in> ?S\<^sup>* \<and>
+        (last = target \<or> (\<not> event target \<and>
+          (\<exists>first. (last,first) \<in> E \<and> (first,target) \<in> ?U\<^sup>*)))"
+    proof (induction rule: rtrancl_induct)
+      case base
+      show ?case by (rule exI[of _ source]) (use source_event in simp)
+    next
+      case (step middle successor)
+      from step.IH obtain last where last_event: "event last"
+        and compressed: "(source,last) \<in> ?S\<^sup>*"
+        and tail: "last = middle \<or> (\<not> event middle \<and>
+          (\<exists>first. (last,first) \<in> E \<and> (first,middle) \<in> ?U\<^sup>*))"
+        by blast
+      show ?case
+      proof (cases "event successor")
+        case True
+        have segment: "(last,successor) \<in> ?S"
+        proof -
+          from tail show ?thesis
+          proof
+            assume "last = middle"
+            then show ?thesis using last_event True step.hyps
+              unfolding event_segment_def by auto
+          next
+            assume tail': "\<not> event middle \<and>
+              (\<exists>first. (last,first) \<in> E \<and> (first,middle) \<in> ?U\<^sup>*)"
+            then obtain first where first: "(last,first) \<in> E"
+              and rest: "(first,middle) \<in> ?U\<^sup>*" by blast
+            have final: "(middle,successor) \<in> ?U" using step.hyps tail' by simp
+            have "(first,successor) \<in> ?U\<^sup>*"
+              by (rule rtrancl_into_rtrancl[OF rest final])
+            with first last_event True show ?thesis
+              unfolding event_segment_def by blast
+          qed
+        qed
+        have compressed_next: "(source,successor) \<in> ?S\<^sup>*"
+          by (rule rtrancl_into_rtrancl[OF compressed segment])
+        show ?thesis
+          by (rule exI[of _ successor])
+             (use True compressed_next in simp)
+      next
+        case False
+        from tail show ?thesis
+        proof
+          assume last: "last = middle"
+          have tail_next: "\<exists>first. (last,first) \<in> E \<and>
+              (first,successor) \<in> ?U\<^sup>*"
+            by (rule exI[of _ successor]) (use last step.hyps in simp)
+          show ?thesis
+            by (rule exI[of _ last])
+               (use last_event compressed False tail_next in blast)
+        next
+          assume tail': "\<not> event middle \<and>
+            (\<exists>first. (last,first) \<in> E \<and> (first,middle) \<in> ?U\<^sup>*)"
+          then obtain first where first: "(last,first) \<in> E"
+            and rest: "(first,middle) \<in> ?U\<^sup>*" by blast
+          have final: "(middle,successor) \<in> ?U" using step.hyps tail' by simp
+          have extended: "(first,successor) \<in> ?U\<^sup>*"
+            by (rule rtrancl_into_rtrancl[OF rest final])
+          show ?thesis
+            by (rule exI[of _ last])
+               (use last_event compressed False first extended in blast)
+        qed
+      qed
+    qed
+  qed
+  from invariant[OF path] obtain last where compressed:
+      "(source,last) \<in> ?S\<^sup>*"
+    and tail: "last = target \<or> (\<not> event target \<and>
+      (\<exists>first. (last,first) \<in> E \<and> (first,target) \<in> ?U\<^sup>*))"
+    by blast
+  from tail target_event have "last = target" by blast
+  with compressed show ?thesis by simp
+qed
+
 lemma no_offshoot_forces_reachable_event_onto_path:
   assumes path: "\<And>n. (p n, p (Suc n)) \<in> E"
     and no_offshoot: "\<And>n. N \<le> n \<Longrightarrow> \<not> event_offshoot E event p n"

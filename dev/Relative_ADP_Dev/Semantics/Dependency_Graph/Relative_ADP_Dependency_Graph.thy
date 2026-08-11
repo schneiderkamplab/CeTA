@@ -2682,6 +2682,152 @@ proof -
        (use projected source_instance target_instance in simp)
 qed
 
+lemma relative_adp_selected_event_segment_dependency_edge:
+  assumes segment: "(source,target) \<in> event_segment
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_labeled P A terms)"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  shows "relative_adp_dependency_edge A
+    (relative_adp_selected_chain_node_label P A terms source)
+    (relative_adp_selected_chain_node_label P A terms target)"
+proof -
+  from segment obtain first where source_labeled:
+      "relative_adp_selected_chain_labeled P A terms source"
+    and target_labeled: "relative_adp_selected_chain_labeled P A terms target"
+    and first: "(source,first) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and tail: "(first,target) \<in>
+      {(x,y). (x,y) \<in> relative_adp_selected_chain_origin_edge P A terms \<and>
+        \<not> relative_adp_selected_chain_labeled P A terms x}\<^sup>*"
+    unfolding event_segment_def by blast
+  obtain i q where source: "source = (i,q)" by (cases source) auto
+  obtain j q' where first_node: "first = (j,q')" by (cases first) auto
+  obtain k rho where target: "target = (k,rho)" by (cases target) auto
+  have first_edge: "((i,q),(j,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using first unfolding source first_node .
+  have j: "j = Suc i"
+    by (rule relative_adp_selected_chain_origin_edge_time[OF first_edge])
+  have source_label: "relative_adp_selected_chain_label P A terms (i,q)
+      (relative_adp_selected_chain_node_label P A terms source)"
+    using relative_adp_selected_chain_labeled_has_node_label[OF source_labeled]
+    unfolding source .
+  have target_label: "relative_adp_selected_chain_label P A terms (k,rho)
+      (relative_adp_selected_chain_node_label P A terms target)"
+    using relative_adp_selected_chain_labeled_has_node_label[OF target_labeled]
+    unfolding target .
+  have source_in_A:
+      "relative_adp_selected_chain_node_label P A terms source \<in> A"
+    by (rule relative_adp_selected_label_in_problem[
+        where i=i and q=q, OF steps[of i] subset source_label])
+  have target_in_A:
+      "relative_adp_selected_chain_node_label P A terms target \<in> A"
+    by (rule relative_adp_selected_label_in_problem[
+        where i=k and q=rho, OF steps[of k] subset target_label])
+  show ?thesis
+    by (rule relative_adp_selected_labeled_segment_dependency_edge[
+        where i=i and q=q and q'=q' and j=k and rho=rho,
+        OF _ source_label _ target_label steps subset
+          lhs_fun[OF source_in_A] lhs_fun[OF target_in_A]])
+       (use first_edge tail in \<open>simp only: j source first_node target\<close>)+
+qed
+
+lemma relative_adp_selected_event_segments_dependency_path:
+  assumes segments: "(source,target) \<in> (event_segment
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_labeled P A terms))\<^sup>*"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  shows "(relative_adp_selected_chain_node_label P A terms source,
+      relative_adp_selected_chain_node_label P A terms target) \<in>
+    {(p,q). relative_adp_dependency_edge A p q}\<^sup>*"
+  using segments
+proof (induction rule: rtrancl_induct)
+  case base
+  show ?case by simp
+next
+  case (step middle successor)
+  have dependency: "relative_adp_dependency_edge A
+      (relative_adp_selected_chain_node_label P A terms middle)
+      (relative_adp_selected_chain_node_label P A terms successor)"
+    by (rule relative_adp_selected_event_segment_dependency_edge[
+        OF step.hyps(2) steps subset lhs_fun])
+  have edge: "(relative_adp_selected_chain_node_label P A terms middle,
+      relative_adp_selected_chain_node_label P A terms successor) \<in>
+      {(p,q). relative_adp_dependency_edge A p q}"
+    using dependency by simp
+  show ?case by (rule rtrancl_into_rtrancl[OF step.IH edge])
+qed
+
+lemma relative_adp_selected_labeled_origin_path_dependency_path:
+  assumes path: "(source,target) \<in>
+      (relative_adp_selected_chain_origin_edge P A terms)\<^sup>*"
+    and source_labeled: "relative_adp_selected_chain_labeled P A terms source"
+    and target_labeled: "relative_adp_selected_chain_labeled P A terms target"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  shows "(relative_adp_selected_chain_node_label P A terms source,
+      relative_adp_selected_chain_node_label P A terms target) \<in>
+    {(p,q). relative_adp_dependency_edge A p q}\<^sup>*"
+proof -
+  have compressed: "(source,target) \<in> (event_segment
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_labeled P A terms))\<^sup>*"
+    by (rule rtrancl_between_events_compresses[
+        OF path source_labeled target_labeled])
+  show ?thesis
+    by (rule relative_adp_selected_event_segments_dependency_path[
+        OF compressed steps subset lhs_fun])
+qed
+
+lemma relative_adp_selected_offshoot_reaches_main_pair:
+  assumes offshoot: "event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n"
+    and path_edge: "(path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  obtains main_pair where
+    "main_pair \<in> P"
+    "(relative_adp_selected_chain_node_label P A terms (path n), main_pair) \<in>
+      {(p,q). relative_adp_dependency_edge A p q}\<^sup>*"
+proof -
+  from offshoot obtain first target where first:
+      "(path n,first) \<in> relative_adp_selected_chain_origin_edge P A terms"
+    and reachable: "(first,target) \<in>
+      (relative_adp_selected_chain_origin_edge P A terms)\<^sup>*"
+    and main: "relative_adp_selected_chain_main_event P A terms target"
+    unfolding event_offshoot_def reachable_events_def by blast
+  have source_labeled: "relative_adp_selected_chain_labeled P A terms (path n)"
+    by (rule relative_adp_selected_event_offshoot_is_labeled[
+        where P=P and A=A and terms=terms and path=path and n=n,
+        OF offshoot path_edge steps subset])
+  have target_labeled: "relative_adp_selected_chain_labeled P A terms target"
+    using main unfolding relative_adp_selected_chain_main_event_iff_node_label by blast
+  have path: "(path n,target) \<in>
+      (relative_adp_selected_chain_origin_edge P A terms)\<^sup>*"
+  proof -
+    have prefix: "(path n,first) \<in>
+        (relative_adp_selected_chain_origin_edge P A terms)\<^sup>*"
+      using first by simp
+    show ?thesis by (rule rtrancl_trans[OF prefix reachable])
+  qed
+  have dependency: "(relative_adp_selected_chain_node_label P A terms (path n),
+      relative_adp_selected_chain_node_label P A terms target) \<in>
+      {(p,q). relative_adp_dependency_edge A p q}\<^sup>*"
+    by (rule relative_adp_selected_labeled_origin_path_dependency_path[
+        OF path source_labeled target_labeled steps subset lhs_fun])
+  have in_P: "relative_adp_selected_chain_node_label P A terms target \<in> P"
+    using main unfolding relative_adp_selected_chain_main_event_iff_node_label by simp
+  show thesis by (rule that[OF in_P dependency])
+qed
+
 lemma relative_adp_selected_labeled_path_dependency_edge:
   assumes infinite: "infinite
       {n. relative_adp_selected_chain_labeled P A terms (path n)}"
@@ -2924,7 +3070,10 @@ lemma relative_adp_selected_offshoots_give_branching_base_stream:
     and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
   shows "INFM n. relative_adp_selected_label_stream P A terms path n \<in> A - P \<and>
     relative_adp_branching_pair
-      (relative_adp_selected_label_stream P A terms path n)"
+      (relative_adp_selected_label_stream P A terms path n) \<and>
+    event_offshoot (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path
+      (enumerate (relative_adp_selected_label_indices P A terms path) n)"
 proof -
   let ?I = "relative_adp_selected_label_indices P A terms path"
   have infinite: "infinite ?I"
@@ -2979,8 +3128,12 @@ proof -
       using alpha beta distinct unfolding relative_adp_branching_pair_def by blast
     show "\<exists>n>N. relative_adp_selected_label_stream P A terms path n \<in> A - P \<and>
         relative_adp_branching_pair
-          (relative_adp_selected_label_stream P A terms path n)"
-      by (rule exI[of _ m]) (use Nm pair branching pair_eq in simp)
+          (relative_adp_selected_label_stream P A terms path n) \<and>
+        event_offshoot (relative_adp_selected_chain_origin_edge P A terms)
+          (relative_adp_selected_chain_main_event P A terms) path
+          (enumerate ?I n)"
+      by (rule exI[of _ m])
+         (use Nm pair branching pair_eq offshoot k in simp)
   qed
 qed
 
@@ -3132,7 +3285,9 @@ lemma relative_adp_selected_offshoot_path_has_branching_base_component:
     "\<exists>pair \<in>
       relative_adp_dependency_component
         (relative_adp_lasso_graph_problem P B) anchor \<inter> B.
-      relative_adp_branching_pair pair"
+      relative_adp_branching_pair pair \<and>
+      (\<exists>main_pair \<in> P. (pair,main_pair) \<in>
+        {(p,q). relative_adp_dependency_edge A p q}\<^sup>*)"
 proof -
   let ?I = "relative_adp_selected_label_indices P A terms path"
   let ?labels = "relative_adp_selected_label_stream P A terms path"
@@ -3209,13 +3364,19 @@ proof -
       ?shifted n \<in> relative_adp_dependency_component ?L anchor"
     by blast
   have branching_stream: "INFM n. ?labels n \<in> A - P \<and>
-      relative_adp_branching_pair (?labels n)"
+      relative_adp_branching_pair (?labels n) \<and>
+      event_offshoot (relative_adp_selected_chain_origin_edge P A terms)
+        (relative_adp_selected_chain_main_event P A terms) path
+        (enumerate ?I n)"
     by (rule relative_adp_selected_offshoots_give_branching_base_stream[
         OF offshoots no_main path_edge steps subset lhs_fun])
   from branching_stream[unfolded INFM_nat]
   obtain m where large: "K+N < m"
     and branching: "?labels m \<in> A - P"
-      "relative_adp_branching_pair (?labels m)" by blast
+      "relative_adp_branching_pair (?labels m)"
+      "event_offshoot (relative_adp_selected_chain_origin_edge P A terms)
+        (relative_adp_selected_chain_main_event P A terms) path
+        (enumerate ?I m)" by blast
   let ?n = "m-K"
   have m: "m = K + ?n" using large by simp
   have Nn: "N \<le> ?n" using large by simp
@@ -3226,10 +3387,25 @@ proof -
       relative_adp_dependency_component ?L anchor"
     using shifted_component m by simp
   have in_B: "?labels m \<in> B" using branching(1) unfolding A by blast
+  from relative_adp_selected_offshoot_reaches_main_pair[
+      where P=P and A=A and terms=terms and path=path and n="enumerate ?I m",
+      OF branching(3) path_edge[of "enumerate ?I m"] steps subset lhs_fun]
+  obtain main_pair where main_pair: "main_pair \<in> P"
+    and reaches: "(relative_adp_selected_chain_node_label P A terms
+        (path (enumerate ?I m)), main_pair) \<in>
+      {(p,q). relative_adp_dependency_edge A p q}\<^sup>*" .
+  have label_eq: "relative_adp_selected_chain_node_label P A terms
+      (path (enumerate ?I m)) = ?labels m"
+    unfolding relative_adp_selected_label_stream_def by simp
+  have reaches_main: "(?labels m,main_pair) \<in>
+      {(p,q). relative_adp_dependency_edge A p q}\<^sup>*"
+    using reaches unfolding label_eq .
   have exists_branching: "\<exists>pair \<in>
       relative_adp_dependency_component ?L anchor \<inter> B.
-      relative_adp_branching_pair pair"
-    using in_component in_B branching(2) by blast
+      relative_adp_branching_pair pair \<and>
+      (\<exists>main_pair \<in> P. (pair,main_pair) \<in>
+        {(p,q). relative_adp_dependency_edge A p q}\<^sup>*)"
+    using in_component in_B branching(2) main_pair reaches_main by blast
   show thesis by (rule that[OF anchor exists_branching])
 qed
 

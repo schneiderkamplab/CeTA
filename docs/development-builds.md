@@ -161,3 +161,16 @@ ADP, which is the SCC premise of a minimal lasso in Definition 32 of the IJCAR
 origin offshoot to the first main label and thereby obtain the finite lasso
 stem. No executable checker or production CeTA integration should be enabled
 until that stem theorem and the resulting full processor theorem are proved.
+
+The finite stem bridge was then replayed as
+`Draft.Finite_Branching_Dichotomy_Test18` and
+`Draft.Relative_ADP_Dependency_Graph_Test135`. A generic event-compression
+theorem decomposes every finite path between labeled nodes into labeled-edge
+plus unlabeled-tail segments. The existing ADP segment theorem maps each one
+to a dependency edge, so every finite selected-origin path between labels maps
+to dependency-graph reachability. Applied to an offshoot, this produces a path
+from the branching base ADP in the recurring component to a main ADP. Thus the
+semantic lasso witness now has all substantive Definition 32 ingredients:
+the base-graph SCC, a base ADP with more than one annotation, and a finite stem
+to a main ADP. The executable layer may choose the first main node on that
+finite stem to obtain the required minimal representative.
