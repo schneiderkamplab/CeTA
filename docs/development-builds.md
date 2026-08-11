@@ -186,3 +186,15 @@ in 4.22 seconds from the warm child session. These functions are not yet
 exposed through XML or `Certified`: the remaining processor theorem must
 first prove that selective removal of annotations outside the checked SCC or
 lasso preserves the required infinite child chain.
+
+The local graph-child projection checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test166`. For every parent ADP step and
+every projected source with the same erased term, it constructs a child step
+over `Q union flat(A - Q)` whose target has the same erased term as the parent
+target. Crucially, flattened outside-`Q` ADPs retain the original valid
+variable-reposition function: only their rule annotations are removed. An
+earlier empty-VRF draft would have lost annotations transported through
+variables and was rejected before checker integration. The theory also proves
+that validity of a VRF is preserved by full ADP annotation erasure. The next
+bridge specializes this construction to the selected fixed witness and proves
+that every retained origin marker remains retained in the projected target.

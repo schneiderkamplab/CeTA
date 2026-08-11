@@ -459,6 +459,185 @@ proof -
     using positions more_than_one by blast
 qed
 
+lemma valid_vrf_erase_annotations_adp_pair:
+  assumes valid: "valid_vrf (l,r) phi"
+  shows "valid_vrf (erase_annotations_adp (l,r)) phi"
+  unfolding valid_vrf_def erase_annotations_adp_def fst_conv snd_conv
+proof (intro ballI)
+  have valid_lr: "\<forall>p \<in> var_poss l.
+      case phi p of None \<Rightarrow> True | Some q \<Rightarrow>
+        q \<in> var_poss r \<and> l |_ p = r |_ q"
+    using valid unfolding valid_vrf_def
+    by (simp only: fst_conv snd_conv)
+  fix p
+  assume p: "p \<in> var_poss (plain_adp_term (erase_adp_term l))"
+  then have p_original: "p \<in> var_poss l" by simp
+  have valid_p: "case phi p of None \<Rightarrow> True | Some q \<Rightarrow>
+      q \<in> var_poss r \<and> l |_ p = r |_ q"
+    by (rule valid_lr[rule_format, OF p_original])
+  show "case phi p of None \<Rightarrow> True | Some q \<Rightarrow>
+      q \<in> var_poss (plain_adp_term (erase_adp_term r)) \<and>
+      plain_adp_term (erase_adp_term l) |_ p =
+        plain_adp_term (erase_adp_term r) |_ q"
+  proof (cases "phi p")
+    case None
+    then show ?thesis by simp
+  next
+    case (Some q)
+    from valid_p Some have q: "q \<in> var_poss r"
+      and equal: "l |_ p = r |_ q" by auto
+    have p_poss: "p \<in> poss l"
+      by (rule var_poss_imp_poss[OF p_original])
+    have q_poss: "q \<in> poss r"
+      by (rule var_poss_imp_poss[OF q])
+    have erased_equal: "plain_adp_term (erase_adp_term l) |_ p =
+        plain_adp_term (erase_adp_term r) |_ q"
+      using equal p_original q p_poss q_poss
+        plain_adp_term_subt_at[of p "erase_adp_term l"]
+        plain_adp_term_subt_at[of q "erase_adp_term r"]
+        erase_adp_term_subt_at[OF p_poss]
+        erase_adp_term_subt_at[OF q_poss]
+      by (simp add: var_poss_iff)
+    show ?thesis unfolding Some using q erased_equal by simp
+  qed
+qed
+
+lemma valid_vrf_erase_annotations_adp:
+  assumes "valid_vrf pair phi"
+  shows "valid_vrf (erase_annotations_adp pair) phi"
+proof (cases pair)
+  case (Pair l r)
+  have "valid_vrf (l,r) phi" using assms unfolding Pair .
+  then have "valid_vrf (erase_annotations_adp (l,r)) phi"
+    by (rule valid_vrf_erase_annotations_adp_pair)
+  then show ?thesis unfolding Pair .
+qed
+
+lemma relative_adp_project_step_to_graph_child:
+  assumes step: "(s,t) \<in> adp_step A"
+    and erased_source: "erase_adp_term projected_source = erase_adp_term s"
+  obtains projected_target where
+    "erase_adp_term projected_target = erase_adp_term t"
+    "(projected_source,projected_target) \<in>
+      adp_step (Q \<union> erase_annotations_adp ` (A - Q))"
+proof -
+  from step obtain at_sharp where case_step:
+      "adp_step_case A at_sharp s t"
+    unfolding adp_step_def adp_step_case_rel_def by auto
+  from case_step obtain l r phi redex sigma annotations where
+      pair: "(l,r) \<in> A"
+    and lhs_plain: "plain_adp_term_pred l"
+    and valid: "valid_vrf (l,r) phi"
+    and redex: "redex \<in> fun_poss s"
+    and lhs: "erase_adp_term (s |_ redex) =
+      erase_adp_term l \<cdot> sigma"
+    and target: "t = replace_at s redex
+      (annotate_term annotations (erase_adp_term r \<cdot> sigma))"
+    by cases blast
+  have redex_projected: "redex \<in> fun_poss projected_source"
+    using redex erased_source fun_poss_erase_adp_term[of s]
+      fun_poss_erase_adp_term[of projected_source]
+    by simp
+  have redex_poss: "redex \<in> poss s"
+    by (rule fun_poss_imp_poss[OF redex])
+  have redex_projected_poss: "redex \<in> poss projected_source"
+    by (rule fun_poss_imp_poss[OF redex_projected])
+  have lhs_projected: "erase_adp_term (projected_source |_ redex) =
+      erase_adp_term l \<cdot> sigma"
+    using lhs erased_source erase_adp_term_subt_at[OF redex_poss]
+      erase_adp_term_subt_at[OF redex_projected_poss]
+    by simp
+  show thesis
+  proof (cases "(l,r) \<in> Q")
+    case True
+    let ?at = "redex \<in> sharp_positions projected_source"
+    let ?annotations = "(if ?at then sharp_positions r else {}) \<union>
+      transported_annotations phi l (projected_source |_ redex)"
+    let ?target = "replace_at projected_source redex
+      (annotate_term ?annotations (erase_adp_term r \<cdot> sigma))"
+    have child_pair: "(l,r) \<in>
+        Q \<union> erase_annotations_adp ` (A - Q)"
+      using True by blast
+    have at_eq: "?at =
+        (redex \<in> sharp_positions projected_source)" by simp
+    have annotations_eq: "?annotations =
+        (if ?at then sharp_positions r else {}) \<union>
+          transported_annotations phi l (projected_source |_ redex)"
+      by simp
+    have target_eq: "?target = replace_at projected_source redex
+        (annotate_term ?annotations (erase_adp_term r \<cdot> sigma))"
+      by simp
+    have projected_step: "adp_step_case
+        (Q \<union> erase_annotations_adp ` (A - Q)) ?at
+        projected_source ?target"
+      by (rule adp_step_case.adp_stepI[
+          OF child_pair lhs_plain valid redex_projected at_eq
+            lhs_projected annotations_eq target_eq])
+    have erased_target: "erase_adp_term ?target = erase_adp_term t"
+      unfolding target
+      using erased_source redex_projected_poss redex_poss
+      by (simp add: erase_adp_term_replace_at)
+    have child_step: "(projected_source,?target) \<in>
+        adp_step (Q \<union> erase_annotations_adp ` (A - Q))"
+      unfolding adp_step_def adp_step_case_rel_def
+      using projected_step by (cases ?at) auto
+    show thesis by (rule that[OF erased_target child_step])
+  next
+    case False
+    let ?pair = "erase_annotations_adp (l,r)"
+    let ?at = "redex \<in> sharp_positions projected_source"
+    let ?annotations = "transported_annotations phi (fst ?pair)
+      (projected_source |_ redex)"
+    let ?target = "replace_at projected_source redex
+      (annotate_term ?annotations (erase_adp_term r \<cdot> sigma))"
+    have child_pair: "?pair \<in>
+        Q \<union> erase_annotations_adp ` (A - Q)"
+      using pair False by blast
+    have pair_plain: "plain_adp_term_pred (fst ?pair)"
+      unfolding erase_annotations_adp_def by simp
+    have pair_valid: "valid_vrf ?pair phi"
+      by (rule valid_vrf_erase_annotations_adp[OF valid])
+    have pair_lhs: "erase_adp_term (projected_source |_ redex) =
+        erase_adp_term (fst ?pair) \<cdot> sigma"
+      using lhs_projected unfolding erase_annotations_adp_def by simp
+    have annotations_eq: "?annotations =
+        (if ?at then sharp_positions (snd ?pair) else {}) \<union>
+          transported_annotations phi (fst ?pair)
+            (projected_source |_ redex)"
+      unfolding erase_annotations_adp_def by simp
+    have at_eq: "?at =
+        (redex \<in> sharp_positions projected_source)" by simp
+    have target_eq: "?target = replace_at projected_source redex
+        (annotate_term ?annotations
+          (erase_adp_term (snd ?pair) \<cdot> sigma))"
+      by (simp add: erase_annotations_adp_def)
+    have projected_step: "adp_step_case
+        (Q \<union> erase_annotations_adp ` (A - Q)) ?at
+        projected_source ?target"
+      apply (rule adp_step_case.adp_stepI[
+          where l="fst ?pair" and r="snd ?pair" and phi=phi
+            and p=redex and sigma=sigma and A="?annotations"])
+      subgoal using child_pair by simp
+      subgoal by (fact pair_plain)
+      subgoal using pair_valid by simp
+      subgoal by (fact redex_projected)
+      subgoal by (fact at_eq)
+      subgoal by (fact pair_lhs)
+      subgoal by (fact annotations_eq)
+      subgoal by (fact target_eq)
+      done
+    have erased_target: "erase_adp_term ?target = erase_adp_term t"
+      unfolding target
+      using erased_source redex_projected_poss redex_poss
+      by (simp add: erase_adp_term_replace_at)
+    have child_step: "(projected_source,?target) \<in>
+        adp_step (Q \<union> erase_annotations_adp ` (A - Q))"
+      unfolding adp_step_def adp_step_case_rel_def
+      using projected_step by (cases ?at) auto
+    show thesis by (rule that[OF erased_target child_step])
+  qed
+qed
+
 definition relative_adp_lasso_graph_problem ::
   "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set" where
   "relative_adp_lasso_graph_problem P B = erase_annotations_adp ` P \<union> B"
