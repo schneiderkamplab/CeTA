@@ -318,6 +318,7 @@ session CSR_Checker_Extensions in "CSR_Checker/Extensions" = CSR_Checker_Core +
     CSR_Innermost_Switch
     CSR_Innermost_DP_Checker
     CSR_Innermost_Unhiding_Checker
+    CSR_Innermost_Unhiding_RTA08
     CSR_Conservative_Checker
 
 session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Checker_Extensions +
