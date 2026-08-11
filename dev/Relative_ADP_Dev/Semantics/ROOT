@@ -186,4 +186,5 @@ session Relative_ADP_Processors_Dev in "Processors" = Relative_ADP_Direct_Criter
 session Relative_ADP_Dependency_Graph_Dev in "Dependency_Graph" = Relative_ADP_Processors_Dev +
   options [document = false]
   theories
+    Finite_Branching_Dichotomy
     Relative_ADP_Dependency_Graph

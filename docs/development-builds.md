@@ -60,3 +60,25 @@ make haskell
 
 The production checker and generated Haskell must always come from that final
 production build, never directly from a temporary development heap.
+
+## Relative ADP graph layer
+
+Relative ADP graph semantics live in the thin
+`Relative_ADP_Dependency_Graph_Dev` session. Its generic finite-branching
+argument is isolated in `Finite_Branching_Dichotomy.thy`; the ADP-specific
+selection, origin, and labeling lemmas remain in
+`Relative_ADP_Dependency_Graph.thy`.
+
+During development, load the stable `Relative_ADP_Processors_Dev` parent once
+in a dedicated Isabelle console and replay renamed copies of these two theories
+from `target/adp-console-flat`. This gives sub-second theory checking after the
+parent is resident and avoids rebuilding any CSR, parser, or code-generation
+heap. The 2026-08-11 selected-origin checkpoint was replayed as
+`Draft.Finite_Branching_Dichotomy_Test5` and
+`Draft.Relative_ADP_Dependency_Graph_Test38`.
+
+The selected application is semantically significant: strict chain indices
+prefer a sharp main-ADP witness, and origin edges pin the chosen ADP and redex
+position. Do not replace this by the union of all witnesses for a term
+transition when proving dependency labels. Such a union is adequate for marker
+reachability but can mix incompatible applications in the graph-label bridge.
