@@ -309,3 +309,22 @@ membership theorem verifies that every guarded SCC/source/target tuple occurs
 in the global finite family. The remaining lasso theorem must connect selected
 origin offshoots to these candidates and discharge the retained-edge and
 coverage premises of `relative_adp_selected_finite_lasso_family_has_non_SN_child`.
+
+That lasso connection is now complete. The generated family combines the
+eventual lasso SCC, the full-problem predecessor cone of the branching source,
+and its source-to-main corridor. The predecessor cone preserves the selected
+chain's finite prefix without shifting the derivation; the eventual SCC keeps
+every later base label; and each late offshoot supplies one generated corridor.
+Consequently one member of the finite family retains the complete selected
+origin path. The complete lasso branch replayed in the warm child session as
+`Draft.Relative_ADP_Dependency_Graph_Impl_Test54` in 3.04 seconds.
+
+The executable graph processor emits both main-SCC and lasso candidates. The
+contrapositive theorem `relative_adp_estimated_graph_has_non_SN_child` proves
+that every nonterminating relative ADP parent has a nonterminating emitted
+child, using the formally verified heavy-path main-event/offshoot dichotomy.
+`relative_adp_estimated_graph_processor` exposes the direct checker contract:
+termination of all emitted children implies termination of the parent. The
+combined proof replayed as Test57 in 3.46 seconds, and the final direct theorem
+as `Draft.Relative_ADP_Dependency_Graph_Impl_Test58` in 3.51 seconds. The next
+step is to expose this finite child family in CPF/CeTA and emit it from Ferrum.
