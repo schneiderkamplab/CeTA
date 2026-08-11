@@ -237,3 +237,24 @@ Infinitely many main events therefore become strict steps in the SCC child.
 This completes the semantic main-SCC branch of Theorem 33 without changing or
 weakening dependency-graph estimation. The minimal-lasso branch and the
 executable certificate coverage theorem remain before XML exposure.
+
+The retained-lasso projection checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test204`; the full theory checked in 5.80
+seconds. This follows Definition 32 and the soundness proof of Theorem 33 in
+the long version of Kassing, Dollase, and Giesl's relative-ADP paper. A
+retained origin edge is a selected canonical-origin edge whose source is
+unlabeled, or whose applied ADP belongs to the chosen lasso. Isabelle proves
+that retained edges preserve annotations in the projected child, first for
+one edge and then for every finite retained path.
+
+Consequently, every retained offshoot ending in a main event becomes a strict
+step of the child problem. The theorem
+`relative_adp_selected_recurring_retained_main_paths_not_SN` packages the
+recurring case: an infinite retained base path with infinitely many retained
+paths to selected main events induces an explicit infinite projected child
+chain with infinitely many strict steps. This closes the term-level
+projection argument for a fixed recurring lasso. The remaining semantic
+selection step must extract one such finite lasso node set from infinitely
+many canonical-origin offshoots. The executable checker must then cover every
+possible recurring set; it must not silently restrict this to simple graph
+paths unless a separate theorem justifies that restriction.

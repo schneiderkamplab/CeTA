@@ -2495,6 +2495,400 @@ proof -
   qed
 qed
 
+definition relative_adp_selected_retained_origin_edge ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow> (nat \<times> pos) rel" where
+  "relative_adp_selected_retained_origin_edge Q P A terms =
+    {(source,target).
+      (source,target) \<in>
+        relative_adp_selected_chain_origin_edge P A terms \<and>
+      (\<not> relative_adp_selected_chain_labeled P A terms source \<or>
+       relative_adp_selected_chain_node_label P A terms source \<in> Q)}"
+
+lemma relative_adp_selected_retained_origin_edge_preserves_projected_marker:
+  assumes edge: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_retained_origin_edge Q P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and marked: "q \<in> sharp_positions
+      (relative_adp_projected_chain Q source
+        (relative_adp_selected_step_witness P A terms) i)"
+  shows "q' \<in> sharp_positions
+    (relative_adp_projected_chain Q source
+      (relative_adp_selected_step_witness P A terms) (Suc i))"
+proof -
+  let ?witness = "relative_adp_selected_step_witness P A terms i"
+  let ?projected = "relative_adp_projected_chain Q source
+    (relative_adp_selected_step_witness P A terms)"
+  have valid: "\<And>k. relative_adp_step_witness_valid A
+      (terms k) (terms (Suc k))
+      (relative_adp_selected_step_witness P A terms k)"
+  proof -
+    fix k
+    have preferred: "relative_adp_preferred_step_witness_valid P A
+        (terms k) (terms (Suc k))
+        (relative_adp_selected_step_witness P A terms k)"
+      by (rule relative_adp_selected_step_witness_valid[OF steps[of k] subset])
+    then show "relative_adp_step_witness_valid A
+        (terms k) (terms (Suc k))
+        (relative_adp_selected_step_witness P A terms k)"
+      unfolding relative_adp_preferred_step_witness_valid_def by simp
+  qed
+  have erased: "erase_adp_term (?projected i) = erase_adp_term (terms i)"
+    by (rule relative_adp_projected_chain_erases[OF valid initial_erased])
+  from edge have origin: "relative_adp_step_witness_origin_edge ?witness q q'"
+    unfolding relative_adp_selected_retained_origin_edge_def
+      relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  from edge have retained_node:
+      "\<not> relative_adp_selected_chain_labeled P A terms (i,q) \<or>
+       relative_adp_selected_chain_node_label P A terms (i,q) \<in> Q"
+    unfolding relative_adp_selected_retained_origin_edge_def by simp
+  have retained: "radp_witness_pair ?witness \<in> Q \<or>
+      q \<noteq> radp_witness_redex ?witness"
+  proof (cases "relative_adp_selected_chain_labeled P A terms (i,q)")
+    case True
+    have label: "relative_adp_selected_chain_node_label P A terms (i,q) =
+        radp_witness_pair ?witness"
+      unfolding relative_adp_selected_chain_node_label_def
+        relative_adp_selected_application_def by (simp add: Let_def)
+    show ?thesis using retained_node True unfolding label by simp
+  next
+    case False
+    have origin_edge: "((i,q),(Suc i,q')) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+      using edge
+      unfolding relative_adp_selected_retained_origin_edge_def by simp
+    have away: "snd (snd (relative_adp_selected_application P A terms i))
+        \<noteq> q"
+      by (rule relative_adp_selected_unlabeled_edge_not_at_redex[
+          OF origin_edge steps[of i] subset False])
+    show ?thesis using away
+      unfolding relative_adp_selected_application_def by (simp add: Let_def)
+  qed
+  show ?thesis
+    by simp (rule relative_adp_projected_witness_preserves_sharp[
+        OF valid[of i] erased origin marked retained])
+qed
+
+lemma relative_adp_selected_retained_origin_path_preserves_projected_marker:
+  assumes path: "((i,q),(j,q')) \<in>
+      (relative_adp_selected_retained_origin_edge Q P A terms)\<^sup>*"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and marked: "q \<in> sharp_positions
+      (relative_adp_projected_chain Q source
+        (relative_adp_selected_step_witness P A terms) i)"
+  shows "q' \<in> sharp_positions
+    (relative_adp_projected_chain Q source
+      (relative_adp_selected_step_witness P A terms) j)"
+proof -
+  let ?projected = "relative_adp_projected_chain Q source
+    (relative_adp_selected_step_witness P A terms)"
+  let ?marked = "\<lambda>node. snd node \<in> sharp_positions (?projected (fst node))"
+  have initial: "?marked (i,q)" using marked by simp
+  have preserved: "\<And>middle target.
+      (middle,target) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms \<Longrightarrow>
+      ?marked middle \<Longrightarrow> ?marked target"
+  proof -
+    fix middle target
+    assume edge0: "(middle,target) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms"
+      and middle_marked: "?marked middle"
+    obtain k r where middle: "middle = (k,r)" by (cases middle) auto
+    obtain l r' where target: "target = (l,r')" by (cases target) auto
+    have edge: "((k,r),(l,r')) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms"
+      using edge0 unfolding middle target .
+    have l: "l = Suc k"
+      using edge unfolding relative_adp_selected_retained_origin_edge_def
+        relative_adp_selected_chain_origin_edge_def by auto
+    have marker: "r \<in> sharp_positions (?projected k)"
+      using middle_marked unfolding middle by simp
+    have edge': "((k,r),(Suc k,r')) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms"
+      using edge l by simp
+    have successor_marked: "r' \<in> sharp_positions (?projected (Suc k))"
+      by (rule relative_adp_selected_retained_origin_edge_preserves_projected_marker[
+          OF edge' steps subset initial_erased marker])
+    show "?marked target" using successor_marked unfolding target l by simp
+  qed
+  have "?marked (j,q')"
+    by (rule rtrancl_induct[where P="?marked", OF path initial])
+       (use preserved in blast)
+  then show ?thesis by simp
+qed
+
+lemma relative_adp_selected_projected_main_event_is_strict:
+  assumes steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and main: "relative_adp_selected_chain_main_event P A terms (i,q)"
+    and selected: "relative_adp_selected_chain_node_label P A terms (i,q) \<in> Q"
+    and marked: "q \<in> sharp_positions
+      (relative_adp_projected_chain Q source
+        (relative_adp_selected_step_witness P A terms) i)"
+  shows "(relative_adp_projected_chain Q source
+      (relative_adp_selected_step_witness P A terms) i,
+    relative_adp_projected_chain Q source
+      (relative_adp_selected_step_witness P A terms) (Suc i)) \<in>
+    adp_step_case_rel (P \<inter> Q) True"
+proof -
+  let ?witness = "relative_adp_selected_step_witness P A terms i"
+  let ?projected_source = "relative_adp_projected_chain Q source
+    (relative_adp_selected_step_witness P A terms) i"
+  let ?projected_witness =
+    "relative_adp_projected_witness Q ?projected_source ?witness"
+  have preferred: "relative_adp_preferred_step_witness_valid P A
+      (terms i) (terms (Suc i)) ?witness"
+    by (rule relative_adp_selected_step_witness_valid[OF steps[of i] subset])
+  then have valid: "relative_adp_step_witness_valid A
+      (terms i) (terms (Suc i)) ?witness"
+    unfolding relative_adp_preferred_step_witness_valid_def by simp
+  have all_valid: "\<And>k. relative_adp_step_witness_valid A
+      (terms k) (terms (Suc k))
+      (relative_adp_selected_step_witness P A terms k)"
+  proof -
+    fix k
+    have "relative_adp_preferred_step_witness_valid P A
+        (terms k) (terms (Suc k))
+        (relative_adp_selected_step_witness P A terms k)"
+      by (rule relative_adp_selected_step_witness_valid[OF steps[of k] subset])
+    then show "relative_adp_step_witness_valid A
+        (terms k) (terms (Suc k))
+        (relative_adp_selected_step_witness P A terms k)"
+      unfolding relative_adp_preferred_step_witness_valid_def by simp
+  qed
+  have erased: "erase_adp_term ?projected_source = erase_adp_term (terms i)"
+    by (rule relative_adp_projected_chain_erases[OF all_valid initial_erased])
+  have projected_valid: "relative_adp_step_witness_valid
+      (Q \<union> erase_annotations_adp ` (A - Q)) ?projected_source
+      (relative_adp_projected_chain Q source
+        (relative_adp_selected_step_witness P A terms) (Suc i))
+      ?projected_witness"
+    by simp (rule relative_adp_projected_witness_valid[OF valid erased])
+  from main have original_pair: "radp_witness_pair ?witness \<in> P"
+    and redex: "radp_witness_redex ?witness = q"
+    unfolding relative_adp_selected_chain_main_event_def
+      relative_adp_selected_application_def by (simp_all add: Let_def)
+  have node_pair: "relative_adp_selected_chain_node_label P A terms (i,q) =
+      radp_witness_pair ?witness"
+    unfolding relative_adp_selected_chain_node_label_def
+      relative_adp_selected_application_def by (simp add: Let_def)
+  have original_in_Q: "radp_witness_pair ?witness \<in> Q"
+    using selected unfolding node_pair .
+  have projected_pair: "radp_witness_pair ?projected_witness =
+      radp_witness_pair ?witness"
+    using original_in_Q
+    by (simp add: relative_adp_projected_witness_def
+        relative_adp_projected_witness_pair_def)
+  have projected_pair_in: "radp_witness_pair ?projected_witness \<in> P \<inter> Q"
+    using original_pair original_in_Q projected_pair by simp
+  have projected_sharp: "radp_witness_at_sharp ?projected_witness"
+    using marked redex
+    by (simp add: relative_adp_projected_witness_def)
+  show ?thesis
+    by (rule relative_adp_step_witness_valid_is_strict_step[
+        OF projected_valid projected_sharp projected_pair_in])
+qed
+
+theorem relative_adp_selected_projected_main_events_not_SN:
+  assumes steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and strict: "INFM i. \<exists>q.
+      relative_adp_selected_chain_main_event P A terms (i,q) \<and>
+      relative_adp_selected_chain_node_label P A terms (i,q) \<in> Q \<and>
+      q \<in> sharp_positions
+        (relative_adp_projected_chain Q source
+          (relative_adp_selected_step_witness P A terms) i)"
+  shows "\<not> adp_problem_SN
+    (P \<inter> Q,
+      (Q \<union> erase_annotations_adp ` (A - Q)) - (P \<inter> Q))"
+proof -
+  let ?witnesses = "relative_adp_selected_step_witness P A terms"
+  let ?projected = "relative_adp_projected_chain Q source ?witnesses"
+  let ?child = "Q \<union> erase_annotations_adp ` (A - Q)"
+  have valid: "\<And>k. relative_adp_step_witness_valid A
+      (terms k) (terms (Suc k)) (?witnesses k)"
+  proof -
+    fix k
+    have "relative_adp_preferred_step_witness_valid P A
+        (terms k) (terms (Suc k)) (?witnesses k)"
+      by (rule relative_adp_selected_step_witness_valid[OF steps[of k] subset])
+    then show "relative_adp_step_witness_valid A
+        (terms k) (terms (Suc k)) (?witnesses k)"
+      unfolding relative_adp_preferred_step_witness_valid_def by simp
+  qed
+  have chain_steps: "\<And>k. (?projected k, ?projected (Suc k)) \<in>
+      adp_step ?child"
+    by (rule relative_adp_projected_chain_step[OF valid initial_erased])
+  have strict_steps: "INFM k. (?projected k, ?projected (Suc k)) \<in>
+      adp_step_case_rel (P \<inter> Q) True"
+  proof (rule INFM_mono[OF strict])
+    fix k
+    assume "\<exists>q. relative_adp_selected_chain_main_event P A terms (k,q) \<and>
+      relative_adp_selected_chain_node_label P A terms (k,q) \<in> Q \<and>
+      q \<in> sharp_positions (?projected k)"
+    then obtain q where main:
+        "relative_adp_selected_chain_main_event P A terms (k,q)"
+      and selected:
+        "relative_adp_selected_chain_node_label P A terms (k,q) \<in> Q"
+      and marked: "q \<in> sharp_positions (?projected k)" by blast
+    show "(?projected k, ?projected (Suc k)) \<in>
+        adp_step_case_rel (P \<inter> Q) True"
+      by (rule relative_adp_selected_projected_main_event_is_strict[
+          OF steps subset initial_erased main selected marked])
+  qed
+  have main_subset: "P \<inter> Q \<subseteq> ?child" by blast
+  have total: "(P \<inter> Q) \<union> (?child - (P \<inter> Q)) = ?child"
+    using main_subset by blast
+  have deriv: "ideriv (adp_step_case_rel (P \<inter> Q) True)
+      (adp_step ?child) ?projected"
+    using chain_steps strict_steps unfolding ideriv_def by blast
+  show ?thesis
+  proof (unfold adp_problem_SN_def, intro notI)
+    assume sn: "SN_rel
+      (adp_step_case_rel (fst
+        (P \<inter> Q, ?child - (P \<inter> Q))) True)
+      (adp_step (fst (P \<inter> Q, ?child - (P \<inter> Q)) \<union>
+        snd (P \<inter> Q, ?child - (P \<inter> Q))))"
+    have "SN_rel (adp_step_case_rel (P \<inter> Q) True) (adp_step ?child)"
+      using sn total by simp
+    then show False unfolding SN_rel_ideriv using deriv by blast
+  qed
+qed
+
+lemma relative_adp_selected_retained_origin_path_time_mono:
+  assumes path: "(source,target) \<in>
+    (relative_adp_selected_retained_origin_edge Q P A terms)\<^sup>*"
+  shows "fst source \<le> fst target"
+proof -
+  let ?later = "\<lambda>node. fst source \<le> fst node"
+  have initial: "?later source" by simp
+  have preserved: "\<And>middle successor.
+      (middle,successor) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms \<Longrightarrow>
+      ?later middle \<Longrightarrow> ?later successor"
+  proof -
+    fix middle successor
+    assume edge: "(middle,successor) \<in>
+        relative_adp_selected_retained_origin_edge Q P A terms"
+      and middle: "?later middle"
+    have time: "fst successor = Suc (fst middle)"
+      using edge unfolding relative_adp_selected_retained_origin_edge_def
+        relative_adp_selected_chain_origin_edge_def
+      by (cases middle; cases successor) auto
+    show "?later successor" using middle unfolding time by simp
+  qed
+  show ?thesis
+    by (rule rtrancl_induct[where P="?later", OF path initial])
+       (use preserved in blast)
+qed
+
+theorem relative_adp_selected_recurring_retained_main_paths_not_SN:
+  assumes steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and initial_erased: "erase_adp_term source = erase_adp_term (terms 0)"
+    and path_root: "path 0 = (0,root_pos)"
+    and root_marked: "root_pos \<in> sharp_positions source"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_retained_origin_edge Q P A terms"
+    and recurring: "INFM n. \<exists>target.
+      (path n,target) \<in>
+        (relative_adp_selected_retained_origin_edge Q P A terms)\<^sup>* \<and>
+      relative_adp_selected_chain_main_event P A terms target \<and>
+      relative_adp_selected_chain_node_label P A terms target \<in> Q"
+  shows "\<not> adp_problem_SN
+    (P \<inter> Q,
+      (Q \<union> erase_annotations_adp ` (A - Q)) - (P \<inter> Q))"
+proof -
+  let ?projected = "relative_adp_projected_chain Q source
+    (relative_adp_selected_step_witness P A terms)"
+  let ?retained = "relative_adp_selected_retained_origin_edge Q P A terms"
+  have path_time: "\<And>n. fst (path n) = n"
+  proof -
+    fix n
+    show "fst (path n) = n"
+    proof (induct n)
+      case 0
+      show ?case using path_root by simp
+    next
+      case (Suc k)
+      have time: "fst (path (Suc k)) = Suc (fst (path k))"
+        using path_edge[of k]
+        unfolding relative_adp_selected_retained_origin_edge_def
+          relative_adp_selected_chain_origin_edge_def
+        by (cases "path k"; cases "path (Suc k)") auto
+      show ?case using time Suc by simp
+    qed
+  qed
+  have path_marked: "\<And>n. snd (path n) \<in> sharp_positions
+      (?projected (fst (path n)))"
+  proof -
+    fix n
+    have prefix: "(path 0,path n) \<in> ?retained\<^sup>*"
+      by (rule ipath_interval_rtrancl[
+          where p=path and E="?retained" and i=0 and j=n, OF path_edge]) simp
+    have initial: "snd (path 0) \<in> sharp_positions
+        (?projected (fst (path 0)))"
+      using path_root root_marked by simp
+    obtain i q where start: "path 0 = (i,q)" by (cases "path 0") auto
+    obtain j q' where finish: "path n = (j,q')" by (cases "path n") auto
+    show "snd (path n) \<in> sharp_positions (?projected (fst (path n)))"
+      unfolding start finish prod.sel
+      by (rule relative_adp_selected_retained_origin_path_preserves_projected_marker[
+          OF _ steps subset initial_erased])
+         (use prefix initial start finish in auto)
+  qed
+  have strict: "INFM i. \<exists>q.
+      relative_adp_selected_chain_main_event P A terms (i,q) \<and>
+      relative_adp_selected_chain_node_label P A terms (i,q) \<in> Q \<and>
+      q \<in> sharp_positions (?projected i)"
+    unfolding INFM_nat
+  proof
+    fix M
+    from recurring[unfolded INFM_nat]
+    obtain n where Mn: "M < n" and witness: "\<exists>target.
+        (path n,target) \<in> ?retained\<^sup>* \<and>
+        relative_adp_selected_chain_main_event P A terms target \<and>
+        relative_adp_selected_chain_node_label P A terms target \<in> Q"
+      by blast
+    then obtain target where stem: "(path n,target) \<in> ?retained\<^sup>*"
+      and main: "relative_adp_selected_chain_main_event P A terms target"
+      and selected:
+        "relative_adp_selected_chain_node_label P A terms target \<in> Q"
+      by blast
+    obtain i q where target: "target = (i,q)" by (cases target) auto
+    have ni: "n \<le> i"
+      using relative_adp_selected_retained_origin_path_time_mono[OF stem]
+        path_time[of n]
+      unfolding target by simp
+    have marked_start: "snd (path n) \<in> sharp_positions
+        (?projected (fst (path n)))"
+      by (rule path_marked)
+    obtain j r where start: "path n = (j,r)" by (cases "path n") auto
+    have marked_target: "q \<in> sharp_positions (?projected i)"
+      unfolding start target prod.sel
+      by (rule relative_adp_selected_retained_origin_path_preserves_projected_marker[
+          OF _ steps subset initial_erased])
+         (use stem marked_start start target in auto)
+    show "\<exists>i>M. \<exists>q.
+        relative_adp_selected_chain_main_event P A terms (i,q) \<and>
+        relative_adp_selected_chain_node_label P A terms (i,q) \<in> Q \<and>
+        q \<in> sharp_positions (?projected i)"
+      by (rule exI[of _ i], rule conjI)
+         (use Mn ni main selected marked_target target in auto)
+  qed
+  show ?thesis
+    by (rule relative_adp_selected_projected_main_events_not_SN[
+        OF steps subset initial_erased strict])
+qed
+
 lemma relative_adp_selected_unlabeled_edge_shape:
   assumes edge: "((i,q),(Suc i,q')) \<in>
       relative_adp_selected_chain_origin_edge P A terms"
