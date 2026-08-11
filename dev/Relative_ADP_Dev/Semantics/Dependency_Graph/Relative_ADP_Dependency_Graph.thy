@@ -1027,6 +1027,188 @@ proof -
   qed
 qed
 
+lemma relative_adp_canonical_origin_projection:
+  assumes origin: "relative_adp_canonical_origin_edge A at_sharp s t
+      pair redex q q'"
+    and not_redex: "redex \<noteq> q"
+  shows "(q' = q \<and> (q <\<^sub>p redex \<or> q \<bottom> redex)) \<or>
+    erase_adp_term (s |_ q) = erase_adp_term (t |_ q')"
+proof -
+  from origin obtain l r phi sigma annotations where
+      valid: "valid_vrf (l,r) phi"
+    and redex_fun: "redex \<in> fun_poss s"
+    and lhs: "erase_adp_term (s |_ redex) =
+      erase_adp_term l \<cdot> sigma"
+    and target: "t = replace_at s redex
+      (annotate_term annotations (erase_adp_term r \<cdot> sigma))"
+    and edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+      redex sigma (if at_sharp then sharp_positions r else {}) phi q q'"
+    unfolding relative_adp_canonical_origin_edge_def by blast
+  have redex_poss: "redex \<in> poss s"
+    by (rule fun_poss_imp_poss[OF redex_fun])
+  from edge show ?thesis
+  proof cases
+    case preserved
+    then show ?thesis by simp
+  next
+    case (root_target alpha)
+    then have "redex = q" by simp
+    with not_redex show ?thesis by contradiction
+  next
+    case (variable_transport rho alpha beta)
+    show ?thesis
+    proof (rule disjI2)
+    have rho_var_erased: "rho \<in> var_poss (erase_adp_term l)"
+      using variable_transport by auto
+    have rho_var: "rho \<in> var_poss l"
+      using rho_var_erased var_poss_erase_adp_term by simp
+    have selected: "alpha \<in> var_poss r \<and> l |_ rho = r |_ alpha"
+      using valid rho_var variable_transport
+      unfolding valid_vrf_def by force
+    from rho_var obtain x where rho_at: "l |_ rho = Var x"
+      unfolding var_poss_iff by blast
+    have alpha_at: "r |_ alpha = Var x" using selected rho_at by simp
+    have rho_erased_at: "erase_adp_term l |_ rho = Var x"
+      using erase_adp_term_subt_at[OF var_poss_imp_poss[OF rho_var]] rho_at
+      by simp
+    have alpha_erased_at: "erase_adp_term r |_ alpha = Var x"
+      using erase_adp_term_subt_at[
+          OF var_poss_imp_poss[OF selected[THEN conjunct1]]] alpha_at
+      by simp
+    have alpha_poss: "alpha \<in> poss (erase_adp_term r)"
+      using selected[THEN conjunct1] var_poss_imp_poss
+        poss_erase_adp_term by metis
+    have target_fun: "alpha @ beta \<in>
+        fun_poss (erase_adp_term r \<cdot> sigma)"
+      using variable_transport by auto
+    have target_poss: "alpha @ beta \<in>
+        poss (erase_adp_term r \<cdot> sigma)"
+      by (rule fun_poss_imp_poss[OF target_fun])
+    have beta_poss: "beta \<in> poss (sigma x)"
+    proof -
+      have alpha_subst: "alpha \<in> poss (erase_adp_term r \<cdot> sigma)"
+        using alpha_poss by simp
+      have at_alpha: "(erase_adp_term r \<cdot> sigma) |_ alpha = sigma x"
+        using subt_at_subst[OF alpha_poss, of sigma] alpha_erased_at by simp
+      show ?thesis using target_poss alpha_subst at_alpha
+        by (simp add: poss_append_poss)
+    qed
+    have erased_redex: "erase_adp_term s |_ redex =
+        erase_adp_term l \<cdot> sigma"
+      using erase_adp_term_subt_at[OF redex_poss] lhs by simp
+    have redex_erased_poss: "redex \<in> poss (erase_adp_term s)"
+      using redex_poss by simp
+    have source_local: "erase_adp_term s |_
+        (redex @ rho @ beta) = sigma x |_ beta"
+      by (rule lhs_variable_subterm[
+          OF redex_erased_poss
+            erased_redex var_poss_imp_poss[OF rho_var_erased]
+            rho_erased_at beta_poss])
+    have target_local: "replace_at (erase_adp_term s) redex
+      (erase_adp_term r \<cdot> sigma) |_
+        (redex @ alpha @ beta) = sigma x |_ beta"
+      by (rule replacement_variable_subterm[
+            where p = redex and s = "erase_adp_term s"
+              and r = "erase_adp_term r" and sigma = sigma
+              and alpha = alpha and x = x and beta = beta])
+         (rule redex_erased_poss, rule alpha_poss,
+          rule alpha_erased_at, rule beta_poss)
+    have erased_target: "erase_adp_term t =
+        replace_at (erase_adp_term s) redex
+          (erase_adp_term r \<cdot> sigma)"
+      using redex_poss unfolding target by simp
+    have source_q: "q = redex @ rho @ beta"
+      using variable_transport by simp
+    have target_q: "q' = redex @ alpha @ beta"
+      using variable_transport by simp
+    have source_suffix_poss:
+        "rho @ beta \<in> poss (erase_adp_term l \<cdot> sigma)"
+    proof -
+      have rho_poss: "rho \<in> poss (erase_adp_term l \<cdot> sigma)"
+        using var_poss_imp_poss[OF rho_var_erased] by simp
+      have at_rho: "(erase_adp_term l \<cdot> sigma) |_ rho = sigma x"
+        using subt_at_subst[
+          OF var_poss_imp_poss[OF rho_var_erased], of sigma]
+          rho_erased_at by simp
+      show ?thesis using rho_poss beta_poss at_rho
+        by (simp add: poss_append_poss)
+    qed
+    have source_suffix_local: "rho @ beta \<in> poss (s |_ redex)"
+      using source_suffix_poss lhs poss_erase_adp_term by metis
+    have source_full_poss: "redex @ rho @ beta \<in> poss s"
+      using redex_poss source_suffix_local
+        by (simp add: poss_append_poss)
+    have target_full_erased_poss:
+        "redex @ alpha @ beta \<in>
+          poss (replace_at (erase_adp_term s) redex
+            (erase_adp_term r \<cdot> sigma))"
+    proof -
+      have redex_after: "redex \<in>
+          poss (replace_at (erase_adp_term s) redex
+            (erase_adp_term r \<cdot> sigma))"
+        by (rule replace_at_below_poss[OF redex_erased_poss]) simp
+      have redex_value: "replace_at (erase_adp_term s) redex
+          (erase_adp_term r \<cdot> sigma) |_ redex =
+          erase_adp_term r \<cdot> sigma"
+        by (rule replace_at_subt_at[OF redex_erased_poss])
+      have target_suffix_local: "alpha @ beta \<in>
+          poss (replace_at (erase_adp_term s) redex
+            (erase_adp_term r \<cdot> sigma) |_ redex)"
+        using target_poss redex_value by simp
+      show ?thesis using redex_after target_suffix_local
+        by (simp add: poss_append_poss)
+    qed
+    have target_full_erased_term_poss:
+        "redex @ alpha @ beta \<in> poss (erase_adp_term t)"
+      using target_full_erased_poss erased_target by simp
+    have target_full_poss: "redex @ alpha @ beta \<in> poss t"
+      using target_full_erased_term_poss poss_erase_adp_term by metis
+    have source_projection:
+        "erase_adp_term (s |_ (redex @ rho @ beta)) =
+          erase_adp_term s |_ (redex @ rho @ beta)"
+      by (rule erase_adp_term_subt_at[OF source_full_poss])
+    have target_projection:
+        "erase_adp_term (t |_ (redex @ alpha @ beta)) =
+          erase_adp_term t |_ (redex @ alpha @ beta)"
+      by (rule erase_adp_term_subt_at[OF target_full_poss])
+    show "erase_adp_term (s |_ q) = erase_adp_term (t |_ q')"
+      using source_local target_local erased_target
+        source_q target_q source_projection target_projection by simp
+    qed
+  qed
+qed
+
+lemma relative_adp_selected_unlabeled_moving_projection:
+  assumes edge: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and unlabeled: "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+    and moving: "q' \<noteq> q"
+  shows "mark_adp_root (terms i |_ q) =
+    mark_adp_root (terms (Suc i) |_ q')"
+proof -
+  let ?application = "relative_adp_selected_application P A terms i"
+  from edge have origin: "relative_adp_canonical_origin_edge A
+      (fst ?application) (terms i) (terms (Suc i))
+      (fst (snd ?application)) (snd (snd ?application)) q q'"
+    unfolding relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  have not_redex: "snd (snd ?application) \<noteq> q"
+    by (rule relative_adp_selected_unlabeled_edge_not_at_redex[
+        OF edge step subset unlabeled])
+  have alternative: "(q' = q \<and>
+      (q <\<^sub>p snd (snd ?application) \<or>
+       q \<bottom> snd (snd ?application))) \<or>
+      erase_adp_term (terms i |_ q) =
+        erase_adp_term (terms (Suc i) |_ q')"
+    by (rule relative_adp_canonical_origin_projection[OF origin not_redex])
+  then have projection: "erase_adp_term (terms i |_ q) =
+      erase_adp_term (terms (Suc i) |_ q')"
+    using moving by blast
+  show ?thesis using projection unfolding mark_adp_root_def by simp
+qed
+
 lemma relative_adp_selected_labeled_edge_enters_rhs:
   assumes edge: "((i,q),(Suc i,q')) \<in>
       relative_adp_selected_chain_origin_edge P A terms"

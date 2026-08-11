@@ -82,3 +82,13 @@ prefer a sharp main-ADP witness, and origin edges pin the chosen ADP and redex
 position. Do not replace this by the union of all witnesses for a term
 transition when proving dependency labels. Such a union is adequate for marker
 reachability but can mix incompatible applications in the graph-label bridge.
+
+The next 2026-08-11 checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test56`. For every selected canonical
+origin away from the applied redex, it now proves the precise alternative
+needed by the graph bridge: either the origin is preserved above or parallel
+to the redex, or the erased tracked projection is identical after the step.
+The variable-transport case is proved directly from the valid VRF and the
+substitution positions; it does not assume that source and target positions
+are different. The corresponding selected unlabeled moving-edge theorem then
+gives equality of the root-marked projections.
