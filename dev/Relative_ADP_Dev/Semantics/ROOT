@@ -182,3 +182,8 @@ session Relative_ADP_Processors_Dev in "Processors" = Relative_ADP_Direct_Criter
   options [document = false]
   theories
     Relative_ADP_Processors
+
+session Relative_ADP_Dependency_Graph_Dev in "Dependency_Graph" = Relative_ADP_Processors_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Dependency_Graph
