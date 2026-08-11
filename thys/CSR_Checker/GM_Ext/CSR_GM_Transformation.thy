@@ -7,6 +7,7 @@ theory CSR_GM_Transformation
     CSR_Checker_Extensions.CSR_Conservative_Checker
     CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker
+    CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08
 begin
 
 text \<open>
@@ -1160,7 +1161,7 @@ where
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Innermost_CSR_Dependency_Pairs P S prf) =
     (if S = [] then
-       check_innermost_csr_termination_proof I J i \<mu> R P prf
+       check_innermost_csr_or_rta08_termination_proof I J i \<mu> R P prf
      else
        debug i (STR ''direct innermost CSR dependency pairs'') (do {
          dpp \<leftarrow> direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S);
@@ -1201,10 +1202,12 @@ next
   proof (cases "S = []")
     case True
     from ok Innermost_CSR_Dependency_Pairs True have rec:
-        "isOK (check_innermost_csr_termination_proof I J i \<mu> R P child)"
+        "isOK (check_innermost_csr_or_rta08_termination_proof
+          I J i \<mu> R P child)"
       by simp
     have "SN (csstep (mu_of \<mu>) (set R))"
-      by (rule check_innermost_csr_termination_proof_sound[OF I J rec])
+      by (rule check_innermost_csr_or_rta08_termination_proof_sound[
+        OF I J rec])
     then show ?thesis
       by (rule SN_subset, unfold sig_step_def, auto)
   next
