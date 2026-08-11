@@ -783,49 +783,79 @@ proof (induct "prf" arbitrary: dpp i)
       using sem sem' pairs_sound[of dpp] pairs_sound[of ?d] by auto
     have rules: "set (rules ?d) = set (rules dpp)"
       using sem sem' rules_sound[of dpp] rules_sound[of ?d] by auto
+    have defined: "set (defined_list (rules ?d)) =
+      set (defined_list (rules dpp))"
+      using rules by simp
     show "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
       (set (dpp_ops.rules J dpp))
       (csr_rta08_defined_target
         (set (defined_list (dpp_ops.rules J dpp))))
       (set (dpp_ops.pairs J dpp) \<inter> set C)"
-      using ih unfolding pairs rules .
+      using ih pairs rules defined by simp
   qed
 next
   case CSR_DP_P_is_Empty
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_P_is_Empty.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      CSR_DP_P_is_Empty)"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Ordinary_Proof x)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Ordinary_Proof.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Ordinary_Proof x))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Subterm_Criterion_Proc x1 x2 x3 subproof)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Subterm_Criterion_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Subterm_Criterion_Proc x1 x2 x3 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Gen_Subterm_Criterion_Proc x1 x2 subproof)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Gen_Subterm_Criterion_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Gen_Subterm_Criterion_Proc x1 x2 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Usable_Rules_Proc x1 subproof)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Usable_Rules_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Usable_Rules_Proc x1 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Instantiation_Proc x1 x2 subproof)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Instantiation_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Instantiation_Proc x1 x2 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Forward_Instantiation_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Redpair_UR_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 next
   case (CSR_DP_Size_Change_Subterm_Proc x)
-  then show ?case
-    by (rule check_innermost_csr_rta08_terminal_sound[OF J], simp)
+  from CSR_DP_Size_Change_Subterm_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Size_Change_Subterm_Proc x))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
 qed
 
 lemma innermost_csr_progress_relation_imp_SN:
@@ -997,13 +1027,6 @@ proof -
     and pairs: "set P = csr_rta08_CSDP_on Sharp (mu_of \<mu>)
       (set (defined_list R)) (set R)"
     by auto
-  have fin: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
-      (set (dpp_ops.rules J dpp))
-      (csr_rta08_defined_target
-        (set (defined_list (dpp_ops.rules J dpp))))
-      (set (dpp_ops.pairs J dpp))"
-    by (rule check_innermost_csr_rta08_dp_proof_sound[OF J _ rec],
-      rule plain_csr_dpp_mk[OF J])
   interpret dpp_spec J by fact
   from csr_rta08_dependency_pairs_tt_sound[OF J tt]
   have dpp: "dpp = dpp_ops.mk J False False P [] [] [] R" by auto
@@ -1013,6 +1036,14 @@ proof -
       (NFS dpp,M dpp,set (local.P dpp),set (Pw dpp),set (Q dpp),
         set (local.R dpp),set (Rw dpp))"
     by (rule dpp_sound)
+  have plain: "plain_csr_dpp J dpp"
+    using sem sem' unfolding plain_csr_dpp_def by auto
+  have fin: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp))"
+    by (rule check_innermost_csr_rta08_dp_proof_sound[OF J plain rec])
   have rules: "set (dpp_ops.rules J dpp) = set R"
     using sem sem' rules_sound[of dpp] by auto
   have pairs': "set (dpp_ops.pairs J dpp) = set P"
