@@ -108,3 +108,21 @@ The proof deliberately uses the existing `replace_at_append_context` law for
 nested replacement. A broad simplifier call at this point diverged; retaining
 the explicit law keeps the replay deterministic and avoids accidental changes
 to graph estimation or origin semantics.
+
+The 2026-08-11 fixed-witness checkpoint was replayed as
+`Draft.Relative_ADP_Dependency_Graph_Test99`. The selected application now
+projects from a full step witness containing the ADP, redex, substitution,
+VRF, and generated annotation set. Selected origin edges are restricted to
+that exact witness. This follows the canonical-origin construction in the
+relative-ADP dependency-graph proof and prevents an existential union from
+combining incompatible VRFs for the same term transition.
+
+The same checkpoint proves that the fixed witness supplies an origin
+predecessor for every target annotation. It also proves that an origin source
+away from the applied redex has exactly one successor: distinct variable
+positions in a left-hand side are parallel, whereas two decompositions of the
+same source position force them to be comparable. Therefore every offshoot of
+the selected heavy path starts at a labeled ADP application. This is the local
+branching fact needed for the minimal-lasso half of Theorem 33; the remaining
+work identifies late offshoot labels as base ADPs with multiple annotations
+and lifts the infinite path to the finite estimated dependency graph.

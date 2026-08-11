@@ -1063,6 +1063,53 @@ proof -
     done
 qed
 
+record ('f, 'v) relative_adp_step_witness =
+  radp_witness_at_sharp :: bool
+  radp_witness_pair :: "('f, 'v) adp"
+  radp_witness_redex :: pos
+  radp_witness_vrf :: "pos \<Rightarrow> pos option"
+  radp_witness_subst :: "'v \<Rightarrow> ('f, 'v) term"
+  radp_witness_annotations :: "pos set"
+
+definition relative_adp_step_witness_valid ::
+  "('f, 'v) adp set \<Rightarrow> ('f adp_symbol, 'v) term \<Rightarrow>
+    ('f adp_symbol, 'v) term \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness \<Rightarrow> bool" where
+  "relative_adp_step_witness_valid A s t witness \<longleftrightarrow>
+    (\<exists>l r.
+      radp_witness_pair witness = (l,r) \<and> (l,r) \<in> A \<and>
+      plain_adp_term_pred l \<and>
+      valid_vrf (l,r) (radp_witness_vrf witness) \<and>
+      radp_witness_redex witness \<in> fun_poss s \<and>
+      radp_witness_at_sharp witness =
+        (radp_witness_redex witness \<in> sharp_positions s) \<and>
+      erase_adp_term (s |_ radp_witness_redex witness) =
+        erase_adp_term l \<cdot> radp_witness_subst witness \<and>
+      radp_witness_annotations witness =
+        (if radp_witness_at_sharp witness then sharp_positions r else {}) \<union>
+          transported_annotations (radp_witness_vrf witness) l
+            (s |_ radp_witness_redex witness) \<and>
+      t = replace_at s (radp_witness_redex witness)
+        (annotate_term (radp_witness_annotations witness)
+          (erase_adp_term r \<cdot> radp_witness_subst witness)))"
+
+definition relative_adp_preferred_step_witness_valid ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    ('f adp_symbol, 'v) term \<Rightarrow> ('f adp_symbol, 'v) term \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness \<Rightarrow> bool" where
+  "relative_adp_preferred_step_witness_valid P A s t witness \<longleftrightarrow>
+    relative_adp_step_witness_valid A s t witness \<and>
+    ((s,t) \<in> adp_step_case_rel P True \<longrightarrow>
+      radp_witness_at_sharp witness \<and> radp_witness_pair witness \<in> P)"
+
+definition relative_adp_selected_step_witness ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow> nat \<Rightarrow>
+    ('f, 'v) relative_adp_step_witness" where
+  "relative_adp_selected_step_witness P A terms i =
+    (SOME witness. relative_adp_preferred_step_witness_valid P A
+      (terms i) (terms (Suc i)) witness)"
+
 type_synonym ('f, 'v) relative_adp_application =
   "bool \<times> (('f, 'v) adp \<times> pos)"
 
@@ -1087,9 +1134,10 @@ definition relative_adp_selected_application ::
   "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
     (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow>
     nat \<Rightarrow> ('f, 'v) relative_adp_application" where
-  "relative_adp_selected_application P A terms i =
-    (SOME application. relative_adp_preferred_application_valid P A
-      (terms i) (terms (Suc i)) application)"
+  "relative_adp_selected_application P A terms i = (let
+      witness = relative_adp_selected_step_witness P A terms i
+    in (radp_witness_at_sharp witness,
+      (radp_witness_pair witness, radp_witness_redex witness)))"
 
 lemma adp_step_has_valid_application:
   assumes step: "(s,t) \<in> adp_step A"
@@ -1138,24 +1186,315 @@ next
         \<open>simp add: relative_adp_preferred_application_valid_def\<close>)
 qed
 
+lemma adp_step_case_has_valid_step_witness:
+  assumes step: "adp_step_case A at_sharp s t"
+  obtains witness where
+    "relative_adp_step_witness_valid A s t witness"
+    "radp_witness_at_sharp witness = at_sharp"
+proof -
+  from step show thesis
+  proof cases
+    case (adp_stepI l r phi p sigma annotations)
+    let ?witness = "\<lparr>
+      radp_witness_at_sharp = at_sharp,
+      radp_witness_pair = (l,r),
+      radp_witness_redex = p,
+      radp_witness_vrf = phi,
+      radp_witness_subst = sigma,
+      radp_witness_annotations = annotations \<rparr>"
+    show thesis
+      by (rule that[of ?witness])
+         (use adp_stepI in
+          \<open>auto simp: relative_adp_step_witness_valid_def\<close>)
+  qed
+qed
+
+lemma relative_adp_step_witness_valid_mono:
+  assumes valid: "relative_adp_step_witness_valid P s t witness"
+    and subset: "P \<subseteq> A"
+  shows "relative_adp_step_witness_valid A s t witness"
+  using valid subset unfolding relative_adp_step_witness_valid_def by blast
+
+lemma adp_step_has_valid_step_witness:
+  assumes step: "(s,t) \<in> adp_step A"
+  shows "\<exists>witness. relative_adp_step_witness_valid A s t witness"
+proof -
+  from step obtain at_sharp where case_step: "adp_step_case A at_sharp s t"
+    unfolding adp_step_def adp_step_case_rel_def by blast
+  from adp_step_case_has_valid_step_witness[OF case_step]
+  obtain witness where "relative_adp_step_witness_valid A s t witness" .
+  then show ?thesis by blast
+qed
+
+lemma adp_step_has_preferred_step_witness:
+  assumes step: "(s,t) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  shows "\<exists>witness.
+    relative_adp_preferred_step_witness_valid P A s t witness"
+proof (cases "(s,t) \<in> adp_step_case_rel P True")
+  case True
+  then have case_step: "adp_step_case P True s t"
+    unfolding adp_step_case_rel_def by simp
+  from adp_step_case_has_valid_step_witness[OF case_step]
+  obtain witness where valid_P:
+      "relative_adp_step_witness_valid P s t witness"
+    and sharp: "radp_witness_at_sharp witness = True" .
+  from valid_P have pair: "radp_witness_pair witness \<in> P"
+    unfolding relative_adp_step_witness_valid_def by auto
+  have valid_A: "relative_adp_step_witness_valid A s t witness"
+    by (rule relative_adp_step_witness_valid_mono[OF valid_P subset])
+  show ?thesis
+    by (rule exI[of _ witness])
+       (use True valid_A sharp pair in
+        \<open>simp add: relative_adp_preferred_step_witness_valid_def\<close>)
+next
+  case False
+  from adp_step_has_valid_step_witness[OF step]
+  obtain witness where valid:
+      "relative_adp_step_witness_valid A s t witness" by blast
+  show ?thesis
+    by (rule exI[of _ witness])
+       (use False valid in
+        \<open>simp add: relative_adp_preferred_step_witness_valid_def\<close>)
+qed
+
+lemma relative_adp_selected_step_witness_valid:
+  assumes step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  shows "relative_adp_preferred_step_witness_valid P A
+    (terms i) (terms (Suc i))
+    (relative_adp_selected_step_witness P A terms i)"
+  unfolding relative_adp_selected_step_witness_def
+  by (rule someI_ex,
+      rule adp_step_has_preferred_step_witness[OF step subset])
+
 lemma relative_adp_selected_application_valid:
   assumes step: "(terms i, terms (Suc i)) \<in> adp_step A"
     and subset: "P \<subseteq> A"
   shows "relative_adp_preferred_application_valid P A
     (terms i) (terms (Suc i))
     (relative_adp_selected_application P A terms i)"
-  unfolding relative_adp_selected_application_def
-  by (rule someI_ex, rule adp_step_has_preferred_application[OF step subset])
+proof -
+  let ?witness = "relative_adp_selected_step_witness P A terms i"
+  have preferred: "relative_adp_preferred_step_witness_valid P A
+      (terms i) (terms (Suc i)) ?witness"
+    by (rule relative_adp_selected_step_witness_valid[OF step subset])
+  then have valid: "relative_adp_step_witness_valid A
+      (terms i) (terms (Suc i)) ?witness"
+    and strict: "(terms i, terms (Suc i)) \<in> adp_step_case_rel P True \<longrightarrow>
+      radp_witness_at_sharp ?witness \<and> radp_witness_pair ?witness \<in> P"
+    unfolding relative_adp_preferred_step_witness_valid_def by auto
+  from valid have applied:
+      "relative_adp_applied_at A (radp_witness_at_sharp ?witness)
+        (terms i) (terms (Suc i)) (radp_witness_pair ?witness)
+        (radp_witness_redex ?witness)"
+    unfolding relative_adp_step_witness_valid_def
+      relative_adp_applied_at_def by blast
+  show ?thesis
+    unfolding relative_adp_preferred_application_valid_def
+      relative_adp_application_valid_def
+      relative_adp_selected_application_def Let_def
+    using applied strict by simp
+qed
+
+definition relative_adp_step_witness_origin_edge ::
+  "('f, 'v) relative_adp_step_witness \<Rightarrow> pos \<Rightarrow> pos \<Rightarrow> bool" where
+  "relative_adp_step_witness_origin_edge witness q q' \<longleftrightarrow>
+    (\<exists>l r. radp_witness_pair witness = (l,r) \<and>
+      origin_edge (erase_adp_term l) (erase_adp_term r)
+        (radp_witness_redex witness) (radp_witness_subst witness)
+        (if radp_witness_at_sharp witness then sharp_positions r else {})
+        (radp_witness_vrf witness) q q')"
+
+lemma relative_adp_step_witness_origin_is_canonical:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+    and origin: "relative_adp_step_witness_origin_edge witness q q'"
+  shows "relative_adp_canonical_origin_edge A
+    (radp_witness_at_sharp witness) s t (radp_witness_pair witness)
+    (radp_witness_redex witness) q q'"
+proof -
+  from valid obtain l r where
+      pair: "radp_witness_pair witness = (l,r)"
+    and rule: "(l,r) \<in> A"
+    and plain: "plain_adp_term_pred l"
+    and vrf: "valid_vrf (l,r) (radp_witness_vrf witness)"
+    and redex: "radp_witness_redex witness \<in> fun_poss s"
+    and sharp: "radp_witness_at_sharp witness =
+      (radp_witness_redex witness \<in> sharp_positions s)"
+    and lhs: "erase_adp_term (s |_ radp_witness_redex witness) =
+      erase_adp_term l \<cdot> radp_witness_subst witness"
+    and annotations: "radp_witness_annotations witness =
+      (if radp_witness_at_sharp witness then sharp_positions r else {}) \<union>
+        transported_annotations (radp_witness_vrf witness) l
+          (s |_ radp_witness_redex witness)"
+    and target: "t = replace_at s (radp_witness_redex witness)
+      (annotate_term (radp_witness_annotations witness)
+        (erase_adp_term r \<cdot> radp_witness_subst witness))"
+    unfolding relative_adp_step_witness_valid_def by blast
+  from origin pair have edge:
+      "origin_edge (erase_adp_term l) (erase_adp_term r)
+        (radp_witness_redex witness) (radp_witness_subst witness)
+        (if radp_witness_at_sharp witness then sharp_positions r else {})
+        (radp_witness_vrf witness) q q'"
+    unfolding relative_adp_step_witness_origin_edge_def by auto
+  show ?thesis
+    unfolding relative_adp_canonical_origin_edge_def
+    by (rule exI[of _ l], rule exI[of _ r],
+        rule exI[of _ "radp_witness_vrf witness"],
+        rule exI[of _ "radp_witness_subst witness"],
+        rule exI[of _ "radp_witness_annotations witness"])
+       (use pair rule plain vrf redex sharp lhs annotations target edge in auto)
+qed
+
+lemma relative_adp_step_witness_sharp_position_has_predecessor:
+  assumes valid: "relative_adp_step_witness_valid A s t witness"
+    and target: "q' \<in> sharp_positions t"
+  obtains q where
+    "q \<in> sharp_positions s"
+    "relative_adp_step_witness_origin_edge witness q q'"
+proof -
+  from valid obtain l r where
+      pair: "radp_witness_pair witness = (l,r)"
+    and redex_fun: "radp_witness_redex witness \<in> fun_poss s"
+    and at: "radp_witness_at_sharp witness =
+      (radp_witness_redex witness \<in> sharp_positions s)"
+    and annotations: "radp_witness_annotations witness =
+      (if radp_witness_at_sharp witness then sharp_positions r else {}) \<union>
+        transported_annotations (radp_witness_vrf witness) l
+          (s |_ radp_witness_redex witness)"
+    and target_term: "t = replace_at s (radp_witness_redex witness)
+      (annotate_term (radp_witness_annotations witness)
+        (erase_adp_term r \<cdot> radp_witness_subst witness))"
+    unfolding relative_adp_step_witness_valid_def by blast
+  let ?p = "radp_witness_redex witness"
+  let ?at = "radp_witness_at_sharp witness"
+  let ?phi = "radp_witness_vrf witness"
+  let ?sigma = "radp_witness_subst witness"
+  let ?annotations = "radp_witness_annotations witness"
+  have p_poss: "?p \<in> poss s" by (rule fun_poss_imp_poss[OF redex_fun])
+  have exact:
+    "\<And>q. origin_edge (erase_adp_term l) (erase_adp_term r) ?p ?sigma
+        (if ?at then sharp_positions r else {}) ?phi q q' \<Longrightarrow>
+      relative_adp_step_witness_origin_edge witness q q'"
+    unfolding relative_adp_step_witness_origin_edge_def
+    using pair by auto
+  from pos_cases[of ?p q']
+  consider (below) "?p \<le>\<^sub>p q'"
+    | (above) "q' <\<^sub>p ?p"
+    | (parallel) "?p \<bottom> q'"
+    by blast
+  then show thesis
+  proof cases
+    case below
+    from prefixE[OF below] obtain a where q': "q' = ?p @ a" by blast
+    have p_after: "?p \<in> poss t"
+      unfolding target_term
+      by (rule replace_at_below_poss[OF p_poss]) simp
+    have local_target:
+      "a \<in> sharp_positions
+        (annotate_term ?annotations (erase_adp_term r \<cdot> ?sigma))"
+      using target sharp_positions_below_iff[OF p_after, of a]
+        replace_at_subt_at[OF p_poss]
+      unfolding target_term q' by simp
+    from local_target have a_poss:
+      "a \<in> poss (annotate_term ?annotations
+        (erase_adp_term r \<cdot> ?sigma))"
+      unfolding sharp_positions_def by auto
+    have a_erased_poss: "a \<in> poss (erase_adp_term r \<cdot> ?sigma)"
+      using a_poss poss_annotate_term_at[of ?annotations "[]"
+        "erase_adp_term r \<cdot> ?sigma"]
+      unfolding annotate_term_def by simp
+    from local_target obtain f n where a_root:
+      "root (annotate_term ?annotations
+        (erase_adp_term r \<cdot> ?sigma) |_ a) = Some (f,n)"
+      unfolding sharp_positions_def
+      by (auto split: option.splits prod.splits)
+    have a_fun: "a \<in> fun_poss (erase_adp_term r \<cdot> ?sigma)"
+    proof (rule poss_is_Fun_fun_poss[OF a_erased_poss])
+      from a_root show "is_Fun (erase_adp_term r \<cdot> ?sigma |_ a)"
+        using erase_annotate_term[of ?annotations
+          "erase_adp_term r \<cdot> ?sigma"]
+          erase_adp_term_subt_at[OF a_poss]
+        by (cases "annotate_term ?annotations
+          (erase_adp_term r \<cdot> ?sigma) |_ a") auto
+    qed
+    have a_annotations: "a \<in> ?annotations"
+      using local_target sharp_positions_annotate_term[OF a_fun] by simp
+    from a_annotations show thesis
+      unfolding annotations
+    proof
+      assume root: "a \<in> (if ?at then sharp_positions r else {})"
+      have sharp: ?at by (cases ?at) (use root in auto)
+      have p_sharp: "?p \<in> sharp_positions s" using at sharp by simp
+      have edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+          ?p ?sigma (if ?at then sharp_positions r else {}) ?phi ?p q'"
+        unfolding q' by (rule origin_edge.root_target[OF root])
+      show thesis by (rule that[OF p_sharp exact[OF edge]])
+    next
+      assume transported: "a \<in>
+        transported_annotations ?phi l (s |_ ?p)"
+      then obtain rho alpha beta where
+          a: "a = alpha @ beta"
+        and rho: "rho \<in> var_poss l"
+        and phi: "?phi rho = Some alpha"
+        and source_local: "rho @ beta \<in> sharp_positions (s |_ ?p)"
+        unfolding transported_annotations_def by blast
+      have source: "?p @ rho @ beta \<in> sharp_positions s"
+        using source_local sharp_positions_below_iff[OF p_poss, of "rho @ beta"]
+        by simp
+      have target_fun:
+        "alpha @ beta \<in> fun_poss (erase_adp_term r \<cdot> ?sigma)"
+        using a_fun a by simp
+      have rho_erased: "rho \<in> var_poss (erase_adp_term l)"
+        using rho var_poss_erase_adp_term by simp
+      have edge0: "origin_edge (erase_adp_term l) (erase_adp_term r)
+          ?p ?sigma (if ?at then sharp_positions r else {}) ?phi
+          (?p @ rho @ beta) (?p @ alpha @ beta)"
+        by (rule origin_edge.variable_transport[
+              where rho = rho and l = "erase_adp_term l" and phi = ?phi
+                and alpha = alpha and beta = beta
+                and r = "erase_adp_term r" and sigma = ?sigma and p = ?p
+                and A = "if ?at then sharp_positions r else {}"])
+           (rule rho_erased, rule phi, rule target_fun)
+      have edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+          ?p ?sigma (if ?at then sharp_positions r else {}) ?phi
+          (?p @ rho @ beta) q'"
+        using edge0 unfolding q' a .
+      show thesis by (rule that[OF source exact[OF edge]])
+    qed
+  next
+    case above
+    have source: "q' \<in> sharp_positions s"
+      using target sharp_positions_replace_outside_iff[OF p_poss]
+      unfolding target_term by (simp add: above)
+    have edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+        ?p ?sigma (if ?at then sharp_positions r else {}) ?phi q' q'"
+      by (rule origin_edge.preserved) (rule disjI1[OF above])
+    show thesis by (rule that[OF source exact[OF edge]])
+  next
+    case parallel
+    have outside: "q' \<bottom> ?p" by (rule parallel_pos_sym[OF parallel])
+    have source: "q' \<in> sharp_positions s"
+      using target sharp_positions_replace_outside_iff[OF p_poss]
+      unfolding target_term by (simp add: outside)
+    have edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+        ?p ?sigma (if ?at then sharp_positions r else {}) ?phi q' q'"
+      by (rule origin_edge.preserved) (rule disjI2[OF outside])
+    show thesis by (rule that[OF source exact[OF edge]])
+  qed
+qed
 
 definition relative_adp_selected_chain_origin_edge ::
   "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
     (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow> (nat \<times> pos) rel" where
   "relative_adp_selected_chain_origin_edge P A terms =
     {((i,q),(j,q')). j = Suc i \<and> q \<in> sharp_positions (terms i) \<and>
-      (let application = relative_adp_selected_application P A terms i in
+      (let witness = relative_adp_selected_step_witness P A terms i;
+           application = relative_adp_selected_application P A terms i in
        relative_adp_canonical_origin_edge A (fst application)
         (terms i) (terms j) (fst (snd application))
-        (snd (snd application)) q q')}"
+        (snd (snd application)) q q' \<and>
+       relative_adp_step_witness_origin_edge witness q q')}"
 
 definition relative_adp_selected_chain_main_event ::
   "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
@@ -1420,6 +1759,216 @@ proof -
         source_q target_q source_projection target_projection by simp
     qed
   qed
+qed
+
+lemma position_prefix_not_parallel:
+  assumes "p \<le>\<^sub>p q"
+  shows "\<not> Position.parallel_pos p q"
+proof -
+  have "p \<le>\<^sub>p q @ []" using assms by simp
+  then show ?thesis by (rule pos_less_eq_append_not_parallel)
+qed
+
+lemma origin_edge_nonroot_unique:
+  assumes first: "origin_edge l r p sigma roots phi q q1"
+    and second: "origin_edge l r p sigma roots phi q q2"
+    and nonroot: "q \<noteq> p"
+  shows "q1 = q2"
+  using first
+proof cases
+  case preserved
+  from second show ?thesis
+  proof cases
+    case preserved
+    then show ?thesis using `q1 = q` by simp
+  next
+    case root_target
+    then show ?thesis using nonroot by simp
+  next
+    case (variable_transport rho alpha beta)
+    have p_le_q: "p \<le>\<^sub>p q" using variable_transport by simp
+    have not_above: "\<not> q <\<^sub>p p"
+    proof
+      assume above: "q <\<^sub>p p"
+      then have q_le_p: "q \<le>\<^sub>p p"
+        by (rule prefix_order.less_imp_le)
+      have "q = p" by (rule prefix_order.antisym[OF q_le_p p_le_q])
+      with above show False by simp
+    qed
+    have not_parallel: "\<not> Position.parallel_pos q p"
+    proof
+      assume "q \<bottom> p"
+      then have "p \<bottom> q" by (rule parallel_pos_sym)
+      moreover have "\<not> Position.parallel_pos p q"
+        by (rule position_prefix_not_parallel[OF p_le_q])
+      ultimately show False by contradiction
+    qed
+    from preserved not_above not_parallel show ?thesis by simp
+  qed
+next
+  case root_target
+  then show ?thesis using nonroot by simp
+next
+  case (variable_transport rho1 alpha1 beta1)
+  have rho1_var: "rho1 \<in> var_poss l" using variable_transport by simp
+  have phi1: "phi rho1 = Some alpha1" using variable_transport by simp
+  have source1: "q = p @ rho1 @ beta1" using variable_transport by simp
+  have target1: "q1 = p @ alpha1 @ beta1" using variable_transport by simp
+  from second show ?thesis
+  proof cases
+    case preserved
+    have p_le_q: "p \<le>\<^sub>p q" using variable_transport by simp
+    have not_above: "\<not> q <\<^sub>p p"
+    proof
+      assume above: "q <\<^sub>p p"
+      then have q_le_p: "q \<le>\<^sub>p p"
+        by (rule prefix_order.less_imp_le)
+      have "q = p" by (rule prefix_order.antisym[OF q_le_p p_le_q])
+      with above show False by simp
+    qed
+    have not_parallel: "\<not> Position.parallel_pos q p"
+    proof
+      assume "q \<bottom> p"
+      then have "p \<bottom> q" by (rule parallel_pos_sym)
+      moreover have "\<not> Position.parallel_pos p q"
+        by (rule position_prefix_not_parallel[OF p_le_q])
+      ultimately show False by contradiction
+    qed
+    from preserved not_above not_parallel show ?thesis by simp
+  next
+    case root_target
+    then show ?thesis using nonroot by simp
+  next
+    case (variable_transport rho2 alpha2 beta2)
+    have rho2_var: "rho2 \<in> var_poss l" using variable_transport by simp
+    have phi2: "phi rho2 = Some alpha2" using variable_transport by simp
+    have source2: "q = p @ rho2 @ beta2" using variable_transport by simp
+    have target2: "q2 = p @ alpha2 @ beta2" using variable_transport by simp
+    have tails: "rho1 @ beta1 = rho2 @ beta2"
+      using source1 source2 by simp
+    have rho_beta: "rho1 = rho2 \<and> beta1 = beta2"
+      using tails rho1_var rho2_var
+      by (metis append_eq_append_conv less_eq_pos_simps(1)
+          pos_less_eq_append_not_parallel var_poss_parallel)
+    then have rho: "rho1 = rho2" and beta: "beta1 = beta2" by auto
+    have alpha: "alpha1 = alpha2"
+      using phi1 phi2 rho by simp
+    show ?thesis using target1 target2 alpha beta by simp
+  qed
+qed
+
+lemma relative_adp_selected_unlabeled_successor_unique:
+  assumes first: "((i,q),(Suc i,q1)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and second: "((i,q),(Suc i,q2)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and unlabeled:
+      "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+  shows "q1 = q2"
+proof -
+  let ?witness = "relative_adp_selected_step_witness P A terms i"
+  from first have first_origin:
+      "relative_adp_step_witness_origin_edge ?witness q q1"
+    unfolding relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  from second have second_origin:
+      "relative_adp_step_witness_origin_edge ?witness q q2"
+    unfolding relative_adp_selected_chain_origin_edge_def
+    by (auto simp: Let_def)
+  from first_origin obtain l1 r1 where
+      pair1: "radp_witness_pair ?witness = (l1,r1)"
+    and edge1: "origin_edge (erase_adp_term l1) (erase_adp_term r1)
+      (radp_witness_redex ?witness) (radp_witness_subst ?witness)
+      (if radp_witness_at_sharp ?witness then sharp_positions r1 else {})
+      (radp_witness_vrf ?witness) q q1"
+    unfolding relative_adp_step_witness_origin_edge_def by blast
+  from second_origin obtain l2 r2 where
+      pair2: "radp_witness_pair ?witness = (l2,r2)"
+    and edge2: "origin_edge (erase_adp_term l2) (erase_adp_term r2)
+      (radp_witness_redex ?witness) (radp_witness_subst ?witness)
+      (if radp_witness_at_sharp ?witness then sharp_positions r2 else {})
+      (radp_witness_vrf ?witness) q q2"
+    unfolding relative_adp_step_witness_origin_edge_def by blast
+  have pairs: "l1 = l2 \<and> r1 = r2" using pair1 pair2 by simp
+  have not_redex:
+      "snd (snd (relative_adp_selected_application P A terms i)) \<noteq> q"
+    by (rule relative_adp_selected_unlabeled_edge_not_at_redex[
+        OF first step subset unlabeled])
+  then have witness_not_redex: "radp_witness_redex ?witness \<noteq> q"
+    unfolding relative_adp_selected_application_def by (simp add: Let_def)
+  then have q_not_witness_redex: "q \<noteq> radp_witness_redex ?witness"
+    by simp
+  from edge2 pairs have edge2':
+      "origin_edge (erase_adp_term l1) (erase_adp_term r1)
+        (radp_witness_redex ?witness) (radp_witness_subst ?witness)
+        (if radp_witness_at_sharp ?witness then sharp_positions r1 else {})
+        (radp_witness_vrf ?witness) q q2"
+    using edge2 pairs
+    by (cases "radp_witness_at_sharp ?witness") auto
+  show ?thesis
+    by (rule origin_edge_nonroot_unique[
+        OF edge1 edge2' q_not_witness_redex])
+qed
+
+lemma relative_adp_selected_unlabeled_node_successor_unique:
+  assumes first: "(source,target1) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and second: "(source,target2) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and unlabeled:
+      "\<not> relative_adp_selected_chain_labeled P A terms source"
+  shows "target1 = target2"
+proof (cases source, cases target1, cases target2)
+  fix i q j1 q1 j2 q2
+  assume source: "source = (i,q)"
+    and target1: "target1 = (j1,q1)"
+    and target2: "target2 = (j2,q2)"
+  from first have j1: "j1 = Suc i"
+    unfolding source target1 relative_adp_selected_chain_origin_edge_def
+    by auto
+  from second have j2: "j2 = Suc i"
+    unfolding source target2 relative_adp_selected_chain_origin_edge_def
+    by auto
+  have first': "((i,q),(Suc i,q1)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using first unfolding source target1 j1 .
+  have second': "((i,q),(Suc i,q2)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    using second unfolding source target2 j2 .
+  have unlabeled':
+      "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+    using unlabeled unfolding source .
+  have q: "q1 = q2"
+    by (rule relative_adp_selected_unlabeled_successor_unique[
+        OF first' second' steps subset unlabeled'])
+  show ?thesis using target1 target2 j1 j2 q by simp
+qed
+
+lemma relative_adp_selected_event_offshoot_is_labeled:
+  assumes offshoot: "event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n"
+    and path_edge: "(path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  shows "relative_adp_selected_chain_labeled P A terms (path n)"
+proof (rule ccontr)
+  assume unlabeled:
+    "\<not> relative_adp_selected_chain_labeled P A terms (path n)"
+  from offshoot obtain target where edge:
+      "(path n,target) \<in>
+        relative_adp_selected_chain_origin_edge P A terms"
+    and distinct: "target \<noteq> path (Suc n)"
+    unfolding event_offshoot_def by blast
+  have "target = path (Suc n)"
+    by (rule relative_adp_selected_unlabeled_node_successor_unique[
+        OF edge path_edge steps subset unlabeled])
+  with distinct show False by contradiction
 qed
 
 lemma relative_adp_selected_unlabeled_moving_projection:
@@ -1866,7 +2415,8 @@ proof (cases source)
         relative_adp_canonical_origin_edge A (fst application)
           (terms i) (terms (Suc i)) (fst (snd application))
           (snd (snd application)) q q'"
-      unfolding Pair relative_adp_selected_chain_origin_edge_def by auto
+      unfolding Pair relative_adp_selected_chain_origin_edge_def
+      by (auto simp: Let_def)
     have "q' \<in> sharp_positions (terms (Suc i))"
       using origin source_sharp
       by (auto intro: relative_adp_canonical_origin_edge_preserves_sharp
@@ -1889,24 +2439,26 @@ lemma relative_adp_selected_chain_target_has_predecessor:
     "((i,q),(Suc i,q')) \<in>
       relative_adp_selected_chain_origin_edge P A terms"
 proof -
+  let ?witness = "relative_adp_selected_step_witness P A terms i"
   let ?application = "relative_adp_selected_application P A terms i"
-  have preferred: "relative_adp_preferred_application_valid P A
-      (terms i) (terms (Suc i)) ?application"
-    by (rule relative_adp_selected_application_valid[OF step subset])
-  then have applied: "relative_adp_applied_at A (fst ?application)
-      (terms i) (terms (Suc i)) (fst (snd ?application))
-      (snd (snd ?application))"
-    unfolding relative_adp_preferred_application_valid_def
-      relative_adp_application_valid_def by simp
-  from relative_adp_applied_at_sharp_position_has_predecessor[
-      OF applied target]
+  have preferred: "relative_adp_preferred_step_witness_valid P A
+      (terms i) (terms (Suc i)) ?witness"
+    by (rule relative_adp_selected_step_witness_valid[OF step subset])
+  then have valid: "relative_adp_step_witness_valid A
+      (terms i) (terms (Suc i)) ?witness"
+    unfolding relative_adp_preferred_step_witness_valid_def by simp
+  from relative_adp_step_witness_sharp_position_has_predecessor[
+      OF valid target]
   obtain q where source: "q \<in> sharp_positions (terms i)"
-    and origin: "relative_adp_canonical_origin_edge A (fst ?application)
+    and exact: "relative_adp_step_witness_origin_edge ?witness q q'" .
+  have origin: "relative_adp_canonical_origin_edge A (fst ?application)
       (terms i) (terms (Suc i)) (fst (snd ?application))
-      (snd (snd ?application)) q q'" .
+      (snd (snd ?application)) q q'"
+    using relative_adp_step_witness_origin_is_canonical[OF valid exact]
+    unfolding relative_adp_selected_application_def Let_def by simp
   show thesis
     by (rule that[where q = q])
-       (use source origin in
+       (use source origin exact in
         \<open>simp add: relative_adp_selected_chain_origin_edge_def Let_def\<close>)
 qed
 
