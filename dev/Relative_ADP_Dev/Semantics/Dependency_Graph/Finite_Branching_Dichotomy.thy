@@ -308,6 +308,19 @@ proof
   qed
 qed
 
+lemma enumerate_nat_lower_bound:
+  assumes "infinite (I :: nat set)"
+  shows "n \<le> enumerate I n"
+proof (induction n)
+  case 0
+  show ?case by simp
+next
+  case (Suc n)
+  have "enumerate I n < enumerate I (Suc n)"
+    by (rule enumerate_mono[OF _ assms]) simp
+  with Suc.IH show ?case by simp
+qed
+
 lemma finite_ipath_has_eventual_mutual_anchor:
   assumes finite_nodes: "finite V"
     and nodes: "range p \<subseteq> V"

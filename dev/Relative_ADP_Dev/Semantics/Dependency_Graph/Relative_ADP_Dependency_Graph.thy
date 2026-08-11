@@ -316,6 +316,37 @@ definition relative_adp_dependency_component ::
       (anchor,pair) \<in> (relative_adp_dependency_graph A)\<^sup>* \<and>
       (pair,anchor) \<in> (relative_adp_dependency_graph A)\<^sup>*}"
 
+definition relative_adp_branching_pair ::
+  "('f, 'v) adp \<Rightarrow> bool" where
+  "relative_adp_branching_pair pair \<longleftrightarrow>
+    (\<exists>alpha beta. alpha \<in> sharp_positions (snd pair) \<and>
+      beta \<in> sharp_positions (snd pair) \<and> alpha \<noteq> beta)"
+
+definition relative_adp_lasso_graph_problem ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set" where
+  "relative_adp_lasso_graph_problem P B = erase_annotations_adp ` P \<union> B"
+
+lemma erase_annotations_adp_idem [simp]:
+  "erase_annotations_adp (erase_annotations_adp pair) =
+    erase_annotations_adp pair"
+  by (cases pair) (simp add: erase_annotations_adp_def)
+
+lemma relative_adp_lasso_graph_problem_erasure:
+  "erase_annotations_adp ` relative_adp_lasso_graph_problem P B =
+    erase_annotations_adp ` (P \<union> B)"
+proof -
+  have "erase_annotations_adp ` (erase_annotations_adp ` P) =
+      erase_annotations_adp ` P"
+    by (simp add: image_image)
+  then show ?thesis unfolding relative_adp_lasso_graph_problem_def by auto
+qed
+
+lemma relative_adp_dependency_edge_erasure_cong:
+  assumes "erase_annotations_adp ` A = erase_annotations_adp ` A'"
+  shows "relative_adp_dependency_edge A pair next =
+    relative_adp_dependency_edge A' pair next"
+  using assms unfolding relative_adp_dependency_edge_def by simp
+
 lemma finite_annotated_rhs_subterms [simp]:
   "finite (annotated_rhs_subterms p)"
 proof -
@@ -2846,6 +2877,150 @@ proof -
   qed
 qed
 
+lemma relative_adp_selected_offshoots_give_labeled_stream:
+  assumes offshoots: "INFM n. event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  shows "infinite (relative_adp_selected_label_indices P A terms path)"
+proof -
+  have inclusion: "{n. event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n} \<subseteq>
+      relative_adp_selected_label_indices P A terms path"
+  proof
+    fix n
+    assume n: "n \<in> {n. event_offshoot
+        (relative_adp_selected_chain_origin_edge P A terms)
+        (relative_adp_selected_chain_main_event P A terms) path n}"
+    have labeled: "relative_adp_selected_chain_labeled P A terms (path n)"
+      by (rule relative_adp_selected_event_offshoot_is_labeled[
+          where P=P and A=A and terms=terms and path=path and n=n,
+          OF _ path_edge[of n] steps subset])
+         (use n in simp)
+    show "n \<in> relative_adp_selected_label_indices P A terms path"
+      using labeled unfolding relative_adp_selected_label_indices_def by simp
+  qed
+  have infinite_offshoots: "infinite {n. event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n}"
+    using offshoots unfolding INFM_iff_infinite .
+  show ?thesis by (rule infinite_super[OF inclusion infinite_offshoots])
+qed
+
+lemma relative_adp_selected_offshoots_give_branching_base_stream:
+  assumes offshoots: "INFM n. event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n"
+    and no_main: "\<not> (INFM n.
+      relative_adp_selected_chain_main_event P A terms (path n))"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  shows "INFM n. relative_adp_selected_label_stream P A terms path n \<in> A - P \<and>
+    relative_adp_branching_pair
+      (relative_adp_selected_label_stream P A terms path n)"
+proof -
+  let ?I = "relative_adp_selected_label_indices P A terms path"
+  have infinite: "infinite ?I"
+    by (rule relative_adp_selected_offshoots_give_labeled_stream[
+        OF offshoots path_edge steps subset])
+  from no_main[unfolded not_INFM MOST_nat_le]
+  obtain K where late_nonmain: "\<And>k. K \<le> k \<Longrightarrow>
+      \<not> relative_adp_selected_chain_main_event P A terms (path k)"
+    by blast
+  show ?thesis unfolding INFM_nat
+  proof
+    fix N
+    from offshoots[unfolded INFM_nat]
+    obtain k where large: "max K (enumerate ?I N) < k"
+      and offshoot: "event_offshoot
+        (relative_adp_selected_chain_origin_edge P A terms)
+        (relative_adp_selected_chain_main_event P A terms) path k"
+      by blast
+    have labeled: "relative_adp_selected_chain_labeled P A terms (path k)"
+      by (rule relative_adp_selected_event_offshoot_is_labeled[
+          where P=P and A=A and terms=terms and path=path and n=k,
+          OF offshoot path_edge[of k] steps subset])
+    then have kI: "k \<in> ?I"
+      unfolding relative_adp_selected_label_indices_def by simp
+    from range_enumerate[OF infinite] kI obtain m where k: "k = enumerate ?I m"
+      by blast
+    have mono: "strict_mono (enumerate ?I)" by (rule strict_mono_enumerate[OF infinite])
+    have Nm: "N < m"
+    proof (rule ccontr)
+      assume "\<not> N < m"
+      then have "m \<le> N" by simp
+      then have "enumerate ?I m \<le> enumerate ?I N"
+        by (rule monoD[OF strict_mono_mono[OF mono]])
+      with large k show False by simp
+    qed
+    have nonmain: "\<not> relative_adp_selected_chain_main_event P A terms (path k)"
+      by (rule late_nonmain) (use large in simp)
+    from relative_adp_selected_nonmain_offshoot_has_branching_base_label[
+        where P=P and A=A and terms=terms and path=path and n=k,
+        OF offshoot path_edge[of k] steps subset lhs_fun nonmain]
+    obtain pair alpha beta where pair: "pair \<in> A - P"
+      and label: "relative_adp_selected_chain_label P A terms (path k) pair"
+      and alpha: "alpha \<in> sharp_positions (snd pair)"
+      and beta: "beta \<in> sharp_positions (snd pair)"
+      and distinct: "alpha \<noteq> beta" .
+    have pair_eq: "relative_adp_selected_label_stream P A terms path m = pair"
+      using label unfolding k relative_adp_selected_chain_label_def
+        relative_adp_selected_label_stream_def
+        relative_adp_selected_chain_node_label_def
+      by (cases "path (enumerate ?I m)") (auto simp: Let_def)
+    have branching: "relative_adp_branching_pair pair"
+      using alpha beta distinct unfolding relative_adp_branching_pair_def by blast
+    show "\<exists>n>N. relative_adp_selected_label_stream P A terms path n \<in> A - P \<and>
+        relative_adp_branching_pair
+          (relative_adp_selected_label_stream P A terms path n)"
+      by (rule exI[of _ m]) (use Nm pair branching pair_eq in simp)
+  qed
+qed
+
+lemma relative_adp_selected_no_main_eventual_base_stream:
+  assumes infinite: "infinite (relative_adp_selected_label_indices P A terms path)"
+    and no_main: "\<not> (INFM n.
+      relative_adp_selected_chain_main_event P A terms (path n))"
+    and steps: "\<And>i. (terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+  obtains N where "\<And>n. N \<le> n \<Longrightarrow>
+    relative_adp_selected_label_stream P A terms path n \<in> A - P"
+proof -
+  from no_main[unfolded not_INFM MOST_nat_le]
+  obtain K where nonmain: "\<And>k. K \<le> k \<Longrightarrow>
+      \<not> relative_adp_selected_chain_main_event P A terms (path k)"
+    by blast
+  have base: "\<And>n. K \<le> n \<Longrightarrow>
+      relative_adp_selected_label_stream P A terms path n \<in> A - P"
+  proof -
+    fix n
+    assume Kn: "K \<le> n"
+    let ?k = "enumerate (relative_adp_selected_label_indices P A terms path) n"
+    have nk: "n \<le> ?k" by (rule enumerate_nat_lower_bound[OF infinite])
+    have not_main_at: "\<not> relative_adp_selected_chain_main_event P A terms (path ?k)"
+      by (rule nonmain) (use Kn nk in simp)
+    have in_A: "relative_adp_selected_label_stream P A terms path n \<in> A"
+      by (rule relative_adp_selected_label_stream_in_problem[OF infinite steps subset])
+    have labeled: "relative_adp_selected_chain_labeled P A terms (path ?k)"
+      using enumerate_in_set[OF infinite, of n]
+      unfolding relative_adp_selected_label_indices_def by simp
+    have not_P: "relative_adp_selected_label_stream P A terms path n \<notin> P"
+      using not_main_at labeled
+      unfolding relative_adp_selected_chain_main_event_iff_node_label
+        relative_adp_selected_label_stream_def by simp
+    show "relative_adp_selected_label_stream P A terms path n \<in> A - P"
+      using in_A not_P by simp
+  qed
+  show thesis by (rule that[OF base])
+qed
+
 lemma relative_adp_selected_label_stream_eventual_component:
   assumes finite: "finite A"
     and infinite: "infinite (relative_adp_selected_label_indices P A terms path)"
@@ -2938,6 +3113,125 @@ lemma relative_adp_dependency_component_maximal:
     and backward: "(pair,anchor) \<in> (relative_adp_dependency_graph A)\<^sup>*"
   shows "pair \<in> relative_adp_dependency_component A anchor"
   using assms unfolding relative_adp_dependency_component_def by simp
+
+lemma relative_adp_selected_offshoot_path_has_branching_base_component:
+  assumes A: "A = P \<union> B"
+    and finite: "finite A"
+    and offshoots: "INFM n. event_offshoot
+      (relative_adp_selected_chain_origin_edge P A terms)
+      (relative_adp_selected_chain_main_event P A terms) path n"
+    and no_main: "\<not> (INFM n.
+      relative_adp_selected_chain_main_event P A terms (path n))"
+    and path_edge: "\<And>n. (path n, path (Suc n)) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and steps: "\<And>k. (terms k, terms (Suc k)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and lhs_fun: "\<And>pair. pair \<in> A \<Longrightarrow> is_Fun (fst pair)"
+  obtains anchor where
+    "anchor \<in> relative_adp_lasso_graph_problem P B"
+    "\<exists>pair \<in>
+      relative_adp_dependency_component
+        (relative_adp_lasso_graph_problem P B) anchor \<inter> B.
+      relative_adp_branching_pair pair"
+proof -
+  let ?I = "relative_adp_selected_label_indices P A terms path"
+  let ?labels = "relative_adp_selected_label_stream P A terms path"
+  let ?L = "relative_adp_lasso_graph_problem P B"
+  have infinite: "infinite ?I"
+    by (rule relative_adp_selected_offshoots_give_labeled_stream[
+        OF offshoots path_edge steps subset])
+  have base_witness: "\<exists>K. \<forall>n. K \<le> n \<longrightarrow> ?labels n \<in> A - P"
+  proof (rule relative_adp_selected_no_main_eventual_base_stream[
+      where P=P and A=A and terms=terms and path=path,
+      OF infinite no_main steps subset])
+    fix K
+    assume base: "\<And>n. K \<le> n \<Longrightarrow> ?labels n \<in> A - P"
+    show "\<exists>K. \<forall>n. K \<le> n \<longrightarrow> ?labels n \<in> A - P"
+      by (rule exI[of _ K]) (use base in blast)
+  qed
+  from base_witness obtain K where base: "\<And>n. K \<le> n \<Longrightarrow>
+      ?labels n \<in> A - P" by blast
+  let ?shifted = "\<lambda>n. ?labels (K+n)"
+  have finite_L: "finite ?L"
+    using finite unfolding A relative_adp_lasso_graph_problem_def by simp
+  have shifted_in_B: "\<And>n. ?shifted n \<in> B"
+  proof -
+    fix n
+    have "?labels (K+n) \<in> A - P" by (rule base) simp
+    then show "?shifted n \<in> B" unfolding A by blast
+  qed
+  have range: "range ?shifted \<subseteq> ?L"
+    using shifted_in_B unfolding relative_adp_lasso_graph_problem_def by blast
+  have edge: "\<And>n. (?shifted n, ?shifted (Suc n)) \<in>
+      relative_adp_dependency_graph ?L"
+  proof -
+    fix n
+    have original: "relative_adp_dependency_edge A
+        (?labels (K+n)) (?labels (Suc (K+n)))"
+      by (rule relative_adp_selected_label_stream_dependency_edge[
+          OF infinite path_edge steps subset lhs_fun])
+    have erased: "erase_annotations_adp ` A = erase_annotations_adp ` ?L"
+      using relative_adp_lasso_graph_problem_erasure[of P B]
+      unfolding A by simp
+    have dependency: "relative_adp_dependency_edge ?L
+        (?labels (K+n)) (?labels (Suc (K+n)))"
+      using original relative_adp_dependency_edge_erasure_cong[OF erased]
+      by simp
+    have source: "?shifted n \<in> ?L" using range by blast
+    have target: "?shifted (Suc n) \<in> ?L" using range by blast
+    show "(?shifted n, ?shifted (Suc n)) \<in>
+        relative_adp_dependency_graph ?L"
+      using source target dependency
+      unfolding relative_adp_dependency_graph_def by simp
+  qed
+  have witness: "\<exists>anchor N. anchor \<in> ?L \<and> (\<forall>n. N \<le> n \<longrightarrow>
+      ?shifted n \<in> relative_adp_dependency_component ?L anchor)"
+  proof (rule finite_ipath_has_eventual_mutual_anchor[
+      where V="?L" and p="?shifted"
+        and E="relative_adp_dependency_graph ?L", OF finite_L range edge])
+    fix anchor N
+    assume anchor: "anchor \<in> ?L"
+      and forward: "\<And>n. N \<le> n \<Longrightarrow>
+        (anchor, ?shifted n) \<in> (relative_adp_dependency_graph ?L)\<^sup>*"
+      and backward: "\<And>n. N \<le> n \<Longrightarrow>
+        (?shifted n, anchor) \<in> (relative_adp_dependency_graph ?L)\<^sup>*"
+    have component: "\<And>n. N \<le> n \<Longrightarrow>
+        ?shifted n \<in> relative_adp_dependency_component ?L anchor"
+      using range forward backward
+      unfolding relative_adp_dependency_component_def by blast
+    show "\<exists>anchor N. anchor \<in> ?L \<and> (\<forall>n. N \<le> n \<longrightarrow>
+        ?shifted n \<in> relative_adp_dependency_component ?L anchor)"
+      by (rule exI[of _ anchor], rule exI[of _ N])
+         (use anchor component in blast)
+  qed
+  from witness obtain anchor N where anchor: "anchor \<in> ?L"
+    and component: "\<And>n. N \<le> n \<Longrightarrow>
+      ?shifted n \<in> relative_adp_dependency_component ?L anchor"
+    by blast
+  have branching_stream: "INFM n. ?labels n \<in> A - P \<and>
+      relative_adp_branching_pair (?labels n)"
+    by (rule relative_adp_selected_offshoots_give_branching_base_stream[
+        OF offshoots no_main path_edge steps subset lhs_fun])
+  from branching_stream[unfolded INFM_nat]
+  obtain m where large: "K+N < m"
+    and branching: "?labels m \<in> A - P"
+      "relative_adp_branching_pair (?labels m)" by blast
+  let ?n = "m-K"
+  have m: "m = K + ?n" using large by simp
+  have Nn: "N \<le> ?n" using large by simp
+  have shifted_component: "?labels (K+?n) \<in>
+      relative_adp_dependency_component ?L anchor"
+    by (rule component[OF Nn])
+  have in_component: "?labels m \<in>
+      relative_adp_dependency_component ?L anchor"
+    using shifted_component m by simp
+  have in_B: "?labels m \<in> B" using branching(1) unfolding A by blast
+  have exists_branching: "\<exists>pair \<in>
+      relative_adp_dependency_component ?L anchor \<inter> B.
+      relative_adp_branching_pair pair"
+    using in_component in_B branching(2) by blast
+  show thesis by (rule that[OF anchor exists_branching])
+qed
 
 lemma relative_adp_selected_main_path_has_main_component:
   assumes finite: "finite A"

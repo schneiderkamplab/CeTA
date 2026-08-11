@@ -146,3 +146,18 @@ finishes the main-containing SCC half of the soundness argument for Theorem 33.
 The remaining semantic step is the minimal-lasso half: after main events cease,
 project the recurring branching base labels in the graph over flattened main
 ADPs plus base ADPs, and project one offshoot to its first main label.
+
+The next lasso-core checkpoint was replayed as
+`Draft.Finite_Branching_Dichotomy_Test15` and
+`Draft.Relative_ADP_Dependency_Graph_Test131`. It proves that infinitely many
+offshoots with only finitely many main events induce infinitely many selected
+base labels whose ADPs have at least two distinct annotations. After discarding
+the finite prefix, their label stream lies in the graph problem
+`flat(P) union B`. Dependency edges transport to this graph because its erased
+rule set is exactly the erased rule set of `P union B`. Finite recurrence then
+produces a maximal mutually reachable component containing a branching base
+ADP, which is the SCC premise of a minimal lasso in Definition 32 of the IJCAR
+2024 relative-ADP paper. The remaining lasso obligation is to project a chosen
+origin offshoot to the first main label and thereby obtain the finite lasso
+stem. No executable checker or production CeTA integration should be enabled
+until that stem theorem and the resulting full processor theorem are proved.
