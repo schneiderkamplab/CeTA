@@ -932,6 +932,21 @@ definition relative_adp_selected_chain_label ::
       fst application \<and> fst (snd application) = pair \<and>
       snd (snd application) = q)"
 
+definition relative_adp_selected_chain_labeled ::
+  "('f, 'v) adp set \<Rightarrow> ('f, 'v) adp set \<Rightarrow>
+    (nat \<Rightarrow> ('f adp_symbol, 'v) term) \<Rightarrow>
+    nat \<times> pos \<Rightarrow> bool" where
+  "relative_adp_selected_chain_labeled P A terms node \<longleftrightarrow>
+    (\<exists>pair. relative_adp_selected_chain_label P A terms node pair)"
+
+lemma relative_adp_selected_chain_labeled_iff:
+  "relative_adp_selected_chain_labeled P A terms (i,q) \<longleftrightarrow>
+    (let application = relative_adp_selected_application P A terms i in
+      fst application \<and> snd (snd application) = q)"
+  unfolding relative_adp_selected_chain_labeled_def
+    relative_adp_selected_chain_label_def
+  by (auto simp: Let_def)
+
 lemma relative_adp_selected_main_event_has_label:
   assumes "relative_adp_selected_chain_main_event P A terms node"
   shows "\<exists>pair \<in> P.
@@ -939,6 +954,78 @@ lemma relative_adp_selected_main_event_has_label:
   using assms unfolding relative_adp_selected_chain_main_event_def
     relative_adp_selected_chain_label_def
   by (cases node) (auto simp: Let_def)
+
+lemma relative_adp_selected_unlabeled_edge_not_at_redex:
+  assumes edge: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and unlabeled: "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+  shows "snd (snd (relative_adp_selected_application P A terms i)) \<noteq> q"
+proof -
+  let ?application = "relative_adp_selected_application P A terms i"
+  from edge have marked: "q \<in> sharp_positions (terms i)"
+    unfolding relative_adp_selected_chain_origin_edge_def by auto
+  have preferred: "relative_adp_preferred_application_valid P A
+      (terms i) (terms (Suc i)) ?application"
+    by (rule relative_adp_selected_application_valid[OF step subset])
+  then have applied: "relative_adp_applied_at A (fst ?application)
+      (terms i) (terms (Suc i)) (fst (snd ?application))
+      (snd (snd ?application))"
+    unfolding relative_adp_preferred_application_valid_def
+      relative_adp_application_valid_def by simp
+  from applied have at:
+      "fst ?application =
+        (snd (snd ?application) \<in> sharp_positions (terms i))"
+    unfolding relative_adp_applied_at_def by blast
+  show ?thesis
+  proof
+    assume "snd (snd ?application) = q"
+    with marked at have "fst ?application" by simp
+    with `snd (snd ?application) = q` have
+      "relative_adp_selected_chain_labeled P A terms (i,q)"
+      unfolding relative_adp_selected_chain_labeled_iff by (simp add: Let_def)
+    with unlabeled show False by contradiction
+  qed
+qed
+
+lemma relative_adp_selected_unlabeled_edge_shape:
+  assumes edge: "((i,q),(Suc i,q')) \<in>
+      relative_adp_selected_chain_origin_edge P A terms"
+    and step: "(terms i, terms (Suc i)) \<in> adp_step A"
+    and subset: "P \<subseteq> A"
+    and unlabeled: "\<not> relative_adp_selected_chain_labeled P A terms (i,q)"
+  shows "q' = q \<or>
+    (\<exists>redex rho alpha beta.
+      q = redex @ rho @ beta \<and> q' = redex @ alpha @ beta)"
+proof -
+  let ?application = "relative_adp_selected_application P A terms i"
+  from edge have origin: "relative_adp_canonical_origin_edge A
+      (fst ?application) (terms i) (terms (Suc i))
+      (fst (snd ?application)) (snd (snd ?application)) q q'"
+    unfolding relative_adp_selected_chain_origin_edge_def by (auto simp: Let_def)
+  from origin obtain l r phi sigma annotations where
+    pair: "fst (snd ?application) = (l,r)"
+    and origin_edge: "origin_edge (erase_adp_term l) (erase_adp_term r)
+      (snd (snd ?application)) sigma
+      (if fst ?application then sharp_positions r else {}) phi q q'"
+    unfolding relative_adp_canonical_origin_edge_def by blast
+  have not_redex: "snd (snd ?application) \<noteq> q"
+    by (rule relative_adp_selected_unlabeled_edge_not_at_redex[
+        OF edge step subset unlabeled])
+  from origin_edge show ?thesis
+  proof cases
+    case preserved
+    then show ?thesis by simp
+  next
+    case (root_target alpha)
+    then have "snd (snd ?application) = q" by simp
+    with not_redex show ?thesis by contradiction
+  next
+    case (variable_transport rho alpha beta)
+    then show ?thesis by blast
+  qed
+qed
 
 lemma relative_adp_selected_labeled_edge_enters_rhs:
   assumes edge: "((i,q),(Suc i,q')) \<in>
