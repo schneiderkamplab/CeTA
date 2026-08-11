@@ -606,4 +606,109 @@ theorem csr_switch_via_innermost_rta08_CSDP_on:
   by (rule csr_switch_overlay_innermost_termination[OF overlay wf],
       rule finite_innermost_csr_rta08_CSDP_on_imp_SN[OF wf D fin])
 
+definition check_innermost_csr_rta08_termination_proof ::
+  "('dpp, ('f::{showl,compare_order}, label_type) lab,string) dpp_ops \<Rightarrow>
+   showsl \<Rightarrow> (('f,label_type) lab) muL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_rta08_termination_proof J i \<mu> R P prf =
+    debug i (STR ''terminal innermost RTA08 CSR dependency pairs'') (do {
+      check_csr_orthogonal R;
+      csr_sharp_mu_check \<mu>;
+      dpp \<leftarrow> csr_rta08_dependency_pairs_tt J \<mu> R P;
+      check_innermost_csr_rta08_terminal J \<mu> (add_index i 1) dpp prf
+    })"
+
+lemma check_innermost_csr_rta08_termination_proof_sound:
+  fixes J :: "('dpp, ('f::{showl,compare_order}, label_type) lab,string) dpp_ops"
+  assumes J: "dpp_spec J"
+    and ok: "isOK (check_innermost_csr_rta08_termination_proof
+      J i \<mu> R P prf)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof -
+  from ok obtain dpp where ortho_ok: "isOK (check_csr_orthogonal R)"
+    and tt: "csr_rta08_dependency_pairs_tt J \<mu> R P = return dpp"
+    and rec: "isOK (check_innermost_csr_rta08_terminal
+      J \<mu> (add_index i 1) dpp prf)"
+    unfolding check_innermost_csr_rta08_termination_proof_def by auto
+  from csr_rta08_dependency_pairs_tt_sound[OF J tt]
+  have wf: "wf_trs (set R)"
+    and pairs: "set P = csr_rta08_CSDP_on Sharp (mu_of \<mu>)
+      (set (defined_list R)) (set R)"
+    by auto
+  have fin: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp))"
+    by (rule check_innermost_csr_rta08_terminal_sound[OF J rec])
+  interpret dpp_spec J by fact
+  from csr_rta08_dependency_pairs_tt_sound[OF J tt]
+  have dpp: "dpp = dpp_ops.mk J False False P [] [] [] R" by auto
+  have sem: "dpp_ops.dpp J dpp = (False,False,set P,{},{},{},set R)"
+    using dpp unfolding dpp_spec.mk_sound[OF J] by simp
+  have sem': "dpp_ops.dpp J dpp =
+      (NFS dpp,M dpp,set (local.P dpp),set (Pw dpp),set (Q dpp),
+        set (local.R dpp),set (Rw dpp))"
+    by (rule dpp_sound)
+  have rules: "set (dpp_ops.rules J dpp) = set R"
+    using sem sem' rules_sound[of dpp] by auto
+  have pairs': "set (dpp_ops.pairs J dpp) = set P"
+    using sem sem' pairs_sound[of dpp] by auto
+  have defined: "set (defined_list (dpp_ops.rules J dpp)) =
+      set (defined_list R)"
+    using rules by simp
+  note fin' = fin[unfolded rules defined pairs']
+  have exact: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set R) (csr_rta08_defined_target (set (defined_list R)))
+      (csr_rta08_CSDP_on Sharp (mu_of \<mu>)
+        (set (defined_list R)) (set R))"
+    using fin' pairs by simp
+  have overlay: "csr_switch_overlay (set R)"
+    by (rule check_csr_orthogonal_sound[OF ortho_ok])
+  have D: "{f. defined (set R) f} \<subseteq> set (defined_list R)"
+    using tt[unfolded csr_rta08_dependency_pairs_tt_def Let_def,
+      simplified] by auto
+  show ?thesis
+    by (rule csr_switch_via_innermost_rta08_CSDP_on[
+      OF overlay wf D exact])
+qed
+
+definition check_innermost_csr_or_rta08_termination_proof ::
+  "('tp, ('f::{showl,compare_order,countable}, label_type) lab,
+      string) tp_ops \<Rightarrow>
+   ('dpp, ('f,label_type) lab,string) dpp_ops \<Rightarrow>
+   showsl \<Rightarrow> (('f,label_type) lab) muL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_or_rta08_termination_proof I J i \<mu> R P prf =
+    (case check_innermost_csr_termination_proof I J i \<mu> R P prf of
+       Inr x \<Rightarrow> Inr x
+     | Inl _ \<Rightarrow> check_innermost_csr_rta08_termination_proof
+         J i \<mu> R P prf)"
+
+lemma check_innermost_csr_or_rta08_termination_proof_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_innermost_csr_or_rta08_termination_proof
+      I J i \<mu> R P prf)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof (cases "check_innermost_csr_termination_proof I J i \<mu> R P prf")
+  case (Inl e)
+  with ok have "isOK (check_innermost_csr_rta08_termination_proof
+      J i \<mu> R P prf)"
+    unfolding check_innermost_csr_or_rta08_termination_proof_def by simp
+  then show ?thesis
+    by (rule check_innermost_csr_rta08_termination_proof_sound[OF J])
+next
+  case (Inr x)
+  then have "isOK (check_innermost_csr_termination_proof
+      I J i \<mu> R P prf)" by simp
+  then show ?thesis
+    by (rule check_innermost_csr_termination_proof_sound[OF I J])
+qed
+
 end
