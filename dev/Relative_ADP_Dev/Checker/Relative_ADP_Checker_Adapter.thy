@@ -6,12 +6,19 @@ theory Relative_ADP_Checker_Adapter
     Framework.Dependency_Pair_Problem_Impl
     Ord.Reduction_Pair_Implementations
     Auxx.Map_Choice
+    Containers.Containers
 begin
 
 derive compare_order adp_symbol
 derive countable adp_symbol
+derive (eq) ceq adp_symbol
+derive ccompare adp_symbol
+derive (rbt) set_impl adp_symbol
 derive compare_order adp_com_symbol
 derive countable adp_com_symbol
+derive (eq) ceq adp_com_symbol
+derive ccompare adp_com_symbol
+derive (rbt) set_impl adp_com_symbol
 
 instantiation adp_symbol :: (showl) showl
 begin
@@ -287,9 +294,9 @@ definition relative_adp_com_flat_rules_list where
 definition relative_adp_com_law_rules ::
   "('f adp_com_symbol, string) rules" where
   "relative_adp_com_law_rules = (let
-      x = Var (STR ''__com_x'');
-      y = Var (STR ''__com_y'');
-      z = Var (STR ''__com_z'');
+      x = Var ''__com_x'';
+      y = Var ''__com_y'';
+      z = Var ''__com_z'';
       c = (\<lambda>a b. Fun Com2 [a,b])
     in [
       (c x y, c y x),
@@ -309,7 +316,8 @@ definition check_relative_adp_com_redpair ::
       rp = get_rel_impl redp;
       strict = relative_adp_com_constraints_list selected;
       weak = relative_adp_com_flat_rules_list (P @ B) @
-        relative_adp_com_constraints_list (P @ B)
+        relative_adp_com_constraints_list (P @ B) @
+        relative_adp_com_law_rules
     in do {
       check (set selected \<subseteq> set P \<union> set B)
         (showsl_lit (STR ''selected relative ADPs are not in the problem''));
@@ -320,8 +328,7 @@ definition check_relative_adp_com_redpair ::
           (STR ''relative ADP Com requires function-rooted left-hand sides''));
       rel_impl_mono_redpair rp strict weak;
       rel_impl_s rp strict;
-      rel_impl_ns rp weak;
-      rel_impl_ns rp relative_adp_com_law_rules
+      rel_impl_ns rp weak
     })"
 
 lemma relative_adp_com_constraints_list_set:
@@ -336,13 +343,15 @@ lemma relative_adp_com_flat_rules_list_set:
   unfolding relative_adp_com_flat_rules_list_def by simp
 
 lemma relative_adp_com_laws_sound:
+  fixes NS :: "((('f adp_com_symbol, string) term) \<times>
+    (('f adp_com_symbol, string) term)) set"
   assumes laws: "set relative_adp_com_law_rules \<subseteq> NS"
     and stable: "subst.closed NS"
   shows "adp_com_invariant NS" "adp_com_discarding NS"
 proof -
-  let ?x = "Var (STR ''__com_x'')"
-  let ?y = "Var (STR ''__com_y'')"
-  let ?z = "Var (STR ''__com_z'')"
+  let ?x = "Var ''__com_x''"
+  let ?y = "Var ''__com_y''"
+  let ?z = "Var ''__com_z''"
   let ?c = "\<lambda>a b. Fun Com2 [a,b]"
   have schemas:
       "(?c ?x ?y, ?c ?y ?x) \<in> NS"
@@ -355,9 +364,9 @@ proof -
   show "adp_com_invariant NS"
     unfolding adp_com_invariant_def
   proof (intro allI conjI)
-    fix x y z
-    let ?sigma = "Var(STR ''__com_x'' := x,
-      STR ''__com_y'' := y, STR ''__com_z'' := z)"
+    fix x y z :: "('f adp_com_symbol, string) term"
+    let ?sigma = "Var(''__com_x'' := x,
+      ''__com_y'' := y, ''__com_z'' := z)"
     show "(Fun Com2 [x,y], Fun Com2 [y,x]) \<in> NS"
       using subst.closedD[OF stable schemas(1), of ?sigma] by simp
     show "(Fun Com2 [y,x], Fun Com2 [x,y]) \<in> NS"
@@ -372,8 +381,8 @@ proof -
   show "adp_com_discarding NS"
     unfolding adp_com_discarding_def
   proof (intro allI conjI)
-    fix x y
-    let ?sigma = "Var(STR ''__com_x'' := x, STR ''__com_y'' := y)"
+    fix x y :: "('f adp_com_symbol, string) term"
+    let ?sigma = "Var(''__com_x'' := x, ''__com_y'' := y)"
     show "(Fun Com2 [x,y],x) \<in> NS"
       using subst.closedD[OF stable schemas(5), of ?sigma] by simp
     show "(Fun Com2 [x,y],y) \<in> NS"
@@ -394,7 +403,8 @@ proof -
   let ?rp = "get_rel_impl redp"
   let ?strict = "relative_adp_com_constraints_list selected"
   let ?weak = "relative_adp_com_flat_rules_list (P @ B) @
-    relative_adp_com_constraints_list (P @ B)"
+    relative_adp_com_constraints_list (P @ B) @
+    relative_adp_com_law_rules"
   from checked[unfolded check_relative_adp_com_redpair_def,
       simplified Let_def]
   have selected: "set selected \<subseteq> set P \<union> set B"
@@ -403,28 +413,33 @@ proof -
     and valid: "isOK (rel_impl_mono_redpair ?rp ?strict ?weak)"
     and strict: "isOK (rel_impl_s ?rp ?strict)"
     and weak: "isOK (rel_impl_ns ?rp ?weak)"
-    and laws: "isOK (rel_impl_ns ?rp relative_adp_com_law_rules)"
     by (auto simp: isOK_check_allm)
   from rel_impl_mono_redpair[OF get_rel_impl valid strict weak,
       of undefined undefined]
   obtain S NS NST where order: "mono_redtriple_order S NS NST"
     and strict_set: "set ?strict \<subseteq> S"
     and weak_set: "set ?weak \<subseteq> NS" by auto
-  from rel_impl_ns[OF get_rel_impl valid laws]
-  have law_set: "set relative_adp_com_law_rules \<subseteq> NS" by auto
+  have law_set: "set relative_adp_com_law_rules \<subseteq> NS"
+    using weak_set by auto
   interpret mono_redtriple_order S NS NST by (rule order)
   have invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     by (rule relative_adp_com_laws_sound[OF law_set subst_NS])+
+  have flat_list_weak:
+      "set (relative_adp_com_flat_rules_list (P @ B)) \<subseteq> NS"
+    using weak_set by auto
+  have constraint_list_weak:
+      "set (relative_adp_com_constraints_list (P @ B)) \<subseteq> NS"
+    using weak_set by auto
   have flat_weak: "relative_adp_com_flat_rule pair \<in> NS"
-    if "pair \<in> set P \<union> set B" for pair
-    using weak_set that unfolding relative_adp_com_flat_rules_list_set
-      relative_adp_com_constraints_list_set by auto
+      if "pair \<in> set P \<union> set B" for pair
+    using flat_list_weak that
+    unfolding relative_adp_com_flat_rules_list_set by auto
   have com_weak: "(relative_adp_com_lhs pair,
       relative_adp_annotation_summary pair) \<in> NS"
     if "pair \<in> set P \<union> set B" for pair
-    using weak_set that unfolding relative_adp_com_flat_rules_list_set
-      relative_adp_com_constraints_list_set by auto
+    using constraint_list_weak that
+    unfolding relative_adp_com_constraints_list_set by auto
   have selected_strict: "(relative_adp_com_lhs pair,
       relative_adp_annotation_summary pair) \<in> S"
     if "pair \<in> set selected" for pair

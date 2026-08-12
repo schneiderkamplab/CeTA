@@ -839,30 +839,21 @@ proof -
           where origin=origin and s=s and redex=redex and q'=q, OF witness])
     show ?thesis using source not_redex by simp
   qed
-  have distinct_preds: "distinct
-      (map (relative_adp_nonfresh_predecessor origin s redex) targets)"
-  unfolding distinct_map
-  proof (intro conjI)
-    show "distinct targets" by (rule distinct_targets)
+  have inj_preds: "inj_on
+      (relative_adp_nonfresh_predecessor origin s redex) (set targets)"
+  proof (rule inj_onI)
     fix x y
     assume x: "x \<in> set targets"
       and y: "y \<in> set targets"
       and eq: "relative_adp_nonfresh_predecessor origin s redex x =
         relative_adp_nonfresh_predecessor origin s redex y"
-    have wx: "\<exists>p. p \<in> sharp_positions s \<and>
-        p \<noteq> redex \<and> origin p x" by (rule covered[OF x])
-    have wy: "\<exists>p. p \<in> sharp_positions s \<and>
-        p \<noteq> redex \<and> origin p y" by (rule covered[OF y])
-    let ?px = "relative_adp_nonfresh_predecessor origin s redex x"
-    have ox: "origin ?px x"
-      by (rule relative_adp_nonfresh_predecessor_sound(3)[
-          where origin=origin and s=s and redex=redex and q'=x, OF wx])
-    have oy: "origin ?px y"
-      using relative_adp_nonfresh_predecessor_sound(3)[
-        where origin=origin and s=s and redex=redex and q'=y, OF wy] eq
-      by simp
-    from ox oy show "x = y" by (rule origin_functional)
+    show "x = y"
+      by (rule relative_adp_nonfresh_predecessor_injective[
+          OF covered[OF x] covered[OF y] eq origin_functional])
   qed
+  have distinct_preds: "distinct
+      (map (relative_adp_nonfresh_predecessor origin s redex) targets)"
+    using distinct_targets inj_preds by (simp add: distinct_map)
   have set_subset: "set (map
       (relative_adp_nonfresh_predecessor origin s redex) targets)
       \<subseteq> sharp_positions s - {redex}"
@@ -871,7 +862,7 @@ proof -
       "distinct (sorted_list_of_set (sharp_positions s - {redex}))" by simp
   have source_set: "set (sorted_list_of_set (sharp_positions s - {redex})) =
       sharp_positions s - {redex}"
-    using finite_relative_adp_sharp_positions by simp
+    using finite_relative_adp_sharp_positions[of s] by simp
   show ?thesis
     unfolding subseteq_mset_def
   proof
@@ -882,14 +873,23 @@ proof -
     proof (cases "x \<in> set (map
         (relative_adp_nonfresh_predecessor origin s redex) targets)")
       case False
+      then have left_zero: "count (mset (map
+          (relative_adp_nonfresh_predecessor origin s redex) targets)) x = 0"
+        by (simp add: count_eq_zero_iff)
       then show ?thesis by simp
     next
       case True
       then have source_member:
           "x \<in> set (sorted_list_of_set (sharp_positions s - {redex}))"
         using set_subset source_set by blast
-      show ?thesis using distinct_preds source_distinct True source_member
-        by (simp add: count_mset)
+      have left_one: "count (mset (map
+          (relative_adp_nonfresh_predecessor origin s redex) targets)) x = 1"
+        using distinct_preds True by (simp add: distinct_count_atmost_1)
+      have right_one: "count (mset
+          (sorted_list_of_set (sharp_positions s - {redex}))) x = 1"
+        using source_distinct source_member
+        by (simp add: distinct_count_atmost_1)
+      show ?thesis using left_one right_one by simp
     qed
   qed
 qed
@@ -904,6 +904,65 @@ definition relative_adp_fresh_target_positions_list ::
   "('f, 'v) adp \<Rightarrow> pos \<Rightarrow> pos list" where
   "relative_adp_fresh_target_positions_list pair redex = map
     ((@) redex) (sorted_list_of_set (sharp_positions (snd pair)))"
+
+lemma distinct_relative_adp_poss_list:
+  "distinct (poss_list t)"
+proof (induct t)
+  case (Fun f ts)
+  let ?xss = "map (\<lambda>i. map ((#) i) (poss_list (ts ! i)))
+    [0..<length ts]"
+  have id: "map2 (\<lambda>i. map ((#) i)) [0..<length ts]
+      (map poss_list ts) =
+    ?xss"
+    by (intro nth_equalityI) auto
+  have outer_distinct: "distinct ?xss"
+    unfolding distinct_map
+  proof (intro conjI inj_onI)
+    show "distinct [0..<length ts]" by simp
+    fix i j
+    assume i: "i \<in> set [0..<length ts]"
+      and j: "j \<in> set [0..<length ts]"
+      and equal: "map ((#) i) (poss_list (ts ! i)) =
+        map ((#) j) (poss_list (ts ! j))"
+    from equal show "i = j"
+      by (cases "ts ! i"; cases "ts ! j")
+        (simp_all add: poss_list.simps)
+  qed
+  have child_distinct: "\<And>ys. ys \<in> set ?xss \<Longrightarrow> distinct ys"
+  proof -
+    fix ys
+    assume "ys \<in> set ?xss"
+    then obtain i where i: "i < length ts"
+      and ys: "ys = map ((#) i) (poss_list (ts ! i))" by auto
+    show "distinct ys" unfolding ys distinct_map
+      using Fun[of "ts ! i"] i by (auto simp: inj_on_def)
+  qed
+  have child_disjoint: "\<And>ys zs. ys \<in> set ?xss \<Longrightarrow>
+      zs \<in> set ?xss \<Longrightarrow> ys \<noteq> zs \<Longrightarrow>
+      set ys \<inter> set zs = {}"
+  proof -
+    fix ys zs
+    assume ys_mem: "ys \<in> set ?xss"
+      and zs_mem: "zs \<in> set ?xss"
+      and different: "ys \<noteq> zs"
+    then obtain i j where
+      ys: "ys = map ((#) i) (poss_list (ts ! i))" and
+      zs: "zs = map ((#) j) (poss_list (ts ! j))" and
+      i: "i < length ts" and j: "j < length ts" by auto
+    have "i \<noteq> j"
+    proof
+      assume "i = j"
+      then have "ys = zs" using ys zs by simp
+      then show False using different by contradiction
+    qed
+    then show "set ys \<inter> set zs = {}" unfolding ys zs by auto
+  qed
+  have concat_distinct: "distinct (concat ?xss)"
+    by (rule distinct_concat[OF outer_distinct child_distinct child_disjoint])
+  have root_fresh: "[] \<notin> set (concat ?xss)" by auto
+  show ?case unfolding poss_list.simps id
+    using root_fresh concat_distinct by simp
+qed (simp add: poss_list.simps)
 
 lemma relative_adp_components_at_mset_cong:
   assumes "mset ps = mset qs"
@@ -1695,14 +1754,11 @@ proof -
       (\<lambda>alpha. snd pair |_ alpha) ` sharp_positions (snd pair)"
     unfolding annotated_rhs_subterms_list_sound annotated_rhs_subterms_def
     by blast
-  have fresh_map: "relative_adp_components_at t
-      (relative_adp_fresh_target_positions_list pair redex) =
-    map (\<lambda>alpha. map_funs_term ADP_Symbol
-      (mark_adp_root (snd pair |_ alpha)) \<cdot>
-        map_funs_subst (ADP_Symbol \<circ> adp_symbol.Plain) sigma) ?positions"
-    unfolding relative_adp_components_at_def
-      relative_adp_fresh_target_positions_list_def
-  proof (rule map_cong)
+  have component_instance: "\<And>alpha. alpha \<in> set ?positions \<Longrightarrow>
+      map_funs_term ADP_Symbol (mark_adp_root (t |_ (redex @ alpha))) =
+      map_funs_term ADP_Symbol (mark_adp_root (snd pair |_ alpha)) \<cdot>
+        map_funs_subst (ADP_Symbol \<circ> adp_symbol.Plain) sigma"
+  proof -
     fix alpha
     assume "alpha \<in> set ?positions"
     then have sharp: "alpha \<in> sharp_positions (snd pair)"
@@ -1710,8 +1766,16 @@ proof -
     show "map_funs_term ADP_Symbol (mark_adp_root (t |_ (redex @ alpha))) =
         map_funs_term ADP_Symbol (mark_adp_root (snd pair |_ alpha)) \<cdot>
           map_funs_subst (ADP_Symbol \<circ> adp_symbol.Plain) sigma"
-      by (rule relative_adp_fixed_fresh_component_instance[OF applied sharp])
+      by (fact relative_adp_fixed_fresh_component_instance[OF applied sharp])
   qed
+  have fresh_map: "relative_adp_components_at t
+      (relative_adp_fresh_target_positions_list pair redex) =
+    map (\<lambda>alpha. map_funs_term ADP_Symbol
+      (mark_adp_root (snd pair |_ alpha)) \<cdot>
+        map_funs_subst (ADP_Symbol \<circ> adp_symbol.Plain) sigma) ?positions"
+    unfolding relative_adp_components_at_def
+      relative_adp_fresh_target_positions_list_def
+    using component_instance by simp
   have positions_mset: "mset ?positions = mset
       (filter (\<lambda>q. case Term.root (snd pair |_ q) of
           None \<Rightarrow> False | Some (f,n) \<Rightarrow> is_sharp_symbol f)
@@ -1724,7 +1788,8 @@ proof -
     have rhs_distinct: "distinct (filter (\<lambda>q.
         case Term.root (snd pair |_ q) of None \<Rightarrow> False
           | Some (f,n) \<Rightarrow> is_sharp_symbol f)
-        (poss_list (snd pair)))" by simp
+        (poss_list (snd pair)))"
+      by (rule distinct_filter[OF distinct_relative_adp_poss_list])
     show ?thesis using set_eq_iff_mset_eq_distinct[OF _ rhs_distinct]
       position_set rhs_set by simp
   qed
@@ -1733,7 +1798,7 @@ proof -
     using arg_cong[OF positions_mset,
       where f="image_mset (\<lambda>alpha. map_funs_term ADP_Symbol
         (mark_adp_root (snd pair |_ alpha)) \<cdot> tau)"]
-    by simp
+    by (simp add: tau_def comp_def)
 qed
 
 lemma relative_adp_fixed_root_strict_from_constraint:
@@ -2038,8 +2103,9 @@ proof -
     then show ?case using refl_NS unfolding refl_on_def by simp
   next
     case (step y z)
-    have yz: "(y,z) \<in> NS" using steps_NS step.hyps(1) by blast
-    show ?case using trans_NS step.hyps(2) yz unfolding trans_def by blast
+    have yz: "(y,z) \<in> NS"
+      by (rule subsetD[OF steps_NS step.hyps(2)])
+    show ?case using trans_NS step.IH yz unfolding trans_def by blast
   qed
 qed
 

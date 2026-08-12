@@ -8772,6 +8772,120 @@ equal_cond_constraint (CC_rewr x21 x22) (CC_rewr y21 y22) =
 equal_cond_constraint (CC_cond x11 x12) (CC_cond y11 y12) =
   x11 == y11 && x12 == y12;
 
+data Adp_com_symbol a = ADP_Symbol (Adp_symbol a) | Com0 | Com2;
+
+equal_adp_com_symbol ::
+  forall a. (Eq a) => Adp_com_symbol a -> Adp_com_symbol a -> Bool;
+equal_adp_com_symbol Com0 Com2 = False;
+equal_adp_com_symbol Com2 Com0 = False;
+equal_adp_com_symbol (ADP_Symbol x1) Com2 = False;
+equal_adp_com_symbol Com2 (ADP_Symbol x1) = False;
+equal_adp_com_symbol (ADP_Symbol x1) Com0 = False;
+equal_adp_com_symbol Com0 (ADP_Symbol x1) = False;
+equal_adp_com_symbol (ADP_Symbol x1) (ADP_Symbol y1) = equal_adp_symbol x1 y1;
+equal_adp_com_symbol Com2 Com2 = True;
+equal_adp_com_symbol Com0 Com0 = True;
+
+instance (Eq a) => Eq (Adp_com_symbol a) where {
+  a == b = equal_adp_com_symbol a b;
+};
+
+comparator_adp_com_symbol ::
+  forall a.
+    (a -> a -> Ordera) -> Adp_com_symbol a -> Adp_com_symbol a -> Ordera;
+comparator_adp_com_symbol comp_f (ADP_Symbol x) (ADP_Symbol y) =
+  comparator_adp_symbol comp_f x y;
+comparator_adp_com_symbol comp_f (ADP_Symbol x) Com0 = Lt;
+comparator_adp_com_symbol comp_f (ADP_Symbol x) Com2 = Lt;
+comparator_adp_com_symbol comp_f Com0 (ADP_Symbol y) = Gt;
+comparator_adp_com_symbol comp_f Com0 Com0 = Eqa;
+comparator_adp_com_symbol comp_f Com0 Com2 = Lt;
+comparator_adp_com_symbol comp_f Com2 (ADP_Symbol y) = Gt;
+comparator_adp_com_symbol comp_f Com2 Com0 = Gt;
+comparator_adp_com_symbol comp_f Com2 Com2 = Eqa;
+
+compare_adp_com_symbol ::
+  forall a. (Compare a) => Adp_com_symbol a -> Adp_com_symbol a -> Ordera;
+compare_adp_com_symbol = comparator_adp_com_symbol compare;
+
+less_eq_adp_com_symbol ::
+  forall a. (Compare a) => Adp_com_symbol a -> Adp_com_symbol a -> Bool;
+less_eq_adp_com_symbol = le_of_comp compare_adp_com_symbol;
+
+less_adp_com_symbol ::
+  forall a. (Compare a) => Adp_com_symbol a -> Adp_com_symbol a -> Bool;
+less_adp_com_symbol = lt_of_comp compare_adp_com_symbol;
+
+instance (Compare a) => Ord (Adp_com_symbol a) where {
+  less_eq = less_eq_adp_com_symbol;
+  less = less_adp_com_symbol;
+};
+
+instance (Compare a) => Compare (Adp_com_symbol a) where {
+  compare = compare_adp_com_symbol;
+};
+
+instance (Compare a) => Quasi_order (Adp_com_symbol a) where {
+};
+
+instance (Compare a) => Weak_order (Adp_com_symbol a) where {
+};
+
+instance (Compare a) => Preorder (Adp_com_symbol a) where {
+};
+
+instance (Compare a) => Order (Adp_com_symbol a) where {
+};
+
+ceq_adp_com_symbol ::
+  forall a. (Eq a) => Maybe (Adp_com_symbol a -> Adp_com_symbol a -> Bool);
+ceq_adp_com_symbol = Just equal_adp_com_symbol;
+
+instance (Eq a) => Ceq (Adp_com_symbol a) where {
+  ceq = ceq_adp_com_symbol;
+};
+
+set_impl_adp_com_symbol :: forall a. Phantom (Adp_com_symbol a) Set_impla;
+set_impl_adp_com_symbol = Phantom Set_RBT;
+
+instance Set_impl (Adp_com_symbol a) where {
+  set_impl = set_impl_adp_com_symbol;
+};
+
+instance (Compare a) => Linorder (Adp_com_symbol a) where {
+};
+
+showsl_adp_com_symbol ::
+  forall a. (Showl a) => Adp_com_symbol a -> String -> String;
+showsl_adp_com_symbol (ADP_Symbol f) = showsl_adp_symbol f;
+showsl_adp_com_symbol Com0 = showsl_lit "Com0";
+showsl_adp_com_symbol Com2 = showsl_lit "Com2";
+
+showsl_list_adp_com_symbol ::
+  forall a. (Showl a) => [Adp_com_symbol a] -> String -> String;
+showsl_list_adp_com_symbol xs = default_showsl_list showsl_adp_com_symbol xs;
+
+instance (Showl a) => Showl (Adp_com_symbol a) where {
+  showsl = showsl_adp_com_symbol;
+  showsl_list = showsl_list_adp_com_symbol;
+};
+
+instance (Compare a) => Compare_order (Adp_com_symbol a) where {
+};
+
+ccompare_adp_com_symbol ::
+  forall a.
+    (Ccompare a) => Maybe (Adp_com_symbol a -> Adp_com_symbol a -> Ordera);
+ccompare_adp_com_symbol =
+  (case ccompare of {
+    Nothing -> Nothing;
+    Just comp_f -> Just (comparator_adp_com_symbol comp_f);
+  });
+
+instance (Ccompare a) => Ccompare (Adp_com_symbol a) where {
+  ccompare = ccompare_adp_com_symbol;
+};
+
 data Itself a = Type;
 
 newtype Rbt b a = RBT (Rbta b a);
@@ -10048,6 +10162,8 @@ data Redord_closure_ext a b c =
 
 data Relative_adp_termination_proof a = Relative_ADP_Empty
   | Relative_ADP_Erasure_Redpair (Redtriple_impl a) [Nat] [Nat]
+      (Relative_adp_termination_proof a)
+  | Relative_ADP_Com_Redpair (Redtriple_impl (Adp_com_symbol a)) [Nat] [Nat]
       (Relative_adp_termination_proof a)
   | Relative_ADP_Dependency_Graph [Relative_adp_termination_proof a]
   | Relative_ADP_Derelatification
@@ -65641,6 +65757,20 @@ relative_adp_drp1_symbol_parser x =
                                  }))))))
     x;
 
+relative_adp_com_symbol_parser ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String) (Adp_com_symbol (Lab [Char] [Nat]));
+relative_adp_com_symbol_parser x =
+  xml_or
+    (xml_change (xml_text "name") (((xml_return . ADP_Symbol) . Plain) . UnLab))
+    (xml_or
+      (xml_change
+        (xml_do "sharp" (xml_take symbol_parser (\ xa -> xml_return (id xa))))
+        ((xml_return . ADP_Symbol) . Sharpb))
+      (xml_or (xml_do "adpCom0" (xml_return Com0))
+        (xml_do "adpCom2" (xml_return Com2))))
+    x;
+
 xml2relative_adp_termination_proof ::
   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
     Sum_bot (Xml_error String)
@@ -65669,19 +65799,38 @@ xml2relative_adp_termination_proof x =
                               (Relative_ADP_Erasure_Redpair redp main_indices
                                 base_indices continuation)))))))
           (xml_or
-            (xml_do "relativeAdpDependencyGraph"
-              (xml_take_many_sub [] zero_nat Infinity_enat
-                xml2relative_adp_termination_proof
-                (\ proofs ->
-                  xml_return (Relative_ADP_Dependency_Graph proofs))))
-            (xml_do "relativeAdpDerelatification"
-              (xml_take
-                (xml2dp_termination_proof relative_adp_drp1_symbol_parser
-                  (mapping_empty (of_phantom mapping_impl_list))
-                  (mapping_empty (of_phantom mapping_impl_list)))
-                (\ ordinary_proof ->
-                  xml_return
-                    (Relative_ADP_Derelatification ordinary_proof)))))))
+            (xml_do "relativeAdpComReductionPair"
+              (xml_take (redtriple relative_adp_com_symbol_parser id False)
+                (\ redp ->
+                  xml_take
+                    (xml_do "mainIndices"
+                      (xml_take_many_sub [] zero_nat Infinity_enat
+                        (xml_nat "index") xml_return))
+                    (\ main_indices ->
+                      xml_take
+                        (xml_do "baseIndices"
+                          (xml_take_many_sub [] zero_nat Infinity_enat
+                            (xml_nat "index") xml_return))
+                        (\ base_indices ->
+                          xml_take xml2relative_adp_termination_proof
+                            (\ continuation ->
+                              xml_return
+                                (Relative_ADP_Com_Redpair redp main_indices
+                                  base_indices continuation)))))))
+            (xml_or
+              (xml_do "relativeAdpDependencyGraph"
+                (xml_take_many_sub [] zero_nat Infinity_enat
+                  xml2relative_adp_termination_proof
+                  (\ proofs ->
+                    xml_return (Relative_ADP_Dependency_Graph proofs))))
+              (xml_do "relativeAdpDerelatification"
+                (xml_take
+                  (xml2dp_termination_proof relative_adp_drp1_symbol_parser
+                    (mapping_empty (of_phantom mapping_impl_list))
+                    (mapping_empty (of_phantom mapping_impl_list)))
+                  (\ ordinary_proof ->
+                    xml_return
+                      (Relative_ADP_Derelatification ordinary_proof))))))))
       (\ xa -> xml_return (id xa)))
     x;
 
@@ -66004,6 +66153,109 @@ check_relative_adp_erasure_redpair redp p b selected =
                  (\ _ ->
                    bindb (rel_impl_s rp strict) (\ _ -> rel_impl_ns rp weak))));
 
+adp_combine_terms ::
+  forall a b. [Term (Adp_com_symbol a) b] -> Term (Adp_com_symbol a) b;
+adp_combine_terms [] = Fun Com0 [];
+adp_combine_terms [t] = t;
+adp_combine_terms (t : u : ts) = Fun Com2 [t, adp_combine_terms (u : ts)];
+
+mark_adp_root :: forall a b. Term (Adp_symbol a) b -> Term (Adp_symbol a) b;
+mark_adp_root t =
+  annotate_termb (inserta [] (set_empty (of_phantom set_impl_list)))
+    (erase_adp_term t);
+
+relative_adp_annotation_summary ::
+  forall a b.
+    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> Term (Adp_com_symbol a) b;
+relative_adp_annotation_summary pair =
+  adp_combine_terms
+    (map (map_term ADP_Symbol (\ x -> x) . mark_adp_root)
+      (annotated_rhs_subterms_list pair));
+
+relative_adp_com_lhs ::
+  forall a b.
+    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> Term (Adp_com_symbol a) b;
+relative_adp_com_lhs pair =
+  map_term ADP_Symbol (\ x -> x) (mark_adp_root (fst pair));
+
+relative_adp_com_constraints_list ::
+  forall a b.
+    [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      [(Term (Adp_com_symbol a) b, Term (Adp_com_symbol a) b)];
+relative_adp_com_constraints_list a =
+  map (\ pair ->
+        (relative_adp_com_lhs pair, relative_adp_annotation_summary pair))
+    a;
+
+relative_adp_com_flat_rule ::
+  forall a b.
+    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) ->
+      (Term (Adp_com_symbol a) b, Term (Adp_com_symbol a) b);
+relative_adp_com_flat_rule pair =
+  map_funs_rule ADP_Symbol (erase_annotations_adp pair);
+
+relative_adp_com_flat_rules_list ::
+  forall a b.
+    [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      [(Term (Adp_com_symbol a) b, Term (Adp_com_symbol a) b)];
+relative_adp_com_flat_rules_list a = map relative_adp_com_flat_rule a;
+
+relative_adp_com_law_rules ::
+  forall a. [(Term (Adp_com_symbol a) [Char], Term (Adp_com_symbol a) [Char])];
+relative_adp_com_law_rules =
+  let {
+    x = Var [char_0x5F, char_0x5F, char_0x63, char_0x6F, char_0x6D, char_0x5F,
+              char_0x78];
+    y = Var [char_0x5F, char_0x5F, char_0x63, char_0x6F, char_0x6D, char_0x5F,
+              char_0x79];
+    z = Var [char_0x5F, char_0x5F, char_0x63, char_0x6F, char_0x6D, char_0x5F,
+              char_0x7A];
+    c = (\ a b -> Fun Com2 [a, b]);
+  } in [(c x y, c y x), (c y x, c x y), (c x (c y z), c (c x y) z),
+         (c (c x y) z, c x (c y z)), (c x y, x), (c x y, y), (x, Fun Com0 [])];
+
+check_relative_adp_com_redpair ::
+  forall a.
+    (Ccompare a, Compare_order a, Eq a,
+      Showl a) => Redtriple_impl (Adp_com_symbol a) ->
+                    [(Term (Adp_symbol a) [Char],
+                       Term (Adp_symbol a) [Char])] ->
+                      [(Term (Adp_symbol a) [Char],
+                         Term (Adp_symbol a) [Char])] ->
+                        [(Term (Adp_symbol a) [Char],
+                           Term (Adp_symbol a) [Char])] ->
+                          Sum (String -> String) ();
+check_relative_adp_com_redpair redp p b selected =
+  let {
+    rp = get_rel_impl redp;
+    strict = relative_adp_com_constraints_list selected;
+    weak =
+      relative_adp_com_flat_rules_list (p ++ b) ++
+        relative_adp_com_constraints_list (p ++ b) ++
+          relative_adp_com_law_rules;
+  } in bindb (check (superset (p ++ b) selected)
+               (showsl_lit "selected relative ADPs are not in the problem"))
+         (\ _ ->
+           bindb (check (not (null selected))
+                   (showsl_lit
+                     "relative ADP Com reduction pair removes no ADP"))
+             (\ _ ->
+               bindb (catch_errora
+                       (catch_errora
+                         (forallM
+                           (\ x ->
+                             (if not (is_Var (fst x)) then Inr () else Inl x))
+                           (p ++ b))
+                         (\ x -> Inl (snd x)))
+                       (\ _ ->
+                         Inl (showsl_lit
+                               "relative ADP Com requires function-rooted left-hand sides")))
+                 (\ _ ->
+                   bindb (rel_impl_mono_redpair rp strict weak)
+                     (\ _ ->
+                       bindb (rel_impl_s rp strict)
+                         (\ _ -> rel_impl_ns rp weak)))));
+
 erase_annotations_adp_list ::
   forall a b.
     [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
@@ -66036,11 +66288,6 @@ relative_adp_flat_rules_list ::
     [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
       [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)];
 relative_adp_flat_rules_list a = map erase_annotations_adp a;
-
-mark_adp_root :: forall a b. Term (Adp_symbol a) b -> Term (Adp_symbol a) b;
-mark_adp_root t =
-  annotate_termb (inserta [] (set_empty (of_phantom set_impl_list)))
-    (erase_adp_term t);
 
 relative_adp_dp_pairs_list ::
   forall a b.
@@ -66128,6 +66375,32 @@ check_relative_adp_termination_proof p b
           let {
             selected = relative_adps_at_indices p b main_indices base_indices;
           } in bindb (check_relative_adp_erasure_redpair redp p b selected)
+                 (\ _ ->
+                   let {
+                     residual = relative_adp_erasure_residual p b selected;
+                   } in check_relative_adp_termination_proof (fst residual)
+                          (snd residual) proof)));
+check_relative_adp_termination_proof p b
+  (Relative_ADP_Com_Redpair redp main_indices base_indices proof) =
+  bindb (catch_errora
+          (catch_errora
+            (forallM
+              (\ x -> (if less_nat x (size_list p) then Inr () else Inl x))
+              main_indices)
+            (\ x -> Inl (snd x)))
+          (\ _ -> Inl (showsl_lit "relative ADP main index out of range")))
+    (\ _ ->
+      bindb (catch_errora
+              (catch_errora
+                (forallM
+                  (\ x -> (if less_nat x (size_list b) then Inr () else Inl x))
+                  base_indices)
+                (\ x -> Inl (snd x)))
+              (\ _ -> Inl (showsl_lit "relative ADP base index out of range")))
+        (\ _ ->
+          let {
+            selected = relative_adps_at_indices p b main_indices base_indices;
+          } in bindb (check_relative_adp_com_redpair redp p b selected)
                  (\ _ ->
                    let {
                      residual = relative_adp_erasure_residual p b selected;

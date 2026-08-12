@@ -356,3 +356,49 @@ The extracted checker was compiled and applied to Ferrum's retained
 reconstructed two graph children and returned `CERTIFIED`. An earlier
 five-child certificate is rejected with a child-count mismatch, confirming
 that Ferrum cannot choose a smaller graph than the verified estimator.
+
+## Production relative-ADP Com verifier rebuild (2026-08-12)
+
+The production verifier was rebuilt from branch
+`codex/relative-adp-20260811` in the isolated Isabelle home
+`target/isabelle-home-com-production-20260812`, with identifier
+`codex_ex1_layer_20260803`. Existing verified dependency heaps through
+`Relative_ADP_Derelatification_Dev` were hard-linked from the earlier isolated
+home; all Com, checker, integration, generated-code, and native-binary outputs
+were rebuilt.
+
+The semantic build exposed a pathological `blast` invocation in a
+reflexive-transitive-closure induction. It searched for 1848 seconds because
+the proof referenced the accumulated closure instead of the new edge. The
+proof now uses the induction rule's edge and induction-hypothesis facts
+directly. The production replay also made position-list distinctness,
+multiset-count reasoning, and fresh-component map congruence explicit. With
+those changes, `Relative_ADP_Com_Reduction_Pair_Dev` checked in 45 seconds
+wall time, including 16.7 seconds for the theory itself.
+
+The checker replay aligned the synthetic Com-law variables with IsaFoR's
+`string` type and includes the law rules in the same weak rule list passed to
+`rel_impl_mono_redpair`. Thus the standard verified reduction-pair theorem,
+not an extra unchecked inference, yields their inclusion in the weak order.
+Executable `ceq`, `ccompare`, and red-black-tree `set_impl` instances are
+derived for both ADP symbol wrappers. `Relative_ADP_Checker_Dev`, including
+its theorem-level tests, checked in 51 seconds.
+
+The unified `Relative_ADP_Ceta_Dev` integration replayed the production
+`Proof_Checker`, relative CPF parser, and Haskell export in 9 minutes 18
+seconds. The Haskell export took 250 seconds. This terminal export session
+does not retain its own heap unless another session depends on it; its durable
+outputs are `generated/Haskell/Ceta_Relative.hs` and the native checker.
+`make -j 16 ceta-relative-adp` compiled the 16 MiB `ceta` executable in 3
+minutes 20 seconds. `make test-relative-adp` passed.
+
+The real Ferrum certificate
+`ferrum-relative/target/relative-adp-com-certified-smoke/rt2-2-com.cpf.xml`
+was accepted with exit status 0 and output `CERTIFIED`. A well-formed mutation
+that changes the first `adpCom2` interpretation from `x1 + x2` to `x1 + 0`
+was rejected with exit status 1 and a monotonicity error. Full replay outputs,
+statuses, mutated CPF, and SHA-256 hashes are retained under
+`target/production-verifier-rebuild-20260812`. The rebuilt binary hash is
+`4a8175dcf85748ab44557429c0c57c3c18b89f77cd442c6f515850ecf8b8c1b3`.
+The semantic, checker, and integration sources contain no `sorry`,
+axiomatization, or oracle declaration.
