@@ -4,6 +4,22 @@ theory Relative_ADP_Ceta
     Proof_Checker.Ceta_Verifier
 begin
 
+partial_function (sum_bot) relative_adp_com_symbol_parser ::
+  "lsymbol adp_com_symbol xmlt" where
+  [code]: "relative_adp_com_symbol_parser x = (
+    xml_change (xml_text (STR ''name''))
+      (xml_return \<circ> ADP_Symbol \<circ> adp_symbol.Plain \<circ> UnLab)
+    XMLor xml_change
+      (xml_singleton (STR ''sharp'') symbol_parser id)
+      (xml_return \<circ> ADP_Symbol \<circ> adp_symbol.Sharp)
+    XMLor XMLdo (STR ''adpCom0'') {
+      xml_return Com0
+    }
+    XMLor XMLdo (STR ''adpCom2'') {
+      xml_return Com2
+    }
+  ) x"
+
 partial_function (sum_bot) relative_adp_drp1_symbol_parser ::
   "(lsymbol adp_symbol, nat list) lab xmlt" where
   [code]: "relative_adp_drp1_symbol_parser x = (

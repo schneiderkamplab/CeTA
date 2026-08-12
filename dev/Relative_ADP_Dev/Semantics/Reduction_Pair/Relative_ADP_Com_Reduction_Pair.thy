@@ -16,10 +16,41 @@ fun adp_combine_terms ::
 | "adp_combine_terms (t # u # ts) =
     Fun Com2 [t, adp_combine_terms (u # ts)]"
 
+definition relative_adp_term_annotation_components ::
+  "('f adp_symbol, 'v) term \<Rightarrow>
+   ('f adp_com_symbol, 'v) term list" where
+  "relative_adp_term_annotation_components t = map
+    (\<lambda>p. map_funs_term ADP_Symbol (mark_adp_root (t |_ p)))
+    (sorted_list_of_set (sharp_positions t))"
+
+definition relative_adp_term_annotation_summary ::
+  "('f adp_symbol, 'v) term \<Rightarrow>
+   ('f adp_com_symbol, 'v) term" where
+  "relative_adp_term_annotation_summary t = adp_combine_terms
+    (relative_adp_term_annotation_components t)"
+
+lemma finite_relative_adp_sharp_positions:
+  "finite (sharp_positions t)"
+  unfolding sharp_positions_def
+  by (rule finite_subset[OF _ finite_poss]) auto
+
+lemma relative_adp_term_annotation_components_set:
+  "set (relative_adp_term_annotation_components t) =
+    (\<lambda>p. map_funs_term ADP_Symbol (mark_adp_root (t |_ p))) `
+      sharp_positions t"
+  unfolding relative_adp_term_annotation_components_def
+  by (simp add: finite_relative_adp_sharp_positions)
+
+lemma relative_adp_term_annotation_summary_unmarked:
+  assumes "sharp_positions t = {}"
+  shows "relative_adp_term_annotation_summary t = Fun Com0 []"
+  using assms unfolding relative_adp_term_annotation_summary_def
+    relative_adp_term_annotation_components_def by simp
+
 definition relative_adp_annotation_summary ::
   "('f, 'v) adp \<Rightarrow> ('f adp_com_symbol, 'v) term" where
   "relative_adp_annotation_summary pair = adp_combine_terms
-    (map (map_funs_term ADP_Symbol)
+    (map (map_funs_term ADP_Symbol \<circ> mark_adp_root)
       (annotated_rhs_subterms_list pair))"
 
 definition adp_com_monotone ::
@@ -41,6 +72,23 @@ definition adp_com_invariant ::
     (Fun Com2 [Fun Com2 [x,y],z],
       Fun Com2 [x, Fun Com2 [y,z]]) \<in> NS)"
 
+definition adp_com_discarding ::
+  "(('f adp_com_symbol, 'v) term \<times>
+     ('f adp_com_symbol, 'v) term) set \<Rightarrow> bool" where
+  "adp_com_discarding NS \<longleftrightarrow> (\<forall>x y.
+    (Fun Com2 [x,y], x) \<in> NS \<and>
+    (Fun Com2 [x,y], y) \<in> NS \<and>
+    (x, Fun Com0 []) \<in> NS)"
+
+text \<open>
+  The published proof of the relative ADP reduction-pair processor drops
+  annotations that are not transported by the VRF.  Commutativity,
+  associativity, and strict Com-monotonicity alone do not justify that step.
+  The explicit discarding laws above state the property used by the proof.
+  They hold for the intended natural interpretation Com0 = 0 and
+  Com2(x,y) = x + y.
+\<close>
+
 lemma relative_adp_annotation_summary_empty:
   assumes "annotated_rhs_subterms_list pair = []"
   shows "relative_adp_annotation_summary pair = Fun Com0 []"
@@ -48,13 +96,15 @@ lemma relative_adp_annotation_summary_empty:
 
 lemma relative_adp_annotation_summary_singleton:
   assumes "annotated_rhs_subterms_list pair = [t]"
-  shows "relative_adp_annotation_summary pair = map_funs_term ADP_Symbol t"
+  shows "relative_adp_annotation_summary pair =
+    map_funs_term ADP_Symbol (mark_adp_root t)"
   using assms unfolding relative_adp_annotation_summary_def by simp
 
 lemma relative_adp_annotation_summary_pair:
   assumes "annotated_rhs_subterms_list pair = [s,t]"
   shows "relative_adp_annotation_summary pair =
-    Fun Com2 [map_funs_term ADP_Symbol s, map_funs_term ADP_Symbol t]"
+    Fun Com2 [map_funs_term ADP_Symbol (mark_adp_root s),
+      map_funs_term ADP_Symbol (mark_adp_root t)]"
   using assms unfolding relative_adp_annotation_summary_def by simp
 
 lemma plain_adp_term_pred_roundtrip:
