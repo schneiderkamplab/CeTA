@@ -89,6 +89,134 @@ text \<open>
   Com2(x,y) = x + y.
 \<close>
 
+lemma adp_combine_terms_list_all2:
+  assumes refl: "refl NS"
+    and trans: "trans NS"
+    and ctxt: "ctxt.closed NS"
+    and related: "list_all2 (\<lambda>s t. (s,t) \<in> NS) xs ys"
+  shows "(adp_combine_terms xs, adp_combine_terms ys) \<in> NS"
+  using related
+proof (induction xs arbitrary: ys)
+  case Nil
+  then have "ys = []" by simp
+  then show ?case using refl unfolding refl_on_def by simp
+next
+  case (Cons x xs)
+  then obtain y ys' where ys: "ys = y # ys'"
+    and head_rel: "(x,y) \<in> NS"
+    and tail_rel: "list_all2 (\<lambda>s t. (s,t) \<in> NS) xs ys'"
+    by (cases ys) auto
+  show ?case
+  proof (cases xs)
+    case Nil
+    then have "ys' = []" using tail_rel by simp
+    with Nil ys head_rel show ?thesis by simp
+  next
+    case (Cons x' xs')
+    then obtain y' ys'' where ys': "ys' = y' # ys''"
+      using tail_rel by (cases ys') auto
+    have head: "(Fun Com2 [x, adp_combine_terms xs],
+        Fun Com2 [y, adp_combine_terms xs]) \<in> NS"
+      using ctxt_closed_one[OF ctxt head_rel,
+        of Com2 "[]" "[adp_combine_terms xs]"] by simp
+    have tail: "(adp_combine_terms xs, adp_combine_terms ys') \<in> NS"
+      by (rule Cons.IH[OF tail_rel])
+    have tail_context: "(Fun Com2 [y, adp_combine_terms xs],
+        Fun Com2 [y, adp_combine_terms ys']) \<in> NS"
+      using ctxt_closed_one[OF ctxt tail,
+        of Com2 "[y]" "[]"] by simp
+    have combined: "(Fun Com2 [x, adp_combine_terms xs],
+        Fun Com2 [y, adp_combine_terms ys']) \<in> NS"
+      using trans head tail_context unfolding trans_def by blast
+    show ?thesis using combined unfolding Cons ys ys' by simp
+  qed
+qed
+
+lemma adp_combine_terms_delete:
+  assumes ctxt: "ctxt.closed NS"
+    and discard: "adp_com_discarding NS"
+  shows "(adp_combine_terms (xs @ x # ys),
+      adp_combine_terms (xs @ ys)) \<in> NS"
+proof (induction xs)
+  case Nil
+  show ?case
+  proof (cases ys)
+    case Nil
+    then show ?thesis using discard
+      unfolding adp_com_discarding_def by simp
+  next
+    case (Cons y ys')
+    then show ?thesis using discard
+      unfolding adp_com_discarding_def by simp
+  qed
+next
+  case (Cons a xs)
+  show ?case
+  proof (cases "xs @ ys")
+    case Nil
+    then have xs: "xs = []" and ys: "ys = []" by auto
+    then show ?thesis using discard
+      unfolding adp_com_discarding_def by simp
+  next
+    case (Cons z zs)
+    have tail: "(adp_combine_terms (xs @ x # ys),
+        adp_combine_terms (xs @ ys)) \<in> NS"
+      by (rule Cons.IH)
+    have lifted: "(Fun Com2 [a, adp_combine_terms (xs @ x # ys)],
+        Fun Com2 [a, adp_combine_terms (xs @ ys)]) \<in> NS"
+      using ctxt_closed_one[OF ctxt tail, of Com2 "[a]" "[]"] by simp
+    show ?thesis
+      using lifted Cons by (cases xs) simp_all
+  qed
+qed
+
+lemma adp_combine_terms_swap_adjacent:
+  assumes trans: "trans NS"
+    and ctxt: "ctxt.closed NS"
+    and invariant: "adp_com_invariant NS"
+  shows "(adp_combine_terms (xs @ a # b # ys),
+      adp_combine_terms (xs @ b # a # ys)) \<in> NS"
+proof (induction xs)
+  case Nil
+  show ?case
+  proof (cases ys)
+    case Nil
+    then show ?thesis using invariant
+      unfolding adp_com_invariant_def by simp
+  next
+    case (Cons z zs)
+    let ?tail = "adp_combine_terms (z # zs)"
+    have assoc1: "(Fun Com2 [a, Fun Com2 [b,?tail]],
+        Fun Com2 [Fun Com2 [a,b],?tail]) \<in> NS"
+      using invariant unfolding adp_com_invariant_def by blast
+    have comm: "(Fun Com2 [a,b], Fun Com2 [b,a]) \<in> NS"
+      using invariant unfolding adp_com_invariant_def by blast
+    have comm_context: "(Fun Com2 [Fun Com2 [a,b],?tail],
+        Fun Com2 [Fun Com2 [b,a],?tail]) \<in> NS"
+      using ctxt_closed_one[OF ctxt comm, of Com2 "[]" "[?tail]"]
+      by simp
+    have assoc2: "(Fun Com2 [Fun Com2 [b,a],?tail],
+        Fun Com2 [b, Fun Com2 [a,?tail]]) \<in> NS"
+      using invariant unfolding adp_com_invariant_def by blast
+    have first_two: "(Fun Com2 [a, Fun Com2 [b,?tail]],
+        Fun Com2 [Fun Com2 [b,a],?tail]) \<in> NS"
+      using trans assoc1 comm_context unfolding trans_def by blast
+    have all: "(Fun Com2 [a, Fun Com2 [b,?tail]],
+        Fun Com2 [b, Fun Com2 [a,?tail]]) \<in> NS"
+      using trans first_two assoc2 unfolding trans_def by blast
+    show ?thesis using all unfolding Cons by simp
+  qed
+next
+  case (Cons x xs)
+  have tail: "(adp_combine_terms (xs @ a # b # ys),
+      adp_combine_terms (xs @ b # a # ys)) \<in> NS"
+    by (rule Cons.IH)
+  have lifted: "(Fun Com2 [x, adp_combine_terms (xs @ a # b # ys)],
+      Fun Com2 [x, adp_combine_terms (xs @ b # a # ys)]) \<in> NS"
+    using ctxt_closed_one[OF ctxt tail, of Com2 "[x]" "[]"] by simp
+  show ?case using lifted by (cases xs) simp_all
+qed
+
 lemma relative_adp_annotation_summary_empty:
   assumes "annotated_rhs_subterms_list pair = []"
   shows "relative_adp_annotation_summary pair = Fun Com0 []"
