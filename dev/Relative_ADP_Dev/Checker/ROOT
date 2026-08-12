@@ -1,4 +1,4 @@
-session Relative_ADP_Checker_Dev in "." = Relative_ADP_Dependency_Graph_Dev +
+session Relative_ADP_Checker_Dev in "." = Relative_ADP_Com_Reduction_Pair_Dev +
   options [document = false]
   theories
     Relative_ADP_Checker_Adapter

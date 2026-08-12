@@ -1,9 +1,26 @@
 theory Relative_ADP_Checker_Adapter
   imports
-    Relative_ADP_Dependency_Graph_Dev.Relative_ADP_Dependency_Graph_Impl
+    Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Reduction_Pair
+    Proof_Checker_Base.Check_Termination
+    Framework.Termination_Problem_Impl
+    Framework.Dependency_Pair_Problem_Impl
     Ord.Reduction_Pair_Implementations
     Auxx.Map_Choice
 begin
+
+derive compare_order adp_symbol
+derive countable adp_symbol
+
+instantiation adp_symbol :: (showl) showl
+begin
+fun showsl_adp_symbol where
+  "showsl_adp_symbol (Plain f) = showsl f"
+| "showsl_adp_symbol (adp_symbol.Sharp f) =
+    (showsl f \<circ> showsl_lit (STR ''#''))"
+definition "showsl_list (xs :: 'a adp_symbol list) =
+  default_showsl_list showsl xs"
+instance by standard
+end
 
 type_synonym ('f, 'v) relative_adp_problem_list =
   "('f, 'v) adp list \<times> ('f, 'v) adp list"
@@ -255,6 +272,8 @@ datatype 'f relative_adp_termination_proof =
       "'f relative_adp_termination_proof"
   | Relative_ADP_Dependency_Graph
       "'f relative_adp_termination_proof list"
+  | Relative_ADP_Derelatification
+      "('f adp_symbol, nat list, string) dp_termination_proof"
 
 definition relative_adps_at_indices ::
   "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
@@ -280,8 +299,212 @@ lemma relative_adp_graph_child_sets:
           ((set P \<union> set B) - set Q)) - (set P \<inter> set Q))"
   by (auto simp: relative_adp_graph_child_def Let_def)
 
+definition relative_adp_move_base_to_main_list ::
+  "('f, 'v) adp list \<Rightarrow> ('f, 'v) adp list \<Rightarrow>
+   ('f, 'v) relative_adp_problem_list" where
+  "relative_adp_move_base_to_main_list P B = (let
+      moved = filter (\<lambda>pair. annotated_rhs_subterms_list pair \<noteq> []) B
+    in (remdups (P @ moved),
+        filter (\<lambda>pair. annotated_rhs_subterms_list pair = []) B))"
+
+lemma annotated_rhs_subterms_list_empty_iff:
+  "annotated_rhs_subterms_list pair = [] \<longleftrightarrow>
+    annotated_rhs_subterms pair = {}"
+proof
+  assume "annotated_rhs_subterms_list pair = []"
+  with annotated_rhs_subterms_list_sound[of pair]
+  show "annotated_rhs_subterms pair = {}" by simp
+next
+  assume "annotated_rhs_subterms pair = {}"
+  with annotated_rhs_subterms_list_sound[of pair]
+  have "set (annotated_rhs_subterms_list pair) = {}" by simp
+  then show "annotated_rhs_subterms_list pair = []" by simp
+qed
+
+lemma relative_adp_move_base_to_main_list_sound:
+  assumes finite: "case relative_adp_move_base_to_main_list P B of
+      (P',B') \<Rightarrow> adp_problem_SN (set P', set B')"
+  shows "adp_problem_SN (set P, set B)"
+proof -
+  let ?A = "{pair \<in> set B. annotated_rhs_subterms pair \<noteq> {}}"
+  have selected: "?A \<subseteq> set B" by blast
+  have sets: "case relative_adp_move_base_to_main_list P B of
+      (P',B') \<Rightarrow> (set P',set B') =
+        (set P \<union> ?A, set B - ?A)"
+    unfolding relative_adp_move_base_to_main_list_def Let_def
+    by (auto simp: annotated_rhs_subterms_list_empty_iff)
+  have "adp_problem_SN (set P \<union> ?A, set B - ?A)"
+    using finite sets
+    by (cases "relative_adp_move_base_to_main_list P B") simp
+  then show ?thesis
+    by (rule relative_adp_move_base_to_main[OF selected])
+qed
+
+definition relative_adp_drp1_dpp_list where
+  "relative_adp_drp1_dpp_list P B =
+    (False, False,
+      map (map_funs_rule UnLab) (relative_adp_dp_pairs_list P),
+      [], [], [],
+      map (map_funs_rule UnLab) (relative_adp_flat_rules_list (P @ B)))"
+
+lemma inj_map_funs_term_NF_terms:
+  assumes inj: "inj fg" and nf: "t \<in> NF_terms Q"
+  shows "map_funs_term fg t \<in> NF_terms (map_funs_term fg ` Q)"
+proof -
+  let ?m = "map_funs_term fg"
+  let ?g = "the_inv fg"
+  have inverse: "?g \<circ> fg = id"
+    by (rule ext, insert the_inv_f_f[OF inj], auto)
+  have "(?m t, s) \<notin> rstep (Id_on (?m ` Q))" for s
+  proof
+    assume "(?m t, s) \<in> rstep (Id_on (?m ` Q))"
+    from rstep_imp_map_rstep[OF this, of ?g,
+        unfolded map_funs_term_comp inverse map_funs_term_ident]
+    have "t \<notin> NF (rstep (map_funs_trs ?g (Id_on (?m ` Q))))"
+      by auto
+    moreover have "map_funs_trs ?g (Id_on (?m ` Q)) = Id_on Q"
+      unfolding map_funs_trs.simps Id_on_def
+      using the_inv_f_f[OF inj]
+      by (force simp: inverse map_funs_term_comp)
+    ultimately show False using nf by simp
+  qed
+  then show ?thesis by auto
+qed
+
+lemma inj_map_funs_term_NF_subst:
+  assumes inj: "inj fg" and nfs: "NF_subst flag (l,r) sigma Q"
+  shows "NF_subst flag (map_funs_term fg l, map_funs_term fg r)
+    (map_funs_subst fg sigma) (map_funs_term fg ` Q)"
+proof
+  fix x
+  assume flag and vars:
+    "x \<in> vars_term (map_funs_term fg l) \<or>
+      x \<in> vars_term (map_funs_term fg r)"
+  from vars have "x \<in> vars_rule (l,r)"
+    unfolding vars_rule_def by auto
+  with nfs `flag` have "sigma x \<in> NF_terms Q"
+    unfolding NF_subst_def by auto
+  from inj_map_funs_term_NF_terms[OF inj this]
+  show "map_funs_subst fg sigma x \<in> NF_terms (map_funs_term fg ` Q)"
+    by simp
+qed
+
+lemma inj_map_funs_term_qrstep:
+  assumes inj: "inj fg" and step: "(s,t) \<in> qrstep nfs Q R"
+  shows "(map_funs_term fg s, map_funs_term fg t) \<in>
+    qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg R)"
+proof -
+  let ?m = "map_funs_term fg"
+  from step obtain C l r sigma where lr: "(l,r) \<in> R"
+    and s: "s = C \<langle> l \<cdot> sigma \<rangle>"
+    and t: "t = C \<langle> r \<cdot> sigma \<rangle>"
+    and nf: "\<forall>u \<lhd> l \<cdot> sigma. u \<in> NF_terms Q"
+    and subst: "NF_subst nfs (l,r) sigma Q"
+    by auto
+  have mapped_lr: "(?m l, ?m r) \<in> map_funs_trs fg R"
+    using lr unfolding map_funs_trs.simps by force
+  have mapped_nf:
+    "\<forall>u \<lhd> ?m l \<cdot> map_funs_subst fg sigma.
+      u \<in> NF_terms (?m ` Q)"
+    unfolding map_funs_subst_distrib[symmetric]
+      NF_terms_args_conv[symmetric]
+  proof
+    fix u
+    assume u: "u \<in> set (args (?m (l \<cdot> sigma)))"
+    then obtain f ls where ls: "l \<cdot> sigma = Fun f ls"
+      by (cases "l \<cdot> sigma", auto)
+    from u[unfolded ls] obtain li where li: "li \<in> set ls"
+      and u_eq: "u = ?m li" by auto
+    from li ls have "li \<in> set (args (l \<cdot> sigma))" by auto
+    with nf[unfolded NF_terms_args_conv[symmetric]]
+    have "li \<in> NF_terms Q" by auto
+    from inj_map_funs_term_NF_terms[OF inj this]
+    show "u \<in> NF_terms (?m ` Q)" unfolding u_eq .
+  qed
+  have mapped_subst:
+    "NF_subst nfs (?m l, ?m r) (map_funs_subst fg sigma) (?m ` Q)"
+    using inj_map_funs_term_NF_subst[OF inj subst] .
+  have "((map_funs_ctxt fg C)\<langle>?m l \<cdot> map_funs_subst fg sigma\<rangle>,
+      (map_funs_ctxt fg C)\<langle>?m r \<cdot> map_funs_subst fg sigma\<rangle>)
+      \<in> qrstep nfs (?m ` Q) (map_funs_trs fg R)"
+  proof (rule qrstepI)
+    show "\<forall>u \<lhd> ?m l \<cdot> map_funs_subst fg sigma.
+        u \<in> NF_terms (?m ` Q)" by (rule mapped_nf)
+    show "(?m l, ?m r) \<in> map_funs_trs fg R" by (rule mapped_lr)
+    show "(map_funs_ctxt fg C)\<langle>?m l \<cdot> map_funs_subst fg sigma\<rangle> =
+        (map_funs_ctxt fg C)\<langle>?m l \<cdot> map_funs_subst fg sigma\<rangle>" by simp
+    show "(map_funs_ctxt fg C)\<langle>?m r \<cdot> map_funs_subst fg sigma\<rangle> =
+        (map_funs_ctxt fg C)\<langle>?m r \<cdot> map_funs_subst fg sigma\<rangle>" by simp
+    show "NF_subst nfs (?m l, ?m r) (map_funs_subst fg sigma) (?m ` Q)"
+      by (rule mapped_subst)
+  qed
+  then show ?thesis
+    unfolding s t map_funs_term_ctxt_distrib map_funs_subst_distrib .
+qed
+
+lemma inj_map_funs_term_qrsteps:
+  assumes inj: "inj fg" and steps: "(s,t) \<in> (qrstep nfs Q R)\<^sup>*"
+  shows "(map_funs_term fg s, map_funs_term fg t) \<in>
+    (qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg R))\<^sup>*"
+  using steps
+proof (induction)
+  case base
+  then show ?case by simp
+next
+  case (step y z)
+  have "(map_funs_term fg y, map_funs_term fg z) \<in>
+      qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg R)"
+    by (rule inj_map_funs_term_qrstep[OF inj step.hyps(2)])
+  with step.IH show ?case by auto
+qed
+
+lemma inj_map_funs_term_finite_dpp:
+  assumes inj: "inj fg"
+    and fin: "finite_dpp (nfs,False,map_funs_trs fg P, {},
+      map_funs_term fg ` Q, {}, map_funs_trs fg Rw)"
+  shows "finite_dpp (nfs,False,P,{},Q,{},Rw)"
+  unfolding finite_dpp_def
+proof (intro notI, elim exE)
+  fix s t sigma
+  let ?dpp = "(nfs, False, P, {}, Q, {}, Rw)"
+  let ?mdpp = "(nfs, False, map_funs_trs fg P, {},
+    map_funs_term fg ` Q, {}, map_funs_trs fg Rw)"
+  let ?m = "map_funs_term fg"
+  let ?ms = "map_funs_subst fg"
+  assume chain: "min_ichain ?dpp s t sigma"
+  then have ichain: "ichain ?dpp s t sigma" by auto
+  from ichain[unfolded ichain.simps] have
+      pairs: "\<And>i. (s i,t i) \<in> P"
+    and nf: "\<And>i. s i \<cdot> sigma i \<in> NF_terms Q"
+    and nfs: "\<And>i. NF_subst nfs (s i,t i) (sigma i) Q"
+    and steps: "\<And>i. (t i \<cdot> sigma i,
+      s (Suc i) \<cdot> sigma (Suc i)) \<in> (qrstep nfs Q Rw)\<^sup>*"
+    by auto
+  let ?s = "\<lambda>i. ?m (s i)"
+  let ?t = "\<lambda>i. ?m (t i)"
+  let ?sigma = "\<lambda>i. ?ms (sigma i)"
+  have mapped_pairs: "(?s i,?t i) \<in> map_funs_trs fg P" for i
+    using pairs[of i] unfolding map_funs_trs.simps by force
+  have mapped: "ichain ?mdpp ?s ?t ?sigma"
+    unfolding ichain.simps Un_empty_right Un_empty_left
+  proof (intro conjI allI disjI1)
+    fix i
+    show "(?s i,?t i) \<in> map_funs_trs fg P"
+      by (rule mapped_pairs)
+    show "?s i \<cdot> ?sigma i \<in> NF_terms (map_funs_term fg ` Q)"
+      using inj_map_funs_term_NF_terms[OF inj nf[of i]] by simp
+    show "NF_subst nfs (?s i,?t i) (?sigma i) (map_funs_term fg ` Q)"
+      using inj_map_funs_term_NF_subst[OF inj nfs] .
+    show "(?t i \<cdot> ?sigma i, ?s (Suc i) \<cdot> ?sigma (Suc i))
+        \<in> (qrstep nfs (map_funs_term fg ` Q) (map_funs_trs fg Rw))\<^sup>*"
+      using inj_map_funs_term_qrsteps[OF inj steps[of i]] by simp
+  qed (insert mapped_pairs, auto)
+  then have "min_ichain ?mdpp ?s ?t ?sigma" by simp
+  with fin show False unfolding finite_dpp_def by blast
+qed
+
 fun check_relative_adp_termination_proof ::
-  "(('f::{compare_order,showl}) adp_symbol, string) rule list \<Rightarrow>
+  "(('f::{compare_order,showl,countable}) adp_symbol, string) rule list \<Rightarrow>
    ('f adp_symbol, string) rule list \<Rightarrow>
    'f relative_adp_termination_proof \<Rightarrow> showsl check" where
   "check_relative_adp_termination_proof P B Relative_ADP_Empty =
@@ -313,9 +536,26 @@ fun check_relative_adp_termination_proof ::
         (fst child) (snd child) proof)
       (zip candidates proofs)
   })"
+| "check_relative_adp_termination_proof P B
+      (Relative_ADP_Derelatification proof) = (let
+    transformed = relative_adp_move_base_to_main_list P B;
+    P' = fst transformed;
+    B' = snd transformed;
+    dpp = relative_adp_drp1_dpp_list P' B'
+  in do {
+    check (relative_adp_base_flat_list B')
+      (showsl_lit (STR ''DRP1 requires an annotation-free base''));
+    check_all (\<lambda>pair. is_Fun (fst pair)) (P' @ B')
+      <+? (\<lambda>pair. showsl_lit
+        (STR ''DRP1 requires function-rooted left-hand sides''));
+    check_dp_termination_proof tp_rbt_impl dpp_rbt_impl False
+      (showsl_lit (STR ''relative ADP DRP1''))
+      (mk_dpp dpp_rbt_impl dpp) proof
+  })"
 
 theorem check_relative_adp_termination_proof_sound:
-  fixes certificate :: "('f::{compare_order,showl}) relative_adp_termination_proof"
+  fixes certificate ::
+    "('f::{compare_order,showl,countable}) relative_adp_termination_proof"
   assumes checked:
     "isOK (check_relative_adp_termination_proof P B certificate)"
   shows "adp_problem_SN (set P, set B)"
@@ -395,6 +635,73 @@ next
   qed
   show ?case
     by (rule relative_adp_estimated_graph_processor[OF lhs_fun children])
+next
+  fix cert P B
+  assume checked:
+    "isOK (check_relative_adp_termination_proof P B
+      (Relative_ADP_Derelatification cert))"
+  let ?transformed = "relative_adp_move_base_to_main_list P B"
+  let ?P' = "fst ?transformed"
+  let ?B' = "snd ?transformed"
+  let ?dpp = "relative_adp_drp1_dpp_list ?P' ?B'"
+  from checked have flat_list:
+      "relative_adp_base_flat_list ?B'"
+    and lhs_list: "\<And>pair. pair \<in> set (?P' @ ?B') \<Longrightarrow>
+      is_Fun (fst pair)"
+    and nested: "isOK (check_dp_termination_proof
+      tp_rbt_impl dpp_rbt_impl False
+      (showsl_lit (STR ''relative ADP DRP1''))
+      (mk_dpp dpp_rbt_impl ?dpp) cert)"
+    by (auto simp: Let_def isOK_check_allm)
+  from check_dp_termination_proof[OF tp_rbt_impl dpp_rbt_impl nested]
+  have finite_labeled: "finite_dpp
+      (False, False,
+        map_funs_trs
+          (UnLab :: _ \<Rightarrow> (_, nat list) lab)
+          (set (relative_adp_dp_pairs_list ?P')),
+        {}, {}, {},
+        map_funs_trs
+          (UnLab :: _ \<Rightarrow> (_, nat list) lab)
+          (set (relative_adp_flat_rules_list (?P' @ ?B'))))"
+    unfolding dpp_spec.mk_sound[OF dpp_rbt_impl]
+      relative_adp_drp1_dpp_list_def map_funs_trs.simps
+    by (simp add: dpp_spec.mk_sound[OF dpp_rbt_impl])
+  have finite_plain: "finite_dpp
+      (False, False, set (relative_adp_dp_pairs_list ?P'),
+        {}, {}, {}, set (relative_adp_flat_rules_list (?P' @ ?B')))"
+  proof (rule inj_map_funs_term_finite_dpp[
+      where fg="UnLab :: _ \<Rightarrow> (_, nat list) lab" and Q="{}"])
+    show "inj (UnLab :: _ \<Rightarrow> (_, nat list) lab)"
+      by (rule injI, simp)
+    show "finite_dpp
+        (False, False,
+          map_funs_trs (UnLab :: _ \<Rightarrow> (_, nat list) lab)
+            (set (relative_adp_dp_pairs_list ?P')),
+          {}, map_funs_term (UnLab :: _ \<Rightarrow> (_, nat list) lab) ` {}, {},
+          map_funs_trs (UnLab :: _ \<Rightarrow> (_, nat list) lab)
+            (set (relative_adp_flat_rules_list (?P' @ ?B'))))"
+      using finite_labeled by simp
+  qed
+  have transformed_SN: "adp_problem_SN (set ?P', set ?B')"
+  proof (rule relative_adp_derelatification_one)
+    show "relative_adp_base_flat (set ?B')"
+      by (rule iffD1[OF relative_adp_base_flat_list_sound flat_list])
+    show "is_Fun (fst pair)" if "pair \<in> set ?P' \<union> set ?B'" for pair
+      using lhs_list[of pair] that by simp
+    show "finite_dpp
+        (False, False, relative_adp_dp_pairs (set ?P'), {}, {}, {},
+          relative_adp_flat_rules (set ?P' \<union> set ?B'))"
+      using finite_plain
+      unfolding relative_adp_dp_pairs_list_sound
+        relative_adp_flat_rules_list_sound
+      by simp
+  qed
+  show "adp_problem_SN (set P, set B)"
+  proof (rule relative_adp_move_base_to_main_list_sound)
+    show "case ?transformed of
+        (P', B') \<Rightarrow> adp_problem_SN (set P', set B')"
+      using transformed_SN by (cases ?transformed) simp
+  qed
 qed
 
 definition check_nonduplicating_rules ::
@@ -406,7 +713,7 @@ definition check_nonduplicating_rules ::
         showsl_lit (STR '' is duplicating''))"
 
 definition check_relative_adp_from_trs ::
-  "('f::{compare_order,showl}, string) rules \<Rightarrow>
+  "('f::{compare_order,showl,countable}, string) rules \<Rightarrow>
    ('f, string) rules \<Rightarrow>
    'f relative_adp_termination_proof \<Rightarrow> showsl check" where
   "check_relative_adp_from_trs R B certificate = do {
@@ -419,7 +726,7 @@ definition check_relative_adp_from_trs ::
 
 theorem check_relative_adp_from_trs_sound:
   fixes certificate ::
-    "('f::{compare_order,showl}) relative_adp_termination_proof"
+    "('f::{compare_order,showl,countable}) relative_adp_termination_proof"
   assumes checked:
     "isOK (check_relative_adp_from_trs R B certificate)"
   shows "SN_rel (rstep (set R)) (rstep (set B))"

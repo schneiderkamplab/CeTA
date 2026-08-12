@@ -4,6 +4,24 @@ theory Relative_ADP_Ceta
     Proof_Checker.Ceta_Verifier
 begin
 
+partial_function (sum_bot) relative_adp_drp1_symbol_parser ::
+  "(lsymbol adp_symbol, nat list) lab xmlt" where
+  [code]: "relative_adp_drp1_symbol_parser x = (
+    xml_change (xml_text (STR ''name''))
+      (xml_return \<circ> UnLab \<circ> Plain \<circ> UnLab)
+    XMLor xml_change
+      (xml_singleton (STR ''sharp'') symbol_parser id)
+      (xml_return \<circ> UnLab \<circ> adp_symbol.Sharp)
+    XMLor xml_pair (STR ''labeledSymbol'')
+      relative_adp_drp1_symbol_parser
+      (xml_many (STR ''numberLabel'') (xml_nat (STR ''number'')) Inl
+       XMLor xml_many (STR ''symbolLabel'')
+         relative_adp_drp1_symbol_parser Inr)
+      (\<lambda>f l. case l of
+        Inl ls \<Rightarrow> Lab f ls
+      | Inr ls \<Rightarrow> FunLab f ls)
+  ) x"
+
 partial_function (sum_bot) xml2relative_adp_termination_proof ::
   "lsymbol relative_adp_termination_proof xmlt" where
   [code]: "xml2relative_adp_termination_proof x =
@@ -26,6 +44,10 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
       } XMLor XMLdo (STR ''relativeAdpDependencyGraph'') {
         proofs \<leftarrow>* xml2relative_adp_termination_proof;
         xml_return (Relative_ADP_Dependency_Graph proofs)
+      } XMLor XMLdo (STR ''relativeAdpDerelatification'') {
+        ordinary_proof \<leftarrow> xml2dp_termination_proof
+          relative_adp_drp1_symbol_parser Mapping.empty Mapping.empty;
+        xml_return (Relative_ADP_Derelatification ordinary_proof)
       }) id x"
 
 definition relative_adp_certification_problem_parser ::
