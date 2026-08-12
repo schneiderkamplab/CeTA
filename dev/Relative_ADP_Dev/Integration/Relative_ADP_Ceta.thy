@@ -57,6 +57,19 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
         continuation \<leftarrow> xml2relative_adp_termination_proof;
         xml_return (Relative_ADP_Erasure_Redpair redp
           main_indices base_indices continuation)
+      } XMLor XMLdo (STR ''relativeAdpComReductionPair'') {
+        redp \<leftarrow> redtriple relative_adp_com_symbol_parser id False;
+        main_indices \<leftarrow> XMLdo (STR ''mainIndices'') {
+          indices \<leftarrow>* xml_nat (STR ''index'');
+          xml_return indices
+        };
+        base_indices \<leftarrow> XMLdo (STR ''baseIndices'') {
+          indices \<leftarrow>* xml_nat (STR ''index'');
+          xml_return indices
+        };
+        continuation \<leftarrow> xml2relative_adp_termination_proof;
+        xml_return (Relative_ADP_Com_Redpair redp
+          main_indices base_indices continuation)
       } XMLor XMLdo (STR ''relativeAdpDependencyGraph'') {
         proofs \<leftarrow>* xml2relative_adp_termination_proof;
         xml_return (Relative_ADP_Dependency_Graph proofs)

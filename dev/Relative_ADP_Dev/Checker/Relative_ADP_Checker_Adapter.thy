@@ -10,6 +10,8 @@ begin
 
 derive compare_order adp_symbol
 derive countable adp_symbol
+derive compare_order adp_com_symbol
+derive countable adp_com_symbol
 
 instantiation adp_symbol :: (showl) showl
 begin
@@ -18,6 +20,17 @@ fun showsl_adp_symbol where
 | "showsl_adp_symbol (adp_symbol.Sharp f) =
     (showsl f \<circ> showsl_lit (STR ''#''))"
 definition "showsl_list (xs :: 'a adp_symbol list) =
+  default_showsl_list showsl xs"
+instance by standard
+end
+
+instantiation adp_com_symbol :: (showl) showl
+begin
+fun showsl_adp_com_symbol where
+  "showsl_adp_com_symbol (ADP_Symbol f) = showsl f"
+| "showsl_adp_com_symbol Com0 = showsl_lit (STR ''Com0'')"
+| "showsl_adp_com_symbol Com2 = showsl_lit (STR ''Com2'')"
+definition "showsl_list (xs :: 'a adp_com_symbol list) =
   default_showsl_list showsl xs"
 instance by standard
 end
@@ -263,10 +276,179 @@ proof -
           OF order all_weak selected_strict residual'])
 qed
 
+definition relative_adp_com_constraints_list where
+  "relative_adp_com_constraints_list A = map
+    (\<lambda>pair. (relative_adp_com_lhs pair,
+      relative_adp_annotation_summary pair)) A"
+
+definition relative_adp_com_flat_rules_list where
+  "relative_adp_com_flat_rules_list A = map relative_adp_com_flat_rule A"
+
+definition relative_adp_com_law_rules ::
+  "('f adp_com_symbol, string) rules" where
+  "relative_adp_com_law_rules = (let
+      x = Var (STR ''__com_x'');
+      y = Var (STR ''__com_y'');
+      z = Var (STR ''__com_z'');
+      c = (\<lambda>a b. Fun Com2 [a,b])
+    in [
+      (c x y, c y x),
+      (c y x, c x y),
+      (c x (c y z), c (c x y) z),
+      (c (c x y) z, c x (c y z)),
+      (c x y, x),
+      (c x y, y),
+      (x, Fun Com0 [])
+    ])"
+
+definition check_relative_adp_com_redpair ::
+  "(('f::{compare_order,showl}) adp_com_symbol) redtriple_impl \<Rightarrow>
+   ('f, string) adp list \<Rightarrow> ('f, string) adp list \<Rightarrow>
+   ('f, string) adp list \<Rightarrow> showsl check" where
+  "check_relative_adp_com_redpair redp P B selected = (let
+      rp = get_rel_impl redp;
+      strict = relative_adp_com_constraints_list selected;
+      weak = relative_adp_com_flat_rules_list (P @ B) @
+        relative_adp_com_constraints_list (P @ B)
+    in do {
+      check (set selected \<subseteq> set P \<union> set B)
+        (showsl_lit (STR ''selected relative ADPs are not in the problem''));
+      check (selected \<noteq> [])
+        (showsl_lit (STR ''relative ADP Com reduction pair removes no ADP''));
+      check_all (\<lambda>pair. is_Fun (fst pair)) (P @ B)
+        <+? (\<lambda>pair. showsl_lit
+          (STR ''relative ADP Com requires function-rooted left-hand sides''));
+      rel_impl_mono_redpair rp strict weak;
+      rel_impl_s rp strict;
+      rel_impl_ns rp weak;
+      rel_impl_ns rp relative_adp_com_law_rules
+    })"
+
+lemma relative_adp_com_constraints_list_set:
+  "set (relative_adp_com_constraints_list A) =
+    (\<lambda>pair. (relative_adp_com_lhs pair,
+      relative_adp_annotation_summary pair)) ` set A"
+  unfolding relative_adp_com_constraints_list_def by simp
+
+lemma relative_adp_com_flat_rules_list_set:
+  "set (relative_adp_com_flat_rules_list A) =
+    relative_adp_com_flat_rule ` set A"
+  unfolding relative_adp_com_flat_rules_list_def by simp
+
+lemma relative_adp_com_laws_sound:
+  assumes laws: "set relative_adp_com_law_rules \<subseteq> NS"
+    and stable: "subst.closed NS"
+  shows "adp_com_invariant NS" "adp_com_discarding NS"
+proof -
+  let ?x = "Var (STR ''__com_x'')"
+  let ?y = "Var (STR ''__com_y'')"
+  let ?z = "Var (STR ''__com_z'')"
+  let ?c = "\<lambda>a b. Fun Com2 [a,b]"
+  have schemas:
+      "(?c ?x ?y, ?c ?y ?x) \<in> NS"
+      "(?c ?y ?x, ?c ?x ?y) \<in> NS"
+      "(?c ?x (?c ?y ?z), ?c (?c ?x ?y) ?z) \<in> NS"
+      "(?c (?c ?x ?y) ?z, ?c ?x (?c ?y ?z)) \<in> NS"
+      "(?c ?x ?y, ?x) \<in> NS" "(?c ?x ?y, ?y) \<in> NS"
+      "(?x, Fun Com0 []) \<in> NS"
+    using laws unfolding relative_adp_com_law_rules_def Let_def by auto
+  show "adp_com_invariant NS"
+    unfolding adp_com_invariant_def
+  proof (intro allI conjI)
+    fix x y z
+    let ?sigma = "Var(STR ''__com_x'' := x,
+      STR ''__com_y'' := y, STR ''__com_z'' := z)"
+    show "(Fun Com2 [x,y], Fun Com2 [y,x]) \<in> NS"
+      using subst.closedD[OF stable schemas(1), of ?sigma] by simp
+    show "(Fun Com2 [y,x], Fun Com2 [x,y]) \<in> NS"
+      using subst.closedD[OF stable schemas(2), of ?sigma] by simp
+    show "(Fun Com2 [x, Fun Com2 [y,z]],
+        Fun Com2 [Fun Com2 [x,y],z]) \<in> NS"
+      using subst.closedD[OF stable schemas(3), of ?sigma] by simp
+    show "(Fun Com2 [Fun Com2 [x,y],z],
+        Fun Com2 [x, Fun Com2 [y,z]]) \<in> NS"
+      using subst.closedD[OF stable schemas(4), of ?sigma] by simp
+  qed
+  show "adp_com_discarding NS"
+    unfolding adp_com_discarding_def
+  proof (intro allI conjI)
+    fix x y
+    let ?sigma = "Var(STR ''__com_x'' := x, STR ''__com_y'' := y)"
+    show "(Fun Com2 [x,y],x) \<in> NS"
+      using subst.closedD[OF stable schemas(5), of ?sigma] by simp
+    show "(Fun Com2 [x,y],y) \<in> NS"
+      using subst.closedD[OF stable schemas(6), of ?sigma] by simp
+    show "(x,Fun Com0 []) \<in> NS"
+      using subst.closedD[OF stable schemas(7), of ?sigma] by simp
+  qed
+qed
+
+theorem check_relative_adp_com_redpair_sound:
+  fixes redp :: "(('f::{compare_order,showl}) adp_com_symbol) redtriple_impl"
+  assumes checked: "isOK (check_relative_adp_com_redpair redp P B selected)"
+    and residual: "adp_problem_SN
+      (case relative_adp_erasure_residual P B selected of
+        (P',B') \<Rightarrow> (set P',set B'))"
+  shows "adp_problem_SN (set P,set B)"
+proof -
+  let ?rp = "get_rel_impl redp"
+  let ?strict = "relative_adp_com_constraints_list selected"
+  let ?weak = "relative_adp_com_flat_rules_list (P @ B) @
+    relative_adp_com_constraints_list (P @ B)"
+  from checked[unfolded check_relative_adp_com_redpair_def,
+      simplified Let_def]
+  have selected: "set selected \<subseteq> set P \<union> set B"
+    and lhs_fun: "\<And>pair. pair \<in> set P \<union> set B \<Longrightarrow>
+      is_Fun (fst pair)"
+    and valid: "isOK (rel_impl_mono_redpair ?rp ?strict ?weak)"
+    and strict: "isOK (rel_impl_s ?rp ?strict)"
+    and weak: "isOK (rel_impl_ns ?rp ?weak)"
+    and laws: "isOK (rel_impl_ns ?rp relative_adp_com_law_rules)"
+    by (auto simp: isOK_check_allm)
+  from rel_impl_mono_redpair[OF get_rel_impl valid strict weak,
+      of undefined undefined]
+  obtain S NS NST where order: "mono_redtriple_order S NS NST"
+    and strict_set: "set ?strict \<subseteq> S"
+    and weak_set: "set ?weak \<subseteq> NS" by auto
+  from rel_impl_ns[OF get_rel_impl valid laws]
+  have law_set: "set relative_adp_com_law_rules \<subseteq> NS" by auto
+  interpret mono_redtriple_order S NS NST by (rule order)
+  have invariant: "adp_com_invariant NS"
+    and discard: "adp_com_discarding NS"
+    by (rule relative_adp_com_laws_sound[OF law_set subst_NS])+
+  have flat_weak: "relative_adp_com_flat_rule pair \<in> NS"
+    if "pair \<in> set P \<union> set B" for pair
+    using weak_set that unfolding relative_adp_com_flat_rules_list_set
+      relative_adp_com_constraints_list_set by auto
+  have com_weak: "(relative_adp_com_lhs pair,
+      relative_adp_annotation_summary pair) \<in> NS"
+    if "pair \<in> set P \<union> set B" for pair
+    using weak_set that unfolding relative_adp_com_flat_rules_list_set
+      relative_adp_com_constraints_list_set by auto
+  have selected_strict: "(relative_adp_com_lhs pair,
+      relative_adp_annotation_summary pair) \<in> S"
+    if "pair \<in> set selected" for pair
+    using strict_set that unfolding relative_adp_com_constraints_list_set by auto
+  have residual': "adp_problem_SN
+      (set P - set selected,
+       (set B - set selected) \<union> erase_annotations_adp ` set selected)"
+    using residual relative_adp_erasure_residual_sets[OF selected]
+    by (cases "relative_adp_erasure_residual P B selected") simp
+  show ?thesis
+    by (rule relative_adp_com_reduction_pair_finite[
+        OF order invariant discard lhs_fun flat_weak com_weak
+          selected_strict selected residual'])
+qed
+
 datatype 'f relative_adp_termination_proof =
     Relative_ADP_Empty
   | Relative_ADP_Erasure_Redpair
       "'f redtriple_impl"
+      "nat list"
+      "nat list"
+      "'f relative_adp_termination_proof"
+  | Relative_ADP_Com_Redpair
+      "('f adp_com_symbol) redtriple_impl"
       "nat list"
       "nat list"
       "'f relative_adp_termination_proof"
@@ -522,6 +704,17 @@ fun check_relative_adp_termination_proof ::
     check_relative_adp_termination_proof (fst residual) (snd residual) proof
   }"
 | "check_relative_adp_termination_proof P B
+      (Relative_ADP_Com_Redpair redp main_indices base_indices proof) = do {
+    check_all (\<lambda>i. i < length P) main_indices
+      <+? (\<lambda>i. showsl_lit (STR ''relative ADP main index out of range''));
+    check_all (\<lambda>i. i < length B) base_indices
+      <+? (\<lambda>i. showsl_lit (STR ''relative ADP base index out of range''));
+    let selected = relative_adps_at_indices P B main_indices base_indices;
+    check_relative_adp_com_redpair redp P B selected;
+    let residual = relative_adp_erasure_residual P B selected;
+    check_relative_adp_termination_proof (fst residual) (snd residual) proof
+  }"
+| "check_relative_adp_termination_proof P B
       (Relative_ADP_Dependency_Graph proofs) = (let
     candidates = relative_adp_estimated_graph_candidates P B
   in do {
@@ -586,6 +779,27 @@ next
   show ?case
     by (rule check_relative_adp_erasure_redpair_sound[
           OF step residual_SN])
+next
+  case (Relative_ADP_Com_Redpair redp main_indices base_indices
+      continuation_certificate)
+  let ?selected =
+    "relative_adps_at_indices P B main_indices base_indices"
+  from Relative_ADP_Com_Redpair.prems have step:
+      "isOK (check_relative_adp_com_redpair redp P B ?selected)"
+    and continuation:
+      "isOK (check_relative_adp_termination_proof
+        (fst (relative_adp_erasure_residual P B ?selected))
+        (snd (relative_adp_erasure_residual P B ?selected))
+        continuation_certificate)"
+    by simp_all
+  have residual_SN:
+    "adp_problem_SN
+      (case relative_adp_erasure_residual P B ?selected of
+        (P',B') \<Rightarrow> (set P', set B'))"
+    using Relative_ADP_Com_Redpair.IH[OF continuation]
+    by (cases "relative_adp_erasure_residual P B ?selected") simp
+  show ?case
+    by (rule check_relative_adp_com_redpair_sound[OF step residual_SN])
 next
   case (Relative_ADP_Dependency_Graph proofs)
   let ?candidates = "relative_adp_estimated_graph_candidates P B"
