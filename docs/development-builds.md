@@ -392,6 +392,14 @@ outputs are `generated/Haskell/Ceta_Relative.hs` and the native checker.
 `make -j 16 ceta-relative-adp` compiled the 16 MiB `ceta` executable in 3
 minutes 20 seconds. `make test-relative-adp` passed.
 
+After integration into the main CeTA-CSR worktree, the Relative-ADP executable
+was made command-line compatible with the ordinary CeTA executable.  Besides
+whole certificates, it accepts `--inputf`, `--propertyf`, `--property`,
+`--answerf`, `--answer`, `--allow-assumptions`, and `--version`; unsupported
+Relative-ADP syntax still falls back to the established unified checker.
+`make test-relative-adp` and Ferrum's complete 690-test Rust library suite pass
+with this executable, including every CSR fragment/checker integration test.
+
 The real Ferrum certificate
 `ferrum-relative/target/relative-adp-com-certified-smoke/rt2-2-com.cpf.xml`
 was accepted with exit status 0 and output `CERTIFIED`. A well-formed mutation
