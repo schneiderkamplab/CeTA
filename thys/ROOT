@@ -328,16 +328,6 @@ session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
     CSR_Innermost_Unhiding_Proofs
     CSR_Muterm_Usable_Rules
 
-session CSR_Muterm_Typed_Ext in "CSR_Checker/Muterm_Typed_Ext" = CSR_Muterm_Ext +
-  options [document = false]
-  theories
-    CSR_Muterm_Typed_Checker
-
-session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Muterm_Typed_Ext +
-  options [document = false]
-  theories
-    CSR_GM_Transformation
-
 session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
   options [document = false, timeout = 600]
   sessions
@@ -347,12 +337,14 @@ session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
     Outermost_Signature_Extension
     Outermost_RZ_Checker
 
-session Proof_Checker in Proof_Checker = CSR_GM_Ext +
+session Proof_Checker in Proof_Checker = CSR_Muterm_Ext +
   options [document = false]
   sessions
     LTS
     Outermost_RZ_Ext
   theories
+    CSR_Muterm_Typed_Checker
+    CSR_GM_Transformation
     All_of_Proof_Checker
 
 (* Sessions for building IsaFoR *)

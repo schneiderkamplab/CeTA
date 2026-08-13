@@ -838,11 +838,9 @@ where
     check (P = []) (i \<circ> showsl_lit (STR '': MU-TERM dependency pairs are not empty''))"
 | "check_muterm_typed_dp_proof I J \<mu> i R S P
       (Muterm_Typed_Local_Usable U prf) =
-    debug i (STR ''MU-TERM local usable rules'') (do {
-      check (muterm_qcs_ur_closed_check R S U \<mu> P)
-        (i \<circ> showsl_lit (STR '': MU-TERM local usable-rule closure check failed''));
+    debug i (STR ''MU-TERM ordinary reduction-pair continuation'') (do {
       check_dp_termination_proof I J False (add_index i 1)
-        (dpp_ops.mk J False False P [] [] [] U) prf
+        (dpp_ops.mk J False False P [] [] [] (R @ S)) prf
     })"
 | "check_muterm_typed_dp_proof I J \<mu> i R S P
       (Muterm_Typed_CSR_Proof prf) =

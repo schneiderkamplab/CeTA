@@ -7,7 +7,7 @@ theory CSR_GM_Transformation
     CSR_Checker_Extensions.CSR_Conservative_Checker
     CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker
-    CSR_Muterm_Typed_Ext.CSR_Muterm_Typed_Checker
+    CSR_Muterm_Typed_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08
 begin
 
