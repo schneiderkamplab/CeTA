@@ -130,7 +130,7 @@ where
   "is_muterm_unhidable shp \<mu> A U u \<longleftrightarrow>
     (\<forall>s t. muterm_frozen_component_on \<mu> u s \<longrightarrow>
       (s = t \<or> mu_supt \<mu> s t) \<longrightarrow> t \<in> mu_Tinf \<mu> A \<longrightarrow>
-      (s,sharp_term shp t) \<in> rstep U)"
+      (s,sharp_term shp t) \<in> rrstep U)"
 
 definition has_muterm_unhiding_property ::
   "('f::{showl,compare_order} \<Rightarrow> 'f) \<Rightarrow> 'f mu \<Rightarrow>
@@ -207,7 +207,7 @@ proof -
       using us st mu_supt_imp_supt by (meson supt_trans)
     from T ut have "SN_on A {t}" unfolding Tinf_def by auto
     moreover from tT have "\<not> SN_on A {t}" unfolding mu_Tinf_def by auto
-    ultimately show "(s,sharp_term shp t) \<in> rstep U" by contradiction
+    ultimately show "(s,sharp_term shp t) \<in> rrstep U" by contradiction
   qed
 qed
 
@@ -448,7 +448,8 @@ proof (intro allI impI)
       show ?thesis by (rule muterm_frozen_component_on.nested[OF vh hs])
     qed
   qed
-  from unhidable frozen_v st tT show "(s,sharp_term shp t) \<in> rstep U"
+  from unhidable frozen_v st tT
+  show "(s,sharp_term shp t) \<in> rrstep U"
     unfolding is_muterm_unhidable_def by blast
 qed
 
@@ -775,7 +776,7 @@ lemma muterm_new_frozen_fun_unhide_finite:
     and frozen: "muterm_frozen_root_on \<mu> r h" and hfun: "is_Fun h"
     and active: "h \<cdot> \<sigma> = t \<or> mu_supt \<mu> (h \<cdot> \<sigma>) t"
     and tT: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
-  shows "(h \<cdot> \<sigma>,sharp_term shp t) \<in> rstep U"
+  shows "(h \<cdot> \<sigma>,sharp_term shp t) \<in> rrstep U"
 proof -
   from mu_Tinf_defined_root[OF wf tT]
   obtain f ts where tfun: "t = Fun f ts" and tdef: "defined R (f,length ts)" .
@@ -816,13 +817,10 @@ proof -
       unfolding muterm_active_defined_call_on_def using ph rootD by blast
     have rule: "(h,sharp_term shp (h |_ p)) \<in> U"
       by (rule muterm_unhiding_coverage_rule[OF cover lr frozen call])
-    show ?thesis
-    proof (rule rstepI[OF rule, where C=\<box> and \<sigma>=\<sigma>])
-      show "h \<cdot> \<sigma> = \<box>\<langle>h \<cdot> \<sigma>\<rangle>" by simp
-      have subfun: "is_Fun (h |_ p)" unfolding base by simp
-      show "sharp_term shp t = \<box>\<langle>sharp_term shp (h |_ p) \<cdot> \<sigma>\<rangle>"
-        unfolding inst sharp_term_subst_distr_2[OF subfun] by simp
-    qed
+    have subfun: "is_Fun (h |_ p)" unfolding base by simp
+    have rhs: "sharp_term shp t = sharp_term shp (h |_ p) \<cdot> \<sigma>"
+      unfolding inst by (simp add: sharp_term_subst_distr_2[OF subfun])
+    show ?thesis unfolding rrstep_def' using rule rhs by blast
   next
     assume subst: "\<exists>x q1 q2. q1 \<in> mu_poss \<mu> h \<and> h |_ q1 = Var x \<and>
       x \<in> vars_term h \<and> p = q1 @ q2 \<and>
@@ -850,7 +848,7 @@ lemma muterm_new_frozen_fun_unhide:
     and frozen: "muterm_frozen_root_on \<mu> r h" and hfun: "is_Fun h"
     and active: "h \<cdot> \<sigma> = t \<or> mu_supt \<mu> (h \<cdot> \<sigma>) t"
     and tT: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
-  shows "(h \<cdot> \<sigma>,sharp_term shp t) \<in> rstep U"
+  shows "(h \<cdot> \<sigma>,sharp_term shp t) \<in> rrstep U"
   by (rule muterm_new_frozen_fun_unhide_finite[
       OF wf defs cover lr lhs _ frozen hfun active tT],
       rule mu_Tinf_SN_on_active_subst_mu_subterm[OF lhs source])
@@ -876,7 +874,7 @@ proof -
     assume component: "muterm_frozen_component_on \<mu> v s"
       and active: "s = t \<or> mu_supt \<mu> s t"
       and tT: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
-    show "(s,sharp_term shp t) \<in> rstep U"
+    show "(s,sharp_term shp t) \<in> rrstep U"
     apply (rule muterm_rhs_component_cases[
       OF cover lr lhs component[unfolded v]])
     proof -
@@ -1053,7 +1051,7 @@ next
         and active: "s = t \<or> mu_supt \<mu> s t"
         and tT: "t \<in> mu_Tinf \<mu> (csstep \<mu> R)"
       from component[unfolded muterm_frozen_component_on_Fun]
-      show "(s,sharp_term shp t) \<in> rstep U"
+      show "(s,sharp_term shp t) \<in> rrstep U"
       proof
         assume active_comp: "\<exists>j<length ts. j \<in> \<mu> (f,length ts) \<and>
           muterm_frozen_component_on \<mu> (ts ! j) s"
@@ -1211,6 +1209,42 @@ proof -
   show ?thesis using pair sharp by auto
 qed
 
+definition muterm_collapsing_rrstep where
+  "muterm_collapsing_rrstep P s t \<longleftrightarrow>
+    (\<exists>l x \<sigma>. (l,Var x) \<in> P \<and>
+      s = l \<cdot> \<sigma> \<and> t = \<sigma> x)"
+
+lemma muterm_collapsing_rrstep_imp_rrstep:
+  assumes "muterm_collapsing_rrstep P s t"
+  shows "(s,t) \<in> rrstep P"
+proof -
+  from assms obtain l x \<sigma> where pair: "(l,Var x) \<in> P"
+    and s: "s = l \<cdot> \<sigma>" and t: "t = \<sigma> x"
+    unfolding muterm_collapsing_rrstep_def by blast
+  show ?thesis using pair s t by auto
+qed
+
+lemma muterm_collapsing_instance_typed:
+  assumes cover: "muterm_unhiding_coverage shp \<mu> D R P U"
+    and lr: "(l,r) \<in> R" and xr: "x \<in> mu_vars_term \<mu> r"
+    and xl: "x \<notin> mu_vars_term \<mu> l" and lhs: "is_Fun l"
+  shows "muterm_collapsing_rrstep P
+    (sharp_term shp (l \<cdot> \<sigma>)) (\<sigma> x)"
+proof -
+  from csr_rta08_collapsing_CSDP_onI[OF lr xr xl]
+  have pair: "(sharp_term shp l,Var x) \<in> P"
+    using muterm_unhiding_coverage_collapsing[OF cover] by blast
+  have sharp: "sharp_term shp (l \<cdot> \<sigma>) = sharp_term shp l \<cdot> \<sigma>"
+    using lhs by (cases l, auto)
+  show ?thesis unfolding muterm_collapsing_rrstep_def
+    using pair sharp by blast
+qed
+
+definition muterm_noncollapsing_rrstep where
+  "muterm_noncollapsing_rrstep P s t \<longleftrightarrow>
+    (\<exists>l r \<sigma>. (l,r) \<in> P \<and> \<not> is_Var r \<and>
+      s = l \<cdot> \<sigma> \<and> t = r \<cdot> \<sigma>)"
+
 lemma csrstep_muterm_unhiding_progress:
   assumes wf: "wf_trs R"
     and root: "(s,v) \<in> csrstep \<mu> R"
@@ -1222,7 +1256,10 @@ lemma csrstep_muterm_unhiding_progress:
   shows "\<exists>u. has_muterm_unhiding_property shp \<mu> (csstep \<mu> R) U u \<and>
     (v = u \<or> mu_supt \<mu> v u) \<and>
     (sharp_term shp s,sharp_term shp u) \<in>
-      (rstep (R \<union> U))\<^sup>* O rrstep P O (rstep (R \<union> U))\<^sup>*"
+      (rstep (R \<union> U))\<^sup>* O rrstep P O (rstep (R \<union> U))\<^sup>* \<and>
+    (muterm_noncollapsing_rrstep P (sharp_term shp s) (sharp_term shp u) \<or>
+      (\<exists>x. muterm_collapsing_rrstep P (sharp_term shp s) x \<and>
+        (x,sharp_term shp u) \<in> rrstep U))"
 proof -
   from root obtain l r \<sigma> where lr: "(l,r) \<in> R"
     and s: "s = l \<cdot> \<sigma>" and v: "v = r \<cdot> \<sigma>"
@@ -1261,7 +1298,10 @@ proof -
     unfolding has_muterm_unhiding_property_def using uT unhidable_u by blast
   from mu_fun_poss_subst_cases_aux_mu[OF p_mu]
   have connection: "(sharp_term shp s,sharp_term shp ?u) \<in>
-      (rstep (R \<union> U))\<^sup>* O rrstep P O (rstep (R \<union> U))\<^sup>*"
+    (rstep (R \<union> U))\<^sup>* O rrstep P O (rstep (R \<union> U))\<^sup>* \<and>
+    (muterm_noncollapsing_rrstep P (sharp_term shp s) (sharp_term shp ?u) \<or>
+      (\<exists>x. muterm_collapsing_rrstep P (sharp_term shp s) x \<and>
+        (x,sharp_term shp ?u) \<in> rrstep U))"
   proof
     assume orig: "p \<in> mu_fun_poss \<mu> r \<and>
       (r \<cdot> \<sigma>) |_ p = (r |_ p) \<cdot> \<sigma>"
@@ -1301,7 +1341,33 @@ proof -
       show ?thesis
         using base rrstep_mono[OF muterm_unhiding_coverage_mu[OF cover]] by blast
     qed
-    show ?thesis unfolding s sub_subst using dp by blast
+    have dp0: "(sharp_term shp l,sharp_term shp (r |_ p)) \<in> P"
+    proof -
+      have base: "(sharp_term shp l,sharp_term shp (r |_ p)) \<in>
+          mu_CSDP_on shp \<mu> D R"
+        unfolding mu_CSDP_on_def
+        by (intro CollectI exI, use lr p_r rp fD ns in auto)
+      show ?thesis
+        using base muterm_unhiding_coverage_mu[OF cover] by blast
+    qed
+    have noncoll: "muterm_noncollapsing_rrstep P
+        (sharp_term shp s) (sharp_term shp ?u)"
+      unfolding muterm_noncollapsing_rrstep_def s sub_subst
+      by (intro exI[of _ "sharp_term shp l"]
+          exI[of _ "sharp_term shp (r |_ p)"] exI[of _ \<sigma>],
+          use dp0 rp lhs in auto)
+    show ?thesis
+    proof (intro conjI)
+      show "(sharp_term shp s,sharp_term shp ?u) \<in>
+          (rstep (R \<union> U))\<^sup>* O rrstep P O
+          (rstep (R \<union> U))\<^sup>*"
+        using dp unfolding s sub_subst by auto
+      show "muterm_noncollapsing_rrstep P
+          (sharp_term shp s) (sharp_term shp ?u) \<or>
+        (\<exists>x. muterm_collapsing_rrstep P (sharp_term shp s) x \<and>
+          (x,sharp_term shp ?u) \<in> rrstep U)"
+        using noncoll by blast
+    qed
   next
     assume subst_case: "\<exists>x q1 q2. q1 \<in> mu_poss \<mu> r \<and>
       r |_ q1 = Var x \<and> x \<in> vars_term r \<and> p = q1 @ q2 \<and>
@@ -1341,16 +1407,25 @@ proof -
       have frozen_component:
           "muterm_frozen_component_on \<mu> (l \<cdot> \<sigma>) (\<sigma> x)"
         by (rule muterm_frozen_component_on.direct[OF frozen_inst])
-      have unhide: "(\<sigma> x,sharp_term shp ?u) \<in> rstep U"
+      have unhide: "(\<sigma> x,sharp_term shp ?u) \<in> rrstep U"
         using unhidable_s frozen_component active_xu uT unfolding s
           is_muterm_unhidable_def by blast
-      have pair: "(sharp_term shp (l \<cdot> \<sigma>),\<sigma> x) \<in> rrstep P"
-        by (rule muterm_collapsing_instance[OF cover lr xr_mu False lhs])
+      have pair: "muterm_collapsing_rrstep P
+          (sharp_term shp (l \<cdot> \<sigma>)) (\<sigma> x)"
+        by (rule muterm_collapsing_instance_typed[OF cover lr xr_mu False lhs])
       have Usub: "rstep U \<subseteq> rstep (R \<union> U)"
         by (rule rstep_mono, auto)
+      have unhide_r: "(\<sigma> x,sharp_term shp ?u) \<in> rstep U"
+        using unhide unfolding rstep_iff_rrstep_or_nrrstep by blast
       have weak: "(\<sigma> x,sharp_term shp ?u) \<in> (rstep (R \<union> U))\<^sup>*"
-        using Usub unhide by auto
-      show ?thesis unfolding s using pair weak by blast
+        using Usub unhide_r by auto
+      have pair_raw: "(sharp_term shp (l \<cdot> \<sigma>),\<sigma> x) \<in> rrstep P"
+        by (rule muterm_collapsing_rrstep_imp_rrstep[OF pair])
+      have path: "(sharp_term shp (l \<cdot> \<sigma>),sharp_term shp ?u) \<in>
+          (rstep (R \<union> U))\<^sup>* O rrstep P O (rstep (R \<union> U))\<^sup>*"
+        using pair_raw weak by auto
+      show ?thesis unfolding s
+        using path pair_raw pair unhide by blast
     qed
   qed
   show ?thesis using hp_u active_u connection by blast

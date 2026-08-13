@@ -163,31 +163,104 @@ proof -
   from step have rr: "(s,t) \<in> rrstep P"
     and source: "innermost_pair_source Sharp \<mu> R s"
     unfolding innermost_rrstep_def by auto
-  from rrstepE[OF rr] obtain u v \<tau> where pair: "(u,v) \<in> P"
-    and s: "s = u \<cdot> \<tau>" and t: "t = v \<cdot> \<tau>"
-    by blast
-  from covered pair obtain f us g vs where u: "u = Fun (Sharp f) us"
-    and v: "v = Fun (Sharp g) vs"
-    and cover: "\<And>j. j < length vs \<Longrightarrow>
-      j \<in> \<mu> (g, length vs) \<Longrightarrow>
-      csr_dp_root_supt \<mu> u (vs ! j)"
-    unfolding innermost_csr_sct_target_covered_def by blast
-  have args_NF: "map (\<lambda>x. x \<cdot> \<tau>) vs ! j \<in> NF (csstep \<mu> R)"
-    if j: "j < length (map (\<lambda>x. x \<cdot> \<tau>) vs)"
-      and active: "j \<in> \<mu> (g, length (map (\<lambda>x. x \<cdot> \<tau>) vs))"
-    for j
-  proof -
-    have j': "j < length vs" using j by simp
-    have active': "j \<in> \<mu> (g, length vs)" using active by simp
-    from innermost_pair_source_root_supt_NF[
-        OF source[unfolded s] cover[OF j' active']]
-    show ?thesis using j' by (simp add: nth_map)
+  have ex: "\<exists>u v \<tau>. (u,v) \<in> P \<and>
+      s = u \<cdot> \<tau> \<and> t = v \<cdot> \<tau>"
+    using rr unfolding rrstep_def' by simp
+  show ?thesis
+  proof (rule exE[OF ex])
+    fix u
+    assume ex_v: "\<exists>v \<tau>. (u,v) \<in> P \<and>
+      s = u \<cdot> \<tau> \<and> t = v \<cdot> \<tau>"
+    show ?thesis
+    proof (rule exE[OF ex_v])
+      fix v
+      assume ex_tau: "\<exists>\<tau>. (u,v) \<in> P \<and>
+        s = u \<cdot> \<tau> \<and> t = v \<cdot> \<tau>"
+      show ?thesis
+      proof (rule exE[OF ex_tau])
+        fix \<tau>
+        assume st: "(u,v) \<in> P \<and>
+          s = u \<cdot> \<tau> \<and> t = v \<cdot> \<tau>"
+        have pair: "(u,v) \<in> P" by (rule conjunct1[OF st])
+        have s: "s = u \<cdot> \<tau>"
+          by (rule conjunct1[OF conjunct2[OF st]])
+        have t: "t = v \<cdot> \<tau>"
+          by (rule conjunct2[OF conjunct2[OF st]])
+        have ex_shape: "\<exists>f us g vs.
+            u = Fun (Sharp f) us \<and> v = Fun (Sharp g) vs \<and>
+            (\<forall>j < length vs. j \<in> \<mu> (g, length vs) \<longrightarrow>
+              csr_dp_root_supt \<mu> u (vs ! j))"
+          using covered pair
+          unfolding innermost_csr_sct_target_covered_def by auto
+        show ?thesis
+        proof (rule exE[OF ex_shape])
+          fix f
+          assume ex_us: "\<exists>us g vs.
+            u = Fun (Sharp f) us \<and> v = Fun (Sharp g) vs \<and>
+            (\<forall>j < length vs. j \<in> \<mu> (g, length vs) \<longrightarrow>
+              csr_dp_root_supt \<mu> u (vs ! j))"
+          show ?thesis
+          proof (rule exE[OF ex_us])
+            fix us
+            assume ex_g: "\<exists>g vs.
+              u = Fun (Sharp f) us \<and> v = Fun (Sharp g) vs \<and>
+              (\<forall>j < length vs. j \<in> \<mu> (g, length vs) \<longrightarrow>
+                csr_dp_root_supt \<mu> u (vs ! j))"
+            show ?thesis
+            proof (rule exE[OF ex_g])
+              fix g
+              assume ex_vs: "\<exists>vs.
+                u = Fun (Sharp f) us \<and> v = Fun (Sharp g) vs \<and>
+                (\<forall>j < length vs. j \<in> \<mu> (g, length vs) \<longrightarrow>
+                  csr_dp_root_supt \<mu> u (vs ! j))"
+              show ?thesis
+              proof (rule exE[OF ex_vs])
+                fix vs
+                assume shape: "u = Fun (Sharp f) us \<and>
+                  v = Fun (Sharp g) vs \<and>
+                  (\<forall>j < length vs. j \<in> \<mu> (g, length vs) \<longrightarrow>
+                    csr_dp_root_supt \<mu> u (vs ! j))"
+                have u: "u = Fun (Sharp f) us"
+                  by (rule conjunct1[OF shape])
+                have tail: "v = Fun (Sharp g) vs \<and>
+                    (\<forall>j < length vs. j \<in> \<mu> (g, length vs) \<longrightarrow>
+                      csr_dp_root_supt \<mu> u (vs ! j))"
+                  by (rule conjunct2[OF shape])
+                have v: "v = Fun (Sharp g) vs"
+                  by (rule conjunct1[OF tail])
+                have cover0: "\<forall>j < length vs.
+                    j \<in> \<mu> (g, length vs) \<longrightarrow>
+                    csr_dp_root_supt \<mu> u (vs ! j)"
+                  by (rule conjunct2[OF tail])
+                have cover: "\<And>j. j < length vs \<Longrightarrow>
+                    j \<in> \<mu> (g, length vs) \<Longrightarrow>
+                    csr_dp_root_supt \<mu> u (vs ! j)"
+                  by (rule cover0[rule_format])
+                have args_NF: "map (\<lambda>x. x \<cdot> \<tau>) vs ! j \<in>
+                    NF (csstep \<mu> R)"
+                  if j: "j < length (map (\<lambda>x. x \<cdot> \<tau>) vs)"
+                    and active: "j \<in> \<mu>
+                      (g, length (map (\<lambda>x. x \<cdot> \<tau>) vs))"
+                  for j
+                proof -
+                  have j': "j < length vs" using j by simp
+                  have active': "j \<in> \<mu> (g, length vs)" using active by simp
+                  from innermost_pair_source_root_supt_NF[
+                      OF source[unfolded s] cover[OF j' active']]
+                  show ?thesis using j' by (simp add: nth_map)
+                qed
+                have "Fun (Sharp g) (map (\<lambda>x. x \<cdot> \<tau>) vs) \<in>
+                    NF (csdp_step Sharp \<mu> R)"
+                  by (rule csdp_Fun_undefined_active_args_NF[
+                    OF wf fresh inj_Sharp args_NF])
+                then show ?thesis unfolding t v by simp
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
   qed
-  have "Fun (Sharp g) (map (\<lambda>x. x \<cdot> \<tau>) vs) \<in>
-      NF (csdp_step Sharp \<mu> R)"
-    by (rule csdp_Fun_undefined_active_args_NF[
-      OF wf fresh inj_Sharp args_NF])
-  then show ?thesis unfolding t v by simp
 qed
 
 lemma finite_min_csr_dpp_imp_finite_innermost_mode:

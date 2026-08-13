@@ -7,7 +7,7 @@ theory CSR_GM_Transformation
     CSR_Checker_Extensions.CSR_Conservative_Checker
     CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker
-    CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs
+    CSR_Muterm_Typed_Ext.CSR_Muterm_Typed_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08
 begin
 
@@ -1192,6 +1192,76 @@ proof -
     OF wf defs cover fin'])
 qed
 
+definition muterm_usable_csr_dependency_pairs_tt ::
+  "('dpp, ('f::{showl,compare_order},label_type) lab,string) dpp_ops \<Rightarrow>
+    (('f,label_type) lab) muL \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow> 'dpp result"
+where
+  "muterm_usable_csr_dependency_pairs_tt J \<mu> R P S W \<equiv>
+    let D = defined_list R
+    in check_return (do {
+      check_wf_trs R;
+      check (list_all (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True) D)
+        (showsl_lit (STR ''MU-TERM source rules already contain marked defined symbols''));
+      check_allm (\<lambda>(f,n). check ((Sharp f,n) \<notin> set D)
+        (showsl_lit (STR ''sharping yields a defined symbol''))) D;
+      check_all (\<lambda>dp. dp \<in> set P) (mu_CSDP_list Sharp R \<mu> D)
+        <+? (\<lambda>_. showsl_lit (STR ''missing replacement-map dependency pair''));
+      check_all (\<lambda>dp. dp \<in> set P)
+        (csr_rta08_collapsing_CSDP_list Sharp \<mu> R)
+        <+? (\<lambda>_. showsl_lit (STR ''missing collapsing dependency pair''));
+      check_all (\<lambda>lr. lr \<in> set S)
+        (muterm_exact_unhiding_rules_list Sharp \<mu> D R)
+        <+? (\<lambda>_. showsl_lit (STR ''missing exact MU-TERM unhiding rule''));
+      check (muterm_unhiding_safe_list \<mu> R)
+        (showsl_lit (STR ''MU-TERM unhiding safety condition failed''));
+      check (muterm_qcs_ur_closed_check R S W \<mu> P)
+        (showsl_lit (STR ''MU-TERM usable-rule closure check failed''))
+    }) (dpp_ops.mk J False False P [] [] [] W)"
+
+lemma muterm_usable_csr_dependency_pairs_tt_finite_imp_SN:
+  assumes J: "dpp_spec J"
+    and tt: "muterm_usable_csr_dependency_pairs_tt J \<mu> R P S W = return d"
+    and fin: "finite_dpp (dpp_ops.dpp J d)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof -
+  let ?D = "defined_list R"
+  note tt' = tt[unfolded muterm_usable_csr_dependency_pairs_tt_def Let_def,
+    simplified]
+  from tt' have d: "d = dpp_ops.mk J False False P [] [] [] W" by auto
+  from tt' have wf: "wf_trs (set R)" by auto
+  from tt' have no_sharp:
+      "list_all (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True) ?D"
+    by auto
+  have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
+    using no_sharp by (auto simp: list_all_iff)
+  have mu_pairs: "set (mu_CSDP_list Sharp R \<mu> ?D) \<subseteq> set P"
+    using tt' by auto
+  have collapsing:
+      "set (csr_rta08_collapsing_CSDP_list Sharp \<mu> R) \<subseteq> set P"
+    using tt' by auto
+  have exact:
+      "set (muterm_exact_unhiding_rules_list Sharp \<mu> ?D R) \<subseteq> set S"
+    using tt' by auto
+  have safe: "muterm_unhiding_safe_list \<mu> R" using tt' by auto
+  have cover: "muterm_unhiding_coverage Sharp (mu_of \<mu>) (set ?D)
+      (set R) (set P) (set S)"
+    by (rule muterm_exact_list_coverage[OF mu_pairs collapsing exact safe])
+  have defs: "{f. defined (set R) f} \<subseteq> set ?D" by auto
+  have closed_check: "muterm_qcs_ur_closed_check R S W \<mu> P"
+    using tt' by auto
+  have closed: "muterm_qcs_ur_closed (set R) (set S) (set W)
+      (mu_of \<mu>) (set P)"
+    by (rule muterm_qcs_ur_closed_check_sound[OF closed_check])
+  have fin': "finite_dpp (False,False,set P,{},{},{},set W)"
+    using fin d dpp_spec.mk_sound[OF J] by simp
+  show ?thesis by (rule finite_muterm_exact_usable_CSDP_imp_SN_csstep[
+    OF wf fresh defs cover closed fin'])
+qed
+
 datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
     Existing_CSR_Proof "('f, 'l, 'v) extended_csr_termination_proof"
   | Innermost_CSR_Dependency_Pairs
@@ -1202,6 +1272,15 @@ datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) csr_dp_termination_proof"
+  | Muterm_Usable_CSR_Dependency_Pairs
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) csr_dp_termination_proof"
+  | Muterm_Typed_CSR_Dependency_Pairs
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) muterm_typed_dp_proof"
   | GM_CSR_Transformation
       "('f, 'l) lab"
       "('f, 'l) lab"
@@ -1232,6 +1311,33 @@ where
     debug i (STR ''MU-TERM innermost CSR dependency pairs'') (do {
       dpp \<leftarrow> muterm_innermost_csr_dependency_pairs_tt J \<mu> R P S;
       check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+    })"
+| "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (Muterm_Usable_CSR_Dependency_Pairs P S W prf) =
+    debug i (STR ''MU-TERM CSR dependency pairs with usable rules'') (do {
+      dpp \<leftarrow> muterm_usable_csr_dependency_pairs_tt J \<mu> R P S W;
+      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+    })"
+| "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (Muterm_Typed_CSR_Dependency_Pairs P S prf) =
+    debug i (STR ''typed recursive MU-TERM CSR dependency pairs'') (do {
+      check_wf_trs R;
+      let D = defined_list R;
+      check (list_all (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True) D)
+        (showsl_lit (STR ''MU-TERM source rules already contain marked defined symbols''));
+      check_allm (\<lambda>(f,n). check ((Sharp f,n) \<notin> set D)
+        (showsl_lit (STR ''sharping yields a defined symbol''))) D;
+      check_all (\<lambda>dp. dp \<in> set P) (mu_CSDP_list Sharp R \<mu> D)
+        <+? (\<lambda>_. showsl_lit (STR ''missing replacement-map dependency pair''));
+      check_all (\<lambda>dp. dp \<in> set P)
+        (csr_rta08_collapsing_CSDP_list Sharp \<mu> R)
+        <+? (\<lambda>_. showsl_lit (STR ''missing collapsing dependency pair''));
+      check_all (\<lambda>lr. lr \<in> set S)
+        (muterm_exact_unhiding_rules_list Sharp \<mu> D R)
+        <+? (\<lambda>_. showsl_lit (STR ''missing exact MU-TERM unhiding rule''));
+      check (muterm_unhiding_safe_list \<mu> R)
+        (showsl_lit (STR ''MU-TERM unhiding safety condition failed''));
+      check_muterm_typed_dp_proof I J \<mu> (add_index i 1) R S P prf
     })"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (GM_CSR_Transformation mark c active prf) =
@@ -1303,6 +1409,48 @@ next
   have "SN (csstep (mu_of \<mu>) (set R))"
     by (rule muterm_innermost_csr_dependency_pairs_tt_finite_imp_SN[
       OF J tt fin])
+  then show ?thesis
+    by (rule SN_subset, unfold sig_step_def, auto)
+next
+  case (Muterm_Usable_CSR_Dependency_Pairs P S W child)
+  from ok Muterm_Usable_CSR_Dependency_Pairs obtain dpp where tt:
+      "muterm_usable_csr_dependency_pairs_tt J \<mu> R P S W = Inr dpp"
+    and rec: "isOK (check_csr_dp_termination_proof
+      I J False (add_index i 1) dpp child)"
+    by auto
+  have fin: "finite_dpp (dpp_ops.dpp J dpp)"
+    by (rule check_csr_dp_termination_proof_sound[OF I J rec])
+  have "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule muterm_usable_csr_dependency_pairs_tt_finite_imp_SN[
+      OF J tt fin])
+  then show ?thesis
+    by (rule SN_subset, unfold sig_step_def, auto)
+next
+  case (Muterm_Typed_CSR_Dependency_Pairs P S child)
+  let ?D = "defined_list R"
+  from ok Muterm_Typed_CSR_Dependency_Pairs have wf: "wf_trs (set R)"
+    and no_sharp:
+      "list_all (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True) ?D"
+    and mu_pairs: "set (mu_CSDP_list Sharp R \<mu> ?D) \<subseteq> set P"
+    and collapsing: "set (csr_rta08_collapsing_CSDP_list Sharp \<mu> R) \<subseteq> set P"
+    and exact: "set (muterm_exact_unhiding_rules_list Sharp \<mu> ?D R) \<subseteq> set S"
+    and safe: "muterm_unhiding_safe_list \<mu> R"
+    and rec: "isOK (check_muterm_typed_dp_proof
+      I J \<mu> (add_index i 1) R S P child)"
+    by (auto simp: Let_def)
+  have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
+    using no_sharp by (auto simp: list_all_iff)
+  have cover: "muterm_unhiding_coverage Sharp (mu_of \<mu>) (set ?D)
+      (set R) (set P) (set S)"
+    by (rule muterm_exact_list_coverage[OF mu_pairs collapsing exact safe])
+  have defs: "{f. defined (set R) f} \<subseteq> set ?D" by auto
+  have typed_fin: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
+    by (rule check_muterm_typed_dp_proof_sound[OF I J wf fresh rec])
+  have "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule finite_muterm_typed_dpp_imp_SN_csstep[
+      OF wf defs cover muterm_unhiding_preserving_on_from_coverage[
+        OF wf defs cover] typed_fin])
   then show ?thesis
     by (rule SN_subset, unfold sig_step_def, auto)
 next

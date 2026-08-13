@@ -326,8 +326,14 @@ session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
   options [document = false]
   theories
     CSR_Innermost_Unhiding_Proofs
+    CSR_Muterm_Usable_Rules
 
-session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Muterm_Ext +
+session CSR_Muterm_Typed_Ext in "CSR_Checker/Muterm_Typed_Ext" = CSR_Muterm_Ext +
+  options [document = false]
+  theories
+    CSR_Muterm_Typed_Checker
+
+session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Muterm_Typed_Ext +
   options [document = false]
   theories
     CSR_GM_Transformation
