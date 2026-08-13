@@ -2768,6 +2768,15 @@ where
             (xml_return \<circ> CSR_DP_Ordinary_Proof);
         xml_return (Innermost_CSR_Dependency_Pairs P S prf)
       };
+      muterm = XMLdo (STR ''csrMutermInnermostDependencyPairs'') {
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        S \<leftarrow> xml_singleton (STR ''unhidingRules'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Muterm_Innermost_CSR_Dependency_Pairs P S prf)
+      };
       orthogonality = xml_singleton
         (STR ''csrOrthogonalityCheck'') innermost id
         XMLor XMLdo (STR ''csrOrthogonalityCheck'') {
@@ -2830,6 +2839,7 @@ where
     in orthogonality
       XMLor improved
       XMLor rta08
+      XMLor muterm
       XMLor innermost
       XMLor removed_improved
       XMLor xml_singleton

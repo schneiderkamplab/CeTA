@@ -320,7 +320,12 @@ session CSR_Checker_Extensions in "CSR_Checker/Extensions" = CSR_Checker_Core +
     CSR_Innermost_Unhiding_Checker
     CSR_Conservative_Checker
 
-session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Checker_Extensions +
+session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
+  options [document = false]
+  theories
+    CSR_Innermost_Unhiding_Proofs
+
+session CSR_GM_Ext in "CSR_Checker/GM_Ext" = CSR_Muterm_Ext +
   options [document = false]
   theories
     CSR_GM_Transformation

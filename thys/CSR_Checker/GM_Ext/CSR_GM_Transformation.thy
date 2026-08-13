@@ -7,6 +7,7 @@ theory CSR_GM_Transformation
     CSR_Checker_Extensions.CSR_Conservative_Checker
     CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker
+    CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs
 begin
 
 text \<open>
@@ -1135,9 +1136,68 @@ proof (rule gm_simulation_imp_SN_sig_csstep[OF transformed_SN ground_const,
   qed
 qed
 
+definition muterm_innermost_csr_dependency_pairs_tt ::
+  "('dpp, ('f::{showl,compare_order},label_type) lab,string) dpp_ops \<Rightarrow>
+    (('f,label_type) lab) muL \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow>
+    (('f,label_type) lab,string) rules \<Rightarrow> 'dpp result"
+where
+  "muterm_innermost_csr_dependency_pairs_tt J \<mu> R P S \<equiv>
+    let D = defined_list R
+    in check_return (do {
+      check_wf_trs R;
+      check_allm (\<lambda>(f,n). check ((Sharp f,n) \<notin> set D)
+        (showsl_lit (STR ''sharping yields a defined symbol''))) D;
+      check_all (\<lambda>dp. dp \<in> set P) (mu_CSDP_list Sharp R \<mu> D)
+        <+? (\<lambda>_. showsl_lit (STR ''missing replacement-map dependency pair''));
+      check_all (\<lambda>dp. dp \<in> set P)
+        (csr_rta08_collapsing_CSDP_list Sharp \<mu> R)
+        <+? (\<lambda>_. showsl_lit (STR ''missing collapsing dependency pair''));
+      check_all (\<lambda>lr. lr \<in> set S)
+        (muterm_exact_unhiding_rules_list Sharp \<mu> D R)
+        <+? (\<lambda>_. showsl_lit (STR ''missing exact MU-TERM unhiding rule''));
+      check (muterm_unhiding_safe_list \<mu> R)
+        (showsl_lit (STR ''MU-TERM unhiding safety condition failed''))
+    }) (dpp_ops.mk J False False P [] [] [] (R @ S))"
+
+lemma muterm_innermost_csr_dependency_pairs_tt_finite_imp_SN:
+  assumes J: "dpp_spec J"
+    and tt: "muterm_innermost_csr_dependency_pairs_tt J \<mu> R P S = return d"
+    and fin: "finite_dpp (dpp_ops.dpp J d)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof -
+  let ?D = "defined_list R"
+  note tt' = tt[unfolded muterm_innermost_csr_dependency_pairs_tt_def Let_def,
+    simplified]
+  from tt' have d: "d = dpp_ops.mk J False False P [] [] [] (R @ S)" by auto
+  from tt' have wf: "wf_trs (set R)" by auto
+  have mu_pairs: "set (mu_CSDP_list Sharp R \<mu> ?D) \<subseteq> set P"
+    using tt' by auto
+  have collapsing:
+      "set (csr_rta08_collapsing_CSDP_list Sharp \<mu> R) \<subseteq> set P"
+    using tt' by auto
+  have exact:
+      "set (muterm_exact_unhiding_rules_list Sharp \<mu> ?D R) \<subseteq> set S"
+    using tt' by auto
+  have safe: "muterm_unhiding_safe_list \<mu> R" using tt' by auto
+  have cover: "muterm_unhiding_coverage Sharp (mu_of \<mu>) (set ?D)
+      (set R) (set P) (set S)"
+    by (rule muterm_exact_list_coverage[OF mu_pairs collapsing exact safe])
+  have defs: "{f. defined (set R) f} \<subseteq> set ?D" by auto
+  have fin': "finite_dpp (False,False,set P,{},{},{},set R \<union> set S)"
+    using fin d dpp_spec.mk_sound[OF J] by simp
+  show ?thesis by (rule finite_muterm_exact_CSDP_imp_SN_csstep[
+    OF wf defs cover fin'])
+qed
+
 datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
     Existing_CSR_Proof "('f, 'l, 'v) extended_csr_termination_proof"
   | Innermost_CSR_Dependency_Pairs
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) csr_dp_termination_proof"
+  | Muterm_Innermost_CSR_Dependency_Pairs
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) csr_dp_termination_proof"
@@ -1161,6 +1221,12 @@ where
       (Innermost_CSR_Dependency_Pairs P S prf) =
     debug i (STR ''direct innermost CSR dependency pairs'') (do {
       dpp \<leftarrow> direct_innermost_csr_dependency_pairs_tt J \<mu> R P (R @ S);
+      check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
+    })"
+| "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (Muterm_Innermost_CSR_Dependency_Pairs P S prf) =
+    debug i (STR ''MU-TERM innermost CSR dependency pairs'') (do {
+      dpp \<leftarrow> muterm_innermost_csr_dependency_pairs_tt J \<mu> R P S;
       check_csr_dp_termination_proof I J False (add_index i 1) dpp prf
     })"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
@@ -1203,6 +1269,20 @@ next
     by (rule check_csr_dp_termination_proof_sound[OF I J rec])
   have "SN (csstep (mu_of \<mu>) (set R))"
     by (rule direct_innermost_csr_dependency_pairs_tt_finite_imp_SN[
+      OF J tt fin])
+  then show ?thesis
+    by (rule SN_subset, unfold sig_step_def, auto)
+next
+  case (Muterm_Innermost_CSR_Dependency_Pairs P S child)
+  from ok Muterm_Innermost_CSR_Dependency_Pairs obtain dpp where tt:
+      "muterm_innermost_csr_dependency_pairs_tt J \<mu> R P S = Inr dpp"
+    and rec: "isOK (check_csr_dp_termination_proof
+      I J False (add_index i 1) dpp child)"
+    by auto
+  have fin: "finite_dpp (dpp_ops.dpp J dpp)"
+    by (rule check_csr_dp_termination_proof_sound[OF I J rec])
+  have "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule muterm_innermost_csr_dependency_pairs_tt_finite_imp_SN[
       OF J tt fin])
   then show ?thesis
     by (rule SN_subset, unfold sig_step_def, auto)
