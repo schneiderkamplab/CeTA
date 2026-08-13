@@ -1,0 +1,1333 @@
+(*
+Author: Ferrum contributors
+License: LGPL (see file COPYING.LESSER)
+*)
+theory CSR_Innermost_Unhiding_RTA08
+  imports
+    CSR_Checker_Extensions.CSR_Innermost_Active_SCT
+    CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
+begin
+
+definition innermost_csr_rta08_pair_step where
+  "innermost_csr_rta08_pair_step shp \<mu> R A P =
+    csr_rta08_pair_step shp \<mu> A P \<inter>
+      {(s,t). innermost_pair_source shp \<mu> R s}"
+
+lemma innermost_csrstep_mu_Tinf_rhs_imp_rta08_pair_step:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and R :: "('f,'v) trs"
+  assumes wf: "wf_trs R"
+    and step: "(s,t) \<in> innermost_csrstep \<mu> R"
+    and sT: "s \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+    and notSN: "\<not> SN_on (innermost_csstep \<mu> R) {t}"
+    and D: "{f. defined R f} \<subseteq> D"
+  shows "\<exists>u. u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<and>
+    (sharp_term shp s, sharp_term shp u) \<in>
+      innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+proof -
+  from step obtain lr \<sigma> where rewrite:
+      "(s,t) \<in> rstep_r_p_s R lr [] \<sigma>"
+    and inner0: "\<And>u. mu_supt \<mu> (fst lr \<cdot> \<sigma>) u \<Longrightarrow>
+      u \<in> NF (csstep \<mu> R)"
+    unfolding innermost_csrstep_def innermost_csstep_p_def by blast
+  obtain l r where lr_def: "lr = (l,r)" by (cases lr)
+  from rewrite have lr: "(l,r) \<in> R"
+    and s: "s = l \<cdot> \<sigma>" and t: "t = r \<cdot> \<sigma>"
+    unfolding lr_def rstep_r_p_s_def' by auto
+  have inner: "\<And>u. mu_supt \<mu> (l \<cdot> \<sigma>) u \<Longrightarrow>
+      u \<in> NF (csstep \<mu> R)"
+    using inner0 unfolding lr_def by simp
+  from wf lr have lhs: "is_Fun l"
+    unfolding wf_trs_def by (cases l, auto)
+  have source: "innermost_pair_source shp \<mu> R
+      (sharp_term shp (l \<cdot> \<sigma>))"
+    unfolding innermost_pair_source_def
+    using lr lhs inner by blast
+  from innermost_notSN_imp_mu_Tinf_defined_subterm[
+    OF wf notSN[unfolded t]]
+  obtain p f us where p_mu: "p \<in> mu_fun_poss \<mu> (r \<cdot> \<sigma>)"
+    and sub_inst: "(r \<cdot> \<sigma>) |_ p = Fun f us"
+    and def: "defined R (f,length us)"
+    and T_p: "(r \<cdot> \<sigma>) |_ p \<in>
+      mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+    by blast
+  from T_p have notSN_p:
+    "\<not> SN_on (innermost_csstep \<mu> R) {(r \<cdot> \<sigma>) |_ p}"
+    unfolding mu_Tinf_def by auto
+  from mu_fun_poss_subst_cases_aux_mu[OF p_mu]
+  show ?thesis
+  proof
+    assume orig: "p \<in> mu_fun_poss \<mu> r \<and>
+      (r \<cdot> \<sigma>) |_ p = (r |_ p) \<cdot> \<sigma>"
+    then have p_r: "p \<in> mu_fun_poss \<mu> r"
+      and sub_subst: "(r \<cdot> \<sigma>) |_ p = (r |_ p) \<cdot> \<sigma>"
+      by auto
+    from mu_fun_poss_imp_fun_poss[OF p_r]
+    obtain g ts where rp0: "r |_ p = Fun g ts"
+      using fun_poss_fun_conv by blast
+    with sub_subst sub_inst have rp: "r |_ p = Fun f ts"
+      and len: "length us = length ts" by auto
+    from D def len have fD: "(f,length ts) \<in> D" by auto
+    have ns: "\<not> mu_supt \<mu> l (r |_ p)"
+    proof
+      assume supt: "mu_supt \<mu> l (r |_ p)"
+      then obtain i q where iq: "i # q \<in> mu_poss \<mu> l"
+        and sub_l: "l |_ (i # q) = r |_ p"
+        unfolding mu_supt_def by auto
+      have iq_poss: "i # q \<in> poss l"
+        using iq mu_poss_imp_poss by blast
+      have sub_eq: "(l \<cdot> \<sigma>) |_ (i # q) = (r |_ p) \<cdot> \<sigma>"
+        using subt_at_subst[OF iq_poss] sub_l by simp
+      have "mu_supt \<mu> (l \<cdot> \<sigma>) ((r |_ p) \<cdot> \<sigma>)"
+        unfolding mu_supt_def
+        by (intro exI[of _ i] exI[of _ q],
+          insert mu_poss_subst_lift[OF iq, of \<sigma>] sub_eq, auto)
+      with sT have "SN_on (innermost_csstep \<mu> R)
+          {(r |_ p) \<cdot> \<sigma>}"
+        unfolding s mu_Tinf_def by blast
+      with notSN_p sub_subst show False by simp
+    qed
+    have pair0: "(sharp_term shp l, sharp_term shp (r |_ p))
+      \<in> mu_CSDP_on shp \<mu> D R"
+      unfolding CSR_Checker_Base.mu_CSDP_on_def
+      using lr p_r rp fD ns by blast
+    have pair: "(sharp_term shp l, sharp_term shp (r |_ p))
+      \<in> csr_rta08_CSDP_on shp \<mu> D R"
+      using pair0 unfolding csr_rta08_CSDP_on_def by blast
+    have rhs_fun: "is_Fun (sharp_term shp (r |_ p))" using rp by simp
+    have raw: "(sharp_term shp (l \<cdot> \<sigma>),
+        sharp_term shp ((r |_ p) \<cdot> \<sigma>)) \<in>
+      csr_rta08_pair_step shp \<mu> (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+      using csr_rta08_pair_step_noncollapsingI[OF pair rhs_fun, of \<sigma>]
+        lhs rp by (cases l, auto)
+    have step': "(sharp_term shp (l \<cdot> \<sigma>),
+        sharp_term shp ((r |_ p) \<cdot> \<sigma>)) \<in>
+      innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+      using raw source unfolding innermost_csr_rta08_pair_step_def by blast
+    show ?thesis using T_p step' sub_subst unfolding s by auto
+  next
+    assume subst_case: "\<exists>x q1 q2. q1 \<in> mu_poss \<mu> r \<and>
+      r |_ q1 = Var x \<and> x \<in> vars_term r \<and> p = q1 @ q2 \<and>
+      q2 \<in> mu_fun_poss \<mu> (\<sigma> x) \<and>
+      (r \<cdot> \<sigma>) |_ p = \<sigma> x |_ q2"
+    then obtain x q1 q2 where q1: "q1 \<in> mu_poss \<mu> r"
+      and r_q1: "r |_ q1 = Var x"
+      and q2: "q2 \<in> mu_fun_poss \<mu> (\<sigma> x)"
+      and sub_q2: "(r \<cdot> \<sigma>) |_ p = \<sigma> x |_ q2"
+      by blast
+    have xr: "x \<in> mu_vars_term \<mu> r"
+      unfolding mu_vars_term_def using q1 r_q1 by blast
+    have xl: "x \<notin> mu_vars_term \<mu> l"
+    proof
+      assume xl: "x \<in> mu_vars_term \<mu> l"
+      have lT: "l \<cdot> \<sigma> \<in>
+        mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+        using sT unfolding s .
+      have "SN_on (innermost_csstep \<mu> R) {\<sigma> x |_ q2}"
+        by (rule innermost_mu_Tinf_SN_on_active_subst_mu_subterm[
+          OF lhs lT xl q2])
+      with notSN_p sub_q2 show False by simp
+    qed
+    have pair0: "(sharp_term shp l, Var x)
+      \<in> csr_rta08_collapsing_CSDP_on shp \<mu> R"
+      by (rule csr_rta08_collapsing_CSDP_onI[OF lr xr xl])
+    have pair: "(sharp_term shp l, Var x)
+      \<in> csr_rta08_CSDP_on shp \<mu> D R"
+      using pair0 unfolding csr_rta08_CSDP_on_def by blast
+    have target: "is_Fun (\<sigma> x |_ q2)" using sub_inst sub_q2 by simp
+    have admitted: "csr_rta08_defined_target D (\<sigma> x |_ q2)"
+      using D def sub_inst sub_q2 by auto
+    have raw0: "(sharp_term shp l \<cdot> \<sigma>,
+        sharp_term shp (\<sigma> x |_ q2)) \<in>
+      csr_rta08_pair_step shp \<mu> (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+      by (rule csr_rta08_pair_step_collapsingI[
+        where l="sharp_term shp l" and x=x and \<sigma>=\<sigma> and q=q2],
+        rule pair, rule q2, rule target, rule admitted)
+    have raw: "(sharp_term shp (l \<cdot> \<sigma>),
+        sharp_term shp (\<sigma> x |_ q2)) \<in>
+      csr_rta08_pair_step shp \<mu> (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+      using raw0 lhs by (cases l, auto)
+    have step': "(sharp_term shp (l \<cdot> \<sigma>),
+        sharp_term shp (\<sigma> x |_ q2)) \<in>
+      innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+      using raw source unfolding innermost_csr_rta08_pair_step_def by blast
+    show ?thesis using T_p step' sub_q2 unfolding s by auto
+  qed
+qed
+
+definition finite_innermost_csr_rta08_dpp where
+  "finite_innermost_csr_rta08_dpp shp \<mu> R A P \<longleftrightarrow>
+    SN_rel (innermost_csr_rta08_pair_step shp \<mu> R A P)
+      (innermost_csdp_step shp \<mu> R)"
+
+lemma innermost_csr_rta08_dep_graph_edge_check_steps:
+  fixes R :: "(((('f::{showl, compare_order}, 'l::{showl, compare_order}) lab),
+    'v::compare_order) rules)"
+  assumes wf: "wf_trs (set R)"
+    and inst: "csr_rta08_pair_instance Sharp (mu_of \<mu>) A s t \<sigma> b"
+    and steps: "(b, u \<cdot> \<tau>) \<in>
+      (innermost_csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+  shows "csr_rta08_dep_graph_edge_check
+    (csr_dp_root_mu (mu_of \<mu>)) R
+    ((((s,t),()),((u,v),())))"
+proof -
+  have steps': "(b, u \<cdot> \<tau>) \<in>
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+    using steps innermost_csdp_step_subset_csdp_step
+    by (meson rtrancl_mono subset_eq)
+  show ?thesis
+    by (rule csr_rta08_dep_graph_edge_check_steps[OF wf inst steps'])
+qed
+
+lemma check_csr_rta08_dep_graph_proc_innermost_sound:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and check: "isOK (check_csr_rta08_dep_graph_proc J \<mu> dpp edps)"
+    and fin: "\<And>prf C. (Some prf,C) \<in> set edps \<Longrightarrow>
+      finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+        (set (dpp_ops.rules J dpp)) A
+        (set (dpp_ops.pairs J dpp) \<inter> set C)"
+  shows "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.rules J dpp)) A (set (dpp_ops.pairs J dpp))"
+proof -
+  interpret dpp_spec J by fact
+  let ?P = "set (pairs dpp)"
+  let ?RL = "rules dpp"
+  let ?R = "set ?RL"
+  let ?S = "innermost_csdp_step Sharp (mu_of \<mu>) ?R"
+  let ?T = "innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?P"
+  let ?echeck = "csr_rta08_dep_graph_edge_check
+    (csr_dp_root_mu (mu_of \<mu>)) ?RL"
+  let ?conv = "\<lambda>(real,Cs).
+    (real \<noteq> None,map (\<lambda>(s,t). ((s,t),())) Cs)"
+  from check have wf: "wf_trs ?R"
+    and subset: "?P \<subseteq> set (concat (map snd edps))"
+    and scc: "isOK (check_graph_decomp (showsl \<circ> fst)
+      (Multi_Map.empty (root o fst o fst))
+      graph_approx_csr_rt Multi_Map.insert ?echeck (map ?conv edps))"
+    unfolding check_csr_rta08_dep_graph_proc_def
+    by (auto simp: Let_def)
+  show ?thesis
+    unfolding finite_innermost_csr_rta08_dpp_def SN_rel_defs SN_defs
+  proof (rule notI)
+    assume infinite: "\<exists>f. f 0 \<in> UNIV \<and>
+      (\<forall>i. (f i,f (Suc i)) \<in> relto ?T ?S)"
+    then obtain ch where chain: "\<And>i.
+      (ch i,ch (Suc i)) \<in> relto ?T ?S" by auto
+    from chain have chain': "\<And>i. (ch i,ch (Suc i)) \<in>
+      ?S\<^sup>* O ?T O ?S\<^sup>*" by auto
+    have ex_step: "\<forall>i. \<exists>l r \<sigma> b.
+      (l,r) \<in> ?P \<and>
+      (ch i,l \<cdot> \<sigma>) \<in> ?S\<^sup>* \<and>
+      csr_rta08_pair_instance Sharp (mu_of \<mu>) A l r \<sigma> b \<and>
+      (l \<cdot> \<sigma>,b) \<in> ?T \<and>
+      (b,ch (Suc i)) \<in> ?S\<^sup>*"
+    proof
+      fix i
+      from chain'[of i] obtain x y where pre: "(ch i,x) \<in> ?S\<^sup>*"
+        and strict: "(x,y) \<in> ?T"
+        and post: "(y,ch (Suc i)) \<in> ?S\<^sup>*" by auto
+      from strict have raw:
+        "(x,y) \<in> csr_rta08_pair_step Sharp (mu_of \<mu>) A ?P"
+        unfolding innermost_csr_rta08_pair_step_def by blast
+      from raw[unfolded csr_rta08_pair_step_iff_instance]
+      obtain l r \<sigma> where pair: "(l,r) \<in> ?P"
+        and x: "x = l \<cdot> \<sigma>"
+        and inst: "csr_rta08_pair_instance Sharp (mu_of \<mu>) A
+          l r \<sigma> y" by blast
+      show "\<exists>l r \<sigma> b. (l,r) \<in> ?P \<and>
+        (ch i,l \<cdot> \<sigma>) \<in> ?S\<^sup>* \<and>
+        csr_rta08_pair_instance Sharp (mu_of \<mu>) A l r \<sigma> b \<and>
+        (l \<cdot> \<sigma>,b) \<in> ?T \<and>
+        (b,ch (Suc i)) \<in> ?S\<^sup>*"
+        using pair pre inst strict post unfolding x by blast
+    qed
+    then obtain s t \<sigma> b where pair: "\<And>i. (s i,t i) \<in> ?P"
+      and pre: "\<And>i. (ch i,s i \<cdot> \<sigma> i) \<in> ?S\<^sup>*"
+      and inst: "\<And>i. csr_rta08_pair_instance Sharp (mu_of \<mu>) A
+        (s i) (t i) (\<sigma> i) (b i)"
+      and strict: "\<And>i. (s i \<cdot> \<sigma> i,b i) \<in> ?T"
+      and post: "\<And>i. (b i,ch (Suc i)) \<in> ?S\<^sup>*"
+      by metis
+    have steps: "\<And>i. (b i,s (Suc i) \<cdot> \<sigma> (Suc i)) \<in> ?S\<^sup>*"
+      using post pre by (meson rtrancl_trans)
+    let ?p = "\<lambda>i. ((s i,t i),())"
+    have path: "\<And>i. ?echeck (?p i,?p (Suc i))"
+      by (rule innermost_csr_rta08_dep_graph_edge_check_steps[
+        OF wf inst steps])
+    have lift_node: "\<And>l r.
+      (l,r) \<in> set (concat (map snd edps)) \<Longrightarrow>
+      ((l,r),()) \<in> set (concat (map snd (map ?conv edps)))"
+      by (auto split: prod.splits) fastforce
+    have nodes: "path_nodes ?p \<subseteq>
+        set (concat (map snd (map ?conv edps)))"
+    proof
+      fix x
+      assume "x \<in> path_nodes ?p"
+      then obtain i where x: "x = ?p i"
+        unfolding path_nodes_def by auto
+      from pair[of i] subset have
+        "(s i,t i) \<in> set (concat (map snd edps))" by auto
+      then show "x \<in> set (concat (map snd (map ?conv edps)))"
+        unfolding x by (rule lift_node)
+    qed
+    have key_insert: "\<And>x m.
+      Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      Multi_Map.key_fun (Multi_Map.insert x m) = root \<circ> fst \<circ> fst"
+      by simp
+    have approx: "\<And>m a b.
+      Multi_Map.key_fun m = root \<circ> fst \<circ> fst \<Longrightarrow>
+      ?echeck (a,b) \<Longrightarrow> b \<in> set (Multi_Map.values m) \<Longrightarrow>
+      b \<in> set (graph_approx_csr_rt m a)"
+      unfolding graph_approx_csr_rt.simps by simp
+    have component: "\<exists>q C. ?p =\<dots> q \<and>
+      C \<in> set (map snd (filter fst (map ?conv edps))) \<and>
+      path_nodes q \<subseteq> set C"
+      by (rule check_graph_decomp_sound[of
+        "\<lambda>m. set (Multi_Map.values m)", OF values_empty values_insert,
+        of "\<lambda>m. Multi_Map.key_fun m = (root o fst o fst)",
+        OF key_fun_empty key_insert approx scc path nodes])
+    then obtain q C where suffix: "?p =\<dots> q"
+      and ending: "path_nodes q \<subseteq> set C"
+      and component_mem:
+        "C \<in> set (map snd (filter fst (map ?conv edps)))" by blast
+    from component_mem obtain proof_id Cs where mem:
+      "(Some proof_id,Cs) \<in> set edps"
+      and C: "C = map (\<lambda>(s,t). ((s,t),())) Cs" by force
+    from suffix obtain n where pq: "\<And>m. ?p (m+n) = q m"
+      unfolding Graph.suffix_def by blast
+    have CP: "(s (m+n),t (m+n)) \<in> ?P \<inter> set Cs" for m
+    proof -
+      have "?p (m+n) \<in> path_nodes q"
+        using pq[of m] unfolding path_nodes_def by blast
+      with ending C pair[of "m+n"] show
+        "(s (m+n),t (m+n)) \<in> ?P \<inter> set Cs" by force
+    qed
+    let ?tail = "\<lambda>m. ch (m+n)"
+    let ?PT = "?P \<inter> set Cs"
+    have strict_tail: "
+      (s (m+n) \<cdot> \<sigma> (m+n),b (m+n)) \<in>
+      innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT" for m
+    proof -
+      from strict[of "m+n"] have source:
+        "innermost_pair_source Sharp (mu_of \<mu>) ?R
+          (s (m+n) \<cdot> \<sigma> (m+n))"
+        unfolding innermost_csr_rta08_pair_step_def by blast
+      have raw: "(s (m+n) \<cdot> \<sigma> (m+n),b (m+n)) \<in>
+        csr_rta08_pair_step Sharp (mu_of \<mu>) A ?PT"
+        unfolding csr_rta08_pair_step_iff_instance
+        by (intro exI[of _ "s (m+n)"] exI[of _ "t (m+n)"]
+            exI[of _ "\<sigma> (m+n)"],
+          use CP[of m] inst[of "m+n"] in auto)
+      show "(s (m+n) \<cdot> \<sigma> (m+n),b (m+n)) \<in>
+        innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT"
+        unfolding innermost_csr_rta08_pair_step_def using raw source by blast
+    qed
+    have tail_chain: "(?tail m,?tail (Suc m)) \<in>
+      relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S" for m
+    proof -
+      have suc_add: "Suc m+n = Suc (m+n)" by simp
+      from pre[of "m+n"] post[of "m+n"] strict_tail[of m]
+      show "(?tail m,?tail (Suc m)) \<in>
+        relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S"
+        unfolding suc_add by auto
+    qed
+    have tail_is_chain: "chain
+      (relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S)
+      ?tail" using tail_chain by simp
+    have tail_sn: "SN
+      (relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S)"
+      using fin[OF mem]
+      unfolding finite_innermost_csr_rta08_dpp_def SN_rel_on_def by simp
+    have not_tail_sn: "\<not> SN
+      (relto (innermost_csr_rta08_pair_step Sharp (mu_of \<mu>) ?R A ?PT) ?S)"
+      by (rule not_SN_onI[of ?tail], simp, rule tail_is_chain)
+    from tail_sn not_tail_sn show False by contradiction
+  qed
+qed
+
+lemma finite_innermost_csr_rta08_dpp_redpair_terminal:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and P S NS R :: "('f,'v) trs"
+  assumes redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and noncoll_S: "csr_rta08_noncollapsing_pairs P \<subseteq> S"
+    and rewrite_NS: "innermost_csdp_step shp \<mu> R \<subseteq> NS"
+    and active_NS: "{(s,t). mu_supt \<mu> s t} \<subseteq> NS"
+    and mark_S: "{(t,sharp_term shp t) |t. is_Fun t \<and> A t} \<subseteq> S"
+  shows "finite_innermost_csr_rta08_dpp shp \<mu> R A P"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  have raw_S: "csr_rta08_pair_step shp \<mu> A P \<subseteq> S"
+  proof
+    fix st
+    assume step: "st \<in> csr_rta08_pair_step shp \<mu> A P"
+    obtain a b where st: "st = (a,b)" by (cases st)
+    from step[unfolded csr_rta08_pair_step_def st]
+    show "st \<in> S"
+    proof
+      assume "(a,b) \<in> {(l \<cdot> \<sigma>,r \<cdot> \<sigma>) |l r \<sigma>.
+        (l,r) \<in> P \<and> is_Fun r}"
+      then obtain l r \<sigma> where a: "a = l \<cdot> \<sigma>"
+        and b: "b = r \<cdot> \<sigma>" and pair: "(l,r) \<in> P"
+        and rhs: "is_Fun r" by blast
+      have "(l,r) \<in> csr_rta08_noncollapsing_pairs P"
+        using pair rhs unfolding csr_rta08_noncollapsing_pairs_def by simp
+      with noncoll_S have "(l,r) \<in> S" by blast
+      then show ?thesis using subst_S unfolding st a b
+        by (auto simp: subst.closed_def)
+    next
+      assume collapse: "(a,b) \<in>
+        {(l \<cdot> \<sigma>,sharp_term shp (\<sigma> x |_ q)) |l x \<sigma> q.
+          (l,Var x) \<in> P \<and> q \<in> mu_fun_poss \<mu> (\<sigma> x) \<and>
+          is_Fun (\<sigma> x |_ q) \<and> A (\<sigma> x |_ q)}"
+      then obtain l x \<sigma> q where a: "a = l \<cdot> \<sigma>"
+        and b: "b = sharp_term shp (\<sigma> x |_ q)"
+        and pair: "(l,Var x) \<in> P"
+        and q: "q \<in> mu_fun_poss \<mu> (\<sigma> x)"
+        and target: "is_Fun (\<sigma> x |_ q)"
+        and admitted: "A (\<sigma> x |_ q)" by blast
+      from orient pair have pair_ord: "(l,Var x) \<in> S \<union> NS" by blast
+      have inst_ord: "(l \<cdot> \<sigma>,\<sigma> x) \<in> S \<union> NS"
+        using pair_ord subst_S subst_NS by (auto simp: subst.closed_def)
+      from csr_rta08_active_subterm_bridge[OF q]
+      have active: "(\<sigma> x,\<sigma> x |_ q) \<in> NS"
+        using active_NS refl_NS unfolding refl_on_def by auto
+      from mark_S target admitted have mark:
+        "(\<sigma> x |_ q,sharp_term shp (\<sigma> x |_ q)) \<in> S" by blast
+      show ?thesis
+      proof (cases "(l \<cdot> \<sigma>,\<sigma> x) \<in> S")
+        case True
+        from compat_S_NS True active have prefix:
+          "(l \<cdot> \<sigma>,\<sigma> x |_ q) \<in> S" by blast
+        from trans_S_point[OF prefix mark] show ?thesis unfolding st a b .
+      next
+        case False
+        with inst_ord have weak: "(l \<cdot> \<sigma>,\<sigma> x) \<in> NS"
+          by blast
+        from trans_NS_point[OF weak active] have prefix:
+          "(l \<cdot> \<sigma>,\<sigma> x |_ q) \<in> NS" .
+        from compat_NS_S prefix mark show ?thesis unfolding st a b by blast
+      qed
+    qed
+  qed
+  have pair_S: "innermost_csr_rta08_pair_step shp \<mu> R A P \<subseteq> S"
+    using raw_S unfolding innermost_csr_rta08_pair_step_def by blast
+  have pair_ord: "innermost_csr_rta08_pair_step shp \<mu> R A P
+      \<subseteq> S \<union> NS" using pair_S by blast
+  have residual: "innermost_csr_rta08_pair_step shp \<mu> R A P - S
+      \<subseteq> {}" using pair_S by blast
+  have empty: "SN_rel {} (innermost_csdp_step shp \<mu> R)"
+    by (rule SN_rel_empty1)
+  have "SN_rel
+      (innermost_csr_rta08_pair_step shp \<mu> R A P)
+      (innermost_csdp_step shp \<mu> R)"
+    by (rule SN_rel_compat_redpair_residual[
+      OF redpair rewrite_NS pair_ord residual empty])
+  then show ?thesis unfolding finite_innermost_csr_rta08_dpp_def .
+qed
+
+lemma finite_innermost_csr_rta08_dpp_redpair:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and P Q S NS R :: "('f,'v) trs"
+  assumes redpair: "compat_redpair_order S NS"
+    and orient: "P \<subseteq> S \<union> NS"
+    and removed_S: "csr_rta08_noncollapsing_pairs (P \<inter> Q) \<subseteq> S"
+    and rewrite_NS: "innermost_csdp_step shp \<mu> R \<subseteq> NS"
+    and active_NS: "{(s,t). mu_supt \<mu> s t} \<subseteq> NS"
+    and mark_S: "{(t,sharp_term shp t) |t. is_Fun t \<and> A t} \<subseteq> S"
+    and residual_finite: "finite_innermost_csr_rta08_dpp shp \<mu> R A (P - Q)"
+  shows "finite_innermost_csr_rta08_dpp shp \<mu> R A P"
+proof -
+  interpret compat_redpair_order S NS by (rule redpair)
+  have raw_order: "csr_rta08_pair_step shp \<mu> A P \<subseteq> S \<union> NS"
+  proof
+    fix st
+    assume step: "st \<in> csr_rta08_pair_step shp \<mu> A P"
+    obtain a b where st: "st = (a,b)" by (cases st)
+    from step[unfolded csr_rta08_pair_step_def st]
+    show "st \<in> S \<union> NS"
+    proof
+      assume "(a,b) \<in> {(l \<cdot> \<sigma>,r \<cdot> \<sigma>) |l r \<sigma>.
+        (l,r) \<in> P \<and> is_Fun r}"
+      then obtain l r \<sigma> where a: "a = l \<cdot> \<sigma>"
+        and b: "b = r \<cdot> \<sigma>" and pair: "(l,r) \<in> P" by blast
+      from orient pair have "(l,r) \<in> S \<union> NS" by blast
+      then show ?thesis using subst_S subst_NS unfolding st a b
+        by (auto simp: subst.closed_def)
+    next
+      assume collapse: "(a,b) \<in>
+        {(l \<cdot> \<sigma>,sharp_term shp (\<sigma> x |_ q)) |l x \<sigma> q.
+          (l,Var x) \<in> P \<and> q \<in> mu_fun_poss \<mu> (\<sigma> x) \<and>
+          is_Fun (\<sigma> x |_ q) \<and> A (\<sigma> x |_ q)}"
+      then obtain l x \<sigma> q where a: "a = l \<cdot> \<sigma>"
+        and b: "b = sharp_term shp (\<sigma> x |_ q)"
+        and pair: "(l,Var x) \<in> P"
+        and q: "q \<in> mu_fun_poss \<mu> (\<sigma> x)"
+        and target: "is_Fun (\<sigma> x |_ q)"
+        and admitted: "A (\<sigma> x |_ q)" by blast
+      from orient pair have pair_ord: "(l,Var x) \<in> S \<union> NS" by blast
+      have inst_ord: "(l \<cdot> \<sigma>,\<sigma> x) \<in> S \<union> NS"
+        using pair_ord subst_S subst_NS by (auto simp: subst.closed_def)
+      from csr_rta08_active_subterm_bridge[OF q]
+      have active: "(\<sigma> x,\<sigma> x |_ q) \<in> NS"
+        using active_NS refl_NS unfolding refl_on_def by auto
+      from mark_S target admitted have mark:
+        "(\<sigma> x |_ q,sharp_term shp (\<sigma> x |_ q)) \<in> S" by blast
+      have "(l \<cdot> \<sigma>,sharp_term shp (\<sigma> x |_ q)) \<in> S"
+      proof (cases "(l \<cdot> \<sigma>,\<sigma> x) \<in> S")
+        case True
+        from compat_S_NS True active have prefix:
+          "(l \<cdot> \<sigma>,\<sigma> x |_ q) \<in> S" by blast
+        from trans_S_point[OF prefix mark] show ?thesis .
+      next
+        case False
+        with inst_ord have weak: "(l \<cdot> \<sigma>,\<sigma> x) \<in> NS" by blast
+        from trans_NS_point[OF weak active] have prefix:
+          "(l \<cdot> \<sigma>,\<sigma> x |_ q) \<in> NS" .
+        from compat_NS_S prefix mark show ?thesis by blast
+      qed
+      then show ?thesis unfolding st a b by blast
+    qed
+  qed
+  have pair_order: "innermost_csr_rta08_pair_step shp \<mu> R A P
+      \<subseteq> S \<union> NS"
+    using raw_order unfolding innermost_csr_rta08_pair_step_def by blast
+  have residual: "innermost_csr_rta08_pair_step shp \<mu> R A P - S
+      \<subseteq> innermost_csr_rta08_pair_step shp \<mu> R A (P - Q)"
+  proof
+    fix st
+    assume mem: "st \<in> innermost_csr_rta08_pair_step shp \<mu> R A P - S"
+    then have source: "st \<in> innermost_csr_rta08_pair_step shp \<mu> R A P"
+      and notS: "st \<notin> S" by auto
+    obtain a b where st: "st = (a,b)" by (cases st)
+    from source obtain src where inner: "innermost_pair_source shp \<mu> R a"
+      and raw: "(a,b) \<in> csr_rta08_pair_step shp \<mu> A P"
+      unfolding innermost_csr_rta08_pair_step_def st by blast
+    from raw[unfolded csr_rta08_pair_step_def]
+    have "(a,b) \<in> csr_rta08_pair_step shp \<mu> A (P - Q)"
+    proof
+      assume noncoll: "(a,b) \<in> {(l \<cdot> \<sigma>,r \<cdot> \<sigma>) |l r \<sigma>.
+        (l,r) \<in> P \<and> is_Fun r}"
+      then obtain l r \<sigma> where a: "a = l \<cdot> \<sigma>" and b: "b = r \<cdot> \<sigma>"
+        and pair: "(l,r) \<in> P" and rhs: "is_Fun r" by blast
+      have "(l,r) \<notin> Q"
+      proof
+        assume inQ: "(l,r) \<in> Q"
+        with pair rhs have "(l,r) \<in> csr_rta08_noncollapsing_pairs (P \<inter> Q)"
+          unfolding csr_rta08_noncollapsing_pairs_def by auto
+        with removed_S have "(l,r) \<in> S" by blast
+        with subst_S have "(a,b) \<in> S" unfolding a b
+          by (auto simp: subst.closed_def)
+        with notS st show False by simp
+      qed
+      with pair rhs show ?thesis unfolding csr_rta08_pair_step_def a b by blast
+    next
+      assume collapse: "(a,b) \<in>
+        {(l \<cdot> \<sigma>,sharp_term shp (\<sigma> x |_ q)) |l x \<sigma> q.
+          (l,Var x) \<in> P \<and> q \<in> mu_fun_poss \<mu> (\<sigma> x) \<and>
+          is_Fun (\<sigma> x |_ q) \<and> A (\<sigma> x |_ q)}"
+      from raw_order raw have "(a,b) \<in> S \<union> NS" by blast
+      moreover from collapse obtain l x \<sigma> q where
+        pair: "(l,Var x) \<in> P" and q: "q \<in> mu_fun_poss \<mu> (\<sigma> x)"
+        and target: "is_Fun (\<sigma> x |_ q)" and admitted: "A (\<sigma> x |_ q)"
+        and a: "a = l \<cdot> \<sigma>" and b: "b = sharp_term shp (\<sigma> x |_ q)" by blast
+      from orient pair have pair_ord: "(l,Var x) \<in> S \<union> NS" by blast
+      have inst_ord: "(l \<cdot> \<sigma>,\<sigma> x) \<in> S \<union> NS"
+        using pair_ord subst_S subst_NS by (auto simp: subst.closed_def)
+      from csr_rta08_active_subterm_bridge[OF q]
+      have active: "(\<sigma> x,\<sigma> x |_ q) \<in> NS"
+        using active_NS refl_NS unfolding refl_on_def by auto
+      from mark_S target admitted have mark:
+        "(\<sigma> x |_ q,sharp_term shp (\<sigma> x |_ q)) \<in> S" by blast
+      have "(a,b) \<in> S" unfolding a b
+        using inst_ord active mark compat_S_NS trans_S_point trans_NS_point compat_NS_S by blast
+      with notS st show ?thesis by simp
+    qed
+    with inner show "st \<in> innermost_csr_rta08_pair_step shp \<mu> R A (P - Q)"
+      unfolding innermost_csr_rta08_pair_step_def st by blast
+  qed
+  have residual_SN: "SN_rel
+      (innermost_csr_rta08_pair_step shp \<mu> R A (P - Q))
+      (innermost_csdp_step shp \<mu> R)"
+    using residual_finite unfolding finite_innermost_csr_rta08_dpp_def .
+  have "SN_rel (innermost_csr_rta08_pair_step shp \<mu> R A P)
+      (innermost_csdp_step shp \<mu> R)"
+    by (rule SN_rel_compat_redpair_residual[
+      OF redpair rewrite_NS pair_order residual residual_SN])
+  then show ?thesis unfolding finite_innermost_csr_rta08_dpp_def .
+qed
+
+lemma csr_rta08_redpair_proc_innermost_sound:
+  fixes J :: "('dpp, ('f::{showl, compare_order},
+      'l::{showl, compare_order}) lab, string) dpp_ops"
+    and \<mu> :: "(('f, 'l) lab) muL"
+    and rp :: "(('f, 'l) lab, string) rel_impl"
+  assumes J: "dpp_spec J" and rp: "rel_impl rp"
+    and proc: "csr_rta08_redpair_proc J \<mu> rp Premove dpp = return dpp'"
+  shows "(finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp'))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp'))))
+      (set (dpp_ops.pairs J dpp')) \<longrightarrow>
+    finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp))) \<and>
+    ((\<forall>dp\<in>set (dpp_ops.pairs J dpp'). is_Var (snd dp)) \<longrightarrow>
+    finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp)))"
+proof -
+  interpret dpp_spec J by (rule J)
+  obtain F where ws: "rel_impl.not_wst rp = Some F"
+    using proc unfolding csr_rta08_redpair_proc_def
+    by (cases "rel_impl.not_wst rp", auto)
+  obtain ps pns where split: "split_pairs dpp Premove = (ps,pns)"
+    by force
+  from split_pairs_sound[OF split]
+  have ps: "set ps = set (pairs dpp) \<inter> set Premove"
+    and pns: "set pns = set (pairs dpp) - set Premove"
+    by auto
+  let ?D = "defined_list (rules dpp)"
+  let ?proj = "csr_rta08_projection_rules_list \<mu> F"
+  let ?marks = "csr_rta08_marking_rules_list Sharp ?D"
+  let ?cps = "filter (is_Var \<circ> snd) ps"
+  let ?nps = "filter (is_Fun \<circ> snd) ps"
+  define weak_list where "weak_list = rules dpp @ ?proj @ ?cps @ pns"
+  define strict_list where "strict_list = ?nps @ ?marks"
+  from proc[unfolded csr_rta08_redpair_proc_def ws split Let_def,
+      simplified]
+  have valid: "isOK (rel_impl_redpair rp)"
+    and weak: "isOK (rel_impl_ns rp weak_list)"
+    and strict: "isOK (rel_impl_s rp strict_list)"
+    and dpp': "dpp' = delete_pairs dpp Premove"
+    by (auto simp: weak_list_def strict_list_def)
+  from valid[unfolded rel_impl_redpair_def, simplified]
+  have impl_valid: "isOK (rel_impl.valid rp)"
+    and standard: "isOK (rel_impl.standard rp)"
+    and sn: "isOK (rel_impl.SN rp)"
+    and subst: "isOK (rel_impl.subst_s rp)"
+    by auto
+  from rp[unfolded rel_impl_def] impl_valid
+  have all_rel: "\<forall>V. \<exists>S NS NST. rel_impl_prop rp V S NS NST"
+    by blast
+  have all_rel': "\<exists>S NS NST.
+      rel_impl_prop rp (strict_list @ weak_list) S NS NST"
+    by (rule spec[OF all_rel])
+  obtain S NS NST where rel_prop:
+      "rel_impl_prop rp (strict_list @ weak_list) S NS NST"
+    using all_rel' by presburger
+  have strict_checks: "\<forall>lr\<in>set strict_list. isOK (rel_impl.s rp lr)"
+    using strict unfolding rel_impl_s_def
+    by (auto simp: isOK_check_allm)
+  have weak_checks: "\<forall>lr\<in>set weak_list. isOK (rel_impl.ns rp lr)"
+    using weak unfolding rel_impl_ns_def
+    by (auto simp: isOK_check_allm)
+  have orientation: "\<forall>st. st \<in> set (strict_list @ weak_list) \<longrightarrow>
+      ((isOK (rel_impl.s rp st) \<longrightarrow> st \<in> S) \<and>
+       (isOK (rel_impl.ns rp st) \<longrightarrow> st \<in> NS) \<and>
+       (isOK (rel_impl.nst rp st) \<longrightarrow> st \<in> NST))"
+    by (rule conjunct1[OF rel_prop])
+  have strict_S: "set strict_list \<subseteq> S"
+    using orientation strict_checks by auto
+  have weak_NS: "set weak_list \<subseteq> NS"
+    using orientation weak_checks by auto
+  from rel_prop have ctxt_NS: "ctxt.closed NS"
+    and trans_NS: "trans NS"
+    and refl_NS: "refl NS"
+    and subst_NS: "subst.closed NS"
+    and info0: "not_subterm_rel_info NS (rel_impl.not_wst rp)"
+    by auto
+  from rel_prop standard have trans_S: "trans S"
+    and S_NS: "S \<subseteq> NS"
+    and S_NS_comp: "S O NS \<subseteq> S"
+    and NS_S_comp: "NS O S \<subseteq> S"
+    by auto
+  from rel_prop subst have subst_S: "subst.closed S" by auto
+  from rel_prop sn have SN_S: "SN S" by auto
+  from info0 have info: "not_subterm_rel_info NS (Some F)"
+    unfolding ws .
+  have redpair: "compat_redpair_order S NS"
+    by (unfold_locales; fact)
+  have rules_NS: "set (rules dpp) \<subseteq> NS"
+    using weak_NS unfolding weak_list_def by auto
+  have rewrite_NS:
+      "innermost_csdp_step Sharp (mu_of \<mu>) (set (rules dpp)) \<subseteq> NS"
+  proof -
+    have inner_rstep:
+      "innermost_csdp_step Sharp (mu_of \<mu>) (set (rules dpp))
+        \<subseteq> rstep (set (rules dpp))"
+      unfolding innermost_csdp_step_def
+      by (auto dest: rstep_r_p_s_imp_rstep)
+    have "rstep (set (rules dpp)) \<subseteq> rstep NS"
+      by (rule rstep_mono[OF rules_NS])
+    also have "rstep NS \<subseteq> NS"
+      by (rule rstep_subset[OF ctxt_NS subst_NS subset_refl])
+    finally show ?thesis using inner_rstep by blast
+  qed
+  have proj_NS: "set ?proj \<subseteq> NS"
+    using weak_NS unfolding weak_list_def by auto
+  have active_NS: "{(s,t). mu_supt (mu_of \<mu>) s t} \<subseteq> NS"
+    by (rule csr_rta08_projection_rules_cover_active[OF redpair info proj_NS])
+  have marks_S: "set ?marks \<subseteq> S"
+    using strict_S unfolding strict_list_def by auto
+  have mark_S: "{(t, sharp_term Sharp t) |t. is_Fun t \<and>
+      csr_rta08_defined_target (set ?D) t} \<subseteq> S"
+    by (rule csr_rta08_marking_rules_cover[OF redpair marks_S])
+  have nps_S: "set ?nps \<subseteq> S"
+    using strict_S unfolding strict_list_def by auto
+  have cps_NS: "set ?cps \<subseteq> NS"
+    using weak_NS unfolding weak_list_def by auto
+  have pns_NS: "set pns \<subseteq> NS"
+    using weak_NS unfolding weak_list_def by auto
+  have orient: "set (pairs dpp) \<subseteq> S \<union> NS"
+  proof
+    fix dp
+    assume pair: "dp \<in> set (pairs dpp)"
+    show "dp \<in> S \<union> NS"
+    proof (cases "dp \<in> set Premove")
+      case True
+      with pair have in_ps: "dp \<in> set ps" unfolding ps by auto
+      obtain l r where dp: "dp = (l,r)" by (cases dp)
+      show ?thesis
+      proof (cases r)
+        case (Var x)
+        with in_ps cps_NS show ?thesis unfolding dp by auto
+      next
+        case (Fun f ts)
+        with in_ps nps_S show ?thesis unfolding dp by auto
+      qed
+    next
+      case False
+      with pair pns_NS show ?thesis unfolding pns by auto
+    qed
+  qed
+  have pairs': "set (pairs dpp') = set (pairs dpp) - set Premove"
+    using dpp' delete_P_Pw_sound[of dpp Premove Premove]
+      pairs_sound[of dpp'] by auto
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using dpp' delete_P_Pw_sound[of dpp Premove Premove]
+      rules_sound[of dpp'] by auto
+  show ?thesis
+  proof (intro conjI impI)
+    assume residual: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (rules dpp'))
+      (csr_rta08_defined_target (set (defined_list (rules dpp'))))
+      (set (pairs dpp'))"
+    have removed_S: "csr_rta08_noncollapsing_pairs
+      (set (pairs dpp) \<inter> set Premove) \<subseteq> S"
+      using nps_S ps unfolding csr_rta08_noncollapsing_pairs_def by auto
+    have residual': "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (rules dpp))
+      (csr_rta08_defined_target (set (defined_list (rules dpp))))
+      (set (pairs dpp) - set Premove)"
+      using residual pairs' rules' by simp
+    show "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (rules dpp))
+      (csr_rta08_defined_target (set (defined_list (rules dpp))))
+      (set (pairs dpp))"
+      by (rule finite_innermost_csr_rta08_dpp_redpair[
+        OF redpair orient removed_S rewrite_NS active_NS mark_S residual'])
+  next
+    assume collapsing: "\<forall>dp\<in>set (pairs dpp'). is_Var (snd dp)"
+    have noncoll_S:
+      "csr_rta08_noncollapsing_pairs (set (pairs dpp)) \<subseteq> S"
+    proof (rule ccontr)
+      assume not_sub: "\<not> csr_rta08_noncollapsing_pairs
+        (set (pairs dpp)) \<subseteq> S"
+      then obtain dp where mem:
+        "dp \<in> csr_rta08_noncollapsing_pairs (set (pairs dpp))"
+        and notS: "dp \<notin> S" by blast
+      from mem have pair: "dp \<in> set (pairs dpp)"
+        and rhs_fun: "is_Fun (snd dp)"
+        unfolding csr_rta08_noncollapsing_pairs_def by auto
+      have "dp \<notin> set Premove"
+        using pair nps_S ps notS rhs_fun by auto
+      with pair pairs' have "dp \<in> set (pairs dpp')" by auto
+      with collapsing have "is_Var (snd dp)" by auto
+      with rhs_fun show False by (cases "snd dp", auto)
+    qed
+    show "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (rules dpp))
+      (csr_rta08_defined_target (set (defined_list (rules dpp))))
+      (set (pairs dpp))"
+      by (rule finite_innermost_csr_rta08_dpp_redpair_terminal[
+        OF redpair orient noncoll_S rewrite_NS active_NS mark_S])
+  qed
+qed
+
+fun check_innermost_csr_rta08_terminal ::
+  "('dpp, ('f::{showl,compare_order}, 'l::{showl,compare_order}) lab,
+      string) dpp_ops \<Rightarrow>
+   (('f,'l) lab) muL \<Rightarrow> showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f,'l,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp Pr U P_is_Empty)) =
+    debug i (STR ''terminal innermost RTA08 reduction pair'') (do {
+      dpp' \<leftarrow> csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp;
+      check (list_all (is_Var \<circ> snd) (dpp_ops.pairs J dpp'))
+        (i \<circ> showsl_lit
+          (STR '': terminal innermost RTA08 reduction pair leaves a non-collapsing dependency pair''))
+    })"
+| "check_innermost_csr_rta08_terminal J \<mu> i dpp prf =
+    error (i \<circ> showsl_lit
+      (STR '': innermost RTA08 proof is not a terminal reduction-pair proof''))"
+
+lemma check_innermost_csr_rta08_terminal_sound:
+  fixes J :: "('dpp, ('f::{showl,compare_order},
+      'l::{showl,compare_order}) lab,string) dpp_ops"
+  assumes J: "dpp_spec J"
+    and ok: "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp prf)"
+  shows "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.rules J dpp))
+    (csr_rta08_defined_target
+      (set (defined_list (dpp_ops.rules J dpp))))
+    (set (dpp_ops.pairs J dpp))"
+using ok
+proof (cases "prf")
+  case (CSR_DP_Ordinary_Proof child)
+  then show ?thesis
+  proof (cases child)
+    case (Redpair_UR_Proc redp Pr U tail)
+    then show ?thesis
+    proof (cases tail)
+      case P_is_Empty
+      from ok CSR_DP_Ordinary_Proof Redpair_UR_Proc P_is_Empty
+      have proc_ok:
+        "isOK (csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp)"
+        by auto
+      then obtain dpp' where proc:
+          "csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp = return dpp'"
+        by (cases "csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp", auto)
+      from ok CSR_DP_Ordinary_Proof Redpair_UR_Proc P_is_Empty proc
+      have collapsing_list:
+          "list_all (is_Var \<circ> snd) (dpp_ops.pairs J dpp')"
+        by simp
+      from collapsing_list
+      have collapsing_ball:
+          "Ball (set (dpp_ops.pairs J dpp')) (is_Var \<circ> snd)"
+        by (metis list_all_iff)
+      have collapsing:
+          "\<forall>dp\<in>set (dpp_ops.pairs J dpp'). is_Var (snd dp)"
+      proof (intro ballI)
+        fix dp
+        assume mem: "dp \<in> set (dpp_ops.pairs J dpp')"
+        from collapsing_ball mem have "(is_Var \<circ> snd) dp"
+          by (rule bspec)
+        then show "is_Var (snd dp)" by simp
+      qed
+      show ?thesis
+        by (rule conjunct2[OF csr_rta08_redpair_proc_innermost_sound[
+          OF J get_rel_impl proc]], rule collapsing)
+    qed (use ok CSR_DP_Ordinary_Proof Redpair_UR_Proc in simp_all)
+  qed (use ok CSR_DP_Ordinary_Proof in simp_all)
+qed (use ok in simp_all)
+
+fun check_innermost_csr_rta08_dp_proof ::
+  "('dpp, ('f::{showl,compare_order}, 'l::{showl,compare_order}) lab,
+      string) dpp_ops \<Rightarrow>
+   (('f,'l) lab) muL \<Rightarrow> showsl \<Rightarrow> 'dpp \<Rightarrow>
+   ('f,'l,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+and check_innermost_csr_rta08_graph_components ::
+  "('dpp, ('f::{showl,compare_order}, 'l::{showl,compare_order}) lab,
+      string) dpp_ops \<Rightarrow>
+   (('f,'l) lab) muL \<Rightarrow> showsl \<Rightarrow> 'dpp \<Rightarrow>
+   (('f,'l,string) csr_dp_termination_proof option \<times>
+    ('f,'l,string) trsLL) list \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_rta08_dp_proof J \<mu> i dpp
+      (CSR_DP_Dep_Graph_Proc edps) =
+    debug i (STR ''innermost RTA08 CSR dependency graph'') (do {
+      _ \<leftarrow> check_csr_rta08_dep_graph_proc J \<mu> dpp edps;
+      check_innermost_csr_rta08_graph_components J \<mu> i dpp edps
+    })"
+| "check_innermost_csr_rta08_dp_proof J \<mu> i dpp
+      (CSR_DP_Redpair_UR_Proc redp Pr U subprf) =
+    try (debug i (STR ''recursive innermost RTA08 reduction pair'') (do {
+        dpp' \<leftarrow> csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp
+          <+? (\<lambda>s. i \<circ> showsl_lit
+            (STR '': error when applying recursive innermost RTA08 reduction pair\<newline>'') \<circ> s);
+        check_innermost_csr_rta08_dp_proof J \<mu> (add_index i 1) dpp' subprf
+          <+? (\<lambda>s. i \<circ> showsl_lit
+            (STR '': error below recursive innermost RTA08 reduction pair\<newline>'') \<circ> s)
+      }))
+      catch (\<lambda>_. check_innermost_csr_rta08_terminal J \<mu> i dpp
+        (CSR_DP_Redpair_UR_Proc redp Pr U subprf))"
+| "check_innermost_csr_rta08_dp_proof J \<mu> i dpp prf =
+    check_innermost_csr_rta08_terminal J \<mu> i dpp prf"
+| "check_innermost_csr_rta08_graph_components J \<mu> i dpp [] = succeed"
+| "check_innermost_csr_rta08_graph_components J \<mu> i dpp
+      ((None,C)#rest) =
+    check_innermost_csr_rta08_graph_components J \<mu>
+      (add_index i 1) dpp rest"
+| "check_innermost_csr_rta08_graph_components J \<mu> i dpp
+      ((Some prf,C)#rest) = do {
+    check_innermost_csr_rta08_dp_proof J \<mu> (add_index i 1)
+      (dpp_ops.intersect_pairs J dpp C) prf;
+    check_innermost_csr_rta08_graph_components J \<mu>
+      (add_index i 1) dpp rest
+  }"
+
+lemma check_innermost_csr_rta08_graph_components_member:
+  assumes ok: "isOK (check_innermost_csr_rta08_graph_components
+      J \<mu> i dpp edps)"
+    and mem: "(Some prf,C) \<in> set edps"
+  shows "\<exists>j. isOK (check_innermost_csr_rta08_dp_proof
+    J \<mu> j (dpp_ops.intersect_pairs J dpp C) prf)"
+  using ok mem
+proof (induct edps arbitrary: i)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons head rest)
+  obtain po D where head: "head = (po,D)" by (cases head)
+  show ?case
+  proof (cases po)
+    case None
+    from Cons.prems(1) head None have tail:
+      "isOK (check_innermost_csr_rta08_graph_components
+        J \<mu> (add_index i 1) dpp rest)" by simp
+    from Cons.prems(2) head None have mem': "(Some prf,C) \<in> set rest"
+      by auto
+    show ?thesis by (rule Cons.hyps[OF tail mem'])
+  next
+    case (Some p)
+    show ?thesis
+    proof (cases "(Some prf,C) = head")
+      case True
+      from Cons.prems(1) head Some True show ?thesis by auto
+    next
+      case False
+      from Cons.prems(1) head Some have tail:
+        "isOK (check_innermost_csr_rta08_graph_components
+          J \<mu> (add_index i 1) dpp rest)" by simp
+      from Cons.prems(2) False have mem': "(Some prf,C) \<in> set rest"
+        by auto
+      show ?thesis by (rule Cons.hyps[OF tail mem'])
+    qed
+  qed
+qed
+
+lemma check_innermost_csr_rta08_dp_proof_sound:
+  assumes J: "dpp_spec J"
+    and plain: "plain_csr_dpp J dpp"
+    and ok: "isOK (check_innermost_csr_rta08_dp_proof J \<mu> i dpp prf)"
+  shows "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.rules J dpp))
+    (csr_rta08_defined_target
+      (set (defined_list (dpp_ops.rules J dpp))))
+    (set (dpp_ops.pairs J dpp))"
+  using ok plain
+proof (induct "prf" arbitrary: dpp i)
+  case (CSR_DP_Dep_Graph_Proc edps)
+  from CSR_DP_Dep_Graph_Proc.prems(1) have graph_ok:
+      "isOK (check_csr_rta08_dep_graph_proc J \<mu> dpp edps)"
+    and components_ok:
+      "isOK (check_innermost_csr_rta08_graph_components
+        J \<mu> i dpp edps)" by auto
+  show ?case
+  proof (rule check_csr_rta08_dep_graph_proc_innermost_sound[
+      OF J CSR_DP_Dep_Graph_Proc.prems(2) graph_ok])
+    fix proof_id C
+    assume mem: "(Some proof_id,C) \<in> set edps"
+    let ?d = "dpp_ops.intersect_pairs J dpp C"
+    from check_innermost_csr_rta08_graph_components_member[
+      OF components_ok mem]
+    obtain j where rec: "isOK (check_innermost_csr_rta08_dp_proof
+      J \<mu> j ?d proof_id)" by blast
+    have plain': "plain_csr_dpp J ?d"
+      by (rule plain_csr_dpp_intersect_pairs[
+        OF J CSR_DP_Dep_Graph_Proc.prems(2)])
+    have ih: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J ?d))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J ?d))))
+      (set (dpp_ops.pairs J ?d))"
+      apply (rule CSR_DP_Dep_Graph_Proc.hyps)
+          apply (rule mem)
+         apply simp
+        apply simp
+       apply (rule rec)
+      apply (rule plain')
+      done
+    interpret dpp_spec J by fact
+    have sem: "dpp_ops.dpp J ?d =
+      (NFS dpp,M dpp,set (P dpp) \<inter> set C,
+        set (Pw dpp) \<inter> set C,set (Q dpp),set (R dpp),set (Rw dpp))"
+      by (rule intersect_pairs_sound)
+    have sem': "dpp_ops.dpp J ?d =
+      (NFS ?d,M ?d,set (P ?d),set (Pw ?d),set (Q ?d),
+        set (R ?d),set (Rw ?d))"
+      by (rule dpp_sound)
+    have pairs: "set (pairs ?d) = set (pairs dpp) \<inter> set C"
+      using sem sem' pairs_sound[of dpp] pairs_sound[of ?d] by auto
+    have rules: "set (rules ?d) = set (rules dpp)"
+      using sem sem' rules_sound[of dpp] rules_sound[of ?d] by auto
+    have defined: "set (defined_list (rules ?d)) =
+      set (defined_list (rules dpp))"
+      using rules by simp
+    show "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp) \<inter> set C)"
+      using ih pairs rules defined by simp
+  qed
+next
+  case CSR_DP_P_is_Empty
+  from CSR_DP_P_is_Empty.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      CSR_DP_P_is_Empty)"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Ordinary_Proof x)
+  from CSR_DP_Ordinary_Proof.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Ordinary_Proof x))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Subterm_Criterion_Proc x1 x2 x3 subproof)
+  from CSR_DP_Subterm_Criterion_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Subterm_Criterion_Proc x1 x2 x3 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Gen_Subterm_Criterion_Proc x1 x2 subproof)
+  from CSR_DP_Gen_Subterm_Criterion_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Gen_Subterm_Criterion_Proc x1 x2 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Usable_Rules_Proc x1 subproof)
+  from CSR_DP_Usable_Rules_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Usable_Rules_Proc x1 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Instantiation_Proc x1 x2 subproof)
+  from CSR_DP_Instantiation_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Instantiation_Proc x1 x2 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof)
+  from CSR_DP_Forward_Instantiation_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Forward_Instantiation_Proc x1 x2 subproof))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+next
+  case (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof)
+  let ?recursive = "debug i (STR ''recursive innermost RTA08 reduction pair'') (do {
+      dpp' \<leftarrow> csr_rta08_redpair_proc J \<mu> (get_rel_impl x1) x2 dpp
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error when applying recursive innermost RTA08 reduction pair\<newline>'') \<circ> s);
+      check_innermost_csr_rta08_dp_proof J \<mu> (add_index i 1) dpp' subproof
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below recursive innermost RTA08 reduction pair\<newline>'') \<circ> s)
+    })"
+  show ?case
+  proof (cases ?recursive)
+    case (Inr value)
+    from Inr CSR_DP_Redpair_UR_Proc.prems(1) obtain dpp' where
+      proc: "csr_rta08_redpair_proc J \<mu> (get_rel_impl x1) x2 dpp = return dpp'"
+      and rec: "isOK (check_innermost_csr_rta08_dp_proof J \<mu>
+        (add_index i 1) dpp' subproof)" by auto
+    have dpp': "dpp' = dpp_ops.delete_pairs J dpp x2"
+      using proc unfolding csr_rta08_redpair_proc_def
+      by (cases "rel_impl.not_wst (get_rel_impl x1)", auto)
+    have plain': "plain_csr_dpp J dpp'"
+      unfolding dpp' by (rule plain_csr_dpp_delete_pairs[
+        OF J CSR_DP_Redpair_UR_Proc.prems(2)])
+    have fin': "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp'))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp'))))
+      (set (dpp_ops.pairs J dpp'))"
+      by (rule CSR_DP_Redpair_UR_Proc.hyps[OF rec plain'])
+    show ?thesis
+      by (rule conjunct1[OF csr_rta08_redpair_proc_innermost_sound[
+        OF J get_rel_impl proc]], rule fin')
+  next
+    case (Inl error)
+    from Inl CSR_DP_Redpair_UR_Proc.prems(1) have terminal:
+      "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+        (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof))" by simp
+    show ?thesis
+      by (rule check_innermost_csr_rta08_terminal_sound[OF J terminal])
+  qed
+next
+  case (CSR_DP_Size_Change_Subterm_Proc x)
+  from CSR_DP_Size_Change_Subterm_Proc.prems(1) have terminal:
+    "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
+      (CSR_DP_Size_Change_Subterm_Proc x))"
+    by (simp only: check_innermost_csr_rta08_dp_proof.simps)
+  from check_innermost_csr_rta08_terminal_sound[OF J terminal] show ?case .
+qed
+
+lemma innermost_csr_progress_relation_imp_SN:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+  assumes progress:
+    "\<And>t. t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<Longrightarrow>
+      \<exists>u. u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<and>
+        (sharp_term shp t, sharp_term shp u) \<in>
+          (innermost_csdp_step shp \<mu> R)\<^sup>* O Q O
+          (innermost_csdp_step shp \<mu> R)\<^sup>*"
+    and fin: "SN_rel Q (innermost_csdp_step shp \<mu> R)"
+  shows "SN (innermost_csstep \<mu> R)"
+proof (rule ccontr)
+  assume not_sn: "\<not> SN (innermost_csstep \<mu> R)"
+  from not_SN_imp_Tinf[OF not_sn]
+  obtain t0 where t0_T: "t0 \<in> Tinf (innermost_csstep \<mu> R)"
+    by blast
+  from Tinf_imp_mu_Tinf[OF t0_T]
+  have t0: "t0 \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)" .
+  let ?S = "innermost_csdp_step shp \<mu> R"
+  let ?rel = "?S\<^sup>* O Q O ?S\<^sup>*"
+  have all_ex: "\<forall>t. \<exists>u.
+      t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<longrightarrow>
+      u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<and>
+        (sharp_term shp t, sharp_term shp u) \<in> ?rel"
+    using progress by blast
+  from choice[OF all_ex]
+  obtain nxt where nxt:
+    "\<And>t. t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<Longrightarrow>
+      nxt t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<and>
+        (sharp_term shp t, sharp_term shp (nxt t)) \<in> ?rel"
+    by blast
+  define ts where "ts = rec_nat t0 (\<lambda>n t. nxt t)"
+  have ts_T: "ts n \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)" for n
+  proof (induct n)
+    case 0
+    then show ?case unfolding ts_def using t0 by simp
+  next
+    case (Suc n)
+    from nxt[OF Suc.hyps]
+    have "nxt (ts n) \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+      by simp
+    then show ?case unfolding ts_def by simp
+  qed
+  have ts_step:
+    "(sharp_term shp (ts n), sharp_term shp (ts (Suc n))) \<in> ?rel"
+    for n
+    using nxt[OF ts_T[of n]] unfolding ts_def by simp
+  define f where "f n = sharp_term shp (ts n)" for n
+  have chain: "\<And>n. (f n,f (Suc n)) \<in> ?rel"
+    unfolding f_def using ts_step by simp
+  have "\<not> SN_rel Q ?S"
+    unfolding SN_rel_on_def SN_defs using chain by blast
+  with fin show False by contradiction
+qed
+
+lemma mu_Tinf_imp_innermost_rta08_relstep:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+  assumes wf: "wf_trs R"
+    and Tinf: "t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+    and D: "{f. defined R f} \<subseteq> D"
+  shows "\<exists>u. u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<and>
+    (sharp_term shp t, sharp_term shp u) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>* O
+      innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R) O
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+proof -
+  from mu_Tinf_innermost_imp_first_root_step[OF Tinf]
+  obtain s v where pref: "(t,s) \<in> (innermost_csnrstep \<mu> R)\<^sup>*"
+    and root: "(s,v) \<in> innermost_csrstep \<mu> R"
+    and notSN_v: "\<not> SN_on (innermost_csstep \<mu> R) {v}"
+    by blast
+  have sv: "(s,v) \<in> innermost_csstep \<mu> R"
+    using root unfolding innermost_csstep_root_nonroot by auto
+  have notSN_s: "\<not> SN_on (innermost_csstep \<mu> R) {s}"
+    by (rule step_notSN_on_source[OF sv notSN_v])
+  have sT: "s \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+    by (rule innermost_csnrsteps_mu_Tinf_preserve[
+      OF wf pref Tinf notSN_s])
+  from innermost_csrstep_mu_Tinf_rhs_imp_rta08_pair_step[
+    OF wf root sT notSN_v D, where shp=shp]
+  obtain u where uT: "u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+    and pair: "(sharp_term shp s,sharp_term shp u) \<in>
+      innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R)"
+    by blast
+  have left: "(sharp_term shp t,sharp_term shp s) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+    by (rule innermost_csnrsteps_imp_sharp_innermost_csdp_steps[
+      OF pref, where shp=shp])
+  have right: "(sharp_term shp u,sharp_term shp u) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>*" by simp
+  show ?thesis using uT left pair right by blast
+qed
+
+theorem finite_innermost_csr_rta08_CSDP_on_imp_SN:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+  assumes wf: "wf_trs R"
+    and D: "{f. defined R f} \<subseteq> D"
+    and fin: "finite_innermost_csr_rta08_dpp shp \<mu> R
+      (csr_rta08_defined_target D)
+      (csr_rta08_CSDP_on shp \<mu> D R)"
+  shows "SN (innermost_csstep \<mu> R)"
+proof (rule innermost_csr_progress_relation_imp_SN)
+  fix t
+  assume "t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+  then show "\<exists>u. u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R) \<and>
+    (sharp_term shp t, sharp_term shp u) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>* O
+      innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R) O
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+    by (rule mu_Tinf_imp_innermost_rta08_relstep[OF wf _ D])
+next
+  show "SN_rel
+      (innermost_csr_rta08_pair_step shp \<mu> R
+        (csr_rta08_defined_target D)
+        (csr_rta08_CSDP_on shp \<mu> D R))
+      (innermost_csdp_step shp \<mu> R)"
+    using fin unfolding finite_innermost_csr_rta08_dpp_def .
+qed
+
+theorem csr_switch_via_innermost_rta08_CSDP_on:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and R :: "('f,string) trs"
+  assumes overlay: "csr_switch_overlay R"
+    and wf: "wf_trs R"
+    and D: "{f. defined R f} \<subseteq> D"
+    and fin: "finite_innermost_csr_rta08_dpp shp \<mu> R
+      (csr_rta08_defined_target D)
+      (csr_rta08_CSDP_on shp \<mu> D R)"
+  shows "SN (csstep \<mu> R)"
+  by (rule csr_switch_overlay_innermost_termination[OF overlay wf],
+      rule finite_innermost_csr_rta08_CSDP_on_imp_SN[OF wf D fin])
+
+definition check_innermost_csr_rta08_termination_proof ::
+  "('dpp, ('f::{showl,compare_order}, label_type) lab,string) dpp_ops \<Rightarrow>
+   showsl \<Rightarrow> (('f,label_type) lab) muL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_rta08_termination_proof J i \<mu> R P prf =
+    debug i (STR ''terminal innermost RTA08 CSR dependency pairs'') (do {
+      check_csr_orthogonal R;
+      csr_sharp_mu_check \<mu>;
+      dpp \<leftarrow> csr_rta08_dependency_pairs_tt J \<mu> R P;
+      check_innermost_csr_rta08_dp_proof J \<mu> (add_index i 1) dpp prf
+    })"
+
+lemma check_innermost_csr_rta08_termination_proof_sound:
+  fixes J :: "('dpp, ('f::{showl,compare_order}, label_type) lab,string) dpp_ops"
+  assumes J: "dpp_spec J"
+    and ok: "isOK (check_innermost_csr_rta08_termination_proof
+      J i \<mu> R P prf)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof -
+  from ok obtain dpp where ortho_ok: "isOK (check_csr_orthogonal R)"
+    and tt: "csr_rta08_dependency_pairs_tt J \<mu> R P = return dpp"
+    and rec: "isOK (check_innermost_csr_rta08_dp_proof
+      J \<mu> (add_index i 1) dpp prf)"
+    unfolding check_innermost_csr_rta08_termination_proof_def by auto
+  from csr_rta08_dependency_pairs_tt_sound[OF J tt]
+  have wf: "wf_trs (set R)"
+    and pairs: "set P = csr_rta08_CSDP_on Sharp (mu_of \<mu>)
+      (set (defined_list R)) (set R)"
+    by auto
+  interpret dpp_spec J by fact
+  from csr_rta08_dependency_pairs_tt_sound[OF J tt]
+  have dpp: "dpp = dpp_ops.mk J False False P [] [] [] R" by auto
+  have sem: "dpp_ops.dpp J dpp = (False,False,set P,{},{},{},set R)"
+    using dpp unfolding dpp_spec.mk_sound[OF J] by simp
+  have sem': "dpp_ops.dpp J dpp =
+      (NFS dpp,M dpp,set (local.P dpp),set (Pw dpp),set (Q dpp),
+        set (local.R dpp),set (Rw dpp))"
+    by (rule dpp_sound)
+  have plain: "plain_csr_dpp J dpp"
+    using sem sem' unfolding plain_csr_dpp_def by auto
+  have fin: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))
+      (csr_rta08_defined_target
+        (set (defined_list (dpp_ops.rules J dpp))))
+      (set (dpp_ops.pairs J dpp))"
+    by (rule check_innermost_csr_rta08_dp_proof_sound[OF J plain rec])
+  have rules: "set (dpp_ops.rules J dpp) = set R"
+    using sem sem' rules_sound[of dpp] by auto
+  have pairs': "set (dpp_ops.pairs J dpp) = set P"
+    using sem sem' pairs_sound[of dpp] by auto
+  have defined: "set (defined_list (dpp_ops.rules J dpp)) =
+      set (defined_list R)"
+    using rules by simp
+  note fin' = fin[unfolded rules defined pairs']
+  have exact: "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+      (set R) (csr_rta08_defined_target (set (defined_list R)))
+      (csr_rta08_CSDP_on Sharp (mu_of \<mu>)
+        (set (defined_list R)) (set R))"
+    using fin' pairs by simp
+  have overlay: "csr_switch_overlay (set R)"
+    by (rule check_csr_orthogonal_sound[OF ortho_ok])
+  have D: "{f. defined (set R) f} \<subseteq> set (defined_list R)"
+    using tt[unfolded csr_rta08_dependency_pairs_tt_def Let_def,
+      simplified] by auto
+  show ?thesis
+    by (rule csr_switch_via_innermost_rta08_CSDP_on[
+      OF overlay wf D exact])
+qed
+
+definition check_innermost_csr_or_rta08_termination_proof ::
+  "('tp, ('f::{showl,compare_order,countable}, label_type) lab,
+      string) tp_ops \<Rightarrow>
+   ('dpp, ('f,label_type) lab,string) dpp_ops \<Rightarrow>
+   showsl \<Rightarrow> (('f,label_type) lab) muL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) csr_dp_termination_proof \<Rightarrow> showsl check"
+where
+  "check_innermost_csr_or_rta08_termination_proof I J i \<mu> R P prf =
+    (case check_innermost_csr_termination_proof_active_sct I J i \<mu> R P prf of
+       Inr x \<Rightarrow> Inr x
+     | Inl _ \<Rightarrow> check_innermost_csr_rta08_termination_proof
+         J i \<mu> R P prf)"
+
+lemma check_innermost_csr_or_rta08_termination_proof_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_innermost_csr_or_rta08_termination_proof
+      I J i \<mu> R P prf)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof (cases "check_innermost_csr_termination_proof_active_sct
+    I J i \<mu> R P prf")
+  case (Inl e)
+  with ok have "isOK (check_innermost_csr_rta08_termination_proof
+      J i \<mu> R P prf)"
+    unfolding check_innermost_csr_or_rta08_termination_proof_def by simp
+  then show ?thesis
+    by (rule check_innermost_csr_rta08_termination_proof_sound[OF J])
+next
+  case (Inr x)
+  then have "isOK (check_innermost_csr_termination_proof_active_sct
+      I J i \<mu> R P prf)" by simp
+  then show ?thesis
+    by (rule check_innermost_csr_termination_proof_active_sct_sound[OF I J])
+qed
+
+end
