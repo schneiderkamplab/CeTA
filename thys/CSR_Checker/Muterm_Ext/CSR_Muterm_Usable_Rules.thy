@@ -5,6 +5,7 @@ License: LGPL (see file COPYING.LESSER)
 theory CSR_Muterm_Usable_Rules
   imports
     CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
+    CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Innermost_Unhiding_Proofs
 begin
 
@@ -137,6 +138,66 @@ definition finite_muterm_min_typed_dpp where
   "finite_muterm_min_typed_dpp shp \<mu> R P S \<longleftrightarrow>
     SN_rel (muterm_min_typed_pair_step shp \<mu> R P S)
       (csdp_step shp \<mu> R)"
+
+text \<open>
+  Keep the innermost MU problem as a first-class semantic object.  Merely
+  setting an ordinary DPP's innermost flag is not equivalent: unhiding rules
+  are macro bridges, while normal-form obligations refer only to the original
+  context-sensitive rules.
+\<close>
+
+definition muterm_innermost_typed_pair_step where
+  "muterm_innermost_typed_pair_step shp \<mu> R P S =
+    muterm_typed_pair_step P S \<inter>
+      {(s,t). innermost_pair_source shp \<mu> R s}"
+
+definition finite_muterm_innermost_typed_dpp where
+  "finite_muterm_innermost_typed_dpp shp \<mu> R P S \<longleftrightarrow>
+    SN_rel (muterm_innermost_typed_pair_step shp \<mu> R P S)
+      (innermost_csdp_step shp \<mu> R)"
+
+lemma muterm_innermost_typed_pair_step_mono_pairs:
+  assumes "P \<subseteq> Q"
+  shows "muterm_innermost_typed_pair_step shp \<mu> R P S \<subseteq>
+    muterm_innermost_typed_pair_step shp \<mu> R Q S"
+proof
+  fix st
+  assume mem: "st \<in> muterm_innermost_typed_pair_step shp \<mu> R P S"
+  then have typed: "st \<in> muterm_typed_pair_step P S"
+    and source: "st \<in> {(s,t). innermost_pair_source shp \<mu> R s}"
+    unfolding muterm_innermost_typed_pair_step_def by auto
+  have typed': "st \<in> muterm_typed_pair_step Q S"
+  proof -
+    obtain a b where st: "st = (a,b)" by (cases st)
+    from typed[unfolded st muterm_typed_pair_step_def]
+    show ?thesis
+    proof
+      assume nc: "(a,b) \<in> {(s,t). muterm_noncollapsing_rrstep P s t}"
+      have "muterm_noncollapsing_rrstep Q a b"
+        using nc assms unfolding muterm_noncollapsing_rrstep_def by blast
+      then show ?thesis unfolding st muterm_typed_pair_step_def by auto
+    next
+      assume coll: "(a,b) \<in> {(s,t). \<exists>x.
+        muterm_collapsing_rrstep P s x \<and> (x,t) \<in> rrstep S}"
+      then obtain x where px: "muterm_collapsing_rrstep P a x"
+        and xb: "(x,b) \<in> rrstep S" by auto
+      have "muterm_collapsing_rrstep Q a x"
+        using px assms unfolding muterm_collapsing_rrstep_def by blast
+      with xb show ?thesis unfolding st muterm_typed_pair_step_def by auto
+    qed
+  qed
+  show "st \<in> muterm_innermost_typed_pair_step shp \<mu> R Q S"
+    unfolding muterm_innermost_typed_pair_step_def using typed' source by auto
+qed
+
+lemma finite_muterm_innermost_typed_dpp_mono_pairs:
+  assumes sub: "P \<subseteq> Q"
+    and fin: "finite_muterm_innermost_typed_dpp shp \<mu> R Q S"
+  shows "finite_muterm_innermost_typed_dpp shp \<mu> R P S"
+  unfolding finite_muterm_innermost_typed_dpp_def
+  by (rule SN_rel_mono[
+      OF muterm_innermost_typed_pair_step_mono_pairs[OF sub]
+        subset_refl fin[unfolded finite_muterm_innermost_typed_dpp_def]])
 
 lemma finite_muterm_typed_imp_finite_min_typed:
   assumes "finite_muterm_typed_dpp shp \<mu> R P S"
@@ -358,6 +419,80 @@ text \<open>
   deliberately accepts variable pair targets only here; the generic QCS
   usable-rule processor remains unchanged.
 \<close>
+
+text \<open>
+  The innermost branch uses the smaller U-triangle usable-rule set from
+  Definition 18 of the LPAR'08
+  framework.  Only defined symbols at active right-hand-side positions seed
+  the closure.  This criterion must remain distinct from U3: U3 also follows
+  inactive left-hand-side positions and inactive positions in all source-rule
+  right-hand sides.  Conflating the two loses precisely the useful rule set in
+  examples such as Ex1_GM03.
+
+  We state the predicate independently of a reduction order.  The recursive
+  processor below combines it with the innermost-chain invariant and the
+  checked reduction pair.
+\<close>
+
+definition muterm_innermost_ur_closed where
+  "muterm_innermost_ur_closed R U \<mu> P \<longleftrightarrow>
+    U \<subseteq> R \<and>
+    (\<forall>dp\<in>P. \<not> is_Var (snd dp) \<longrightarrow>
+      csr_u3_root_rules_closed R U (snd dp)
+        (mu_fun_poss \<mu> (snd dp))) \<and>
+    (\<forall>lr\<in>U. csr_u3_root_rules_closed R U (snd lr)
+      (mu_fun_poss \<mu> (snd lr)))"
+
+definition muterm_innermost_ur_closed_check where
+  "muterm_innermost_ur_closed_check R U \<mu> P =
+    (list_all (\<lambda>lr. lr \<in> set R) U \<and>
+     list_all (\<lambda>dp. is_Var (snd dp) \<or>
+       csr_rta08_active_root_rules_check R U \<mu> (snd dp)) P \<and>
+     list_all (\<lambda>lr.
+       csr_rta08_active_root_rules_check R U \<mu> (snd lr)) U)"
+
+lemma muterm_innermost_ur_closed_check_sound:
+  assumes "muterm_innermost_ur_closed_check R U \<mu> P"
+  shows "muterm_innermost_ur_closed (set R) (set U) (mu_of \<mu>) (set P)"
+proof -
+  from assms have subset: "set U \<subseteq> set R"
+    and pairs: "\<And>dp. dp \<in> set P \<Longrightarrow> \<not> is_Var (snd dp) \<Longrightarrow>
+      csr_rta08_active_root_rules_check R U \<mu> (snd dp)"
+    and rules: "\<And>lr. lr \<in> set U \<Longrightarrow>
+      csr_rta08_active_root_rules_check R U \<mu> (snd lr)"
+    unfolding muterm_innermost_ur_closed_check_def
+    by (auto simp: list_all_iff)
+  have active_sound: "\<And>t. csr_rta08_active_root_rules_check R U \<mu> t \<Longrightarrow>
+      csr_u3_root_rules_closed (set R) (set U) t
+        (mu_fun_poss (mu_of \<mu>) t)"
+  proof -
+    fix t
+    assume check: "csr_rta08_active_root_rules_check R U \<mu> t"
+    have roots: "csr_u3_root_rules_closed (set R) (set U) t
+        (set (mu_fun_poss_list \<mu> t))"
+      using csr_u3_root_rules_check_sound[OF check[unfolded
+        csr_rta08_active_root_rules_check_def]] by simp
+    show "csr_u3_root_rules_closed (set R) (set U) t
+        (mu_fun_poss (mu_of \<mu>) t)"
+      using roots by simp
+  qed
+  show ?thesis unfolding muterm_innermost_ur_closed_def
+  proof (intro conjI ballI impI)
+    show "set U \<subseteq> set R" by (rule subset)
+  next
+    fix dp
+    assume dp: "dp \<in> set P" and nonvar: "\<not> is_Var (snd dp)"
+    show "csr_u3_root_rules_closed (set R) (set U) (snd dp)
+      (mu_fun_poss (mu_of \<mu>) (snd dp))"
+      by (rule active_sound[OF pairs[OF dp nonvar]])
+  next
+    fix lr
+    assume lr: "lr \<in> set U"
+    show "csr_u3_root_rules_closed (set R) (set U) (snd lr)
+      (mu_fun_poss (mu_of \<mu>) (snd lr))"
+      by (rule active_sound[OF rules[OF lr]])
+  qed
+qed
 
 definition muterm_qcs_ur_closed where
   "muterm_qcs_ur_closed R S W \<mu> P \<longleftrightarrow>
