@@ -7,6 +7,8 @@ theory CSR_Muterm_Usable_Rules
     CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
     CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Innermost_Unhiding_Proofs
+    Auxx.RenamingN
+    Auxx.RenamingN_String
 begin
 
 text \<open>
@@ -18,10 +20,222 @@ text \<open>
   rewrite-rule component of a generic DPP.
 \<close>
 
+definition muterm_rename_many where
+  "muterm_rename_many ren i = (\<lambda>v. rename_many ren (i,v))"
+
 definition muterm_typed_pair_step where
   "muterm_typed_pair_step P S =
     {(s,t). muterm_noncollapsing_rrstep P s t} \<union>
     {(s,t). \<exists>x. muterm_collapsing_rrstep P s x \<and> (x,t) \<in> rrstep S}"
+
+text \<open>
+  A collapsing MU-TERM pair followed by its mandatory unhiding step is an
+  ordinary root step of a composed pair.  Both input rules are renamed apart
+  before composition; this is essential because variables in distinct rules
+  are independent even when their printed names coincide.
+\<close>
+
+definition muterm_compose_collapsing_pair where
+  "muterm_compose_collapsing_pair ren l x a b =
+    (let rp = muterm_rename_many ren 0;
+         rs = rename_single ren;
+         l' = map_vars_term rp l;
+         a' = map_vars_term rs a;
+         b' = map_vars_term rs b
+     in (l' \<cdot> Var(rp x := a'), b'))"
+
+definition muterm_expanded_pairs where
+  "muterm_expanded_pairs ren P S =
+    {(map_vars_term (muterm_rename_many ren 0) l,
+       map_vars_term (muterm_rename_many ren 0) r) | l r.
+       (l,r) \<in> P \<and> \<not> is_Var r} \<union>
+    {muterm_compose_collapsing_pair ren l x a b | l x a b.
+       (l,Var x) \<in> P \<and> (a,b) \<in> S}"
+
+fun muterm_expand_one_pair where
+  "muterm_expand_one_pair ren S (l,Var x) =
+    map (\<lambda>(a,b). muterm_compose_collapsing_pair ren l x a b) S"
+| "muterm_expand_one_pair ren S (l,Fun f ts) =
+    [(map_vars_term (muterm_rename_many ren 0) l,
+      map_vars_term (muterm_rename_many ren 0) (Fun f ts))]"
+
+definition muterm_expanded_pairs_list where
+  "muterm_expanded_pairs_list ren P S =
+    concat (map (muterm_expand_one_pair ren S) P)"
+
+lemma set_muterm_expanded_pairs_list:
+  "set (muterm_expanded_pairs_list ren P S) =
+    muterm_expanded_pairs ren (set P) (set S)"
+proof (rule equalityI)
+  show "set (muterm_expanded_pairs_list ren P S) \<subseteq>
+      muterm_expanded_pairs ren (set P) (set S)"
+  proof
+    fix q
+    assume q: "q \<in> set (muterm_expanded_pairs_list ren P S)"
+    then obtain p where p: "p \<in> set P"
+      and one: "q \<in> set (muterm_expand_one_pair ren S p)"
+      unfolding muterm_expanded_pairs_list_def by auto
+    obtain l r where pair: "p = (l,r)" by (cases p)
+    show "q \<in> muterm_expanded_pairs ren (set P) (set S)"
+    proof (cases r)
+      case (Var x)
+      from one obtain a b where ab: "(a,b) \<in> set S"
+        and qeq: "q = muterm_compose_collapsing_pair ren l x a b"
+        unfolding pair Var by auto
+      show ?thesis unfolding muterm_expanded_pairs_def
+        using p[unfolded pair Var] ab qeq by blast
+    next
+      case (Fun f ts)
+      from one have qeq: "q =
+          (map_vars_term (muterm_rename_many ren 0) l,
+           map_vars_term (muterm_rename_many ren 0) r)"
+        unfolding pair Fun by simp
+      have mem: "(map_vars_term (muterm_rename_many ren 0) l,
+          map_vars_term (muterm_rename_many ren 0) r) \<in>
+          {(map_vars_term (muterm_rename_many ren 0) l,
+            map_vars_term (muterm_rename_many ren 0) r) |l r.
+            (l,r) \<in> set P \<and> \<not> is_Var r}"
+        using p[unfolded pair] Fun by blast
+      show ?thesis unfolding muterm_expanded_pairs_def qeq
+        by (rule UnI1[OF mem])
+    qed
+  qed
+next
+  show "muterm_expanded_pairs ren (set P) (set S) \<subseteq>
+      set (muterm_expanded_pairs_list ren P S)"
+  proof
+    fix q
+    assume q: "q \<in> muterm_expanded_pairs ren (set P) (set S)"
+    from q show "q \<in> set (muterm_expanded_pairs_list ren P S)"
+      unfolding muterm_expanded_pairs_def
+    proof
+      assume nc: "q \<in> {(map_vars_term (muterm_rename_many ren 0) l,
+          map_vars_term (muterm_rename_many ren 0) r) |l r.
+          (l,r) \<in> set P \<and> \<not> is_Var r}"
+      then obtain l r where lr: "(l,r) \<in> set P" and rv: "\<not> is_Var r"
+        and qeq: "q = (map_vars_term (muterm_rename_many ren 0) l,
+          map_vars_term (muterm_rename_many ren 0) r)" by blast
+      from rv obtain f ts where r: "r = Fun f ts" by (cases r) auto
+      have one: "q \<in> set (muterm_expand_one_pair ren S (l,r))"
+        using qeq unfolding r by simp
+      show ?thesis unfolding muterm_expanded_pairs_list_def
+        using lr one by auto
+    next
+      assume coll: "q \<in> {muterm_compose_collapsing_pair ren l x a b |l x a b.
+          (l,Var x) \<in> set P \<and> (a,b) \<in> set S}"
+      then obtain l x a b where lx: "(l,Var x) \<in> set P"
+        and ab: "(a,b) \<in> set S"
+        and qeq: "q = muterm_compose_collapsing_pair ren l x a b" by blast
+      have one: "q \<in> set (muterm_expand_one_pair ren S (l,Var x))"
+        using ab qeq by auto
+      have member_set: "set (muterm_expand_one_pair ren S (l,Var x)) \<in>
+          set ` muterm_expand_one_pair ren S ` set P"
+        using lx by blast
+      show ?thesis unfolding muterm_expanded_pairs_list_def set_concat set_map
+        by (rule UnionI[OF member_set one])
+    qed
+  qed
+qed
+
+lemma muterm_typed_pair_step_subset_expanded:
+  "muterm_typed_pair_step P S \<subseteq> rrstep (muterm_expanded_pairs ren P S)"
+proof
+  fix st
+  assume step: "st \<in> muterm_typed_pair_step P S"
+  obtain s t where st: "st = (s,t)" by (cases st)
+  from step[unfolded st muterm_typed_pair_step_def] show
+    "st \<in> rrstep (muterm_expanded_pairs ren P S)"
+  proof
+    assume nc: "(s,t) \<in> {(s,t). muterm_noncollapsing_rrstep P s t}"
+    then obtain l r \<sigma> where lr: "(l,r) \<in> P" and rv: "\<not> is_Var r"
+      and s: "s = l \<cdot> \<sigma>" and t: "t = r \<cdot> \<sigma>"
+      unfolding muterm_noncollapsing_rrstep_def by auto
+    let ?rp = "muterm_rename_many ren 0"
+    define \<tau> where "\<tau> z =
+      (if z \<in> range ?rp then \<sigma> (the_inv ?rp z) else Var z)" for z
+    have inj: "inj ?rp"
+      unfolding muterm_rename_many_def inj_def
+      using renameN(1)[of ren, unfolded inj_def] by blast
+    have tau: "\<tau> (?rp x) = \<sigma> x" for x
+      unfolding \<tau>_def by (simp add: inj the_inv_f_f)
+    have left: "map_vars_term ?rp l \<cdot> \<tau> = l \<cdot> \<sigma>"
+      unfolding apply_subst_map_vars_term
+      by (rule term_subst_eq, simp add: tau)
+    have right: "map_vars_term ?rp r \<cdot> \<tau> = r \<cdot> \<sigma>"
+      unfolding apply_subst_map_vars_term
+      by (rule term_subst_eq, simp add: tau)
+    have ep: "(map_vars_term ?rp l,map_vars_term ?rp r) \<in>
+        muterm_expanded_pairs ren P S"
+      unfolding muterm_expanded_pairs_def using lr rv by blast
+    show ?thesis unfolding st s t
+      by (rule rrstepI[OF ep, where \<sigma> = \<tau>], use left right in auto)
+  next
+    assume coll: "(s,t) \<in> {(s,t). \<exists>x.
+      muterm_collapsing_rrstep P s x \<and> (x,t) \<in> rrstep S}"
+    then obtain x where px: "muterm_collapsing_rrstep P s x"
+      and xt: "(x,t) \<in> rrstep S" by auto
+    from px obtain l y \<sigma> where ly: "(l,Var y) \<in> P"
+      and s: "s = l \<cdot> \<sigma>" and x: "x = \<sigma> y"
+      unfolding muterm_collapsing_rrstep_def by auto
+    from xt obtain a b \<theta> where ab: "(a,b) \<in> S"
+      and x': "x = a \<cdot> \<theta>" and t: "t = b \<cdot> \<theta>"
+      unfolding rrstep_def' by auto
+    let ?rp = "muterm_rename_many ren 0"
+    let ?rs = "rename_single ren"
+    define \<tau> where "\<tau> z =
+      (if z \<in> range ?rp then \<sigma> (the_inv ?rp z)
+       else if z \<in> range ?rs then \<theta> (the_inv ?rs z)
+       else Var z)" for z
+    have injp: "inj ?rp"
+      unfolding muterm_rename_many_def inj_def
+      using renameN(1)[of ren, unfolded inj_def] by blast
+    have injs: "inj ?rs" using renameN(2)[of ren] .
+    have disj: "range ?rp \<inter> range ?rs = {}"
+      unfolding muterm_rename_many_def using renameN(3)[of ren] by blast
+    have taup: "\<tau> (?rp z) = \<sigma> z" for z
+      unfolding \<tau>_def by (simp add: injp the_inv_f_f)
+    have taus: "\<tau> (?rs z) = \<theta> z" for z
+    proof -
+      have "?rs z \<notin> range ?rp" using disj by blast
+      then show ?thesis unfolding \<tau>_def
+        by (simp add: injs the_inv_f_f)
+    qed
+    have a_tau: "map_vars_term ?rs a \<cdot> \<tau> = a \<cdot> \<theta>"
+      unfolding apply_subst_map_vars_term
+      by (rule term_subst_eq, simp add: taus)
+    have bridge_eq: "a \<cdot> \<theta> = \<sigma> y" using x x' by simp
+    let ?\<rho> = "Var(?rp y := map_vars_term ?rs a)"
+    have rho_tau: "(?\<rho> \<circ>\<^sub>s \<tau>) (?rp z) = \<sigma> z" for z
+    proof (cases "z = y")
+      case True
+      show ?thesis unfolding True subst_compose_def using x x' a_tau by simp
+    next
+      case False
+      have ne: "?rp z \<noteq> ?rp y" using False injp by (auto simp: inj_def)
+      show ?thesis unfolding subst_compose_def using ne taup by simp
+    qed
+    have left: "(map_vars_term ?rp l \<cdot> ?\<rho>) \<cdot> \<tau> = l \<cdot> \<sigma>"
+      by (induct l) (simp_all add: a_tau bridge_eq taup injp inj_eq)
+    have right: "map_vars_term ?rs b \<cdot> \<tau> = b \<cdot> \<theta>"
+      unfolding apply_subst_map_vars_term
+      by (rule term_subst_eq, simp add: taus)
+    have ep: "muterm_compose_collapsing_pair ren l y a b \<in>
+        muterm_expanded_pairs ren P S"
+      unfolding muterm_expanded_pairs_def using ly ab by blast
+    obtain cl cr where comp:
+      "muterm_compose_collapsing_pair ren l y a b = (cl,cr)"
+      by (cases "muterm_compose_collapsing_pair ren l y a b") auto
+    have ep': "(cl,cr) \<in> muterm_expanded_pairs ren P S"
+      using ep comp by simp
+    show ?thesis unfolding st s t
+    proof (rule rrstepI[OF ep', where \<sigma> = \<tau>])
+      show "l \<cdot> \<sigma> = cl \<cdot> \<tau>"
+        using comp left unfolding muterm_compose_collapsing_pair_def Let_def by simp
+      show "b \<cdot> \<theta> = cr \<cdot> \<tau>"
+        using comp right unfolding muterm_compose_collapsing_pair_def Let_def by simp
+    qed
+  qed
+qed
 
 definition finite_muterm_typed_dpp where
   "finite_muterm_typed_dpp shp \<mu> R P S \<longleftrightarrow>
@@ -138,6 +352,20 @@ definition finite_muterm_min_typed_dpp where
   "finite_muterm_min_typed_dpp shp \<mu> R P S \<longleftrightarrow>
     SN_rel (muterm_min_typed_pair_step shp \<mu> R P S)
       (csdp_step shp \<mu> R)"
+
+lemma finite_min_csr_dpp_expanded_imp_finite_muterm_min_typed:
+  assumes fin: "finite_min_csr_dpp Sharp \<mu>
+      (muterm_expanded_pairs ren P S) R"
+  shows "finite_muterm_min_typed_dpp Sharp \<mu> R P S"
+proof -
+  have strict: "muterm_min_typed_pair_step Sharp \<mu> R P S \<subseteq>
+      csr_min_pair_step Sharp \<mu> (muterm_expanded_pairs ren P S) R"
+    unfolding muterm_min_typed_pair_step_def csr_min_pair_step_def
+    using muterm_typed_pair_step_subset_expanded[of P S ren] by blast
+  show ?thesis
+    unfolding finite_muterm_min_typed_dpp_def finite_min_csr_dpp_def
+    by (rule SN_rel_mono[OF strict subset_refl fin[unfolded finite_min_csr_dpp_def]])
+qed
 
 text \<open>
   Keep the innermost MU problem as a first-class semantic object.  Merely
@@ -1057,6 +1285,7 @@ datatype (dead 'f, dead 'l, dead 'v) muterm_typed_dp_proof =
   | Muterm_Typed_Local_Usable
       "('f,'l,'v) trsLL" "('f,'l,'v) dp_termination_proof"
   | Muterm_Typed_CSR_Proof "('f,'l,'v) csr_dp_termination_proof"
+  | Muterm_Typed_Expanded_CSR_Proof "('f,'l,'v) csr_dp_termination_proof"
   | Muterm_Typed_Dep_Graph
       "(('f,'l,'v) muterm_typed_dp_proof option \<times> ('f,'l,'v) trsLL) list"
 
@@ -1121,6 +1350,13 @@ where
       check (list_all (is_Fun \<circ> snd) P)
         (i \<circ> showsl_lit (STR '': collapsing pair requires the typed MU-TERM processor''));
       let dpp = dpp_ops.mk J False False P [] [] [] R;
+      check_csr_dp_termination_proof_min I J \<mu> False (add_index i 1) dpp prf
+    })"
+| "check_muterm_typed_dp_proof I J \<mu> i R S P
+      (Muterm_Typed_Expanded_CSR_Proof prf) =
+    debug i (STR ''expanded typed MU-TERM CSR component'') (do {
+      let E = muterm_expanded_pairs_list string_renameN P S;
+      let dpp = dpp_ops.mk J False False E [] [] [] R;
       check_csr_dp_termination_proof_min I J \<mu> False (add_index i 1) dpp prf
     })"
 | "check_muterm_typed_dp_proof I J \<mu> i R S P

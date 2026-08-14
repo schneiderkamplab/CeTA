@@ -1554,6 +1554,9 @@ where
     } XMLor XMLdo (STR ''noncollapsingCsrProof'') {
       prf \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (Muterm_Typed_CSR_Proof prf)
+    } XMLor XMLdo (STR ''expandedCsrProof'') {
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (Muterm_Typed_Expanded_CSR_Proof prf)
     } XMLor XMLdo (STR ''depGraphProc'') {
       cs \<leftarrow>* XMLdo (STR ''component'') {
         dps \<leftarrow> xml_singleton (STR ''dps'')

@@ -173,6 +173,46 @@ next
     by (rule finite_min_csr_dpp_imp_finite_muterm_min_typed_noncollapsing[
       OF nc fin])
 next
+  case (Muterm_Typed_Expanded_CSR_Proof child)
+  let ?E = "muterm_expanded_pairs_list string_renameN P S"
+  let ?d = "dpp_ops.mk J False False ?E [] [] [] R"
+  from Muterm_Typed_Expanded_CSR_Proof.prems have child_ok:
+      "isOK (check_csr_dp_termination_proof_min
+        I J \<mu> False (add_index i 1) ?d child)"
+    by (simp add: Let_def)
+  have plain: "plain_csr_dpp J ?d"
+    unfolding plain_csr_dpp_def
+    using dpp_spec.mk_sound[OF J, of False False ?E "[]" "[]" "[]" R]
+      dpp_spec.dpp_sound[OF J, of ?d]
+    by auto
+  have rules_d: "set (dpp_ops.rules J ?d) = set R"
+    using dpp_spec.mk_sound[OF J, of False False ?E "[]" "[]" "[]" R]
+      dpp_spec.rules_sound[OF J, of ?d]
+      dpp_spec.dpp_sound[OF J, of ?d]
+    by auto
+  have wf_d: "wf_trs (set (dpp_ops.rules J ?d))"
+    unfolding rules_d by (rule wf)
+  have fresh_d: "\<And>f n.
+      \<not> defined (set (dpp_ops.rules J ?d)) (Sharp f,n)"
+    unfolding rules_d by (rule fresh)
+  have raw: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (dpp_ops.pairs J ?d)) (set (dpp_ops.rules J ?d))"
+    by (rule check_csr_dp_termination_proof_min_sound[
+      OF I J plain wf_d fresh_d child_ok])
+  have sem: "dpp_ops.dpp J ?d =
+      (False,False,set ?E,{},{},{},set R)"
+    using dpp_spec.mk_sound[OF J, of False False ?E "[]" "[]" "[]" R]
+    by simp
+  have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>) (set ?E) (set R)"
+    using raw sem dpp_spec.pairs_sound[OF J,of ?d]
+      dpp_spec.rules_sound[OF J,of ?d]
+      dpp_spec.dpp_sound[OF J,of ?d] by auto
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (muterm_expanded_pairs string_renameN (set P) (set S)) (set R)"
+    using fin set_muterm_expanded_pairs_list[of string_renameN P S] by simp
+  show ?case
+    by (rule finite_min_csr_dpp_expanded_imp_finite_muterm_min_typed[OF fin'])
+next
   case (Muterm_Typed_Dep_Graph edps)
   from Muterm_Typed_Dep_Graph.prems have graph_ok:
       "isOK (check_muterm_typed_dep_graph \<mu> R S P edps)"
