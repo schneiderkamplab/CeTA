@@ -679,6 +679,39 @@ definition muterm_innermost_ur_closed_check where
      list_all (\<lambda>lr.
        csr_rta08_active_root_rules_check R U \<mu> (snd lr)) U)"
 
+text \<open>
+  The full-termination branch of the LPAR'08 U-triangle processor additionally
+  requires strong conservativity (Definition 20).  Keep this side condition
+  executable and explicit: active variables must be preserved from right to
+  left, and no variable may occur both actively and in a frozen position of
+  either side.  In particular, this is a property of the exact residual pairs
+  together with the supplied usable rules, rather than of the original TRS.
+\<close>
+
+definition muterm_strongly_conservative where
+  "muterm_strongly_conservative \<mu> T \<longleftrightarrow>
+    rhs_mu_vars_condition \<mu> T \<and>
+    (\<forall>(l,r)\<in>T.
+      mu_vars_term \<mu> l \<inter> (vars_term l - mu_vars_term \<mu> l) = {} \<and>
+      mu_vars_term \<mu> r \<inter> (vars_term r - mu_vars_term \<mu> r) = {})"
+
+definition muterm_strongly_conservative_check where
+  "muterm_strongly_conservative_check \<mu> T =
+    (rhs_mu_vars_condition_list \<mu> T \<and>
+     list_all (\<lambda>(l,r).
+       set (mu_vars_term_list \<mu> l) \<inter>
+         (set (vars_term_list l) - set (mu_vars_term_list \<mu> l)) = {} \<and>
+       set (mu_vars_term_list \<mu> r) \<inter>
+         (set (vars_term_list r) - set (mu_vars_term_list \<mu> r)) = {}) T)"
+
+lemma muterm_strongly_conservative_check_sound:
+  assumes "muterm_strongly_conservative_check \<mu> T"
+  shows "muterm_strongly_conservative (mu_of \<mu>) (set T)"
+  using assms rhs_mu_vars_condition_list_sound[of \<mu> T]
+  unfolding muterm_strongly_conservative_check_def
+    muterm_strongly_conservative_def list_all_iff
+  by auto
+
 lemma muterm_innermost_ur_closed_check_sound:
   assumes "muterm_innermost_ur_closed_check R U \<mu> P"
   shows "muterm_innermost_ur_closed (set R) (set U) (mu_of \<mu>) (set P)"
