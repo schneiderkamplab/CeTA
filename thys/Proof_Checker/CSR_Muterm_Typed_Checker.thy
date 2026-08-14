@@ -137,7 +137,7 @@ next
   let ?d = "dpp_ops.mk J False False P [] [] [] R"
   from Muterm_Typed_CSR_Proof.prems have nc_list:
       "list_all (is_Fun \<circ> snd) P"
-    and child_ok: "isOK (check_csr_dp_termination_proof_core
+    and child_ok: "isOK (check_csr_dp_termination_proof_min
       I J \<mu> False (add_index i 1) ?d child)"
     by (auto simp: Let_def)
   have plain: "plain_csr_dpp J ?d"
@@ -145,24 +145,33 @@ next
     using dpp_spec.mk_sound[OF J, of False False P "[]" "[]" "[]" R]
       dpp_spec.dpp_sound[OF J, of ?d]
     by auto
-  have raw: "finite_csr_dpp Sharp (mu_of \<mu>)
+  have rules_d: "set (dpp_ops.rules J ?d) = set R"
+    using dpp_spec.mk_sound[OF J, of False False P "[]" "[]" "[]" R]
+      dpp_spec.rules_sound[OF J, of ?d]
+      dpp_spec.dpp_sound[OF J, of ?d]
+    by auto
+  have wf_d: "wf_trs (set (dpp_ops.rules J ?d))"
+    unfolding rules_d by (rule wf)
+  have fresh_d: "\<And>f n.
+      \<not> defined (set (dpp_ops.rules J ?d)) (Sharp f,n)"
+    unfolding rules_d by (rule fresh)
+  have raw: "finite_min_csr_dpp Sharp (mu_of \<mu>)
       (set (dpp_ops.pairs J ?d)) (set (dpp_ops.rules J ?d))"
-    by (rule check_csr_dp_termination_proof_core_sound[
-      OF I J plain child_ok])
+    by (rule check_csr_dp_termination_proof_min_sound[
+      OF I J plain wf_d fresh_d child_ok])
   have sem: "dpp_ops.dpp J ?d =
       (False,False,set P,{},{},{},set R)"
     using dpp_spec.mk_sound[OF J, of False False P "[]" "[]" "[]" R]
     by simp
-  have fin: "finite_csr_dpp Sharp (mu_of \<mu>) (set P) (set R)"
+  have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>) (set P) (set R)"
     using raw sem dpp_spec.pairs_sound[OF J,of ?d]
       dpp_spec.rules_sound[OF J,of ?d]
       dpp_spec.dpp_sound[OF J,of ?d] by auto
   have nc: "\<forall>dp\<in>set P. is_Fun (snd dp)"
     using nc_list by (simp add: list_all_iff)
-  have full: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
-      (set R) (set P) (set S)"
-    by (rule finite_csr_dpp_imp_finite_muterm_typed_noncollapsing[OF nc fin])
-  show ?case by (rule finite_muterm_typed_imp_finite_min_typed[OF full])
+  show ?case
+    by (rule finite_min_csr_dpp_imp_finite_muterm_min_typed_noncollapsing[
+      OF nc fin])
 next
   case (Muterm_Typed_Dep_Graph edps)
   from Muterm_Typed_Dep_Graph.prems have graph_ok:

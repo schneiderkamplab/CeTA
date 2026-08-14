@@ -1121,7 +1121,7 @@ where
       check (list_all (is_Fun \<circ> snd) P)
         (i \<circ> showsl_lit (STR '': collapsing pair requires the typed MU-TERM processor''));
       let dpp = dpp_ops.mk J False False P [] [] [] R;
-      check_csr_dp_termination_proof_core I J \<mu> False (add_index i 1) dpp prf
+      check_csr_dp_termination_proof_min I J \<mu> False (add_index i 1) dpp prf
     })"
 | "check_muterm_typed_dp_proof I J \<mu> i R S P
       (Muterm_Typed_Dep_Graph edps) =
@@ -1231,6 +1231,15 @@ lemma finite_csr_dpp_imp_finite_muterm_typed_noncollapsing:
   shows "finite_muterm_typed_dpp Sharp \<mu> R P S"
   using fin muterm_typed_pair_step_noncollapsing[OF nc]
   unfolding finite_csr_dpp_def finite_muterm_typed_dpp_def by simp
+
+lemma finite_min_csr_dpp_imp_finite_muterm_min_typed_noncollapsing:
+  assumes nc: "\<forall>dp\<in>P. is_Fun (snd dp)"
+    and fin: "finite_min_csr_dpp Sharp \<mu> P R"
+  shows "finite_muterm_min_typed_dpp Sharp \<mu> R P S"
+  using fin muterm_typed_pair_step_noncollapsing[OF nc]
+  unfolding finite_min_csr_dpp_def finite_muterm_min_typed_dpp_def
+    muterm_min_typed_pair_step_def csr_min_pair_step_def
+  by simp
 
 lemma check_muterm_typed_graph_components_member:
   assumes ok: "isOK (check_muterm_typed_graph_components
