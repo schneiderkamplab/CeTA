@@ -98,14 +98,16 @@ theorem check_muterm_typed_dp_proof_sound:
     and wf: "wf_trs (set R)"
     and fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
     and ok: "isOK (check_muterm_typed_dp_proof I J \<mu> i R S P p)"
-  shows "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+  shows "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
     (set R) (set P) (set S)"
   using ok
 proof (induct p arbitrary: i P)
   case Muterm_Typed_P_Is_Empty
   then have "P = []" by simp
-  then have empty: "muterm_typed_pair_step (set P) (set S) = {}" by simp
-  show ?case unfolding finite_muterm_typed_dpp_def empty
+  then have empty: "muterm_min_typed_pair_step Sharp (mu_of \<mu>)
+      (set R) (set P) (set S) = {}"
+    unfolding muterm_min_typed_pair_step_def by simp
+  show ?case unfolding finite_muterm_min_typed_dpp_def empty
     by (rule SN_rel_empty1)
 next
   case (Muterm_Typed_Local_Usable U child)
@@ -124,8 +126,10 @@ next
   have child_fin':
       "finite_dpp (False,False,set P,{},{},{},set R \<union> set S)"
     using child_fin by simp
-  show ?case
+  have full: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
     by (rule finite_ordinary_imp_finite_muterm_typed[OF child_fin'])
+  show ?case by (rule finite_muterm_typed_imp_finite_min_typed[OF full])
 next
   case (Muterm_Typed_CSR_Proof child)
   let ?d = "dpp_ops.mk J False False P [] [] [] R"
@@ -153,8 +157,10 @@ next
       dpp_spec.dpp_sound[OF J,of ?d] by auto
   have nc: "\<forall>dp\<in>set P. is_Fun (snd dp)"
     using nc_list by (simp add: list_all_iff)
-  show ?case by (rule finite_csr_dpp_imp_finite_muterm_typed_noncollapsing[
-    OF nc fin])
+  have full: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
+    by (rule finite_csr_dpp_imp_finite_muterm_typed_noncollapsing[OF nc fin])
+  show ?case by (rule finite_muterm_typed_imp_finite_min_typed[OF full])
 next
   case (Muterm_Typed_Dep_Graph edps)
   from Muterm_Typed_Dep_Graph.prems have graph_ok:
@@ -163,7 +169,7 @@ next
       I J \<mu> i R S P edps)"
     by (auto simp: Let_def)
   show ?case
-  proof (rule check_muterm_typed_dep_graph_sound[OF graph_ok])
+  proof (rule check_muterm_min_typed_dep_graph_sound[OF graph_ok])
     fix p C
     assume mem: "(Some p,C) \<in> set edps"
     from check_muterm_typed_graph_components_member[OF components_ok mem]
@@ -171,7 +177,7 @@ next
       (filter (\<lambda>dp. dp \<in> set C) P) p)" by blast
     have set_filter: "set (filter (\<lambda>dp. dp \<in> set C) P) =
       set P \<inter> set C" by auto
-    show "finite_muterm_typed_dpp Sharp (mu_of \<mu>) (set R)
+    show "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>) (set R)
       (set P \<inter> set C) (set S)"
       unfolding set_filter[symmetric]
       apply (rule Muterm_Typed_Dep_Graph.hyps)

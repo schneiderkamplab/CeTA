@@ -121,6 +121,130 @@ proof (rule ccontr)
 qed
 
 text \<open>
+  MU-TERM's reduction-triple processor exploits the minimality invariant of
+  chains extracted from a minimal nonterminating CSR term.  Keep this
+  invariant in the semantic problem instead of labelling an unrestricted DPP
+  as minimal.  In particular, the target of every typed macro pair must be
+  strongly normalizing for the context-sensitive DP rewrite relation.
+\<close>
+
+definition muterm_min_typed_pair_step where
+  "muterm_min_typed_pair_step shp \<mu> R P S =
+    muterm_typed_pair_step P S \<inter>
+      {(s,t). SN_on (csdp_step shp \<mu> R) {t}}"
+
+definition finite_muterm_min_typed_dpp where
+  "finite_muterm_min_typed_dpp shp \<mu> R P S \<longleftrightarrow>
+    SN_rel (muterm_min_typed_pair_step shp \<mu> R P S)
+      (csdp_step shp \<mu> R)"
+
+lemma finite_muterm_typed_imp_finite_min_typed:
+  assumes "finite_muterm_typed_dpp shp \<mu> R P S"
+  shows "finite_muterm_min_typed_dpp shp \<mu> R P S"
+proof -
+  from assms have full: "SN_rel (muterm_typed_pair_step P S)
+      (csdp_step shp \<mu> R)"
+    unfolding finite_muterm_typed_dpp_def .
+  have sub: "muterm_min_typed_pair_step shp \<mu> R P S \<subseteq>
+      muterm_typed_pair_step P S"
+    unfolding muterm_min_typed_pair_step_def by auto
+  show ?thesis unfolding finite_muterm_min_typed_dpp_def
+    by (rule SN_rel_mono[OF sub subset_refl full])
+qed
+
+lemma muterm_unhiding_relstep_min_typed:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and hp: "has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S t"
+    and defs: "{f. defined R f} \<subseteq> D"
+    and cover: "muterm_unhiding_coverage Sharp \<mu> D R P S"
+    and preserving: "muterm_unhiding_preserving_on Sharp \<mu> R S"
+  shows "\<exists>u. has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S u \<and>
+    (sharp_term Sharp t,sharp_term Sharp u) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>* O
+      muterm_min_typed_pair_step Sharp \<mu> R P S"
+proof -
+  from muterm_unhiding_relstep_typed[OF wf hp defs cover preserving]
+  obtain u where hp_u:
+      "has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S u"
+    and step: "(sharp_term Sharp t,sharp_term Sharp u) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>* O muterm_typed_pair_step P S"
+    by blast
+  from hp_u have uT: "u \<in> mu_Tinf \<mu> (csstep \<mu> R)"
+    unfolding has_muterm_unhiding_property_def by auto
+  have target: "SN_on (csdp_step Sharp \<mu> R) {sharp_term Sharp u}"
+    by (rule mu_Tinf_imp_SN_sharp_csdp[OF wf fresh uT])
+  from step obtain v where prefix:
+      "(sharp_term Sharp t,v) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and strict: "(v,sharp_term Sharp u) \<in> muterm_typed_pair_step P S"
+    by auto
+  have strict': "(v,sharp_term Sharp u) \<in>
+      muterm_min_typed_pair_step Sharp \<mu> R P S"
+    unfolding muterm_min_typed_pair_step_def using strict target by auto
+  show ?thesis using hp_u prefix strict' by blast
+qed
+
+theorem finite_muterm_min_typed_dpp_imp_SN_csstep:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and defs: "{f. defined R f} \<subseteq> D"
+    and cover: "muterm_unhiding_coverage Sharp \<mu> D R P S"
+    and preserving: "muterm_unhiding_preserving_on Sharp \<mu> R S"
+    and fin: "finite_muterm_min_typed_dpp Sharp \<mu> R P S"
+  shows "SN (csstep \<mu> R)"
+proof (rule ccontr)
+  assume notSN: "\<not> SN (csstep \<mu> R)"
+  from not_SN_imp_Tinf[OF notSN] obtain t0 where
+    t0T: "t0 \<in> Tinf (csstep \<mu> R)" by blast
+  have hp0: "has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S t0"
+    by (rule Tinf_has_muterm_unhiding_property[OF t0T])
+  let ?A = "(csdp_step Sharp \<mu> R)\<^sup>* O
+    muterm_min_typed_pair_step Sharp \<mu> R P S O
+    (csdp_step Sharp \<mu> R)\<^sup>*"
+  have step_ex: "\<And>t. has_muterm_unhiding_property Sharp \<mu>
+      (csstep \<mu> R) S t \<Longrightarrow>
+      \<exists>u. has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S u \<and>
+        (sharp_term Sharp t,sharp_term Sharp u) \<in> ?A"
+  proof -
+    fix t
+    assume hp: "has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S t"
+    from muterm_unhiding_relstep_min_typed[
+      OF wf fresh hp defs cover preserving]
+    obtain u where hp_u:
+        "has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S u"
+      and step: "(sharp_term Sharp t,sharp_term Sharp u) \<in>
+        (csdp_step Sharp \<mu> R)\<^sup>* O
+        muterm_min_typed_pair_step Sharp \<mu> R P S"
+      by blast
+    have suffix: "(sharp_term Sharp u,sharp_term Sharp u) \<in>
+        (csdp_step Sharp \<mu> R)\<^sup>*" by simp
+    show "\<exists>u. has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S u \<and>
+      (sharp_term Sharp t,sharp_term Sharp u) \<in> ?A"
+      using hp_u step suffix by blast
+  qed
+  have all_ex: "\<forall>t. \<exists>u.
+      has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S t \<longrightarrow>
+      has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S u \<and>
+      (sharp_term Sharp t,sharp_term Sharp u) \<in> ?A"
+    using step_ex by blast
+  from choice[OF all_ex] obtain nxt where nxt:
+      "\<And>t. has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S t \<Longrightarrow>
+       has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S (nxt t) \<and>
+       (sharp_term Sharp t,sharp_term Sharp (nxt t)) \<in> ?A" by blast
+  define ts where "ts = rec_nat t0 (\<lambda>n t. nxt t)"
+  have inv: "has_muterm_unhiding_property Sharp \<mu> (csstep \<mu> R) S (ts n)"
+    for n
+    by (induct n, unfold ts_def, use hp0 nxt in auto)
+  define f where "f n = sharp_term Sharp (ts n)" for n
+  have chain: "(f n,f (Suc n)) \<in> ?A" for n
+    using nxt[OF inv[of n]] unfolding f_def ts_def by auto
+  from fin have sn: "SN ?A"
+    unfolding finite_muterm_min_typed_dpp_def SN_rel_on_def .
+  moreover have "\<not> SN ?A" unfolding SN_defs using chain by blast
+  ultimately show False by contradiction
+qed
+
+text \<open>
   The QCS usable-rule simulation does not intrinsically depend on minimality.
   This full-chain variant is kept in the MU-TERM overlay because its first use
   is the recursive exact-unhiding processor; placing it in the central CSR-DP
@@ -945,6 +1069,13 @@ proof
   qed
 qed
 
+lemma muterm_min_typed_pair_step_mono:
+  assumes "P \<subseteq> Q"
+  shows "muterm_min_typed_pair_step shp \<mu> R P S \<subseteq>
+    muterm_min_typed_pair_step shp \<mu> R Q S"
+  unfolding muterm_min_typed_pair_step_def
+  using muterm_typed_pair_step_mono[OF assms] by blast
+
 lemma finite_csr_dpp_imp_finite_muterm_typed_noncollapsing:
   assumes nc: "\<forall>dp\<in>P. is_Fun (snd dp)"
     and fin: "finite_csr_dpp Sharp \<mu> P R"
@@ -1101,6 +1232,97 @@ proof -
       apply (rule_tac x="Var y" in exI)
       apply (rule_tac x=\<sigma> in exI)
       using body vy by simp
+  qed
+qed
+
+lemma muterm_min_typed_relto_witness:
+  assumes step: "(s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>* O
+      muterm_min_typed_pair_step Sharp \<mu> R P S O
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "\<exists>l r \<sigma>. (l,r) \<in> P \<and>
+    (s,l \<cdot> \<sigma>) \<in> (csdp_step Sharp \<mu> (R \<union> S))\<^sup>* \<and>
+    (r \<cdot> \<sigma>,t) \<in> (csdp_step Sharp \<mu> (R \<union> S))\<^sup>* \<and>
+    (s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>* O
+      muterm_min_typed_pair_step Sharp \<mu> R {(l,r)} S O
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+proof -
+  from step obtain a b where pre: "(s,a) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and event: "(a,b) \<in> muterm_min_typed_pair_step Sharp \<mu> R P S"
+    and post: "(b,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>*" by auto
+  from event have typed: "(a,b) \<in> muterm_typed_pair_step P S"
+    and normal: "SN_on (csdp_step Sharp \<mu> R) {b}"
+    unfolding muterm_min_typed_pair_step_def by auto
+  have Rsub: "csdp_step Sharp \<mu> R \<subseteq> csdp_step Sharp \<mu> (R \<union> S)"
+  proof
+    fix st
+    assume mem: "st \<in> csdp_step Sharp \<mu> R"
+    then obtain x y p lr \<tau> where st: "st = (x,y)"
+      and cond: "csdp_step_cond Sharp \<mu> p x"
+      and raw: "(x,y) \<in> rstep_r_p_s R lr p \<tau>"
+      unfolding csdp_step_def csdp_step_p_def by auto
+    from raw have lrR: "lr \<in> R"
+      unfolding rstep_r_p_s_def Let_def by auto
+    have raw': "(x,y) \<in> rstep_r_p_s (R \<union> S) lr p \<tau>"
+      using raw lrR unfolding rstep_r_p_s_def Let_def by auto
+    show "st \<in> csdp_step Sharp \<mu> (R \<union> S)"
+      unfolding st csdp_step_def csdp_step_p_def using cond raw' by blast
+  qed
+  have pre': "(s,a) \<in> (csdp_step Sharp \<mu> (R \<union> S))\<^sup>*"
+    using pre rtrancl_mono[OF Rsub] by blast
+  have post': "(b,t) \<in> (csdp_step Sharp \<mu> (R \<union> S))\<^sup>*"
+    using post rtrancl_mono[OF Rsub] by blast
+  from typed have cases:
+      "muterm_noncollapsing_rrstep P a b \<or>
+       (\<exists>x. muterm_collapsing_rrstep P a x \<and> (x,b) \<in> rrstep S)"
+    unfolding muterm_typed_pair_step_def by blast
+  from cases show ?thesis
+  proof
+    assume nc: "muterm_noncollapsing_rrstep P a b"
+    then obtain l r \<sigma> where pair: "(l,r) \<in> P" and rv: "\<not> is_Var r"
+      and a: "a = l \<cdot> \<sigma>" and b: "b = r \<cdot> \<sigma>"
+      unfolding muterm_noncollapsing_rrstep_def by blast
+    have one: "(a,b) \<in> muterm_typed_pair_step {(l,r)} S"
+      unfolding muterm_typed_pair_step_def muterm_noncollapsing_rrstep_def
+      using rv a b by auto
+    have min: "(a,b) \<in> muterm_min_typed_pair_step Sharp \<mu> R {(l,r)} S"
+      unfolding muterm_min_typed_pair_step_def using one normal by auto
+    show ?thesis
+      apply (rule_tac x=l in exI)
+      apply (rule_tac x=r in exI)
+      apply (rule_tac x=\<sigma> in exI)
+      using pair pre' post' pre min post unfolding a b by blast
+  next
+    assume coll: "\<exists>x. muterm_collapsing_rrstep P a x \<and> (x,b) \<in> rrstep S"
+    then obtain x where collapse: "muterm_collapsing_rrstep P a x"
+      and bridge: "(x,b) \<in> rrstep S" by blast
+    from collapse obtain l y \<sigma> where pair: "(l,Var y) \<in> P"
+      and a: "a = l \<cdot> \<sigma>" and x: "x = \<sigma> y"
+      unfolding muterm_collapsing_rrstep_def by blast
+    have one_coll: "muterm_collapsing_rrstep {(l,Var y)} a x"
+      unfolding muterm_collapsing_rrstep_def using a x by auto
+    have one: "(a,b) \<in> muterm_typed_pair_step {(l,Var y)} S"
+      unfolding muterm_typed_pair_step_def using one_coll bridge by auto
+    have min: "(a,b) \<in>
+        muterm_min_typed_pair_step Sharp \<mu> R {(l,Var y)} S"
+      unfolding muterm_min_typed_pair_step_def using one normal by auto
+    have bridge': "(x,b) \<in> csdp_step Sharp \<mu> (R \<union> S)"
+      using rrstep_subset_csdp_step_union bridge by blast
+    have post'': "(x,t) \<in> (csdp_step Sharp \<mu> (R \<union> S))\<^sup>*"
+      using bridge' post' by auto
+    have vy: "Var y \<cdot> \<sigma> = \<sigma> y" by simp
+    have whole: "(s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>* O
+        muterm_min_typed_pair_step Sharp \<mu> R {(l,Var y)} S O
+        (csdp_step Sharp \<mu> R)\<^sup>*"
+      using pre min post unfolding a by blast
+    show ?thesis
+      apply (rule_tac x=l in exI)
+      apply (rule_tac x="Var y" in exI)
+      apply (rule_tac x=\<sigma> in exI)
+      apply (intro conjI)
+         apply (rule pair)
+        apply (rule pre'[unfolded a])
+       apply (simp only: vy, rule post''[unfolded x])
+      by (rule whole)
   qed
 qed
 
@@ -1365,5 +1587,151 @@ proof -
     from not_tail_sn tail_sn show False ..
   qed
 qed
+
+
+lemma check_muterm_min_typed_dep_graph_sound:
+  fixes \<mu> :: "(('f::{showl,compare_order},label_type) lab) muL"
+  assumes check: "isOK (check_muterm_typed_dep_graph \<mu> R S P edps)"
+    and fin: "\<And>prf C. (Some prf,C) \<in> set edps \<Longrightarrow>
+      finite_muterm_min_typed_dpp Sharp (mu_of \<mu>) (set R)
+        (set P \<inter> set C) (set S)"
+  shows "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>) (set R) (set P) (set S)"
+proof -
+  let ?P = "set P"
+  let ?RL = "R @ S"
+  let ?RS = "set ?RL"
+  show ?thesis
+    unfolding finite_muterm_min_typed_dpp_def SN_rel_on_def SN_on_def
+  proof (rule notI)
+    let ?A = "(csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+      muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R) ?P (set S) O
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+    assume infinite: "\<exists>f. f 0 \<in> UNIV \<and>
+      (\<forall>i. (f i,f (Suc i)) \<in> ?A)"
+    then obtain ch where chain: "\<And>i. (ch i,ch (Suc i)) \<in> ?A" by auto
+    have ex_step: "\<forall>i. \<exists>l r \<sigma>.
+      (l,r) \<in> ?P \<and>
+      (ch i,l \<cdot> \<sigma>) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (r \<cdot> \<sigma>,ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (ch i,ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+        muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R) {(l,r)} (set S) O
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+    proof
+      fix i
+      from muterm_min_typed_relto_witness[OF chain[of i]]
+      show "\<exists>l r \<sigma>. (l,r) \<in> ?P \<and>
+        (ch i,l \<cdot> \<sigma>) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+        (r \<cdot> \<sigma>,ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+        (ch i,ch (Suc i)) \<in>
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+          muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R) {(l,r)} (set S) O
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+        by (simp add: set_append)
+    qed
+    from choice[OF ex_step] obtain s where choose_s: "\<forall>i. \<exists>r \<sigma>.
+      (s i,r) \<in> ?P \<and>
+      (ch i,s i \<cdot> \<sigma>) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (r \<cdot> \<sigma>,ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (ch i,ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+        muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R) {(s i,r)} (set S) O
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+      by blast
+    from choice[OF choose_s] obtain t where choose_t: "\<forall>i. \<exists>\<sigma>.
+      (s i,t i) \<in> ?P \<and>
+      (ch i,s i \<cdot> \<sigma>) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (t i \<cdot> \<sigma>,ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (ch i,ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+        muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R) {(s i,t i)} (set S) O
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+      by blast
+    from choice[OF choose_t] obtain \<sigma> where chosen: "\<forall>i.
+      (s i,t i) \<in> ?P \<and>
+      (ch i,s i \<cdot> \<sigma> i) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (t i \<cdot> \<sigma> i,ch (Suc i)) \<in> (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>* \<and>
+      (ch i,ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+        muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+          {(s i,t i)} (set S) O
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+      by blast
+    from chosen have pair: "\<And>i. (s i,t i) \<in> ?P"
+      and pre: "\<And>i. (ch i,s i \<cdot> \<sigma> i) \<in>
+        (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>*"
+      and post: "\<And>i. (t i \<cdot> \<sigma> i,ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>*"
+      and typed: "\<And>i. (ch i,ch (Suc i)) \<in>
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+        muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+          {(s i,t i)} (set S) O
+        (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+      by blast+
+    have steps: "\<And>i. (t i \<cdot> \<sigma> i,s (Suc i) \<cdot> \<sigma> (Suc i)) \<in>
+      (csdp_step Sharp (mu_of \<mu>) ?RS)\<^sup>*"
+      using post pre by (meson rtrancl_trans)
+    from check_muterm_typed_dep_graph_select_component[
+      where \<mu>=\<mu> and R=R and S=S and P=P and edps=edps
+        and s=s and t=t and \<sigma>=\<sigma>, OF check pair steps]
+    obtain p Cs n where mem: "(Some p,Cs) \<in> set edps"
+      and CP_all: "\<forall>m. (s (m+n),t (m+n)) \<in> ?P \<inter> set Cs"
+      by auto
+    from CP_all have CP: "\<And>m. (s (m+n),t (m+n)) \<in> ?P \<inter> set Cs"
+      by auto
+    let ?tail = "\<lambda>m. ch (m+n)"
+    have tail_step: "\<And>m. (?tail m,?tail (Suc m)) \<in>
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+      muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+        (?P \<inter> set Cs) (set S) O
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+    proof -
+      fix m
+      have singleton: "{(s (m+n),t (m+n))} \<subseteq> ?P \<inter> set Cs"
+        using CP[of m] by auto
+      have mono: "muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+          {(s (m+n),t (m+n))} (set S)
+        \<subseteq> muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+          (?P \<inter> set Cs) (set S)"
+        by (rule muterm_min_typed_pair_step_mono[OF singleton])
+      have suc_add: "Suc m+n = Suc (m+n)" by simp
+      have inc: "(csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+          muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+            {(s (m+n),t (m+n))} (set S) O
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* \<subseteq>
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+          muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+            (?P \<inter> set Cs) (set S) O
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+        by (meson relcomp_mono mono subset_refl)
+      from typed[of "m+n"] inc show "(?tail m,?tail (Suc m)) \<in>
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+          muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+            (?P \<inter> set Cs) (set S) O
+          (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*"
+        unfolding suc_add
+        by blast
+    qed
+    have tail_sn: "SN ((csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+      muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+        (?P \<inter> set Cs) (set S) O
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*)"
+      using fin[OF mem]
+      unfolding finite_muterm_min_typed_dpp_def SN_rel_on_def .
+    have tail_is_chain: "chain
+      ((csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+       muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+         (?P \<inter> set Cs) (set S) O
+       (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*) ?tail"
+      using tail_step by simp
+    have not_tail_sn: "\<not> SN ((csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>* O
+      muterm_min_typed_pair_step Sharp (mu_of \<mu>) (set R)
+        (?P \<inter> set Cs) (set S) O
+      (csdp_step Sharp (mu_of \<mu>) (set R))\<^sup>*)"
+      by (rule not_SN_onI[of ?tail], simp, rule tail_is_chain)
+    from not_tail_sn tail_sn show False ..
+  qed
+qed
+
 
 end

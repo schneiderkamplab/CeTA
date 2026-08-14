@@ -1444,12 +1444,12 @@ next
       (set R) (set P) (set S)"
     by (rule muterm_exact_list_coverage[OF mu_pairs collapsing exact safe])
   have defs: "{f. defined (set R) f} \<subseteq> set ?D" by auto
-  have typed_fin: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+  have typed_fin: "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
       (set R) (set P) (set S)"
     by (rule check_muterm_typed_dp_proof_sound[OF I J wf fresh rec])
   have "SN (csstep (mu_of \<mu>) (set R))"
-    by (rule finite_muterm_typed_dpp_imp_SN_csstep[
-      OF wf defs cover muterm_unhiding_preserving_on_from_coverage[
+    by (rule finite_muterm_min_typed_dpp_imp_SN_csstep[
+      OF wf fresh defs cover muterm_unhiding_preserving_on_from_coverage[
         OF wf defs cover] typed_fin])
   then show ?thesis
     by (rule SN_subset, unfold sig_step_def, auto)
