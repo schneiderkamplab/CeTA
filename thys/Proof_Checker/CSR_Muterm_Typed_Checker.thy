@@ -111,24 +111,26 @@ proof (induct p arbitrary: i P)
     by (rule SN_rel_empty1)
 next
   case (Muterm_Typed_Local_Usable U child)
-  from Muterm_Typed_Local_Usable.prems have child_ok:
+  from Muterm_Typed_Local_Usable.prems have closure_ok:
+      "muterm_qcs_ur_closed_check R S U \<mu> P"
+    and child_ok:
       "isOK (check_dp_termination_proof I J False
-        (add_index i 1) (dpp_ops.mk J False False P [] [] [] (R @ S)) child)"
+        (add_index i 1) (dpp_ops.mk J False False P [] [] [] U) child)"
     by auto
-  have child_fin: "finite_dpp (False,False,set P,{},{},{},set (R @ S))"
+  have child_fin: "finite_dpp (False,False,set P,{},{},{},set U)"
   proof -
     have raw: "finite_dpp (dpp_ops.dpp J
-      (dpp_ops.mk J False False P [] [] [] (R @ S)))"
+      (dpp_ops.mk J False False P [] [] [] U))"
       by (rule check_dp_termination_proof[OF I J child_ok])
     show ?thesis using raw dpp_spec.mk_sound[
-      OF J, of False False P "[]" "[]" "[]" "R @ S"] by simp
+      OF J, of False False P "[]" "[]" "[]" U] by simp
   qed
-  have child_fin':
-      "finite_dpp (False,False,set P,{},{},{},set R \<union> set S)"
-    using child_fin by simp
+  have closed: "muterm_qcs_ur_closed (set R) (set S) (set U)
+      (mu_of \<mu>) (set P)"
+    by (rule muterm_qcs_ur_closed_check_sound[OF closure_ok])
   have full: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
       (set R) (set P) (set S)"
-    by (rule finite_ordinary_imp_finite_muterm_typed[OF child_fin'])
+    by (rule finite_muterm_typed_dpp_usable[OF wf fresh closed child_fin])
   show ?case by (rule finite_muterm_typed_imp_finite_min_typed[OF full])
 next
   case (Muterm_Typed_CSR_Proof child)
