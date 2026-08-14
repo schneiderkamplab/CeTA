@@ -963,8 +963,20 @@ where
 | "check_muterm_typed_dp_proof I J \<mu> i R S P
       (Muterm_Typed_Local_Usable U prf) =
     debug i (STR ''MU-TERM ordinary reduction-pair continuation'') (do {
-      check (muterm_qcs_ur_closed_check R S U \<mu> P)
-        (i \<circ> showsl_lit (STR '': invalid MU-TERM usable-rule closure''));
+      check (list_all (\<lambda>lr. lr \<in> set U) S)
+        (i \<circ> showsl_lit (STR '': MU-TERM usable rules omit an unhiding rule''));
+      check (list_all (\<lambda>lr. lr \<in> set R \<or> lr \<in> set S) U)
+        (i \<circ> showsl_lit (STR '': extraneous MU-TERM usable rule''));
+      let UR = filter (\<lambda>lr. lr \<in> set R) U;
+      check (list_all (\<lambda>lr.
+          qcs_ur_closed_term_check R UR \<mu> (snd lr)) UR)
+        (i \<circ> showsl_lit (STR '': ordinary MU-TERM rule closure failed''));
+      check (list_all (\<lambda>lr.
+          qcs_ur_closed_dp_rhs_check R UR \<mu> (snd lr)) S)
+        (i \<circ> showsl_lit (STR '': MU-TERM unhiding closure failed''));
+      check (list_all (\<lambda>dp. is_Var (snd dp) \<or>
+          qcs_ur_closed_dp_rhs_check R UR \<mu> (snd dp)) P)
+        (i \<circ> showsl_lit (STR '': MU-TERM pair closure failed''));
       check_dp_termination_proof I J False (add_index i 1)
         (dpp_ops.mk J False False P [] [] [] U) prf
     })"

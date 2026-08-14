@@ -116,7 +116,7 @@ next
     and child_ok:
       "isOK (check_dp_termination_proof I J False
         (add_index i 1) (dpp_ops.mk J False False P [] [] [] U) child)"
-    by auto
+    unfolding muterm_qcs_ur_closed_check_def Let_def by auto
   have child_fin: "finite_dpp (False,False,set P,{},{},{},set U)"
   proof -
     have raw: "finite_dpp (dpp_ops.dpp J
