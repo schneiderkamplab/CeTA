@@ -177,8 +177,8 @@ next
   let ?E = "muterm_expanded_pairs_list string_renameN P S"
   let ?d = "dpp_ops.mk J False False ?E [] [] [] R"
   from Muterm_Typed_Expanded_CSR_Proof.prems have child_ok:
-      "isOK (check_csr_dp_termination_proof_min
-        I J \<mu> False (add_index i 1) ?d child)"
+      "isOK (check_muterm_expanded_csr_proof
+        I J \<mu> (add_index i 1) ?d child)"
     by (simp add: Let_def)
   have plain: "plain_csr_dpp J ?d"
     unfolding plain_csr_dpp_def
@@ -197,7 +197,7 @@ next
     unfolding rules_d by (rule fresh)
   have raw: "finite_min_csr_dpp Sharp (mu_of \<mu>)
       (set (dpp_ops.pairs J ?d)) (set (dpp_ops.rules J ?d))"
-    by (rule check_csr_dp_termination_proof_min_sound[
+    by (rule check_muterm_expanded_csr_proof_sound[
       OF I J plain wf_d fresh_d child_ok])
   have sem: "dpp_ops.dpp J ?d =
       (False,False,set ?E,{},{},{},set R)"
@@ -212,6 +212,105 @@ next
     using fin set_muterm_expanded_pairs_list[of string_renameN P S] by simp
   show ?case
     by (rule finite_min_csr_dpp_expanded_imp_finite_muterm_min_typed[OF fin'])
+next
+  case (Muterm_Typed_Expanded_Local_Usable U child)
+  let ?E = "muterm_expanded_pairs_list string_renameN P S"
+  from Muterm_Typed_Expanded_Local_Usable.prems have closure_ok:
+      "muterm_qcs_expanded_ur_closed_check R S U \<mu> P"
+    and child_ok:
+      "isOK (check_dp_termination_proof I J False (add_index i 1)
+        (dpp_ops.mk J False False ?E [] [] [] U) child)"
+    unfolding muterm_qcs_expanded_ur_closed_check_def Let_def by auto
+  have raw: "finite_dpp (False,False,set ?E,{},{},{},set U)"
+  proof -
+    have "finite_dpp (dpp_ops.dpp J
+      (dpp_ops.mk J False False ?E [] [] [] U))"
+      by (rule check_dp_termination_proof[OF I J child_ok])
+    then show ?thesis using dpp_spec.mk_sound[
+      OF J, of False False ?E "[]" "[]" "[]" U] by simp
+  qed
+  have fin: "finite_dpp (False,False,
+      muterm_expanded_pairs string_renameN (set P) (set S),{},{},{},set U)"
+    using raw set_muterm_expanded_pairs_list[of string_renameN P S] by simp
+  have closed: "muterm_qcs_expanded_ur_closed (set R) (set S) (set U)
+      (mu_of \<mu>) (set P)"
+    by (rule muterm_qcs_expanded_ur_closed_check_sound[OF closure_ok])
+  have full: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
+    by (rule finite_muterm_typed_dpp_expanded_usable[
+      OF wf fresh closed fin])
+  show ?case by (rule finite_muterm_typed_imp_finite_min_typed[OF full])
+next
+  case (Muterm_Typed_Expanded_Strong_Usable U redp Pr child)
+  let ?E = "muterm_expanded_pairs_list string_renameN P S"
+  let ?d = "dpp_ops.mk J False False ?E [] [] [] R"
+  from Muterm_Typed_Expanded_Strong_Usable.prems
+  obtain d' where proc:
+      "muterm_strong_ur_redpair_proc J \<mu> (get_rel_impl redp) Pr U ?d = return d'"
+    and child_ok: "isOK (check_csr_dp_termination_proof_min I J \<mu> False
+      (add_index i 1) d' child)" by (auto simp: Let_def)
+  have d': "d' = dpp_spec.delete_pairs J ?d Pr"
+    using proc unfolding muterm_strong_ur_redpair_proc_def by auto
+  have plain: "plain_csr_dpp J ?d"
+    unfolding plain_csr_dpp_def
+    using dpp_spec.mk_sound[OF J,of False False ?E "[]" "[]" "[]" R]
+      dpp_spec.dpp_sound[OF J,of ?d] by auto
+  have plain': "plain_csr_dpp J d'"
+    unfolding d' by (rule plain_csr_dpp_delete_pairs[OF J plain])
+  interpret dpp_spec J by fact
+  have rules_d: "set (rules ?d) = set R"
+    using mk_sound[of False False ?E "[]" "[]" "[]" R]
+      rules_sound[of ?d] dpp_sound[of ?d] by auto
+  have rules': "set (rules d') = set (rules ?d)"
+    using d' delete_P_Pw_sound[of ?d Pr Pr] rules_sound[of d'] by auto
+  have wf_d: "wf_trs (set (rules ?d))" using wf unfolding rules_d .
+  have fresh_d: "\<And>f n. \<not> defined (set (rules ?d)) (Sharp f,n)"
+    using fresh unfolding rules_d .
+  have wf': "wf_trs (set (rules d'))" using wf_d unfolding rules' .
+  have fresh': "\<And>f n. \<not> defined (set (rules d')) (Sharp f,n)"
+    using fresh_d unfolding rules' .
+  have child_fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs d')) (set (rules d'))"
+    by (rule check_csr_dp_termination_proof_min_sound[
+      OF I J plain' wf' fresh' child_ok])
+  have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs ?d)) (set (rules ?d))"
+    by (rule muterm_strong_ur_redpair_proc_sound[
+      OF J get_rel_impl proc wf_d fresh_d child_fin])
+  have sem: "dpp_ops.dpp J ?d =
+      (False,False,set ?E,{},{},{},set R)"
+    using mk_sound[of False False ?E "[]" "[]" "[]" R] by simp
+  have expanded_fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (muterm_expanded_pairs string_renameN (set P) (set S)) (set R)"
+    using fin sem pairs_sound[of ?d] rules_sound[of ?d] dpp_sound[of ?d]
+      set_muterm_expanded_pairs_list[of string_renameN P S] by auto
+  show ?case
+    by (rule finite_min_csr_dpp_expanded_imp_finite_muterm_min_typed[
+      OF expanded_fin])
+next
+  case (Muterm_Typed_Expanded_Ordinary child)
+  let ?E = "muterm_expanded_pairs_list string_renameN P S"
+  from Muterm_Typed_Expanded_Ordinary.prems have child_ok:
+      "isOK (check_dp_termination_proof I J False (add_index i 1)
+        (dpp_ops.mk J False False ?E [] [] [] R) child)"
+    by (simp add: Let_def)
+  have raw: "finite_dpp (False,False,set ?E,{},{},{},set R)"
+  proof -
+    have "finite_dpp (dpp_ops.dpp J
+      (dpp_ops.mk J False False ?E [] [] [] R))"
+      by (rule check_dp_termination_proof[OF I J child_ok])
+    then show ?thesis using dpp_spec.mk_sound[
+      OF J, of False False ?E "[]" "[]" "[]" R] by simp
+  qed
+  have fin: "finite_dpp (False,False,
+      muterm_expanded_pairs string_renameN (set P) (set S),{},{},{},
+      set R)"
+    using raw set_muterm_expanded_pairs_list[of string_renameN P S]
+    by simp
+  have full: "finite_muterm_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
+    by (rule finite_muterm_typed_dpp_expanded_ordinary[OF fin])
+  show ?case by (rule finite_muterm_typed_imp_finite_min_typed[OF full])
 next
   case (Muterm_Typed_Dep_Graph edps)
   from Muterm_Typed_Dep_Graph.prems have graph_ok:

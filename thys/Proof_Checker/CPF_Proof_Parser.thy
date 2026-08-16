@@ -1557,6 +1557,22 @@ where
     } XMLor XMLdo (STR ''expandedCsrProof'') {
       prf \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (Muterm_Typed_Expanded_CSR_Proof prf)
+    } XMLor XMLdo (STR ''expandedLocalUsableRulesProc'') {
+      U \<leftarrow> xml_singleton (STR ''usableRules'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2dp_termination_proof;
+      xml_return (Muterm_Typed_Expanded_Local_Usable U prf)
+    } XMLor XMLdo (STR ''expandedStrongUsableRulesProc'') {
+      U \<leftarrow> xml_singleton (STR ''usableRules'')
+        (rules xml2name termIndexMap ruleMap) id;
+      redp \<leftarrow> red_triple False;
+      Pr \<leftarrow> xml_singleton (STR ''dps'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (Muterm_Typed_Expanded_Strong_Usable U redp Pr prf)
+    } XMLor XMLdo (STR ''expandedOrdinaryDpProof'') {
+      prf \<leftarrow> xml2dp_termination_proof;
+      xml_return (Muterm_Typed_Expanded_Ordinary prf)
     } XMLor XMLdo (STR ''depGraphProc'') {
       cs \<leftarrow>* XMLdo (STR ''component'') {
         dps \<leftarrow> xml_singleton (STR ''dps'')
@@ -2824,6 +2840,41 @@ where
           symbol_parser termIndexMap ruleMap;
         xml_return (Muterm_Typed_CSR_Dependency_Pairs P S prf)
       };
+      muterm_expanded_innermost =
+        XMLdo (STR ''csrMutermExpandedInnermostDependencyPairs'') {
+          P \<leftarrow> xml_singleton (STR ''dps'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          S \<leftarrow> xml_singleton (STR ''unhidingRules'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          prf \<leftarrow> xml2dp_termination_proof
+            symbol_parser termIndexMap ruleMap;
+          xml_return
+            (Muterm_Expanded_Innermost_CSR_Dependency_Pairs P S prf)
+        };
+      muterm_expanded_innermost_filtered_usable =
+        XMLdo (STR ''csrMutermExpandedInnermostFilteredUsableDependencyPairs'') {
+          P \<leftarrow> xml_singleton (STR ''dps'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          S \<leftarrow> xml_singleton (STR ''unhidingRules'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          prf \<leftarrow> xml2csr_dp_termination_proof
+            symbol_parser termIndexMap ruleMap;
+          xml_return
+            (Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs P S prf)
+        };
+      muterm_expanded_innermost_usable =
+        XMLdo (STR ''csrMutermExpandedInnermostUsableDependencyPairs'') {
+          P \<leftarrow> xml_singleton (STR ''dps'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          S \<leftarrow> xml_singleton (STR ''unhidingRules'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          U \<leftarrow> xml_singleton (STR ''usableRules'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          prf \<leftarrow> xml2dp_termination_proof
+            symbol_parser termIndexMap ruleMap;
+          xml_return
+            (Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs P S U prf)
+        };
       orthogonality = xml_singleton
         (STR ''csrOrthogonalityCheck'') innermost id
         XMLor XMLdo (STR ''csrOrthogonalityCheck'') {
@@ -2889,6 +2940,9 @@ where
       XMLor muterm
       XMLor muterm_usable
       XMLor muterm_typed
+      XMLor muterm_expanded_innermost
+      XMLor muterm_expanded_innermost_filtered_usable
+      XMLor muterm_expanded_innermost_usable
       XMLor innermost
       XMLor removed_improved
       XMLor xml_singleton

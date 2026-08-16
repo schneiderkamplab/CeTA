@@ -4482,15 +4482,16 @@ proof -
 qed
 
 lemma not_finite_min_csr_dpp_obtain_chain:
-  assumes not_fin: "\<not> finite_min_csr_dpp Sharp \<mu> P R"
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+  assumes not_fin: "\<not> finite_min_csr_dpp shp \<mu> P R"
   shows "\<exists>s t \<sigma>.
     (\<forall>k. (s k, t k) \<in> P) \<and>
-    (\<forall>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}) \<and>
+    (\<forall>k. SN_on (csdp_step shp \<mu> R) {t k \<cdot> \<sigma> k}) \<and>
     (\<forall>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
-      (csdp_step Sharp \<mu> R)\<^sup>*)"
+      (csdp_step shp \<mu> R)\<^sup>*)"
 proof -
-  let ?S = "csdp_step Sharp \<mu> R"
-  let ?M = "csr_min_pair_step Sharp \<mu> P R"
+  let ?S = "csdp_step shp \<mu> R"
+  let ?M = "csr_min_pair_step shp \<mu> P R"
   from not_fin obtain f where chain:
     "\<And>k. (f k, f (Suc k)) \<in> ?S\<^sup>* O ?M O ?S\<^sup>*"
     unfolding finite_min_csr_dpp_def SN_rel_on_def SN_on_def
@@ -5237,28 +5238,29 @@ proof -
 qed
 
 theorem finite_min_csr_dpp_redpair_simulation:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
   assumes redpair: "compat_redpair_order S NS"
     and orient: "P \<subseteq> S \<union> NS"
     and simulation:
       "\<And>s t \<sigma>.
         (\<And>k. (s k, t k) \<in> P) \<Longrightarrow>
-        (\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}) \<Longrightarrow>
+        (\<And>k. SN_on (csdp_step shp \<mu> R) {t k \<cdot> \<sigma> k}) \<Longrightarrow>
         (\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
-          (csdp_step Sharp \<mu> R)\<^sup>*) \<Longrightarrow>
+          (csdp_step shp \<mu> R)\<^sup>*) \<Longrightarrow>
         \<exists>\<tau>. \<forall>k. (t k \<cdot> \<tau> k, s (Suc k) \<cdot> \<tau> (Suc k)) \<in> NS"
-    and fin: "finite_min_csr_dpp Sharp \<mu> (P - S) R"
-  shows "finite_min_csr_dpp Sharp \<mu> P R"
+    and fin: "finite_min_csr_dpp shp \<mu> (P - S) R"
+  shows "finite_min_csr_dpp shp \<mu> P R"
 proof (rule ccontr)
   interpret compat_redpair_order S NS by (rule redpair)
-  assume not_fin: "\<not> finite_min_csr_dpp Sharp \<mu> P R"
+  assume not_fin: "\<not> finite_min_csr_dpp shp \<mu> P R"
   from not_finite_min_csr_dpp_obtain_chain[OF not_fin]
   obtain s t \<sigma> where
     pair: "\<And>k. (s k, t k) \<in> P"
     and target_SN:
-      "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+      "\<And>k. SN_on (csdp_step shp \<mu> R) {t k \<cdot> \<sigma> k}"
     and steps:
       "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
-        (csdp_step Sharp \<mu> R)\<^sup>*"
+        (csdp_step shp \<mu> R)\<^sup>*"
     by blast
   from simulation[of s t \<sigma>, OF pair target_SN steps]
   obtain \<tau> where sim:
@@ -5313,8 +5315,8 @@ proof (rule ccontr)
   let ?ss = "shift s j"
   let ?tt = "shift t j"
   let ?\<sigma>\<sigma> = "shift \<sigma> j"
-  let ?RS = "csdp_step Sharp \<mu> R"
-  let ?RP = "csr_min_pair_step Sharp \<mu> (P - S) R"
+  let ?RS = "csdp_step shp \<mu> R"
+  let ?RP = "csr_min_pair_step shp \<mu> (P - S) R"
   let ?rel = "?RS\<^sup>* O ?RP O ?RS\<^sup>*"
   let ?vals = "\<lambda>k. ?ss k \<cdot> ?\<sigma>\<sigma> k"
   have rel_step: "(?vals k, ?vals (Suc k)) \<in> ?rel" for k
@@ -6167,10 +6169,83 @@ proof -
       OF redpair orient rewrite_NS active_NS mark_S fin_needed])
 qed
 
+text \<open>
+  The original executable U3 processor accepted only replacement maps without
+  explicit marked entries.  That encoding is sufficient for ordinary CS-DPs,
+  because missing entries default to all arguments, but it excludes the exact
+  MU-TERM boundary, which deliberately records equal active positions for an
+  unmarked symbol and its marked copy.  The semantic U3
+  proof only requires the inclusion below.  Checking every stored key is
+  complete for the finite-map representation: absent entries denote the full
+  arity, and the arity-bound conjunct covers the one-sided stored case.
+\<close>
+
+fun csr_u3_sharp_mu_entry_ok where
+  "csr_u3_sharp_mu_entry_ok \<mu> (((Sharp f), n), is) =
+    (set is \<subseteq> {0..<n} \<and> mu_of \<mu> (f,n) \<subseteq> set is)"
+| "csr_u3_sharp_mu_entry_ok \<mu> ((f, n), is) =
+    (set is \<subseteq> {0..<n} \<and> set is \<subseteq> mu_of \<mu> (Sharp f,n))"
+
+definition csr_u3_sharp_mu_check ::
+  "((('f::{showl, compare_order}, 'l::showl) lab) muL) \<Rightarrow> showsl check"
+where
+  "csr_u3_sharp_mu_check \<mu> = check_allm (\<lambda>e.
+    check (csr_u3_sharp_mu_entry_ok \<mu> e)
+      (case e of ((f, n), _) \<Rightarrow>
+        showsl_lit (STR ''invalid replacement map inclusion for CSR-DP sharp side steps: '')
+        \<circ> showsl f \<circ> showsl_lit (STR ''/'') \<circ> showsl n)) \<mu>"
+
+lemma csr_u3_sharp_mu_check_sound:
+  assumes ok: "isOK (csr_u3_sharp_mu_check \<mu>)"
+  shows "mu_of \<mu> (f,n) \<subseteq> mu_of \<mu> (Sharp f,n)"
+proof -
+  have valid: "\<And>g m is. ((g,m),is) \<in> set \<mu> \<Longrightarrow>
+      csr_u3_sharp_mu_entry_ok \<mu> ((g,m),is)"
+    using isOK_check_allm_checkD[OF ok[unfolded csr_u3_sharp_mu_check_def]]
+    by force
+  have bounded: "\<And>g m is. ((g,m),is) \<in> set \<mu> \<Longrightarrow>
+      set is \<subseteq> {0..<m}"
+  proof -
+    fix g m positions
+    assume mem: "((g,m),positions) \<in> set \<mu>"
+    from valid[OF mem] show "set positions \<subseteq> {0..<m}"
+      by (cases g; auto)
+  qed
+  show ?thesis
+  proof (cases "map_of \<mu> (f,n)")
+    case None
+    note left_none = None
+    show ?thesis
+    proof (cases "map_of \<mu> (Sharp f,n)")
+      case None
+      with left_none show ?thesis unfolding mu_of_def by simp
+    next
+      case (Some js)
+      have inc: "mu_of \<mu> (f,n) \<subseteq> set js"
+        using valid[OF map_of_SomeD[OF Some]] by simp
+      with Some show ?thesis unfolding mu_of_def by simp
+    qed
+  next
+    case (Some poss)
+    show ?thesis
+    proof (cases "map_of \<mu> (Sharp f,n)")
+      case None
+      have bound: "set poss \<subseteq> {0..<n}"
+        by (rule bounded[OF map_of_SomeD[OF Some]])
+      with Some None show ?thesis unfolding mu_of_def by simp
+    next
+      case (Some js)
+      have inc: "mu_of \<mu> (f,n) \<subseteq> set js"
+        using valid[OF map_of_SomeD[OF Some]] by simp
+      with Some show ?thesis unfolding mu_of_def by simp
+    qed
+  qed
+qed
+
 definition csr_u3_redpair_proc where
   "csr_u3_redpair_proc J \<mu> rp Premove U dpp = check_return (do {
     rel_impl_redpair rp;
-    csr_sharp_mu_check \<mu>;
+    csr_u3_sharp_mu_check \<mu>;
     let (ps, pns) = dpp_ops.split_pairs J dpp Premove;
     check (csr_sharp_pairs_check (dpp_ops.pairs J dpp) \<or>
         csr_u3_mixed_pairs_check (dpp_ops.rules J dpp)
@@ -6213,7 +6288,7 @@ proof -
     by auto
   from proc[unfolded csr_u3_redpair_proc_def Let_def split, simplified]
   have valid: "isOK (rel_impl_redpair rp)"
-    and sharp_mu: "isOK (csr_sharp_mu_check \<mu>)"
+    and sharp_mu: "isOK (csr_u3_sharp_mu_check \<mu>)"
     and shape: "csr_sharp_pairs_check (pairs dpp) \<or>
       csr_u3_mixed_pairs_check (rules dpp) (pairs dpp)"
     and closed: "csr_u3_usable_rules_check (rules dpp) U \<mu> (pairs dpp)"
@@ -6262,7 +6337,7 @@ proof -
     by (rule csr_u3_usable_rules_check_sound[OF closed])
   have marked_mu:
       "\<And>f n. mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
-    by (rule csr_sharp_mu_check_sound[OF sharp_mu])
+    by (rule csr_u3_sharp_mu_check_sound[OF sharp_mu])
   have pairs': "set (pairs dpp') = set (pairs dpp) - set Premove"
     using dpp' delete_P_Pw_sound[of dpp Premove Premove]
       pairs_sound[of dpp'] by auto

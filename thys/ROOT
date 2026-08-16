@@ -327,6 +327,14 @@ session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
   theories
     CSR_Innermost_Unhiding_Proofs
     CSR_Muterm_Usable_Rules
+    CSR_Muterm_Innermost_Usable
+    CSR_Muterm_Innermost_Usable_Exec
+    CSR_Muterm_Innermost_Progress
+
+session CSR_Muterm_Extended_Basic in "CSR_Checker/Muterm_Extended_Basic" = CSR_Muterm_Ext +
+  options [document = false]
+  theories
+    CSR_Muterm_Extended_Basic
 
 session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
   options [document = false, timeout = 600]

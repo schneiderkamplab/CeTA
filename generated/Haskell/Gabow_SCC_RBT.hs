@@ -58,7 +58,7 @@ pop_tr s =
                                   (Arith.plus_nat x Arith.one_nat)))
                      (\ (ac, bc) ->
                        (Arith.suc ac,
-                         Arith.rbt_insert (Impl_Array_Stack.as_get a ac)
+                         Arith.rbt_inserta (Impl_Array_Stack.as_get a ac)
                            (Arith.uminus_int Arith.one_int) bc))
                      (Impl_Array_Stack.as_get aa x, ab)
                of {
@@ -79,7 +79,7 @@ idx_of_tr s v =
   (case v of {
     (_, (aa, (ab, _))) ->
       let {
-        x = (case Arith.rbt_lookup ab s of {
+        x = (case Arith.rbt_lookupa ab s of {
               Just i ->
                 (if Arith.less_eq_int Arith.zero_int i then Arith.nat i
                   else error "undefined");
@@ -106,7 +106,7 @@ push_code g_impl =
       y_a = Impl_Array_Stack.as_length xa;
       y_b = Impl_Array_Stack.as_push xa x;
       y_c = Impl_Array_Stack.as_push xb y_a;
-      y_d = Arith.rbt_insert x (Arith.int_of_nat y_a) xc;
+      y_d = Arith.rbt_inserta x (Arith.int_of_nat y_a) xc;
       y_e = (if Autoref_Bindings_HOL.is_Nil (Digraph_Impl.gi_E g_impl x) then xd
               else Impl_Array_Stack.as_push xd
                      (y_a, Digraph_Impl.gi_E g_impl x));
@@ -232,7 +232,7 @@ compute_SCC_tr g =
     xa = ([], Arith.Empty);
   } in (case Foldi.foldli (id (Digraph_Impl.gi_V0 g)) (\ _ -> True)
                (\ xb (a, b) ->
-                 (if not (case Arith.rbt_lookup b xb of {
+                 (if not (case Arith.rbt_lookupa b xb of {
                            Nothing -> False;
                            Just i ->
                              (if Arith.less_eq_int Arith.zero_int i then False
@@ -242,7 +242,7 @@ compute_SCC_tr g =
                           xc = (a, (Impl_Array_Stack.as_singleton xb,
                                      (Impl_Array_Stack.as_singleton
 Arith.zero_nat,
-                                       (Arith.rbt_insert xb
+                                       (Arith.rbt_inserta xb
   (Arith.int_of_nat Arith.zero_nat) b,
  (if Autoref_Bindings_HOL.is_Nil (Digraph_Impl.gi_E g xb)
    then Impl_Array_Stack.as_empty ()
@@ -262,9 +262,9 @@ Arith.zero_nat,
                     xh = xf : aa;
                   } in (xh, xg);
  (Just xf, bb) ->
-   (if (case Arith.rbt_lookup (case bb of {
-                                (_, (_, (xl, _))) -> xl;
-                              })
+   (if (case Arith.rbt_lookupa (case bb of {
+                                 (_, (_, (xl, _))) -> xl;
+                               })
                xf
          of {
          Nothing -> False;
@@ -273,9 +273,9 @@ Arith.zero_nat,
      then let {
             ab = collapse_tr xf bb;
           } in (aa, ab)
-     else (if not (case Arith.rbt_lookup (case bb of {
-   (_, (_, (xl, _))) -> xl;
- })
+     else (if not (case Arith.rbt_lookupa (case bb of {
+    (_, (_, (xl, _))) -> xl;
+  })
                           xf
                     of {
                     Nothing -> False;
