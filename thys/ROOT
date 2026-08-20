@@ -358,8 +358,6 @@ session Proof_Checker in Proof_Checker = CSR_Muterm_Typed_Recursive_Redpair +
   sessions
     LTS
     Outermost_RZ_Ext
-  directories
-    "../../target/code-csr-production"
   theories
     CSR_Muterm_Typed_Checker
     CSR_GM_Transformation

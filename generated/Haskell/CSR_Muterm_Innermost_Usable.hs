@@ -21,140 +21,29 @@ import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified CSR_Innermost_Active_SCT;
 import qualified CSR_Innermost_DP_Checker;
+import qualified CSR_Minimal_CSDP_Proofs;
 import qualified FOR_Preliminaries;
+import qualified Check_Monad;
+import qualified Error_Monad;
+import qualified HOL;
 import qualified Complex_Constant_Removal_Impl;
+import qualified Dependency_Pair_Problem_Spec;
 import qualified Reduction_Pair_Implementations;
 import qualified Check_Termination_Common;
 import qualified Termination_Problem_Spec;
+import qualified CSR_Checker_Base;
 import qualified Bounded_Increase_Impl;
 import qualified Semantic_Labeling_Carrier;
 import qualified Check_Termination;
 import qualified Critical_Pairs_Impl;
 import qualified Subterm_Criterion_Impl;
-import qualified Countable;
-import qualified Compare;
-import qualified Compare_Order_Instances;
-import qualified CSR_Muterm_Usable_Rules;
-import qualified CSR_Minimal_CSDP_Proofs;
-import qualified Check_Monad;
-import qualified Error_Monad;
-import qualified HOL;
-import qualified Dependency_Pair_Problem_Spec;
 import qualified Sum_Type;
+import qualified Compare;
+import qualified Countable;
 import qualified Labelings;
-import qualified CSR_Checker_Base;
-import qualified Context_Sensitive_Impl;
+import qualified Compare_Order_Instances;
 import qualified Term_Rewriting;
 import qualified Arith;
-
-af_mu_vars_term_list ::
-  forall a b.
-    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] ->
-                ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                  Term_Rewriting.Term a b -> [b];
-af_mu_vars_term_list mu pi (Term_Rewriting.Var x) = [x];
-af_mu_vars_term_list mu pi (Term_Rewriting.Fun f ts) =
-  concat
-    (Arith.map_filter
-      (\ x ->
-        (if Arith.member x
-              (Context_Sensitive_Impl.mu_of mu (f, Arith.size_list ts)) &&
-              Arith.member x (pi (f, Arith.size_list ts))
-          then Just (af_mu_vars_term_list mu pi (Arith.nth ts x)) else Nothing))
-      (Arith.upt Arith.zero_nat (Arith.size_list ts)));
-
-rhs_af_mu_vars_condition_list ::
-  forall a b.
-    (Eq a,
-      Eq b) => [((a, Arith.Nat), [Arith.Nat])] ->
-                 ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                   [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] -> Bool;
-rhs_af_mu_vars_condition_list mu pi r =
-  all (\ (l, ra) ->
-        all (Arith.membera (af_mu_vars_term_list mu pi l))
-          (af_mu_vars_term_list mu pi ra))
-    r;
-
-rhs_pair_af_mu_vars_condition_list ::
-  forall a b.
-    (Eq a,
-      Eq b) => [((a, Arith.Nat), [Arith.Nat])] ->
-                 ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
-                   [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] -> Bool;
-rhs_pair_af_mu_vars_condition_list mu pi r =
-  all (\ (l, ra) ->
-        all (Arith.membera (CSR_Checker_Base.mu_vars_term_list mu l))
-          (af_mu_vars_term_list mu pi ra))
-    r;
-
-muterm_innermost_af_ur_redpair_proc ::
-  forall a b c d.
-    (Eq b, Term_Rewriting.Showl b, Eq c, Term_Rewriting.Showl c, Eq d,
-      Term_Rewriting.Showl d) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a
-                                   (Labelings.Lab b c) d () ->
-                                   [((Labelings.Lab b c, Arith.Nat),
-                                      [Arith.Nat])] ->
-                                     Term_Rewriting.Rel_impl_ext
-                                       (Labelings.Lab b c) d () ->
-                                       [(Term_Rewriting.Term (Labelings.Lab b c)
-   d,
-  Term_Rewriting.Term (Labelings.Lab b c) d)] ->
- [(Term_Rewriting.Term (Labelings.Lab b c) d,
-    Term_Rewriting.Term (Labelings.Lab b c) d)] ->
-   a -> Sum_Type.Sum (String -> String) a;
-muterm_innermost_af_ur_redpair_proc j mu rp premove u dpp =
-  (case Error_Monad.bind (Term_Rewriting.rel_impl_redpair rp)
-          (\ _ ->
-            (case Dependency_Pair_Problem_Spec.split_pairs j dpp premove of {
-              (ps, pns) ->
-                Error_Monad.bind
-                  (Check_Monad.check
-                    (CSR_Minimal_CSDP_Proofs.csr_sharp_pairs_check
-                      (Dependency_Pair_Problem_Spec.pairs j dpp))
-                    (Term_Rewriting.showsl_lit
-                      "filtered innermost MU-TERM usable-rule processor requires marked pairs"))
-                  (\ _ ->
-                    Error_Monad.bind
-                      (Check_Monad.check
-                        (CSR_Muterm_Usable_Rules.muterm_marked_mu_pairs_check mu
-                          (Dependency_Pair_Problem_Spec.pairs j dpp))
-                        (Term_Rewriting.showsl_lit
-                          "marked replacement-map entries differ from their source symbols"))
-                      (\ _ ->
-                        Error_Monad.bind
-                          (Check_Monad.check
-                            (CSR_Muterm_Usable_Rules.muterm_innermost_ur_closed_check
-                              (Dependency_Pair_Problem_Spec.rules j dpp) u mu
-                              (Dependency_Pair_Problem_Spec.pairs j dpp))
-                            (Term_Rewriting.showsl_lit
-                              "supplied rules are not the closed innermost MU-TERM usable set"))
-                          (\ _ ->
-                            Error_Monad.bind
-                              (Check_Monad.check
-                                (rhs_pair_af_mu_vars_condition_list mu
-                                  (Term_Rewriting.af rp)
-                                  (Dependency_Pair_Problem_Spec.pairs j dpp))
-                                (Term_Rewriting.showsl_lit
-                                  "filtered innermost MU-TERM pair-variable condition failed"))
-                              (\ _ ->
-                                Error_Monad.bind
-                                  (Check_Monad.check
-                                    (rhs_af_mu_vars_condition_list mu
-                                      (Term_Rewriting.af rp) u)
-                                    (Term_Rewriting.showsl_lit
-                                      "filtered innermost MU-TERM usable-rule variable condition failed"))
-                                  (\ _ ->
-                                    Error_Monad.bind
-                                      (Term_Rewriting.rel_impl_ns rp (u ++ pns))
-                                      (\ _ ->
-Term_Rewriting.rel_impl_s rp ps))))));
-            }))
-    of {
-    Sum_Type.Inl a -> Sum_Type.Inl a;
-    Sum_Type.Inr _ ->
-      Sum_Type.Inr
-        (Dependency_Pair_Problem_Spec.delete_P_Pw j dpp premove premove);
-  });
 
 check_muterm_expanded_innermost_proof ::
   forall a b c.
@@ -178,17 +67,61 @@ check_muterm_expanded_innermost_proof ia j mu i dpp
         edps)
       (\ _ -> check_muterm_expanded_innermost_components ia j mu i dpp edps));
 check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
+  FOR_Preliminaries.debug i "expanded innermost MU-TERM instantiation"
+    (Error_Monad.bind
+      (CSR_Minimal_CSDP_Proofs.csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_muterm_expanded_innermost_proof ia j mu
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
+check_muterm_expanded_innermost_proof ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Redpair_UR_Proc redp pr u subprf))
   = FOR_Preliminaries.debug i
-      "expanded innermost MU-TERM filtered usable-rule reduction pair"
+      "expanded innermost MU-TERM QCS usable-rule reduction pair"
       (Error_Monad.bind
-        (muterm_innermost_af_ur_redpair_proc j mu
-          (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
-        (\ dppa ->
-          CSR_Checker_Base.check_csr_dp_termination_proof ia j False
-            (Term_Rewriting.add_index i Arith.one_nat) dppa
-            (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf)));
+        (Check_Monad.check
+          (all (Arith.membera (Dependency_Pair_Problem_Spec.rules j dpp)) u)
+          (Term_Rewriting.showsl_lit
+            "expanded MU-TERM usable rules are not a subset of the active rules"))
+        (\ _ ->
+          Error_Monad.bind
+            (Check_Monad.check
+              (all (\ lr ->
+                     CSR_Minimal_CSDP_Proofs.qcs_ur_closed_term_check
+                       (Dependency_Pair_Problem_Spec.rules j dpp) u mu (snd lr))
+                u)
+              (Term_Rewriting.showsl_lit
+                "expanded MU-TERM usable-rule RHS closure failed"))
+            (\ _ ->
+              Error_Monad.bind
+                (Check_Monad.check
+                  (all (\ dp ->
+                         CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check
+                           (Dependency_Pair_Problem_Spec.rules j dpp) u mu
+                           (snd dp))
+                    (Dependency_Pair_Problem_Spec.pairs j dpp))
+                  (Term_Rewriting.showsl_lit
+                    "expanded MU-TERM dependency-pair RHS closure failed"))
+                (\ _ ->
+                  Error_Monad.bind
+                    (Check_Monad.check
+                      (CSR_Minimal_CSDP_Proofs.qcs_csr_ur_closed_check
+                        (Dependency_Pair_Problem_Spec.rules j dpp) u mu
+                        (Dependency_Pair_Problem_Spec.pairs j dpp))
+                      (Term_Rewriting.showsl_lit
+                        "expanded MU-TERM QCS usable-rule closure failed"))
+                    (\ _ ->
+                      let {
+                        dppU =
+                          Dependency_Pair_Problem_Spec.mk j False False
+                            (Dependency_Pair_Problem_Spec.pairs j dpp) [] [] []
+                            u;
+                      } in Check_Termination.check_dp_termination_proof ia j
+                             False (Term_Rewriting.add_index i Arith.one_nat)
+                             dppU
+                             (Check_Termination.Redpair_Proc redp pr
+                               subprf))))));
 check_muterm_expanded_innermost_proof ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof Check_Termination.P_is_Empty) =
   FOR_Preliminaries.debug i "expanded innermost ordinary DP proof"
@@ -376,10 +309,6 @@ check_muterm_expanded_innermost_proof ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va) =
   CSR_Innermost_Active_SCT.check_innermost_csr_dp_termination_proof_active_sct
     ia j mu i dpp (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va);
-check_muterm_expanded_innermost_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Instantiation_Proc v va vb) =
-  CSR_Innermost_Active_SCT.check_innermost_csr_dp_termination_proof_active_sct
-    ia j mu i dpp (CSR_Checker_Base.CSR_DP_Instantiation_Proc v va vb);
 check_muterm_expanded_innermost_proof ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb) =
   CSR_Innermost_Active_SCT.check_innermost_csr_dp_termination_proof_active_sct

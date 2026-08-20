@@ -9365,10 +9365,49 @@ data Extended_csr_termination_proof a b c =
       [(Term (Lab a b) c, Term (Lab a b) c)]
       [(Term (Lab a b) c, Term (Lab a b) c)] (Csr_dp_termination_proof a b c);
 
+data Muterm_typed_dp_proof a b c = Muterm_Typed_P_Is_Empty
+  | Muterm_Typed_Local_Usable [(Term (Lab a b) c, Term (Lab a b) c)]
+      (Dp_termination_proof a b c)
+  | Muterm_Typed_General_Usable (Redtriple_impl (Lab a b))
+      [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Muterm_typed_dp_proof a b c)
+  | Muterm_Typed_Pair_Augmentation (Term (Lab a b) c, Term (Lab a b) c)
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Muterm_typed_dp_proof a b c)
+  | Muterm_Typed_CSR_Proof (Csr_dp_termination_proof a b c)
+  | Muterm_Typed_Expanded_CSR_Proof (Csr_dp_termination_proof a b c)
+  | Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
+      (Csr_dp_termination_proof a b c)
+  | Muterm_Typed_Expanded_Local_Usable [(Term (Lab a b) c, Term (Lab a b) c)]
+      (Dp_termination_proof a b c)
+  | Muterm_Typed_Expanded_Strong_Usable [(Term (Lab a b) c, Term (Lab a b) c)]
+      (Redtriple_impl (Lab a b)) [(Term (Lab a b) c, Term (Lab a b) c)]
+      (Csr_dp_termination_proof a b c)
+  | Muterm_Typed_Expanded_Ordinary (Dp_termination_proof a b c)
+  | Muterm_Typed_Dep_Graph
+      [(Maybe (Muterm_typed_dp_proof a b c),
+         [(Term (Lab a b) c, Term (Lab a b) c)])];
+
 data Gm_extended_csr_termination_proof a b c =
   Existing_CSR_Proof (Extended_csr_termination_proof a b c)
   | Innermost_CSR_Dependency_Pairs [(Term (Lab a b) c, Term (Lab a b) c)]
       [(Term (Lab a b) c, Term (Lab a b) c)] (Csr_dp_termination_proof a b c)
+  | Muterm_Innermost_CSR_Dependency_Pairs [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Csr_dp_termination_proof a b c)
+  | Muterm_Usable_CSR_Dependency_Pairs [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Csr_dp_termination_proof a b c)
+  | Muterm_Typed_CSR_Dependency_Pairs [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Muterm_typed_dp_proof a b c)
+  | Muterm_Expanded_Innermost_CSR_Dependency_Pairs
+      [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Csr_dp_termination_proof a b c)
+  | Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs
+      [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Csr_dp_termination_proof a b c)
+  | Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs
+      [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)]
+      [(Term (Lab a b) c, Term (Lab a b) c)] (Dp_termination_proof a b c)
   | GM_CSR_Transformation (Lab a b) (Lab a b) [((Lab a b, Nat), Lab a b)]
       (Trs_termination_proof a b c);
 
@@ -41087,6 +41126,15 @@ set_option :: forall a. (Ceq a, Ccompare a, Set_impl a) => Maybe a -> Set a;
 set_option Nothing = bot_set;
 set_option (Just x2) = inserta x2 bot_set;
 
+csr_dp_unsharp_root ::
+  forall a b c.
+    (Compare_order a, Showl a) => Term (Lab a b) c -> Term (Lab a b) c;
+csr_dp_unsharp_root (Var x) = Var x;
+csr_dp_unsharp_root (Fun (Sharp f) ts) = Fun f ts;
+csr_dp_unsharp_root (Fun (Lab v va) ts) = Fun (Lab v va) ts;
+csr_dp_unsharp_root (Fun (FunLab v va) ts) = Fun (FunLab v va) ts;
+csr_dp_unsharp_root (Fun (UnLab v) ts) = Fun (UnLab v) ts;
+
 mu_of :: forall a. (Eq a) => [((a, Nat), [Nat])] -> (a, Nat) -> Set Nat;
 mu_of mu = let {
              m = map_of mu;
@@ -41094,45 +41142,6 @@ mu_of mu = let {
                                Nothing -> atLeastLessThan zero_nat a;
                                Just aa -> set aa;
                              }));
-
-mu_vars_term_list ::
-  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [b];
-mu_vars_term_list mu (Var x) = [x];
-mu_vars_term_list mu (Fun f ts) =
-  concat
-    (map_filter
-      (\ x ->
-        (if member x (mu_of mu (f, size_list ts))
-          then Just (mu_vars_term_list mu (nth ts x)) else Nothing))
-      (upt zero_nat (size_list ts)));
-
-direct_collapsing_mu_CSDP_list ::
-  forall a b.
-    (Eq a,
-      Eq b) => (a -> a) ->
-                 [((a, Nat), [Nat])] ->
-                   [(Term a b, Term a b)] -> [(Term a b, Term a b)];
-direct_collapsing_mu_CSDP_list shp mu r =
-  concatMap
-    (\ (l, ra) ->
-      map_filter
-        (\ x ->
-          (if not (membera (mu_vars_term_list mu l) x)
-            then Just (sharp_term shp l, Var x) else Nothing))
-        (remdups (mu_vars_term_list mu ra)))
-    r;
-
-mu_fun_poss_list ::
-  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [[Nat]];
-mu_fun_poss_list mu (Var x) = [];
-mu_fun_poss_list mu (Fun f ts) =
-  [] : concat
-         (map_filter
-           (\ x ->
-             (if member x (mu_of mu (f, size_list ts))
-               then Just (map (\ a -> x : a) (mu_fun_poss_list mu (nth ts x)))
-               else Nothing))
-           (upt zero_nat (size_list ts)));
 
 mu_poss_list ::
   forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [[Nat]];
@@ -41146,234 +41155,28 @@ mu_poss_list mu (Fun f ts) =
                else Nothing))
            (upt zero_nat (size_list ts)));
 
-hides_position_list ::
-  forall a b.
-    (Ceq a, Ccompare a, Eq a, Set_impl a,
-      Eq b) => [((a, Nat), [Nat])] ->
-                 [(a, Nat)] ->
-                   [(Term a b, Term a b)] -> a -> Nat -> Nat -> Bool;
-hides_position_list mu d r f n i =
-  any (\ (l, ra) ->
-        any (\ p ->
-              not (membera (mu_fun_poss_list mu ra) p) &&
-                (case subt_at ra p of {
-                  Var _ -> False;
-                  Fun g ts ->
-                    g == f &&
-                      equal_nat (size_list ts) n &&
-                        less_nat i (size_list ts) &&
-                          member i (mu_of mu (g, size_list ts)) &&
-                            any (\ q ->
-                                  member (root (subt_at (nth ts i) q))
-                                    (image Just (set d)) ||
-                                    (case subt_at (nth ts i) q of {
-                                      Var x ->
-contains_var_term x l &&
-  contains_var_term x ra && not (membera (mu_vars_term_list mu l) x);
-                                      Fun _ _ -> False;
-                                    }))
-                              (mu_poss_list mu (nth ts i));
-                }))
-          (fun_poss_list ra))
-    r;
-
-x_1_to_x_n :: Nat -> [[Char]];
-x_1_to_x_n = fresh_strings_list [char_0x78] one_nat [];
-
-direct_projection_rules_list ::
-  forall a b.
-    (Ceq a, Ccompare a, Eq a, Set_impl a,
-      Eq b) => [((a, Nat), [Nat])] ->
-                 [(a, Nat)] ->
-                   [(Term a b, Term a b)] -> [(Term a [Char], Term a [Char])];
-direct_projection_rules_list mu d r =
-  concatMap
-    (\ (f, n) ->
-      let {
-        xs = map Var (x_1_to_x_n n);
-      } in map_filter
-             (\ x ->
-               (if hides_position_list mu d r f n x
-                 then Just (Fun f xs, nth xs x) else Nothing))
-             (upt zero_nat n))
-    (remdups (funas_trs_list r));
-
-direct_hidden_mu_CSDP_list ::
-  forall a b.
-    (Ceq a, Ccompare a, Compare_order a, Eq a, Set_impl a,
-      Showl a) => (a -> a) ->
-                    [((a, Nat), [Nat])] ->
-                      [(a, Nat)] ->
-                        [(Term a b, Term a b)] -> [(Term a b, Term a b)];
-direct_hidden_mu_CSDP_list shp mu d r =
-  concatMap
-    (\ (_, ra) ->
-      map_filter
-        (\ x ->
-          (if not (membera (mu_fun_poss_list mu ra) x) &&
-                member (root (subt_at ra x)) (image Just (set d))
-            then Just (subt_at ra x, sharp_term shp (subt_at ra x))
-            else Nothing))
-        (fun_poss_list ra))
-    r;
-
 mu_supt_list ::
   forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [Term a b];
 mu_supt_list mu s =
   map_filter (\ x -> (if not (null x) then Just (subt_at s x) else Nothing))
     (mu_poss_list mu s);
 
-mu_CSDP_list ::
-  forall a b.
-    (Compare_order a, Eq a, Showl a,
-      Eq b) => (a -> a) ->
-                 [(Term a b, Term a b)] ->
-                   [((a, Nat), [Nat])] -> [(a, Nat)] -> [(Term a b, Term a b)];
-mu_CSDP_list shp r mu d_list =
-  concatMap
-    (\ lr ->
-      let {
-        l = fst lr;
-        ra = snd lr;
-        s = sharp_term shp l;
-      } in map_filter
-             (\ x ->
-               (if not (membera (mu_supt_list mu l) (subt_at ra x)) &&
-                     (case subt_at ra x of {
-                       Var _ -> False;
-                       Fun f ts -> membera d_list (f, size_list ts);
-                     })
-                 then Just (s, sharp_term shp (subt_at ra x)) else Nothing))
-             (mu_fun_poss_list mu ra))
-    r;
-
-direct_innermost_csr_dependency_pairs_tt ::
-  forall a b.
-    (Compare_order b, Eq b,
-      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
-                    [((Lab b [Nat], Nat), [Nat])] ->
-                      [(Term (Lab b [Nat]) [Char],
-                         Term (Lab b [Nat]) [Char])] ->
-                        [(Term (Lab b [Nat]) [Char],
-                           Term (Lab b [Nat]) [Char])] ->
-                          [(Term (Lab b [Nat]) [Char],
-                             Term (Lab b [Nat]) [Char])] ->
-                            Sum (String -> String) a;
-direct_innermost_csr_dependency_pairs_tt j mu r p s =
-  let {
-    d = defined_list r;
-    s0 = r ++ direct_projection_rules_list mu d r;
-  } in (case bindb (check_wf_trs r)
-               (\ _ ->
-                 bindb (catch_errora
-                         (forallM
-                           (\ (f, n) ->
-                             check (not (membera d (Sharp f, n)))
-                               (showsl_lit "sharping yields a defined symbol"))
-                           d)
-                         (\ x -> Inl (snd x)))
-                   (\ _ ->
-                     bindb (catch_errora
-                             (catch_errora
-                               (forallM
-                                 (\ x ->
-                                   (if membera p x then Inr () else Inl x))
-                                 (mu_CSDP_list Sharp r mu d))
-                               (\ x -> Inl (snd x)))
-                             (\ _ ->
-                               Inl (showsl_lit
-                                     "missing replacement-map dependency pair")))
-                       (\ _ ->
-                         bindb (catch_errora
-                                 (catch_errora
-                                   (forallM
-                                     (\ x ->
-                                       (if membera p x then Inr () else Inl x))
-                                     (direct_collapsing_mu_CSDP_list Sharp mu
-                                       r))
-                                   (\ x -> Inl (snd x)))
-                                 (\ _ ->
-                                   Inl (showsl_lit
- "missing direct collapsing dependency pair")))
-                           (\ _ ->
-                             bindb (catch_errora
-                                     (catch_errora
-                                       (forallM
- (\ x -> (if membera p x then Inr () else Inl x))
- (direct_hidden_mu_CSDP_list Sharp mu d r))
-                                       (\ x -> Inl (snd x)))
-                                     (\ _ ->
-                                       Inl
- (showsl_lit "missing direct hidden-term dependency pair")))
-                               (\ _ ->
-                                 bindb (catch_errora
- (catch_errora (forallM (\ x -> (if membera s x then Inr () else Inl x)) r)
-   (\ x -> Inl (snd x)))
- (\ _ -> Inl (showsl_lit "missing original weak rule")))
-                                   (\ _ ->
-                                     catch_errora
-                                       (catch_errora
- (forallM (\ x -> (if membera s x then Inr () else Inl x))
-   (direct_projection_rules_list mu d r))
- (\ x -> Inl (snd x)))
-                                       (\ _ ->
- Inl (showsl_lit "missing direct unhiding projection rule"))))))))
-         of {
-         Inl a -> Inl a;
-         Inr _ -> Inr (mkd j False False p [] [] [] s0);
-       });
-
-is_sharp_lab :: forall a b. Lab a b -> Bool;
-is_sharp_lab (Sharp f) = True;
-is_sharp_lab (UnLab f) = False;
-is_sharp_lab (Lab f l) = False;
-is_sharp_lab (FunLab f ls) = False;
-
-csr_nested_unhiding_subterm_check ::
-  forall a b c d.
-    (Eq a, Eq b,
-      Eq d) => [(Term (Lab a b) c, Term (Lab a b) c)] ->
-                 [(Term (Lab a b) d, Term (Lab a b) d)] -> Bool;
-csr_nested_unhiding_subterm_check r [(Fun u [s], Fun v [t])] =
-  equal_lab u v &&
-    not (is_sharp_lab u) &&
-      supt_impl s t && all (\ (f, _) -> not (equal_lab f u)) (defined_list r);
-csr_nested_unhiding_subterm_check r [] = False;
-csr_nested_unhiding_subterm_check r ((Var vd, vc) : va) = False;
-csr_nested_unhiding_subterm_check r ((Fun vd [], vc) : va) = False;
-csr_nested_unhiding_subterm_check r ((Fun vd (vf : vh : vi), vc) : va) = False;
-csr_nested_unhiding_subterm_check r ((vb, Var vd) : va) = False;
-csr_nested_unhiding_subterm_check r ((vb, Fun vd []) : va) = False;
-csr_nested_unhiding_subterm_check r ((vb, Fun vd (vf : vh : vi)) : va) = False;
-csr_nested_unhiding_subterm_check r (v : vb : vc) = False;
-
-csr_sct_active_index_check ::
+csr_dp_root_supt_list ::
   forall a b c.
-    (Eq a,
-      Eq b) => [((Lab a b, Nat), [Nat])] -> Term (Lab a b) c -> Nat -> Bool;
-csr_sct_active_index_check mu (Fun (Sharp f) ts) i =
-  less_nat zero_nat i &&
-    less_eq_nat i (size_list ts) &&
-      member (minus_nat i one_nat) (mu_of mu (f, size_list ts));
-csr_sct_active_index_check mu (Var v) i = False;
-csr_sct_active_index_check mu (Fun (Lab vb vc) va) i = False;
-csr_sct_active_index_check mu (Fun (FunLab vb vc) va) i = False;
-csr_sct_active_index_check mu (Fun (UnLab vb) va) i = False;
+    (Compare_order a, Eq a, Showl a,
+      Eq b) => [((Lab a b, Nat), [Nat])] ->
+                 Term (Lab a b) c -> [Term (Lab a b) c];
+csr_dp_root_supt_list mu s = mu_supt_list mu (csr_dp_unsharp_root s);
 
-csr_sct_index_check :: forall a b c. Term (Lab a b) c -> Nat -> Bool;
-csr_sct_index_check (Fun (Sharp f) ts) i =
-  less_nat zero_nat i && less_eq_nat i (size_list ts);
-csr_sct_index_check (Var v) i = False;
-csr_sct_index_check (Fun (Lab vb vc) va) i = False;
-csr_sct_index_check (Fun (FunLab vb vc) va) i = False;
-csr_sct_index_check (Fun (UnLab vb) va) i = False;
-
-csr_sct_sharp_term :: forall a b c. Term (Lab a b) c -> Bool;
-csr_sct_sharp_term (Fun (Sharp f) ts) = True;
-csr_sct_sharp_term (Var v) = False;
-csr_sct_sharp_term (Fun (Lab vb vc) va) = False;
-csr_sct_sharp_term (Fun (FunLab vb vc) va) = False;
-csr_sct_sharp_term (Fun (UnLab vb) va) = False;
+innermost_csr_lhs_blocked_check ::
+  forall a b c.
+    (Compare_order a, Eq a, Showl a, Compare_order b, Eq b, Showl b, Ccompare c,
+      Compare_order c, Eq c,
+      Mapping_impl c) => [((Lab a b, Nat), [Nat])] ->
+                           [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                             Term (Lab a b) c -> Bool;
+innermost_csr_lhs_blocked_check mu r u =
+  any (\ w -> any (\ (l, _) -> matches w l) r) (csr_dp_root_supt_list mu u);
 
 csr_tcap_no_edge ::
   forall a b.
@@ -41533,129 +41336,56 @@ csr_dp_root_mu mu (Lab v va, n) = mu (Lab v va, n);
 csr_dp_root_mu mu (FunLab v va, n) = mu (FunLab v va, n);
 csr_dp_root_mu mu (UnLab v, n) = mu (UnLab v, n);
 
-csr_sct_active_subterm_proc ::
+innermost_csr_dep_graph_edge_check ::
   forall a b c.
+    (Compare_order a, Eq a, Showl a, Compare_order b, Eq b, Showl b, Ccompare c,
+      Compare_order c, Eq c,
+      Mapping_impl c) => [((Lab a b, Nat), [Nat])] ->
+                           [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                             (((Term (Lab a b) c, Term (Lab a b) c), ()),
+                               ((Term (Lab a b) c, Term (Lab a b) c), ())) ->
+                               Bool;
+innermost_csr_dep_graph_edge_check mu r (((s, t), uu), ((u, v), uv)) =
+  csr_dep_graph_edge_check (csr_dp_root_mu (mu_of mu)) r
+    (((s, t), ()), ((u, v), ())) &&
+    not (innermost_csr_lhs_blocked_check mu r u);
+
+graph_approx_csr_rt :: forall a b c. Multimap a b -> c -> [b];
+graph_approx_csr_rt m uu = valuesa m;
+
+check_innermost_csr_dep_graph_proc ::
+  forall a b c d.
     (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
       Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
                     [((Lab b c, Nat), [Nat])] ->
-                      [((Term (Lab b c) [Char], Term (Lab b c) [Char]),
-                         ([(Nat, Nat)], [(Nat, Nat)]))] ->
-                        a -> Sum (String -> String) ();
-csr_sct_active_subterm_proc j mu gs dpp =
+                      a -> [(Maybe d,
+                              [(Term (Lab b c) [Char],
+                                 Term (Lab b c) [Char])])] ->
+                             Sum (String -> String) ();
+check_innermost_csr_dep_graph_proc j mu dpp dps =
   let {
     p = pairsb j dpp;
     r = rulesf j dpp;
-  } in bindb (catch_errora (check_subseteq p (map fst gs))
-               (\ x ->
-                 Inl (showsl_lit "there is no CSR size-change graph for pair " .
-                       showsl_rule x)))
+  } in bindb (check_wf_trs r)
          (\ _ ->
-           let {
-             gGs = filter (\ g -> membera p (fst g)) gs;
-           } in bindb (catch_errora
-                        (forallM
-                          (\ (a, b) ->
-                            (case a of {
-                              (s, t) ->
-                                (\ (stri, nstri) ->
-                                  bindb (check
-  (csr_sct_sharp_term s && csr_sct_sharp_term t)
-  (showsl_lit "CSR size-change pair is not sharp-rooted"))
-                                    (\ _ ->
-                                      bindb
-(catch_errora
-  (forallM
-    (\ (i, ja) ->
-      check (csr_sct_active_index_check mu s i &&
-              csr_sct_index_check t ja &&
-                membera (mu_supt_list mu (get_arg s i)) (get_arg t ja))
-        (showsl_lit "invalid strict CSR size-change edge"))
-    stri)
-  (\ x -> Inl (snd x)))
-(\ _ ->
-  catch_errora
-    (forallM
-      (\ (i, ja) ->
-        check (csr_sct_index_check s i &&
-                csr_sct_index_check t ja &&
-                  (equal_term (get_arg s i) (get_arg t ja) ||
-                    csr_sct_active_index_check mu s i &&
-                      membera (mu_supt_list mu (get_arg s i)) (get_arg t ja)))
-          (showsl_lit "invalid non-strict CSR size-change edge"))
-      nstri)
-    (\ x -> Inl (snd x)))));
-                            })
-                              b)
-                          gGs)
-                        (\ x -> Inl (snd x)))
-                  (\ _ ->
-                    let {
-                      conn =
-                        (\ st uv ->
-                          csr_dep_graph_edge_check (csr_dp_root_mu (mu_of mu)) r
-                            ((st, ()), (uv, ())));
-                    } in check (check_SCT conn
-                                 (map (\ (st, (stri, nstri)) ->
-Scg st st (remdups_sort stri) (remdups_sort nstri))
-                                   gGs))
-                           (showsl_lit "CSR size-change analysis failed")));
-
-qcs_ur_closed_term_check ::
-  forall a b c d.
-    (Eq a, Eq b,
-      Eq c) => [(Term a b, c)] ->
-                 [(Term a b, c)] -> [((a, Nat), [Nat])] -> Term a d -> Bool;
-qcs_ur_closed_term_check r u mu (Var x) = all (membera u) r;
-qcs_ur_closed_term_check r u mu (Fun f ts) =
-  all (\ lr -> not (root (fst lr) == Just (f, size_list ts)) || membera u lr)
-    r &&
-    all (\ (i, t) ->
-          not (member i (mu_of mu (f, size_list ts))) ||
-            qcs_ur_closed_term_check r u mu t)
-      (zip (upt zero_nat (size_list ts)) ts);
-
-qcs_ur_closed_dp_rhs_check ::
-  forall a b c d e.
-    (Eq a, Eq b, Eq c,
-      Eq d) => [(Term (Lab a b) c, d)] ->
-                 [(Term (Lab a b) c, d)] ->
-                   [((Lab a b, Nat), [Nat])] -> Term (Lab a b) e -> Bool;
-qcs_ur_closed_dp_rhs_check r u mu (Var x) = False;
-qcs_ur_closed_dp_rhs_check r u mu (Fun (Sharp f) ts) =
-  all (\ (i, t) ->
-        not (member i (mu_of mu (f, size_list ts))) ||
-          qcs_ur_closed_term_check r u mu t)
-    (zip (upt zero_nat (size_list ts)) ts);
-qcs_ur_closed_dp_rhs_check r u mu (Fun (Lab v va) ts) = False;
-qcs_ur_closed_dp_rhs_check r u mu (Fun (FunLab v va) ts) = False;
-qcs_ur_closed_dp_rhs_check r u mu (Fun (UnLab v) ts) = False;
-
-qcs_csr_ur_closed_check ::
-  forall a b c d e f.
-    (Eq a, Eq b, Eq c,
-      Eq d) => [(Term (Lab a b) c, Term (Lab a b) d)] ->
-                 [(Term (Lab a b) c, Term (Lab a b) d)] ->
-                   [((Lab a b, Nat), [Nat])] -> [(e, Term (Lab a b) f)] -> Bool;
-qcs_csr_ur_closed_check r u mu p =
-  all (membera r) u &&
-    all (\ lr -> qcs_ur_closed_term_check r u mu (snd lr)) u &&
-      all (\ dp -> qcs_ur_closed_dp_rhs_check r u mu (snd dp)) p;
-
-csr_qcs_usable_rules_proc ::
-  forall a b c d.
-    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c, Showl c,
-      Compare_order d, Eq d,
-      Showl d) => Dpp_ops_ext a (Lab b c) d () ->
-                    [((Lab b c, Nat), [Nat])] ->
-                      [(Term (Lab b c) d, Term (Lab b c) d)] ->
-                        a -> Sum (String -> String) a;
-csr_qcs_usable_rules_proc j mu u dpp =
-  (case check (qcs_csr_ur_closed_check (rulesf j dpp) u mu (pairsb j dpp))
-          (showsl_lit "error when checking QCS usable-rule closure")
-    of {
-    Inl a -> Inl a;
-    Inr _ -> Inr (intersect_rulesb j dpp u);
-  });
+           bindb (catch_errora (check_subseteq p (concatMap snd dps))
+                   (\ x ->
+                     Inl ((showsl_lit "innermost CSR dependency pair " .
+                            showsl_rule x) .
+                           showsl_lit " is missing in decomposition\n")))
+             (\ _ ->
+               catch_errora
+                 (check_graph_decomp (showsl_prod . fst)
+                   (emptyd ((root . fst) . fst)) graph_approx_csr_rt insertd
+                   (innermost_csr_dep_graph_edge_check mu r)
+                   (map (\ (real, cs) ->
+                          (not (is_none real),
+                            map (\ (s, t) -> ((s, t), ())) cs))
+                     dps))
+                 (\ x ->
+                   Inl (showsl_lit
+                          "invalid innermost CSR dependency-graph decomposition:\n" .
+                         x))));
 
 dp_proof_of_csr_dp_termination_proof ::
   forall a b c. Csr_dp_termination_proof a b c -> Dp_termination_proof a b c;
@@ -41724,9 +41454,6 @@ csr_mu_usable_rules_proc j mu u dpp =
     Inl a -> Inl a;
     Inr _ -> Inr (intersect_rulesb j dpp u);
   });
-
-graph_approx_csr_rt :: forall a b c. Multimap a b -> c -> [b];
-graph_approx_csr_rt m uu = valuesa m;
 
 check_csr_dep_graph_proc ::
   forall a b c d.
@@ -41865,6 +41592,1442 @@ check_csr_dp_graph_components ia j mu a i dpp ((Just prf, p) : rest) =
     (\ _ ->
       check_csr_dp_graph_components ia j mu a (add_index i one_nat) dpp rest);
 
+check_innermost_csr_dp_termination_proof ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> Csr_dp_termination_proof b [Nat] [Char] ->
+                                 Sum (String -> String) ();
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Dep_Graph_Proc edps) =
+  debug i "innermost CSR-DP dependency graph"
+    (bindb (check_innermost_csr_dep_graph_proc j mu dpp edps)
+      (\ _ -> check_innermost_csr_dp_graph_components ia j mu i dpp edps));
+check_innermost_csr_dp_termination_proof ia j mu i dpp CSR_DP_P_is_Empty =
+  check_csr_dp_termination_proof_core ia j mu False i dpp CSR_DP_P_is_Empty;
+check_innermost_csr_dp_termination_proof ia j mu i dpp (CSR_DP_Ordinary_Proof v)
+  = check_csr_dp_termination_proof_core ia j mu False i dpp
+      (CSR_DP_Ordinary_Proof v);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Usable_Rules_Proc v va) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Usable_Rules_Proc v va);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Instantiation_Proc v va vb) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Instantiation_Proc v va vb);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Forward_Instantiation_Proc v va vb);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Redpair_UR_Proc v va vb vc) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Redpair_UR_Proc v va vb vc);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc v) =
+  check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_DP_Size_Change_Subterm_Proc v);
+
+check_innermost_csr_dp_graph_components ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> [(Maybe (Csr_dp_termination_proof b [Nat]
+ [Char]),
+                                  [(Term (Lab b [Nat]) [Char],
+                                     Term (Lab b [Nat]) [Char])])] ->
+                                 Sum (String -> String) ();
+check_innermost_csr_dp_graph_components ia j mu i dpp [] = Inr ();
+check_innermost_csr_dp_graph_components ia j mu i dpp ((Nothing, p) : rest) =
+  check_innermost_csr_dp_graph_components ia j mu (add_index i one_nat) dpp
+    rest;
+check_innermost_csr_dp_graph_components ia j mu i dpp ((Just prf, p) : rest) =
+  bindb (check_innermost_csr_dp_termination_proof ia j mu (add_index i one_nat)
+          (intersect_pairsb j dpp p) prf)
+    (\ _ ->
+      check_innermost_csr_dp_graph_components ia j mu (add_index i one_nat) dpp
+        rest);
+
+csr_sct_sharp_term :: forall a b c. Term (Lab a b) c -> Bool;
+csr_sct_sharp_term (Fun (Sharp f) ts) = True;
+csr_sct_sharp_term (Var v) = False;
+csr_sct_sharp_term (Fun (Lab vb vc) va) = False;
+csr_sct_sharp_term (Fun (FunLab vb vc) va) = False;
+csr_sct_sharp_term (Fun (UnLab vb) va) = False;
+
+innermost_csr_sct_target_covered_check ::
+  forall a b c.
+    (Compare_order a, Eq a, Showl a, Eq b,
+      Eq c) => [((Lab a b, Nat), [Nat])] ->
+                 (Term (Lab a b) c, Term (Lab a b) c) -> Bool;
+innermost_csr_sct_target_covered_check mu (u, Fun (Sharp g) vs) =
+  csr_sct_sharp_term u &&
+    all (\ j ->
+          not (member j (mu_of mu (g, size_list vs))) ||
+            membera (csr_dp_root_supt_list mu u) (nth vs j))
+      (upt zero_nat (size_list vs));
+innermost_csr_sct_target_covered_check mu (v, Var vb) = False;
+innermost_csr_sct_target_covered_check mu (v, Fun (Lab vd ve) vc) = False;
+innermost_csr_sct_target_covered_check mu (v, Fun (FunLab vd ve) vc) = False;
+innermost_csr_sct_target_covered_check mu (v, Fun (UnLab vd) vc) = False;
+
+csr_sct_active_index_check ::
+  forall a b c.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] -> Term (Lab a b) c -> Nat -> Bool;
+csr_sct_active_index_check mu (Fun (Sharp f) ts) i =
+  less_nat zero_nat i &&
+    less_eq_nat i (size_list ts) &&
+      member (minus_nat i one_nat) (mu_of mu (f, size_list ts));
+csr_sct_active_index_check mu (Var v) i = False;
+csr_sct_active_index_check mu (Fun (Lab vb vc) va) i = False;
+csr_sct_active_index_check mu (Fun (FunLab vb vc) va) i = False;
+csr_sct_active_index_check mu (Fun (UnLab vb) va) i = False;
+
+csr_sct_index_check :: forall a b c. Term (Lab a b) c -> Nat -> Bool;
+csr_sct_index_check (Fun (Sharp f) ts) i =
+  less_nat zero_nat i && less_eq_nat i (size_list ts);
+csr_sct_index_check (Var v) i = False;
+csr_sct_index_check (Fun (Lab vb vc) va) i = False;
+csr_sct_index_check (Fun (FunLab vb vc) va) i = False;
+csr_sct_index_check (Fun (UnLab vb) va) i = False;
+
+csr_sct_active_subterm_proc ::
+  forall a b c.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      [((Term (Lab b c) [Char], Term (Lab b c) [Char]),
+                         ([(Nat, Nat)], [(Nat, Nat)]))] ->
+                        a -> Sum (String -> String) ();
+csr_sct_active_subterm_proc j mu gs dpp =
+  let {
+    p = pairsb j dpp;
+    r = rulesf j dpp;
+  } in bindb (catch_errora (check_subseteq p (map fst gs))
+               (\ x ->
+                 Inl (showsl_lit "there is no CSR size-change graph for pair " .
+                       showsl_rule x)))
+         (\ _ ->
+           let {
+             gGs = filter (\ g -> membera p (fst g)) gs;
+           } in bindb (catch_errora
+                        (forallM
+                          (\ (a, b) ->
+                            (case a of {
+                              (s, t) ->
+                                (\ (stri, nstri) ->
+                                  bindb (check
+  (csr_sct_sharp_term s && csr_sct_sharp_term t)
+  (showsl_lit "CSR size-change pair is not sharp-rooted"))
+                                    (\ _ ->
+                                      bindb
+(catch_errora
+  (forallM
+    (\ (i, ja) ->
+      check (csr_sct_active_index_check mu s i &&
+              csr_sct_index_check t ja &&
+                membera (mu_supt_list mu (get_arg s i)) (get_arg t ja))
+        (showsl_lit "invalid strict CSR size-change edge"))
+    stri)
+  (\ x -> Inl (snd x)))
+(\ _ ->
+  catch_errora
+    (forallM
+      (\ (i, ja) ->
+        check (csr_sct_index_check s i &&
+                csr_sct_index_check t ja &&
+                  (equal_term (get_arg s i) (get_arg t ja) ||
+                    csr_sct_active_index_check mu s i &&
+                      membera (mu_supt_list mu (get_arg s i)) (get_arg t ja)))
+          (showsl_lit "invalid non-strict CSR size-change edge"))
+      nstri)
+    (\ x -> Inl (snd x)))));
+                            })
+                              b)
+                          gGs)
+                        (\ x -> Inl (snd x)))
+                  (\ _ ->
+                    let {
+                      conn =
+                        (\ st uv ->
+                          csr_dep_graph_edge_check (csr_dp_root_mu (mu_of mu)) r
+                            ((st, ()), (uv, ())));
+                    } in check (check_SCT conn
+                                 (map (\ (st, (stri, nstri)) ->
+Scg st st (remdups_sort stri) (remdups_sort nstri))
+                                   gGs))
+                           (showsl_lit "CSR size-change analysis failed")));
+
+is_sharp_lab :: forall a b. Lab a b -> Bool;
+is_sharp_lab (Sharp f) = True;
+is_sharp_lab (UnLab f) = False;
+is_sharp_lab (Lab f l) = False;
+is_sharp_lab (FunLab f ls) = False;
+
+csr_rules_sharp_fresh_check ::
+  forall a b c.
+    [(Term (Lab a b) c, Term (Lab a b) c)] -> Sum (String -> String) ();
+csr_rules_sharp_fresh_check r =
+  catch_errora
+    (forallM
+      (\ (f, _) ->
+        check (not (is_sharp_lab f))
+          (showsl_lit "source CSR defines a sharp symbol"))
+      (defined_list r))
+    (\ x -> Inl (snd x));
+
+innermost_csr_sct_active_subterm_proc ::
+  forall a b c.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      [((Term (Lab b c) [Char], Term (Lab b c) [Char]),
+                         ([(Nat, Nat)], [(Nat, Nat)]))] ->
+                        a -> Sum (String -> String) ();
+innermost_csr_sct_active_subterm_proc j mu gs dpp =
+  bindb (check_wf_trs (rulesf j dpp))
+    (\ _ ->
+      bindb (csr_rules_sharp_fresh_check (rulesf j dpp))
+        (\ _ ->
+          bindb (check
+                  (all (innermost_csr_sct_target_covered_check mu)
+                    (pairsb j dpp))
+                  (showsl_lit
+                    "innermost CSR SCT target arguments are not source-covered"))
+            (\ _ -> csr_sct_active_subterm_proc j mu gs dpp)));
+
+check_innermost_csr_dp_termination_proof_active_sct ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> Csr_dp_termination_proof b [Nat] [Char] ->
+                                 Sum (String -> String) ();
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Dep_Graph_Proc edps) =
+  debug i "innermost CSR-DP dependency graph"
+    (bindb (check_innermost_csr_dep_graph_proc j mu dpp edps)
+      (\ _ ->
+        check_innermost_csr_dp_graph_components_active_sct ia j mu i dpp edps));
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc graphs) =
+  (if all (innermost_csr_sct_target_covered_check mu) (pairsb j dpp)
+    then debug i "innermost CSR active size-change"
+           (innermost_csr_sct_active_subterm_proc j mu graphs dpp)
+    else check_innermost_csr_dp_termination_proof ia j mu i dpp
+           (CSR_DP_Size_Change_Subterm_Proc graphs));
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  CSR_DP_P_is_Empty =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp CSR_DP_P_is_Empty;
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Ordinary_Proof v) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof v);
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Usable_Rules_Proc v va) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Usable_Rules_Proc v va);
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Instantiation_Proc v va vb) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Instantiation_Proc v va vb);
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Forward_Instantiation_Proc v va vb);
+check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+  (CSR_DP_Redpair_UR_Proc v va vb vc) =
+  check_innermost_csr_dp_termination_proof ia j mu i dpp
+    (CSR_DP_Redpair_UR_Proc v va vb vc);
+
+check_innermost_csr_dp_graph_components_active_sct ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> [(Maybe (Csr_dp_termination_proof b [Nat]
+ [Char]),
+                                  [(Term (Lab b [Nat]) [Char],
+                                     Term (Lab b [Nat]) [Char])])] ->
+                                 Sum (String -> String) ();
+check_innermost_csr_dp_graph_components_active_sct ia j mu i dpp [] = Inr ();
+check_innermost_csr_dp_graph_components_active_sct ia j mu i dpp
+  ((Nothing, p) : rest) =
+  check_innermost_csr_dp_graph_components_active_sct ia j mu
+    (add_index i one_nat) dpp rest;
+check_innermost_csr_dp_graph_components_active_sct ia j mu i dpp
+  ((Just prf, p) : rest) =
+  bindb (check_innermost_csr_dp_termination_proof_active_sct ia j mu
+          (add_index i one_nat) (intersect_pairsb j dpp p) prf)
+    (\ _ ->
+      check_innermost_csr_dp_graph_components_active_sct ia j mu
+        (add_index i one_nat) dpp rest);
+
+mu_vars_term_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [b];
+mu_vars_term_list mu (Var x) = [x];
+mu_vars_term_list mu (Fun f ts) =
+  concat
+    (map_filter
+      (\ x ->
+        (if member x (mu_of mu (f, size_list ts))
+          then Just (mu_vars_term_list mu (nth ts x)) else Nothing))
+      (upt zero_nat (size_list ts)));
+
+rhs_mu_vars_condition_list ::
+  forall a b.
+    (Eq a, Eq b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+rhs_mu_vars_condition_list mu r =
+  all (\ (l, ra) ->
+        all (membera (mu_vars_term_list mu l)) (mu_vars_term_list mu ra))
+    r;
+
+mu_fun_poss_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [[Nat]];
+mu_fun_poss_list mu (Var x) = [];
+mu_fun_poss_list mu (Fun f ts) =
+  [] : concat
+         (map_filter
+           (\ x ->
+             (if member x (mu_of mu (f, size_list ts))
+               then Just (map (\ a -> x : a) (mu_fun_poss_list mu (nth ts x)))
+               else Nothing))
+           (upt zero_nat (size_list ts)));
+
+mu_CSDP_list ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a,
+      Eq b) => (a -> a) ->
+                 [(Term a b, Term a b)] ->
+                   [((a, Nat), [Nat])] -> [(a, Nat)] -> [(Term a b, Term a b)];
+mu_CSDP_list shp r mu d_list =
+  concatMap
+    (\ lr ->
+      let {
+        l = fst lr;
+        ra = snd lr;
+        s = sharp_term shp l;
+      } in map_filter
+             (\ x ->
+               (if not (membera (mu_supt_list mu l) (subt_at ra x)) &&
+                     (case subt_at ra x of {
+                       Var _ -> False;
+                       Fun f ts -> membera d_list (f, size_list ts);
+                     })
+                 then Just (s, sharp_term shp (subt_at ra x)) else Nothing))
+             (mu_fun_poss_list mu ra))
+    r;
+
+mu_csr_dependency_pairs_tt ::
+  forall a b c.
+    (Compare_order a, Eq a, Showl a, Ccompare c, Compare_order c, Eq c,
+      Mapping_impl c,
+      Showl c) => (a -> a) ->
+                    Dpp_ops_ext b a c () ->
+                      [((a, Nat), [Nat])] ->
+                        [(Term a c, Term a c)] ->
+                          [(Term a c, Term a c)] -> Sum (String -> String) b;
+mu_csr_dependency_pairs_tt shp j mu r p =
+  let {
+    d = defined_list r;
+  } in (case catch_errora
+               (bindb (check_wf_trs r)
+                 (\ _ ->
+                   bindb (check (rhs_mu_vars_condition_list mu r)
+                           (showsl_lit
+                             "the RHS of a CSR rule contains a variable in an active position that is not active in the LHS\n"))
+                     (\ _ ->
+                       bindb (catch_errora
+                               (forallM
+                                 (\ (f, n) ->
+                                   check (not (membera d (shp f, n)))
+                                     (((showsl_lit "sharping " . showsl f) .
+showsl_lit " yields the defined symbol ") .
+                                       showsl (shp f)))
+                                 d)
+                               (\ x -> Inl (snd x)))
+                         (\ _ ->
+                           let {
+                             pa = set p;
+                           } in catch_errora
+                                  (catch_errora
+                                    (forallM
+                                      (\ x ->
+(if member x pa || any (eq_rule_mod_vars x) p then Inr () else Inl x))
+                                      (mu_CSDP_list shp r mu d))
+                                    (\ x -> Inl (snd x)))
+                                  (\ x ->
+                                    Inl ((showsl_lit
+    "the replacement-map-specific CS-DP " .
+   showsl_rule x) .
+  showsl_lit " does not appear in the DP problem\n"))))))
+               (\ x ->
+                 Inl (showsl_lit
+                        "the replacement-map-specific CS-DP transformation is not applied correctly.\n" .
+                       x))
+         of {
+         Inl a -> Inl a;
+         Inr _ -> Inr (mkd j False False p [] [] [] r);
+       });
+
+check_csr_orthogonal ::
+  forall a.
+    (Compare_order a, Eq a,
+      Showl a) => [(Term a [Char], Term a [Char])] -> Sum (String -> String) ();
+check_csr_orthogonal r =
+  bindb (catch_errora (check_left_linear_trs r)
+          (\ x -> Inl (showsl_lit "the CSR is not left-linear\n" . x)))
+    (\ _ ->
+      catch_errora
+        (forallM
+          (\ (at_root, (s, t)) ->
+            check (at_root && equal_term s t)
+              (((showsl_lit "the CSR has a non-root or non-trivial overlap: " .
+                  showsl_terma s) .
+                 showsl_lit " <- . -> ") .
+                showsl_terma t))
+          (critical_pairs_impl string_rename r r))
+        (\ x -> Inl (snd x)));
+
+csr_sharp_mu_entry_ok ::
+  forall a b.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] -> ((Lab a b, Nat), [Nat]) -> Bool;
+csr_sharp_mu_entry_ok mu e =
+  (case e of {
+    ((f, n), is) ->
+      less_eq_set (set is) (atLeastLessThan zero_nat n) &&
+        (case f of {
+          Lab _ _ -> True;
+          FunLab _ _ -> True;
+          UnLab _ -> True;
+          Sharp g -> less_eq_set (mu_of mu (g, n)) (set is);
+        });
+  });
+
+csr_sharp_mu_check ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a, Eq b,
+      Showl b) => [((Lab a b, Nat), [Nat])] -> Sum (String -> String) ();
+csr_sharp_mu_check mu =
+  catch_errora
+    (forallM
+      (\ e ->
+        check (csr_sharp_mu_entry_ok mu e)
+          (case e of {
+            ((f, n), _) ->
+              ((showsl_lit
+                  "invalid replacement map entry for CSR-DP sharp side steps: " .
+                 showsl_lab f) .
+                showsl_lit "/") .
+                showsl_nat n;
+          }))
+      mu)
+    (\ x -> Inl (snd x));
+
+check_innermost_csr_termination_proof_active_sct ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      (String -> String) ->
+                        [((Lab b [Nat], Nat), [Nat])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              Csr_dp_termination_proof b [Nat] [Char] ->
+                                Sum (String -> String) ();
+check_innermost_csr_termination_proof_active_sct ia j i mu r p prf =
+  debug i "innermost CSR dependency pairs"
+    (bindb (check_csr_orthogonal r)
+      (\ _ ->
+        bindb (csr_sharp_mu_check mu)
+          (\ _ ->
+            bindb (mu_csr_dependency_pairs_tt Sharp j mu r p)
+              (\ dpp ->
+                check_innermost_csr_dp_termination_proof_active_sct ia j mu
+                  (add_index i one_nat) dpp prf))));
+
+x_1_to_x_n :: Nat -> [[Char]];
+x_1_to_x_n = fresh_strings_list [char_0x78] one_nat [];
+
+csr_rta08_projection_rules_list ::
+  forall a.
+    (Eq a) => [((a, Nat), [Nat])] ->
+                [(a, Nat)] -> [(Term a [Char], Term a [Char])];
+csr_rta08_projection_rules_list mu f =
+  concatMap
+    (\ (fa, n) ->
+      let {
+        xs = map Var (x_1_to_x_n n);
+      } in map_filter
+             (\ x ->
+               (if member x (mu_of mu (fa, n)) then Just (Fun fa xs, nth xs x)
+                 else Nothing))
+             (upt zero_nat n))
+    f;
+
+csr_rta08_marking_rules_list ::
+  forall a. (a -> a) -> [(a, Nat)] -> [(Term a [Char], Term a [Char])];
+csr_rta08_marking_rules_list shp d =
+  map (\ (f, n) -> let {
+                     xs = map Var (x_1_to_x_n n);
+                   } in (Fun f xs, sharp_term shp (Fun f xs)))
+    d;
+
+csr_rta08_redpair_proc ::
+  forall a b c.
+    (Eq b, Showl b, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      Rel_impl_ext (Lab b c) [Char] () ->
+                        [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                          a -> Sum (String -> String) a;
+csr_rta08_redpair_proc j mu rp premove dpp =
+  (case (case not_wst rp of {
+          Nothing ->
+            Inl (showsl_lit
+                  "RTA08 reduction pair does not expose weak-subterm exceptions");
+          Just f ->
+            bindb (rel_impl_redpair rp)
+              (\ _ ->
+                let {
+                  d = defined_list (rulesf j dpp);
+                } in (case split_pairsa j dpp premove of {
+                       (ps, pns) ->
+                         bindb (catch_errora
+                                 (forallM
+                                   (\ (l, r) ->
+                                     check (not (is_Var r) ||
+     membera premove (l, r))
+                                       (showsl_lit
+ "RTA08 case 2(b) must remove every collapsing pair"))
+                                   (pairsb j dpp))
+                                 (\ x -> Inl (snd x)))
+                           (\ _ ->
+                             bindb (catch_errora
+                                     (rel_impl_ns rp
+                                       (rulesf j dpp ++
+ csr_rta08_projection_rules_list mu f ++ filter (is_Var . snd) ps ++ pns))
+                                     (\ x ->
+                                       Inl
+ (showsl_lit "problem weakly orienting RTA08 rules, projections, or pairs\n" .
+   x)))
+                               (\ _ ->
+                                 catch_errora
+                                   (rel_impl_s rp
+                                     (filter ((\ t -> not (is_Var t)) . snd)
+ps ++
+                                       csr_rta08_marking_rules_list Sharp d))
+                                   (\ x ->
+                                     Inl (showsl_lit
+    "problem strictly orienting RTA08 pairs or marking rules\n" .
+   x))));
+                     }));
+        })
+    of {
+    Inl a -> Inl a;
+    Inr _ -> Inr (delete_P_Pwa j dpp premove premove);
+  });
+
+check_innermost_csr_rta08_terminal ::
+  forall a b c.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      (String -> String) ->
+                        a -> Csr_dp_termination_proof b c [Char] ->
+                               Sum (String -> String) ();
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp pr u P_is_Empty)) =
+  debug i "terminal innermost RTA08 reduction pair"
+    (bindb (csr_rta08_redpair_proc j mu (get_rel_impl redp) pr dpp)
+      (\ dppa ->
+        check (all (is_Var . snd) (pairsb j dppa))
+          (i . showsl_lit
+                 ": terminal innermost RTA08 reduction pair leaves a non-collapsing dependency pair")));
+check_innermost_csr_rta08_terminal j mu i dpp CSR_DP_P_is_Empty =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp (CSR_DP_Ordinary_Proof P_is_Empty)
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc va vb vc vd)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc va vb vc)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_Proc va vb vc)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Subterm_Criterion_Proc ve vf vg vh)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Gen_Subterm_Criterion_Proc ve vf vg)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Redpair_Proc ve vf vg))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Redpair_UR_Proc ve vf vg vh)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Usable_Rules_Proc ve vf))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Dep_Graph_Proc ve))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Mono_Redpair_Proc ve vf vg vh)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Mono_URM_Redpair_Proc ve vf vg vh)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Mono_Redpair_UR_Proc ve vf vg vh vi)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Size_Change_Subterm_Proc ve)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Size_Change_Redpair_Proc ve vf vg)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Uncurry_Proc ve vf vg vh vi)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Fcc_Proc ve vf vg vh vi))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Split_Proc ve vf vg vh))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Semlab_Proc ve vf vg vh vi)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Switch_Innermost_Proc ve vf)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Rewriting_Proc ve vf vg vh vi vj vk)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Instantiation_Proc ve vf vg)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Forward_Instantiation_Proc ve vf vg vh)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Narrowing_Proc ve vf vg vh)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Assume_Finite ve vf))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (Q_Reduction_Proc ve vf))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (Complex_Constant_Removal_Proc ve vf)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof
+    (Redpair_UR_Proc va vb vc (General_Redpair_Proc ve vf vg vh vi)))
+  = Inl (i . showsl_lit
+               ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc va vb vc (To_Trs_Proc ve))) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Usable_Rules_Proc va vb)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Dep_Graph_Proc va)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc va vb vc vd)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc va vb vc vd)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc va vb vc vd ve)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc va)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc va vb vc)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Uncurry_Proc va vb vc vd ve)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Fcc_Proc va vb vc vd ve)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Split_Proc va vb vc vd)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Semlab_Proc va vb vc vd ve)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc va vb)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Rewriting_Proc va vb vc vd ve vf vg)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Instantiation_Proc va vb vc)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc va vb vc vd)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Narrowing_Proc va vb vc vd)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Assume_Finite va vb)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Q_Reduction_Proc va vb)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc va vb)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (General_Redpair_Proc va vb vc vd ve)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Ordinary_Proof (To_Trs_Proc va)) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp (CSR_DP_Usable_Rules_Proc v va) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp (CSR_DP_Dep_Graph_Proc v) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Instantiation_Proc v va vb) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Redpair_UR_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc v) =
+  Inl (i . showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+
+csr_rta08_dep_graph_edge_check ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a, Compare_order b,
+      Eq b) => ((a, Nat) -> Set Nat) ->
+                 [(Term a b, Term a b)] ->
+                   (((Term a b, Term a b), ()), ((Term a b, Term a b), ())) ->
+                     Bool;
+csr_rta08_dep_graph_edge_check mu r (((s, Var x), a), ((u, v), b)) = True;
+csr_rta08_dep_graph_edge_check mu r (((s, Fun f ts), a), ((u, v), b)) =
+  csr_dep_graph_edge_check mu r (((s, Fun f ts), a), ((u, v), b));
+
+check_csr_rta08_dep_graph_proc ::
+  forall a b c d.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      a -> [(Maybe d,
+                              [(Term (Lab b c) [Char],
+                                 Term (Lab b c) [Char])])] ->
+                             Sum (String -> String) ();
+check_csr_rta08_dep_graph_proc j mu dpp dps =
+  let {
+    p = pairsb j dpp;
+    r = rulesf j dpp;
+  } in bindb (check_wf_trs r)
+         (\ _ ->
+           bindb (catch_errora (check_subseteq p (concatMap snd dps))
+                   (\ x ->
+                     Inl ((showsl_lit "RTA08 dependency pair " .
+                            showsl_rule x) .
+                           showsl_lit " is missing in decomposition\n")))
+             (\ _ ->
+               check_graph_decomp (showsl_prod . fst)
+                 (emptyd ((root . fst) . fst)) graph_approx_csr_rt insertd
+                 (csr_rta08_dep_graph_edge_check (csr_dp_root_mu (mu_of mu)) r)
+                 (map (\ (real, cs) ->
+                        (not (is_none real), map (\ (s, t) -> ((s, t), ())) cs))
+                   dps)));
+
+check_innermost_csr_rta08_dp_proof ::
+  forall a b c.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      (String -> String) ->
+                        a -> Csr_dp_termination_proof b c [Char] ->
+                               Sum (String -> String) ();
+check_innermost_csr_rta08_dp_proof j mu i dpp (CSR_DP_Dep_Graph_Proc edps) =
+  debug i "innermost RTA08 CSR dependency graph"
+    (bindb (check_csr_rta08_dep_graph_proc j mu dpp edps)
+      (\ _ -> check_innermost_csr_rta08_graph_components j mu i dpp edps));
+check_innermost_csr_rta08_dp_proof j mu i dpp
+  (CSR_DP_Redpair_UR_Proc redp pr u subprf) =
+  catch_errora
+    (debug i "recursive innermost RTA08 reduction pair"
+      (bindb
+        (catch_errora (csr_rta08_redpair_proc j mu (get_rel_impl redp) pr dpp)
+          (\ x ->
+            Inl ((i . showsl_lit
+                        ": error when applying recursive innermost RTA08 reduction pair\n") .
+                  x)))
+        (\ dppa ->
+          catch_errora
+            (check_innermost_csr_rta08_dp_proof j mu (add_index i one_nat) dppa
+              subprf)
+            (\ x ->
+              Inl ((i . showsl_lit
+                          ": error below recursive innermost RTA08 reduction pair\n") .
+                    x)))))
+    (\ _ ->
+      check_innermost_csr_rta08_terminal j mu i dpp
+        (CSR_DP_Redpair_UR_Proc redp pr u subprf));
+check_innermost_csr_rta08_dp_proof j mu i dpp CSR_DP_P_is_Empty =
+  check_innermost_csr_rta08_terminal j mu i dpp CSR_DP_P_is_Empty;
+check_innermost_csr_rta08_dp_proof j mu i dpp (CSR_DP_Ordinary_Proof v) =
+  check_innermost_csr_rta08_terminal j mu i dpp (CSR_DP_Ordinary_Proof v);
+check_innermost_csr_rta08_dp_proof j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_innermost_csr_rta08_terminal j mu i dpp
+    (CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_innermost_csr_rta08_dp_proof j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_innermost_csr_rta08_terminal j mu i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_innermost_csr_rta08_dp_proof j mu i dpp (CSR_DP_Usable_Rules_Proc v va) =
+  check_innermost_csr_rta08_terminal j mu i dpp (CSR_DP_Usable_Rules_Proc v va);
+check_innermost_csr_rta08_dp_proof j mu i dpp
+  (CSR_DP_Instantiation_Proc v va vb) =
+  check_innermost_csr_rta08_terminal j mu i dpp
+    (CSR_DP_Instantiation_Proc v va vb);
+check_innermost_csr_rta08_dp_proof j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_innermost_csr_rta08_terminal j mu i dpp
+    (CSR_DP_Forward_Instantiation_Proc v va vb);
+check_innermost_csr_rta08_dp_proof j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc v) =
+  check_innermost_csr_rta08_terminal j mu i dpp
+    (CSR_DP_Size_Change_Subterm_Proc v);
+
+check_innermost_csr_rta08_graph_components ::
+  forall a b c.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      (String -> String) ->
+                        a -> [(Maybe (Csr_dp_termination_proof b c [Char]),
+                                [(Term (Lab b c) [Char],
+                                   Term (Lab b c) [Char])])] ->
+                               Sum (String -> String) ();
+check_innermost_csr_rta08_graph_components j mu i dpp [] = Inr ();
+check_innermost_csr_rta08_graph_components j mu i dpp ((Nothing, c) : rest) =
+  check_innermost_csr_rta08_graph_components j mu (add_index i one_nat) dpp
+    rest;
+check_innermost_csr_rta08_graph_components j mu i dpp ((Just prf, c) : rest) =
+  bindb (check_innermost_csr_rta08_dp_proof j mu (add_index i one_nat)
+          (intersect_pairsb j dpp c) prf)
+    (\ _ ->
+      check_innermost_csr_rta08_graph_components j mu (add_index i one_nat) dpp
+        rest);
+
+csr_rta08_collapsing_CSDP_list ::
+  forall a b.
+    (Eq a,
+      Eq b) => (a -> a) ->
+                 [((a, Nat), [Nat])] ->
+                   [(Term a b, Term a b)] -> [(Term a b, Term a b)];
+csr_rta08_collapsing_CSDP_list shp mu r =
+  concatMap
+    (\ (l, ra) ->
+      map_filter
+        (\ x ->
+          (if not (membera (mu_vars_term_list mu l) x)
+            then Just (sharp_term shp l, Var x) else Nothing))
+        (remdups (mu_vars_term_list mu ra)))
+    r;
+
+csr_rta08_CSDP_list ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a,
+      Eq b) => (a -> a) ->
+                 [(Term a b, Term a b)] ->
+                   [((a, Nat), [Nat])] -> [(a, Nat)] -> [(Term a b, Term a b)];
+csr_rta08_CSDP_list shp r mu d =
+  mu_CSDP_list shp r mu d ++ csr_rta08_collapsing_CSDP_list shp mu r;
+
+csr_rta08_dependency_pairs_tt ::
+  forall a b.
+    (Compare_order b, Eq b,
+      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    [((Lab b [Nat], Nat), [Nat])] ->
+                      [(Term (Lab b [Nat]) [Char],
+                         Term (Lab b [Nat]) [Char])] ->
+                        [(Term (Lab b [Nat]) [Char],
+                           Term (Lab b [Nat]) [Char])] ->
+                          Sum (String -> String) a;
+csr_rta08_dependency_pairs_tt j mu r p =
+  let {
+    d = defined_list r;
+    g = csr_rta08_CSDP_list Sharp r mu d;
+  } in (case bindb (check_wf_trs r)
+               (\ _ ->
+                 bindb (catch_errora
+                         (forallM
+                           (\ (f, n) ->
+                             check (not (membera d (Sharp f, n)))
+                               (showsl_lit "sharping yields a defined symbol"))
+                           d)
+                         (\ x -> Inl (snd x)))
+                   (\ _ ->
+                     bindb (catch_errora
+                             (catch_errora
+                               (forallM
+                                 (\ x ->
+                                   (if membera p x then Inr () else Inl x))
+                                 g)
+                               (\ x -> Inl (snd x)))
+                             (\ _ ->
+                               Inl (showsl_lit
+                                     "missing RTA08 context-sensitive dependency pair")))
+                       (\ _ ->
+                         catch_errora
+                           (catch_errora
+                             (forallM
+                               (\ x -> (if membera g x then Inr () else Inl x))
+                               p)
+                             (\ x -> Inl (snd x)))
+                           (\ _ ->
+                             Inl (showsl_lit
+                                   "unexpected RTA08 context-sensitive dependency pair")))))
+         of {
+         Inl a -> Inl a;
+         Inr _ -> Inr (mkd j False False p [] [] [] r);
+       });
+
+check_innermost_csr_rta08_termination_proof ::
+  forall a b.
+    (Compare_order b, Eq b,
+      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    (String -> String) ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        [(Term (Lab b [Nat]) [Char],
+                           Term (Lab b [Nat]) [Char])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            Csr_dp_termination_proof b [Nat] [Char] ->
+                              Sum (String -> String) ();
+check_innermost_csr_rta08_termination_proof j i mu r p prf =
+  debug i "terminal innermost RTA08 CSR dependency pairs"
+    (bindb (check_csr_orthogonal r)
+      (\ _ ->
+        bindb (csr_sharp_mu_check mu)
+          (\ _ ->
+            bindb (csr_rta08_dependency_pairs_tt j mu r p)
+              (\ dpp ->
+                check_innermost_csr_rta08_dp_proof j mu (add_index i one_nat)
+                  dpp prf))));
+
+check_innermost_csr_or_rta08_termination_proof ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      (String -> String) ->
+                        [((Lab b [Nat], Nat), [Nat])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              Csr_dp_termination_proof b [Nat] [Char] ->
+                                Sum (String -> String) ();
+check_innermost_csr_or_rta08_termination_proof ia j i mu r p prf =
+  (case check_innermost_csr_termination_proof_active_sct ia j i mu r p prf of {
+    Inl _ -> check_innermost_csr_rta08_termination_proof j i mu r p prf;
+    Inr a -> Inr a;
+  });
+
+muterm_mu_positions_list ::
+  forall a. (Eq a) => [((a, Nat), [Nat])] -> (a, Nat) -> [Nat];
+muterm_mu_positions_list mu fn = (case map_of mu fn of {
+                                   Nothing -> upt zero_nat (snd fn);
+                                   Just a -> remdups_sort a;
+                                 });
+
+muterm_marked_target_check ::
+  forall a b c.
+    (Eq a, Eq b) => [((Lab a b, Nat), [Nat])] -> Term (Lab a b) c -> Bool;
+muterm_marked_target_check mu (Fun (Sharp f) ts) =
+  muterm_mu_positions_list mu (Sharp f, size_list ts) ==
+    muterm_mu_positions_list mu (f, size_list ts);
+muterm_marked_target_check mu (Var v) = False;
+muterm_marked_target_check mu (Fun (Lab vb vc) va) = False;
+muterm_marked_target_check mu (Fun (FunLab vb vc) va) = False;
+muterm_marked_target_check mu (Fun (UnLab vb) va) = False;
+
+muterm_innermost_typed_shape_check ::
+  forall a b c d e f g.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] ->
+                 [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                   [(Term e f, Term (Lab a b) g)] -> Bool;
+muterm_innermost_typed_shape_check mu p s =
+  all (\ (l, r) ->
+        muterm_marked_target_check mu l &&
+          (is_Var r || muterm_marked_target_check mu r))
+    p &&
+    all (\ (l, r) -> not (is_Var l) && muterm_marked_target_check mu r) s;
+
+csr_u3_root_rules_check ::
+  forall a b c d.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, c)] ->
+                 [(Term a b, c)] -> Term a d -> [[Nat]] -> Bool;
+csr_u3_root_rules_check r u t ps =
+  all (\ p ->
+        (case root (subt_at t p) of {
+          Nothing -> True;
+          Just f ->
+            all (\ lr -> not (root (fst lr) == Just f) || membera u lr) r;
+        }))
+    ps;
+
+csr_rta08_active_root_rules_check ::
+  forall a b c d.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, c)] ->
+                 [(Term a b, c)] -> [((a, Nat), [Nat])] -> Term a d -> Bool;
+csr_rta08_active_root_rules_check r u mu t =
+  csr_u3_root_rules_check r u t (mu_fun_poss_list mu t);
+
+muterm_innermost_ur_closed_check ::
+  forall a b c d e.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, Term a c)] ->
+                 [(Term a b, Term a c)] ->
+                   [((a, Nat), [Nat])] -> [(d, Term a e)] -> Bool;
+muterm_innermost_ur_closed_check r u mu p =
+  all (membera r) u &&
+    all (\ dp ->
+          is_Var (snd dp) || csr_rta08_active_root_rules_check r u mu (snd dp))
+      p &&
+      all (\ lr -> csr_rta08_active_root_rules_check r u mu (snd lr)) u;
+
+muterm_expanded_innermost_usable_check ::
+  forall a b c.
+    (Eq a, Eq b,
+      Eq c) => [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                 [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                   [((Lab a b, Nat), [Nat])] ->
+                     [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                       [(Term (Lab a b) c, Term (Lab a b) c)] -> Bool;
+muterm_expanded_innermost_usable_check r u mu p s =
+  muterm_innermost_ur_closed_check r u mu (p ++ s) &&
+    rhs_mu_vars_condition_list mu (p ++ s ++ u) &&
+      muterm_innermost_typed_shape_check mu p s;
+
+direct_collapsing_mu_CSDP_list ::
+  forall a b.
+    (Eq a,
+      Eq b) => (a -> a) ->
+                 [((a, Nat), [Nat])] ->
+                   [(Term a b, Term a b)] -> [(Term a b, Term a b)];
+direct_collapsing_mu_CSDP_list shp mu r =
+  concatMap
+    (\ (l, ra) ->
+      map_filter
+        (\ x ->
+          (if not (membera (mu_vars_term_list mu l) x)
+            then Just (sharp_term shp l, Var x) else Nothing))
+        (remdups (mu_vars_term_list mu ra)))
+    r;
+
+hides_position_list ::
+  forall a b.
+    (Ceq a, Ccompare a, Eq a, Set_impl a,
+      Eq b) => [((a, Nat), [Nat])] ->
+                 [(a, Nat)] ->
+                   [(Term a b, Term a b)] -> a -> Nat -> Nat -> Bool;
+hides_position_list mu d r f n i =
+  any (\ (l, ra) ->
+        any (\ p ->
+              not (membera (mu_fun_poss_list mu ra) p) &&
+                (case subt_at ra p of {
+                  Var _ -> False;
+                  Fun g ts ->
+                    g == f &&
+                      equal_nat (size_list ts) n &&
+                        less_nat i (size_list ts) &&
+                          member i (mu_of mu (g, size_list ts)) &&
+                            any (\ q ->
+                                  member (root (subt_at (nth ts i) q))
+                                    (image Just (set d)) ||
+                                    (case subt_at (nth ts i) q of {
+                                      Var x ->
+contains_var_term x l &&
+  contains_var_term x ra && not (membera (mu_vars_term_list mu l) x);
+                                      Fun _ _ -> False;
+                                    }))
+                              (mu_poss_list mu (nth ts i));
+                }))
+          (fun_poss_list ra))
+    r;
+
+direct_projection_rules_list ::
+  forall a b.
+    (Ceq a, Ccompare a, Eq a, Set_impl a,
+      Eq b) => [((a, Nat), [Nat])] ->
+                 [(a, Nat)] ->
+                   [(Term a b, Term a b)] -> [(Term a [Char], Term a [Char])];
+direct_projection_rules_list mu d r =
+  concatMap
+    (\ (f, n) ->
+      let {
+        xs = map Var (x_1_to_x_n n);
+      } in map_filter
+             (\ x ->
+               (if hides_position_list mu d r f n x
+                 then Just (Fun f xs, nth xs x) else Nothing))
+             (upt zero_nat n))
+    (remdups (funas_trs_list r));
+
+direct_hidden_mu_CSDP_list ::
+  forall a b.
+    (Ceq a, Ccompare a, Compare_order a, Eq a, Set_impl a,
+      Showl a) => (a -> a) ->
+                    [((a, Nat), [Nat])] ->
+                      [(a, Nat)] ->
+                        [(Term a b, Term a b)] -> [(Term a b, Term a b)];
+direct_hidden_mu_CSDP_list shp mu d r =
+  concatMap
+    (\ (_, ra) ->
+      map_filter
+        (\ x ->
+          (if not (membera (mu_fun_poss_list mu ra) x) &&
+                member (root (subt_at ra x)) (image Just (set d))
+            then Just (subt_at ra x, sharp_term shp (subt_at ra x))
+            else Nothing))
+        (fun_poss_list ra))
+    r;
+
+direct_innermost_csr_dependency_pairs_tt ::
+  forall a b.
+    (Compare_order b, Eq b,
+      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    [((Lab b [Nat], Nat), [Nat])] ->
+                      [(Term (Lab b [Nat]) [Char],
+                         Term (Lab b [Nat]) [Char])] ->
+                        [(Term (Lab b [Nat]) [Char],
+                           Term (Lab b [Nat]) [Char])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            Sum (String -> String) a;
+direct_innermost_csr_dependency_pairs_tt j mu r p s =
+  let {
+    d = defined_list r;
+    s0 = r ++ direct_projection_rules_list mu d r;
+  } in (case bindb (check_wf_trs r)
+               (\ _ ->
+                 bindb (catch_errora
+                         (forallM
+                           (\ (f, n) ->
+                             check (not (membera d (Sharp f, n)))
+                               (showsl_lit "sharping yields a defined symbol"))
+                           d)
+                         (\ x -> Inl (snd x)))
+                   (\ _ ->
+                     bindb (catch_errora
+                             (catch_errora
+                               (forallM
+                                 (\ x ->
+                                   (if membera p x then Inr () else Inl x))
+                                 (mu_CSDP_list Sharp r mu d))
+                               (\ x -> Inl (snd x)))
+                             (\ _ ->
+                               Inl (showsl_lit
+                                     "missing replacement-map dependency pair")))
+                       (\ _ ->
+                         bindb (catch_errora
+                                 (catch_errora
+                                   (forallM
+                                     (\ x ->
+                                       (if membera p x then Inr () else Inl x))
+                                     (direct_collapsing_mu_CSDP_list Sharp mu
+                                       r))
+                                   (\ x -> Inl (snd x)))
+                                 (\ _ ->
+                                   Inl (showsl_lit
+ "missing direct collapsing dependency pair")))
+                           (\ _ ->
+                             bindb (catch_errora
+                                     (catch_errora
+                                       (forallM
+ (\ x -> (if membera p x then Inr () else Inl x))
+ (direct_hidden_mu_CSDP_list Sharp mu d r))
+                                       (\ x -> Inl (snd x)))
+                                     (\ _ ->
+                                       Inl
+ (showsl_lit "missing direct hidden-term dependency pair")))
+                               (\ _ ->
+                                 bindb (catch_errora
+ (catch_errora (forallM (\ x -> (if membera s x then Inr () else Inl x)) r)
+   (\ x -> Inl (snd x)))
+ (\ _ -> Inl (showsl_lit "missing original weak rule")))
+                                   (\ _ ->
+                                     catch_errora
+                                       (catch_errora
+ (forallM (\ x -> (if membera s x then Inr () else Inl x))
+   (direct_projection_rules_list mu d r))
+ (\ x -> Inl (snd x)))
+                                       (\ _ ->
+ Inl (showsl_lit "missing direct unhiding projection rule"))))))))
+         of {
+         Inl a -> Inl a;
+         Inr _ -> Inr (mkd j False False p [] [] [] s0);
+       });
+
+muterm_unmarked_term_check_exec :: forall a b c. Term (Lab a b) c -> Bool;
+muterm_unmarked_term_check_exec (Var x) = True;
+muterm_unmarked_term_check_exec (Fun f ts) =
+  not (is_sharp_lab f) && all muterm_unmarked_term_check_exec ts;
+
+muterm_recursive_target_shape_check_exec ::
+  forall a b c d e f g h.
+    [(a, Term (Lab b c) d)] -> [(e, Term (Lab f g) h)] -> Bool;
+muterm_recursive_target_shape_check_exec p b =
+  all (\ lr ->
+        (case snd lr of {
+          Var _ -> True;
+          Fun (Lab _ _) _ -> False;
+          Fun (FunLab _ _) _ -> False;
+          Fun (UnLab _) _ -> False;
+          Fun (Sharp f) ts ->
+            not (is_sharp_lab f) && all muterm_unmarked_term_check_exec ts;
+        }))
+    p &&
+    all (\ lr ->
+          (case snd lr of {
+            Var _ -> False;
+            Fun (Lab _ _) _ -> False;
+            Fun (FunLab _ _) _ -> False;
+            Fun (UnLab _) _ -> False;
+            Fun (Sharp f) ts ->
+              not (is_sharp_lab f) && all muterm_unmarked_term_check_exec ts;
+          }))
+      b;
+
+muterm_i4_mu_exec ::
+  forall a b c.
+    (Ceq c, Ccompare c, Eq c, Interval c,
+      Set_impl c) => ((Lab a b, c) -> Set c) -> (Lab a b, c) -> Set c;
+muterm_i4_mu_exec mu fn =
+  (if is_sharp_lab (fst fn) then atLeastLessThan zerob (snd fn) else mu fn);
+
+muterm_i4_symbolically_covered_exec ::
+  forall a b c.
+    (Compare a, Eq a, Compare b, Eq b, Compare c,
+      Eq c) => ((Lab a b, Nat) -> Set Nat) ->
+                 Set (Lab a b, Nat) ->
+                   Set (Term (Lab a b) c) -> Term (Lab a b) c -> Bool;
+muterm_i4_symbolically_covered_exec mu delta e (Var x) = True;
+muterm_i4_symbolically_covered_exec mu delta e (Fun f ts) =
+  (is_sharp_lab f ||
+    muterm_unmarked_term_check_exec (Fun f ts) &&
+      (member (f, size_list ts) delta || member (Fun f ts) e)) &&
+    let {
+      d = minus_nat (size_list ts) one_nat;
+    } in (if less_nat d (size_list ts)
+           then all_interval
+                  (\ i ->
+                    (if member i (muterm_i4_mu_exec mu (f, size_list ts))
+                      then muterm_i4_symbolically_covered_exec mu delta e
+                             (nth ts i)
+                      else True))
+                  zero_nat d
+           else True);
+
+muterm_recursive_bridges_safe_check_exec ::
+  forall a b c d.
+    (Compare a, Eq a, Compare b, Eq b, One c, Eq c, Cenum d, Ceq d, Ccompare d,
+      Compare d, Eq d,
+      Set_impl d) => [(Lab a b, c)] ->
+                       ((Lab a b, Nat) -> Set Nat) ->
+                         Set (Lab a b, Nat) ->
+                           [(Term (Lab a b) d, Term (Lab a b) d)] -> Bool;
+muterm_recursive_bridges_safe_check_exec ds mu delta b =
+  all (\ lr ->
+        less_eq_set (vars_term (snd lr)) (vars_term (fst lr)) &&
+          (muterm_i4_symbolically_covered_exec mu delta
+             (inserta (fst lr) (set_empty (of_phantom set_impl_term)))
+             (fst lr) ||
+            (case fst lr of {
+              Var _ -> False;
+              Fun _ [] -> False;
+              Fun f [u] ->
+                not (membera ds (f, onea)) &&
+                  muterm_i4_symbolically_covered_exec mu delta
+                    (inserta u (set_empty (of_phantom set_impl_term))) (fst lr);
+              Fun _ (_ : _ : _) -> False;
+            })) &&
+            muterm_i4_symbolically_covered_exec mu delta
+              (set_empty (of_phantom set_impl_term)) (snd lr))
+    b;
+
+qcs_ur_closed_term_check ::
+  forall a b c d.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, c)] ->
+                 [(Term a b, c)] -> [((a, Nat), [Nat])] -> Term a d -> Bool;
+qcs_ur_closed_term_check r u mu (Var x) = all (membera u) r;
+qcs_ur_closed_term_check r u mu (Fun f ts) =
+  all (\ lr -> not (root (fst lr) == Just (f, size_list ts)) || membera u lr)
+    r &&
+    all (\ (i, t) ->
+          not (member i (mu_of mu (f, size_list ts))) ||
+            qcs_ur_closed_term_check r u mu t)
+      (zip (upt zero_nat (size_list ts)) ts);
+
+qcs_ur_closed_dp_rhs_check ::
+  forall a b c d e.
+    (Eq a, Eq b, Eq c,
+      Eq d) => [(Term (Lab a b) c, d)] ->
+                 [(Term (Lab a b) c, d)] ->
+                   [((Lab a b, Nat), [Nat])] -> Term (Lab a b) e -> Bool;
+qcs_ur_closed_dp_rhs_check r u mu (Var x) = False;
+qcs_ur_closed_dp_rhs_check r u mu (Fun (Sharp f) ts) =
+  all (\ (i, t) ->
+        not (member i (mu_of mu (f, size_list ts))) ||
+          qcs_ur_closed_term_check r u mu t)
+    (zip (upt zero_nat (size_list ts)) ts);
+qcs_ur_closed_dp_rhs_check r u mu (Fun (Lab v va) ts) = False;
+qcs_ur_closed_dp_rhs_check r u mu (Fun (FunLab v va) ts) = False;
+qcs_ur_closed_dp_rhs_check r u mu (Fun (UnLab v) ts) = False;
+
+qcs_csr_ur_closed_check ::
+  forall a b c d e f.
+    (Eq a, Eq b, Eq c,
+      Eq d) => [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                 [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                   [((Lab a b, Nat), [Nat])] -> [(e, Term (Lab a b) f)] -> Bool;
+qcs_csr_ur_closed_check r u mu p =
+  all (membera r) u &&
+    all (\ lr -> qcs_ur_closed_term_check r u mu (snd lr)) u &&
+      all (\ dp -> qcs_ur_closed_dp_rhs_check r u mu (snd dp)) p;
+
 csr_shared_instantiation_cap ::
   forall a b.
     ((Lab a b, Nat) -> Set Nat) ->
@@ -41988,19 +43151,541 @@ csr_instantiation_proc j mu st sts dpp =
     Inr _ -> Inr (replace_paira j dpp st sts);
   });
 
-csr_u3_root_rules_check ::
+check_muterm_expanded_innermost_proof ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> Csr_dp_termination_proof b [Nat] [Char] ->
+                                 Sum (String -> String) ();
+check_muterm_expanded_innermost_proof ia j mu i dpp (CSR_DP_Dep_Graph_Proc edps)
+  = debug i "expanded innermost MU-TERM dependency graph"
+      (bindb (check_innermost_csr_dep_graph_proc j mu dpp edps)
+        (\ _ -> check_muterm_expanded_innermost_components ia j mu i dpp edps));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Instantiation_Proc st sts prf) =
+  debug i "expanded innermost MU-TERM instantiation"
+    (bindb (csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_muterm_expanded_innermost_proof ia j mu (add_index i one_nat) dppa
+          prf));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp pr u subprf)) =
+  debug i "expanded innermost MU-TERM QCS usable-rule reduction pair"
+    (bindb
+      (check (all (membera (rulesf j dpp)) u)
+        (showsl_lit
+          "expanded MU-TERM usable rules are not a subset of the active rules"))
+      (\ _ ->
+        bindb (check
+                (all (\ lr ->
+                       qcs_ur_closed_term_check (rulesf j dpp) u mu (snd lr))
+                  u)
+                (showsl_lit "expanded MU-TERM usable-rule RHS closure failed"))
+          (\ _ ->
+            bindb (check
+                    (all (\ dp ->
+                           qcs_ur_closed_dp_rhs_check (rulesf j dpp) u mu
+                             (snd dp))
+                      (pairsb j dpp))
+                    (showsl_lit
+                      "expanded MU-TERM dependency-pair RHS closure failed"))
+              (\ _ ->
+                bindb (check
+                        (qcs_csr_ur_closed_check (rulesf j dpp) u mu
+                          (pairsb j dpp))
+                        (showsl_lit
+                          "expanded MU-TERM QCS usable-rule closure failed"))
+                  (\ _ ->
+                    let {
+                      dppU = mkd j False False (pairsb j dpp) [] [] [] u;
+                    } in check_dp_termination_proof ia j False
+                           (add_index i one_nat) dppU
+                           (Redpair_Proc redp pr subprf))))));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof P_is_Empty) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof P_is_Empty));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc v va vb vc)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc v va vb vc)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc v va vb)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc v va vb)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_Proc v va vb)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Redpair_Proc v va vb)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Usable_Rules_Proc v va)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Usable_Rules_Proc v va)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Dep_Graph_Proc v)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Dep_Graph_Proc v)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc v va vb vc)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc v va vb vc)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc v va vb vc)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc v va vb vc)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc v va vb vc vd)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc v va vb vc vd)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc v)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc v)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc v va vb)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc v va vb)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Uncurry_Proc v va vb vc vd)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Uncurry_Proc v va vb vc vd)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Fcc_Proc v va vb vc vd)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Fcc_Proc v va vb vc vd)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Split_Proc v va vb vc)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Split_Proc v va vb vc)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Semlab_Proc v va vb vc vd)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Semlab_Proc v va vb vc vd)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc v va)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc v va)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Rewriting_Proc v va vb vc vd ve vf)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Rewriting_Proc v va vb vc vd ve vf)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Instantiation_Proc v va vb)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Instantiation_Proc v va vb)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc v va vb vc)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc v va vb vc)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Narrowing_Proc v va vb vc)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Narrowing_Proc v va vb vc)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Assume_Finite v va)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Assume_Finite v va)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Q_Reduction_Proc v va)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Q_Reduction_Proc v va)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc v va)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc v va)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (General_Redpair_Proc v va vb vc vd)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (General_Redpair_Proc v va vb vc vd)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (To_Trs_Proc v)) =
+  debug i "expanded innermost ordinary DP proof"
+    (check_csr_dp_termination_proof ia j False i dpp
+      (CSR_DP_Ordinary_Proof (To_Trs_Proc v)));
+check_muterm_expanded_innermost_proof ia j mu i dpp CSR_DP_P_is_Empty =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    CSR_DP_P_is_Empty;
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    (CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Usable_Rules_Proc v va) =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    (CSR_DP_Usable_Rules_Proc v va);
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    (CSR_DP_Forward_Instantiation_Proc v va vb);
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Redpair_UR_Proc v va vb vc) =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    (CSR_DP_Redpair_UR_Proc v va vb vc);
+check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc v) =
+  check_innermost_csr_dp_termination_proof_active_sct ia j mu i dpp
+    (CSR_DP_Size_Change_Subterm_Proc v);
+
+check_muterm_expanded_innermost_components ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> [(Maybe (Csr_dp_termination_proof b [Nat]
+ [Char]),
+                                  [(Term (Lab b [Nat]) [Char],
+                                     Term (Lab b [Nat]) [Char])])] ->
+                                 Sum (String -> String) ();
+check_muterm_expanded_innermost_components ia j mu i dpp [] = Inr ();
+check_muterm_expanded_innermost_components ia j mu i dpp ((Nothing, c) : rest) =
+  check_muterm_expanded_innermost_components ia j mu (add_index i one_nat) dpp
+    rest;
+check_muterm_expanded_innermost_components ia j mu i dpp ((Just prf, c) : rest)
+  = bindb (check_muterm_expanded_innermost_proof ia j mu (add_index i one_nat)
+            (intersect_pairsb j dpp c) prf)
+      (\ _ ->
+        check_muterm_expanded_innermost_components ia j mu (add_index i one_nat)
+          dpp rest);
+
+muterm_no_bridge_matches_exec ::
+  forall a b c d.
+    (Eq a, Ccompare b, Eq b, Mapping_impl b,
+      Eq d) => [(Term a b, c)] -> Term a d -> Bool;
+muterm_no_bridge_matches_exec b q = all (\ (a, _) -> not (matches q a)) b;
+
+muterm_root_pair_selects_or_ground_blocked_exec ::
+  forall a b c d e f g h i j.
+    (Eq b, Eq c, Eq e, Ccompare f, Eq f, Mapping_impl f, Eq h,
+      Eq i) => a -> ((Lab b c, Nat) -> Set Nat) ->
+                      d -> [(Term e f, g)] ->
+                             Lab b c ->
+                               Nat ->
+                                 [Term e h] ->
+                                   (Term (Lab b c) i, Term j i) -> Bool;
+muterm_root_pair_selects_or_ground_blocked_exec rs mu delta b f i ts lr =
+  (case lr of {
+    (Var _, _) -> False;
+    (Fun (Lab _ _) _, _) -> False;
+    (Fun (FunLab _ _) _, _) -> False;
+    (Fun (UnLab _) _, _) -> False;
+    (Fun (Sharp g) ls, r) ->
+      (if not (equal_lab g f) then True
+        else (case r of {
+               Var y ->
+                 less_nat i (size_list ls) && equal_term (nth ls i) (Var y) ||
+                   let {
+                     d = minus_nat (size_list ls) one_nat;
+                   } in less_nat d (size_list ls) &&
+                          not (all_interval
+                                (not .
+                                  (\ j ->
+                                    less_nat j (size_list ts) &&
+                                      not
+(member j (csr_dp_root_mu mu (Sharp f, size_list ts))) &&
+equal_term (nth ls j) (Var y) &&
+  ground (nth ts j) && muterm_no_bridge_matches_exec b (nth ts j)))
+                                zero_nat d);
+               Fun _ _ -> False;
+             }));
+  });
+
+muterm_root_successors_select_or_block_check_exec ::
+  forall a b c d e f g h i j.
+    (Eq b, Eq c, Eq e, Eq g, Ccompare h, Eq h, Mapping_impl h,
+      Eq j) => a -> ((Lab b c, Nat) -> Set Nat) ->
+                      d -> [(Term (Lab b c) e, Term f e)] ->
+                             [(Term g h, i)] ->
+                               Lab b c -> Nat -> [Term g j] -> Bool;
+muterm_root_successors_select_or_block_check_exec rs mu delta p b f i ts =
+  all (muterm_root_pair_selects_or_ground_blocked_exec rs mu delta b f i ts) p;
+
+muterm_recursive_pair_safe_check_exec ::
+  forall a b c d e f g h.
+    (Compare a, Eq a, Compare b, Eq b, Eq d, Ccompare f, Eq f, Mapping_impl f,
+      Cenum h, Ceq h, Ccompare h, Compare h, Eq h,
+      Set_impl h) => [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                       ((Lab a b, Nat) -> Set Nat) ->
+                         Set (Lab a b, Nat) ->
+                           [(Term (Lab a b) d, Term e d)] ->
+                             [(Term (Lab a b) f, g)] ->
+                               (Term (Lab a b) h, Term (Lab a b) h) -> Bool;
+muterm_recursive_pair_safe_check_exec rs mu delta p b lr =
+  (case lr of {
+    (l, r) ->
+      (case l of {
+        Var _ -> False;
+        Fun (Lab _ _) _ -> False;
+        Fun (FunLab _ _) _ -> False;
+        Fun (UnLab _) _ -> False;
+        Fun (Sharp _) _ ->
+          muterm_i4_symbolically_covered_exec mu delta
+            (set_empty (of_phantom set_impl_term)) l &&
+            less_eq_set (vars_term r) (vars_term l) &&
+              (case r of {
+                Var _ -> True;
+                Fun (Lab _ _) _ -> False;
+                Fun (FunLab _ _) _ -> False;
+                Fun (UnLab _) _ -> False;
+                Fun (Sharp f) ts ->
+                  muterm_i4_symbolically_covered_exec mu delta
+                    (set_empty (of_phantom set_impl_term)) r ||
+                    any (\ a ->
+                          (case a of {
+                            (_, Var _) -> False;
+                            (_, Fun _ []) -> False;
+                            (i, Fun g [u]) ->
+                              not (member i
+                                    (csr_dp_root_mu mu
+                                      (Sharp f, size_list ts))) &&
+                                not (membera (defined_list rs) (g, one_nat)) &&
+                                  muterm_i4_symbolically_covered_exec mu delta
+                                    (inserta u
+                                      (set_empty (of_phantom set_impl_term)))
+                                    r &&
+                                    muterm_root_successors_select_or_block_check_exec
+                                      rs mu delta p b f i ts;
+                            (_, Fun _ (_ : _ : _)) -> False;
+                          }))
+                      (zip (upt zero_nat (size_list ts)) ts);
+              });
+      });
+  });
+
+muterm_recursive_pairs_safe_check_exec ::
+  forall a b c d e f.
+    (Compare a, Eq a, Compare b, Eq b, Cenum d, Ceq d, Ccompare d, Compare d,
+      Eq d, Set_impl d, Ccompare e, Eq e,
+      Mapping_impl e) => [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                           ((Lab a b, Nat) -> Set Nat) ->
+                             Set (Lab a b, Nat) ->
+                               [(Term (Lab a b) d, Term (Lab a b) d)] ->
+                                 [(Term (Lab a b) e, f)] -> Bool;
+muterm_recursive_pairs_safe_check_exec rs mu delta p b =
+  all (muterm_recursive_pair_safe_check_exec rs mu delta p b) p;
+
+muterm_active_defined_calls_list ::
+  forall a b.
+    (Eq a) => [((a, Nat), [Nat])] -> [(a, Nat)] -> Term a b -> [Term a b];
+muterm_active_defined_calls_list mu d (Var x) = [];
+muterm_active_defined_calls_list mu d (Fun f ts) =
+  (if membera d (f, size_list ts) then [Fun f ts] else []) ++
+    concat
+      (map_filter
+        (\ x ->
+          (if member x (mu_of mu (f, size_list ts))
+            then Just (muterm_active_defined_calls_list mu d (nth ts x))
+            else Nothing))
+        (upt zero_nat (size_list ts)));
+
+muterm_frozen_roots_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [Term a b];
+muterm_frozen_roots_list mu (Var x) = [];
+muterm_frozen_roots_list mu (Fun f ts) =
+  concatMap
+    (\ i ->
+      (if member i (mu_of mu (f, size_list ts))
+        then muterm_frozen_roots_list mu (nth ts i) else [nth ts i]))
+    (upt zero_nat (size_list ts));
+
+muterm_exact_unhiding_rules_list ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a,
+      Eq b) => (a -> a) ->
+                 [((a, Nat), [Nat])] ->
+                   [(a, Nat)] ->
+                     [(Term a b, Term a b)] -> [(Term a b, Term a b)];
+muterm_exact_unhiding_rules_list shp mu d r =
+  remdups
+    (concatMap
+      (\ (_, ra) ->
+        concatMap
+          (\ h ->
+            map (\ t -> (h, sharp_term shp t))
+              (muterm_active_defined_calls_list mu d h))
+          (muterm_frozen_roots_list mu ra))
+      r);
+
+muterm_safe_frozen_fun_vars_list ::
+  forall a b.
+    (Eq a, Eq b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+muterm_safe_frozen_fun_vars_list mu r =
+  all (\ (l, ra) ->
+        all (\ h ->
+              (if not (is_Var h)
+                then all (membera (mu_vars_term_list mu l))
+                       (mu_vars_term_list mu h)
+                else True))
+          (muterm_frozen_roots_list mu ra))
+    r;
+
+muterm_safe_migrating_vars_list ::
+  forall a b.
+    (Eq a, Eq b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+muterm_safe_migrating_vars_list mu r =
+  all (\ (l, ra) ->
+        all (\ x -> membera (muterm_frozen_roots_list mu l) (Var x))
+          (filter (\ x -> not (membera (mu_vars_term_list mu l) x))
+            (remdups (mu_vars_term_list mu ra))))
+    r;
+
+muterm_safe_frozen_vars_list ::
+  forall a b.
+    (Eq a, Eq b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+muterm_safe_frozen_vars_list mu r =
+  all (\ (l, ra) ->
+        all (\ x ->
+              membera (mu_vars_term_list mu l) x ||
+                membera (muterm_frozen_roots_list mu l) (Var x))
+          (filter (\ x -> membera (muterm_frozen_roots_list mu ra) (Var x))
+            (remdups (vars_term_list ra))))
+    r;
+
+muterm_unhiding_safe_list ::
+  forall a b.
+    (Eq a, Eq b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+muterm_unhiding_safe_list mu r =
+  muterm_safe_frozen_fun_vars_list mu r &&
+    muterm_safe_migrating_vars_list mu r &&
+      muterm_safe_frozen_vars_list mu r &&
+        all (\ (_, ra) ->
+              all (\ h ->
+                    (if not (is_Var h) then null (muterm_frozen_roots_list mu h)
+                      else True))
+                (muterm_frozen_roots_list mu ra))
+          r;
+
+muterm_innermost_csr_dependency_pairs_tt ::
+  forall a b.
+    (Compare_order b, Eq b,
+      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    [((Lab b [Nat], Nat), [Nat])] ->
+                      [(Term (Lab b [Nat]) [Char],
+                         Term (Lab b [Nat]) [Char])] ->
+                        [(Term (Lab b [Nat]) [Char],
+                           Term (Lab b [Nat]) [Char])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            Sum (String -> String) a;
+muterm_innermost_csr_dependency_pairs_tt j mu r p s =
+  let {
+    d = defined_list r;
+  } in (case bindb (check_wf_trs r)
+               (\ _ ->
+                 bindb (catch_errora
+                         (forallM
+                           (\ (f, n) ->
+                             check (not (membera d (Sharp f, n)))
+                               (showsl_lit "sharping yields a defined symbol"))
+                           d)
+                         (\ x -> Inl (snd x)))
+                   (\ _ ->
+                     bindb (catch_errora
+                             (catch_errora
+                               (forallM
+                                 (\ x ->
+                                   (if membera p x then Inr () else Inl x))
+                                 (mu_CSDP_list Sharp r mu d))
+                               (\ x -> Inl (snd x)))
+                             (\ _ ->
+                               Inl (showsl_lit
+                                     "missing replacement-map dependency pair")))
+                       (\ _ ->
+                         bindb (catch_errora
+                                 (catch_errora
+                                   (forallM
+                                     (\ x ->
+                                       (if membera p x then Inr () else Inl x))
+                                     (csr_rta08_collapsing_CSDP_list Sharp mu
+                                       r))
+                                   (\ x -> Inl (snd x)))
+                                 (\ _ ->
+                                   Inl (showsl_lit
+ "missing collapsing dependency pair")))
+                           (\ _ ->
+                             bindb (catch_errora
+                                     (catch_errora
+                                       (forallM
+ (\ x -> (if membera s x then Inr () else Inl x))
+ (muterm_exact_unhiding_rules_list Sharp mu d r))
+                                       (\ x -> Inl (snd x)))
+                                     (\ _ ->
+                                       Inl
+ (showsl_lit "missing exact MU-TERM unhiding rule")))
+                               (\ _ ->
+                                 check (muterm_unhiding_safe_list mu r)
+                                   (showsl_lit
+                                     "MU-TERM unhiding safety condition failed"))))))
+         of {
+         Inl a -> Inl a;
+         Inr _ -> Inr (mkd j False False p [] [] [] (r ++ s));
+       });
+
+csr_nested_unhiding_subterm_check ::
   forall a b c d.
     (Eq a, Eq b,
-      Eq c) => [(Term a b, c)] ->
-                 [(Term a b, c)] -> Term a d -> [[Nat]] -> Bool;
-csr_u3_root_rules_check r u t ps =
-  all (\ p ->
-        (case root (subt_at t p) of {
-          Nothing -> True;
-          Just f ->
-            all (\ lr -> not (root (fst lr) == Just f) || membera u lr) r;
-        }))
-    ps;
+      Eq d) => [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                 [(Term (Lab a b) d, Term (Lab a b) d)] -> Bool;
+csr_nested_unhiding_subterm_check r [(Fun u [s], Fun v [t])] =
+  equal_lab u v &&
+    not (is_sharp_lab u) &&
+      supt_impl s t && all (\ (f, _) -> not (equal_lab f u)) (defined_list r);
+csr_nested_unhiding_subterm_check r [] = False;
+csr_nested_unhiding_subterm_check r ((Var vd, vc) : va) = False;
+csr_nested_unhiding_subterm_check r ((Fun vd [], vc) : va) = False;
+csr_nested_unhiding_subterm_check r ((Fun vd (vf : vh : vi), vc) : va) = False;
+csr_nested_unhiding_subterm_check r ((vb, Var vd) : va) = False;
+csr_nested_unhiding_subterm_check r ((vb, Fun vd []) : va) = False;
+csr_nested_unhiding_subterm_check r ((vb, Fun vd (vf : vh : vi)) : va) = False;
+csr_nested_unhiding_subterm_check r (v : vb : vc) = False;
+
+csr_qcs_usable_rules_proc ::
+  forall a b c d.
+    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c, Showl c,
+      Compare_order d, Eq d,
+      Showl d) => Dpp_ops_ext a (Lab b c) d () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      [(Term (Lab b c) d, Term (Lab b c) d)] ->
+                        a -> Sum (String -> String) a;
+csr_qcs_usable_rules_proc j mu u dpp =
+  (case check (qcs_csr_ur_closed_check (rulesf j dpp) u mu (pairsb j dpp))
+          (showsl_lit "error when checking QCS usable-rule closure")
+    of {
+    Inl a -> Inl a;
+    Inr _ -> Inr (intersect_rulesb j dpp u);
+  });
 
 csr_u3_inactive_root_rules_check ::
   forall a b c d.
@@ -42055,6 +43740,43 @@ csr_u3_mixed_pairs_check r p =
               p)
     (map fst (funas_trs_list p));
 
+csr_u3_sharp_mu_entry_ok ::
+  forall a b.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] -> ((Lab a b, Nat), [Nat]) -> Bool;
+csr_u3_sharp_mu_entry_ok mu ((Sharp f, n), is) =
+  less_eq_set (set is) (atLeastLessThan zero_nat n) &&
+    less_eq_set (mu_of mu (f, n)) (set is);
+csr_u3_sharp_mu_entry_ok mu ((Lab v va, n), is) =
+  less_eq_set (set is) (atLeastLessThan zero_nat n) &&
+    less_eq_set (set is) (mu_of mu (Sharp (Lab v va), n));
+csr_u3_sharp_mu_entry_ok mu ((FunLab v va, n), is) =
+  less_eq_set (set is) (atLeastLessThan zero_nat n) &&
+    less_eq_set (set is) (mu_of mu (Sharp (FunLab v va), n));
+csr_u3_sharp_mu_entry_ok mu ((UnLab v, n), is) =
+  less_eq_set (set is) (atLeastLessThan zero_nat n) &&
+    less_eq_set (set is) (mu_of mu (Sharp (UnLab v), n));
+
+csr_u3_sharp_mu_check ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a, Eq b,
+      Showl b) => [((Lab a b, Nat), [Nat])] -> Sum (String -> String) ();
+csr_u3_sharp_mu_check mu =
+  catch_errora
+    (forallM
+      (\ e ->
+        check (csr_u3_sharp_mu_entry_ok mu e)
+          (case e of {
+            ((f, n), _) ->
+              ((showsl_lit
+                  "invalid replacement map inclusion for CSR-DP sharp side steps: " .
+                 showsl_lab f) .
+                showsl_lit "/") .
+                showsl_nat n;
+          }))
+      mu)
+    (\ x -> Inl (snd x));
+
 csr_sharp_pairs_check ::
   forall a b c d e f. [(Term (Lab a b) c, Term (Lab d e) f)] -> Bool;
 csr_sharp_pairs_check p =
@@ -42075,33 +43797,6 @@ csr_sharp_pairs_check p =
           }))
     p;
 
-csr_sharp_mu_entry_ok :: forall a b. ((Lab a b, Nat), [Nat]) -> Bool;
-csr_sharp_mu_entry_ok e =
-  (case e of {
-    ((f, n), is) ->
-      not (is_sharp_lab f) && less_eq_set (set is) (atLeastLessThan zero_nat n);
-  });
-
-csr_sharp_mu_check ::
-  forall a b.
-    (Compare_order a, Showl a,
-      Showl b) => [((Lab a b, Nat), [Nat])] -> Sum (String -> String) ();
-csr_sharp_mu_check mu =
-  catch_errora
-    (forallM
-      (\ e ->
-        check (csr_sharp_mu_entry_ok e)
-          (case e of {
-            ((f, n), _) ->
-              ((showsl_lit
-                  "invalid replacement map entry for CSR-DP sharp side steps: " .
-                 showsl_lab f) .
-                showsl_lit "/") .
-                showsl_nat n;
-          }))
-      mu)
-    (\ x -> Inl (snd x));
-
 csr_u3_redpair_proc ::
   forall a b c d.
     (Compare_order b, Eq b, Showl b, Eq c, Showl c, Eq d,
@@ -42114,7 +43809,7 @@ csr_u3_redpair_proc ::
 csr_u3_redpair_proc j mu rp premove u dpp =
   (case bindb (rel_impl_redpair rp)
           (\ _ ->
-            bindb (csr_sharp_mu_check mu)
+            bindb (csr_u3_sharp_mu_check mu)
               (\ _ ->
                 (case split_pairsa j dpp premove of {
                   (ps, pns) ->
@@ -42814,8 +44509,11 @@ check_csr_dp_termination_proof_min ia j mu a i dpp (CSR_DP_Dep_Graph_Proc edpts)
                     x))));
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_DP_Instantiation_Proc st sts prf) =
-  Inl (i . showsl_lit
-             ": context-sensitive instantiation requires improved CS-DPs");
+  debug i "minimal CSR-DP instantiation"
+    (bindb (csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_csr_dp_termination_proof_min ia j mu a (add_index i one_nat) dppa
+          prf));
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_DP_Forward_Instantiation_Proc st sts prf) =
   Inl (i . showsl_lit
@@ -43355,171 +45053,6 @@ improved_csr_dependency_pairs_tt j u mu r p =
          Inr _ -> Inr (mkd j False False p [] [] [] r);
        });
 
-csr_rta08_collapsing_CSDP_list ::
-  forall a b.
-    (Eq a,
-      Eq b) => (a -> a) ->
-                 [((a, Nat), [Nat])] ->
-                   [(Term a b, Term a b)] -> [(Term a b, Term a b)];
-csr_rta08_collapsing_CSDP_list shp mu r =
-  concatMap
-    (\ (l, ra) ->
-      map_filter
-        (\ x ->
-          (if not (membera (mu_vars_term_list mu l) x)
-            then Just (sharp_term shp l, Var x) else Nothing))
-        (remdups (mu_vars_term_list mu ra)))
-    r;
-
-csr_rta08_CSDP_list ::
-  forall a b.
-    (Compare_order a, Eq a, Showl a,
-      Eq b) => (a -> a) ->
-                 [(Term a b, Term a b)] ->
-                   [((a, Nat), [Nat])] -> [(a, Nat)] -> [(Term a b, Term a b)];
-csr_rta08_CSDP_list shp r mu d =
-  mu_CSDP_list shp r mu d ++ csr_rta08_collapsing_CSDP_list shp mu r;
-
-csr_rta08_dependency_pairs_tt ::
-  forall a b.
-    (Compare_order b, Eq b,
-      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
-                    [((Lab b [Nat], Nat), [Nat])] ->
-                      [(Term (Lab b [Nat]) [Char],
-                         Term (Lab b [Nat]) [Char])] ->
-                        [(Term (Lab b [Nat]) [Char],
-                           Term (Lab b [Nat]) [Char])] ->
-                          Sum (String -> String) a;
-csr_rta08_dependency_pairs_tt j mu r p =
-  let {
-    d = defined_list r;
-    g = csr_rta08_CSDP_list Sharp r mu d;
-  } in (case bindb (check_wf_trs r)
-               (\ _ ->
-                 bindb (catch_errora
-                         (forallM
-                           (\ (f, n) ->
-                             check (not (membera d (Sharp f, n)))
-                               (showsl_lit "sharping yields a defined symbol"))
-                           d)
-                         (\ x -> Inl (snd x)))
-                   (\ _ ->
-                     bindb (catch_errora
-                             (catch_errora
-                               (forallM
-                                 (\ x ->
-                                   (if membera p x then Inr () else Inl x))
-                                 g)
-                               (\ x -> Inl (snd x)))
-                             (\ _ ->
-                               Inl (showsl_lit
-                                     "missing RTA08 context-sensitive dependency pair")))
-                       (\ _ ->
-                         catch_errora
-                           (catch_errora
-                             (forallM
-                               (\ x -> (if membera g x then Inr () else Inl x))
-                               p)
-                             (\ x -> Inl (snd x)))
-                           (\ _ ->
-                             Inl (showsl_lit
-                                   "unexpected RTA08 context-sensitive dependency pair")))))
-         of {
-         Inl a -> Inl a;
-         Inr _ -> Inr (mkd j False False p [] [] [] r);
-       });
-
-csr_rules_sharp_fresh_check ::
-  forall a b c.
-    [(Term (Lab a b) c, Term (Lab a b) c)] -> Sum (String -> String) ();
-csr_rules_sharp_fresh_check r =
-  catch_errora
-    (forallM
-      (\ (f, _) ->
-        check (not (is_sharp_lab f))
-          (showsl_lit "source CSR defines a sharp symbol"))
-      (defined_list r))
-    (\ x -> Inl (snd x));
-
-csr_rta08_projection_rules_list ::
-  forall a.
-    (Eq a) => [((a, Nat), [Nat])] ->
-                [(a, Nat)] -> [(Term a [Char], Term a [Char])];
-csr_rta08_projection_rules_list mu f =
-  concatMap
-    (\ (fa, n) ->
-      let {
-        xs = map Var (x_1_to_x_n n);
-      } in map_filter
-             (\ x ->
-               (if member x (mu_of mu (fa, n)) then Just (Fun fa xs, nth xs x)
-                 else Nothing))
-             (upt zero_nat n))
-    f;
-
-csr_rta08_marking_rules_list ::
-  forall a. (a -> a) -> [(a, Nat)] -> [(Term a [Char], Term a [Char])];
-csr_rta08_marking_rules_list shp d =
-  map (\ (f, n) -> let {
-                     xs = map Var (x_1_to_x_n n);
-                   } in (Fun f xs, sharp_term shp (Fun f xs)))
-    d;
-
-csr_rta08_redpair_proc ::
-  forall a b c.
-    (Eq b, Showl b, Eq c,
-      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
-                    [((Lab b c, Nat), [Nat])] ->
-                      Rel_impl_ext (Lab b c) [Char] () ->
-                        [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
-                          a -> Sum (String -> String) a;
-csr_rta08_redpair_proc j mu rp premove dpp =
-  (case (case not_wst rp of {
-          Nothing ->
-            Inl (showsl_lit
-                  "RTA08 reduction pair does not expose weak-subterm exceptions");
-          Just f ->
-            bindb (rel_impl_redpair rp)
-              (\ _ ->
-                let {
-                  d = defined_list (rulesf j dpp);
-                } in (case split_pairsa j dpp premove of {
-                       (ps, pns) ->
-                         bindb (catch_errora
-                                 (forallM
-                                   (\ (l, r) ->
-                                     check (not (is_Var r) ||
-     membera premove (l, r))
-                                       (showsl_lit
- "RTA08 case 2(b) must remove every collapsing pair"))
-                                   (pairsb j dpp))
-                                 (\ x -> Inl (snd x)))
-                           (\ _ ->
-                             bindb (catch_errora
-                                     (rel_impl_ns rp
-                                       (rulesf j dpp ++
- csr_rta08_projection_rules_list mu f ++ filter (is_Var . snd) ps ++ pns))
-                                     (\ x ->
-                                       Inl
- (showsl_lit "problem weakly orienting RTA08 rules, projections, or pairs\n" .
-   x)))
-                               (\ _ ->
-                                 catch_errora
-                                   (rel_impl_s rp
-                                     (filter ((\ t -> not (is_Var t)) . snd)
-ps ++
-                                       csr_rta08_marking_rules_list Sharp d))
-                                   (\ x ->
-                                     Inl (showsl_lit
-    "problem strictly orienting RTA08 pairs or marking rules\n" .
-   x))));
-                     }));
-        })
-    of {
-    Inl a -> Inl a;
-    Inr _ -> Inr (delete_P_Pwa j dpp premove premove);
-  });
-
 check_csr_rta08_redpair_first ::
   forall a b c.
     (Compare_order b, Countable b, Eq b,
@@ -43700,45 +45233,6 @@ check_csr_rta08_graph_components ia j mu i dpp ((Just prf, c) : rest) =
     (\ _ ->
       check_csr_rta08_graph_components ia j mu (add_index i one_nat) dpp rest);
 
-csr_rta08_dep_graph_edge_check ::
-  forall a b.
-    (Compare_order a, Eq a, Showl a, Compare_order b,
-      Eq b) => ((a, Nat) -> Set Nat) ->
-                 [(Term a b, Term a b)] ->
-                   (((Term a b, Term a b), ()), ((Term a b, Term a b), ())) ->
-                     Bool;
-csr_rta08_dep_graph_edge_check mu r (((s, Var x), a), ((u, v), b)) = True;
-csr_rta08_dep_graph_edge_check mu r (((s, Fun f ts), a), ((u, v), b)) =
-  csr_dep_graph_edge_check mu r (((s, Fun f ts), a), ((u, v), b));
-
-check_csr_rta08_dep_graph_proc ::
-  forall a b c d.
-    (Compare_order b, Eq b, Showl b, Compare_order c, Eq c,
-      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
-                    [((Lab b c, Nat), [Nat])] ->
-                      a -> [(Maybe d,
-                              [(Term (Lab b c) [Char],
-                                 Term (Lab b c) [Char])])] ->
-                             Sum (String -> String) ();
-check_csr_rta08_dep_graph_proc j mu dpp dps =
-  let {
-    p = pairsb j dpp;
-    r = rulesf j dpp;
-  } in bindb (check_wf_trs r)
-         (\ _ ->
-           bindb (catch_errora (check_subseteq p (concatMap snd dps))
-                   (\ x ->
-                     Inl ((showsl_lit "RTA08 dependency pair " .
-                            showsl_rule x) .
-                           showsl_lit " is missing in decomposition\n")))
-             (\ _ ->
-               check_graph_decomp (showsl_prod . fst)
-                 (emptyd ((root . fst) . fst)) graph_approx_csr_rt insertd
-                 (csr_rta08_dep_graph_edge_check (csr_dp_root_mu (mu_of mu)) r)
-                 (map (\ (real, cs) ->
-                        (not (is_none real), map (\ (s, t) -> ((s, t), ())) cs))
-                   dps)));
-
 check_csr_rta08_dp_first ::
   forall a b c.
     (Compare_order b, Countable b, Eq b,
@@ -43856,66 +45350,6 @@ safe_csr_dependency_pairs_tt shp j mu r p =
          of {
          Inl a -> Inl a;
          Inr _ -> Inr (mkd j False True p [] [] [] r);
-       });
-
-rhs_mu_vars_condition_list ::
-  forall a b.
-    (Eq a, Eq b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
-rhs_mu_vars_condition_list mu r =
-  all (\ (l, ra) ->
-        all (membera (mu_vars_term_list mu l)) (mu_vars_term_list mu ra))
-    r;
-
-mu_csr_dependency_pairs_tt ::
-  forall a b c.
-    (Compare_order a, Eq a, Showl a, Ccompare c, Compare_order c, Eq c,
-      Mapping_impl c,
-      Showl c) => (a -> a) ->
-                    Dpp_ops_ext b a c () ->
-                      [((a, Nat), [Nat])] ->
-                        [(Term a c, Term a c)] ->
-                          [(Term a c, Term a c)] -> Sum (String -> String) b;
-mu_csr_dependency_pairs_tt shp j mu r p =
-  let {
-    d = defined_list r;
-  } in (case catch_errora
-               (bindb (check_wf_trs r)
-                 (\ _ ->
-                   bindb (check (rhs_mu_vars_condition_list mu r)
-                           (showsl_lit
-                             "the RHS of a CSR rule contains a variable in an active position that is not active in the LHS\n"))
-                     (\ _ ->
-                       bindb (catch_errora
-                               (forallM
-                                 (\ (f, n) ->
-                                   check (not (membera d (shp f, n)))
-                                     (((showsl_lit "sharping " . showsl f) .
-showsl_lit " yields the defined symbol ") .
-                                       showsl (shp f)))
-                                 d)
-                               (\ x -> Inl (snd x)))
-                         (\ _ ->
-                           let {
-                             pa = set p;
-                           } in catch_errora
-                                  (catch_errora
-                                    (forallM
-                                      (\ x ->
-(if member x pa || any (eq_rule_mod_vars x) p then Inr () else Inl x))
-                                      (mu_CSDP_list shp r mu d))
-                                    (\ x -> Inl (snd x)))
-                                  (\ x ->
-                                    Inl ((showsl_lit
-    "the replacement-map-specific CS-DP " .
-   showsl_rule x) .
-  showsl_lit " does not appear in the DP problem\n"))))))
-               (\ x ->
-                 Inl (showsl_lit
-                        "the replacement-map-specific CS-DP transformation is not applied correctly.\n" .
-                       x))
-         of {
-         Inl a -> Inl a;
-         Inr _ -> Inr (mkd j False False p [] [] [] r);
        });
 
 csr_mu_mono_check ::
@@ -44306,25 +45740,6 @@ check_csr_termination_proof_min ia j a i mu r (CSR_Dependency_Pairs p prf) =
 check_csr_termination_proof_min ia j a i mu r (CSR_Safe_Dependency_Pairs p prf)
   = check_csr_termination_proof ia j a i mu r (CSR_Safe_Dependency_Pairs p prf);
 
-check_csr_orthogonal ::
-  forall a.
-    (Compare_order a, Eq a,
-      Showl a) => [(Term a [Char], Term a [Char])] -> Sum (String -> String) ();
-check_csr_orthogonal r =
-  bindb (catch_errora (check_left_linear_trs r)
-          (\ x -> Inl (showsl_lit "the CSR is not left-linear\n" . x)))
-    (\ _ ->
-      catch_errora
-        (forallM
-          (\ (at_root, (s, t)) ->
-            check (at_root && equal_term s t)
-              (((showsl_lit "the CSR has a non-root or non-trivial overlap: " .
-                  showsl_terma s) .
-                 showsl_lit " <- . -> ") .
-                showsl_terma t))
-          (critical_pairs_impl string_rename r r))
-        (\ x -> Inl (snd x)));
-
 check_extended_csr_termination_proof ::
   forall a b c.
     (Compare_order b, Countable b, Eq b,
@@ -44403,6 +45818,1467 @@ check_extended_csr_termination_proof ia j a i mu r
             Inl ((i . showsl_lit
                         ": error below conservative CSR dependency pairs\n") .
                   x))));
+
+muterm_qcs_ur_closed_check ::
+  forall a b c d e f.
+    (Eq a, Eq b, Eq c,
+      Eq d) => [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                 [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                   [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                     [((Lab a b, Nat), [Nat])] ->
+                       [(e, Term (Lab a b) f)] -> Bool;
+muterm_qcs_ur_closed_check r s w mu p =
+  all (membera w) s &&
+    all (\ lr -> membera r lr || membera s lr) w &&
+      let {
+        u = filter (membera r) w;
+      } in all (\ lr -> qcs_ur_closed_term_check r u mu (snd lr)) u &&
+             all (\ lr -> qcs_ur_closed_dp_rhs_check r u mu (snd lr)) s &&
+               all (\ dp ->
+                     is_Var (snd dp) ||
+                       qcs_ur_closed_dp_rhs_check r u mu (snd dp))
+                 p;
+
+muterm_usable_csr_dependency_pairs_tt ::
+  forall a b.
+    (Compare_order b, Eq b,
+      Showl b) => Dpp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    [((Lab b [Nat], Nat), [Nat])] ->
+                      [(Term (Lab b [Nat]) [Char],
+                         Term (Lab b [Nat]) [Char])] ->
+                        [(Term (Lab b [Nat]) [Char],
+                           Term (Lab b [Nat]) [Char])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              Sum (String -> String) a;
+muterm_usable_csr_dependency_pairs_tt j mu r p s w =
+  let {
+    d = defined_list r;
+  } in (case bindb (check_wf_trs r)
+               (\ _ ->
+                 bindb (check (all (\ a -> (case a of {
+     (Lab _ _, _) -> True;
+     (FunLab _ _, _) -> True;
+     (UnLab _, _) -> True;
+     (Sharp _, _) -> False;
+   }))
+                                d)
+                         (showsl_lit
+                           "MU-TERM source rules already contain marked defined symbols"))
+                   (\ _ ->
+                     bindb (catch_errora
+                             (forallM
+                               (\ (f, n) ->
+                                 check (not (membera d (Sharp f, n)))
+                                   (showsl_lit
+                                     "sharping yields a defined symbol"))
+                               d)
+                             (\ x -> Inl (snd x)))
+                       (\ _ ->
+                         bindb (catch_errora
+                                 (catch_errora
+                                   (forallM
+                                     (\ x ->
+                                       (if membera p x then Inr () else Inl x))
+                                     (mu_CSDP_list Sharp r mu d))
+                                   (\ x -> Inl (snd x)))
+                                 (\ _ ->
+                                   Inl (showsl_lit
+ "missing replacement-map dependency pair")))
+                           (\ _ ->
+                             bindb (catch_errora
+                                     (catch_errora
+                                       (forallM
+ (\ x -> (if membera p x then Inr () else Inl x))
+ (csr_rta08_collapsing_CSDP_list Sharp mu r))
+                                       (\ x -> Inl (snd x)))
+                                     (\ _ ->
+                                       Inl
+ (showsl_lit "missing collapsing dependency pair")))
+                               (\ _ ->
+                                 bindb (catch_errora
+ (catch_errora
+   (forallM (\ x -> (if membera s x then Inr () else Inl x))
+     (muterm_exact_unhiding_rules_list Sharp mu d r))
+   (\ x -> Inl (snd x)))
+ (\ _ -> Inl (showsl_lit "missing exact MU-TERM unhiding rule")))
+                                   (\ _ ->
+                                     bindb (check
+     (muterm_unhiding_safe_list mu r)
+     (showsl_lit "MU-TERM unhiding safety condition failed"))
+                                       (\ _ ->
+ check (muterm_qcs_ur_closed_check r s w mu p)
+   (showsl_lit "MU-TERM usable-rule closure check failed"))))))))
+         of {
+         Inl a -> Inl a;
+         Inr _ -> Inr (mkd j False False p [] [] [] w);
+       });
+
+muterm_marked_mu_entry_equal ::
+  forall a b.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] -> ((Lab a b, Nat), [Nat]) -> Bool;
+muterm_marked_mu_entry_equal mu e =
+  (case e of {
+    ((h, n), is) -> (case h of {
+                      Lab _ _ -> set_eq (set is) (mu_of mu (Sharp h, n));
+                      FunLab _ _ -> set_eq (set is) (mu_of mu (Sharp h, n));
+                      UnLab _ -> set_eq (set is) (mu_of mu (Sharp h, n));
+                      Sharp f -> set_eq (set is) (mu_of mu (f, n));
+                    });
+  });
+
+muterm_marked_mu_equal_check ::
+  forall a b. (Eq a, Eq b) => [((Lab a b, Nat), [Nat])] -> Bool;
+muterm_marked_mu_equal_check mu = all (muterm_marked_mu_entry_equal mu) mu;
+
+muterm_is_singly_marked_root :: forall a b c. Term (Lab a b) c -> Bool;
+muterm_is_singly_marked_root (Fun (Sharp (UnLab f)) ts) = True;
+muterm_is_singly_marked_root (Var v) = False;
+muterm_is_singly_marked_root (Fun (Lab vb vc) va) = False;
+muterm_is_singly_marked_root (Fun (FunLab vb vc) va) = False;
+muterm_is_singly_marked_root (Fun (UnLab vb) va) = False;
+muterm_is_singly_marked_root (Fun (Sharp (Lab vc vd)) va) = False;
+muterm_is_singly_marked_root (Fun (Sharp (FunLab vc vd)) va) = False;
+muterm_is_singly_marked_root (Fun (Sharp (Sharp vc)) va) = False;
+
+muterm_general_typed_shape_check ::
+  forall a b c d e f g h i j.
+    [(Term (Lab a b) c, Term (Lab d e) f)] -> [(g, Term (Lab h i) j)] -> Bool;
+muterm_general_typed_shape_check p s =
+  all (\ (l, r) ->
+        muterm_is_singly_marked_root l &&
+          (is_Var r || muterm_is_singly_marked_root r))
+    p &&
+    all (\ (_, a) -> muterm_is_singly_marked_root a) s;
+
+csr_rta08_usable_rules_check ::
+  forall a b c d e.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, Term a c)] ->
+                 [(Term a b, Term a c)] ->
+                   [((a, Nat), [Nat])] -> [(Term a d, Term a e)] -> Bool;
+csr_rta08_usable_rules_check r u mu p =
+  all (membera r) u &&
+    all (\ dp ->
+          csr_u3_inactive_root_rules_check r u mu (fst dp) &&
+            csr_rta08_active_root_rules_check r u mu (snd dp))
+      p &&
+      all (\ lr -> csr_u3_inactive_root_rules_check r u mu (snd lr)) r &&
+        all (\ lr ->
+              csr_u3_inactive_root_rules_check r u mu (fst lr) &&
+                csr_rta08_active_root_rules_check r u mu (snd lr))
+          u;
+
+muterm_general_rta08_ur_redpair_proc ::
+  forall a b c.
+    (Eq b, Showl b, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      Rel_impl_ext (Lab b c) [Char] () ->
+                        [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                          [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                            [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                              a -> Sum (String -> String) a;
+muterm_general_rta08_ur_redpair_proc j mu rp premove u b dpp =
+  (case (case not_wst rp of {
+          Nothing ->
+            Inl (showsl_lit
+                  "general RTA\'08 MU-TERM reduction pair does not expose weak-subterm exceptions");
+          Just f ->
+            bindb (rel_impl_redpair rp)
+              (\ _ ->
+                (case split_pairsa j dpp premove of {
+                  (ps, pns) ->
+                    bindb (check
+                            (csr_rta08_usable_rules_check (rulesf j dpp) u mu
+                              (pairsb j dpp))
+                            (showsl_lit
+                              "general RTA\'08 MU-TERM usable-rule closure failed"))
+                      (\ _ ->
+                        bindb (check
+                                (all (\ dp ->
+                                       is_Var (snd dp) ||
+ csr_u3_all_root_rules_check (rulesf j dpp) u (snd dp))
+                                  (pairsb j dpp))
+                                (showsl_lit
+                                  "general RTA\'08 MU-TERM pair RHS closure failed"))
+                          (\ _ ->
+                            bindb (check
+                                    (all (\ lr ->
+   csr_u3_inactive_root_rules_check (rulesf j dpp) u mu (fst lr))
+                                      b)
+                                    (showsl_lit
+                                      "general RTA\'08 MU-TERM unhiding LHS closure failed"))
+                              (\ _ ->
+                                bindb (check
+(all (\ lr -> csr_u3_all_root_rules_check (rulesf j dpp) u (snd lr)) b)
+(showsl_lit "general RTA\'08 MU-TERM unhiding RHS closure failed"))
+                                  (\ _ ->
+                                    bindb (check
+    (muterm_general_typed_shape_check (pairsb j dpp) b)
+    (showsl_lit "general RTA\'08 MU-TERM typed pair or unhiding shape failed"))
+                                      (\ _ ->
+bindb (check (muterm_marked_mu_equal_check mu)
+        (showsl_lit
+          "marked replacement-map entries differ from their source symbols"))
+  (\ _ ->
+    bindb (ce_compat rp)
+      (\ _ ->
+        bindb (catch_errora
+                (rel_impl_ns rp
+                  (u ++ b ++ csr_rta08_projection_rules_list mu f ++ pns))
+                (\ x ->
+                  Inl (showsl_lit
+                         "problem weakly orienting general RTA\'08 MU-TERM rules, unhiding rules, projections, or pairs\n" .
+                        x)))
+          (\ _ ->
+            catch_errora (rel_impl_s rp ps)
+              (\ x ->
+                Inl (showsl_lit
+                       "problem strictly orienting general RTA\'08 MU-TERM pairs\n" .
+                      x))))))))));
+                }));
+        })
+    of {
+    Inl a -> Inl a;
+    Inr _ -> Inr (delete_P_Pwa j dpp premove premove);
+  });
+
+var_of_term :: forall a b. Term a b -> b;
+var_of_term (Var x) = x;
+var_of_term (Fun f ts) = error "undefined";
+
+non_mu_vars_term_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [b];
+non_mu_vars_term_list mu t =
+  map_filter
+    (\ x ->
+      (if not (membera (mu_poss_list mu t) x)
+        then Just (var_of_term (subt_at t x)) else Nothing))
+    (var_poss_list t);
+
+muterm_extended_basic_side_conditions_check ::
+  forall a b.
+    (Eq a, Showl a, Card_UNIV b, Ceq b, Cproper_interval b, Eq b, Set_impl b,
+      Showl b) => [((a, Nat), [Nat])] ->
+                    [(Term a b, Term a b)] ->
+                      [(Term a b, Term a b)] -> Sum (String -> String) ();
+muterm_extended_basic_side_conditions_check mu p u =
+  bindb (check (all ((\ t -> not (is_Var t)) . snd) p)
+          (showsl_lit "extended-basic processor requires non-collapsing pairs"))
+    (\ _ ->
+      bindb (check_left_linear_trs (p ++ u))
+        (\ _ ->
+          bindb (check (rhs_mu_vars_condition_list mu (p ++ u))
+                  (showsl_lit "extended-basic conservativity condition failed"))
+            (\ _ ->
+              check (all (\ (l, _) ->
+                           is_empty
+                             (inf_set (set (mu_vars_term_list mu l))
+                               (set (non_mu_vars_term_list mu l))))
+                      (p ++ u))
+                (showsl_lit
+                  "extended-basic left-hand-side activity partition failed"))));
+
+muterm_noncollapsing_pairs_list ::
+  forall a b c. [(a, Term b c)] -> [(a, Term b c)];
+muterm_noncollapsing_pairs_list p = filter ((\ t -> not (is_Var t)) . snd) p;
+
+muterm_extended_basic_seed_list ::
+  forall a b c.
+    [(a, Term b c)] -> [(a, Term b c)] -> [(a, Term b c)] -> [(a, Term b c)];
+muterm_extended_basic_seed_list p s u =
+  muterm_noncollapsing_pairs_list p ++ s ++ u;
+
+muterm_extended_basic_ur_closed_check ::
+  forall a b c.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, Term a c)] ->
+                 [(Term a b, Term a c)] ->
+                   [((a, Nat), [Nat])] ->
+                     [(Term a b, Term a c)] -> [(Term a b, Term a c)] -> Bool;
+muterm_extended_basic_ur_closed_check r u mu p b =
+  all (membera r) u &&
+    all (\ lr -> csr_rta08_active_root_rules_check r u mu (snd lr))
+      (muterm_extended_basic_seed_list p b u);
+
+muterm_marked_mu_pairs_check ::
+  forall a b c d.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] ->
+                 [(Term (Lab a b) c, Term (Lab a b) d)] -> Bool;
+muterm_marked_mu_pairs_check mu p =
+  all (\ (l, r) ->
+        (case root l of {
+          Nothing -> False;
+          Just (Lab _ _, _) -> False;
+          Just (FunLab _ _, _) -> False;
+          Just (UnLab _, _) -> False;
+          Just (Sharp f, n) ->
+            muterm_mu_positions_list mu (Sharp f, n) ==
+              muterm_mu_positions_list mu (f, n);
+        }) &&
+          (case root r of {
+            Nothing -> False;
+            Just (Lab _ _, _) -> False;
+            Just (FunLab _ _, _) -> False;
+            Just (UnLab _, _) -> False;
+            Just (Sharp f, n) ->
+              muterm_mu_positions_list mu (Sharp f, n) ==
+                muterm_mu_positions_list mu (f, n);
+          }))
+    p;
+
+muterm_extended_basic_redpair_proc ::
+  forall a b c d.
+    (Eq b, Showl b, Eq c, Showl c, Card_UNIV d, Ceq d, Cproper_interval d, Eq d,
+      Set_impl d,
+      Showl d) => Dpp_ops_ext a (Lab b c) d () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      Rel_impl_ext (Lab b c) d () ->
+                        [(Term (Lab b c) d, Term (Lab b c) d)] ->
+                          [(Term (Lab b c) d, Term (Lab b c) d)] ->
+                            a -> Sum (String -> String) a;
+muterm_extended_basic_redpair_proc j mu rp premove u dpp =
+  (case bindb (rel_impl_redpair rp)
+          (\ _ ->
+            (case split_pairsa j dpp premove of {
+              (ps, pns) ->
+                bindb (check (csr_sharp_pairs_check (pairsb j dpp))
+                        (showsl_lit
+                          "extended-basic processor requires marked pairs"))
+                  (\ _ ->
+                    bindb (check
+                            (muterm_marked_mu_pairs_check mu (pairsb j dpp))
+                            (showsl_lit
+                              "marked replacement-map entries differ from their source symbols"))
+                      (\ _ ->
+                        bindb (check
+                                (muterm_extended_basic_ur_closed_check
+                                  (rulesf j dpp) u mu (pairsb j dpp) [])
+                                (showsl_lit
+                                  "supplied rules are not a closed extended-basic set"))
+                          (\ _ ->
+                            bindb (muterm_extended_basic_side_conditions_check
+                                    mu (pairsb j dpp) u)
+                              (\ _ ->
+                                bindb (ce_compat rp)
+                                  (\ _ ->
+                                    bindb (rel_impl_ns rp (u ++ pns))
+                                      (\ _ -> rel_impl_s rp ps))))));
+            }))
+    of {
+    Inl a -> Inl a;
+    Inr _ -> Inr (delete_P_Pwa j dpp premove premove);
+  });
+
+muterm_dp_mu_poss_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [[Nat]];
+muterm_dp_mu_poss_list mu (Var x) = [[]];
+muterm_dp_mu_poss_list mu (Fun f ts) =
+  [] : concat
+         (map_filter
+           (\ x ->
+             (if member x (mu_of mu (f, size_list ts))
+               then Just (map (\ a -> x : a)
+                           (muterm_dp_mu_poss_list mu (nth ts x)))
+               else Nothing))
+           (upt zero_nat (size_list ts)));
+
+muterm_dp_non_mu_vars_term_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [b];
+muterm_dp_non_mu_vars_term_list mu t =
+  map_filter
+    (\ x ->
+      (if not (membera (muterm_dp_mu_poss_list mu t) x)
+        then Just (var_of_term (subt_at t x)) else Nothing))
+    (var_poss_list t);
+
+muterm_dp_mu_vars_term_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [b];
+muterm_dp_mu_vars_term_list mu (Var x) = [x];
+muterm_dp_mu_vars_term_list mu (Fun f ts) =
+  concat
+    (map_filter
+      (\ x ->
+        (if member x (mu_of mu (f, size_list ts))
+          then Just (muterm_dp_mu_vars_term_list mu (nth ts x)) else Nothing))
+      (upt zero_nat (size_list ts)));
+
+muterm_dp_strongly_conservative_check ::
+  forall a b.
+    (Eq a, Card_UNIV b, Ceq b, Cproper_interval b, Eq b,
+      Set_impl b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+muterm_dp_strongly_conservative_check mu t =
+  all (\ (l, r) ->
+        all (membera (muterm_dp_mu_vars_term_list mu l))
+          (muterm_dp_mu_vars_term_list mu r))
+    t &&
+    all (\ (l, r) ->
+          is_empty
+            (inf_set (set (muterm_dp_mu_vars_term_list mu l))
+              (set (muterm_dp_non_mu_vars_term_list mu l))) &&
+            is_empty
+              (inf_set (set (muterm_dp_mu_vars_term_list mu r))
+                (set (muterm_dp_non_mu_vars_term_list mu r))))
+      t;
+
+muterm_dp_mu_fun_poss_list ::
+  forall a b. (Eq a) => [((a, Nat), [Nat])] -> Term a b -> [[Nat]];
+muterm_dp_mu_fun_poss_list mu (Var x) = [];
+muterm_dp_mu_fun_poss_list mu (Fun f ts) =
+  [] : concat
+         (map_filter
+           (\ x ->
+             (if member x (mu_of mu (f, size_list ts))
+               then Just (map (\ a -> x : a)
+                           (muterm_dp_mu_fun_poss_list mu (nth ts x)))
+               else Nothing))
+           (upt zero_nat (size_list ts)));
+
+muterm_dp_active_ur_closed_check ::
+  forall a b c d e.
+    (Eq a, Eq b,
+      Eq c) => [(Term a b, Term a c)] ->
+                 [(Term a b, Term a c)] ->
+                   [((a, Nat), [Nat])] -> [(d, Term a e)] -> Bool;
+muterm_dp_active_ur_closed_check r u mu p =
+  all (membera r) u &&
+    all (\ dp ->
+          is_Var (snd dp) ||
+            csr_u3_root_rules_check r u (snd dp)
+              (muterm_dp_mu_fun_poss_list mu (snd dp)))
+      p &&
+      all (\ lr ->
+            csr_u3_root_rules_check r u (snd lr)
+              (muterm_dp_mu_fun_poss_list mu (snd lr)))
+        u;
+
+muterm_strong_ur_redpair_proc ::
+  forall a b c d.
+    (Eq b, Showl b, Eq c, Showl c, Card_UNIV d, Ceq d, Cproper_interval d, Eq d,
+      Set_impl d,
+      Showl d) => Dpp_ops_ext a (Lab b c) d () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      Rel_impl_ext (Lab b c) d () ->
+                        [(Term (Lab b c) d, Term (Lab b c) d)] ->
+                          [(Term (Lab b c) d, Term (Lab b c) d)] ->
+                            a -> Sum (String -> String) a;
+muterm_strong_ur_redpair_proc j mu rp premove u dpp =
+  (case bindb (rel_impl_redpair rp)
+          (\ _ ->
+            (case split_pairsa j dpp premove of {
+              (ps, pns) ->
+                bindb (check (csr_sharp_pairs_check (pairsb j dpp))
+                        (showsl_lit
+                          "strong MU-TERM usable-rule processor requires marked pairs"))
+                  (\ _ ->
+                    bindb (check
+                            (muterm_marked_mu_pairs_check mu (pairsb j dpp))
+                            (showsl_lit
+                              "marked replacement-map entries differ from their source symbols"))
+                      (\ _ ->
+                        bindb (check
+                                (muterm_dp_active_ur_closed_check (rulesf j dpp)
+                                  u mu (pairsb j dpp))
+                                (showsl_lit
+                                  "supplied rules are not a closed active MU-TERM set"))
+                          (\ _ ->
+                            bindb (check
+                                    (muterm_dp_strongly_conservative_check mu
+                                      (pairsb j dpp ++ u))
+                                    (showsl_lit
+                                      "strong MU-TERM conservativity condition failed"))
+                              (\ _ ->
+                                bindb (ce_compat rp)
+                                  (\ _ ->
+                                    bindb (rel_impl_ns rp (u ++ pns))
+                                      (\ _ -> rel_impl_s rp ps))))));
+            }))
+    of {
+    Inl a -> Inl a;
+    Inr _ -> Inr (delete_P_Pwa j dpp premove premove);
+  });
+
+check_muterm_expanded_csr_proof ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> Csr_dp_termination_proof b [Nat] [Char] ->
+                                 Sum (String -> String) ();
+check_muterm_expanded_csr_proof ia j mu i dpp (CSR_DP_Dep_Graph_Proc edpts) =
+  debug i "expanded MU-TERM CSR dependency graph"
+    (bindb (check_csr_dep_graph_proc j mu dpp edpts)
+      (\ _ -> check_muterm_expanded_csr_components ia j mu i dpp edpts));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp pr u subprf)) =
+  (case muterm_strong_ur_redpair_proc j mu (get_rel_impl redp) pr u dpp of {
+    Inl _ ->
+      check_csr_dp_termination_proof_min ia j mu False i dpp
+        (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp pr u subprf));
+    Inr dppa ->
+      debug i "expanded strong MU-TERM usable-rule reduction pair"
+        (check_csr_dp_termination_proof_min ia j mu False (add_index i one_nat)
+          dppa (CSR_DP_Ordinary_Proof subprf));
+  });
+check_muterm_expanded_csr_proof ia j mu i dpp CSR_DP_P_is_Empty =
+  check_csr_dp_termination_proof_min ia j mu False i dpp CSR_DP_P_is_Empty;
+check_muterm_expanded_csr_proof ia j mu i dpp (CSR_DP_Ordinary_Proof P_is_Empty)
+  = check_csr_dp_termination_proof_min ia j mu False i dpp
+      (CSR_DP_Ordinary_Proof P_is_Empty);
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc va vb vc vd)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc va vb vc vd));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc va vb vc)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc va vb vc));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_Proc va vb vc)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Redpair_Proc va vb vc));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Usable_Rules_Proc va vb)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Usable_Rules_Proc va vb));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Dep_Graph_Proc va)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Dep_Graph_Proc va));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc va vb vc vd)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc va vb vc vd));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc va vb vc vd)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc va vb vc vd));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc va vb vc vd ve)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc va vb vc vd ve));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc va)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc va));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc va vb vc)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc va vb vc));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Uncurry_Proc va vb vc vd ve)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Uncurry_Proc va vb vc vd ve));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Fcc_Proc va vb vc vd ve)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Fcc_Proc va vb vc vd ve));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Split_Proc va vb vc vd)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Split_Proc va vb vc vd));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Semlab_Proc va vb vc vd ve)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Semlab_Proc va vb vc vd ve));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc va vb)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc va vb));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Rewriting_Proc va vb vc vd ve vf vg)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Rewriting_Proc va vb vc vd ve vf vg));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Instantiation_Proc va vb vc)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Instantiation_Proc va vb vc));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc va vb vc vd)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc va vb vc vd));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Narrowing_Proc va vb vc vd)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Narrowing_Proc va vb vc vd));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Assume_Finite va vb)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Assume_Finite va vb));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Q_Reduction_Proc va vb)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Q_Reduction_Proc va vb));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc va vb)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc va vb));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (General_Redpair_Proc va vb vc vd ve)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (General_Redpair_Proc va vb vc vd ve));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (To_Trs_Proc va)) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Ordinary_Proof (To_Trs_Proc va));
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_muterm_expanded_csr_proof ia j mu i dpp (CSR_DP_Usable_Rules_Proc v va) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Usable_Rules_Proc v va);
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Instantiation_Proc v va vb) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Instantiation_Proc v va vb);
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Forward_Instantiation_Proc v va vb);
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Redpair_UR_Proc v va vb vc) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Redpair_UR_Proc v va vb vc);
+check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc v) =
+  check_csr_dp_termination_proof_min ia j mu False i dpp
+    (CSR_DP_Size_Change_Subterm_Proc v);
+
+check_muterm_expanded_csr_components ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> [(Maybe (Csr_dp_termination_proof b [Nat]
+ [Char]),
+                                  [(Term (Lab b [Nat]) [Char],
+                                     Term (Lab b [Nat]) [Char])])] ->
+                                 Sum (String -> String) ();
+check_muterm_expanded_csr_components ia j mu i dpp [] = Inr ();
+check_muterm_expanded_csr_components ia j mu i dpp ((Nothing, c) : rest) =
+  check_muterm_expanded_csr_components ia j mu (add_index i one_nat) dpp rest;
+check_muterm_expanded_csr_components ia j mu i dpp ((Just prf, c) : rest) =
+  bindb (check_muterm_expanded_csr_proof ia j mu (add_index i one_nat)
+          (intersect_pairsb j dpp c) prf)
+    (\ _ ->
+      check_muterm_expanded_csr_components ia j mu (add_index i one_nat) dpp
+        rest);
+
+check_muterm_expanded_extended_basic_proof ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> Csr_dp_termination_proof b [Nat] [Char] ->
+                                 Sum (String -> String) ();
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Dep_Graph_Proc edpts) =
+  debug i "expanded extended-basic MU-TERM dependency graph"
+    (bindb (check_csr_dep_graph_proc j mu dpp edpts)
+      (\ _ ->
+        check_muterm_expanded_extended_basic_components ia j mu i dpp edpts));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_UR_Proc redp pr u subprf)) =
+  debug i "expanded extended-basic MU-TERM reduction pair"
+    (bindb
+      (muterm_extended_basic_redpair_proc j mu (get_rel_impl redp) pr u dpp)
+      (\ dppa ->
+        check_csr_dp_termination_proof_min ia j mu False (add_index i one_nat)
+          dppa (CSR_DP_Ordinary_Proof subprf)));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Instantiation_Proc st sts prf) =
+  debug i "expanded extended-basic MU-TERM instantiation"
+    (bindb (csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_muterm_expanded_extended_basic_proof ia j mu (add_index i one_nat)
+          dppa prf));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp CSR_DP_P_is_Empty =
+  check_muterm_expanded_csr_proof ia j mu i dpp CSR_DP_P_is_Empty;
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof P_is_Empty) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof P_is_Empty);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc va vb vc vd)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Subterm_Criterion_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc va vb vc)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Gen_Subterm_Criterion_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Redpair_Proc va vb vc)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Redpair_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Usable_Rules_Proc va vb)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Usable_Rules_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Dep_Graph_Proc va)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Dep_Graph_Proc va));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc va vb vc vd)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Mono_Redpair_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc va vb vc vd)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Mono_URM_Redpair_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc va vb vc vd ve)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Mono_Redpair_UR_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc va)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Size_Change_Subterm_Proc va));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc va vb vc)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Size_Change_Redpair_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Uncurry_Proc va vb vc vd ve)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Uncurry_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Fcc_Proc va vb vc vd ve)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Fcc_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Split_Proc va vb vc vd)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Split_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Semlab_Proc va vb vc vd ve)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Semlab_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc va vb)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Switch_Innermost_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Rewriting_Proc va vb vc vd ve vf vg)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Rewriting_Proc va vb vc vd ve vf vg));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Instantiation_Proc va vb vc)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Instantiation_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc va vb vc vd)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Forward_Instantiation_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Narrowing_Proc va vb vc vd)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Narrowing_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Assume_Finite va vb)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Assume_Finite va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Q_Reduction_Proc va vb)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Q_Reduction_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc va vb)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (Complex_Constant_Removal_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (General_Redpair_Proc va vb vc vd ve)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (General_Redpair_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Ordinary_Proof (To_Trs_Proc va)) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Ordinary_Proof (To_Trs_Proc va));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Usable_Rules_Proc v va) =
+  check_muterm_expanded_csr_proof ia j mu i dpp (CSR_DP_Usable_Rules_Proc v va);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Forward_Instantiation_Proc v va vb);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Redpair_UR_Proc v va vb vc) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Redpair_UR_Proc v va vb vc);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_DP_Size_Change_Subterm_Proc v) =
+  check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_DP_Size_Change_Subterm_Proc v);
+
+check_muterm_expanded_extended_basic_components ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          c -> [(Maybe (Csr_dp_termination_proof b [Nat]
+ [Char]),
+                                  [(Term (Lab b [Nat]) [Char],
+                                     Term (Lab b [Nat]) [Char])])] ->
+                                 Sum (String -> String) ();
+check_muterm_expanded_extended_basic_components ia j mu i dpp [] = Inr ();
+check_muterm_expanded_extended_basic_components ia j mu i dpp
+  ((Nothing, c) : rest) =
+  check_muterm_expanded_extended_basic_components ia j mu (add_index i one_nat)
+    dpp rest;
+check_muterm_expanded_extended_basic_components ia j mu i dpp
+  ((Just prf, c) : rest) =
+  bindb (check_muterm_expanded_extended_basic_proof ia j mu
+          (add_index i one_nat) (intersect_pairsb j dpp c) prf)
+    (\ _ ->
+      check_muterm_expanded_extended_basic_components ia j mu
+        (add_index i one_nat) dpp rest);
+
+check_muterm_typed_dep_graph ::
+  forall a b c d.
+    (Compare a, Eq a, Showl a, Compare b, Eq b, Showl b, Compare_order c, Eq c,
+      Showl c) => [((Lab a b, Nat), [Nat])] ->
+                    [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                      [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                        [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                          [(Maybe d, [(Term (Lab a b) c, Term (Lab a b) c)])] ->
+                            Sum (String -> String) ();
+check_muterm_typed_dep_graph mu r s p dps =
+  bindb (check_wf_trs (r ++ s))
+    (\ _ ->
+      bindb (catch_errora (check_subseteq p (concatMap snd dps))
+              (\ x ->
+                Inl ((showsl_lit "typed MU-TERM dependency pair " .
+                       showsl_rule x) .
+                      showsl_lit " is missing in decomposition\n")))
+        (\ _ ->
+          check_graph_decomp (showsl_prod . fst) (emptyd ((root . fst) . fst))
+            graph_approx_csr_rt insertd
+            (csr_dep_graph_edge_check (csr_dp_root_mu (mu_of mu)) (r ++ s))
+            (map (\ (real, cs) ->
+                   (not (is_none real), map (\ (sa, t) -> ((sa, t), ())) cs))
+              dps)));
+
+muterm_rename_many :: forall a. (Infinite a) => RenamingN a -> Nat -> a -> a;
+muterm_rename_many ren i = (\ v -> rename_many ren (i, v));
+
+muterm_compose_collapsing_pair ::
+  forall a b c.
+    (Infinite a,
+      Eq a) => RenamingN a ->
+                 Term b a -> a -> Term b a -> Term c a -> (Term b a, Term c a);
+muterm_compose_collapsing_pair ren l x a b =
+  let {
+    rp = muterm_rename_many ren zero_nat;
+    rs = rename_single ren;
+    la = map_term (\ xa -> xa) rp l;
+    aa = map_term (\ xa -> xa) rs a;
+    ba = map_term (\ xa -> xa) rs b;
+  } in (eval_term Fun la (fun_upd Var (rp x) aa), ba);
+
+muterm_expand_one_pair ::
+  forall a b c.
+    (Infinite a,
+      Eq a) => RenamingN a ->
+                 [(Term b a, Term c a)] ->
+                   (Term b a, Term c a) -> [(Term b a, Term c a)];
+muterm_expand_one_pair ren s (l, Var x) =
+  map (\ (a, b) -> muterm_compose_collapsing_pair ren l x a b) s;
+muterm_expand_one_pair ren s (l, Fun f ts) =
+  [(map_term (\ x -> x) (muterm_rename_many ren zero_nat) l,
+     map_term (\ x -> x) (muterm_rename_many ren zero_nat) (Fun f ts))];
+
+muterm_expanded_pairs_list ::
+  forall a b c.
+    (Infinite a,
+      Eq a) => RenamingN a ->
+                 [(Term b a, Term c a)] ->
+                   [(Term b a, Term c a)] -> [(Term b a, Term c a)];
+muterm_expanded_pairs_list ren p s = concatMap (muterm_expand_one_pair ren s) p;
+
+check_muterm_typed_dp_proof_production ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              [(Term (Lab b [Nat]) [Char],
+                                 Term (Lab b [Nat]) [Char])] ->
+                                Muterm_typed_dp_proof b [Nat] [Char] ->
+                                  Sum (String -> String) ();
+check_muterm_typed_dp_proof_production ia j mu i r s p Muterm_Typed_P_Is_Empty =
+  check (null p)
+    (i . showsl_lit ": innermost typed MU-TERM pairs are not empty");
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child) =
+  debug i "expanded typed extended-basic MU-TERM CSR component"
+    (let {
+       e = muterm_expanded_pairs_list string_renameN p s;
+       dpp = mkd j False False e [] [] [] r;
+     } in check_muterm_expanded_extended_basic_proof ia j mu
+            (add_index i one_nat) dpp child);
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_General_Usable redp pr u child) =
+  debug i "innermost typed RTA\'08 MU-TERM usable-rule reduction pair"
+    (let {
+       dpp = mkd j False False p [] [] [] r;
+     } in bindb (muterm_general_rta08_ur_redpair_proc j mu (get_rel_impl redp)
+                  pr u s dpp)
+            (\ dppa ->
+              check_muterm_typed_dp_proof_production ia j mu
+                (add_index i one_nat) r s (pairsb j dppa) child));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Pair_Augmentation st sts child) =
+  debug i "innermost typed MU-TERM pair augmentation"
+    (let {
+       dpp = mkd j False False p [] [] [] r;
+     } in bindb (csr_instantiation_proc j mu st sts dpp)
+            (\ dppa ->
+              bindb (catch_errora (check_subseteq p (pairsb j dppa))
+                      (\ _ ->
+                        Inl (showsl_lit
+                              "typed MU-TERM augmentation removed an original pair")))
+                (\ _ ->
+                  check_muterm_typed_dp_proof_production ia j mu
+                    (add_index i one_nat) r s (pairsb j dppa) child)));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_CSR_Proof child) =
+  debug i "innermost typed MU-TERM noncollapsing CSR component"
+    (bindb
+      (check (all ((\ t -> not (is_Var t)) . snd) p)
+        (i . showsl_lit
+               ": collapsing pair requires the typed MU-TERM processor"))
+      (\ _ ->
+        let {
+          dpp = mkd j False False p [] [] [] r;
+        } in check_csr_dp_termination_proof_min ia j mu False
+               (add_index i one_nat) dpp child));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Local_Usable u child) =
+  Inl (i . showsl_lit
+             ": recursive local usable rules require the invariant graph checker");
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Expanded_CSR_Proof child) =
+  debug i "expanded typed MU-TERM CSR component"
+    (let {
+       e = muterm_expanded_pairs_list string_renameN p s;
+       dpp = mkd j False False e [] [] [] r;
+     } in check_muterm_expanded_csr_proof ia j mu (add_index i one_nat) dpp
+            child);
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Expanded_Local_Usable u child) =
+  debug i "expanded innermost typed MU-TERM local usable rules"
+    (bindb
+      (check (all (membera r) u)
+        (i . showsl_lit ": extraneous MU-TERM usable rule"))
+      (\ _ ->
+        bindb (check (all (\ lr -> qcs_ur_closed_term_check r u mu (snd lr)) u)
+                (i . showsl_lit ": ordinary MU-TERM rule closure failed"))
+          (\ _ ->
+            bindb (check
+                    (all (\ lr -> qcs_ur_closed_dp_rhs_check r u mu (snd lr)) s)
+                    (i . showsl_lit ": MU-TERM unhiding closure failed"))
+              (\ _ ->
+                bindb (check
+                        (all (\ dp ->
+                               is_Var (snd dp) ||
+                                 qcs_ur_closed_dp_rhs_check r u mu (snd dp))
+                          p)
+                        (i . showsl_lit ": MU-TERM pair closure failed"))
+                  (\ _ ->
+                    let {
+                      e = muterm_expanded_pairs_list string_renameN p s;
+                    } in check_dp_termination_proof ia j False
+                           (add_index i one_nat)
+                           (mkd j False False e [] [] [] u) child)))));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Expanded_Ordinary child) =
+  debug i "expanded typed MU-TERM ordinary DP continuation"
+    (let {
+       e = muterm_expanded_pairs_list string_renameN p s;
+     } in check_dp_termination_proof ia j False (add_index i one_nat)
+            (mkd j False False e [] [] [] r) child);
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Dep_Graph edps) =
+  debug i "innermost typed MU-TERM dependency graph"
+    (bindb (check_muterm_typed_dep_graph mu r s p edps)
+      (\ _ ->
+        check_muterm_innermost_typed_graph_components ia j mu i r s p edps));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (Muterm_Typed_Expanded_Strong_Usable v va vb vc) =
+  Inl (i . showsl_lit
+             ": processor is not supported inside an innermost typed MU-TERM chain");
+
+check_muterm_innermost_typed_graph_components ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              [(Term (Lab b [Nat]) [Char],
+                                 Term (Lab b [Nat]) [Char])] ->
+                                [(Maybe (Muterm_typed_dp_proof b [Nat] [Char]),
+                                   [(Term (Lab b [Nat]) [Char],
+                                      Term (Lab b [Nat]) [Char])])] ->
+                                  Sum (String -> String) ();
+check_muterm_innermost_typed_graph_components ia j mu i r s p [] = Inr ();
+check_muterm_innermost_typed_graph_components ia j mu i r s p
+  ((Nothing, c) : rest) =
+  check_muterm_innermost_typed_graph_components ia j mu (add_index i one_nat) r
+    s p rest;
+check_muterm_innermost_typed_graph_components ia j mu i r s p
+  ((Just child, c) : rest) =
+  bindb (check_muterm_typed_dp_proof_production ia j mu (add_index i one_nat) r
+          s (filter (membera c) p) child)
+    (\ _ ->
+      check_muterm_innermost_typed_graph_components ia j mu
+        (add_index i one_nat) r s p rest);
+
+muterm_i4_mu_vars_term_list_exec ::
+  forall a b c. ((Lab a b, Nat) -> Set Nat) -> Term (Lab a b) c -> [c];
+muterm_i4_mu_vars_term_list_exec mu (Var x) = [x];
+muterm_i4_mu_vars_term_list_exec mu (Fun f ts) =
+  concat
+    (map_filter
+      (\ x ->
+        (if is_sharp_lab f || member x (mu (f, size_list ts))
+          then Just (muterm_i4_mu_vars_term_list_exec mu (nth ts x))
+          else Nothing))
+      (upt zero_nat (size_list ts)));
+
+muterm_i4_non_mu_vars_term_list_exec ::
+  forall a b c. ((Lab a b, Nat) -> Set Nat) -> Term (Lab a b) c -> [c];
+muterm_i4_non_mu_vars_term_list_exec mu (Var x) = [];
+muterm_i4_non_mu_vars_term_list_exec mu (Fun f ts) =
+  concatMap
+    (\ i ->
+      (if is_sharp_lab f || member i (mu (f, size_list ts))
+        then muterm_i4_non_mu_vars_term_list_exec mu (nth ts i)
+        else vars_term_list (nth ts i)))
+    (upt zero_nat (size_list ts));
+
+muterm_i4_partition_check_exec ::
+  forall a b c.
+    (Card_UNIV c, Ceq c, Cproper_interval c,
+      Set_impl c) => ((Lab a b, Nat) -> Set Nat) -> Term (Lab a b) c -> Bool;
+muterm_i4_partition_check_exec mu t =
+  is_empty
+    (inf_set (set (muterm_i4_mu_vars_term_list_exec mu t))
+      (set (muterm_i4_non_mu_vars_term_list_exec mu t)));
+
+muterm_i4_full_check_exec ::
+  forall a b c.
+    (Eq c) => ((Lab a b, Nat) -> Set Nat) -> Term (Lab a b) c -> Bool;
+muterm_i4_full_check_exec mu t =
+  all (membera (muterm_i4_mu_vars_term_list_exec mu t)) (vars_term_list t);
+
+muterm_recursive_i4_shape_check_exec ::
+  forall a b c d e.
+    (Card_UNIV c, Ceq c, Cproper_interval c, Eq c, Set_impl c, Card_UNIV d,
+      Ceq d, Cproper_interval d, Eq d, Set_impl d, Card_UNIV e, Ceq e,
+      Cproper_interval e, Eq e,
+      Set_impl e) => ((Lab a b, Nat) -> Set Nat) ->
+                       [(Term (Lab a b) c, Term (Lab a b) d)] ->
+                         [(Term (Lab a b) e, Term (Lab a b) e)] -> Bool;
+muterm_recursive_i4_shape_check_exec mu p b =
+  all (\ lr ->
+        muterm_i4_partition_check_exec mu (fst lr) &&
+          muterm_i4_full_check_exec mu (fst lr) &&
+            (is_Var (snd lr) ||
+              muterm_i4_partition_check_exec mu (snd lr) &&
+                muterm_i4_full_check_exec mu (snd lr)))
+    p &&
+    all (\ lr ->
+          muterm_i4_partition_check_exec mu (fst lr) &&
+            muterm_i4_partition_check_exec mu (snd lr) &&
+              muterm_i4_full_check_exec mu (snd lr) &&
+                all (membera (muterm_i4_mu_vars_term_list_exec mu (fst lr)))
+                  (muterm_i4_mu_vars_term_list_exec mu (snd lr)))
+      b;
+
+muterm_strongly_conservative_check ::
+  forall a b.
+    (Eq a, Card_UNIV b, Ceq b, Cproper_interval b, Eq b,
+      Set_impl b) => [((a, Nat), [Nat])] -> [(Term a b, Term a b)] -> Bool;
+muterm_strongly_conservative_check mu t =
+  rhs_mu_vars_condition_list mu t &&
+    all (\ (l, r) ->
+          is_empty
+            (inf_set (set (mu_vars_term_list mu l))
+              (set (non_mu_vars_term_list mu l))) &&
+            is_empty
+              (inf_set (set (mu_vars_term_list mu r))
+                (set (non_mu_vars_term_list mu r))))
+      t;
+
+muterm_recursive_rta08_ur_redpair_proc_exec ::
+  forall a b c d e.
+    (Compare a, Eq a, Showl a, Compare b, Eq b, Showl b, Card_UNIV e, Cenum e,
+      Ceq e, Cproper_interval e, Compare e, Eq e, Mapping_impl e, Set_impl e,
+      Showl e) => [(Term (Lab a b) c, Term (Lab a b) c)] ->
+                    ((Lab a b, Nat) -> Set Nat) ->
+                      Set (Lab a b, Nat) ->
+                        Dpp_ops_ext d (Lab a b) e () ->
+                          [((Lab a b, Nat), [Nat])] ->
+                            Rel_impl_ext (Lab a b) e () ->
+                              [(Term (Lab a b) e, Term (Lab a b) e)] ->
+                                [(Term (Lab a b) e, Term (Lab a b) e)] ->
+                                  [(Term (Lab a b) e, Term (Lab a b) e)] ->
+                                    d -> Sum (String -> String) d;
+muterm_recursive_rta08_ur_redpair_proc_exec rs mu delta j m rp premove u b dpp =
+  (case bindb (rel_impl_redpair rp)
+          (\ _ ->
+            (case split_pairsa j dpp premove of {
+              (ps, pns) ->
+                let {
+                  t = pairsb j dpp ++ b ++ u;
+                } in bindb (check
+                             (muterm_innermost_ur_closed_check (rulesf j dpp) u
+                               m t)
+                             (showsl_lit
+                               "recursive MU-TERM usable-rule closure failed"))
+                       (\ _ ->
+                         bindb (check (muterm_strongly_conservative_check m u)
+                                 (showsl_lit
+                                   "recursive MU-TERM strong-conservativity check failed"))
+                           (\ _ ->
+                             bindb (check
+                                     (all ((\ ta -> not (is_Var ta)) . fst) t)
+                                     (showsl_lit
+                                       "recursive MU-TERM rule has a variable left-hand side"))
+                               (\ _ ->
+                                 bindb (check
+ (muterm_recursive_pairs_safe_check_exec rs mu delta (pairsb j dpp) b)
+ (showsl_lit "recursive MU-TERM pair safety check failed"))
+                                   (\ _ ->
+                                     bindb (check
+     (muterm_recursive_bridges_safe_check_exec (defined_list rs) mu delta b)
+     (showsl_lit "recursive MU-TERM unhiding safety check failed"))
+                                       (\ _ ->
+ bindb (check (muterm_recursive_target_shape_check_exec (pairsb j dpp) b)
+         (showsl_lit "recursive MU-TERM target-shape check failed"))
+   (\ _ ->
+     bindb (check (muterm_recursive_i4_shape_check_exec mu (pairsb j dpp) b)
+             (showsl_lit "recursive MU-TERM interpretation-shape check failed"))
+       (\ _ ->
+         bindb (check (muterm_marked_mu_equal_check m)
+                 (showsl_lit
+                   "marked replacement-map entries differ from source symbols"))
+           (\ _ ->
+             bindb (ce_compat rp)
+               (\ _ ->
+                 bindb (catch_errora (rel_impl_ns rp (u ++ b ++ pns))
+                         (\ x ->
+                           Inl (showsl_lit
+                                  "problem weakly orienting recursive MU-TERM rules, unhiding rules, or pairs\n" .
+                                 x)))
+                   (\ _ ->
+                     catch_errora (rel_impl_s rp ps)
+                       (\ x ->
+                         Inl (showsl_lit
+                                "problem strictly orienting recursive MU-TERM pairs\n" .
+                               x))))))))))));
+            }))
+    of {
+    Inl a -> Inl a;
+    Inr _ -> Inr (delete_P_Pwa j dpp premove premove);
+  });
+
+csr_u3_delta ::
+  forall a b c.
+    (Cenum a, Compare a, Eq a, Compare b, Eq b, Ceq c,
+      Ccompare c) => Set (Term a b, c) -> Set (Term a b, c) -> Set (a, Nat);
+csr_u3_delta r u =
+  collect
+    (\ f ->
+      ball r (\ lr -> (if root (fst lr) == Just f then member lr u else True)));
+
+check_muterm_recursive_dp_proof ::
+  forall a b c.
+    (Compare b, Eq b, Showl b, Compare c, Eq c,
+      Showl c) => Dpp_ops_ext a (Lab b c) [Char] () ->
+                    [((Lab b c, Nat), [Nat])] ->
+                      (String -> String) ->
+                        [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                          [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                            [(Term (Lab b c) [Char], Term (Lab b c) [Char])] ->
+                              [(Term (Lab b c) [Char],
+                                 Term (Lab b c) [Char])] ->
+                                Dp_termination_proof b c [Char] ->
+                                  Sum (String -> String) ();
+check_muterm_recursive_dp_proof j m i r b u p P_is_Empty =
+  check (null p) (i . showsl_lit ": recursive MU-TERM pairs are not empty");
+check_muterm_recursive_dp_proof j m i r b u p (Redpair_Proc redp pr child) =
+  debug i "recursive MU-TERM reduction pair"
+    (let {
+       dpp = mkd j False False p [] [] [] r;
+     } in bindb (muterm_recursive_rta08_ur_redpair_proc_exec (rulesf j dpp)
+                  (mu_of m) (csr_u3_delta (set (rulesf j dpp)) (set u)) j m
+                  (get_rel_impl redp) pr u b dpp)
+            (\ dppa ->
+              check_muterm_recursive_dp_proof j m (add_index i one_nat) r b u
+                (pairsb j dppa) child));
+check_muterm_recursive_dp_proof j m i r b u p (Dep_Graph_Proc edps) =
+  debug i "terminal recursive MU-TERM dependency graph"
+    (bindb (check_muterm_typed_dep_graph m r b p edps)
+      (\ _ ->
+        check (all (\ (po, _) -> is_none po) edps)
+          (i . showsl_lit
+                 ": recursive MU-TERM graph has a nonterminal component")));
+check_muterm_recursive_dp_proof j m i r b u p
+  (Subterm_Criterion_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p
+  (Gen_Subterm_Criterion_Proc v va vb) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Redpair_UR_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Usable_Rules_Proc v va) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Mono_Redpair_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Mono_URM_Redpair_Proc v va vb vc)
+  = Inl (i . showsl_lit
+               ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p
+  (Mono_Redpair_UR_Proc v va vb vc vd) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Size_Change_Subterm_Proc v) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Size_Change_Redpair_Proc v va vb)
+  = Inl (i . showsl_lit
+               ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Uncurry_Proc v va vb vc vd) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Fcc_Proc v va vb vc vd) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Split_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Semlab_Proc v va vb vc vd) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Switch_Innermost_Proc v va) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p
+  (Rewriting_Proc v va vb vc vd ve vf) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Instantiation_Proc v va vb) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p
+  (Forward_Instantiation_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Narrowing_Proc v va vb vc) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Assume_Finite v va) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (Q_Reduction_Proc v va) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p
+  (Complex_Constant_Removal_Proc v va) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p
+  (General_Redpair_Proc v va vb vc vd) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r b u p (To_Trs_Proc v) =
+  Inl (i . showsl_lit
+             ": unsupported processor in recursive MU-TERM continuation");
+
+check_muterm_i4_graph_component ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              [(Term (Lab b [Nat]) [Char],
+                                 Term (Lab b [Nat]) [Char])] ->
+                                (Maybe (Muterm_typed_dp_proof b [Nat] [Char]),
+                                  [(Term (Lab b [Nat]) [Char],
+                                     Term (Lab b [Nat]) [Char])]) ->
+                                  Sum (String -> String) ();
+check_muterm_i4_graph_component ia j m i r b p (Nothing, c) = Inr ();
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Local_Usable u child), c) =
+  bindb (check (all (\ lr -> membera r lr || membera b lr) u)
+          (i . showsl_lit ": extraneous recursive MU-TERM usable rule"))
+    (\ _ ->
+      let {
+        u0 = filter (membera r) u;
+      } in check_muterm_recursive_dp_proof j m (add_index i one_nat) r b u0
+             (filter (membera c) p) child);
+check_muterm_i4_graph_component ia j m i r b p (Just Muterm_Typed_P_Is_Empty, c)
+  = check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+      (filter (membera c) p) Muterm_Typed_P_Is_Empty;
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_General_Usable v va vb vc), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_General_Usable v va vb vc);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Pair_Augmentation v va vb), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Pair_Augmentation v va vb);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_CSR_Proof v), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_CSR_Proof v);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Expanded_CSR_Proof v), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Expanded_CSR_Proof v);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Expanded_Local_Usable v va), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Expanded_Local_Usable v va);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Expanded_Strong_Usable v va vb vc), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Expanded_Strong_Usable v va vb vc);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Expanded_Ordinary v), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Expanded_Ordinary v);
+check_muterm_i4_graph_component ia j m i r b p
+  (Just (Muterm_Typed_Dep_Graph v), c) =
+  check_muterm_typed_dp_proof_production ia j m (add_index i one_nat) r b
+    (filter (membera c) p) (Muterm_Typed_Dep_Graph v);
+
+check_muterm_i4_graph_components ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              [(Term (Lab b [Nat]) [Char],
+                                 Term (Lab b [Nat]) [Char])] ->
+                                [(Maybe (Muterm_typed_dp_proof b [Nat] [Char]),
+                                   [(Term (Lab b [Nat]) [Char],
+                                      Term (Lab b [Nat]) [Char])])] ->
+                                  Sum (String -> String) ();
+check_muterm_i4_graph_components ia j m i r b p [] = Inr ();
+check_muterm_i4_graph_components ia j m i r b p (head : rest) =
+  bindb (check_muterm_i4_graph_component ia j m i r b p head)
+    (\ _ ->
+      check_muterm_i4_graph_components ia j m (add_index i one_nat) r b p rest);
+
+check_muterm_i4_root_proof ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), [Nat])] ->
+                        (String -> String) ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            [(Term (Lab b [Nat]) [Char],
+                               Term (Lab b [Nat]) [Char])] ->
+                              [(Term (Lab b [Nat]) [Char],
+                                 Term (Lab b [Nat]) [Char])] ->
+                                Muterm_typed_dp_proof b [Nat] [Char] ->
+                                  Sum (String -> String) ();
+check_muterm_i4_root_proof ia j m i r b p (Muterm_Typed_Dep_Graph edps) =
+  bindb (check_muterm_typed_dep_graph m r b p edps)
+    (\ _ -> check_muterm_i4_graph_components ia j m i r b p edps);
+check_muterm_i4_root_proof ia j m i r b p Muterm_Typed_P_Is_Empty =
+  check_muterm_typed_dp_proof_production ia j m i r b p Muterm_Typed_P_Is_Empty;
+check_muterm_i4_root_proof ia j m i r b p (Muterm_Typed_Local_Usable v va) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Local_Usable v va);
+check_muterm_i4_root_proof ia j m i r b p
+  (Muterm_Typed_General_Usable v va vb vc) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_General_Usable v va vb vc);
+check_muterm_i4_root_proof ia j m i r b p
+  (Muterm_Typed_Pair_Augmentation v va vb) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Pair_Augmentation v va vb);
+check_muterm_i4_root_proof ia j m i r b p (Muterm_Typed_CSR_Proof v) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_CSR_Proof v);
+check_muterm_i4_root_proof ia j m i r b p (Muterm_Typed_Expanded_CSR_Proof v) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Expanded_CSR_Proof v);
+check_muterm_i4_root_proof ia j m i r b p
+  (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v);
+check_muterm_i4_root_proof ia j m i r b p
+  (Muterm_Typed_Expanded_Local_Usable v va) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Expanded_Local_Usable v va);
+check_muterm_i4_root_proof ia j m i r b p
+  (Muterm_Typed_Expanded_Strong_Usable v va vb vc) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Expanded_Strong_Usable v va vb vc);
+check_muterm_i4_root_proof ia j m i r b p (Muterm_Typed_Expanded_Ordinary v) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (Muterm_Typed_Expanded_Ordinary v);
 
 gm_vars :: forall a. Nat -> [Term a [Char]];
 gm_vars n = map Var (x_1_to_x_n n);
@@ -44484,6 +47360,22 @@ gm_transformed_rules_list mu d act mark f r ds =
   map (gm_rule mu d act mark) r ++
     map (gm_mark_rule mu d act mark) f ++ map (gm_deactivate_rule act) ds;
 
+muterm_internal_mu ::
+  forall a b.
+    (Eq a,
+      Eq b) => [((Lab a b, Nat), [Nat])] ->
+                 [(Lab a b, Nat)] -> [((Lab a b, Nat), [Nat])];
+muterm_internal_mu mu d =
+  mu ++ map (\ (f, n) -> ((Sharp f, n), muterm_mu_positions_list mu (f, n)))
+          d ++
+          map (\ (a, b) ->
+                (case a of {
+                  (f, n) ->
+                    (\ _ -> ((Sharp f, n), muterm_mu_positions_list mu (f, n)));
+                })
+                  b)
+            mu;
+
 check_gm_extended_csr_termination_proof ::
   forall a b c.
     (Compare_order b, Countable b, Eq b,
@@ -44501,11 +47393,300 @@ check_gm_extended_csr_termination_proof ia j a i mu r (Existing_CSR_Proof prf) =
   check_extended_csr_termination_proof ia j a i mu r prf;
 check_gm_extended_csr_termination_proof ia j a i mu r
   (Innermost_CSR_Dependency_Pairs p s prf) =
-  debug i "direct innermost CSR dependency pairs"
-    (bindb (direct_innermost_csr_dependency_pairs_tt j mu r p (r ++ s))
+  (if null s
+    then check_innermost_csr_or_rta08_termination_proof ia j i mu r p prf
+    else debug i "direct innermost CSR dependency pairs"
+           (bindb (direct_innermost_csr_dependency_pairs_tt j mu r p (r ++ s))
+             (\ dpp ->
+               check_csr_dp_termination_proof ia j False (add_index i one_nat)
+                 dpp prf)));
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Muterm_Innermost_CSR_Dependency_Pairs p s prf) =
+  debug i "MU-TERM innermost CSR dependency pairs"
+    (bindb (muterm_innermost_csr_dependency_pairs_tt j mu r p s)
       (\ dpp ->
         check_csr_dp_termination_proof ia j False (add_index i one_nat) dpp
           prf));
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Muterm_Usable_CSR_Dependency_Pairs p s w prf) =
+  debug i "MU-TERM CSR dependency pairs with usable rules"
+    (bindb (muterm_usable_csr_dependency_pairs_tt j mu r p s w)
+      (\ dpp ->
+        check_csr_dp_termination_proof ia j False (add_index i one_nat) dpp
+          prf));
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Muterm_Typed_CSR_Dependency_Pairs p s prf) =
+  debug i "typed recursive MU-TERM CSR dependency pairs"
+    (bindb (check_wf_trs r)
+      (\ _ ->
+        bindb (check_csr_orthogonal r)
+          (\ _ ->
+            bindb (csr_sharp_mu_check mu)
+              (\ _ ->
+                let {
+                  d = defined_list r;
+                } in bindb (check
+                             (all (\ (f, _) -> not (is_sharp_lab f))
+                               (funas_trs_list r))
+                             (showsl_lit
+                               "MU-TERM source signature contains marked symbols"))
+                       (\ _ ->
+                         let {
+                           mu_i = muterm_internal_mu mu d;
+                         } in bindb (check
+                                      (all (\ aa -> (case aa of {
+              (Lab _ _, _) -> True;
+              (FunLab _ _, _) -> True;
+              (UnLab _, _) -> True;
+              (Sharp _, _) -> False;
+            }))
+d)
+                                      (showsl_lit
+"MU-TERM source rules already contain marked defined symbols"))
+                                (\ _ ->
+                                  bindb (catch_errora
+  (forallM
+    (\ (f, n) ->
+      check (not (membera d (Sharp f, n)))
+        (showsl_lit "sharping yields a defined symbol"))
+    d)
+  (\ x -> Inl (snd x)))
+                                    (\ _ ->
+                                      bindb
+(catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (mu_CSDP_list Sharp r mu_i d))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing replacement-map dependency pair")))
+(\ _ ->
+  bindb (catch_errora
+          (catch_errora
+            (forallM (\ x -> (if membera p x then Inr () else Inl x))
+              (csr_rta08_collapsing_CSDP_list Sharp mu_i r))
+            (\ x -> Inl (snd x)))
+          (\ _ -> Inl (showsl_lit "missing collapsing dependency pair")))
+    (\ _ ->
+      bindb (check
+              (set_eq (set s)
+                (set (muterm_exact_unhiding_rules_list Sharp mu_i d r)))
+              (showsl_lit "MU-TERM unhiding rules are not exact"))
+        (\ _ ->
+          bindb (check (muterm_unhiding_safe_list mu_i r)
+                  (showsl_lit "MU-TERM unhiding safety condition failed"))
+            (\ _ ->
+              let {
+                t = r ++ p ++ s;
+                delta = set (funas_trs_list t);
+              } in bindb (check
+                           (muterm_recursive_pairs_safe_check_exec r
+                             (mu_of mu_i) delta p s)
+                           (showsl_lit
+                             "recursive MU-TERM pair safety check failed"))
+                     (\ _ ->
+                       bindb (check
+                               (muterm_recursive_bridges_safe_check_exec
+                                 (defined_list r) (mu_of mu_i) delta s)
+                               (showsl_lit
+                                 "recursive MU-TERM bridge safety check failed"))
+                         (\ _ ->
+                           bindb (check
+                                   (muterm_recursive_target_shape_check_exec p
+                                     s)
+                                   (showsl_lit
+                                     "recursive MU-TERM target-shape check failed"))
+                             (\ _ ->
+                               bindb (check (muterm_marked_mu_equal_check mu_i)
+                                       (showsl_lit
+ "marked replacement-map entries differ from source symbols"))
+                                 (\ _ ->
+                                   check_muterm_i4_root_proof ia j mu_i
+                                     (add_index i one_nat) r s p
+                                     prf)))))))))))))));
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Muterm_Expanded_Innermost_CSR_Dependency_Pairs p s prf) =
+  debug i "orthogonal CSR via expanded innermost MU-TERM pairs"
+    (bindb (check_wf_trs r)
+      (\ _ ->
+        bindb (check_csr_orthogonal r)
+          (\ _ ->
+            bindb (csr_sharp_mu_check mu)
+              (\ _ ->
+                let {
+                  d = defined_list r;
+                } in bindb (check
+                             (all (\ (f, _) -> not (is_sharp_lab f))
+                               (funas_trs_list r))
+                             (showsl_lit
+                               "MU-TERM source signature contains marked symbols"))
+                       (\ _ ->
+                         let {
+                           mu_i = muterm_internal_mu mu d;
+                         } in bindb (check
+                                      (all (\ aa -> (case aa of {
+              (Lab _ _, _) -> True;
+              (FunLab _ _, _) -> True;
+              (UnLab _, _) -> True;
+              (Sharp _, _) -> False;
+            }))
+d)
+                                      (showsl_lit
+"source TRS already contains reserved sharp symbols"))
+                                (\ _ ->
+                                  bindb (catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (mu_CSDP_list Sharp r mu_i d))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing replacement-map dependency pair")))
+                                    (\ _ ->
+                                      bindb
+(catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (csr_rta08_collapsing_CSDP_list Sharp mu_i r))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing collapsing dependency pair")))
+(\ _ ->
+  bindb (catch_errora
+          (catch_errora
+            (forallM (\ x -> (if membera s x then Inr () else Inl x))
+              (muterm_exact_unhiding_rules_list Sharp mu_i d r))
+            (\ x -> Inl (snd x)))
+          (\ _ -> Inl (showsl_lit "missing exact MU-TERM unhiding rule")))
+    (\ _ ->
+      bindb (check (muterm_unhiding_safe_list mu_i r)
+              (showsl_lit "MU-TERM unhiding safety condition failed"))
+        (\ _ ->
+          let {
+            e = muterm_expanded_pairs_list string_renameN p s;
+            dpp = mkd j False False e [] [] [] r;
+          } in check_muterm_expanded_innermost_proof ia j mu_i
+                 (add_index i one_nat) dpp prf))))))))));
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs p s u prf) =
+  debug i "orthogonal CSR via expanded innermost MU-TERM usable rules"
+    (bindb (check_wf_trs r)
+      (\ _ ->
+        bindb (check_csr_orthogonal r)
+          (\ _ ->
+            bindb (csr_sharp_mu_check mu)
+              (\ _ ->
+                let {
+                  d = defined_list r;
+                } in bindb (check
+                             (all (\ (f, _) -> not (is_sharp_lab f))
+                               (funas_trs_list r))
+                             (showsl_lit
+                               "MU-TERM source signature contains marked symbols"))
+                       (\ _ ->
+                         let {
+                           mu_i = muterm_internal_mu mu d;
+                         } in bindb (check
+                                      (all (\ aa -> (case aa of {
+              (Lab _ _, _) -> True;
+              (FunLab _ _, _) -> True;
+              (UnLab _, _) -> True;
+              (Sharp _, _) -> False;
+            }))
+d)
+                                      (showsl_lit
+"source TRS already contains reserved sharp symbols"))
+                                (\ _ ->
+                                  bindb (catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (mu_CSDP_list Sharp r mu_i d))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing replacement-map dependency pair")))
+                                    (\ _ ->
+                                      bindb
+(catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (csr_rta08_collapsing_CSDP_list Sharp mu_i r))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing collapsing dependency pair")))
+(\ _ ->
+  bindb (catch_errora
+          (catch_errora
+            (forallM (\ x -> (if membera s x then Inr () else Inl x))
+              (muterm_exact_unhiding_rules_list Sharp mu_i d r))
+            (\ x -> Inl (snd x)))
+          (\ _ -> Inl (showsl_lit "missing exact MU-TERM unhiding rule")))
+    (\ _ ->
+      bindb (check (muterm_unhiding_safe_list mu_i r)
+              (showsl_lit "MU-TERM unhiding safety condition failed"))
+        (\ _ ->
+          bindb (check (muterm_expanded_innermost_usable_check r u mu_i p s)
+                  (showsl_lit
+                    "invalid innermost usable-rule closure or typed MU-TERM target"))
+            (\ _ ->
+              let {
+                e = muterm_expanded_pairs_list string_renameN p s;
+                dpp = mkd j False False e [] [] [] u;
+              } in check_dp_termination_proof ia j False (add_index i one_nat)
+                     dpp prf)))))))))));
+check_gm_extended_csr_termination_proof ia j a i mu r
+  (Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs p s prf) =
+  debug i "orthogonal CSR via expanded innermost filtered MU-TERM usable rules"
+    (bindb (check_wf_trs r)
+      (\ _ ->
+        bindb (check_csr_orthogonal r)
+          (\ _ ->
+            bindb (csr_sharp_mu_check mu)
+              (\ _ ->
+                let {
+                  d = defined_list r;
+                } in bindb (check
+                             (all (\ (f, _) -> not (is_sharp_lab f))
+                               (funas_trs_list r))
+                             (showsl_lit
+                               "MU-TERM source signature contains marked symbols"))
+                       (\ _ ->
+                         let {
+                           mu_i = muterm_internal_mu mu d;
+                         } in bindb (check
+                                      (all (\ aa -> (case aa of {
+              (Lab _ _, _) -> True;
+              (FunLab _ _, _) -> True;
+              (UnLab _, _) -> True;
+              (Sharp _, _) -> False;
+            }))
+d)
+                                      (showsl_lit
+"source TRS already contains reserved sharp symbols"))
+                                (\ _ ->
+                                  bindb (catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (mu_CSDP_list Sharp r mu_i d))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing replacement-map dependency pair")))
+                                    (\ _ ->
+                                      bindb
+(catch_errora
+  (catch_errora
+    (forallM (\ x -> (if membera p x then Inr () else Inl x))
+      (csr_rta08_collapsing_CSDP_list Sharp mu_i r))
+    (\ x -> Inl (snd x)))
+  (\ _ -> Inl (showsl_lit "missing collapsing dependency pair")))
+(\ _ ->
+  bindb (catch_errora
+          (catch_errora
+            (forallM (\ x -> (if membera s x then Inr () else Inl x))
+              (muterm_exact_unhiding_rules_list Sharp mu_i d r))
+            (\ x -> Inl (snd x)))
+          (\ _ -> Inl (showsl_lit "missing exact MU-TERM unhiding rule")))
+    (\ _ ->
+      bindb (check (muterm_unhiding_safe_list mu_i r)
+              (showsl_lit "MU-TERM unhiding safety condition failed"))
+        (\ _ ->
+          let {
+            e = muterm_expanded_pairs_list string_renameN p s;
+            dpp = mkd j False False e [] [] [] r;
+          } in check_muterm_expanded_innermost_proof ia j mu_i
+                 (add_index i one_nat) dpp prf))))))))));
 check_gm_extended_csr_termination_proof ia j a i mu r
   (GM_CSR_Transformation mark c active prf) =
   debug i "Giesl-Middeldorp CSR transformation"
@@ -61696,6 +64877,165 @@ xml_return (case pi_mpi of {
       xml_return)
     x;
 
+xml2muterm_typed_dp_proof ::
+  forall a b.
+    (Compare_order a, Eq a, Showl a, Compare_order b, Eq b,
+      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                    Sum_bot (Xml_error String) (Lab a b)) ->
+                    Mapping [Char] (Term (Lab a b) [Char]) ->
+                      Mapping [Char]
+                        (Term (Lab a b) [Char], Term (Lab a b) [Char]) ->
+                        (Xml, ([([Char], [Char])],
+                                (Bool, ([String], [String])))) ->
+                          Sum_bot (Xml_error String)
+                            (Muterm_typed_dp_proof a b [Char]);
+xml2muterm_typed_dp_proof xml2name termIndexMap ruleMap x =
+  xml_do "mutermTypedDpProof"
+    (xml_take
+      (xml_or (xml_do "pIsEmpty" (xml_return Muterm_Typed_P_Is_Empty))
+        (xml_or
+          (xml_do "localUsableRulesProc"
+            (xml_take
+              (xml_do "usableRules"
+                (xml_take (rules xml2name termIndexMap ruleMap)
+                  (\ xa -> xml_return (id xa))))
+              (\ u ->
+                xml_take
+                  (xml2dp_termination_proof xml2name termIndexMap ruleMap)
+                  (\ prf -> xml_return (Muterm_Typed_Local_Usable u prf)))))
+          (xml_or
+            (xml_do "generalUsableRulesProc"
+              (xml_take (redtriple xml2name Sharp False)
+                (\ redp ->
+                  xml_take
+                    (xml_do "dps"
+                      (xml_take (rules xml2name termIndexMap ruleMap)
+                        (\ xa -> xml_return (id xa))))
+                    (\ pr ->
+                      xml_take
+                        (xml_do "usableRules"
+                          (xml_take (rules xml2name termIndexMap ruleMap)
+                            (\ xa -> xml_return (id xa))))
+                        (\ u ->
+                          xml_take
+                            (xml2muterm_typed_dp_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ prf ->
+                              xml_return
+                                (Muterm_Typed_General_Usable redp pr u
+                                  prf)))))))
+            (xml_or
+              (xml_do "generalUsableRulesRedPairProc"
+                (xml_take
+                  (xml_do "usableRules"
+                    (xml_take (rules xml2name termIndexMap ruleMap)
+                      (\ xa -> xml_return (id xa))))
+                  (\ u ->
+                    xml_take (redtriple xml2name Sharp False)
+                      (\ redp ->
+                        xml_take
+                          (xml_do "dps"
+                            (xml_take (rules xml2name termIndexMap ruleMap)
+                              (\ xa -> xml_return (id xa))))
+                          (\ pr ->
+                            xml_take
+                              (xml2muterm_typed_dp_proof xml2name termIndexMap
+                                ruleMap)
+                              (\ prf ->
+                                xml_return
+                                  (Muterm_Typed_General_Usable redp pr u
+                                    prf)))))))
+              (xml_or
+                (xml_do "typedInstantiationProc"
+                  (xml_take (rule xml2name termIndexMap ruleMap)
+                    (\ st ->
+                      xml_take
+                        (xml_do "instantiations"
+                          (xml_take (rules xml2name termIndexMap ruleMap)
+                            (\ xa -> xml_return (id xa))))
+                        (\ sts ->
+                          xml_take
+                            (xml2muterm_typed_dp_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ prf ->
+                              xml_return
+                                (Muterm_Typed_Pair_Augmentation st sts prf))))))
+                (xml_or
+                  (xml_do "noncollapsingCsrProof"
+                    (xml_take
+                      (xml2csr_dp_termination_proof xml2name termIndexMap
+                        ruleMap)
+                      (\ prf -> xml_return (Muterm_Typed_CSR_Proof prf))))
+                  (xml_or
+                    (xml_do "expandedCsrProof"
+                      (xml_take
+                        (xml2csr_dp_termination_proof xml2name termIndexMap
+                          ruleMap)
+                        (\ prf ->
+                          xml_return (Muterm_Typed_Expanded_CSR_Proof prf))))
+                    (xml_or
+                      (xml_do "expandedExtendedBasicCsrProof"
+                        (xml_take
+                          (xml2csr_dp_termination_proof xml2name termIndexMap
+                            ruleMap)
+                          (\ prf ->
+                            xml_return
+                              (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
+                                prf))))
+                      (xml_or
+                        (xml_do "expandedLocalUsableRulesProc"
+                          (xml_take
+                            (xml_do "usableRules"
+                              (xml_take (rules xml2name termIndexMap ruleMap)
+                                (\ xa -> xml_return (id xa))))
+                            (\ u ->
+                              xml_take
+                                (xml2dp_termination_proof xml2name termIndexMap
+                                  ruleMap)
+                                (\ prf ->
+                                  xml_return
+                                    (Muterm_Typed_Expanded_Local_Usable u
+                                      prf)))))
+                        (xml_or
+                          (xml_do "expandedStrongUsableRulesProc"
+                            (xml_take
+                              (xml_do "usableRules"
+                                (xml_take (rules xml2name termIndexMap ruleMap)
+                                  (\ xa -> xml_return (id xa))))
+                              (\ u ->
+                                xml_take (redtriple xml2name Sharp False)
+                                  (\ redp ->
+                                    xml_take
+                                      (xml_do "dps"
+(xml_take (rules xml2name termIndexMap ruleMap) (\ xa -> xml_return (id xa))))
+                                      (\ pr ->
+xml_take (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
+  (\ prf -> xml_return (Muterm_Typed_Expanded_Strong_Usable u redp pr prf)))))))
+                          (xml_or
+                            (xml_do "expandedOrdinaryDpProof"
+                              (xml_take
+                                (xml2dp_termination_proof xml2name termIndexMap
+                                  ruleMap)
+                                (\ prf ->
+                                  xml_return
+                                    (Muterm_Typed_Expanded_Ordinary prf))))
+                            (xml_do "depGraphProc"
+                              (xml_take_many_sub [] zero_nat Infinity_enat
+                                (xml_do "component"
+                                  (xml_take
+                                    (xml_do "dps"
+                                      (xml_take
+(rules xml2name termIndexMap ruleMap) (\ xa -> xml_return (id xa))))
+                                    (\ dps ->
+                                      xml_take_optional
+(xml2muterm_typed_dp_proof xml2name termIndexMap ruleMap)
+(\ prf -> xml_return (prf, dps)))))
+                                (\ cs ->
+                                  xml_return
+                                    (Muterm_Typed_Dep_Graph cs)))))))))))))))
+      xml_return)
+    x;
+
 xml2csr_termination_proof ::
   forall a b.
     (Compare_order a, Eq a, Showl a, Compare_order b, Eq b,
@@ -61835,6 +65175,125 @@ xml2conservative_csr_termination_proof termIndexMap ruleMap =
                       (xml_return . CSR_DP_Ordinary_Proof)))
                   (\ prf ->
                     xml_return (Innermost_CSR_Dependency_Pairs p s prf)))));
+    muterm =
+      xml_do "csrMutermInnermostDependencyPairs"
+        (xml_take
+          (xml_do "dps"
+            (xml_take (rules symbol_parser termIndexMap ruleMap)
+              (\ x -> xml_return (id x))))
+          (\ p ->
+            xml_take
+              (xml_do "unhidingRules"
+                (xml_take (rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> xml_return (id x))))
+              (\ s ->
+                xml_take
+                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                    ruleMap)
+                  (\ prf ->
+                    xml_return
+                      (Muterm_Innermost_CSR_Dependency_Pairs p s prf)))));
+    muterm_usable =
+      xml_do "csrMutermUsableDependencyPairs"
+        (xml_take
+          (xml_do "dps"
+            (xml_take (rules symbol_parser termIndexMap ruleMap)
+              (\ x -> xml_return (id x))))
+          (\ p ->
+            xml_take
+              (xml_do "unhidingRules"
+                (xml_take (rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> xml_return (id x))))
+              (\ s ->
+                xml_take
+                  (xml_do "usableRules"
+                    (xml_take (rules symbol_parser termIndexMap ruleMap)
+                      (\ x -> xml_return (id x))))
+                  (\ w ->
+                    xml_take
+                      (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                        ruleMap)
+                      (\ prf ->
+                        xml_return
+                          (Muterm_Usable_CSR_Dependency_Pairs p s w prf))))));
+    muterm_typed =
+      xml_do "csrMutermTypedDependencyPairs"
+        (xml_take
+          (xml_do "dps"
+            (xml_take (rules symbol_parser termIndexMap ruleMap)
+              (\ x -> xml_return (id x))))
+          (\ p ->
+            xml_take
+              (xml_do "unhidingRules"
+                (xml_take (rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> xml_return (id x))))
+              (\ s ->
+                xml_take
+                  (xml2muterm_typed_dp_proof symbol_parser termIndexMap ruleMap)
+                  (\ prf ->
+                    xml_return (Muterm_Typed_CSR_Dependency_Pairs p s prf)))));
+    muterm_expanded_innermost =
+      xml_do "csrMutermExpandedInnermostDependencyPairs"
+        (xml_take
+          (xml_do "dps"
+            (xml_take (rules symbol_parser termIndexMap ruleMap)
+              (\ x -> xml_return (id x))))
+          (\ p ->
+            xml_take
+              (xml_do "unhidingRules"
+                (xml_take (rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> xml_return (id x))))
+              (\ s ->
+                xml_take
+                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                    ruleMap)
+                  (\ prf ->
+                    xml_return
+                      (Muterm_Expanded_Innermost_CSR_Dependency_Pairs p s
+                        prf)))));
+    muterm_expanded_innermost_filtered_usable =
+      xml_do "csrMutermExpandedInnermostFilteredUsableDependencyPairs"
+        (xml_take
+          (xml_do "dps"
+            (xml_take (rules symbol_parser termIndexMap ruleMap)
+              (\ x -> xml_return (id x))))
+          (\ p ->
+            xml_take
+              (xml_do "unhidingRules"
+                (xml_take (rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> xml_return (id x))))
+              (\ s ->
+                xml_take
+                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                    ruleMap)
+                  (\ prf ->
+                    xml_return
+                      (Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs
+                        p s prf)))));
+    muterm_expanded_innermost_usable =
+      xml_do "csrMutermExpandedInnermostUsableDependencyPairs"
+        (xml_take
+          (xml_do "dps"
+            (xml_take (rules symbol_parser termIndexMap ruleMap)
+              (\ x -> xml_return (id x))))
+          (\ p ->
+            xml_take
+              (xml_do "unhidingRules"
+                (xml_take (rules symbol_parser termIndexMap ruleMap)
+                  (\ x -> xml_return (id x))))
+              (\ s ->
+                xml_take
+                  (xml_do "usableRules"
+                    (xml_take (rules symbol_parser termIndexMap ruleMap)
+                      (\ x -> xml_return (id x))))
+                  (\ u ->
+                    xml_take
+                      (xml2dp_termination_proof symbol_parser termIndexMap
+                        ruleMap)
+                      (\ prf ->
+                        xml_return
+                          (Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs
+                            p s u prf))))));
     orthogonality =
       xml_or
         (xml_do "csrOrthogonalityCheck"
@@ -61958,15 +65417,23 @@ xml2conservative_csr_termination_proof termIndexMap ruleMap =
   } in xml_or orthogonality
          (xml_or improved
            (xml_or rta08
-             (xml_or innermost
-               (xml_or removed_improved
-                 (xml_or
-                   (xml_do "conservativeCsrTerminationProof"
-                     (xml_take conservative (\ x -> xml_return (id x))))
-                   (xml_or
-                     (xml_do "nativeConservativeCsrTerminationProof"
-                       (xml_take conservative (\ x -> xml_return (id x))))
-                     gm))))));
+             (xml_or muterm
+               (xml_or muterm_usable
+                 (xml_or muterm_typed
+                   (xml_or muterm_expanded_innermost
+                     (xml_or muterm_expanded_innermost_filtered_usable
+                       (xml_or muterm_expanded_innermost_usable
+                         (xml_or innermost
+                           (xml_or removed_improved
+                             (xml_or
+                               (xml_do "conservativeCsrTerminationProof"
+                                 (xml_take conservative
+                                   (\ x -> xml_return (id x))))
+                               (xml_or
+                                 (xml_do "nativeConservativeCsrTerminationProof"
+                                   (xml_take conservative
+                                     (\ x -> xml_return (id x))))
+                                 gm))))))))))));
 
 xml2outermost_rz_termination_proof ::
   Mapping [Char] (Term (Lab [Char] [Nat]) [Char]) ->

@@ -25,6 +25,7 @@ import qualified CSR_Innermost_Unhiding_RTA08;
 import qualified CSR_Muterm_Innermost_Usable_Exec;
 import qualified CSR_Innermost_Unhiding_Checker;
 import qualified CSR_Muterm_Innermost_Usable;
+import qualified CSR_Muterm_Typed_Checker;
 import qualified CSR_Innermost_Switch;
 import qualified RenamingN_String;
 import qualified Context_Sensitive_Impl;
@@ -33,6 +34,7 @@ import qualified Map;
 import qualified Termination_Problem_Spec;
 import qualified RenamingN;
 import qualified Countable;
+import qualified Mapping;
 import qualified Lists_are_Infinite;
 import qualified CSR_Innermost_Unhiding_Proofs;
 import qualified CSR_Minimal_CSDP_Proofs;
@@ -85,7 +87,7 @@ data Gm_extended_csr_termination_proof a b c =
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
-      (Check_Termination.Dp_termination_proof a b c)
+      (CSR_Checker_Base.Csr_dp_termination_proof a b c)
   | Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
@@ -202,7 +204,17 @@ muterm_internal_mu mu d =
   mu ++ map (\ (f, n) ->
               ((Labelings.Sharp f, n),
                 CSR_Muterm_Usable_Rules.muterm_mu_positions_list mu (f, n)))
-          d;
+          d ++
+          map (\ (a, b) ->
+                (case a of {
+                  (f, n) ->
+                    (\ _ ->
+                      ((Labelings.Sharp f, n),
+                        CSR_Muterm_Usable_Rules.muterm_mu_positions_list mu
+                          (f, n)));
+                })
+                  b)
+            mu;
 
 gm_transformed_rules_list ::
   forall a.
@@ -463,86 +475,118 @@ check_gm_extended_csr_termination_proof ia j a i mu r
   FOR_Preliminaries.debug i "typed recursive MU-TERM CSR dependency pairs"
     (Error_Monad.bind (Term_Rewriting.check_wf_trs r)
       (\ _ ->
-        Error_Monad.bind (CSR_Checker_Base.csr_sharp_mu_check mu)
+        Error_Monad.bind (CSR_Innermost_Switch.check_csr_orthogonal r)
           (\ _ ->
-            let {
-              d = Term_Rewriting.defined_list r;
-            } in Error_Monad.bind
-                   (Check_Monad.check
-                     (all (\ (f, _) -> not (CSR_Checker_Base.is_sharp_lab f))
-                       (Term_Rewriting.funas_trs_list r))
-                     (Term_Rewriting.showsl_lit
-                       "MU-TERM source signature contains marked symbols"))
-                   (\ _ ->
-                     let {
-                       mu_i = muterm_internal_mu mu d;
-                     } in Error_Monad.bind
-                            (Check_Monad.check
-                              (all (\ aa ->
-                                     (case aa of {
-                                       (Labelings.Lab _ _, _) -> True;
-                                       (Labelings.FunLab _ _, _) -> True;
-                                       (Labelings.UnLab _, _) -> True;
-                                       (Labelings.Sharp _, _) -> False;
-                                     }))
-                                d)
-                              (Term_Rewriting.showsl_lit
-                                "MU-TERM source rules already contain marked defined symbols"))
-                            (\ _ ->
-                              Error_Monad.bind
-                                (Error_Monad.catch_error
-                                  (Error_Monad.forallM
-                                    (\ (f, n) ->
-                                      Check_Monad.check
-(not (Arith.membera d (Labelings.Sharp f, n)))
-(Term_Rewriting.showsl_lit "sharping yields a defined symbol"))
+            Error_Monad.bind (CSR_Checker_Base.csr_sharp_mu_check mu)
+              (\ _ ->
+                let {
+                  d = Term_Rewriting.defined_list r;
+                } in Error_Monad.bind
+                       (Check_Monad.check
+                         (all (\ (f, _) ->
+                                not (CSR_Checker_Base.is_sharp_lab f))
+                           (Term_Rewriting.funas_trs_list r))
+                         (Term_Rewriting.showsl_lit
+                           "MU-TERM source signature contains marked symbols"))
+                       (\ _ ->
+                         let {
+                           mu_i = muterm_internal_mu mu d;
+                         } in Error_Monad.bind
+                                (Check_Monad.check
+                                  (all (\ aa ->
+ (case aa of {
+   (Labelings.Lab _ _, _) -> True;
+   (Labelings.FunLab _ _, _) -> True;
+   (Labelings.UnLab _, _) -> True;
+   (Labelings.Sharp _, _) -> False;
+ }))
                                     d)
-                                  (\ x -> Sum_Type.Inl (snd x)))
+                                  (Term_Rewriting.showsl_lit
+                                    "MU-TERM source rules already contain marked defined symbols"))
                                 (\ _ ->
                                   Error_Monad.bind
                                     (Error_Monad.catch_error
-                                      (Error_Monad.catch_error
-(Error_Monad.forallM
-  (\ x -> (if Arith.membera p x then Sum_Type.Inr () else Sum_Type.Inl x))
-  (CSR_Checker_Base.mu_CSDP_list Labelings.Sharp r mu_i d))
-(\ x -> Sum_Type.Inl (snd x)))
-                                      (\ _ ->
-Sum_Type.Inl
-  (Term_Rewriting.showsl_lit "missing replacement-map dependency pair")))
+                                      (Error_Monad.forallM
+(\ (f, n) ->
+  Check_Monad.check (not (Arith.membera d (Labelings.Sharp f, n)))
+    (Term_Rewriting.showsl_lit "sharping yields a defined symbol"))
+d)
+                                      (\ x -> Sum_Type.Inl (snd x)))
                                     (\ _ ->
                                       Error_Monad.bind
 (Error_Monad.catch_error
   (Error_Monad.catch_error
     (Error_Monad.forallM
       (\ x -> (if Arith.membera p x then Sum_Type.Inr () else Sum_Type.Inl x))
-      (CSR_Minimal_CSDP_Proofs.csr_rta08_collapsing_CSDP_list Labelings.Sharp
-        mu_i r))
+      (CSR_Checker_Base.mu_CSDP_list Labelings.Sharp r mu_i d))
     (\ x -> Sum_Type.Inl (snd x)))
   (\ _ ->
     Sum_Type.Inl
-      (Term_Rewriting.showsl_lit "missing collapsing dependency pair")))
+      (Term_Rewriting.showsl_lit "missing replacement-map dependency pair")))
 (\ _ ->
   Error_Monad.bind
     (Error_Monad.catch_error
       (Error_Monad.catch_error
         (Error_Monad.forallM
           (\ x ->
-            (if Arith.membera s x then Sum_Type.Inr () else Sum_Type.Inl x))
-          (CSR_Innermost_Unhiding_Proofs.muterm_exact_unhiding_rules_list
-            Labelings.Sharp mu_i d r))
+            (if Arith.membera p x then Sum_Type.Inr () else Sum_Type.Inl x))
+          (CSR_Minimal_CSDP_Proofs.csr_rta08_collapsing_CSDP_list
+            Labelings.Sharp mu_i r))
         (\ x -> Sum_Type.Inl (snd x)))
       (\ _ ->
         Sum_Type.Inl
-          (Term_Rewriting.showsl_lit "missing exact MU-TERM unhiding rule")))
+          (Term_Rewriting.showsl_lit "missing collapsing dependency pair")))
     (\ _ ->
       Error_Monad.bind
         (Check_Monad.check
-          (CSR_Innermost_Unhiding_Proofs.muterm_unhiding_safe_list mu_i r)
-          (Term_Rewriting.showsl_lit
-            "MU-TERM unhiding safety condition failed"))
+          (Arith.set_eq (Arith.set s)
+            (Arith.set
+              (CSR_Innermost_Unhiding_Proofs.muterm_exact_unhiding_rules_list
+                Labelings.Sharp mu_i d r)))
+          (Term_Rewriting.showsl_lit "MU-TERM unhiding rules are not exact"))
         (\ _ ->
-          CSR_Muterm_Usable_Rules.check_muterm_typed_dp_proof ia j mu_i
-            (Term_Rewriting.add_index i Arith.one_nat) r s p prf))))))))));
+          Error_Monad.bind
+            (Check_Monad.check
+              (CSR_Innermost_Unhiding_Proofs.muterm_unhiding_safe_list mu_i r)
+              (Term_Rewriting.showsl_lit
+                "MU-TERM unhiding safety condition failed"))
+            (\ _ ->
+              let {
+                t = r ++ p ++ s;
+                delta = Arith.set (Term_Rewriting.funas_trs_list t);
+              } in Error_Monad.bind
+                     (Check_Monad.check
+                       (CSR_Muterm_Typed_Checker.muterm_recursive_pairs_safe_check_exec
+                         r (Context_Sensitive_Impl.mu_of mu_i) delta p s)
+                       (Term_Rewriting.showsl_lit
+                         "recursive MU-TERM pair safety check failed"))
+                     (\ _ ->
+                       Error_Monad.bind
+                         (Check_Monad.check
+                           (CSR_Muterm_Typed_Checker.muterm_recursive_bridges_safe_check_exec
+                             (Term_Rewriting.defined_list r)
+                             (Context_Sensitive_Impl.mu_of mu_i) delta s)
+                           (Term_Rewriting.showsl_lit
+                             "recursive MU-TERM bridge safety check failed"))
+                         (\ _ ->
+                           Error_Monad.bind
+                             (Check_Monad.check
+                               (CSR_Muterm_Typed_Checker.muterm_recursive_target_shape_check_exec
+                                 p s)
+                               (Term_Rewriting.showsl_lit
+                                 "recursive MU-TERM target-shape check failed"))
+                             (\ _ ->
+                               Error_Monad.bind
+                                 (Check_Monad.check
+                                   (CSR_Muterm_Usable_Rules.muterm_marked_mu_equal_check
+                                     mu_i)
+                                   (Term_Rewriting.showsl_lit
+                                     "marked replacement-map entries differ from source symbols"))
+                                 (\ _ ->
+                                   CSR_Muterm_Typed_Checker.check_muterm_i4_root_proof
+                                     ia j mu_i
+                                     (Term_Rewriting.add_index i Arith.one_nat)
+                                     r s p prf)))))))))))))));
 check_gm_extended_csr_termination_proof ia j a i mu r
   (Muterm_Expanded_Innermost_CSR_Dependency_Pairs p s prf) =
   FOR_Preliminaries.debug i
@@ -624,8 +668,9 @@ Sum_Type.Inl
             e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
                   RenamingN_String.string_renameN p s;
             dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
-          } in Check_Termination.check_dp_termination_proof ia j False
-                 (Term_Rewriting.add_index i Arith.one_nat) dpp prf))))))))));
+          } in CSR_Muterm_Innermost_Usable.check_muterm_expanded_innermost_proof
+                 ia j mu_i (Term_Rewriting.add_index i Arith.one_nat) dpp
+                 prf))))))))));
 check_gm_extended_csr_termination_proof ia j a i mu r
   (Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs p s u prf) =
   FOR_Preliminaries.debug i

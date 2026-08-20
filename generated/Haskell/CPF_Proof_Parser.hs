@@ -4455,85 +4455,163 @@ xml2muterm_typed_dp_proof xml2name termIndexMap ruleMap x =
                       (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable u
                         prf)))))
           (Xmlt.xml_or
-            (Xmlt.xml_do "noncollapsingCsrProof"
-              (Xmlt.xml_take
-                (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
-                (\ prf ->
-                  Xmlt.xml_return
-                    (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof prf))))
-            (Xmlt.xml_or
-              (Xmlt.xml_do "expandedCsrProof"
-                (Xmlt.xml_take
-                  (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
-                  (\ prf ->
-                    Xmlt.xml_return
-                      (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof
-                        prf))))
-              (Xmlt.xml_or
-                (Xmlt.xml_do "expandedLocalUsableRulesProc"
-                  (Xmlt.xml_take
-                    (Xmlt.xml_do "usableRules"
+            (Xmlt.xml_do "generalUsableRulesProc"
+              (Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
+                (\ redp ->
+                  Xmlt.xml_take
+                    (Xmlt.xml_do "dps"
                       (Xmlt.xml_take
                         (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
                         (\ xa -> Xmlt.xml_return (id xa))))
-                    (\ u ->
+                    (\ pr ->
                       Xmlt.xml_take
-                        (xml2dp_termination_proof xml2name termIndexMap ruleMap)
-                        (\ prf ->
-                          Xmlt.xml_return
-                            (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable
-                              u prf)))))
-                (Xmlt.xml_or
-                  (Xmlt.xml_do "expandedStrongUsableRulesProc"
-                    (Xmlt.xml_take
-                      (Xmlt.xml_do "usableRules"
-                        (Xmlt.xml_take
-                          (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                          (\ xa -> Xmlt.xml_return (id xa))))
-                      (\ u ->
-                        Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
-                          (\ redp ->
-                            Xmlt.xml_take
-                              (Xmlt.xml_do "dps"
-                                (Xmlt.xml_take
-                                  (CPF_Input_Parser.rules xml2name termIndexMap
-                                    ruleMap)
-                                  (\ xa -> Xmlt.xml_return (id xa))))
-                              (\ pr ->
-                                Xmlt.xml_take
-                                  (xml2csr_dp_termination_proof xml2name
-                                    termIndexMap ruleMap)
-                                  (\ prf ->
-                                    Xmlt.xml_return
-                                      (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable
-u redp pr prf)))))))
-                  (Xmlt.xml_or
-                    (Xmlt.xml_do "expandedOrdinaryDpProof"
-                      (Xmlt.xml_take
-                        (xml2dp_termination_proof xml2name termIndexMap ruleMap)
-                        (\ prf ->
-                          Xmlt.xml_return
-                            (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary
-                              prf))))
-                    (Xmlt.xml_do "depGraphProc"
-                      (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                        Extended_Nat.Infinity_enat
-                        (Xmlt.xml_do "component"
+                        (Xmlt.xml_do "usableRules"
                           (Xmlt.xml_take
-                            (Xmlt.xml_do "dps"
+                            (CPF_Input_Parser.rules xml2name termIndexMap
+                              ruleMap)
+                            (\ xa -> Xmlt.xml_return (id xa))))
+                        (\ u ->
+                          Xmlt.xml_take
+                            (xml2muterm_typed_dp_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ prf ->
+                              Xmlt.xml_return
+                                (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable
+                                  redp pr u prf)))))))
+            (Xmlt.xml_or
+              (Xmlt.xml_do "generalUsableRulesRedPairProc"
+                (Xmlt.xml_take
+                  (Xmlt.xml_do "usableRules"
+                    (Xmlt.xml_take
+                      (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                      (\ xa -> Xmlt.xml_return (id xa))))
+                  (\ u ->
+                    Xmlt.xml_take (redtriple xml2name Labelings.Sharp False)
+                      (\ redp ->
+                        Xmlt.xml_take
+                          (Xmlt.xml_do "dps"
+                            (Xmlt.xml_take
+                              (CPF_Input_Parser.rules xml2name termIndexMap
+                                ruleMap)
+                              (\ xa -> Xmlt.xml_return (id xa))))
+                          (\ pr ->
+                            Xmlt.xml_take
+                              (xml2muterm_typed_dp_proof xml2name termIndexMap
+                                ruleMap)
+                              (\ prf ->
+                                Xmlt.xml_return
+                                  (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable
+                                    redp pr u prf)))))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "typedInstantiationProc"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rule xml2name termIndexMap ruleMap)
+                    (\ st ->
+                      Xmlt.xml_take
+                        (Xmlt.xml_do "instantiations"
+                          (Xmlt.xml_take
+                            (CPF_Input_Parser.rules xml2name termIndexMap
+                              ruleMap)
+                            (\ xa -> Xmlt.xml_return (id xa))))
+                        (\ sts ->
+                          Xmlt.xml_take
+                            (xml2muterm_typed_dp_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ prf ->
+                              Xmlt.xml_return
+                                (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation
+                                  st sts prf))))))
+                (Xmlt.xml_or
+                  (Xmlt.xml_do "noncollapsingCsrProof"
+                    (Xmlt.xml_take
+                      (xml2csr_dp_termination_proof xml2name termIndexMap
+                        ruleMap)
+                      (\ prf ->
+                        Xmlt.xml_return
+                          (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof
+                            prf))))
+                  (Xmlt.xml_or
+                    (Xmlt.xml_do "expandedCsrProof"
+                      (Xmlt.xml_take
+                        (xml2csr_dp_termination_proof xml2name termIndexMap
+                          ruleMap)
+                        (\ prf ->
+                          Xmlt.xml_return
+                            (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof
+                              prf))))
+                    (Xmlt.xml_or
+                      (Xmlt.xml_do "expandedExtendedBasicCsrProof"
+                        (Xmlt.xml_take
+                          (xml2csr_dp_termination_proof xml2name termIndexMap
+                            ruleMap)
+                          (\ prf ->
+                            Xmlt.xml_return
+                              (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
+                                prf))))
+                      (Xmlt.xml_or
+                        (Xmlt.xml_do "expandedLocalUsableRulesProc"
+                          (Xmlt.xml_take
+                            (Xmlt.xml_do "usableRules"
                               (Xmlt.xml_take
                                 (CPF_Input_Parser.rules xml2name termIndexMap
                                   ruleMap)
                                 (\ xa -> Xmlt.xml_return (id xa))))
-                            (\ dps ->
-                              Xmlt.xml_take_optional
-                                (xml2muterm_typed_dp_proof xml2name termIndexMap
+                            (\ u ->
+                              Xmlt.xml_take
+                                (xml2dp_termination_proof xml2name termIndexMap
                                   ruleMap)
-                                (\ prf -> Xmlt.xml_return (prf, dps)))))
-                        (\ cs ->
-                          Xmlt.xml_return
-                            (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph
-                              cs)))))))))))
+                                (\ prf ->
+                                  Xmlt.xml_return
+                                    (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable
+                                      u prf)))))
+                        (Xmlt.xml_or
+                          (Xmlt.xml_do "expandedStrongUsableRulesProc"
+                            (Xmlt.xml_take
+                              (Xmlt.xml_do "usableRules"
+                                (Xmlt.xml_take
+                                  (CPF_Input_Parser.rules xml2name termIndexMap
+                                    ruleMap)
+                                  (\ xa -> Xmlt.xml_return (id xa))))
+                              (\ u ->
+                                Xmlt.xml_take
+                                  (redtriple xml2name Labelings.Sharp False)
+                                  (\ redp ->
+                                    Xmlt.xml_take
+                                      (Xmlt.xml_do "dps"
+(Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+  (\ xa -> Xmlt.xml_return (id xa))))
+                                      (\ pr ->
+Xmlt.xml_take (xml2csr_dp_termination_proof xml2name termIndexMap ruleMap)
+  (\ prf ->
+    Xmlt.xml_return
+      (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable u redp pr
+        prf)))))))
+                          (Xmlt.xml_or
+                            (Xmlt.xml_do "expandedOrdinaryDpProof"
+                              (Xmlt.xml_take
+                                (xml2dp_termination_proof xml2name termIndexMap
+                                  ruleMap)
+                                (\ prf ->
+                                  Xmlt.xml_return
+                                    (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary
+                                      prf))))
+                            (Xmlt.xml_do "depGraphProc"
+                              (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                                Extended_Nat.Infinity_enat
+                                (Xmlt.xml_do "component"
+                                  (Xmlt.xml_take
+                                    (Xmlt.xml_do "dps"
+                                      (Xmlt.xml_take
+(CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+(\ xa -> Xmlt.xml_return (id xa))))
+                                    (\ dps ->
+                                      Xmlt.xml_take_optional
+(xml2muterm_typed_dp_proof xml2name termIndexMap ruleMap)
+(\ prf -> Xmlt.xml_return (prf, dps)))))
+                                (\ cs ->
+                                  Xmlt.xml_return
+                                    (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph
+                                      cs)))))))))))))))
       Xmlt.xml_return)
     x;
 
@@ -4812,7 +4890,8 @@ xml2conservative_csr_termination_proof termIndexMap ruleMap =
                   (\ x -> Xmlt.xml_return (id x))))
               (\ s ->
                 Xmlt.xml_take
-                  (xml2dp_termination_proof symbol_parser termIndexMap ruleMap)
+                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                    ruleMap)
                   (\ prf ->
                     Xmlt.xml_return
                       (CSR_GM_Transformation.Muterm_Expanded_Innermost_CSR_Dependency_Pairs

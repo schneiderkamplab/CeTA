@@ -1,12 +1,17 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  CSR_Muterm_Usable_Rules(Muterm_typed_dp_proof(..), muterm_mu_positions_list,
-                           muterm_expanded_pairs_list,
+  CSR_Muterm_Usable_Rules(Muterm_typed_dp_proof(..), non_mu_vars_term_list,
+                           muterm_mu_positions_list, muterm_expanded_pairs_list,
                            muterm_qcs_ur_closed_check,
+                           check_muterm_typed_dep_graph,
+                           muterm_marked_mu_equal_check,
                            muterm_marked_mu_pairs_check,
-                           check_muterm_typed_dp_proof,
-                           muterm_innermost_ur_closed_check)
+                           check_muterm_expanded_csr_proof,
+                           muterm_extended_basic_seed_list,
+                           muterm_general_typed_shape_check,
+                           muterm_innermost_ur_closed_check,
+                           muterm_strongly_conservative_check)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -26,27 +31,25 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified CSR_Checker;
+import qualified FOR_Preliminaries;
 import qualified Complex_Constant_Removal_Impl;
 import qualified Check_Termination_Common;
+import qualified Termination_Problem_Spec;
 import qualified Bounded_Increase_Impl;
 import qualified Semantic_Labeling_Carrier;
 import qualified Critical_Pairs_Impl;
 import qualified Subterm_Criterion_Impl;
-import qualified Fun;
-import qualified Graph;
-import qualified Multi_Map;
-import qualified Mapping;
-import qualified RenamingN_String;
-import qualified FOR_Preliminaries;
-import qualified Check_Monad;
-import qualified Error_Monad;
-import qualified Dependency_Pair_Problem_Spec;
-import qualified Termination_Problem_Spec;
-import qualified Sum_Type;
 import qualified Countable;
-import qualified Compare;
 import qualified Compare_Order_Instances;
-import qualified Lists_are_Infinite;
+import qualified Fun;
+import qualified Dependency_Pair_Problem_Spec;
+import qualified Check_Monad;
+import qualified Graph;
+import qualified Error_Monad;
+import qualified Multi_Map;
+import qualified Sum_Type;
+import qualified Compare;
+import qualified Mapping;
 import qualified CSR_Minimal_CSDP_Proofs;
 import qualified HOL;
 import qualified Missing_List;
@@ -66,8 +69,23 @@ data Muterm_typed_dp_proof a b c = Muterm_Typed_P_Is_Empty
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       (Check_Termination.Dp_termination_proof a b c)
+  | Muterm_Typed_General_Usable
+      (Reduction_Pair_Implementations.Redtriple_impl (Labelings.Lab a b))
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Muterm_typed_dp_proof a b c)
+  | Muterm_Typed_Pair_Augmentation
+      (Term_Rewriting.Term (Labelings.Lab a b) c,
+        Term_Rewriting.Term (Labelings.Lab a b) c)
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Muterm_typed_dp_proof a b c)
   | Muterm_Typed_CSR_Proof (CSR_Checker_Base.Csr_dp_termination_proof a b c)
   | Muterm_Typed_Expanded_CSR_Proof
+      (CSR_Checker_Base.Csr_dp_termination_proof a b c)
+  | Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
       (CSR_Checker_Base.Csr_dp_termination_proof a b c)
   | Muterm_Typed_Expanded_Local_Usable
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
@@ -94,6 +112,16 @@ var_of_term (Term_Rewriting.Fun f ts) = error "undefined";
 muterm_rename_many ::
   forall a. (Fresh.Infinite a) => RenamingN.RenamingN a -> Arith.Nat -> a -> a;
 muterm_rename_many ren i = (\ v -> RenamingN.rename_many ren (i, v));
+
+non_mu_vars_term_list ::
+  forall a b.
+    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] -> Term_Rewriting.Term a b -> [b];
+non_mu_vars_term_list mu t =
+  Arith.map_filter
+    (\ x ->
+      (if not (Arith.membera (CSR_Checker_Base.mu_poss_list mu t) x)
+        then Just (var_of_term (Term_Rewriting.subt_at t x)) else Nothing))
+    (Term_Rewriting.var_poss_list t);
 
 muterm_dp_mu_poss_list ::
   forall a b.
@@ -209,16 +237,6 @@ muterm_qcs_ur_closed_check r s w mu p =
                          (snd dp))
                  p;
 
-muterm_dp_non_mu_vars_term_list ::
-  forall a b.
-    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] -> Term_Rewriting.Term a b -> [b];
-muterm_dp_non_mu_vars_term_list mu t =
-  Arith.map_filter
-    (\ x ->
-      (if not (Arith.membera (muterm_dp_mu_poss_list mu t) x)
-        then Just (var_of_term (Term_Rewriting.subt_at t x)) else Nothing))
-    (Term_Rewriting.var_poss_list t);
-
 muterm_dp_mu_vars_term_list ::
   forall a b.
     (Eq a) => [((a, Arith.Nat), [Arith.Nat])] -> Term_Rewriting.Term a b -> [b];
@@ -232,6 +250,134 @@ muterm_dp_mu_vars_term_list mu (Term_Rewriting.Fun f ts) =
           then Just (muterm_dp_mu_vars_term_list mu (Arith.nth ts x))
           else Nothing))
       (Arith.upt Arith.zero_nat (Arith.size_list ts)));
+
+check_muterm_typed_dep_graph ::
+  forall a b c d.
+    (Compare.Compare a, Eq a, Term_Rewriting.Showl a, Compare.Compare b, Eq b,
+      Term_Rewriting.Showl b, Compare.Compare_order c, Eq c,
+      Term_Rewriting.Showl c) => [((Labelings.Lab a b, Arith.Nat),
+                                    [Arith.Nat])] ->
+                                   [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                                      Term_Rewriting.Term (Labelings.Lab a b)
+c)] ->
+                                     [(Term_Rewriting.Term (Labelings.Lab a b)
+ c,
+Term_Rewriting.Term (Labelings.Lab a b) c)] ->
+                                       [(Term_Rewriting.Term (Labelings.Lab a b)
+   c,
+  Term_Rewriting.Term (Labelings.Lab a b) c)] ->
+ [(Maybe d,
+    [(Term_Rewriting.Term (Labelings.Lab a b) c,
+       Term_Rewriting.Term (Labelings.Lab a b) c)])] ->
+   Sum_Type.Sum (String -> String) ();
+check_muterm_typed_dep_graph mu r s p dps =
+  Error_Monad.bind (Term_Rewriting.check_wf_trs (r ++ s))
+    (\ _ ->
+      Error_Monad.bind
+        (Error_Monad.catch_error
+          (Check_Monad.check_subseteq p (concatMap snd dps))
+          (\ x ->
+            Sum_Type.Inl
+              ((Term_Rewriting.showsl_lit "typed MU-TERM dependency pair " .
+                 Term_Rewriting.showsl_rule x) .
+                Term_Rewriting.showsl_lit " is missing in decomposition\n")))
+        (\ _ ->
+          Graph.check_graph_decomp (Term_Rewriting.showsl_prod . fst)
+            (Multi_Map.empty ((Term_Rewriting.root . fst) . fst))
+            CSR_Checker_Base.graph_approx_csr_rt Multi_Map.insert
+            (CSR_Checker_Base.csr_dep_graph_edge_check
+              (CSR_Checker_Base.csr_dp_root_mu
+                (Context_Sensitive_Impl.mu_of mu))
+              (r ++ s))
+            (map (\ (real, cs) ->
+                   (not (Arith.is_none real),
+                     map (\ (sa, t) -> ((sa, t), ())) cs))
+              dps)));
+
+muterm_is_singly_marked_root ::
+  forall a b c. Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
+muterm_is_singly_marked_root
+  (Term_Rewriting.Fun (Labelings.Sharp (Labelings.UnLab f)) ts) = True;
+muterm_is_singly_marked_root (Term_Rewriting.Var v) = False;
+muterm_is_singly_marked_root (Term_Rewriting.Fun (Labelings.Lab vb vc) va) =
+  False;
+muterm_is_singly_marked_root (Term_Rewriting.Fun (Labelings.FunLab vb vc) va) =
+  False;
+muterm_is_singly_marked_root (Term_Rewriting.Fun (Labelings.UnLab vb) va) =
+  False;
+muterm_is_singly_marked_root
+  (Term_Rewriting.Fun (Labelings.Sharp (Labelings.Lab vc vd)) va) = False;
+muterm_is_singly_marked_root
+  (Term_Rewriting.Fun (Labelings.Sharp (Labelings.FunLab vc vd)) va) = False;
+muterm_is_singly_marked_root
+  (Term_Rewriting.Fun (Labelings.Sharp (Labelings.Sharp vc)) va) = False;
+
+muterm_marked_mu_entry_equal ::
+  forall a b.
+    (Eq a,
+      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                 ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
+muterm_marked_mu_entry_equal mu e =
+  (case e of {
+    ((h, n), is) ->
+      (case h of {
+        Labelings.Lab _ _ ->
+          Arith.set_eq (Arith.set is)
+            (Context_Sensitive_Impl.mu_of mu (Labelings.Sharp h, n));
+        Labelings.FunLab _ _ ->
+          Arith.set_eq (Arith.set is)
+            (Context_Sensitive_Impl.mu_of mu (Labelings.Sharp h, n));
+        Labelings.UnLab _ ->
+          Arith.set_eq (Arith.set is)
+            (Context_Sensitive_Impl.mu_of mu (Labelings.Sharp h, n));
+        Labelings.Sharp f ->
+          Arith.set_eq (Arith.set is) (Context_Sensitive_Impl.mu_of mu (f, n));
+      });
+  });
+
+muterm_marked_mu_equal_check ::
+  forall a b.
+    (Eq a, Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] -> Bool;
+muterm_marked_mu_equal_check mu = all (muterm_marked_mu_entry_equal mu) mu;
+
+muterm_marked_mu_pairs_check ::
+  forall a b c d.
+    (Eq a,
+      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                 [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) d)] ->
+                   Bool;
+muterm_marked_mu_pairs_check mu p =
+  all (\ (l, r) ->
+        (case Term_Rewriting.root l of {
+          Nothing -> False;
+          Just (Labelings.Lab _ _, _) -> False;
+          Just (Labelings.FunLab _ _, _) -> False;
+          Just (Labelings.UnLab _, _) -> False;
+          Just (Labelings.Sharp f, n) ->
+            muterm_mu_positions_list mu (Labelings.Sharp f, n) ==
+              muterm_mu_positions_list mu (f, n);
+        }) &&
+          (case Term_Rewriting.root r of {
+            Nothing -> False;
+            Just (Labelings.Lab _ _, _) -> False;
+            Just (Labelings.FunLab _ _, _) -> False;
+            Just (Labelings.UnLab _, _) -> False;
+            Just (Labelings.Sharp f, n) ->
+              muterm_mu_positions_list mu (Labelings.Sharp f, n) ==
+                muterm_mu_positions_list mu (f, n);
+          }))
+    p;
+
+muterm_dp_non_mu_vars_term_list ::
+  forall a b.
+    (Eq a) => [((a, Arith.Nat), [Arith.Nat])] -> Term_Rewriting.Term a b -> [b];
+muterm_dp_non_mu_vars_term_list mu t =
+  Arith.map_filter
+    (\ x ->
+      (if not (Arith.membera (muterm_dp_mu_poss_list mu t) x)
+        then Just (var_of_term (Term_Rewriting.subt_at t x)) else Nothing))
+    (Term_Rewriting.var_poss_list t);
 
 muterm_dp_strongly_conservative_check ::
   forall a b.
@@ -272,35 +418,6 @@ muterm_dp_active_ur_closed_check r u mu p =
             CSR_Minimal_CSDP_Proofs.csr_u3_root_rules_check r u (snd lr)
               (muterm_dp_mu_fun_poss_list mu (snd lr)))
         u;
-
-muterm_marked_mu_pairs_check ::
-  forall a b c d.
-    (Eq a,
-      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
-                 [(Term_Rewriting.Term (Labelings.Lab a b) c,
-                    Term_Rewriting.Term (Labelings.Lab a b) d)] ->
-                   Bool;
-muterm_marked_mu_pairs_check mu p =
-  all (\ (l, r) ->
-        (case Term_Rewriting.root l of {
-          Nothing -> False;
-          Just (Labelings.Lab _ _, _) -> False;
-          Just (Labelings.FunLab _ _, _) -> False;
-          Just (Labelings.UnLab _, _) -> False;
-          Just (Labelings.Sharp f, n) ->
-            muterm_mu_positions_list mu (Labelings.Sharp f, n) ==
-              muterm_mu_positions_list mu (f, n);
-        }) &&
-          (case Term_Rewriting.root r of {
-            Nothing -> False;
-            Just (Labelings.Lab _ _, _) -> False;
-            Just (Labelings.FunLab _ _, _) -> False;
-            Just (Labelings.UnLab _, _) -> False;
-            Just (Labelings.Sharp f, n) ->
-              muterm_mu_positions_list mu (Labelings.Sharp f, n) ==
-                muterm_mu_positions_list mu (f, n);
-          }))
-    p;
 
 muterm_strong_ur_redpair_proc ::
   forall a b c d.
@@ -613,241 +730,31 @@ check_muterm_expanded_csr_components ia j mu i dpp ((Just prf, c) : rest) =
       check_muterm_expanded_csr_components ia j mu
         (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
 
-check_muterm_typed_dep_graph ::
-  forall a b c d.
-    (Compare.Compare a, Eq a, Term_Rewriting.Showl a, Compare.Compare b, Eq b,
-      Term_Rewriting.Showl b, Compare.Compare_order c, Eq c,
-      Term_Rewriting.Showl c) => [((Labelings.Lab a b, Arith.Nat),
-                                    [Arith.Nat])] ->
-                                   [(Term_Rewriting.Term (Labelings.Lab a b) c,
-                                      Term_Rewriting.Term (Labelings.Lab a b)
-c)] ->
-                                     [(Term_Rewriting.Term (Labelings.Lab a b)
- c,
-Term_Rewriting.Term (Labelings.Lab a b) c)] ->
-                                       [(Term_Rewriting.Term (Labelings.Lab a b)
-   c,
-  Term_Rewriting.Term (Labelings.Lab a b) c)] ->
- [(Maybe d,
+muterm_noncollapsing_pairs_list ::
+  forall a b c.
+    [(a, Term_Rewriting.Term b c)] -> [(a, Term_Rewriting.Term b c)];
+muterm_noncollapsing_pairs_list p =
+  filter ((\ t -> not (Term_Rewriting.is_Var t)) . snd) p;
+
+muterm_extended_basic_seed_list ::
+  forall a b c.
+    [(a, Term_Rewriting.Term b c)] ->
+      [(a, Term_Rewriting.Term b c)] ->
+        [(a, Term_Rewriting.Term b c)] -> [(a, Term_Rewriting.Term b c)];
+muterm_extended_basic_seed_list p s u =
+  muterm_noncollapsing_pairs_list p ++ s ++ u;
+
+muterm_general_typed_shape_check ::
+  forall a b c d e f g h i j.
     [(Term_Rewriting.Term (Labelings.Lab a b) c,
-       Term_Rewriting.Term (Labelings.Lab a b) c)])] ->
-   Sum_Type.Sum (String -> String) ();
-check_muterm_typed_dep_graph mu r s p dps =
-  Error_Monad.bind (Term_Rewriting.check_wf_trs (r ++ s))
-    (\ _ ->
-      Error_Monad.bind
-        (Error_Monad.catch_error
-          (Check_Monad.check_subseteq p (concatMap snd dps))
-          (\ x ->
-            Sum_Type.Inl
-              ((Term_Rewriting.showsl_lit "typed MU-TERM dependency pair " .
-                 Term_Rewriting.showsl_rule x) .
-                Term_Rewriting.showsl_lit " is missing in decomposition\n")))
-        (\ _ ->
-          Graph.check_graph_decomp (Term_Rewriting.showsl_prod . fst)
-            (Multi_Map.empty ((Term_Rewriting.root . fst) . fst))
-            CSR_Checker_Base.graph_approx_csr_rt Multi_Map.insert
-            (CSR_Checker_Base.csr_dep_graph_edge_check
-              (CSR_Checker_Base.csr_dp_root_mu
-                (Context_Sensitive_Impl.mu_of mu))
-              (r ++ s))
-            (map (\ (real, cs) ->
-                   (not (Arith.is_none real),
-                     map (\ (sa, t) -> ((sa, t), ())) cs))
-              dps)));
-
-check_muterm_typed_dp_proof ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-       Muterm_typed_dp_proof b [Arith.Nat] [Arith.Char] ->
-         Sum_Type.Sum (String -> String) ();
-check_muterm_typed_dp_proof ia j mu i r s p Muterm_Typed_P_Is_Empty =
-  Check_Monad.check (null p)
-    (i . Term_Rewriting.showsl_lit ": MU-TERM dependency pairs are not empty");
-check_muterm_typed_dp_proof ia j mu i r s p (Muterm_Typed_Local_Usable u prf) =
-  FOR_Preliminaries.debug i "MU-TERM ordinary reduction-pair continuation"
-    (Error_Monad.bind
-      (Check_Monad.check (all (Arith.membera u) s)
-        (i . Term_Rewriting.showsl_lit
-               ": MU-TERM usable rules omit an unhiding rule"))
-      (\ _ ->
-        Error_Monad.bind
-          (Check_Monad.check
-            (all (\ lr -> Arith.membera r lr || Arith.membera s lr) u)
-            (i . Term_Rewriting.showsl_lit ": extraneous MU-TERM usable rule"))
-          (\ _ ->
-            let {
-              ur = filter (Arith.membera r) u;
-            } in Error_Monad.bind
-                   (Check_Monad.check
-                     (all (\ lr ->
-                            CSR_Minimal_CSDP_Proofs.qcs_ur_closed_term_check r
-                              ur mu (snd lr))
-                       ur)
-                     (i . Term_Rewriting.showsl_lit
-                            ": ordinary MU-TERM rule closure failed"))
-                   (\ _ ->
-                     Error_Monad.bind
-                       (Check_Monad.check
-                         (all (\ lr ->
-                                CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check
-                                  r ur mu (snd lr))
-                           s)
-                         (i . Term_Rewriting.showsl_lit
-                                ": MU-TERM unhiding closure failed"))
-                       (\ _ ->
-                         Error_Monad.bind
-                           (Check_Monad.check
-                             (all (\ dp ->
-                                    Term_Rewriting.is_Var (snd dp) ||
-                                      CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check
-r ur mu (snd dp))
-                               p)
-                             (i . Term_Rewriting.showsl_lit
-                                    ": MU-TERM pair closure failed"))
-                           (\ _ ->
-                             Check_Termination.check_dp_termination_proof ia j
-                               False (Term_Rewriting.add_index i Arith.one_nat)
-                               (Dependency_Pair_Problem_Spec.mk j False False p
-                                 [] [] [] u)
-                               prf))))));
-check_muterm_typed_dp_proof ia j mu i r s p (Muterm_Typed_CSR_Proof prf) =
-  FOR_Preliminaries.debug i "MU-TERM noncollapsing CSR component"
-    (Error_Monad.bind
-      (Check_Monad.check (all ((\ t -> not (Term_Rewriting.is_Var t)) . snd) p)
-        (i . Term_Rewriting.showsl_lit
-               ": collapsing pair requires the typed MU-TERM processor"))
-      (\ _ ->
-        let {
-          dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
-        } in CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu
-               False (Term_Rewriting.add_index i Arith.one_nat) dpp prf));
-check_muterm_typed_dp_proof ia j mu i r s p
-  (Muterm_Typed_Expanded_CSR_Proof prf) =
-  FOR_Preliminaries.debug i "expanded typed MU-TERM CSR component"
-    (let {
-       e = muterm_expanded_pairs_list RenamingN_String.string_renameN p s;
-       dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
-     } in check_muterm_expanded_csr_proof ia j mu
-            (Term_Rewriting.add_index i Arith.one_nat) dpp prf);
-check_muterm_typed_dp_proof ia j mu i r s p
-  (Muterm_Typed_Expanded_Local_Usable u prf) =
-  FOR_Preliminaries.debug i
-    "expanded MU-TERM ordinary reduction-pair continuation"
-    (Error_Monad.bind
-      (Check_Monad.check (all (Arith.membera r) u)
-        (i . Term_Rewriting.showsl_lit ": extraneous MU-TERM usable rule"))
-      (\ _ ->
-        Error_Monad.bind
-          (Check_Monad.check
-            (all (\ lr ->
-                   CSR_Minimal_CSDP_Proofs.qcs_ur_closed_term_check r u mu
-                     (snd lr))
-              u)
-            (i . Term_Rewriting.showsl_lit
-                   ": ordinary MU-TERM rule closure failed"))
-          (\ _ ->
-            Error_Monad.bind
-              (Check_Monad.check
-                (all (\ lr ->
-                       CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check r u mu
-                         (snd lr))
-                  s)
-                (i . Term_Rewriting.showsl_lit
-                       ": MU-TERM unhiding closure failed"))
-              (\ _ ->
-                Error_Monad.bind
-                  (Check_Monad.check
-                    (all (\ dp ->
-                           Term_Rewriting.is_Var (snd dp) ||
-                             CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check
-                               r u mu (snd dp))
-                      p)
-                    (i . Term_Rewriting.showsl_lit
-                           ": MU-TERM pair closure failed"))
-                  (\ _ ->
-                    let {
-                      e = muterm_expanded_pairs_list
-                            RenamingN_String.string_renameN p s;
-                    } in Check_Termination.check_dp_termination_proof ia j False
-                           (Term_Rewriting.add_index i Arith.one_nat)
-                           (Dependency_Pair_Problem_Spec.mk j False False e []
-                             [] [] u)
-                           prf)))));
-check_muterm_typed_dp_proof ia j mu i r s p
-  (Muterm_Typed_Expanded_Strong_Usable u redp pr prf) =
-  FOR_Preliminaries.debug i "expanded strong MU-TERM usable-rule reduction pair"
-    (let {
-       e = muterm_expanded_pairs_list RenamingN_String.string_renameN p s;
-       dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
-     } in Error_Monad.bind
-            (muterm_strong_ur_redpair_proc j mu
-              (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
-            (\ dppa ->
-              CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu
-                False (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
-check_muterm_typed_dp_proof ia j mu i r s p (Muterm_Typed_Expanded_Ordinary prf)
-  = FOR_Preliminaries.debug i "expanded MU-TERM ordinary DP continuation"
-      (let {
-         e = muterm_expanded_pairs_list RenamingN_String.string_renameN p s;
-       } in Check_Termination.check_dp_termination_proof ia j False
-              (Term_Rewriting.add_index i Arith.one_nat)
-              (Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r) prf);
-check_muterm_typed_dp_proof ia j mu i r s p (Muterm_Typed_Dep_Graph edps) =
-  FOR_Preliminaries.debug i "typed MU-TERM dependency graph"
-    (Error_Monad.bind (check_muterm_typed_dep_graph mu r s p edps)
-      (\ _ -> check_muterm_typed_graph_components ia j mu i r s p edps));
-
-check_muterm_typed_graph_components ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-       [(Maybe (Muterm_typed_dp_proof b [Arith.Nat] [Arith.Char]),
-          [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-             Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
-               [Arith.Char])])] ->
-         Sum_Type.Sum (String -> String) ();
-check_muterm_typed_graph_components ia j mu i r s p [] = Sum_Type.Inr ();
-check_muterm_typed_graph_components ia j mu i r s p ((Nothing, c) : rest) =
-  check_muterm_typed_graph_components ia j mu
-    (Term_Rewriting.add_index i Arith.one_nat) r s p rest;
-check_muterm_typed_graph_components ia j mu i r s p ((Just prf, c) : rest) =
-  Error_Monad.bind
-    (check_muterm_typed_dp_proof ia j mu
-      (Term_Rewriting.add_index i Arith.one_nat) r s
-      (filter (Arith.membera c) p) prf)
-    (\ _ ->
-      check_muterm_typed_graph_components ia j mu
-        (Term_Rewriting.add_index i Arith.one_nat) r s p rest);
+       Term_Rewriting.Term (Labelings.Lab d e) f)] ->
+      [(g, Term_Rewriting.Term (Labelings.Lab h i) j)] -> Bool;
+muterm_general_typed_shape_check p s =
+  all (\ (l, r) ->
+        muterm_is_singly_marked_root l &&
+          (Term_Rewriting.is_Var r || muterm_is_singly_marked_root r))
+    p &&
+    all (\ (_, a) -> muterm_is_singly_marked_root a) s;
 
 muterm_innermost_ur_closed_check ::
   forall a b c d e.
@@ -867,5 +774,24 @@ muterm_innermost_ur_closed_check r u mu p =
             CSR_Minimal_CSDP_Proofs.csr_rta08_active_root_rules_check r u mu
               (snd lr))
         u;
+
+muterm_strongly_conservative_check ::
+  forall a b.
+    (Eq a, Arith.Card_UNIV b, Arith.Ceq b, Arith.Cproper_interval b, Eq b,
+      Arith.Set_impl b) => [((a, Arith.Nat), [Arith.Nat])] ->
+                             [(Term_Rewriting.Term a b,
+                                Term_Rewriting.Term a b)] ->
+                               Bool;
+muterm_strongly_conservative_check mu t =
+  CSR_Checker_Base.rhs_mu_vars_condition_list mu t &&
+    all (\ (l, r) ->
+          Arith.is_empty
+            (Arith.inf_set (Arith.set (CSR_Checker_Base.mu_vars_term_list mu l))
+              (Arith.set (non_mu_vars_term_list mu l))) &&
+            Arith.is_empty
+              (Arith.inf_set
+                (Arith.set (CSR_Checker_Base.mu_vars_term_list mu r))
+                (Arith.set (non_mu_vars_term_list mu r))))
+      t;
 
 }

@@ -312,18 +312,28 @@ mu_vars_term_list mu (Term_Rewriting.Fun f ts) =
       (Arith.upt Arith.zero_nat (Arith.size_list ts)));
 
 csr_sharp_mu_entry_ok ::
-  forall a b. ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
-csr_sharp_mu_entry_ok e =
+  forall a b.
+    (Eq a,
+      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                 ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
+csr_sharp_mu_entry_ok mu e =
   (case e of {
     ((f, n), is) ->
-      not (is_sharp_lab f) &&
-        Arith.less_eq_set (Arith.set is)
-          (Set_Interval.atLeastLessThan Arith.zero_nat n);
+      Arith.less_eq_set (Arith.set is)
+        (Set_Interval.atLeastLessThan Arith.zero_nat n) &&
+        (case f of {
+          Labelings.Lab _ _ -> True;
+          Labelings.FunLab _ _ -> True;
+          Labelings.UnLab _ -> True;
+          Labelings.Sharp g ->
+            Arith.less_eq_set (Context_Sensitive_Impl.mu_of mu (g, n))
+              (Arith.set is);
+        });
   });
 
 csr_sharp_mu_check ::
   forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a,
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a, Eq b,
       Term_Rewriting.Showl b) => [((Labelings.Lab a b, Arith.Nat),
                                     [Arith.Nat])] ->
                                    Sum_Type.Sum (String -> String) ();
@@ -331,7 +341,7 @@ csr_sharp_mu_check mu =
   Error_Monad.catch_error
     (Error_Monad.forallM
       (\ e ->
-        Check_Monad.check (csr_sharp_mu_entry_ok e)
+        Check_Monad.check (csr_sharp_mu_entry_ok mu e)
           (case e of {
             ((f, n), _) ->
               ((Term_Rewriting.showsl_lit

@@ -1,20 +1,26 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  CSR_Minimal_CSDP_Proofs(csr_sct_sharp_term, csr_rta08_collapsing_CSDP_list,
-                           csr_u3_root_rules_check, csr_u3_mixed_term_check,
+  CSR_Minimal_CSDP_Proofs(csr_u3_delta, csr_sct_sharp_term,
+                           csr_rta08_collapsing_CSDP_list,
+                           csr_u3_root_rules_check,
+                           csr_u3_inactive_root_rules_check,
+                           csr_u3_all_root_rules_check, csr_u3_mixed_term_check,
                            csr_sharp_pairs_check, csr_u3_redpair_proc,
-                           csr_instantiation_proc, csr_rta08_redpair_proc,
-                           qcs_ur_closed_term_check, qcs_ur_closed_dp_rhs_check,
+                           csr_instantiation_proc,
+                           csr_rta08_projection_rules_list,
+                           csr_rta08_redpair_proc, qcs_ur_closed_term_check,
+                           qcs_ur_closed_dp_rhs_check, qcs_csr_ur_closed_check,
                            check_csr_rta08_dep_graph_proc,
                            csr_qcs_usable_rules_proc,
                            csr_rules_sharp_fresh_check,
                            csr_sct_active_subterm_proc,
+                           csr_rta08_active_root_rules_check,
+                           csr_rta08_usable_rules_check,
                            csr_rta08_dependency_pairs_tt,
                            csr_forward_instantiation_proc,
                            check_csr_dp_termination_proof_min,
-                           check_csr_termination_proof_min,
-                           csr_rta08_active_root_rules_check)
+                           check_csr_termination_proof_min)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -65,10 +71,25 @@ import qualified HOL;
 import qualified Dependency_Pair_Problem_Spec;
 import qualified Sum_Type;
 import qualified CSR_Checker_Base;
-import qualified Arith;
-import qualified Compare;
 import qualified Labelings;
+import qualified Compare;
 import qualified Term_Rewriting;
+import qualified Arith;
+
+csr_u3_delta ::
+  forall a b c.
+    (Arith.Cenum a, Compare.Compare a, Eq a, Compare.Compare b, Eq b,
+      Arith.Ceq c,
+      Arith.Ccompare c) => Arith.Set (Term_Rewriting.Term a b, c) ->
+                             Arith.Set (Term_Rewriting.Term a b, c) ->
+                               Arith.Set (a, Arith.Nat);
+csr_u3_delta r u =
+  Arith.collect
+    (\ f ->
+      Arith.ball r
+        (\ lr ->
+          (if Term_Rewriting.root (fst lr) == Just f then Arith.member lr u
+            else True)));
 
 csr_sct_sharp_term ::
   forall a b c. Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
@@ -2041,6 +2062,36 @@ stri)
                            (Term_Rewriting.showsl_lit
                              "CSR size-change analysis failed")));
 
+csr_rta08_active_root_rules_check ::
+  forall a b c d.
+    (Eq a, Eq b,
+      Eq c) => [(Term_Rewriting.Term a b, c)] ->
+                 [(Term_Rewriting.Term a b, c)] ->
+                   [((a, Arith.Nat), [Arith.Nat])] ->
+                     Term_Rewriting.Term a d -> Bool;
+csr_rta08_active_root_rules_check r u mu t =
+  csr_u3_root_rules_check r u t (CSR_Checker_Base.mu_fun_poss_list mu t);
+
+csr_rta08_usable_rules_check ::
+  forall a b c d e.
+    (Eq a, Eq b,
+      Eq c) => [(Term_Rewriting.Term a b, Term_Rewriting.Term a c)] ->
+                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a c)] ->
+                   [((a, Arith.Nat), [Arith.Nat])] ->
+                     [(Term_Rewriting.Term a d, Term_Rewriting.Term a e)] ->
+                       Bool;
+csr_rta08_usable_rules_check r u mu p =
+  all (Arith.membera r) u &&
+    all (\ dp ->
+          csr_u3_inactive_root_rules_check r u mu (fst dp) &&
+            csr_rta08_active_root_rules_check r u mu (snd dp))
+      p &&
+      all (\ lr -> csr_u3_inactive_root_rules_check r u mu (snd lr)) r &&
+        all (\ lr ->
+              csr_u3_inactive_root_rules_check r u mu (fst lr) &&
+                csr_rta08_active_root_rules_check r u mu (snd lr))
+          u;
+
 csr_rta08_dependency_pairs_tt ::
   forall a b.
     (Compare.Compare_order b, Eq b,
@@ -2250,9 +2301,11 @@ check_csr_dp_termination_proof_min ia j mu a i dpp
                 x))));
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
-  Sum_Type.Inl
-    (i . Term_Rewriting.showsl_lit
-           ": context-sensitive instantiation requires improved CS-DPs");
+  FOR_Preliminaries.debug i "minimal CSR-DP instantiation"
+    (Error_Monad.bind (csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_csr_dp_termination_proof_min ia j mu a
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc st sts prf) =
   Sum_Type.Inl
@@ -2401,15 +2454,5 @@ check_csr_termination_proof_min ia j a i mu r
   (CSR_Checker_Base.CSR_Safe_Dependency_Pairs p prf) =
   CSR_Checker.check_csr_termination_proof ia j a i mu r
     (CSR_Checker_Base.CSR_Safe_Dependency_Pairs p prf);
-
-csr_rta08_active_root_rules_check ::
-  forall a b c d.
-    (Eq a, Eq b,
-      Eq c) => [(Term_Rewriting.Term a b, c)] ->
-                 [(Term_Rewriting.Term a b, c)] ->
-                   [((a, Arith.Nat), [Arith.Nat])] ->
-                     Term_Rewriting.Term a d -> Bool;
-csr_rta08_active_root_rules_check r u mu t =
-  csr_u3_root_rules_check r u t (CSR_Checker_Base.mu_fun_poss_list mu t);
 
 }
