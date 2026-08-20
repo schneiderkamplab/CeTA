@@ -609,7 +609,7 @@ proof -
   show ?thesis using hp_u typed by blast
 qed
 
-lemma innermost_muterm_unhiding_relstep:
+lemma innermost_muterm_unhiding_relstep_core:
   fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
     and R :: "('f,'v) trs"
   assumes wf: "wf_trs R"
@@ -617,12 +617,12 @@ lemma innermost_muterm_unhiding_relstep:
       (innermost_csstep \<mu> R) U t"
     and defs: "{f. defined R f} \<subseteq> D"
     and cover: "muterm_unhiding_coverage shp \<mu> D R P U"
-  shows "\<exists>u. has_muterm_unhiding_property shp \<mu>
+  shows "\<exists>s u. has_muterm_unhiding_property shp \<mu>
       (innermost_csstep \<mu> R) U u \<and>
-    (sharp_term shp t,sharp_term shp u) \<in>
-      (innermost_csdp_step shp \<mu> R)\<^sup>* O
-      muterm_innermost_typed_pair_step shp \<mu> R P U O
-      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+    (sharp_term shp t,sharp_term shp s) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>* \<and>
+    (sharp_term shp s,sharp_term shp u) \<in>
+      muterm_innermost_typed_pair_step shp \<mu> R P U"
 proof -
   from hp have Tinf: "t \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
     unfolding has_muterm_unhiding_property_def by auto
@@ -652,6 +652,31 @@ proof -
   have left: "(sharp_term shp t,sharp_term shp s) \<in>
       (innermost_csdp_step shp \<mu> R)\<^sup>*"
     by (rule innermost_csnrsteps_imp_sharp_innermost_csdp_steps[OF pref])
+  show ?thesis using hp_u left pair by blast
+qed
+
+lemma innermost_muterm_unhiding_relstep:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and R :: "('f,'v) trs"
+  assumes wf: "wf_trs R"
+    and hp: "has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U t"
+    and defs: "{f. defined R f} \<subseteq> D"
+    and cover: "muterm_unhiding_coverage shp \<mu> D R P U"
+  shows "\<exists>u. has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U u \<and>
+    (sharp_term shp t,sharp_term shp u) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>* O
+      muterm_innermost_typed_pair_step shp \<mu> R P U O
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+proof -
+  from innermost_muterm_unhiding_relstep_core[OF wf hp defs cover]
+  obtain s u where hp_u: "has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U u"
+    and left: "(sharp_term shp t,sharp_term shp s) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+    and pair: "(sharp_term shp s,sharp_term shp u) \<in>
+      muterm_innermost_typed_pair_step shp \<mu> R P U" by blast
   have right: "(sharp_term shp u,sharp_term shp u) \<in>
       (innermost_csdp_step shp \<mu> R)\<^sup>*" by simp
   show ?thesis using hp_u left pair right by blast
@@ -713,6 +738,117 @@ proof (rule ccontr)
   have "\<not> SN ?A" unfolding SN_defs using chain by blast
   moreover from fin have "SN_rel ?Q ?S"
     unfolding finite_muterm_innermost_typed_dpp_def .
+  then have "SN ?A" unfolding SN_rel_on_def .
+  ultimately show False by contradiction
+qed
+
+text \<open>
+  The reduction-triple processor needs to retain the semantic invariant used
+  by the innermost MU-TERM extraction, not merely target termination of an
+  ordinary minimal dependency-pair step.  In particular, the target of every
+  macro event is the marked form of the next minimal innermost
+  non-terminating call.  This is the chain-level information needed to handle
+  a collapsing pair together with its mandatory unhiding bridge.
+\<close>
+
+definition muterm_innermost_min_typed_pair_step where
+  "muterm_innermost_min_typed_pair_step shp \<mu> R P U =
+    muterm_innermost_typed_pair_step shp \<mu> R P U \<inter>
+      {(s,t). \<exists>u. t = sharp_term shp u \<and>
+        u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)}"
+
+definition finite_muterm_innermost_min_typed_dpp where
+  "finite_muterm_innermost_min_typed_dpp shp \<mu> R P U \<longleftrightarrow>
+    SN_rel (muterm_innermost_min_typed_pair_step shp \<mu> R P U)
+      (innermost_csdp_step shp \<mu> R)"
+
+lemma innermost_muterm_unhiding_relstep_min_typed:
+  assumes wf: "wf_trs R"
+    and hp: "has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U t"
+    and defs: "{f. defined R f} \<subseteq> D"
+    and cover: "muterm_unhiding_coverage shp \<mu> D R P U"
+  shows "\<exists>u. has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U u \<and>
+    (sharp_term shp t,sharp_term shp u) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>* O
+      muterm_innermost_min_typed_pair_step shp \<mu> R P U O
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+proof -
+  from innermost_muterm_unhiding_relstep_core[OF wf hp defs cover]
+  obtain s u where hp_u: "has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U u"
+    and prefix: "(sharp_term shp t,sharp_term shp s) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>*"
+    and event: "(sharp_term shp s,sharp_term shp u) \<in>
+      muterm_innermost_typed_pair_step shp \<mu> R P U" by blast
+  from hp_u have uT:
+      "u \<in> mu_Tinf \<mu> (innermost_csstep \<mu> R)"
+    unfolding has_muterm_unhiding_property_def by auto
+  have event': "(sharp_term shp s,sharp_term shp u) \<in>
+      muterm_innermost_min_typed_pair_step shp \<mu> R P U"
+    unfolding muterm_innermost_min_typed_pair_step_def using event uT by auto
+  have suffix: "(sharp_term shp u,sharp_term shp u) \<in>
+      (innermost_csdp_step shp \<mu> R)\<^sup>*" by simp
+  show ?thesis using hp_u prefix event' suffix by blast
+qed
+
+theorem finite_muterm_innermost_min_typed_dpp_imp_SN_innermost:
+  fixes shp :: "'f::{showl,compare_order} \<Rightarrow> 'f"
+    and R :: "('f,'v) trs"
+  assumes wf: "wf_trs R"
+    and defs: "{f. defined R f} \<subseteq> D"
+    and cover: "muterm_unhiding_coverage shp \<mu> D R P U"
+    and fin: "finite_muterm_innermost_min_typed_dpp shp \<mu> R P U"
+  shows "SN (innermost_csstep \<mu> R)"
+proof (rule ccontr)
+  assume notSN: "\<not> SN (innermost_csstep \<mu> R)"
+  from not_SN_imp_Tinf[OF notSN]
+  obtain t0 where t0T: "t0 \<in> Tinf (innermost_csstep \<mu> R)" by blast
+  have hp0: "has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U t0"
+    by (rule Tinf_has_muterm_unhiding_property[OF t0T])
+  let ?S = "innermost_csdp_step shp \<mu> R"
+  let ?Q = "muterm_innermost_min_typed_pair_step shp \<mu> R P U"
+  let ?A = "?S\<^sup>* O ?Q O ?S\<^sup>*"
+  have step_ex: "\<And>t. has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U t \<Longrightarrow>
+    \<exists>u. has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U u \<and>
+      (sharp_term shp t,sharp_term shp u) \<in> ?A"
+    by (rule innermost_muterm_unhiding_relstep_min_typed[OF wf _ defs cover])
+  have all_ex: "\<forall>t. \<exists>u. has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U t \<longrightarrow>
+    has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U u \<and>
+      (sharp_term shp t,sharp_term shp u) \<in> ?A"
+    using step_ex by blast
+  from choice[OF all_ex]
+  obtain nxt where nxt: "\<And>t. has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U t \<Longrightarrow>
+    has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U (nxt t) \<and>
+      (sharp_term shp t,sharp_term shp (nxt t)) \<in> ?A"
+    by blast
+  define ts where "ts = rec_nat t0 (\<lambda>n t. nxt t)"
+  have ts_hp: "has_muterm_unhiding_property shp \<mu>
+      (innermost_csstep \<mu> R) U (ts n)" for n
+  proof (induct n)
+    case 0
+    show ?case unfolding ts_def using hp0 by simp
+  next
+    case (Suc n)
+    from nxt[OF Suc.hyps] show ?case unfolding ts_def by simp
+  qed
+  have ts_step: "(sharp_term shp (ts n),sharp_term shp (ts (Suc n)))
+      \<in> ?A" for n
+    using nxt[OF ts_hp[of n]] unfolding ts_def by simp
+  define f where "f n = sharp_term shp (ts n)" for n
+  have chain: "\<And>n. (f n,f (Suc n)) \<in> ?A"
+    unfolding f_def using ts_step by simp
+  have "\<not> SN ?A" unfolding SN_defs using chain by blast
+  moreover from fin have "SN_rel ?Q ?S"
+    unfolding finite_muterm_innermost_min_typed_dpp_def .
   then have "SN ?A" unfolding SN_rel_on_def .
   ultimately show False by contradiction
 qed

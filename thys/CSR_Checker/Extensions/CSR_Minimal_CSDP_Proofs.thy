@@ -8274,8 +8274,11 @@ where
     })"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Instantiation_Proc st sts prf) =
-    error (i \<circ> showsl_lit
-      (STR '': context-sensitive instantiation requires improved CS-DPs''))"
+    debug i (STR ''minimal CSR-DP instantiation'') (do {
+      dpp' \<leftarrow> csr_instantiation_proc J \<mu> st sts dpp;
+      check_csr_dp_termination_proof_min I J \<mu> a
+        (add_index i 1) dpp' prf
+    })"
 | "check_csr_dp_termination_proof_min I J \<mu> a i dpp
     (CSR_DP_Forward_Instantiation_Proc st sts prf) =
     error (i \<circ> showsl_lit
@@ -8844,7 +8847,44 @@ next
   qed
 next
   case (CSR_DP_Instantiation_Proc st sts subprf)
-  then show ?case by simp
+  from CSR_DP_Instantiation_Proc.prems(1)
+  obtain dpp' where proc:
+      "csr_instantiation_proc J \<mu> st sts dpp = return dpp'"
+    and rec: "isOK (check_csr_dp_termination_proof_min I J \<mu> False
+      (add_index i 1) dpp' subprf)"
+    by auto
+  note proc_sound = csr_instantiation_proc_sound[OF proc]
+  obtain s t where st: "st = (s,t)" by (cases st)
+  interpret dpp_spec J by fact
+  have dpp'_def: "dpp' = replace_pair dpp (s,t) sts"
+    using proc_sound(1) st by simp
+  have sem: "dpp_ops.dpp J dpp' =
+      (NFS dpp, M dpp, replace (s,t) (set sts) (set (P dpp)),
+       replace (s,t) (set sts) (set (Pw dpp)), set (Q dpp),
+       set (R dpp), set (Rw dpp))"
+    unfolding dpp'_def by (rule replace_pair_sound)
+  have sem': "dpp_ops.dpp J dpp' =
+      (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'), set (Q dpp'),
+       set (R dpp'), set (Rw dpp'))"
+    by (rule dpp_sound)
+  from CSR_DP_Instantiation_Proc.prems(2)
+  have plain_fields:
+      "\<not> NFS dpp" "\<not> M dpp" "Pw dpp = []" "Q dpp = []" "R dpp = []"
+    unfolding plain_csr_dpp_def by auto
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
+  have plain': "plain_csr_dpp J dpp'"
+    using sem sem' plain_fields
+    unfolding plain_csr_dpp_def Util.replace_def by auto
+  have wf': "wf_trs (set (rules dpp'))"
+    using CSR_DP_Instantiation_Proc.prems(3) unfolding rules' .
+  have fresh': "\<And>f n. \<not> defined (set (rules dpp')) (Sharp f,n)"
+    using CSR_DP_Instantiation_Proc.prems(4) unfolding rules' .
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp')) (set (rules dpp'))"
+    by (rule CSR_DP_Instantiation_Proc.hyps[OF rec plain' wf' fresh'])
+  show ?case by (rule csr_instantiation_proc_finite_sound[
+    OF J proc CSR_DP_Instantiation_Proc.prems(3) fin'])
 next
   case (CSR_DP_Forward_Instantiation_Proc st sts subprf)
   then show ?case by simp

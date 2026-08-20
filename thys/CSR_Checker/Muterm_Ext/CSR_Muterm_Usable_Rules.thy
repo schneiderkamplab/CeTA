@@ -2753,6 +2753,174 @@ proof (intro ballI)
   qed
 qed
 
+definition muterm_marked_mu_entry_equal where
+  "muterm_marked_mu_entry_equal \<mu> e = (case e of ((h,n),is) \<Rightarrow>
+    (case h of
+       Sharp f \<Rightarrow> set is = mu_of \<mu> (f,n)
+     | _ \<Rightarrow> set is = mu_of \<mu> (Sharp h,n)))"
+
+definition muterm_marked_mu_equal_check where
+  "muterm_marked_mu_equal_check \<mu> =
+    list_all (muterm_marked_mu_entry_equal \<mu>) \<mu>"
+
+lemma muterm_marked_mu_equal_check_sound_unlab:
+  assumes "muterm_marked_mu_equal_check \<mu>"
+  shows "mu_of \<mu> (Sharp (UnLab f),n) = mu_of \<mu> (UnLab f,n)"
+proof (cases "map_of \<mu> (Sharp (UnLab f),n)")
+  case (Some js)
+  then have mem: "((Sharp (UnLab f),n),js) \<in> set \<mu>" by (rule map_of_SomeD)
+  from assms mem have eq: "set js = mu_of \<mu> (UnLab f,n)"
+    unfolding muterm_marked_mu_equal_check_def
+    by (auto simp: list_all_iff muterm_marked_mu_entry_equal_def)
+  have marked_eq: "mu_of \<mu> (Sharp (UnLab f),n) = set js"
+    unfolding mu_of_def using Some by simp
+  show ?thesis using marked_eq eq by simp
+next
+  case marked: None
+  show ?thesis
+  proof (cases "map_of \<mu> (UnLab f,n)")
+    case None
+    with marked show ?thesis unfolding mu_of_def by simp
+  next
+    case (Some js)
+    then have mem: "((UnLab f,n),js) \<in> set \<mu>" by (rule map_of_SomeD)
+    from assms mem have eq: "set js = mu_of \<mu> (Sharp (UnLab f),n)"
+      unfolding muterm_marked_mu_equal_check_def
+      by (auto simp: list_all_iff muterm_marked_mu_entry_equal_def)
+    have plain_eq: "mu_of \<mu> (UnLab f,n) = set js"
+      unfolding mu_of_def using Some by simp
+    show ?thesis using plain_eq eq by simp
+  qed
+qed
+
+lemma muterm_marked_mu_equal_check_sound:
+  assumes check: "muterm_marked_mu_equal_check \<mu>"
+    and unmarked: "\<not> is_sharp_lab f"
+  shows "mu_of \<mu> (Sharp f,n) = mu_of \<mu> (f,n)"
+proof (cases "map_of \<mu> (Sharp f,n)")
+  case (Some js)
+  then have mem: "((Sharp f,n),js) \<in> set \<mu>" by (rule map_of_SomeD)
+  from check mem have eq: "set js = mu_of \<mu> (f,n)"
+    unfolding muterm_marked_mu_equal_check_def
+    by (auto simp: list_all_iff muterm_marked_mu_entry_equal_def)
+  have "mu_of \<mu> (Sharp f,n) = set js"
+    unfolding mu_of_def using Some by simp
+  then show ?thesis using eq by simp
+next
+  case None
+  have lhs: "mu_of \<mu> (Sharp f,n) = {0..<n}"
+    unfolding mu_of_def using None by simp
+  show ?thesis
+  proof (cases "map_of \<mu> (f,n)")
+    case None_f: None
+    then show ?thesis using lhs unfolding mu_of_def by simp
+  next
+    case (Some inds)
+    then have mem: "((f,n),inds) \<in> set \<mu>" by (rule map_of_SomeD)
+    from check mem unmarked have eq: "set inds = mu_of \<mu> (Sharp f,n)"
+      unfolding muterm_marked_mu_equal_check_def
+      by (cases f; auto simp: list_all_iff muterm_marked_mu_entry_equal_def)
+    have rhs: "mu_of \<mu> (f,n) = set inds"
+      unfolding mu_of_def using Some by simp
+    show ?thesis using lhs eq rhs by simp
+  qed
+qed
+
+fun muterm_is_marked_root where
+  "muterm_is_marked_root (Fun (Sharp f) ts) = True"
+| "muterm_is_marked_root t = False"
+
+lemma muterm_is_marked_root_sound:
+  assumes "muterm_is_marked_root t"
+  obtains f ts where "t = Fun (Sharp f) ts"
+proof (cases t)
+  case (Var x)
+  with assms show thesis by simp
+next
+  case (Fun h ts)
+  show thesis
+  proof (cases h)
+    case (Sharp f)
+    show thesis by (rule that[of f ts], simp add: Fun Sharp)
+  qed (use assms Fun in auto)
+qed
+
+fun muterm_is_singly_marked_root where
+  "muterm_is_singly_marked_root (Fun (Sharp (UnLab f)) ts) = True"
+| "muterm_is_singly_marked_root t = False"
+
+lemma muterm_is_singly_marked_root_sound:
+  assumes "muterm_is_singly_marked_root t"
+  obtains f ts where "t = Fun (Sharp (UnLab f)) ts"
+proof (cases t)
+  case (Var x)
+  with assms show thesis by simp
+next
+  case (Fun h ts)
+  show thesis
+  proof (cases h)
+    case (Sharp g)
+    show thesis
+    proof (cases g)
+      case (UnLab f)
+      show thesis by (rule that[of f ts], simp add: Fun Sharp UnLab)
+    qed (use assms Fun Sharp in auto)
+  qed (use assms Fun in auto)
+qed
+
+definition muterm_general_typed_shape_check where
+  "muterm_general_typed_shape_check P S =
+    (list_all (\<lambda>(l,r).
+       muterm_is_singly_marked_root l \<and>
+       (is_Var r \<or> muterm_is_singly_marked_root r)) P \<and>
+     list_all (\<lambda>(a,b). muterm_is_singly_marked_root b) S)"
+
+lemma muterm_general_typed_shape_check_sound:
+  assumes "muterm_general_typed_shape_check P S"
+  shows "(\<forall>(l,r)\<in>set P. (\<exists>f ls. l = Fun (Sharp (UnLab f)) ls) \<and>
+      (is_Var r \<or> (\<exists>g rs. r = Fun (Sharp (UnLab g)) rs))) \<and>
+    (\<forall>(a,b)\<in>set S. \<exists>g rs. b = Fun (Sharp (UnLab g)) rs)"
+proof (intro conjI)
+  show "\<forall>(l,r)\<in>set P. (\<exists>f ls. l = Fun (Sharp (UnLab f)) ls) \<and>
+      (is_Var r \<or> (\<exists>g rs. r = Fun (Sharp (UnLab g)) rs))"
+  proof (intro ballI, clarify)
+    fix l r
+    assume lr: "(l,r) \<in> set P"
+    from assms lr have l: "muterm_is_singly_marked_root l"
+      and r: "is_Var r \<or> muterm_is_singly_marked_root r"
+      unfolding muterm_general_typed_shape_check_def
+      by (auto simp: list_all_iff)
+    from muterm_is_singly_marked_root_sound[OF l] obtain f ls where
+      lf: "l = Fun (Sharp (UnLab f)) ls" .
+    show "(\<exists>f ls. l = Fun (Sharp (UnLab f)) ls) \<and>
+        (is_Var r \<or> (\<exists>g rs. r = Fun (Sharp (UnLab g)) rs))"
+    proof (intro conjI)
+      show "\<exists>f ls. l = Fun (Sharp (UnLab f)) ls" using lf by blast
+      from r show "is_Var r \<or> (\<exists>g rs. r = Fun (Sharp (UnLab g)) rs)"
+      proof
+        assume "is_Var r"
+        then show ?thesis by simp
+      next
+        assume marked_r: "muterm_is_singly_marked_root r"
+        from muterm_is_singly_marked_root_sound[OF marked_r]
+        obtain g rs where "r = Fun (Sharp (UnLab g)) rs" .
+        then show ?thesis by blast
+      qed
+    qed
+  qed
+  show "\<forall>(a,b)\<in>set S. \<exists>g rs. b = Fun (Sharp (UnLab g)) rs"
+  proof (intro ballI, clarify)
+    fix a b
+    assume ab: "(a,b) \<in> set S"
+    from assms ab have marked_b: "muterm_is_singly_marked_root b"
+      unfolding muterm_general_typed_shape_check_def
+      by (auto simp: list_all_iff)
+    from muterm_is_singly_marked_root_sound[OF marked_b]
+    obtain g rs where b: "b = Fun (Sharp (UnLab g)) rs" .
+    show "\<exists>g rs. b = Fun (Sharp (UnLab g)) rs" using b by blast
+  qed
+qed
+
 definition muterm_strong_ur_redpair_proc where
   "muterm_strong_ur_redpair_proc J \<mu> rp Premove U dpp = check_return (do {
     rel_impl_redpair rp;
@@ -2777,13 +2945,12 @@ text \<open>
   reduction-pair processor (Theorem 93 of the arbitrary CS-problem
   development).
 
-  This processor deliberately has no conservativity premise.  Its usable-rule
-  closure is the general context-sensitive closure: all pair right-hand-side
-  defined symbols, all pair left-hand-side symbols below frozen positions,
-  and all hidden symbols seed the dependency closure.  The checked unhiding
-  rules represent the hidden-term-to-marked-term obligations of the theorem.
-  Active projections represent C-epsilon.  A strict subset of pairs may be
-  removed and the residual typed problem is checked recursively.
+  Collapsing pairs are handled by their exact unhiding bridge and therefore
+  are not subject to the non-collapsing right-hand-side conservativity check.
+  The usable-rule boundary is closed at active positions of non-collapsing
+  pair targets, unhiding rules, and usable rules.  Active projections
+  represent C-epsilon.  A strict subset of pairs may be removed and the
+  residual typed problem is checked recursively.
 \<close>
 
 definition muterm_noncollapsing_pairs_list where
@@ -2811,10 +2978,29 @@ definition muterm_general_ur_redpair_proc where
     | Some F \<Rightarrow> do {
         rel_impl_redpair rp;
         let (ps,pns) = dpp_ops.split_pairs J dpp Premove;
-        check (csr_rta08_usable_rules_check
-            (dpp_ops.rules J dpp) U \<mu>
-            (dpp_ops.pairs J dpp))
+        check (list_all (\<lambda>lr. lr \<in> set (dpp_ops.rules J dpp)) U \<and>
+            list_all (\<lambda>lr. csr_rta08_active_root_rules_check
+              (dpp_ops.rules J dpp) U \<mu> (snd lr))
+              (muterm_extended_basic_seed_list (dpp_ops.pairs J dpp) S U))
           (showsl_lit (STR ''general MU-TERM usable-rule closure failed''));
+        check (rhs_mu_vars_condition_list \<mu>
+            (muterm_extended_basic_seed_list (dpp_ops.pairs J dpp) S U))
+          (showsl_lit (STR ''general MU-TERM conservativity condition failed''));
+        check (list_all (\<lambda>(l,r).
+            set (mu_vars_term_list \<mu> l) \<inter>
+              set (non_mu_vars_term_list \<mu> l) = {})
+            (dpp_ops.pairs J dpp @ S @ U))
+          (showsl_lit (STR ''general MU-TERM left-hand-side activity partition failed''));
+        check (list_all (\<lambda>(l,r). case r of
+            Var x \<Rightarrow> x \<in> set (mu_vars_term_list \<mu> l)
+          | Fun f ts \<Rightarrow> True) (dpp_ops.pairs J dpp))
+          (showsl_lit (STR ''general MU-TERM collapsing variable is not active''));
+        check (muterm_general_typed_shape_check (dpp_ops.pairs J dpp) S)
+          (showsl_lit (STR ''general MU-TERM typed pair or unhiding shape failed''));
+        check (list_all (is_Fun \<circ> fst) S)
+          (showsl_lit (STR ''general MU-TERM unhiding left-hand side is a variable''));
+        check (muterm_marked_mu_equal_check \<mu>)
+          (showsl_lit (STR ''marked replacement-map entries differ from their source symbols''));
         rel_impl.ce_compat rp;
         rel_impl_ns rp
           (U @ S @ csr_rta08_projection_rules_list \<mu> F @ pns)
@@ -3991,8 +4177,16 @@ datatype (dead 'f, dead 'l, dead 'v) muterm_typed_dp_proof =
     Muterm_Typed_P_Is_Empty
   | Muterm_Typed_Local_Usable
       "('f,'l,'v) trsLL" "('f,'l,'v) dp_termination_proof"
+  | Muterm_Typed_General_Usable
+      "('f,'l) lab redtriple_impl" "('f,'l,'v) trsLL"
+      "('f,'l,'v) trsLL" "('f,'l,'v) muterm_typed_dp_proof"
+  | Muterm_Typed_Pair_Augmentation
+      "(('f,'l) lab,'v) rule" "('f,'l,'v) trsLL"
+      "('f,'l,'v) muterm_typed_dp_proof"
   | Muterm_Typed_CSR_Proof "('f,'l,'v) csr_dp_termination_proof"
   | Muterm_Typed_Expanded_CSR_Proof "('f,'l,'v) csr_dp_termination_proof"
+  | Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
+      "('f,'l,'v) csr_dp_termination_proof"
   | Muterm_Typed_Expanded_Local_Usable
       "('f,'l,'v) trsLL" "('f,'l,'v) dp_termination_proof"
   | Muterm_Typed_Expanded_Strong_Usable
@@ -4059,6 +4253,27 @@ where
         (dpp_ops.mk J False False P [] [] [] U) prf
     })"
 | "check_muterm_typed_dp_proof I J \<mu> i R S P
+      (Muterm_Typed_General_Usable redp Pr U prf) =
+    debug i (STR ''general typed MU-TERM usable-rule reduction pair'') (do {
+      let dpp = dpp_ops.mk J False False P [] [] [] R;
+      dpp' \<leftarrow> muterm_general_ur_redpair_proc J \<mu>
+        (get_rel_impl redp) Pr U S dpp;
+      check_muterm_typed_dp_proof I J \<mu> (add_index i 1) R S
+        (dpp_ops.pairs J dpp') prf
+    })"
+| "check_muterm_typed_dp_proof I J \<mu> i R S P
+      (Muterm_Typed_Pair_Augmentation st sts prf) =
+    debug i (STR ''typed MU-TERM pair augmentation'') (do {
+      let dpp = dpp_ops.mk J False False P [] [] [] R;
+      dpp' \<leftarrow> csr_instantiation_proc J \<mu> st sts dpp;
+      check_subseteq P (dpp_ops.pairs J dpp')
+        <+? (\<lambda>dp. showsl_lit
+          (STR ''typed MU-TERM augmentation removed original pair\<newline>'') \<circ>
+          showsl_rule dp);
+      check_muterm_typed_dp_proof I J \<mu> (add_index i 1) R S
+        (dpp_ops.pairs J dpp') prf
+    })"
+| "check_muterm_typed_dp_proof I J \<mu> i R S P
       (Muterm_Typed_CSR_Proof prf) =
     debug i (STR ''MU-TERM noncollapsing CSR component'') (do {
       check (list_all (is_Fun \<circ> snd) P)
@@ -4073,6 +4288,10 @@ where
       let dpp = dpp_ops.mk J False False E [] [] [] R;
       check_muterm_expanded_csr_proof I J \<mu> (add_index i 1) dpp prf
     })"
+| "check_muterm_typed_dp_proof I J \<mu> i R S P
+      (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof prf) =
+    error (i \<circ> showsl_lit
+      (STR '': extended-basic proof requires the production checker''))"
 | "check_muterm_typed_dp_proof I J \<mu> i R S P
       (Muterm_Typed_Expanded_Local_Usable U prf) =
     debug i (STR ''expanded MU-TERM ordinary reduction-pair continuation'') (do {
@@ -4209,6 +4428,15 @@ lemma muterm_min_typed_pair_step_mono:
     muterm_min_typed_pair_step shp \<mu> R Q S"
   unfolding muterm_min_typed_pair_step_def
   using muterm_typed_pair_step_mono[OF assms] by blast
+
+lemma finite_muterm_min_typed_dpp_mono_pairs:
+  assumes sub: "P \<subseteq> Q"
+    and fin: "finite_muterm_min_typed_dpp shp \<mu> R Q S"
+  shows "finite_muterm_min_typed_dpp shp \<mu> R P S"
+  unfolding finite_muterm_min_typed_dpp_def
+  by (rule SN_rel_mono[
+      OF muterm_min_typed_pair_step_mono[OF sub] subset_refl
+        fin[unfolded finite_muterm_min_typed_dpp_def]])
 
 lemma finite_csr_dpp_imp_finite_muterm_typed_noncollapsing:
   assumes nc: "\<forall>dp\<in>P. is_Fun (snd dp)"

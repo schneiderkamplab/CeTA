@@ -331,10 +331,18 @@ session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
     CSR_Muterm_Innermost_Usable_Exec
     CSR_Muterm_Innermost_Progress
 
-session CSR_Muterm_Extended_Basic in "CSR_Checker/Muterm_Extended_Basic" = CSR_Muterm_Ext +
+session CSR_Muterm_Typed_General_Redpair in "CSR_Checker/Muterm_Typed_General_Redpair" = CSR_Muterm_Ext +
   options [document = false]
+  directories
+    "../Muterm_Extended_Basic"
   theories
     CSR_Muterm_Extended_Basic
+    CSR_Muterm_Typed_General_Redpair
+
+session CSR_Muterm_Typed_Recursive_Redpair in "CSR_Checker/Muterm_Typed_Recursive_Redpair" = CSR_Muterm_Typed_General_Redpair +
+  options [document = false]
+  theories
+    CSR_Muterm_Typed_Recursive_Redpair
 
 session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
   options [document = false, timeout = 600]
@@ -345,15 +353,23 @@ session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
     Outermost_Signature_Extension
     Outermost_RZ_Checker
 
-session Proof_Checker in Proof_Checker = CSR_Muterm_Ext +
+session Proof_Checker in Proof_Checker = CSR_Muterm_Typed_Recursive_Redpair +
   options [document = false]
   sessions
     LTS
     Outermost_RZ_Ext
+  directories
+    "../../target/code-csr-production"
   theories
     CSR_Muterm_Typed_Checker
     CSR_GM_Transformation
     All_of_Proof_Checker
+    Code_CSR_Production
+
+session CSR_Muterm_Haskell_Export in "../target/csr-muterm-haskell-export-session" = Proof_Checker +
+  options [document = false, timeout = 1200]
+  theories
+    Emit_CSR_Muterm_Inst_Haskell
 
 (* Sessions for building IsaFoR *)
 session IsaFoR_1 in "Session_Dirs/IsaFoR_1" = "HOL-AFP" +

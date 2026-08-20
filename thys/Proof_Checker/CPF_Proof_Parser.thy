@@ -1551,12 +1551,37 @@ where
         (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2dp_termination_proof;
       xml_return (Muterm_Typed_Local_Usable U prf)
+    } XMLor XMLdo (STR ''generalUsableRulesProc'') {
+      redp \<leftarrow> red_triple False;
+      Pr \<leftarrow> xml_singleton (STR ''dps'')
+        (rules xml2name termIndexMap ruleMap) id;
+      U \<leftarrow> xml_singleton (STR ''usableRules'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2muterm_typed_dp_proof;
+      xml_return (Muterm_Typed_General_Usable redp Pr U prf)
+    } XMLor XMLdo (STR ''generalUsableRulesRedPairProc'') {
+      U \<leftarrow> xml_singleton (STR ''usableRules'')
+        (rules xml2name termIndexMap ruleMap) id;
+      redp \<leftarrow> red_triple False;
+      Pr \<leftarrow> xml_singleton (STR ''dps'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2muterm_typed_dp_proof;
+      xml_return (Muterm_Typed_General_Usable redp Pr U prf)
+    } XMLor XMLdo (STR ''typedInstantiationProc'') {
+      st \<leftarrow> rule xml2name termIndexMap ruleMap;
+      sts \<leftarrow> xml_singleton (STR ''instantiations'')
+        (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2muterm_typed_dp_proof;
+      xml_return (Muterm_Typed_Pair_Augmentation st sts prf)
     } XMLor XMLdo (STR ''noncollapsingCsrProof'') {
       prf \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (Muterm_Typed_CSR_Proof prf)
     } XMLor XMLdo (STR ''expandedCsrProof'') {
       prf \<leftarrow> xml2csr_dp_termination_proof;
       xml_return (Muterm_Typed_Expanded_CSR_Proof prf)
+    } XMLor XMLdo (STR ''expandedExtendedBasicCsrProof'') {
+      prf \<leftarrow> xml2csr_dp_termination_proof;
+      xml_return (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof prf)
     } XMLor XMLdo (STR ''expandedLocalUsableRulesProc'') {
       U \<leftarrow> xml_singleton (STR ''usableRules'')
         (rules xml2name termIndexMap ruleMap) id;
@@ -2846,7 +2871,7 @@ where
             (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
           S \<leftarrow> xml_singleton (STR ''unhidingRules'')
             (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
-          prf \<leftarrow> xml2dp_termination_proof
+          prf \<leftarrow> xml2csr_dp_termination_proof
             symbol_parser termIndexMap ruleMap;
           xml_return
             (Muterm_Expanded_Innermost_CSR_Dependency_Pairs P S prf)

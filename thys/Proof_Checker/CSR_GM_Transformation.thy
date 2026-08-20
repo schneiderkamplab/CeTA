@@ -1265,21 +1265,34 @@ qed
 
 definition muterm_internal_mu where
   "muterm_internal_mu \<mu> D = \<mu> @ map (\<lambda>(f,n).
-    ((Sharp f,n), muterm_mu_positions_list \<mu> (f,n))) D"
+    ((Sharp f,n), muterm_mu_positions_list \<mu> (f,n))) D @
+    map (\<lambda>((f,n),is).
+      ((Sharp f,n), muterm_mu_positions_list \<mu> (f,n))) \<mu>"
 
 lemma muterm_internal_mu_unmarked [simp]:
   assumes "\<not> is_sharp_lab f"
   shows "mu_of (muterm_internal_mu \<mu> D) (f,n) = mu_of \<mu> (f,n)"
 proof -
-  have none: "map_of (map (\<lambda>(g,m).
+  have none_D: "map_of (map (\<lambda>(g,m).
       ((Sharp g,m), muterm_mu_positions_list \<mu> (g,m))) D) (f,n) = None"
     using assms by (induct D; cases f; auto)
-  have lookup: "(map_of (map (\<lambda>(g,m).
-      ((Sharp g,m), muterm_mu_positions_list \<mu> (g,m))) D) ++ map_of \<mu>)
-      (f,n) = map_of \<mu> (f,n)"
-    using none by (cases "map_of \<mu> (f,n)"; simp add: map_add_def)
-  show ?thesis unfolding muterm_internal_mu_def mu_of_def map_of_append
-    by (simp add: lookup)
+  have none_mu: "map_of (map (\<lambda>((g,m),is).
+      ((Sharp g,m), muterm_mu_positions_list \<mu> (g,m))) \<mu>) (f,n) = None"
+    using assms
+    by (auto simp: map_of_eq_None_iff split: prod.splits lab.splits)
+  have lookup: "map_of (muterm_internal_mu \<mu> D) (f,n) =
+      map_of \<mu> (f,n)"
+  proof (cases "map_of \<mu> (f,n)")
+    case None
+    show ?thesis unfolding muterm_internal_mu_def
+      using None none_D none_mu
+      by (simp add: map_of_append_None)
+  next
+    case (Some xs)
+    show ?thesis unfolding muterm_internal_mu_def
+      using Some by (simp add: map_of_append_Some)
+  qed
+  show ?thesis using lookup by (simp add: mu_of_def)
 qed
 
 lemma csstep_mu_mono:
@@ -1309,7 +1322,7 @@ datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
   | Muterm_Expanded_Innermost_CSR_Dependency_Pairs
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) trsLL"
-      "('f, 'l, 'v) dp_termination_proof"
+      "('f, 'l, 'v) csr_dp_termination_proof"
   | Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) trsLL"
@@ -1360,6 +1373,7 @@ where
       (Muterm_Typed_CSR_Dependency_Pairs P S prf) =
     debug i (STR ''typed recursive MU-TERM CSR dependency pairs'') (do {
       check_wf_trs R;
+      check_csr_orthogonal R;
       csr_sharp_mu_check \<mu>;
       let D = defined_list R;
       check (list_all (\<lambda>(f,n). \<not> is_sharp_lab f) (funas_trs_list R))
@@ -1374,12 +1388,24 @@ where
       check_all (\<lambda>dp. dp \<in> set P)
         (csr_rta08_collapsing_CSDP_list Sharp \<mu>i R)
         <+? (\<lambda>_. showsl_lit (STR ''missing collapsing dependency pair''));
-      check_all (\<lambda>lr. lr \<in> set S)
-        (muterm_exact_unhiding_rules_list Sharp \<mu>i D R)
-        <+? (\<lambda>_. showsl_lit (STR ''missing exact MU-TERM unhiding rule''));
+      check (set S = set (muterm_exact_unhiding_rules_list Sharp \<mu>i D R))
+        (showsl_lit (STR ''MU-TERM unhiding rules are not exact''));
       check (muterm_unhiding_safe_list \<mu>i R)
         (showsl_lit (STR ''MU-TERM unhiding safety condition failed''));
-      check_muterm_typed_dp_proof I J \<mu>i (add_index i 1) R S P prf
+      let T = R @ P @ S;
+      let \<Delta> = set (funas_trs_list T);
+      check (muterm_recursive_pairs_safe_check_exec
+          R (mu_of \<mu>i) \<Delta> P S)
+        (showsl_lit (STR ''recursive MU-TERM pair safety check failed''));
+      check (muterm_recursive_bridges_safe_check_exec
+          (defined_list R) (mu_of \<mu>i) \<Delta> S)
+        (showsl_lit (STR ''recursive MU-TERM bridge safety check failed''));
+      check (muterm_recursive_target_shape_check_exec
+          P S)
+        (showsl_lit (STR ''recursive MU-TERM target-shape check failed''));
+      check (muterm_marked_mu_equal_check \<mu>i)
+        (showsl_lit (STR ''marked replacement-map entries differ from source symbols''));
+      check_muterm_i4_root_proof I J \<mu>i (add_index i 1) R S P prf
     })"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Muterm_Expanded_Innermost_CSR_Dependency_Pairs P S prf) =
@@ -1405,7 +1431,8 @@ where
         (showsl_lit (STR ''MU-TERM unhiding safety condition failed''));
       let E = muterm_expanded_pairs_list string_renameN P S;
       let dpp = dpp_ops.mk J False False E [] [] [] R;
-      check_dp_termination_proof I J False (add_index i 1) dpp prf
+      check_muterm_expanded_innermost_proof I J \<mu>i
+        (add_index i 1) dpp prf
     })"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs P S U prf) =
@@ -1553,7 +1580,10 @@ next
   let ?D = "defined_list R"
   let ?F = "set (funas_trs_list R)"
   let ?\<mu>i = "muterm_internal_mu \<mu> ?D"
+  let ?T = "R @ P @ S"
+  let ?\<Delta> = "set (funas_trs_list ?T)"
   from ok Muterm_Typed_CSR_Dependency_Pairs have wf: "wf_trs (set R)"
+    and ortho_ok: "isOK (check_csr_orthogonal R)"
     and sharp_ok: "isOK (csr_sharp_mu_check \<mu>)"
     and source_sig: "list_all (\<lambda>(f,n). \<not> is_sharp_lab f)
       (funas_trs_list R)"
@@ -1561,39 +1591,100 @@ next
       "list_all (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True) ?D"
     and mu_pairs: "set (mu_CSDP_list Sharp R ?\<mu>i ?D) \<subseteq> set P"
     and collapsing: "set (csr_rta08_collapsing_CSDP_list Sharp ?\<mu>i R) \<subseteq> set P"
-    and exact: "set (muterm_exact_unhiding_rules_list Sharp ?\<mu>i ?D R) \<subseteq> set S"
+    and exact: "set S =
+      set (muterm_exact_unhiding_rules_list Sharp ?\<mu>i ?D R)"
     and safe: "muterm_unhiding_safe_list ?\<mu>i R"
-    and rec: "isOK (check_muterm_typed_dp_proof
+    and pairs_check_exec: "muterm_recursive_pairs_safe_check_exec
+      R (mu_of ?\<mu>i) ?\<Delta> P S"
+    and bridges_check_exec: "muterm_recursive_bridges_safe_check_exec
+      (defined_list R) (mu_of ?\<mu>i) ?\<Delta> S"
+    and target_check_exec: "muterm_recursive_target_shape_check_exec
+      P S"
+    and marked_check: "muterm_marked_mu_equal_check ?\<mu>i"
+    and rec: "isOK (check_muterm_i4_root_proof
       I J ?\<mu>i (add_index i 1) R S P child)"
     by (auto simp: Let_def)
   have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
     using no_sharp by (auto simp: list_all_iff)
   have cover: "muterm_unhiding_coverage Sharp (mu_of ?\<mu>i) (set ?D)
       (set R) (set P) (set S)"
-    by (rule muterm_exact_list_coverage[OF mu_pairs collapsing exact safe])
+    by (rule muterm_exact_list_coverage[
+      OF mu_pairs collapsing _ safe], use exact in simp)
   have defs: "{f. defined (set R) f} \<subseteq> set ?D" by auto
-  have typed_fin: "finite_muterm_min_typed_dpp Sharp (mu_of ?\<mu>i)
-      (set R) (set P) (set S)"
-    by (rule check_muterm_typed_dp_proof_sound[OF I J wf fresh rec])
-  have internal: "SN (csstep (mu_of ?\<mu>i) (set R))"
-    by (rule finite_muterm_min_typed_dpp_imp_SN_csstep[
-      OF wf fresh defs cover muterm_unhiding_preserving_on_from_coverage[
-        OF wf defs cover] typed_fin])
+  have overlay: "csr_switch_overlay (set R)"
+    by (rule check_csr_orthogonal_sound[OF ortho_ok])
+  interpret M: muterm_i4 R "mu_of ?\<mu>i" ?\<Delta> "undefined"
+    by (unfold_locales, rule wf)
+  have pairs_check: "M.muterm_recursive_pairs_safe_check P S"
+    by (subst M.muterm_recursive_pairs_safe_check_exec_eq[symmetric],
+        rule pairs_check_exec)
+  have bridges_check: "M.muterm_recursive_bridges_safe_check S"
+    by (subst M.muterm_recursive_bridges_safe_check_exec_eq[symmetric],
+        rule bridges_check_exec)
+  have target_check: "M.muterm_recursive_target_shape_check P S"
+    by (subst M.muterm_recursive_target_shape_check_exec_eq[symmetric],
+        rule target_check_exec)
+  have rules_unmarked: "\<And>fn. fn \<in> funas_trs (set R) \<Longrightarrow>
+      \<not> is_sharp_lab (fst fn)"
+    using source_sig by (auto simp: list_all_iff)
+  have marked: "\<And>f n. \<not> is_sharp_lab f \<Longrightarrow>
+      mu_of ?\<mu>i (Sharp f,n) = mu_of ?\<mu>i (f,n)"
+    by (rule muterm_marked_mu_equal_check_sound[OF marked_check])
+  have typed_fin: "muterm_i4.finite_muterm_i4_good_typed_dpp
+      R (mu_of ?\<mu>i) (set P) (set S)"
+    by (rule check_muterm_i4_root_proof_sound[
+      OF I J wf overlay exact fresh rules_unmarked marked rec])
+  have inner_plain: "\<And>x. M.unmarked_term x \<Longrightarrow>
+      SN_on (innermost_csstep (mu_of ?\<mu>i) (set R)) {x}"
+    by (rule M.finite_muterm_i4_good_typed_dpp_imp_SN_on_unmarked_innermost[
+      OF defs cover fresh rules_unmarked pairs_check bridges_check
+        target_check typed_fin])
+  have full_plain: "\<And>x. M.unmarked_term x \<Longrightarrow>
+      SN_on (csstep (mu_of ?\<mu>i) (set R)) {x}"
+    by (rule M.csr_switch_overlay_innermost_termination_unmarked[
+      OF overlay rules_unmarked inner_plain])
   have F_unmarked: "\<And>f n. (f,n) \<in> ?F \<Longrightarrow> \<not> is_sharp_lab f"
     using source_sig by (auto simp: list_all_iff)
   have restrict_eq: "restrict_mu_to_sig ?F (mu_of ?\<mu>i) =
       restrict_mu_to_sig ?F (mu_of \<mu>)"
     by (rule ext, auto simp: restrict_mu_to_sig_def F_unmarked)
-  have restricted: "SN (csstep
-      (restrict_mu_to_sig ?F (mu_of ?\<mu>i)) (set R))"
-    by (rule SN_subset[OF internal csstep_mu_mono],
-      auto simp: restrict_mu_to_sig_def)
-  have restricted': "SN (csstep
-      (restrict_mu_to_sig ?F (mu_of \<mu>)) (set R))"
-    using restricted unfolding restrict_eq .
-  have "SN (sig_step ?F (csstep (mu_of \<mu>) (set R)))"
-    by (rule SN_restrict_mu_to_sig_imp_SN_sig_csstep[OF restricted'])
-  then show ?thesis .
+  have restricted_mono: "csstep
+      (restrict_mu_to_sig ?F (mu_of ?\<mu>i)) (set R) \<subseteq>
+      csstep (mu_of ?\<mu>i) (set R)"
+    by (rule csstep_mu_mono, auto simp: restrict_mu_to_sig_def)
+  have step_sub: "sig_step ?F (csstep (mu_of \<mu>) (set R)) \<subseteq>
+      csstep (mu_of ?\<mu>i) (set R)"
+  proof -
+    have first: "sig_step ?F (csstep (mu_of \<mu>) (set R)) \<subseteq>
+        csstep (restrict_mu_to_sig ?F (mu_of \<mu>)) (set R)"
+      by (rule sig_csstep_subset_restrict_mu_to_sig)
+    show ?thesis using first restricted_mono
+      unfolding restrict_eq by blast
+  qed
+  show ?thesis
+  proof (rule ccontr)
+    assume not_SN: "\<not> SN (sig_step ?F (csstep (mu_of \<mu>) (set R)))"
+    then obtain ch where chain: "\<And>n. (ch n,ch (Suc n)) \<in>
+        sig_step ?F (csstep (mu_of \<mu>) (set R))"
+      unfolding SN_defs by blast
+    have sig0: "funas_term (ch 0) \<subseteq> ?F"
+      using chain[of 0] unfolding sig_step_def by auto
+    have plain0: "M.unmarked_term (ch 0)"
+      unfolding M.unmarked_term_def
+    proof
+      fix fn
+      assume fn: "fn \<in> funas_term (ch 0)"
+      obtain f n where shape: "fn = (f,n)" by (cases fn)
+      show "\<not> is_sharp_lab (fst fn)"
+        unfolding shape by (rule F_unmarked, use sig0 fn shape in auto)
+    qed
+    have local: "SN_on (csstep (mu_of ?\<mu>i) (set R)) {ch 0}"
+      by (rule full_plain[OF plain0])
+    have internal_chain: "\<And>n. (ch n,ch (Suc n)) \<in>
+        csstep (mu_of ?\<mu>i) (set R)"
+      by (rule step_sub[THEN subsetD, OF chain])
+    from local[unfolded SN_on_def] show False using internal_chain by blast
+  qed
 next
   case (Muterm_Expanded_Innermost_CSR_Dependency_Pairs P S child)
   let ?D = "defined_list R"
@@ -1601,6 +1692,7 @@ next
   let ?\<mu>i = "muterm_internal_mu \<mu> ?D"
   let ?E = "muterm_expanded_pairs_list string_renameN P S"
   let ?d = "dpp_ops.mk J False False ?E [] [] [] R"
+  interpret ds: dpp_spec J by fact
   from ok Muterm_Expanded_Innermost_CSR_Dependency_Pairs have
       wf: "wf_trs (set R)"
     and ortho_ok: "isOK (check_csr_orthogonal R)"
@@ -1614,46 +1706,51 @@ next
     and exact:
       "set (muterm_exact_unhiding_rules_list Sharp ?\<mu>i ?D R) \<subseteq> set S"
     and safe: "muterm_unhiding_safe_list ?\<mu>i R"
-    and rec: "isOK (check_dp_termination_proof I J False
-      (add_index i 1) ?d child)"
+    and rec: "isOK (check_muterm_expanded_innermost_proof
+      I J ?\<mu>i (add_index i 1) ?d child)"
     by (auto simp: Let_def)
   have sem: "dpp_ops.dpp J ?d =
       (False,False,set ?E,{},{},{},set R)"
     using dpp_spec.mk_sound[OF J, of False False ?E "[]" "[]" "[]" R]
     by simp
-  from check_dp_termination_proof[OF I J rec]
-  have fin0: "finite_dpp (dpp_ops.dpp J ?d)" .
-  have ordinary: "finite_dpp
-      (False,False,set ?E,{},{},{},set R)"
-    using fin0 unfolding sem .
-  have raw: "finite_mode_csr_dpp Sharp CSR_Innermost (mu_of ?\<mu>i)
-      (set ?E) (set R)"
+  have plain: "plain_csr_dpp J ?d"
   proof -
-    from ordinary have sn: "SN_rel (rrstep (set ?E)) (rstep (set R))"
-      unfolding finite_dpp_iff_SN_rel CS_rrstep_conv by simp
+    from ds.mk_sound[of False False ?E "[]" "[]" "[]" R]
+      ds.dpp_sound[of ?d]
+    have fields: "\<not> ds.NFS ?d" "\<not> ds.M ?d"
+      "set (ds.Pw ?d) = {}" "set (ds.Q ?d) = {}" "set (ds.R ?d) = {}"
+      by auto
+    have pw: "ds.Pw ?d = []" using fields(3)
+      by (cases "ds.Pw ?d"; auto)
+    have q: "ds.Q ?d = []" using fields(4)
+      by (cases "ds.Q ?d"; auto)
+    have r: "ds.R ?d = []" using fields(5)
+      by (cases "ds.R ?d"; auto)
     show ?thesis
-      unfolding finite_mode_csr_dpp_def csr_mode_rrstep.simps
-        csr_mode_csdp_step.simps
-    proof (rule SN_rel_mono[OF _ _ sn])
-      show "innermost_rrstep Sharp (mu_of ?\<mu>i) (set R) (set ?E)
-          \<subseteq> rrstep (set ?E)"
-        unfolding innermost_rrstep_def by auto
-      show "innermost_csdp_step Sharp (mu_of ?\<mu>i) (set R)
-          \<subseteq> rstep (set R)"
-      proof -
-        have cs: "csdp_step Sharp (mu_of ?\<mu>i) (set R)
-            \<subseteq> rstep (set R)"
-          unfolding csdp_step_def csdp_step_p_def
-          by (auto dest: rstep_r_p_s_imp_rstep)
-        show ?thesis
-          by (rule subset_trans[OF
-            innermost_csdp_step_subset_csdp_step cs])
-      qed
-    qed
+      using fields(1,2) pw q r unfolding plain_csr_dpp_def by simp
   qed
+  have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
+  proof
+    fix f n
+    assume def: "defined (set R) (Sharp f,n)"
+    have mem: "(Sharp f,n) \<in> set ?D" using def by auto
+    from no_sharp mem show False by (auto simp: list_all_iff)
+  qed
+  have pairs_d: "set (dpp_ops.pairs J ?d) = set ?E"
+    and rules_d: "set (dpp_ops.rules J ?d) = set R"
+    using sem ds.dpp_sound[of ?d] ds.pairs_sound[of ?d]
+      ds.rules_sound[of ?d] by auto
+  have wf_d: "wf_trs (set (dpp_ops.rules J ?d))" using wf rules_d by simp
+  have fresh_d: "\<And>f n. \<not> defined
+      (set (dpp_ops.rules J ?d)) (Sharp f,n)" using fresh rules_d by simp
+  have raw: "finite_mode_csr_dpp Sharp CSR_Innermost (mu_of ?\<mu>i)
+      (set (dpp_ops.pairs J ?d)) (set (dpp_ops.rules J ?d))"
+    by (rule check_muterm_expanded_innermost_proof_sound[
+      OF I J plain wf_d fresh_d rec])
   have fin: "finite_mode_csr_dpp Sharp CSR_Innermost (mu_of ?\<mu>i)
       (muterm_expanded_pairs string_renameN (set P) (set S)) (set R)"
-    using raw set_muterm_expanded_pairs_list[of string_renameN P S] by simp
+    using raw set_muterm_expanded_pairs_list[of string_renameN P S]
+    unfolding pairs_d rules_d by simp
   have cover: "muterm_unhiding_coverage Sharp (mu_of ?\<mu>i) (set ?D)
       (set R) (set P) (set S)"
     by (rule muterm_exact_list_coverage[OF mu_pairs collapsing exact safe])
