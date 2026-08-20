@@ -232,16 +232,18 @@ where
 | "is_sharp_lab (FunLab f ls) = False"
 
 definition csr_sharp_mu_entry_ok ::
-  "((('f, 'l) lab \<times> nat) \<times> nat list) \<Rightarrow> bool"
+  "(('f, 'l) lab) muL \<Rightarrow>
+   ((('f, 'l) lab \<times> nat) \<times> nat list) \<Rightarrow> bool"
 where
-  "csr_sharp_mu_entry_ok e = (case e of ((f, n), is) \<Rightarrow>
-    \<not> is_sharp_lab f \<and> set is \<subseteq> {0..<n})"
+  "csr_sharp_mu_entry_ok \<mu> e = (case e of ((f, n), is) \<Rightarrow>
+    set is \<subseteq> {0..<n} \<and>
+    (case f of Sharp g \<Rightarrow> mu_of \<mu> (g,n) \<subseteq> set is | _ \<Rightarrow> True))"
 
 definition csr_sharp_mu_check ::
   "(('f::{showl, compare_order}, 'l::showl) lab) muL \<Rightarrow> showsl check"
 where
   "csr_sharp_mu_check \<mu> = check_allm (\<lambda>e.
-    check (csr_sharp_mu_entry_ok e)
+    check (csr_sharp_mu_entry_ok \<mu> e)
       (case e of ((f, n), is) \<Rightarrow>
         showsl_lit (STR ''invalid replacement map entry for CSR-DP sharp side steps: '')
         \<circ> showsl f \<circ> showsl_lit (STR ''/'') \<circ> showsl n)) \<mu>"
@@ -251,26 +253,26 @@ lemma csr_sharp_mu_check_sound:
   shows "mu_of \<mu> (f, n) \<subseteq> mu_of \<mu> (Sharp f, n)"
 proof -
   have valid: "\<And>g m is. ((g, m), is) \<in> set \<mu> \<Longrightarrow>
-      \<not> is_sharp_lab g \<and> set is \<subseteq> {0..<m}"
+      set is \<subseteq> {0..<m} \<and>
+      (case g of Sharp h \<Rightarrow> mu_of \<mu> (h,m) \<subseteq> set is | _ \<Rightarrow> True)"
     using isOK_check_allm_checkD[OF ok[unfolded csr_sharp_mu_check_def]]
     unfolding csr_sharp_mu_entry_ok_def by force
-  have none: "map_of \<mu> (Sharp f, n) = None"
-  proof (rule ccontr)
-    assume "map_of \<mu> (Sharp f, n) \<noteq> None"
-    then obtain js where some: "map_of \<mu> (Sharp f, n) = Some js"
-      by auto
-    from map_of_SomeD[OF some] valid
-    show False by fastforce
-  qed
   show ?thesis
-  proof (cases "map_of \<mu> (f, n)")
-    case None
-    with none show ?thesis
+  proof (cases "map_of \<mu> (Sharp f, n)")
+    case (Some js)
+    from valid[OF map_of_SomeD[OF Some]] Some show ?thesis
       unfolding mu_of_def by simp
   next
-    case (Some js)
-    from valid[OF map_of_SomeD[OF Some]] Some none show ?thesis
-      unfolding mu_of_def by simp
+    case sharp: None
+    show ?thesis
+    proof (cases "map_of \<mu> (f, n)")
+      case None
+      with sharp show ?thesis unfolding mu_of_def by simp
+    next
+      case (Some js)
+      from valid[OF map_of_SomeD[OF Some]] Some sharp show ?thesis
+        unfolding mu_of_def by auto
+    qed
   qed
 qed
 

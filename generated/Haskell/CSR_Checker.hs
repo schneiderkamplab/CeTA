@@ -182,6 +182,16 @@ check_csr_dp_termination_proof_core ia j mu a i dpp
     (i . Term_Rewriting.showsl_lit
            ": context-sensitive instantiation requires improved CS-DPs");
 check_csr_dp_termination_proof_core ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc st sts prf) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": context-sensitive forward instantiation requires improved CS-DPs");
+check_csr_dp_termination_proof_core ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc redp pr u prf) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": context-sensitive U3 reduction pairs require minimal CS-DPs");
+check_csr_dp_termination_proof_core ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs) =
   CSR_Checker_Base.check_csr_dp_termination_proof ia j a i dpp
     (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs);

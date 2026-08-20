@@ -1,6 +1,6 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module Intf_Comp(Comp_res(..), comp2eq) where {
+module Intf_Comp(Comp_res(..), comp2eq, comp2lt) where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -25,6 +25,13 @@ comp2eq :: forall a b. (a -> b -> Comp_res) -> a -> b -> Bool;
 comp2eq cmp a b = (case cmp a b of {
                     LESS -> False;
                     EQUAL -> True;
+                    GREATER -> False;
+                  });
+
+comp2lt :: forall a b. (a -> b -> Comp_res) -> a -> b -> Bool;
+comp2lt cmp a b = (case cmp a b of {
+                    LESS -> True;
+                    EQUAL -> False;
                     GREATER -> False;
                   });
 

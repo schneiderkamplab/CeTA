@@ -3,7 +3,7 @@
 module
   Tree_Automata_Impl(showsl_ta_rule, Ta_rule_impl, Ta_impl, Ta_relation(..),
                       Tree_automaton(..), ta_of_ta, check_det, rqss_impl,
-                      rel_checker, r_lhs_states_impl, ta_res_impl,
+                      r_rhs_impl, rel_checker, r_lhs_states_impl, ta_res_impl,
                       generate_ta_cond, ta_rhs_states_set, ta_rules_impl,
                       ta_epss_impl, state_compatible_eff_list,
                       tree_aut_trs_closed, non_join_with_ta, ta_final_impl,
@@ -113,6 +113,9 @@ check_det (Tree_Automaton fin rules eps) =
 
 rqss_impl :: forall a b. Ta_rule_impl a b -> RBT.Rbt a ();
 rqss_impl (TA_rule_impl f qsa q qs) = qs;
+
+r_rhs_impl :: forall a b. Ta_rule_impl a b -> a;
+r_rhs_impl (TA_rule_impl f qsa q qs) = q;
 
 r_sym_impl :: forall a b. Ta_rule_impl a b -> (b, Arith.Nat);
 r_sym_impl (TA_rule_impl f qsa q qs) = (f, Arith.size_list qsa);
