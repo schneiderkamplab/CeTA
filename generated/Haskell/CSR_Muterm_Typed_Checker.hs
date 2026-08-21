@@ -39,6 +39,7 @@ import qualified Bounded_Increase_Impl;
 import qualified Semantic_Labeling_Carrier;
 import qualified Critical_Pairs_Impl;
 import qualified Subterm_Criterion_Impl;
+import qualified CSR_Muterm_Innermost_Usable_Exec;
 import qualified Check_Monad;
 import qualified HOL;
 import qualified Mapping;
@@ -67,6 +68,14 @@ muterm_i4_mu_exec mu fn =
   (if CSR_Checker_Base.is_sharp_lab (fst fn)
     then Set_Interval.atLeastLessThan Arith.zero (snd fn) else mu fn);
 
+muterm_active_vars_exec ::
+  forall a b.
+    (Eq a, Arith.Ceq b, Arith.Ccompare b,
+      Arith.Set_impl b) => [((a, Arith.Nat), [Arith.Nat])] ->
+                             Term_Rewriting.Term a b -> Arith.Set b;
+muterm_active_vars_exec m l =
+  Arith.set (CSR_Checker_Base.mu_vars_term_list m l);
+
 muterm_i4_mu_vars_term_list_exec ::
   forall a b c.
     ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
@@ -89,6 +98,18 @@ muterm_i4_full_check_exec ::
 muterm_i4_full_check_exec mu t =
   all (Arith.membera (muterm_i4_mu_vars_term_list_exec mu t))
     (Term_Rewriting.vars_term_list t);
+
+muterm_component_unhiding_rules ::
+  forall a b c d e.
+    (Eq b) => [(a, Term_Rewriting.Term b c)] ->
+                [(Term_Rewriting.Term b d, e)] ->
+                  [(a, Term_Rewriting.Term b c)];
+muterm_component_unhiding_rules s p =
+  filter
+    (\ ab ->
+      any (\ dp -> Term_Rewriting.root (snd ab) == Term_Rewriting.root (fst dp))
+        p)
+    s;
 
 check_muterm_expanded_extended_basic_proof ::
   forall a b c.
@@ -379,14 +400,23 @@ check_muterm_typed_dp_proof_production ia j mu i r s p
     "innermost typed RTA\'08 MU-TERM usable-rule reduction pair"
     (let {
        dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
-     } in Error_Monad.bind
-            (CSR_Muterm_Typed_General_Redpair.muterm_general_rta08_ur_redpair_proc
-              j mu (Reduction_Pair_Implementations.get_rel_impl redp) pr u s
-              dpp)
-            (\ dppa ->
+     } in (case CSR_Muterm_Typed_General_Redpair.muterm_general_rta08_ur_redpair_proc
+                  j mu (Reduction_Pair_Implementations.get_rel_impl redp) pr u s
+                  dpp
+            of {
+            Sum_Type.Inl _ ->
+              Error_Monad.bind
+                (CSR_Muterm_Usable_Rules.muterm_general_ur_redpair_proc j mu
+                  (Reduction_Pair_Implementations.get_rel_impl redp) pr u s dpp)
+                (\ dppa ->
+                  CSR_Muterm_Usable_Rules.check_muterm_typed_dp_proof ia j mu
+                    (Term_Rewriting.add_index i Arith.one_nat) r s
+                    (Dependency_Pair_Problem_Spec.pairs j dppa) child);
+            Sum_Type.Inr dppa ->
               check_muterm_typed_dp_proof_production ia j mu
                 (Term_Rewriting.add_index i Arith.one_nat) r s
-                (Dependency_Pair_Problem_Spec.pairs j dppa) child));
+                (Dependency_Pair_Problem_Spec.pairs j dppa) child;
+          }));
 check_muterm_typed_dp_proof_production ia j mu i r s p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation st sts child) =
   FOR_Preliminaries.debug i "innermost typed MU-TERM pair augmentation"
@@ -479,6 +509,21 @@ check_muterm_typed_dp_proof_production ia j mu i r s p
                              [] [] u)
                            child)))));
 check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable u redp pr child)
+  = FOR_Preliminaries.debug i
+      "expanded strong MU-TERM usable-rule reduction pair"
+      (let {
+         e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
+               RenamingN_String.string_renameN p s;
+         dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
+       } in Error_Monad.bind
+              (CSR_Muterm_Usable_Rules.muterm_strong_ur_redpair_proc j mu
+                (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
+              (\ dppa ->
+                CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j
+                  mu False (Term_Rewriting.add_index i Arith.one_nat) dppa
+                  child));
+check_muterm_typed_dp_proof_production ia j mu i r s p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary child) =
   FOR_Preliminaries.debug i "expanded typed MU-TERM ordinary DP continuation"
     (let {
@@ -494,11 +539,6 @@ check_muterm_typed_dp_proof_production ia j mu i r s p
       (CSR_Muterm_Usable_Rules.check_muterm_typed_dep_graph mu r s p edps)
       (\ _ ->
         check_muterm_innermost_typed_graph_components ia j mu i r s p edps));
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable v va vb vc) =
-  Sum_Type.Inl
-    (i . Term_Rewriting.showsl_lit
-           ": processor is not supported inside an innermost typed MU-TERM chain");
 
 check_muterm_innermost_typed_graph_components ::
   forall a b c.
@@ -532,13 +572,22 @@ check_muterm_innermost_typed_graph_components ia j mu i r s p
     (Term_Rewriting.add_index i Arith.one_nat) r s p rest;
 check_muterm_innermost_typed_graph_components ia j mu i r s p
   ((Just child, c) : rest) =
-  Error_Monad.bind
-    (check_muterm_typed_dp_proof_production ia j mu
-      (Term_Rewriting.add_index i Arith.one_nat) r s
-      (filter (Arith.membera c) p) child)
-    (\ _ ->
-      check_muterm_innermost_typed_graph_components ia j mu
-        (Term_Rewriting.add_index i Arith.one_nat) r s p rest);
+  let {
+    pc = filter (Arith.membera c) p;
+    sc = muterm_component_unhiding_rules s pc;
+  } in Error_Monad.bind
+         (Check_Monad.check
+           (CSR_Muterm_Innermost_Usable_Exec.muterm_innermost_typed_shape_check
+             mu pc s)
+           (i . Term_Rewriting.showsl_lit
+                  ": component-local MU-TERM bridge shape check failed"))
+         (\ _ ->
+           Error_Monad.bind
+             (check_muterm_typed_dp_proof_production ia j mu
+               (Term_Rewriting.add_index i Arith.one_nat) r sc pc child)
+             (\ _ ->
+               check_muterm_innermost_typed_graph_components ia j mu
+                 (Term_Rewriting.add_index i Arith.one_nat) r s p rest));
 
 muterm_unmarked_term_check_exec ::
   forall a b c. Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
@@ -601,6 +650,69 @@ muterm_i4_symbolically_covered_exec mu delta e (Term_Rewriting.Fun f ts) =
                   Arith.zero_nat d
            else True);
 
+muterm_recursive_bridge_target_source_check_exec ::
+  forall a b c.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Compare.Compare c,
+      Eq c) => ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                 Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                   Term_Rewriting.Term (Labelings.Lab a b) c ->
+                     Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
+muterm_recursive_bridge_target_source_check_exec mu delta a b =
+  (case b of {
+    Term_Rewriting.Var _ -> False;
+    Term_Rewriting.Fun (Labelings.Lab _ _) _ -> False;
+    Term_Rewriting.Fun (Labelings.FunLab _ _) _ -> False;
+    Term_Rewriting.Fun (Labelings.UnLab _) _ -> False;
+    Term_Rewriting.Fun (Labelings.Sharp g) us ->
+      muterm_i4_symbolically_covered_exec mu delta
+        (Arith.insert a
+          (Arith.insert (Term_Rewriting.Fun g us)
+            (Arith.set_empty
+              (Phantom_Type.of_phantom Term_Rewriting.set_impl_term))))
+        a;
+  });
+
+muterm_recursive_bridge_unary_source_check_exec ::
+  forall a b c d.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.One c, Eq c,
+      Compare.Compare d,
+      Eq d) => [(Labelings.Lab a b, c)] ->
+                 ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                   Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                     Term_Rewriting.Term (Labelings.Lab a b) d -> Bool;
+muterm_recursive_bridge_unary_source_check_exec ds mu delta a =
+  (case a of {
+    Term_Rewriting.Var _ -> False;
+    Term_Rewriting.Fun _ [] -> False;
+    Term_Rewriting.Fun f [u] ->
+      not (Arith.membera ds (f, Arith.one)) &&
+        muterm_i4_symbolically_covered_exec mu delta
+          (Arith.insert u
+            (Arith.set_empty
+              (Phantom_Type.of_phantom Term_Rewriting.set_impl_term)))
+          a;
+    Term_Rewriting.Fun _ (_ : _ : _) -> False;
+  });
+
+muterm_recursive_bridge_source_safe_check_exec ::
+  forall a b c d.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.One c, Eq c,
+      Compare.Compare d,
+      Eq d) => [(Labelings.Lab a b, c)] ->
+                 ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                   Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                     (Term_Rewriting.Term (Labelings.Lab a b) d,
+                       Term_Rewriting.Term (Labelings.Lab a b) d) ->
+                       Bool;
+muterm_recursive_bridge_source_safe_check_exec ds mu delta lr =
+  muterm_i4_symbolically_covered_exec mu delta
+    (Arith.insert (fst lr)
+      (Arith.set_empty (Phantom_Type.of_phantom Term_Rewriting.set_impl_term)))
+    (fst lr) ||
+    (muterm_recursive_bridge_unary_source_check_exec ds mu delta (fst lr) ||
+      muterm_recursive_bridge_target_source_check_exec mu delta (fst lr)
+        (snd lr));
+
 muterm_recursive_bridges_safe_check_exec ::
   forall a b c d.
     (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.One c, Eq c,
@@ -617,28 +729,179 @@ muterm_recursive_bridges_safe_check_exec ds mu delta b =
   all (\ lr ->
         Arith.less_eq_set (Term_Rewriting.vars_term (snd lr))
           (Term_Rewriting.vars_term (fst lr)) &&
-          (muterm_i4_symbolically_covered_exec mu delta
-             (Arith.insert (fst lr)
-               (Arith.set_empty
-                 (Phantom_Type.of_phantom Term_Rewriting.set_impl_term)))
-             (fst lr) ||
-            (case fst lr of {
-              Term_Rewriting.Var _ -> False;
-              Term_Rewriting.Fun _ [] -> False;
-              Term_Rewriting.Fun f [u] ->
-                not (Arith.membera ds (f, Arith.one)) &&
-                  muterm_i4_symbolically_covered_exec mu delta
-                    (Arith.insert u
-                      (Arith.set_empty
-                        (Phantom_Type.of_phantom Term_Rewriting.set_impl_term)))
-                    (fst lr);
-              Term_Rewriting.Fun _ (_ : _ : _) -> False;
-            })) &&
+          muterm_recursive_bridge_source_safe_check_exec ds mu delta lr &&
             muterm_i4_symbolically_covered_exec mu delta
               (Arith.set_empty
                 (Phantom_Type.of_phantom Term_Rewriting.set_impl_term))
               (snd lr))
     b;
+
+muterm_active_lhs_blocked_exec ::
+  forall a b c d.
+    (Eq a, Arith.Ccompare b, Eq b, Mapping.Mapping_impl b,
+      Eq d) => [(Term_Rewriting.Term a b, c)] ->
+                 [((a, Arith.Nat), [Arith.Nat])] ->
+                   Term_Rewriting.Term a d -> Bool;
+muterm_active_lhs_blocked_exec rs m a =
+  any (\ w -> any (\ (l, _) -> Term_Rewriting.matches w l) rs)
+    (CSR_Checker_Base.mu_supt_list m a);
+
+muterm_all_bridge_sources_active_blocked_exec ::
+  forall a b c d e.
+    (Eq a, Arith.Ccompare b, Eq b, Mapping.Mapping_impl b,
+      Eq d) => [(Term_Rewriting.Term a b, c)] ->
+                 [((a, Arith.Nat), [Arith.Nat])] ->
+                   [(Term_Rewriting.Term a d, e)] -> Bool;
+muterm_all_bridge_sources_active_blocked_exec rs m b =
+  all (\ (a, _) -> muterm_active_lhs_blocked_exec rs m a) b;
+
+muterm_root_pair_selects_symbolic_arg_exec ::
+  forall a b c d e f.
+    (Compare.Compare b, Eq b, Compare.Compare c, Eq c, Compare.Compare d, Eq d,
+      Eq e) => a -> ((Labelings.Lab b c, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                      Arith.Set (Labelings.Lab b c, Arith.Nat) ->
+                        Labelings.Lab b c ->
+                          [Term_Rewriting.Term (Labelings.Lab b c) d] ->
+                            (Term_Rewriting.Term (Labelings.Lab b c) e,
+                              Term_Rewriting.Term f e) ->
+                              Bool;
+muterm_root_pair_selects_symbolic_arg_exec rs mu delta f ts lr =
+  (case lr of {
+    (Term_Rewriting.Var _, _) -> False;
+    (Term_Rewriting.Fun (Labelings.Lab _ _) _, _) -> False;
+    (Term_Rewriting.Fun (Labelings.FunLab _ _) _, _) -> False;
+    (Term_Rewriting.Fun (Labelings.UnLab _) _, _) -> False;
+    (Term_Rewriting.Fun (Labelings.Sharp g) ls, r) ->
+      (if not (Labelings.equal_lab g f) then True
+        else (case r of {
+               Term_Rewriting.Var y ->
+                 any (\ (i, v) ->
+                       Arith.less_nat i (Arith.size_list ts) &&
+                         not (Arith.member i
+                               (CSR_Checker_Base.csr_dp_root_mu mu
+                                 (Labelings.Sharp f, Arith.size_list ts))) &&
+                           Term_Rewriting.equal_term v (Term_Rewriting.Var y) &&
+                             muterm_i4_symbolically_covered_exec mu delta
+                               (Arith.insert (Arith.nth ts i)
+                                 (Arith.set_empty
+                                   (Phantom_Type.of_phantom
+                                     Term_Rewriting.set_impl_term)))
+                               (Term_Rewriting.Fun (Labelings.Sharp f) ts))
+                   (zip (Arith.upt Arith.zero_nat (Arith.size_list ls)) ls);
+               Term_Rewriting.Fun _ _ -> False;
+             }));
+  });
+
+muterm_bridge_exposure_check_exec ::
+  forall a b c d.
+    (Compare.Compare b, Eq b, Compare.Compare c, Eq c, Compare.Compare d,
+      Eq d) => a -> ((Labelings.Lab b c, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                      Arith.Set (Labelings.Lab b c, Arith.Nat) ->
+                        [(Term_Rewriting.Term (Labelings.Lab b c) d,
+                           Term_Rewriting.Term (Labelings.Lab b c) d)] ->
+                          Term_Rewriting.Term (Labelings.Lab b c) d ->
+                            Term_Rewriting.Term (Labelings.Lab b c) d -> Bool;
+muterm_bridge_exposure_check_exec rs mu delta b v r =
+  not (null b) &&
+    all (\ (a, ba) ->
+          Term_Rewriting.equal_term a v &&
+            (case ba of {
+              Term_Rewriting.Var _ -> False;
+              Term_Rewriting.Fun (Labelings.Lab _ _) _ -> False;
+              Term_Rewriting.Fun (Labelings.FunLab _ _) _ -> False;
+              Term_Rewriting.Fun (Labelings.UnLab _) _ -> False;
+              Term_Rewriting.Fun (Labelings.Sharp g) us ->
+                muterm_i4_symbolically_covered_exec mu delta
+                  (Arith.insert v
+                    (Arith.insert (Term_Rewriting.Fun g us)
+                      (Arith.set_empty
+                        (Phantom_Type.of_phantom
+                          Term_Rewriting.set_impl_term))))
+                  r;
+            }))
+      b;
+
+muterm_root_pair_selects_symbolic_or_source_blocked_exec ::
+  forall a b c d e f g.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.Ccompare c, Eq c,
+      Mapping.Mapping_impl c, Arith.Ceq e, Arith.Ccompare e, Compare.Compare e,
+      Eq e,
+      Eq f) => [(Term_Rewriting.Term (Labelings.Lab a b) c, d)] ->
+                 [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                   ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                     Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                       Arith.Set e ->
+                         [(Term_Rewriting.Term (Labelings.Lab a b) e,
+                            Term_Rewriting.Term (Labelings.Lab a b) e)] ->
+                           Labelings.Lab a b ->
+                             [Term_Rewriting.Term (Labelings.Lab a b) e] ->
+                               (Term_Rewriting.Term (Labelings.Lab a b) f,
+                                 Term_Rewriting.Term g f) ->
+                                 Bool;
+muterm_root_pair_selects_symbolic_or_source_blocked_exec rs m mu delta a b f ts
+  lr =
+  muterm_root_pair_selects_symbolic_arg_exec rs mu delta f ts lr ||
+    (case lr of {
+      (Term_Rewriting.Var _, _) -> False;
+      (Term_Rewriting.Fun (Labelings.Lab _ _) _, _) -> False;
+      (Term_Rewriting.Fun (Labelings.FunLab _ _) _, _) -> False;
+      (Term_Rewriting.Fun (Labelings.UnLab _) _, _) -> False;
+      (Term_Rewriting.Fun (Labelings.Sharp g) ls, r) ->
+        (if not (Labelings.equal_lab g f) then True
+          else (case r of {
+                 Term_Rewriting.Var y ->
+                   any (\ (i, v) ->
+                         Arith.less_nat i (Arith.size_list ts) &&
+                           not (Arith.member i
+                                 (CSR_Checker_Base.csr_dp_root_mu mu
+                                   (Labelings.Sharp f, Arith.size_list ts))) &&
+                             Term_Rewriting.equal_term v
+                               (Term_Rewriting.Var y) &&
+                               (case Arith.nth ts i of {
+                                 Term_Rewriting.Var z -> Arith.member z a;
+                                 Term_Rewriting.Fun _ _ -> False;
+                               }) &&
+                                 muterm_all_bridge_sources_active_blocked_exec
+                                   rs m b)
+                     (zip (Arith.upt Arith.zero_nat (Arith.size_list ls)) ls) ||
+                     any (\ (i, v) ->
+                           Arith.less_nat i (Arith.size_list ts) &&
+                             not (Arith.member i
+                                   (CSR_Checker_Base.csr_dp_root_mu mu
+                                     (Labelings.Sharp f,
+                                       Arith.size_list ts))) &&
+                               Term_Rewriting.equal_term v
+                                 (Term_Rewriting.Var y) &&
+                                 muterm_bridge_exposure_check_exec rs mu delta b
+                                   (Arith.nth ts i)
+                                   (Term_Rewriting.Fun (Labelings.Sharp f) ts))
+                       (zip (Arith.upt Arith.zero_nat (Arith.size_list ls)) ls);
+                 Term_Rewriting.Fun _ _ -> False;
+               }));
+    });
+
+muterm_root_successors_select_symbolic_or_source_blocked_check_exec ::
+  forall a b c d e f g.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.Ccompare c, Eq c,
+      Mapping.Mapping_impl c, Arith.Ceq e, Arith.Ccompare e, Compare.Compare e,
+      Eq e,
+      Eq f) => [(Term_Rewriting.Term (Labelings.Lab a b) c, d)] ->
+                 [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                   ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                     Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                       Arith.Set e ->
+                         [(Term_Rewriting.Term (Labelings.Lab a b) e,
+                            Term_Rewriting.Term (Labelings.Lab a b) e)] ->
+                           [(Term_Rewriting.Term (Labelings.Lab a b) f,
+                              Term_Rewriting.Term g f)] ->
+                             Labelings.Lab a b ->
+                               [Term_Rewriting.Term (Labelings.Lab a b) e] ->
+                                 Bool;
+muterm_root_successors_select_symbolic_or_source_blocked_check_exec rs m mu
+  delta a b p f ts =
+  all (muterm_root_pair_selects_symbolic_or_source_blocked_exec rs m mu delta a
+        b f ts)
+    p;
 
 muterm_no_bridge_matches_exec ::
   forall a b c d.
@@ -703,25 +966,99 @@ muterm_root_successors_select_or_block_check_exec ::
 muterm_root_successors_select_or_block_check_exec rs mu delta p b f i ts =
   all (muterm_root_pair_selects_or_ground_blocked_exec rs mu delta b f i ts) p;
 
+muterm_recursive_target_safe_check_exec ::
+  forall a b c d e f.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.Ccompare c, Eq c,
+      Mapping.Mapping_impl c, Arith.Ceq d, Arith.Ccompare d, Compare.Compare d,
+      Eq d, Mapping.Mapping_impl d,
+      Eq e) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                  Term_Rewriting.Term (Labelings.Lab a b) c)] ->
+                 [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                   ((Labelings.Lab a b, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                     Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                       Arith.Set d ->
+                         [(Term_Rewriting.Term (Labelings.Lab a b) e,
+                            Term_Rewriting.Term f e)] ->
+                           [(Term_Rewriting.Term (Labelings.Lab a b) d,
+                              Term_Rewriting.Term (Labelings.Lab a b) d)] ->
+                             Term_Rewriting.Term (Labelings.Lab a b) d -> Bool;
+muterm_recursive_target_safe_check_exec rs m mu delta a p b r =
+  (case r of {
+    Term_Rewriting.Var _ -> True;
+    Term_Rewriting.Fun (Labelings.Lab _ _) _ -> False;
+    Term_Rewriting.Fun (Labelings.FunLab _ _) _ -> False;
+    Term_Rewriting.Fun (Labelings.UnLab _) _ -> False;
+    Term_Rewriting.Fun (Labelings.Sharp f) ts ->
+      muterm_i4_symbolically_covered_exec mu delta
+        (Arith.set_empty (Phantom_Type.of_phantom Term_Rewriting.set_impl_term))
+        r ||
+        (muterm_root_successors_select_symbolic_or_source_blocked_check_exec rs
+           m mu delta a b p f ts ||
+          (any (\ (i, v) ->
+                 not (Arith.member i
+                       (CSR_Checker_Base.csr_dp_root_mu mu
+                         (Labelings.Sharp f, Arith.size_list ts))) &&
+                   muterm_i4_symbolically_covered_exec mu delta
+                     (Arith.insert v
+                       (Arith.set_empty
+                         (Phantom_Type.of_phantom
+                           Term_Rewriting.set_impl_term)))
+                     r &&
+                     muterm_root_successors_select_or_block_check_exec rs mu
+                       delta p b f i ts)
+             (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts) ||
+            (any (\ (i, v) ->
+                   not (Arith.member i
+                         (CSR_Checker_Base.csr_dp_root_mu mu
+                           (Labelings.Sharp f, Arith.size_list ts))) &&
+                     muterm_bridge_exposure_check_exec rs mu delta b v r &&
+                       muterm_root_successors_select_or_block_check_exec rs mu
+                         delta p b f i ts)
+               (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts) ||
+              any (\ aa ->
+                    (case aa of {
+                      (_, Term_Rewriting.Var _) -> False;
+                      (_, Term_Rewriting.Fun _ []) -> False;
+                      (i, Term_Rewriting.Fun g [u]) ->
+                        not (Arith.member i
+                              (CSR_Checker_Base.csr_dp_root_mu mu
+                                (Labelings.Sharp f, Arith.size_list ts))) &&
+                          not (Arith.membera (Term_Rewriting.defined_list rs)
+                                (g, Arith.one_nat)) &&
+                            muterm_i4_symbolically_covered_exec mu delta
+                              (Arith.insert u
+                                (Arith.set_empty
+                                  (Phantom_Type.of_phantom
+                                    Term_Rewriting.set_impl_term)))
+                              r &&
+                              muterm_root_successors_select_or_block_check_exec
+                                rs mu delta p b f i ts;
+                      (_, Term_Rewriting.Fun _ (_ : _ : _)) -> False;
+                    }))
+                (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts))));
+  });
+
 muterm_recursive_pair_safe_check_exec ::
-  forall a b c d e f g h.
-    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Eq d, Arith.Ccompare f,
-      Eq f, Mapping.Mapping_impl f, Arith.Cenum h, Arith.Ceq h,
-      Arith.Ccompare h, Compare.Compare h, Eq h,
-      Arith.Set_impl h) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
+  forall a b c d e f.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.Ccompare c, Eq c,
+      Mapping.Mapping_impl c, Eq d, Arith.Cenum f, Arith.Ceq f,
+      Arith.Ccompare f, Compare.Compare f, Eq f, Mapping.Mapping_impl f,
+      Arith.Set_impl f) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
                               Term_Rewriting.Term (Labelings.Lab a b) c)] ->
-                             ((Labelings.Lab a b, Arith.Nat) ->
-                               Arith.Set Arith.Nat) ->
-                               Arith.Set (Labelings.Lab a b, Arith.Nat) ->
-                                 [(Term_Rewriting.Term (Labelings.Lab a b) d,
-                                    Term_Rewriting.Term e d)] ->
-                                   [(Term_Rewriting.Term (Labelings.Lab a b) f,
-                                      g)] ->
-                                     (Term_Rewriting.Term (Labelings.Lab a b) h,
-                                       Term_Rewriting.Term (Labelings.Lab a b)
- h) ->
-                                       Bool;
-muterm_recursive_pair_safe_check_exec rs mu delta p b lr =
+                             [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                               ((Labelings.Lab a b, Arith.Nat) ->
+                                 Arith.Set Arith.Nat) ->
+                                 Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                                   [(Term_Rewriting.Term (Labelings.Lab a b) d,
+                                      Term_Rewriting.Term e d)] ->
+                                     [(Term_Rewriting.Term (Labelings.Lab a b)
+ f,
+Term_Rewriting.Term (Labelings.Lab a b) f)] ->
+                                       (Term_Rewriting.Term (Labelings.Lab a b)
+  f,
+ Term_Rewriting.Term (Labelings.Lab a b) f) ->
+ Bool;
+muterm_recursive_pair_safe_check_exec rs m mu delta p b lr =
   (case lr of {
     (l, r) ->
       (case l of {
@@ -729,66 +1066,39 @@ muterm_recursive_pair_safe_check_exec rs mu delta p b lr =
         Term_Rewriting.Fun (Labelings.Lab _ _) _ -> False;
         Term_Rewriting.Fun (Labelings.FunLab _ _) _ -> False;
         Term_Rewriting.Fun (Labelings.UnLab _) _ -> False;
-        Term_Rewriting.Fun (Labelings.Sharp _) _ ->
-          muterm_i4_symbolically_covered_exec mu delta
-            (Arith.set_empty
-              (Phantom_Type.of_phantom Term_Rewriting.set_impl_term))
-            l &&
-            Arith.less_eq_set (Term_Rewriting.vars_term r)
-              (Term_Rewriting.vars_term l) &&
-              (case r of {
-                Term_Rewriting.Var _ -> True;
-                Term_Rewriting.Fun (Labelings.Lab _ _) _ -> False;
-                Term_Rewriting.Fun (Labelings.FunLab _ _) _ -> False;
-                Term_Rewriting.Fun (Labelings.UnLab _) _ -> False;
-                Term_Rewriting.Fun (Labelings.Sharp f) ts ->
-                  muterm_i4_symbolically_covered_exec mu delta
-                    (Arith.set_empty
-                      (Phantom_Type.of_phantom Term_Rewriting.set_impl_term))
-                    r ||
-                    any (\ a ->
-                          (case a of {
-                            (_, Term_Rewriting.Var _) -> False;
-                            (_, Term_Rewriting.Fun _ []) -> False;
-                            (i, Term_Rewriting.Fun g [u]) ->
-                              not (Arith.member i
-                                    (CSR_Checker_Base.csr_dp_root_mu mu
-                                      (Labelings.Sharp f,
-Arith.size_list ts))) &&
-                                not (Arith.membera
-                                      (Term_Rewriting.defined_list rs)
-                                      (g, Arith.one_nat)) &&
-                                  muterm_i4_symbolically_covered_exec mu delta
-                                    (Arith.insert u
-                                      (Arith.set_empty
-(Phantom_Type.of_phantom Term_Rewriting.set_impl_term)))
-                                    r &&
-                                    muterm_root_successors_select_or_block_check_exec
-                                      rs mu delta p b f i ts;
-                            (_, Term_Rewriting.Fun _ (_ : _ : _)) -> False;
-                          }))
-                      (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts);
-              });
+        Term_Rewriting.Fun (Labelings.Sharp k) _ ->
+          not (CSR_Checker_Base.is_sharp_lab k) &&
+            muterm_i4_symbolically_covered_exec mu delta
+              (Arith.set_empty
+                (Phantom_Type.of_phantom Term_Rewriting.set_impl_term))
+              l &&
+              Arith.less_eq_set (Term_Rewriting.vars_term r)
+                (Term_Rewriting.vars_term l) &&
+                muterm_recursive_target_safe_check_exec rs m mu delta
+                  (muterm_active_vars_exec m l) p b r;
       });
   });
 
 muterm_recursive_pairs_safe_check_exec ::
-  forall a b c d e f.
-    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.Cenum d,
-      Arith.Ceq d, Arith.Ccompare d, Compare.Compare d, Eq d, Arith.Set_impl d,
-      Arith.Ccompare e, Eq e,
-      Mapping.Mapping_impl e) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
-                                    Term_Rewriting.Term (Labelings.Lab a b)
-                                      c)] ->
-                                   ((Labelings.Lab a b, Arith.Nat) ->
-                                     Arith.Set Arith.Nat) ->
-                                     Arith.Set (Labelings.Lab a b, Arith.Nat) ->
-                                       [(Term_Rewriting.Term (Labelings.Lab a b)
-   d,
-  Term_Rewriting.Term (Labelings.Lab a b) d)] ->
- [(Term_Rewriting.Term (Labelings.Lab a b) e, f)] -> Bool;
-muterm_recursive_pairs_safe_check_exec rs mu delta p b =
-  all (muterm_recursive_pair_safe_check_exec rs mu delta p b) p;
+  forall a b c d.
+    (Compare.Compare a, Eq a, Compare.Compare b, Eq b, Arith.Ccompare c, Eq c,
+      Mapping.Mapping_impl c, Arith.Cenum d, Arith.Ceq d, Arith.Ccompare d,
+      Compare.Compare d, Eq d, Mapping.Mapping_impl d,
+      Arith.Set_impl d) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                              Term_Rewriting.Term (Labelings.Lab a b) c)] ->
+                             [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                               ((Labelings.Lab a b, Arith.Nat) ->
+                                 Arith.Set Arith.Nat) ->
+                                 Arith.Set (Labelings.Lab a b, Arith.Nat) ->
+                                   [(Term_Rewriting.Term (Labelings.Lab a b) d,
+                                      Term_Rewriting.Term (Labelings.Lab a b)
+d)] ->
+                                     [(Term_Rewriting.Term (Labelings.Lab a b)
+ d,
+Term_Rewriting.Term (Labelings.Lab a b) d)] ->
+                                       Bool;
+muterm_recursive_pairs_safe_check_exec rs m mu delta p b =
+  all (muterm_recursive_pair_safe_check_exec rs m mu delta p b) p;
 
 muterm_i4_non_mu_vars_term_list_exec ::
   forall a b c.
@@ -846,11 +1156,11 @@ muterm_recursive_i4_shape_check_exec mu p b =
       b;
 
 muterm_recursive_rta08_ur_redpair_proc_exec ::
-  forall a b c d e.
+  forall a b c d e f.
     (Compare.Compare a, Eq a, Term_Rewriting.Showl a, Compare.Compare b, Eq b,
-      Term_Rewriting.Showl b, Arith.Card_UNIV e, Arith.Cenum e, Arith.Ceq e,
-      Arith.Cproper_interval e, Compare.Compare e, Eq e, Mapping.Mapping_impl e,
-      Arith.Set_impl e,
+      Term_Rewriting.Showl b, Arith.Ccompare c, Eq c, Mapping.Mapping_impl c,
+      Arith.Card_UNIV e, Arith.Cenum e, Arith.Ceq e, Arith.Cproper_interval e,
+      Compare.Compare e, Eq e, Mapping.Mapping_impl e, Arith.Set_impl e,
       Term_Rewriting.Showl e) => [(Term_Rewriting.Term (Labelings.Lab a b) c,
                                     Term_Rewriting.Term (Labelings.Lab a b)
                                       c)] ->
@@ -865,10 +1175,11 @@ muterm_recursive_rta08_ur_redpair_proc_exec ::
         Term_Rewriting.Term (Labelings.Lab a b) e)] ->
        [(Term_Rewriting.Term (Labelings.Lab a b) e,
           Term_Rewriting.Term (Labelings.Lab a b) e)] ->
-         [(Term_Rewriting.Term (Labelings.Lab a b) e,
-            Term_Rewriting.Term (Labelings.Lab a b) e)] ->
-           d -> Sum_Type.Sum (String -> String) d;
-muterm_recursive_rta08_ur_redpair_proc_exec rs mu delta j m rp premove u b dpp =
+         f -> [(Term_Rewriting.Term (Labelings.Lab a b) e,
+                 Term_Rewriting.Term (Labelings.Lab a b) e)] ->
+                d -> Sum_Type.Sum (String -> String) d;
+muterm_recursive_rta08_ur_redpair_proc_exec rs mu delta j m rp premove u bcheck
+  b dpp =
   (case Error_Monad.bind (Term_Rewriting.rel_impl_redpair rp)
           (\ _ ->
             (case Dependency_Pair_Problem_Spec.split_pairs j dpp premove of {
@@ -901,7 +1212,7 @@ fst)
                                  Error_Monad.bind
                                    (Check_Monad.check
                                      (muterm_recursive_pairs_safe_check_exec rs
-                                       mu delta
+                                       m mu delta
                                        (Dependency_Pair_Problem_Spec.pairs j
  dpp)
                                        b)
@@ -959,7 +1270,7 @@ fst)
   });
 
 check_muterm_recursive_dp_proof ::
-  forall a b c.
+  forall a b c d.
     (Compare.Compare b, Eq b, Term_Rewriting.Showl b, Compare.Compare c, Eq c,
       Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a
                                    (Labelings.Lab b c) [Arith.Char] () ->
@@ -969,18 +1280,19 @@ check_muterm_recursive_dp_proof ::
                                        [(Term_Rewriting.Term (Labelings.Lab b c)
    [Arith.Char],
   Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
- [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
-    Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
-   [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
-      Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
-     [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
-       Check_Termination.Dp_termination_proof b c [Arith.Char] ->
-         Sum_Type.Sum (String -> String) ();
-check_muterm_recursive_dp_proof j m i r b u p Check_Termination.P_is_Empty =
+ d -> [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
+         Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
+        [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
+           Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
+          [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
+             Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
+            Check_Termination.Dp_termination_proof b c [Arith.Char] ->
+              Sum_Type.Sum (String -> String) ();
+check_muterm_recursive_dp_proof j m i r bcheck b u p
+  Check_Termination.P_is_Empty =
   Check_Monad.check (null p)
     (i . Term_Rewriting.showsl_lit ": recursive MU-TERM pairs are not empty");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Redpair_Proc redp pr child) =
   FOR_Preliminaries.debug i "recursive MU-TERM reduction pair"
     (let {
@@ -992,12 +1304,13 @@ check_muterm_recursive_dp_proof j m i r b u p
               (CSR_Minimal_CSDP_Proofs.csr_u3_delta
                 (Arith.set (Dependency_Pair_Problem_Spec.rules j dpp))
                 (Arith.set u))
-              j m (Reduction_Pair_Implementations.get_rel_impl redp) pr u b dpp)
+              j m (Reduction_Pair_Implementations.get_rel_impl redp) pr u bcheck
+              b dpp)
             (\ dppa ->
               check_muterm_recursive_dp_proof j m
-                (Term_Rewriting.add_index i Arith.one_nat) r b u
+                (Term_Rewriting.add_index i Arith.one_nat) r bcheck b u
                 (Dependency_Pair_Problem_Spec.pairs j dppa) child));
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Dep_Graph_Proc edps) =
   FOR_Preliminaries.debug i "terminal recursive MU-TERM dependency graph"
     (Error_Monad.bind
@@ -1006,120 +1319,121 @@ check_muterm_recursive_dp_proof j m i r b u p
         Check_Monad.check (all (\ (po, _) -> Arith.is_none po) edps)
           (i . Term_Rewriting.showsl_lit
                  ": recursive MU-TERM graph has a nonterminal component")));
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Subterm_Criterion_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Gen_Subterm_Criterion_Proc v va vb) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Redpair_UR_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Usable_Rules_Proc v va) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Mono_Redpair_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Mono_URM_Redpair_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Mono_Redpair_UR_Proc v va vb vc vd) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Size_Change_Subterm_Proc v) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Size_Change_Redpair_Proc v va vb) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Uncurry_Proc v va vb vc vd) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Fcc_Proc v va vb vc vd) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Split_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Semlab_Proc v va vb vc vd) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Switch_Innermost_Proc v va) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Rewriting_Proc v va vb vc vd ve vf) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Instantiation_Proc v va vb) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Forward_Instantiation_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Narrowing_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Assume_Finite v va) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Q_Reduction_Proc v va) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.Complex_Constant_Removal_Proc v va) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p
+check_muterm_recursive_dp_proof j m i r bcheck b u p
   (Check_Termination.General_Redpair_Proc v va vb vc vd) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
-check_muterm_recursive_dp_proof j m i r b u p (Check_Termination.To_Trs_Proc v)
-  = Sum_Type.Inl
-      (i . Term_Rewriting.showsl_lit
-             ": unsupported processor in recursive MU-TERM continuation");
+check_muterm_recursive_dp_proof j m i r bcheck b u p
+  (Check_Termination.To_Trs_Proc v) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive MU-TERM continuation");
 
 check_muterm_i4_graph_component ::
   forall a b c.
@@ -1147,17 +1461,27 @@ check_muterm_i4_graph_component ::
 check_muterm_i4_graph_component ia j m i r b p (Nothing, c) = Sum_Type.Inr ();
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable u child), c) =
-  Error_Monad.bind
-    (Check_Monad.check
-      (all (\ lr -> Arith.membera r lr || Arith.membera b lr) u)
-      (i . Term_Rewriting.showsl_lit
-             ": extraneous recursive MU-TERM usable rule"))
-    (\ _ ->
-      let {
-        u0 = filter (Arith.membera r) u;
-      } in check_muterm_recursive_dp_proof j m
-             (Term_Rewriting.add_index i Arith.one_nat) r b u0
-             (filter (Arith.membera c) p) child);
+  let {
+    pc = filter (Arith.membera c) p;
+    bc = muterm_component_unhiding_rules b pc;
+  } in Error_Monad.bind
+         (Check_Monad.check
+           (CSR_Muterm_Innermost_Usable_Exec.muterm_innermost_typed_shape_check
+             m pc b)
+           (i . Term_Rewriting.showsl_lit
+                  ": component-local recursive MU-TERM bridge shape check failed"))
+         (\ _ ->
+           Error_Monad.bind
+             (Check_Monad.check
+               (all (\ lr -> Arith.membera r lr || Arith.membera b lr) u)
+               (i . Term_Rewriting.showsl_lit
+                      ": extraneous recursive MU-TERM usable rule"))
+             (\ _ ->
+               let {
+                 u0 = filter (Arith.membera r) u;
+               } in check_muterm_recursive_dp_proof j m
+                      (Term_Rewriting.add_index i Arith.one_nat) r b bc u0 pc
+                      child));
 check_muterm_i4_graph_component ia j m i r b p
   (Just CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty, c) =
   check_muterm_typed_dp_proof_production ia j m

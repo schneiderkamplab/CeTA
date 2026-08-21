@@ -1,8 +1,6 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module
-  CSR_Mixed_Subterm_Proofs(csr_mixed_subterm_proc, csr_mixed_unhiding_present)
-  where {
+module CSR_Mixed_Subterm_Proofs(csr_mixed_subterm_proc) where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -142,20 +140,5 @@ csr_mixed_subterm_proc j u mu pL rseq pr dpp =
     Sum_Type.Inr _ ->
       Sum_Type.Inr (Dependency_Pair_Problem_Spec.delete_P_Pw j dpp pr pr);
   });
-
-csr_mixed_unhiding_present ::
-  forall a b c.
-    (Eq a) => a -> [(Term_Rewriting.Term a b, Term_Rewriting.Term a c)] -> Bool;
-csr_mixed_unhiding_present u p =
-  any (\ (l, r) ->
-        (case Term_Rewriting.root l of {
-          Nothing -> False;
-          Just (f, _) -> f == u;
-        }) ||
-          (case Term_Rewriting.root r of {
-            Nothing -> False;
-            Just (f, _) -> f == u;
-          }))
-    p;
 
 }

@@ -557,7 +557,7 @@ d)
               } in Error_Monad.bind
                      (Check_Monad.check
                        (CSR_Muterm_Typed_Checker.muterm_recursive_pairs_safe_check_exec
-                         r (Context_Sensitive_Impl.mu_of mu_i) delta p s)
+                         r mu_i (Context_Sensitive_Impl.mu_of mu_i) delta p s)
                        (Term_Rewriting.showsl_lit
                          "recursive MU-TERM pair safety check failed"))
                      (\ _ ->

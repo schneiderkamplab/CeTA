@@ -1,6 +1,8 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module CSR_Muterm_Innermost_Usable_Exec(muterm_expanded_innermost_usable_check)
+module
+  CSR_Muterm_Innermost_Usable_Exec(muterm_innermost_typed_shape_check,
+                                    muterm_expanded_innermost_usable_check)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
