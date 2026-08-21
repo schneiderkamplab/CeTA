@@ -329,14 +329,11 @@ where
        (CSR_DP_Size_Change_Subterm_Proc graphs))"
 | "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp
       (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf) =
-    (if csr_mixed_unhiding_present U (dpp_ops.pairs J dpp)
-     then debug i (STR ''LPAR08 mixed marked/unhiding subterm'') (do {
-       dpp' \<leftarrow> csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp;
-       check_improved_csr_dp_termination_proof I J U \<mu> a
-         (add_index i 1) dpp' prf
-     })
-     else check_csr_dp_termination_proof_min I J \<mu> a i dpp
-       (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf))"
+    debug i (STR ''LPAR08 marked/unhiding subterm'') (do {
+      dpp' \<leftarrow> csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp;
+      check_improved_csr_dp_termination_proof I J U \<mu> a
+        (add_index i 1) dpp' prf
+    })"
 | "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp prf =
     check_csr_dp_termination_proof_min I J \<mu> a i dpp prf"
 | "check_improved_csr_dp_graph_components I J U \<mu> a i dpp [] =
@@ -719,55 +716,42 @@ next
       CSR_DP_Ordinary_Proof.prems(4) old])
 next
   case (CSR_DP_Subterm_Criterion_Proc p rseq Pr sub)
-  show ?case
-  proof (cases "csr_mixed_unhiding_present U (dpp_ops.pairs J dpp)")
-    case True
-    from CSR_DP_Subterm_Criterion_Proc.prems(1) True
-    obtain dpp' where proc:
-        "csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp = return dpp'"
-      and rec: "isOK (check_improved_csr_dp_termination_proof
-        I J U \<mu> False (add_index i 1) dpp' sub)" by auto
-    from proc have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
-      unfolding csr_mixed_subterm_proc_def by auto
-    have plain': "plain_csr_dpp J dpp'"
-      unfolding dpp' by (rule plain_csr_dpp_delete_pairs[
-        OF J CSR_DP_Subterm_Criterion_Proc.prems(2)])
-    interpret dpp_spec J by fact
-    have sem: "dpp_ops.dpp J dpp' =
-      (NFS dpp, M dpp, set (P dpp) - set Pr,
-       set (Pw dpp) - set Pr, set (Q dpp), set (R dpp), set (Rw dpp))"
-      unfolding dpp' by (rule delete_P_Pw_sound)
-    have sem': "dpp_ops.dpp J dpp' =
-      (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'),
-       set (Q dpp'), set (R dpp'), set (Rw dpp'))" by (rule dpp_sound)
-    have rules': "set (rules dpp') = set (rules dpp)"
-      using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
-    have wf': "wf_trs (set (rules dpp'))"
-      using CSR_DP_Subterm_Criterion_Proc.prems(3) unfolding rules' .
-    have fresh_sharp': "\<And>f n.
-      \<not> defined (set (rules dpp')) (Sharp f,n)"
-      using CSR_DP_Subterm_Criterion_Proc.prems(4) unfolding rules' .
-    have fresh_U': "\<And>n. \<not> defined (set (rules dpp')) (U,n)"
-      using CSR_DP_Subterm_Criterion_Proc.prems(5) unfolding rules' .
-    from CSR_DP_Subterm_Criterion_Proc.hyps[
-      OF rec plain' wf' fresh_sharp' fresh_U']
-    have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
-      (set (pairs dpp')) (set (rules dpp'))" .
-    show ?thesis by (rule csr_mixed_subterm_proc_sound[
-      OF J CSR_DP_Subterm_Criterion_Proc.prems(2)
-        CSR_DP_Subterm_Criterion_Proc.prems(3)
-        CSR_DP_Subterm_Criterion_Proc.prems(4)
-        CSR_DP_Subterm_Criterion_Proc.prems(5) unsharp proc fin'])
-  next
-    case False
-    from CSR_DP_Subterm_Criterion_Proc.prems(1) False have old:
-      "isOK (check_csr_dp_termination_proof_min I J \<mu> False i dpp
-        (CSR_DP_Subterm_Criterion_Proc p rseq Pr sub))" by simp
-    show ?thesis by (rule check_csr_dp_termination_proof_min_sound[
-      OF I J CSR_DP_Subterm_Criterion_Proc.prems(2)
-        CSR_DP_Subterm_Criterion_Proc.prems(3)
-        CSR_DP_Subterm_Criterion_Proc.prems(4) old])
-  qed
+  from CSR_DP_Subterm_Criterion_Proc.prems(1)
+  obtain dpp' where proc:
+      "csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp = return dpp'"
+    and rec: "isOK (check_improved_csr_dp_termination_proof
+      I J U \<mu> False (add_index i 1) dpp' sub)" by auto
+  from proc have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+    unfolding csr_mixed_subterm_proc_def by auto
+  have plain': "plain_csr_dpp J dpp'"
+    unfolding dpp' by (rule plain_csr_dpp_delete_pairs[
+      OF J CSR_DP_Subterm_Criterion_Proc.prems(2)])
+  interpret dpp_spec J by fact
+  have sem: "dpp_ops.dpp J dpp' =
+    (NFS dpp, M dpp, set (P dpp) - set Pr,
+     set (Pw dpp) - set Pr, set (Q dpp), set (R dpp), set (Rw dpp))"
+    unfolding dpp' by (rule delete_P_Pw_sound)
+  have sem': "dpp_ops.dpp J dpp' =
+    (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'),
+     set (Q dpp'), set (R dpp'), set (Rw dpp'))" by (rule dpp_sound)
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
+  have wf': "wf_trs (set (rules dpp'))"
+    using CSR_DP_Subterm_Criterion_Proc.prems(3) unfolding rules' .
+  have fresh_sharp': "\<And>f n.
+    \<not> defined (set (rules dpp')) (Sharp f,n)"
+    using CSR_DP_Subterm_Criterion_Proc.prems(4) unfolding rules' .
+  have fresh_U': "\<And>n. \<not> defined (set (rules dpp')) (U,n)"
+    using CSR_DP_Subterm_Criterion_Proc.prems(5) unfolding rules' .
+  from CSR_DP_Subterm_Criterion_Proc.hyps[
+    OF rec plain' wf' fresh_sharp' fresh_U']
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (pairs dpp')) (set (rules dpp'))" .
+  show ?case by (rule csr_mixed_subterm_proc_sound[
+    OF J CSR_DP_Subterm_Criterion_Proc.prems(2)
+      CSR_DP_Subterm_Criterion_Proc.prems(3)
+      CSR_DP_Subterm_Criterion_Proc.prems(4)
+      CSR_DP_Subterm_Criterion_Proc.prems(5) unsharp proc fin'])
 next
   case (CSR_DP_Gen_Subterm_Criterion_Proc p Pr sub)
   from CSR_DP_Gen_Subterm_Criterion_Proc.prems(1) have old:

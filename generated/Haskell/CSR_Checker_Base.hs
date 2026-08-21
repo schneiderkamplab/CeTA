@@ -6,8 +6,8 @@ module
                     mu_CSDP_list, csr_root_tcap, csr_dp_root_mu,
                     mu_vars_term_list, csr_sharp_mu_check, graph_approx_csr_rt,
                     csr_rule_removal_impl, csr_dep_graph_edge_check,
-                    csr_mu_usable_rules_proc, mu_csr_dependency_pairs_tt,
-                    safe_csr_dependency_pairs_tt,
+                    csr_mu_usable_rules_proc, rhs_mu_vars_condition_list,
+                    mu_csr_dependency_pairs_tt, safe_csr_dependency_pairs_tt,
                     check_csr_dp_termination_proof)
   where {
 
@@ -99,6 +99,19 @@ data Csr_dp_termination_proof a b c = CSR_DP_P_is_Empty
   | CSR_DP_Instantiation_Proc
       (Term_Rewriting.Term (Labelings.Lab a b) c,
         Term_Rewriting.Term (Labelings.Lab a b) c)
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Csr_dp_termination_proof a b c)
+  | CSR_DP_Forward_Instantiation_Proc
+      (Term_Rewriting.Term (Labelings.Lab a b) c,
+        Term_Rewriting.Term (Labelings.Lab a b) c)
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Csr_dp_termination_proof a b c)
+  | CSR_DP_Redpair_UR_Proc
+      (Reduction_Pair_Implementations.Redtriple_impl (Labelings.Lab a b))
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       (Csr_dp_termination_proof a b c)
@@ -299,18 +312,28 @@ mu_vars_term_list mu (Term_Rewriting.Fun f ts) =
       (Arith.upt Arith.zero_nat (Arith.size_list ts)));
 
 csr_sharp_mu_entry_ok ::
-  forall a b. ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
-csr_sharp_mu_entry_ok e =
+  forall a b.
+    (Eq a,
+      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                 ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
+csr_sharp_mu_entry_ok mu e =
   (case e of {
     ((f, n), is) ->
-      not (is_sharp_lab f) &&
-        Arith.less_eq_set (Arith.set is)
-          (Set_Interval.atLeastLessThan Arith.zero_nat n);
+      Arith.less_eq_set (Arith.set is)
+        (Set_Interval.atLeastLessThan Arith.zero_nat n) &&
+        (case f of {
+          Labelings.Lab _ _ -> True;
+          Labelings.FunLab _ _ -> True;
+          Labelings.UnLab _ -> True;
+          Labelings.Sharp g ->
+            Arith.less_eq_set (Context_Sensitive_Impl.mu_of mu (g, n))
+              (Arith.set is);
+        });
   });
 
 csr_sharp_mu_check ::
   forall a b.
-    (Compare.Compare_order a, Term_Rewriting.Showl a,
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a, Eq b,
       Term_Rewriting.Showl b) => [((Labelings.Lab a b, Arith.Nat),
                                     [Arith.Nat])] ->
                                    Sum_Type.Sum (String -> String) ();
@@ -318,7 +341,7 @@ csr_sharp_mu_check mu =
   Error_Monad.catch_error
     (Error_Monad.forallM
       (\ e ->
-        Check_Monad.check (csr_sharp_mu_entry_ok e)
+        Check_Monad.check (csr_sharp_mu_entry_ok mu e)
           (case e of {
             ((f, n), _) ->
               ((Term_Rewriting.showsl_lit
@@ -972,6 +995,13 @@ dp_proof_of_csr_dp_termination_proof (CSR_DP_Dep_Graph_Proc edpts) =
       edpts);
 dp_proof_of_csr_dp_termination_proof (CSR_DP_Instantiation_Proc st sts prf) =
   Check_Termination.Instantiation_Proc st sts
+    (dp_proof_of_csr_dp_termination_proof prf);
+dp_proof_of_csr_dp_termination_proof
+  (CSR_DP_Forward_Instantiation_Proc st sts prf) =
+  Check_Termination.Forward_Instantiation_Proc st sts Nothing
+    (dp_proof_of_csr_dp_termination_proof prf);
+dp_proof_of_csr_dp_termination_proof (CSR_DP_Redpair_UR_Proc redp pr u prf) =
+  Check_Termination.Redpair_UR_Proc redp pr u
     (dp_proof_of_csr_dp_termination_proof prf);
 dp_proof_of_csr_dp_termination_proof (CSR_DP_Size_Change_Subterm_Proc graphs) =
   Check_Termination.Size_Change_Subterm_Proc graphs;

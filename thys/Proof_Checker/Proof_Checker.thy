@@ -8,7 +8,7 @@ License: LGPL (see file COPYING.LESSER)
 theory Proof_Checker
   imports
     Proof_Checker_Base.Check_Termination
-    CSR_GM_Ext.CSR_GM_Transformation
+    CSR_GM_Transformation
     Outermost_RZ_Ext.Outermost_RZ_Checker
     CSR_Check_Loops
     Check_CRP

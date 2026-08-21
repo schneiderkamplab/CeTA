@@ -1,8 +1,24 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  CSR_Minimal_CSDP_Proofs(csr_u3_mixed_term_check, csr_instantiation_proc,
+  CSR_Minimal_CSDP_Proofs(csr_u3_delta, csr_sct_sharp_term,
+                           csr_rta08_collapsing_CSDP_list,
+                           csr_u3_root_rules_check,
+                           csr_u3_inactive_root_rules_check,
+                           csr_u3_all_root_rules_check, csr_u3_mixed_term_check,
+                           csr_sharp_pairs_check, csr_u3_redpair_proc,
+                           csr_instantiation_proc,
+                           csr_rta08_projection_rules_list,
+                           csr_rta08_redpair_proc, qcs_ur_closed_term_check,
+                           qcs_ur_closed_dp_rhs_check, qcs_csr_ur_closed_check,
+                           check_csr_rta08_dep_graph_proc,
                            csr_qcs_usable_rules_proc,
+                           csr_rules_sharp_fresh_check,
+                           csr_sct_active_subterm_proc,
+                           csr_rta08_active_root_rules_check,
+                           csr_rta08_usable_rules_check,
+                           csr_rta08_dependency_pairs_tt,
+                           csr_forward_instantiation_proc,
                            check_csr_dp_termination_proof_min,
                            check_csr_termination_proof_min)
   where {
@@ -23,6 +39,9 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
+import qualified Icap_Impl;
+import qualified Graph;
+import qualified Multi_Map;
 import qualified Name;
 import qualified Sharp_Syntax;
 import qualified Size_Change_Termination_Processors;
@@ -30,8 +49,9 @@ import qualified Missing_List;
 import qualified Size_Change_Termination;
 import qualified Product_Lexorder;
 import qualified Icap;
-import qualified Compare_Order_Instances;
 import qualified CSR_Checker;
+import qualified Set_Interval;
+import qualified Compare_Order_Instances;
 import qualified Context_Sensitive_Impl;
 import qualified Mapping;
 import qualified FOR_Preliminaries;
@@ -51,10 +71,25 @@ import qualified HOL;
 import qualified Dependency_Pair_Problem_Spec;
 import qualified Sum_Type;
 import qualified CSR_Checker_Base;
-import qualified Arith;
-import qualified Compare;
 import qualified Labelings;
+import qualified Compare;
 import qualified Term_Rewriting;
+import qualified Arith;
+
+csr_u3_delta ::
+  forall a b c.
+    (Arith.Cenum a, Compare.Compare a, Eq a, Compare.Compare b, Eq b,
+      Arith.Ceq c,
+      Arith.Ccompare c) => Arith.Set (Term_Rewriting.Term a b, c) ->
+                             Arith.Set (Term_Rewriting.Term a b, c) ->
+                               Arith.Set (a, Arith.Nat);
+csr_u3_delta r u =
+  Arith.collect
+    (\ f ->
+      Arith.ball r
+        (\ lr ->
+          (if Term_Rewriting.root (fst lr) == Just f then Arith.member lr u
+            else True)));
 
 csr_sct_sharp_term ::
   forall a b c. Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
@@ -190,6 +225,56 @@ csr_u3_mixed_pairs_check r p =
               p)
     (map fst (Term_Rewriting.funas_trs_list p));
 
+csr_u3_sharp_mu_entry_ok ::
+  forall a b.
+    (Eq a,
+      Eq b) => [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                 ((Labelings.Lab a b, Arith.Nat), [Arith.Nat]) -> Bool;
+csr_u3_sharp_mu_entry_ok mu ((Labelings.Sharp f, n), is) =
+  Arith.less_eq_set (Arith.set is)
+    (Set_Interval.atLeastLessThan Arith.zero_nat n) &&
+    Arith.less_eq_set (Context_Sensitive_Impl.mu_of mu (f, n)) (Arith.set is);
+csr_u3_sharp_mu_entry_ok mu ((Labelings.Lab v va, n), is) =
+  Arith.less_eq_set (Arith.set is)
+    (Set_Interval.atLeastLessThan Arith.zero_nat n) &&
+    Arith.less_eq_set (Arith.set is)
+      (Context_Sensitive_Impl.mu_of mu
+        (Labelings.Sharp (Labelings.Lab v va), n));
+csr_u3_sharp_mu_entry_ok mu ((Labelings.FunLab v va, n), is) =
+  Arith.less_eq_set (Arith.set is)
+    (Set_Interval.atLeastLessThan Arith.zero_nat n) &&
+    Arith.less_eq_set (Arith.set is)
+      (Context_Sensitive_Impl.mu_of mu
+        (Labelings.Sharp (Labelings.FunLab v va), n));
+csr_u3_sharp_mu_entry_ok mu ((Labelings.UnLab v, n), is) =
+  Arith.less_eq_set (Arith.set is)
+    (Set_Interval.atLeastLessThan Arith.zero_nat n) &&
+    Arith.less_eq_set (Arith.set is)
+      (Context_Sensitive_Impl.mu_of mu
+        (Labelings.Sharp (Labelings.UnLab v), n));
+
+csr_u3_sharp_mu_check ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a, Eq b,
+      Term_Rewriting.Showl b) => [((Labelings.Lab a b, Arith.Nat),
+                                    [Arith.Nat])] ->
+                                   Sum_Type.Sum (String -> String) ();
+csr_u3_sharp_mu_check mu =
+  Error_Monad.catch_error
+    (Error_Monad.forallM
+      (\ e ->
+        Check_Monad.check (csr_u3_sharp_mu_entry_ok mu e)
+          (case e of {
+            ((f, n), _) ->
+              ((Term_Rewriting.showsl_lit
+                  "invalid replacement map inclusion for CSR-DP sharp side steps: " .
+                 Term_Rewriting.showsl_lab f) .
+                Term_Rewriting.showsl_lit "/") .
+                Term_Rewriting.showsl_nat n;
+          }))
+      mu)
+    (\ x -> Sum_Type.Inl (snd x));
+
 csr_sharp_pairs_check ::
   forall a b c d e f.
     [(Term_Rewriting.Term (Labelings.Lab a b) c,
@@ -232,7 +317,7 @@ csr_u3_redpair_proc ::
 csr_u3_redpair_proc j mu rp premove u dpp =
   (case Error_Monad.bind (Term_Rewriting.rel_impl_redpair rp)
           (\ _ ->
-            Error_Monad.bind (CSR_Checker_Base.csr_sharp_mu_check mu)
+            Error_Monad.bind (csr_u3_sharp_mu_check mu)
               (\ _ ->
                 (case Dependency_Pair_Problem_Spec.split_pairs j dpp premove of
                   {
@@ -1016,7 +1101,7 @@ qcs_csr_ur_closed_check r u mu p =
     all (\ lr -> qcs_ur_closed_term_check r u mu (snd lr)) u &&
       all (\ dp -> qcs_ur_closed_dp_rhs_check r u mu (snd dp)) p;
 
-check_csr_rta08_dp_first ::
+check_csr_rta08_redpair_first ::
   forall a b c.
     (Compare.Compare_order b, Countable.Countable b, Eq b,
       Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
@@ -1030,7 +1115,7 @@ check_csr_rta08_dp_first ::
                                        (String -> String) ->
  c -> CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
         Sum_Type.Sum (String -> String) ();
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Redpair_UR_Proc redp pr u subprf))
   = FOR_Preliminaries.debug i "RTA08 collapsing reduction pair"
@@ -1053,187 +1138,357 @@ check_csr_rta08_dp_first ia j mu i dpp
                 ((i . Term_Rewriting.showsl_lit
                         ": error below RTA08 collapsing reduction pair\n") .
                   x))));
-check_csr_rta08_dp_first ia j mu i dpp CSR_Checker_Base.CSR_DP_P_is_Empty =
+check_csr_rta08_redpair_first ia j mu i dpp CSR_Checker_Base.CSR_DP_P_is_Empty =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof Check_Termination.P_is_Empty) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Subterm_Criterion_Proc va vb vc vd))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Gen_Subterm_Criterion_Proc va vb vc))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Redpair_Proc va vb vc))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Usable_Rules_Proc va vb))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.Dep_Graph_Proc va))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Mono_Redpair_Proc va vb vc vd))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Mono_URM_Redpair_Proc va vb vc vd))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Mono_Redpair_UR_Proc va vb vc vd ve))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Size_Change_Subterm_Proc va))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Size_Change_Redpair_Proc va vb vc))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Uncurry_Proc va vb vc vd ve))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Fcc_Proc va vb vc vd ve))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Split_Proc va vb vc vd))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Semlab_Proc va vb vc vd ve))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Switch_Innermost_Proc va vb))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Rewriting_Proc va vb vc vd ve vf vg))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Instantiation_Proc va vb vc))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Forward_Instantiation_Proc va vb vc vd))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Narrowing_Proc va vb vc vd))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Assume_Finite va vb))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Q_Reduction_Proc va vb))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Complex_Constant_Removal_Proc va vb))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.General_Redpair_Proc va vb vc vd ve))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
              ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va)) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Dep_Graph_Proc v) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Instantiation_Proc v va vb) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
-check_csr_rta08_dp_first ia j mu i dpp
+check_csr_rta08_redpair_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
+check_csr_rta08_redpair_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
+check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
+
+check_csr_rta08_graph_components ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
+                [Arith.Char]),
+         [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+            Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+              [Arith.Char])])] ->
+        Sum_Type.Sum (String -> String) ();
+check_csr_rta08_graph_components ia j mu i dpp [] = Sum_Type.Inr ();
+check_csr_rta08_graph_components ia j mu i dpp ((Nothing, c) : rest) =
+  check_csr_rta08_graph_components ia j mu
+    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
+check_csr_rta08_graph_components ia j mu i dpp ((Just prf, c) : rest) =
+  Error_Monad.bind
+    (if all ((\ t -> not (Term_Rewriting.is_Var t)) . snd) c
+      then CSR_Checker.check_csr_dp_termination_proof_core ia j mu False
+             (Term_Rewriting.add_index i Arith.one_nat)
+             (Dependency_Pair_Problem_Spec.intersect_pairs j dpp c) prf
+      else check_csr_rta08_redpair_first ia j mu
+             (Term_Rewriting.add_index i Arith.one_nat)
+             (Dependency_Pair_Problem_Spec.intersect_pairs j dpp c) prf)
+    (\ _ ->
+      check_csr_rta08_graph_components ia j mu
+        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
+
+csr_rta08_dep_graph_edge_check ::
+  forall a b.
+    (Compare.Compare_order a, Eq a, Term_Rewriting.Showl a,
+      Compare.Compare_order b,
+      Eq b) => ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
+                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)] ->
+                   (((Term_Rewriting.Term a b, Term_Rewriting.Term a b), ()),
+                     ((Term_Rewriting.Term a b, Term_Rewriting.Term a b),
+                       ())) ->
+                     Bool;
+csr_rta08_dep_graph_edge_check mu r
+  (((s, Term_Rewriting.Var x), a), ((u, v), b)) = True;
+csr_rta08_dep_graph_edge_check mu r
+  (((s, Term_Rewriting.Fun f ts), a), ((u, v), b)) =
+  CSR_Checker_Base.csr_dep_graph_edge_check mu r
+    (((s, Term_Rewriting.Fun f ts), a), ((u, v), b));
+
+check_csr_rta08_dep_graph_proc ::
+  forall a b c d.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b,
+      Compare.Compare_order c, Eq c,
+      Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a
+                                   (Labelings.Lab b c) [Arith.Char] () ->
+                                   [((Labelings.Lab b c, Arith.Nat),
+                                      [Arith.Nat])] ->
+                                     a -> [(Maybe d,
+     [(Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])])] ->
+    Sum_Type.Sum (String -> String) ();
+check_csr_rta08_dep_graph_proc j mu dpp dps =
+  let {
+    p = Dependency_Pair_Problem_Spec.pairs j dpp;
+    r = Dependency_Pair_Problem_Spec.rules j dpp;
+  } in Error_Monad.bind (Term_Rewriting.check_wf_trs r)
+         (\ _ ->
+           Error_Monad.bind
+             (Error_Monad.catch_error
+               (Check_Monad.check_subseteq p (concatMap snd dps))
+               (\ x ->
+                 Sum_Type.Inl
+                   ((Term_Rewriting.showsl_lit "RTA08 dependency pair " .
+                      Term_Rewriting.showsl_rule x) .
+                     Term_Rewriting.showsl_lit
+                       " is missing in decomposition\n")))
+             (\ _ ->
+               Graph.check_graph_decomp (Term_Rewriting.showsl_prod . fst)
+                 (Multi_Map.empty ((Term_Rewriting.root . fst) . fst))
+                 CSR_Checker_Base.graph_approx_csr_rt Multi_Map.insert
+                 (csr_rta08_dep_graph_edge_check
+                   (CSR_Checker_Base.csr_dp_root_mu
+                     (Context_Sensitive_Impl.mu_of mu))
+                   r)
+                 (map (\ (real, cs) ->
+                        (not (Arith.is_none real),
+                          map (\ (s, t) -> ((s, t), ())) cs))
+                   dps)));
+
+check_csr_rta08_dp_first ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ c -> CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+        Sum_Type.Sum (String -> String) ();
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Dep_Graph_Proc edps) =
+  FOR_Preliminaries.debug i "RTA08 collapsing CS-DP dependency graph"
+    (Error_Monad.bind
+      (Error_Monad.catch_error (check_csr_rta08_dep_graph_proc j mu dpp edps)
+        (\ x ->
+          Sum_Type.Inl
+            ((i . Term_Rewriting.showsl_lit
+                    ": error when applying RTA08 dependency graph\n") .
+              x)))
+      (\ _ ->
+        Error_Monad.catch_error
+          (check_csr_rta08_graph_components ia j mu i dpp edps)
+          (\ x ->
+            Sum_Type.Inl
+              ((i . Term_Rewriting.showsl_lit
+                      ": error below RTA08 dependency graph\n") .
+                x))));
+check_csr_rta08_dp_first ia j mu i dpp CSR_Checker_Base.CSR_DP_P_is_Empty =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    CSR_Checker_Base.CSR_DP_P_is_Empty;
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof v) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Ordinary_Proof v);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Instantiation_Proc v va vb) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Instantiation_Proc v va vb);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc);
+check_csr_rta08_dp_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v) =
+  check_csr_rta08_redpair_first ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v);
 
 check_csr_dp_ordinary_min ::
   forall a b c.
@@ -1807,6 +2062,36 @@ stri)
                            (Term_Rewriting.showsl_lit
                              "CSR size-change analysis failed")));
 
+csr_rta08_active_root_rules_check ::
+  forall a b c d.
+    (Eq a, Eq b,
+      Eq c) => [(Term_Rewriting.Term a b, c)] ->
+                 [(Term_Rewriting.Term a b, c)] ->
+                   [((a, Arith.Nat), [Arith.Nat])] ->
+                     Term_Rewriting.Term a d -> Bool;
+csr_rta08_active_root_rules_check r u mu t =
+  csr_u3_root_rules_check r u t (CSR_Checker_Base.mu_fun_poss_list mu t);
+
+csr_rta08_usable_rules_check ::
+  forall a b c d e.
+    (Eq a, Eq b,
+      Eq c) => [(Term_Rewriting.Term a b, Term_Rewriting.Term a c)] ->
+                 [(Term_Rewriting.Term a b, Term_Rewriting.Term a c)] ->
+                   [((a, Arith.Nat), [Arith.Nat])] ->
+                     [(Term_Rewriting.Term a d, Term_Rewriting.Term a e)] ->
+                       Bool;
+csr_rta08_usable_rules_check r u mu p =
+  all (Arith.membera r) u &&
+    all (\ dp ->
+          csr_u3_inactive_root_rules_check r u mu (fst dp) &&
+            csr_rta08_active_root_rules_check r u mu (snd dp))
+      p &&
+      all (\ lr -> csr_u3_inactive_root_rules_check r u mu (snd lr)) r &&
+        all (\ lr ->
+              csr_u3_inactive_root_rules_check r u mu (fst lr) &&
+                csr_rta08_active_root_rules_check r u mu (snd lr))
+          u;
+
 csr_rta08_dependency_pairs_tt ::
   forall a b.
     (Compare.Compare_order b, Eq b,
@@ -1871,6 +2156,80 @@ csr_rta08_dependency_pairs_tt j mu r p =
            Sum_Type.Inr
              (Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r);
        });
+
+csr_forward_instantiation_proc ::
+  forall a b c.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b,
+      Compare.Compare_order c, Eq c,
+      Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a
+                                   (Labelings.Lab b c) [Arith.Char] () ->
+                                   [((Labelings.Lab b c, Arith.Nat),
+                                      [Arith.Nat])] ->
+                                     (Term_Rewriting.Term (Labelings.Lab b c)
+[Arith.Char],
+                                       Term_Rewriting.Term (Labelings.Lab b c)
+ [Arith.Char]) ->
+                                       [(Term_Rewriting.Term (Labelings.Lab b c)
+   [Arith.Char],
+  Term_Rewriting.Term (Labelings.Lab b c) [Arith.Char])] ->
+ a -> Sum_Type.Sum (String -> String) a;
+csr_forward_instantiation_proc j mu st sts dpp =
+  (case Error_Monad.bind
+          (Check_Monad.check
+            (Arith.membera (Dependency_Pair_Problem_Spec.pairs j dpp) st)
+            (Term_Rewriting.showsl_lit "selected CS-DP is not present"))
+          (\ _ ->
+            Error_Monad.bind
+              (Error_Monad.catch_error
+                (Error_Monad.forallM
+                  (\ sta ->
+                    Check_Monad.check (Term_Rewriting.instance_rule sta st)
+                      (Term_Rewriting.showsl_lit
+                         "supplied CS-DP is not an instance of the selected pair" .
+                        Term_Rewriting.showsl_rule sta))
+                  sts)
+                (\ x -> Sum_Type.Inl (snd x)))
+              (\ _ ->
+                (case st of {
+                  (s, t) ->
+                    let {
+                      ur = map (\ (l, r) -> (r, l))
+                             (Dependency_Pair_Problem_Spec.rules j dpp);
+                      ic = Icap_Impl.icap_impl (Term_Rewriting.is_NF_terms [])
+                             ur [];
+                    } in Error_Monad.catch_error
+                           (Error_Monad.forallM
+                             (\ (u, v) ->
+                               (if not (CSR_Checker_Base.csr_dep_graph_edge_check
+ (CSR_Checker_Base.csr_dp_root_mu (Context_Sensitive_Impl.mu_of mu))
+ (Dependency_Pair_Problem_Spec.rules j dpp) (((s, t), ()), ((u, v), ())))
+                                 then Sum_Type.Inr ()
+                                 else (case Icap.mgu_class (ic u) t of {
+Nothing -> Sum_Type.Inr ();
+Just gamma ->
+  Check_Monad.check
+    (any (Term_Rewriting.instance_rule
+           (Term_Rewriting.eval_term Term_Rewriting.Fun
+              (Term_Rewriting.map_term (\ x -> x) (\ a -> Arith.char_0x79 : a)
+                s)
+              gamma,
+             Term_Rewriting.eval_term Term_Rewriting.Fun
+               (Term_Rewriting.map_term (\ x -> x) (\ a -> Arith.char_0x79 : a)
+                 t)
+               gamma))
+      sts)
+    (Term_Rewriting.showsl_lit
+       "missing context-sensitive forward instance for successor " .
+      Term_Rewriting.showsl_rule (u, v));
+                                      })))
+                             (Dependency_Pair_Problem_Spec.pairs j dpp))
+                           (\ x -> Sum_Type.Inl (snd x));
+                })))
+    of {
+    Sum_Type.Inl a -> Sum_Type.Inl a;
+    Sum_Type.Inr _ ->
+      Sum_Type.Inr (Dependency_Pair_Problem_Spec.replace_pair j dpp st sts);
+  });
 
 check_csr_dp_termination_proof_min ::
   forall a b c.
@@ -1942,9 +2301,20 @@ check_csr_dp_termination_proof_min ia j mu a i dpp
                 x))));
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
+  FOR_Preliminaries.debug i "minimal CSR-DP instantiation"
+    (Error_Monad.bind (csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_csr_dp_termination_proof_min ia j mu a
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
+check_csr_dp_termination_proof_min ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc st sts prf) =
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
-           ": context-sensitive instantiation requires improved CS-DPs");
+           ": context-sensitive forward instantiation requires improved CS-DPs");
+check_csr_dp_termination_proof_min ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc redp pr u prf) =
+  CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+    (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc redp pr u prf);
 check_csr_dp_termination_proof_min ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs) =
   (if csr_nested_unhiding_subterm_check

@@ -1,6 +1,10 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module CSR_Innermost_DP_Checker(check_innermost_csr_termination_proof) where {
+module
+  CSR_Innermost_DP_Checker(csr_dp_root_supt_list,
+                            check_innermost_csr_dep_graph_proc,
+                            check_innermost_csr_dp_termination_proof)
+  where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -19,10 +23,10 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified CSR_Checker;
+import qualified FOR_Preliminaries;
+import qualified Reduction_Pair_Implementations;
 import qualified Check_Termination;
 import qualified Subterm_Criterion_Impl;
-import qualified CSR_Innermost_Switch;
-import qualified FOR_Preliminaries;
 import qualified Termination_Problem_Spec;
 import qualified Countable;
 import qualified Context_Sensitive_Impl;
@@ -151,6 +155,37 @@ check_innermost_csr_dep_graph_proc j mu dpp dps =
                         "invalid innermost CSR dependency-graph decomposition:\n" .
                        x))));
 
+check_innermost_csr_dp_graph_components ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
+                [Arith.Char]),
+         [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+            Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+              [Arith.Char])])] ->
+        Sum_Type.Sum (String -> String) ();
+check_innermost_csr_dp_graph_components ia j mu i dpp [] = Sum_Type.Inr ();
+check_innermost_csr_dp_graph_components ia j mu i dpp ((Nothing, p) : rest) =
+  check_innermost_csr_dp_graph_components ia j mu
+    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
+check_innermost_csr_dp_graph_components ia j mu i dpp ((Just prf, p) : rest) =
+  Error_Monad.bind
+    (check_innermost_csr_dp_termination_proof ia j mu
+      (Term_Rewriting.add_index i Arith.one_nat)
+      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp p) prf)
+    (\ _ ->
+      check_innermost_csr_dp_graph_components ia j mu
+        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
+
 check_innermost_csr_dp_termination_proof ::
   forall a b c.
     (Compare.Compare_order b, Countable.Countable b, Eq b,
@@ -195,71 +230,16 @@ check_innermost_csr_dp_termination_proof ia j mu i dpp
   CSR_Checker.check_csr_dp_termination_proof_core ia j mu False i dpp
     (CSR_Checker_Base.CSR_DP_Instantiation_Proc v va vb);
 check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb) =
+  CSR_Checker.check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc) =
+  CSR_Checker.check_csr_dp_termination_proof_core ia j mu False i dpp
+    (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc);
+check_innermost_csr_dp_termination_proof ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v) =
   CSR_Checker.check_csr_dp_termination_proof_core ia j mu False i dpp
     (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v);
-
-check_innermost_csr_dp_graph_components ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
-                [Arith.Char]),
-         [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-            Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
-              [Arith.Char])])] ->
-        Sum_Type.Sum (String -> String) ();
-check_innermost_csr_dp_graph_components ia j mu i dpp [] = Sum_Type.Inr ();
-check_innermost_csr_dp_graph_components ia j mu i dpp ((Nothing, p) : rest) =
-  check_innermost_csr_dp_graph_components ia j mu
-    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
-check_innermost_csr_dp_graph_components ia j mu i dpp ((Just prf, p) : rest) =
-  Error_Monad.bind
-    (check_innermost_csr_dp_termination_proof ia j mu
-      (Term_Rewriting.add_index i Arith.one_nat)
-      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp p) prf)
-    (\ _ ->
-      check_innermost_csr_dp_graph_components ia j mu
-        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
-
-check_innermost_csr_termination_proof ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     (String -> String) ->
-                                       [((Labelings.Lab b [Arith.Nat],
-   Arith.Nat),
-  [Arith.Nat])] ->
- [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
-       Sum_Type.Sum (String -> String) ();
-check_innermost_csr_termination_proof ia j i mu r p prf =
-  FOR_Preliminaries.debug i "innermost CSR dependency pairs"
-    (Error_Monad.bind (CSR_Innermost_Switch.check_csr_orthogonal r)
-      (\ _ ->
-        Error_Monad.bind (CSR_Checker_Base.csr_sharp_mu_check mu)
-          (\ _ ->
-            Error_Monad.bind
-              (CSR_Checker_Base.mu_csr_dependency_pairs_tt Labelings.Sharp j mu
-                r p)
-              (\ dpp ->
-                check_innermost_csr_dp_termination_proof ia j mu
-                  (Term_Rewriting.add_index i Arith.one_nat) dpp prf))));
 
 }
