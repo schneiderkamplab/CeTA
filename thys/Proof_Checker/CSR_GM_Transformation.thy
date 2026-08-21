@@ -1395,7 +1395,7 @@ where
       let T = R @ P @ S;
       let \<Delta> = set (funas_trs_list T);
       check (muterm_recursive_pairs_safe_check_exec
-          R (mu_of \<mu>i) \<Delta> P S)
+          R \<mu>i (mu_of \<mu>i) \<Delta> P S)
         (showsl_lit (STR ''recursive MU-TERM pair safety check failed''));
       check (muterm_recursive_bridges_safe_check_exec
           (defined_list R) (mu_of \<mu>i) \<Delta> S)
@@ -1595,7 +1595,7 @@ next
       set (muterm_exact_unhiding_rules_list Sharp ?\<mu>i ?D R)"
     and safe: "muterm_unhiding_safe_list ?\<mu>i R"
     and pairs_check_exec: "muterm_recursive_pairs_safe_check_exec
-      R (mu_of ?\<mu>i) ?\<Delta> P S"
+      R ?\<mu>i (mu_of ?\<mu>i) ?\<Delta> P S"
     and bridges_check_exec: "muterm_recursive_bridges_safe_check_exec
       (defined_list R) (mu_of ?\<mu>i) ?\<Delta> S"
     and target_check_exec: "muterm_recursive_target_shape_check_exec
@@ -1617,7 +1617,7 @@ next
     by (unfold_locales, rule wf)
   have pairs_check: "M.muterm_recursive_pairs_safe_check P S"
     by (subst M.muterm_recursive_pairs_safe_check_exec_eq[symmetric],
-        rule pairs_check_exec)
+        rule refl, rule pairs_check_exec)
   have bridges_check: "M.muterm_recursive_bridges_safe_check S"
     by (subst M.muterm_recursive_bridges_safe_check_exec_eq[symmetric],
         rule bridges_check_exec)

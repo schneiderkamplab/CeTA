@@ -1025,7 +1025,7 @@ lemma i4_next_collapsing_hidden_not_SN:
     and lift_minimal: "\<And>u. u \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       u \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and next_event: "(s',t') \<in>
       muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) P B"
     and collapsing: "muterm_collapsing_rrstep P s' x"
@@ -1038,10 +1038,15 @@ proof -
     unfolding muterm_innermost_min_typed_pair_step_def by auto
   have uT: "u \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
     by (rule lift_minimal[OF uT_inner])
+  have bridge_full: "(x,sharp_term Sharp u) \<in> rrstep
+      (set (muterm_exact_unhiding_rules_list Sharp m D Rs))"
+    by (rule rrstep_mono[OF exact, THEN subsetD],
+      rule bridge[unfolded target])
   show ?thesis
     by (rule exact_unhiding_bridge_hidden_not_SN[
-      where \<mu>=m and R="set Rs" and B=B and u=u,
-      unfolded mu[symmetric], OF wf exact bridge[unfolded target] uT])
+      where \<mu>=m and R="set Rs"
+        and B="set (muterm_exact_unhiding_rules_list Sharp m D Rs)" and u=u,
+      unfolded mu[symmetric], OF wf refl bridge_full uT])
 qed
 
 fun i4_covered_or_exposed ::
@@ -1117,7 +1122,7 @@ lemma i4_covered_by_next_collapsing_imp_safe:
     and lift_minimal: "\<And>u. u \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       u \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and next_event: "(s',t') \<in>
       muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) P B"
     and collapsing: "muterm_collapsing_rrstep P s' x"
@@ -1157,7 +1162,7 @@ lemma i4_covered_by_next_unary_hidden_imp_safe:
     and lift_minimal: "\<And>v. v \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       v \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and next_event: "(s',t') \<in>
       muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) P B"
     and collapsing: "muterm_collapsing_rrstep P s' x"
@@ -1203,7 +1208,7 @@ lemma i4_frozen_unary_next_exposure_imp_safe:
     and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
     and current: "t = Fun (Sharp f) ts"
     and following: "s' = Fun (Sharp f) us"
@@ -1504,7 +1509,7 @@ lemma i4_exact_bridge_symbolic_safe:
     and lift_minimal: "\<And>u. u \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       u \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and event: "(s,t) \<in>
       muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) P B"
     and collapsing: "muterm_collapsing_rrstep P s x"
@@ -1536,7 +1541,7 @@ lemma i4_exact_bridge_unary_symbolic_safe:
     and lift_minimal: "\<And>v. v \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       v \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and event: "(s,t) \<in>
       muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) P B"
     and collapsing: "muterm_collapsing_rrstep P s x"
@@ -1567,13 +1572,63 @@ proof
       OF target_symbolic target_subst])
 qed
 
+lemma i4_exact_bridge_target_symbolic_safe:
+  fixes m :: "((('f,'l) lab) muL)"
+  assumes mu: "\<mu> = mu_of m"
+    and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
+      w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and event: "(s,t) \<in>
+      muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) P B"
+    and collapsing: "muterm_collapsing_rrstep P s (a \<cdot> \<theta>)"
+    and event_bridge: "(a \<cdot> \<theta>,t) \<in> rrstep B"
+    and target_instance: "t = b \<cdot> \<theta>"
+    and target_shape: "b = Fun (Sharp g) us"
+    and source_symbolic:
+      "i4_symbolically_covered {a,Fun g us} a"
+    and target_symbolic: "i4_symbolically_covered {} b"
+    and source_subst: "\<And>z. z \<in> vars_term a \<Longrightarrow>
+      unmarked_term (\<theta> z)"
+    and target_subst: "\<And>z. z \<in> vars_term b \<Longrightarrow>
+      unmarked_term (\<theta> z)"
+  shows "i4_safe a \<theta> \<and> i4_safe b \<theta>"
+proof -
+  let ?u = "Fun g us"
+  from event obtain w where target: "t = sharp_term Sharp w"
+    and wT_inner: "w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs))"
+    unfolding muterm_innermost_min_typed_pair_step_def by auto
+  have sharp_inst: "sharp_term Sharp w = sharp_term Sharp (?u \<cdot> \<theta>)"
+    using target target_instance target_shape
+    by (simp add: sharp_term_subst_distr_2)
+  have w: "w = ?u \<cdot> \<theta>"
+    by (rule sharp_term_Sharp_inject[THEN iffD1, OF sharp_inst])
+  have u_not: "\<not> SN_on (csstep \<mu> (set Rs)) {?u \<cdot> \<theta>}"
+    using lift_minimal[OF wT_inner] unfolding mu_Tinf_def w by auto
+  have a_not: "\<not> SN_on (csstep \<mu> (set Rs)) {a \<cdot> \<theta>}"
+    by (rule i4_next_collapsing_hidden_not_SN[
+      OF mu lift_minimal exact event collapsing event_bridge])
+  have covered: "i4_covered_or_exposed
+      {a \<cdot> \<theta>,?u \<cdot> \<theta>} a \<theta>"
+    using i4_symbolically_covered_subst[
+      OF source_symbolic source_subst] by simp
+  have source_safe: "i4_safe a \<theta>"
+    by (rule i4_covered_or_exposed_imp_safe[OF covered],
+      use a_not u_not in auto)
+  have target_safe: "i4_safe b \<theta>"
+    by (rule i4_symbolically_covered_empty_safe[
+      OF target_symbolic target_subst])
+  show ?thesis using source_safe target_safe by simp
+qed
+
 lemma i4_frozen_unary_symbolic_target_safe:
   fixes m :: "((('f,'l) lab) muL)"
   assumes mu: "\<mu> = mu_of m"
     and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "B = set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and exact: "B \<subseteq> set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
     and rhs: "r = Fun (Sharp f) ts"
     and i: "i < length ts"
@@ -1771,47 +1826,283 @@ definition muterm_root_successors_select_or_block_check where
   "muterm_root_successors_select_or_block_check P B f i ts =
     list_all (muterm_root_pair_selects_or_ground_blocked B f i ts) P"
 
+definition muterm_root_pair_selects_symbolic_arg where
+  "muterm_root_pair_selects_symbolic_arg f ts lr \<longleftrightarrow>
+    (case lr of (l,r) \<Rightarrow> case l of
+      Var x \<Rightarrow> False
+    | Fun h ls \<Rightarrow> (case h of
+        Sharp g \<Rightarrow> if g \<noteq> f then True else
+          (case r of
+            Fun k rs \<Rightarrow> False
+          | Var y \<Rightarrow> (\<exists>i<length ls. i < length ts \<and>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              ls ! i = Var y \<and>
+              i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts)))
+      | _ \<Rightarrow> False))"
+
+definition muterm_root_successors_select_symbolic_arg_check where
+  "muterm_root_successors_select_symbolic_arg_check P f ts =
+    list_all (muterm_root_pair_selects_symbolic_arg f ts) P"
+
+definition muterm_active_lhs_blocked where
+  "muterm_active_lhs_blocked a \<longleftrightarrow> (\<exists>w l r \<rho>.
+    mu_supt \<mu> a w \<and> (l,r) \<in> set Rs \<and> w = l \<cdot> \<rho>)"
+
+definition muterm_all_bridge_sources_active_blocked where
+  "muterm_all_bridge_sources_active_blocked B \<longleftrightarrow>
+    list_all (\<lambda>(a,b). muterm_active_lhs_blocked a) B"
+
+definition muterm_bridge_exposure_check where
+  "muterm_bridge_exposure_check B v r \<longleftrightarrow>
+    B \<noteq> [] \<and> list_all (\<lambda>(a,b). a = v \<and> (case b of
+      Var x \<Rightarrow> False
+    | Fun h us \<Rightarrow> (case h of
+        Sharp g \<Rightarrow> i4_symbolically_covered {v,Fun g us} r
+      | _ \<Rightarrow> False))) B"
+
+definition muterm_root_pair_selects_symbolic_or_source_blocked where
+  "muterm_root_pair_selects_symbolic_or_source_blocked A B f ts lr \<longleftrightarrow>
+    muterm_root_pair_selects_symbolic_arg f ts lr \<or>
+    (case lr of (l,r) \<Rightarrow> case l of
+      Var x \<Rightarrow> False
+    | Fun h ls \<Rightarrow> (case h of
+        Sharp g \<Rightarrow> if g \<noteq> f then True else
+          (case r of
+            Fun k rs \<Rightarrow> False
+          | Var y \<Rightarrow> (\<exists>i<length ls. i < length ts \<and>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              ls ! i = Var y \<and> (\<exists>x. ts ! i = Var x \<and> x \<in> A) \<and>
+              muterm_all_bridge_sources_active_blocked B) \<or>
+            (\<exists>i<length ls. i < length ts \<and>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              ls ! i = Var y \<and>
+              muterm_bridge_exposure_check B (ts ! i)
+                (Fun (Sharp f) ts)))
+      | _ \<Rightarrow> False))"
+
+definition muterm_root_successors_select_symbolic_or_source_blocked_check where
+  "muterm_root_successors_select_symbolic_or_source_blocked_check A B P f ts =
+    list_all
+      (muterm_root_pair_selects_symbolic_or_source_blocked A B f ts) P"
+
+definition muterm_singleton_bridge_exposure_check where
+  "muterm_singleton_bridge_exposure_check B v r \<longleftrightarrow>
+    (case B of
+      [(a,b)] \<Rightarrow> a = v \<and> (case b of
+          Var x \<Rightarrow> False
+        | Fun h us \<Rightarrow> (case h of
+            Sharp g \<Rightarrow> i4_symbolically_covered {v,Fun g us} r
+          | _ \<Rightarrow> False))
+    | _ \<Rightarrow> False)"
+
+lemma muterm_singleton_bridge_exposure_checkE:
+  assumes check: "muterm_singleton_bridge_exposure_check B v r"
+  obtains g gs where "B = [(v,Fun (Sharp g) gs)]"
+    and "i4_symbolically_covered {v,Fun g gs} r"
+proof (cases B)
+  case Nil
+  then show thesis using check
+    unfolding muterm_singleton_bridge_exposure_check_def by simp
+next
+  case (Cons ab bs)
+  note B = Cons
+  show thesis
+  proof (cases bs)
+    case Nil
+    obtain a b where ab: "ab = (a,b)" by (cases ab)
+    from check obtain g gs where a: "a = v"
+      and b: "b = Fun (Sharp g) gs"
+      and symbolic: "i4_symbolically_covered {v,Fun g gs} r"
+      unfolding muterm_singleton_bridge_exposure_check_def B Nil ab
+      by (cases b; auto split: lab.splits)
+    show thesis by (rule that[of g gs], use B Nil ab a b symbolic in auto)
+  next
+    case (Cons ab' bs')
+    then show thesis using check B
+      unfolding muterm_singleton_bridge_exposure_check_def by simp
+  qed
+qed
+
+lemma muterm_bridge_exposure_check_memberE:
+  assumes check: "muterm_bridge_exposure_check B v r"
+    and member: "(a,b) \<in> set B"
+  obtains g gs where "a = v" "b = Fun (Sharp g) gs"
+    "i4_symbolically_covered {v,Fun g gs} r"
+proof -
+  from check member have valid: "a = v \<and> (case b of
+      Var x \<Rightarrow> False
+    | Fun h us \<Rightarrow> (case h of
+        Sharp g \<Rightarrow> i4_symbolically_covered {v,Fun g us} r
+      | _ \<Rightarrow> False))"
+    unfolding muterm_bridge_exposure_check_def list_all_iff by auto
+  from valid obtain g gs where a: "a = v" and b: "b = Fun (Sharp g) gs"
+    and symbolic: "i4_symbolically_covered {v,Fun g gs} r"
+    by (cases b; auto split: lab.splits)
+  show thesis by (rule that[OF a b symbolic])
+qed
+
+definition muterm_recursive_target_safe_check where
+  "muterm_recursive_target_safe_check A P B r \<longleftrightarrow>
+    (case r of
+      Var y \<Rightarrow> True
+    | Fun q ts \<Rightarrow> (case q of
+        Sharp f \<Rightarrow>
+          i4_symbolically_covered {} r \<or>
+          muterm_root_successors_select_symbolic_or_source_blocked_check
+            A B P f ts \<or>
+          list_ex (\<lambda>(i,v).
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              i4_symbolically_covered {v} r \<and>
+              muterm_root_successors_select_or_block_check P B f i ts)
+            (zip [0..<length ts] ts) \<or>
+          list_ex (\<lambda>(i,v).
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              muterm_bridge_exposure_check B v r \<and>
+              muterm_root_successors_select_or_block_check P B f i ts)
+            (zip [0..<length ts] ts) \<or>
+          list_ex (\<lambda>(i,v). case v of
+              Var z \<Rightarrow> False
+            | Fun g us \<Rightarrow> (case us of
+                [u] \<Rightarrow>
+                  i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+                  \<not> defined (set Rs) (g,1) \<and>
+                  i4_symbolically_covered {u} r \<and>
+                  muterm_root_successors_select_or_block_check P B f i ts
+              | _ \<Rightarrow> False))
+            (zip [0..<length ts] ts)
+      | _ \<Rightarrow> False))"
+
+lemma list_ex_zip_upt_length:
+  "list_ex F (zip [0..<length xs] xs) \<longleftrightarrow>
+    (\<exists>i<length xs. F (i,xs ! i))"
+proof
+  assume "list_ex F (zip [0..<length xs] xs)"
+  then obtain x where mem: "x \<in> set (zip [0..<length xs] xs)"
+    and Fx: "F x" unfolding list_ex_iff by blast
+  from mem obtain j where j: "j < length (zip [0..<length xs] xs)"
+    and x: "x = zip [0..<length xs] xs ! j"
+    unfolding in_set_conv_nth by blast
+  have jlen: "j < length xs" using j by simp
+  have "x = (j,xs ! j)" using x jlen by simp
+  with Fx jlen show "\<exists>i<length xs. F (i,xs ! i)" by blast
+next
+  assume "\<exists>i<length xs. F (i,xs ! i)"
+  then obtain i where i: "i < length xs" and Fi: "F (i,xs ! i)" by blast
+  have "(i,xs ! i) \<in> set (zip [0..<length xs] xs)"
+    using nth_mem[of i "zip [0..<length xs] xs"] i by simp
+  with Fi show "list_ex F (zip [0..<length xs] xs)"
+    unfolding list_ex_iff by blast
+qed
+
+lemma list_ex_zip_upt_singleton_term:
+  "list_ex (\<lambda>(i,v). case v of
+      Var z \<Rightarrow> False
+    | Fun g us \<Rightarrow> (case us of [u] \<Rightarrow> F i g u | _ \<Rightarrow> False))
+      (zip [0..<length xs] xs) \<longleftrightarrow>
+    (\<exists>i g u. i < length xs \<and> xs ! i = Fun g [u] \<and> F i g u)"
+proof -
+  have "list_ex (\<lambda>(i,v). case v of
+        Var z \<Rightarrow> False
+      | Fun g us \<Rightarrow> (case us of [u] \<Rightarrow> F i g u | _ \<Rightarrow> False))
+        (zip [0..<length xs] xs) \<longleftrightarrow>
+      (\<exists>i<length xs. case xs ! i of
+        Var z \<Rightarrow> False
+      | Fun g us \<Rightarrow> (case us of [u] \<Rightarrow> F i g u | _ \<Rightarrow> False))"
+    by (simp only: list_ex_zip_upt_length prod.case)
+  also have "... \<longleftrightarrow>
+      (\<exists>i g u. i < length xs \<and> xs ! i = Fun g [u] \<and> F i g u)"
+  proof
+    assume left: "\<exists>i<length xs. case xs ! i of
+        Var z \<Rightarrow> False
+      | Fun g us \<Rightarrow> (case us of [u] \<Rightarrow> F i g u | _ \<Rightarrow> False)"
+    then obtain i where i: "i < length xs" and valid: "case xs ! i of
+        Var z \<Rightarrow> False
+      | Fun g us \<Rightarrow> (case us of [u] \<Rightarrow> F i g u | _ \<Rightarrow> False)"
+      by blast
+    from valid obtain g u where at: "xs ! i = Fun g [u]" and F: "F i g u"
+      by (cases "xs ! i"; auto split: list.splits)
+    show "\<exists>i g u. i < length xs \<and> xs ! i = Fun g [u] \<and> F i g u"
+      using i at F by blast
+  next
+    assume right: "\<exists>i g u. i < length xs \<and>
+      xs ! i = Fun g [u] \<and> F i g u"
+    then obtain i g u where i: "i < length xs"
+      and at: "xs ! i = Fun g [u]" and F: "F i g u" by blast
+    show "\<exists>i<length xs. case xs ! i of
+        Var z \<Rightarrow> False
+      | Fun g us \<Rightarrow> (case us of [u] \<Rightarrow> F i g u | _ \<Rightarrow> False)"
+      by (rule exI[of _ i], use i at F in simp)
+  qed
+  finally show ?thesis .
+qed
+
+lemma muterm_recursive_target_safe_check_Sharp_iff:
+  "muterm_recursive_target_safe_check A P B (Fun (Sharp f) ts) \<longleftrightarrow>
+    (i4_symbolically_covered {} (Fun (Sharp f) ts) \<or>
+     muterm_root_successors_select_symbolic_or_source_blocked_check
+       A B P f ts \<or>
+     (\<exists>i<length ts.
+       i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+       i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts) \<and>
+       muterm_root_successors_select_or_block_check P B f i ts) \<or>
+     (\<exists>i<length ts.
+       i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+       muterm_bridge_exposure_check B (ts ! i)
+         (Fun (Sharp f) ts) \<and>
+       muterm_root_successors_select_or_block_check P B f i ts) \<or>
+     (\<exists>i g u. i < length ts \<and> ts ! i = Fun g [u] \<and>
+       i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+       \<not> defined (set Rs) (g,1) \<and>
+       i4_symbolically_covered {u} (Fun (Sharp f) ts) \<and>
+       muterm_root_successors_select_or_block_check P B f i ts))"
+  unfolding muterm_recursive_target_safe_check_def
+  apply (simp only: term.simps lab.simps)
+  apply (subst list_ex_zip_upt_singleton_term)
+  apply (simp only: list_ex_zip_upt_length prod.case)
+  done
+
 definition muterm_recursive_pair_safe_check where
   "muterm_recursive_pair_safe_check P B lr \<longleftrightarrow>
     (case lr of (l,r) \<Rightarrow> case l of
       Var x \<Rightarrow> False
     | Fun h ls \<Rightarrow> (case h of
         Sharp k \<Rightarrow>
+          \<not> is_sharp_lab k \<and>
           i4_symbolically_covered {} l \<and>
           vars_term r \<subseteq> vars_term l \<and>
-          (case r of
-            Var y \<Rightarrow> True
-          | Fun q ts \<Rightarrow> (case q of
-              Sharp f \<Rightarrow>
-                i4_symbolically_covered {} r \<or>
-                list_ex (\<lambda>(i,v). case v of
-                    Var z \<Rightarrow> False
-                  | Fun g us \<Rightarrow> (case us of
-                      [u] \<Rightarrow>
-                        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
-                        \<not> defined (set Rs) (g,1) \<and>
-                        i4_symbolically_covered {u} r \<and>
-                        muterm_root_successors_select_or_block_check
-                          P B f i ts
-                    | _ \<Rightarrow> False))
-                  (zip [0..<length ts] ts)
-            | _ \<Rightarrow> False))
+          muterm_recursive_target_safe_check (mu_vars_term \<mu> l) P B r
       | _ \<Rightarrow> False))"
 
 definition muterm_recursive_pairs_safe_check where
   "muterm_recursive_pairs_safe_check P B =
     list_all (muterm_recursive_pair_safe_check P B) P"
 
+definition muterm_recursive_bridge_unary_source_check where
+  "muterm_recursive_bridge_unary_source_check a =
+    (case a of
+      Var x \<Rightarrow> False
+    | Fun f ts \<Rightarrow> (case ts of
+        [u] \<Rightarrow> \<not> defined (set Rs) (f,1) \<and>
+          i4_symbolically_covered {u} a
+      | _ \<Rightarrow> False))"
+
+definition muterm_recursive_bridge_target_source_check where
+  "muterm_recursive_bridge_target_source_check a b =
+    (case b of
+      Fun (Sharp g) us \<Rightarrow>
+        i4_symbolically_covered {a,Fun g us} a
+    | _ \<Rightarrow> False)"
+
+definition muterm_recursive_bridge_source_safe_check where
+  "muterm_recursive_bridge_source_safe_check lr =
+    (i4_symbolically_covered {fst lr} (fst lr) \<or>
+      muterm_recursive_bridge_unary_source_check (fst lr) \<or>
+      muterm_recursive_bridge_target_source_check (fst lr) (snd lr))"
+
 definition muterm_recursive_bridges_safe_check where
   "muterm_recursive_bridges_safe_check B = list_all (\<lambda>lr.
     vars_term (snd lr) \<subseteq> vars_term (fst lr) \<and>
-    (i4_symbolically_covered {fst lr} (fst lr) \<or>
-      (case fst lr of
-        Var x \<Rightarrow> False
-      | Fun f ts \<Rightarrow> (case ts of
-          [u] \<Rightarrow> \<not> defined (set Rs) (f,1) \<and>
-            i4_symbolically_covered {u} (fst lr)
-        | _ \<Rightarrow> False))) \<and>
+    muterm_recursive_bridge_source_safe_check lr \<and>
     i4_symbolically_covered {} (snd lr)) B"
 
 fun muterm_unmarked_term_check where
@@ -2111,15 +2402,13 @@ lemma muterm_recursive_pairs_safe_check_member:
 lemma muterm_recursive_pair_safe_check_sound:
   assumes check: "muterm_recursive_pair_safe_check P B (l,r)"
   shows "\<exists>k ls. l = Fun (Sharp k) ls \<and>
+    \<not> is_sharp_lab k \<and>
     i4_symbolically_covered {} l \<and>
     vars_term r \<subseteq> vars_term l \<and>
-    (is_Var r \<or> (\<exists>f ts. r = Fun (Sharp f) ts \<and>
-      (i4_symbolically_covered {} r \<or>
-       (\<exists>i g u. i < length ts \<and> ts ! i = Fun g [u] \<and>
-         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
-         \<not> defined (set Rs) (g,1) \<and>
-         i4_symbolically_covered {u} r \<and>
-         muterm_root_successors_select_or_block_check P B f i ts))))"
+    muterm_recursive_target_safe_check (mu_vars_term \<mu> l) P B r"
+  using check unfolding muterm_recursive_pair_safe_check_def
+  by (cases l; auto split: lab.splits)
+(* DIAGNOSTIC PAIR-SOUND PROOF BISECTION
 proof -
   from check obtain k ls where l: "l = Fun (Sharp k) ls"
     and lhs_symbolic: "i4_symbolically_covered {} l"
@@ -2129,6 +2418,18 @@ proof -
       | Fun q ts \<Rightarrow> (case q of
           Sharp f \<Rightarrow>
             i4_symbolically_covered {} r \<or>
+            list_ex (\<lambda>(i,v).
+                i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+                i4_symbolically_covered {v} r \<and>
+                muterm_root_successors_select_or_block_check
+                  P B f i ts)
+              (zip [0..<length ts] ts) \<or>
+            list_ex (\<lambda>(i,v).
+                i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+                muterm_singleton_bridge_exposure_check B v r \<and>
+                muterm_root_successors_select_or_block_check
+                  P B f i ts)
+              (zip [0..<length ts] ts) \<or>
             list_ex (\<lambda>(i,v). case v of
                 Var z \<Rightarrow> False
               | Fun g us \<Rightarrow> (case us of
@@ -2145,6 +2446,14 @@ proof -
     by (cases l; auto split: lab.splits)
   have target: "is_Var r \<or> (\<exists>f ts. r = Fun (Sharp f) ts \<and>
       (i4_symbolically_covered {} r \<or>
+       (\<exists>i v. i < length ts \<and> ts ! i = v \<and>
+         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+         i4_symbolically_covered {v} r \<and>
+         muterm_root_successors_select_or_block_check P B f i ts) \<or>
+       (\<exists>i v. i < length ts \<and> ts ! i = v \<and>
+         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+         muterm_singleton_bridge_exposure_check B v r \<and>
+         muterm_root_successors_select_or_block_check P B f i ts) \<or>
        (\<exists>i g u. i < length ts \<and> ts ! i = Fun g [u] \<and>
          i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
          \<not> defined (set Rs) (g,1) \<and>
@@ -2158,6 +2467,16 @@ proof -
     from target_raw[unfolded Fun]
     obtain f where q: "q = Sharp f" by (cases q; auto)
     from target_raw have alt: "i4_symbolically_covered {} r \<or>
+        list_ex (\<lambda>(i,v).
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            i4_symbolically_covered {v} r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)
+          (zip [0..<length ts] ts) \<or>
+        list_ex (\<lambda>(i,v).
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            muterm_singleton_bridge_exposure_check B v r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)
+          (zip [0..<length ts] ts) \<or>
         list_ex (\<lambda>(i,v). case v of
             Var z \<Rightarrow> False
           | Fun g us \<Rightarrow> (case us of
@@ -2175,7 +2494,17 @@ proof -
       assume direct: "i4_symbolically_covered {} r"
       show ?thesis using Fun q direct by auto
     next
-      assume listed: "list_ex (\<lambda>(i,v). case v of
+      assume alternatives: "list_ex (\<lambda>(i,v).
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            i4_symbolically_covered {v} r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)
+          (zip [0..<length ts] ts) \<or>
+        list_ex (\<lambda>(i,v).
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            muterm_singleton_bridge_exposure_check B v r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)
+          (zip [0..<length ts] ts) \<or>
+        list_ex (\<lambda>(i,v). case v of
             Var z \<Rightarrow> False
           | Fun g us \<Rightarrow> (case us of
               [u] \<Rightarrow>
@@ -2185,7 +2514,80 @@ proof -
                 muterm_root_successors_select_or_block_check P B f i ts
             | _ \<Rightarrow> False))
           (zip [0..<length ts] ts)"
-      then obtain iv where iv: "iv \<in> set (zip [0..<length ts] ts)"
+      from alternatives show ?thesis
+      proof
+        assume listed: "list_ex (\<lambda>(i,v).
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            i4_symbolically_covered {v} r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)
+          (zip [0..<length ts] ts)"
+        then obtain iv where iv: "iv \<in> set (zip [0..<length ts] ts)"
+          and valid: "(case iv of (i,v) \<Rightarrow>
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            i4_symbolically_covered {v} r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)"
+          unfolding list_ex_iff by blast
+        obtain i v where iv_pair: "iv = (i,v)" by (cases iv)
+        from iv iv_pair have i: "i < length ts" and v: "v = ts ! i"
+          by (auto simp: in_set_conv_nth)
+        from valid[unfolded iv_pair] have inactive:
+            "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+          and symbolic: "i4_symbolically_covered {v} r"
+          and successors:
+            "muterm_root_successors_select_or_block_check P B f i ts"
+          by auto
+        show ?thesis using Fun q i v inactive symbolic successors by auto
+      next
+        assume later: "list_ex (\<lambda>(i,v).
+            i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+            muterm_singleton_bridge_exposure_check B v r \<and>
+            muterm_root_successors_select_or_block_check P B f i ts)
+          (zip [0..<length ts] ts) \<or>
+        list_ex (\<lambda>(i,v). case v of
+            Var z \<Rightarrow> False
+          | Fun g us \<Rightarrow> (case us of
+              [u] \<Rightarrow>
+                i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+                \<not> defined (set Rs) (g,1) \<and>
+                i4_symbolically_covered {u} r \<and>
+                muterm_root_successors_select_or_block_check P B f i ts
+            | _ \<Rightarrow> False))
+          (zip [0..<length ts] ts)"
+        from later show ?thesis
+        proof
+          assume listed: "list_ex (\<lambda>(i,v).
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              muterm_singleton_bridge_exposure_check B v r \<and>
+              muterm_root_successors_select_or_block_check P B f i ts)
+            (zip [0..<length ts] ts)"
+          then obtain iv where iv: "iv \<in> set (zip [0..<length ts] ts)"
+            and valid: "(case iv of (i,v) \<Rightarrow>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              muterm_singleton_bridge_exposure_check B v r \<and>
+              muterm_root_successors_select_or_block_check P B f i ts)"
+            unfolding list_ex_iff by blast
+          obtain i v where iv_pair: "iv = (i,v)" by (cases iv)
+          from iv iv_pair have i: "i < length ts" and v: "v = ts ! i"
+            by (auto simp: in_set_conv_nth)
+          from valid[unfolded iv_pair] have inactive:
+              "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+            and singleton: "muterm_singleton_bridge_exposure_check B v r"
+            and successors:
+              "muterm_root_successors_select_or_block_check P B f i ts"
+            by auto
+          show ?thesis using Fun q i v inactive singleton successors by auto
+        next
+        assume listed: "list_ex (\<lambda>(i,v). case v of
+            Var z \<Rightarrow> False
+          | Fun g us \<Rightarrow> (case us of
+              [u] \<Rightarrow>
+                i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+                \<not> defined (set Rs) (g,1) \<and>
+                i4_symbolically_covered {u} r \<and>
+                muterm_root_successors_select_or_block_check P B f i ts
+            | _ \<Rightarrow> False))
+          (zip [0..<length ts] ts)"
+        then obtain iv where iv: "iv \<in> set (zip [0..<length ts] ts)"
         and valid: "(case iv of (i,v) \<Rightarrow> case v of
             Var z \<Rightarrow> False
           | Fun g us \<Rightarrow> (case us of
@@ -2208,10 +2610,13 @@ proof -
         by (cases v; auto split: list.splits)
       show ?thesis using Fun q i v vu inactive undef symbolic successors
         by auto
+        qed
+      qed
     qed
   qed
   show ?thesis using l lhs_symbolic vars target by blast
 qed
+DIAGNOSTIC PAIR-SOUND PROOF BISECTION *)
 
 lemma muterm_recursive_pair_safe_check_lhs_vars:
   assumes check: "muterm_recursive_pair_safe_check P B (l,r)"
@@ -2241,23 +2646,77 @@ lemma muterm_recursive_bridges_safe_check_member:
   shows "vars_term b \<subseteq> vars_term a \<and>
     (i4_symbolically_covered {a} a \<or>
       (\<exists>f u. a = Fun f [u] \<and> \<not> defined (set Rs) (f,1) \<and>
-        i4_symbolically_covered {u} a)) \<and>
+        i4_symbolically_covered {u} a) \<or>
+      (\<exists>g us. b = Fun (Sharp g) us \<and>
+        i4_symbolically_covered {a,Fun g us} a)) \<and>
     i4_symbolically_covered {} b"
 proof -
   from check have all: "\<forall>lr\<in>set B.
       vars_term (snd lr) \<subseteq> vars_term (fst lr) \<and>
-      (i4_symbolically_covered {fst lr} (fst lr) \<or>
-        (case fst lr of
-          Var x \<Rightarrow> False
-        | Fun f ts \<Rightarrow> (case ts of
-            [u] \<Rightarrow> \<not> defined (set Rs) (f,1) \<and>
-              i4_symbolically_covered {u} (fst lr)
-          | _ \<Rightarrow> False))) \<and>
+      muterm_recursive_bridge_source_safe_check lr \<and>
       i4_symbolically_covered {} (snd lr)"
     unfolding muterm_recursive_bridges_safe_check_def list_all_iff .
   note raw = all[THEN bspec, OF member]
-  show ?thesis using raw
-    by (cases a; auto split: list.splits)
+  from raw have source_check:
+      "muterm_recursive_bridge_source_safe_check (a,b)" by simp
+  have raw': "vars_term b \<subseteq> vars_term a \<and>
+    (i4_symbolically_covered {a} a \<or>
+      (case a of
+        Var x \<Rightarrow> False
+      | Fun f ts \<Rightarrow> (case ts of
+          [u] \<Rightarrow> \<not> defined (set Rs) (f,1) \<and>
+            i4_symbolically_covered {u} a
+        | _ \<Rightarrow> False)) \<or>
+      (case b of
+        Fun (Sharp g) us \<Rightarrow>
+          i4_symbolically_covered {a,Fun g us} a
+      | _ \<Rightarrow> False)) \<and>
+    i4_symbolically_covered {} b"
+    using raw source_check
+    unfolding muterm_recursive_bridge_source_safe_check_def
+      muterm_recursive_bridge_unary_source_check_def
+      muterm_recursive_bridge_target_source_check_def
+    by (simp only: prod.sel)
+  from raw' have vars: "vars_term b \<subseteq> vars_term a"
+    and source_raw: "i4_symbolically_covered {a} a \<or>
+      (case a of
+        Var x \<Rightarrow> False
+      | Fun f ts \<Rightarrow> (case ts of
+          [u] \<Rightarrow> \<not> defined (set Rs) (f,1) \<and>
+            i4_symbolically_covered {u} a
+        | _ \<Rightarrow> False)) \<or>
+      (case b of
+        Fun (Sharp g) us \<Rightarrow>
+          i4_symbolically_covered {a,Fun g us} a
+      | _ \<Rightarrow> False)"
+    and target: "i4_symbolically_covered {} b" by blast+
+  have source: "i4_symbolically_covered {a} a \<or>
+      (\<exists>f u. a = Fun f [u] \<and> \<not> defined (set Rs) (f,1) \<and>
+        i4_symbolically_covered {u} a) \<or>
+      (\<exists>g us. b = Fun (Sharp g) us \<and>
+        i4_symbolically_covered {a,Fun g us} a)"
+  using source_raw
+  proof (elim disjE)
+    assume "i4_symbolically_covered {a} a"
+    then show ?thesis by simp
+  next
+    assume unary: "case a of
+        Var x \<Rightarrow> False
+      | Fun f ts \<Rightarrow> (case ts of
+          [u] \<Rightarrow> \<not> defined (set Rs) (f,1) \<and>
+            i4_symbolically_covered {u} a
+        | _ \<Rightarrow> False)"
+    then show ?thesis
+      by (cases a; auto simp only: term.simps list.simps split: list.splits)
+  next
+    assume target_source: "case b of
+        Fun (Sharp g) us \<Rightarrow>
+          i4_symbolically_covered {a,Fun g us} a
+      | _ \<Rightarrow> False"
+    then show ?thesis
+      by (cases b; auto simp only: term.simps lab.simps split: lab.splits)
+  qed
+  show ?thesis using vars source target by simp
 qed
 
 lemma muterm_recursive_event_target_good:
@@ -3197,13 +3656,279 @@ proof -
   qed
 qed
 
+lemma muterm_root_successors_select_symbolic_arg_sound:
+  assumes check: "muterm_root_successors_select_symbolic_arg_check P f ts"
+    and fresh: "\<And>g n. \<not> defined (set Rs) (Sharp g,n)"
+    and current: "r = Fun (Sharp f) ts"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+  shows "\<exists>i us. i < length ts \<and>
+    i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+    i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts) \<and>
+    s' = Fun (Sharp f) us \<and>
+    muterm_collapsing_rrstep (set P) s' (us ! i) \<and>
+    ((us ! i),t') \<in> rrstep (set B)"
+proof -
+  from next_event have typed: "(s',t') \<in>
+      muterm_typed_pair_step (set P) (set B)"
+    unfolding muterm_innermost_min_typed_pair_step_def
+      muterm_innermost_typed_pair_step_def by auto
+  from typed have cases: "muterm_noncollapsing_rrstep (set P) s' t' \<or>
+      (\<exists>x. muterm_collapsing_rrstep (set P) s' x \<and>
+        (x,t') \<in> rrstep (set B))"
+    unfolding muterm_typed_pair_step_def by auto
+  have current_shape: "r \<cdot> \<sigma> =
+      Fun (Sharp f) (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+    unfolding current by simp
+  have full_steps: "(Fun (Sharp f) (map (\<lambda>u. u \<cdot> \<sigma>) ts),s') \<in>
+      (csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    by (rule rtrancl_mono[OF innermost_csdp_step_subset_csdp_step,
+      THEN subsetD, OF steps[unfolded current_shape]])
+  from cssteps_Fun_undefined_root_preserved[OF wf fresh full_steps]
+  obtain us where sshape: "s' = Fun (Sharp f) us"
+    and us_length: "length us = length ts" by auto
+  from cases show ?thesis
+  proof
+    assume nc: "muterm_noncollapsing_rrstep (set P) s' t'"
+    then obtain l q \<tau> where pair: "(l,q) \<in> set P"
+      and qfun: "is_Fun q" and source: "s' = l \<cdot> \<tau>"
+      unfolding muterm_noncollapsing_rrstep_def rrstep_def' by auto
+    from check have valid_all:
+      "\<forall>lr\<in>set P. muterm_root_pair_selects_symbolic_arg f ts lr"
+      unfolding muterm_root_successors_select_symbolic_arg_check_def
+        list_all_iff .
+    note valid = valid_all[THEN bspec, OF pair]
+    from valid obtain g ls where l: "l = Fun (Sharp g) ls"
+      unfolding muterm_root_pair_selects_symbolic_arg_def
+      by (cases l; auto split: lab.splits)
+    have g: "g = f" using source sshape unfolding l by simp
+    from valid qfun show ?thesis
+      unfolding muterm_root_pair_selects_symbolic_arg_def l g
+      by (cases q, auto)
+  next
+    assume coll: "\<exists>x. muterm_collapsing_rrstep (set P) s' x \<and>
+      (x,t') \<in> rrstep (set B)"
+    then obtain x l y \<tau> where pair: "(l,Var y) \<in> set P"
+      and source: "s' = l \<cdot> \<tau>" and x: "x = \<tau> y"
+      and bridge: "(x,t') \<in> rrstep (set B)"
+      unfolding muterm_collapsing_rrstep_def by auto
+    have coll_x: "muterm_collapsing_rrstep (set P) s' x"
+      unfolding muterm_collapsing_rrstep_def
+      using pair source x by auto
+    from check have valid_all:
+      "\<forall>lr\<in>set P. muterm_root_pair_selects_symbolic_arg f ts lr"
+      unfolding muterm_root_successors_select_symbolic_arg_check_def
+        list_all_iff .
+    note valid = valid_all[THEN bspec, OF pair]
+    from valid obtain g ls where l: "l = Fun (Sharp g) ls"
+      unfolding muterm_root_pair_selects_symbolic_arg_def
+      by (cases l; auto split: lab.splits if_splits term.splits)
+    have g: "g = f" using source sshape unfolding l by simp
+    from valid obtain i where il: "i < length ls" and it: "i < length ts"
+      and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+      and li: "ls ! i = Var y"
+      and symbolic:
+        "i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts)"
+      unfolding muterm_root_pair_selects_symbolic_arg_def l g by auto
+    have us: "us = map (\<lambda>u. u \<cdot> \<tau>) ls"
+      using source sshape unfolding l g by simp
+    have selected: "us ! i = x" using il li x unfolding us by simp
+    show ?thesis
+      by (rule exI[of _ i], rule exI[of _ us],
+        use it inactive symbolic sshape coll_x bridge selected in auto)
+  qed
+qed
+
+lemma muterm_active_lhs_blocked_instance_not_NF:
+  assumes blocked: "muterm_active_lhs_blocked a"
+  shows "a \<cdot> \<theta> \<notin> NF (csstep \<mu> (set Rs))"
+proof
+  assume nf: "a \<cdot> \<theta> \<in> NF (csstep \<mu> (set Rs))"
+  from blocked obtain w l r \<rho> where aw: "mu_supt \<mu> a w"
+    and lr: "(l,r) \<in> set Rs" and w: "w = l \<cdot> \<rho>"
+    unfolding muterm_active_lhs_blocked_def by blast
+  from mu_supt_subst[OF aw, of \<theta>]
+  have active: "mu_supt \<mu> (a \<cdot> \<theta>) (w \<cdot> \<theta>)" .
+  from active obtain p where p: "p \<in> mu_poss \<mu> (a \<cdot> \<theta>)"
+    and at: "(a \<cdot> \<theta>) |_ p = w \<cdot> \<theta>"
+    unfolding mu_supt_def by blast
+  have sub_nf: "w \<cdot> \<theta> \<in> NF (csstep \<mu> (set Rs))"
+    using NF_csstep_mu_pos[OF nf p] unfolding at .
+  let ?\<delta> = "\<rho> \<circ>\<^sub>s \<theta>"
+  have root: "(l \<cdot> ?\<delta>,r \<cdot> ?\<delta>) \<in>
+      csrstep \<mu> (set Rs)"
+    unfolding csrstep_iff_rstep_root
+  proof (intro exI[of _ "(l,r)"] exI[of _ ?\<delta>])
+    show "(l \<cdot> ?\<delta>,r \<cdot> ?\<delta>) \<in>
+      rstep_r_p_s (set Rs) (l,r) [] ?\<delta>"
+      unfolding rstep_r_p_s_def' using lr by simp
+  qed
+  have step: "(w \<cdot> \<theta>,r \<cdot> ?\<delta>) \<in>
+      csstep \<mu> (set Rs)"
+    using root unfolding csstep_root_nonroot w by simp
+  from sub_nf step show False unfolding NF_def by blast
+qed
+
+lemma muterm_root_successors_select_symbolic_or_source_blocked_sound:
+  assumes check:
+      "muterm_root_successors_select_symbolic_or_source_blocked_check
+        (mu_vars_term \<mu> l0) B P f ts"
+    and fresh: "\<And>g n. \<not> defined (set Rs) (Sharp g,n)"
+    and l0: "l0 = Fun (Sharp k) ks"
+    and marked: "\<mu> (Sharp k,length ks) = \<mu> (k,length ks)"
+    and source: "innermost_pair_source Sharp \<mu> (set Rs) (l0 \<cdot> \<sigma>)"
+    and current: "r = Fun (Sharp f) ts"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+  shows "(\<exists>i us. i < length ts \<and>
+      i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+      i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts) \<and>
+      s' = Fun (Sharp f) us \<and>
+      muterm_collapsing_rrstep (set P) s' (us ! i) \<and>
+      ((us ! i),t') \<in> rrstep (set B)) \<or>
+    (\<exists>i us. i < length ts \<and>
+      i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+      muterm_bridge_exposure_check B (ts ! i) (Fun (Sharp f) ts) \<and>
+      s' = Fun (Sharp f) us \<and>
+      muterm_collapsing_rrstep (set P) s' (us ! i) \<and>
+      ((us ! i),t') \<in> rrstep (set B))"
+proof -
+  from next_event have typed: "(s',t') \<in>
+      muterm_typed_pair_step (set P) (set B)"
+    unfolding muterm_innermost_min_typed_pair_step_def
+      muterm_innermost_typed_pair_step_def by auto
+  from typed have cases: "muterm_noncollapsing_rrstep (set P) s' t' \<or>
+      (\<exists>x. muterm_collapsing_rrstep (set P) s' x \<and>
+        (x,t') \<in> rrstep (set B))"
+    unfolding muterm_typed_pair_step_def by auto
+  have current_shape: "r \<cdot> \<sigma> =
+      Fun (Sharp f) (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+    unfolding current by simp
+  have full_steps: "(Fun (Sharp f) (map (\<lambda>u. u \<cdot> \<sigma>) ts),s') \<in>
+      (csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    by (rule rtrancl_mono[OF innermost_csdp_step_subset_csdp_step,
+      THEN subsetD, OF steps[unfolded current_shape]])
+  from cssteps_Fun_undefined_root_preserved[OF wf fresh full_steps]
+  obtain us where sshape: "s' = Fun (Sharp f) us"
+    and us_length: "length us = length ts" by auto
+  from check have valid_all:
+    "\<forall>lr\<in>set P.
+      muterm_root_pair_selects_symbolic_or_source_blocked
+        (mu_vars_term \<mu> l0) B f ts lr"
+    unfolding
+      muterm_root_successors_select_symbolic_or_source_blocked_check_def
+      list_all_iff .
+  from cases show ?thesis
+  proof
+    assume nc: "muterm_noncollapsing_rrstep (set P) s' t'"
+    then obtain l q \<tau> where pair: "(l,q) \<in> set P"
+      and qfun: "is_Fun q" and source': "s' = l \<cdot> \<tau>"
+      unfolding muterm_noncollapsing_rrstep_def rrstep_def' by auto
+    note valid = valid_all[THEN bspec, OF pair]
+    from valid obtain g ls where l: "l = Fun (Sharp g) ls"
+      unfolding muterm_root_pair_selects_symbolic_or_source_blocked_def
+        muterm_root_pair_selects_symbolic_arg_def
+      by (cases l; auto split: lab.splits)
+    have g: "g = f" using source' sshape unfolding l by simp
+    from valid qfun show ?thesis
+      unfolding muterm_root_pair_selects_symbolic_or_source_blocked_def
+        muterm_root_pair_selects_symbolic_arg_def l g
+      by (cases q, auto)
+  next
+    assume coll: "\<exists>x. muterm_collapsing_rrstep (set P) s' x \<and>
+      (x,t') \<in> rrstep (set B)"
+    then obtain x l y \<tau> where pair: "(l,Var y) \<in> set P"
+      and source': "s' = l \<cdot> \<tau>" and x: "x = \<tau> y"
+      and bridge: "(x,t') \<in> rrstep (set B)"
+      unfolding muterm_collapsing_rrstep_def by auto
+    have coll_x: "muterm_collapsing_rrstep (set P) s' x"
+      unfolding muterm_collapsing_rrstep_def
+      using pair source' x by auto
+    note valid = valid_all[THEN bspec, OF pair]
+    from valid obtain g ls where l: "l = Fun (Sharp g) ls"
+      unfolding muterm_root_pair_selects_symbolic_or_source_blocked_def
+        muterm_root_pair_selects_symbolic_arg_def
+      by (cases l; auto split: lab.splits if_splits term.splits)
+    have g: "g = f" using source' sshape unfolding l by simp
+    have us: "us = map (\<lambda>u. u \<cdot> \<tau>) ls"
+      using source' sshape unfolding l g by simp
+    from valid consider
+      (symbolic) i where "i < length ls" "i < length ts"
+        "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+        "ls ! i = Var y"
+        "i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts)"
+    | (blocked) i z where "i < length ls" "i < length ts"
+        "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+        "ls ! i = Var y" "ts ! i = Var z"
+        "z \<in> mu_vars_term \<mu> l0"
+        "muterm_all_bridge_sources_active_blocked B"
+    | (exposure) i where "i < length ls" "i < length ts"
+        "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+        "ls ! i = Var y"
+        "muterm_bridge_exposure_check B (ts ! i) (Fun (Sharp f) ts)"
+      unfolding muterm_root_pair_selects_symbolic_or_source_blocked_def
+        muterm_root_pair_selects_symbolic_arg_def l g by auto
+    then show ?thesis
+    proof cases
+      case (symbolic i)
+      have selected: "us ! i = x"
+        using symbolic(1,4) x unfolding us by simp
+      show ?thesis
+        by (rule disjI1, rule exI[of _ i], rule exI[of _ us],
+          use symbolic sshape coll_x bridge selected in auto)
+    next
+      case (blocked i z)
+      have current_i: "i < length (map (\<lambda>u. u \<cdot> \<sigma>) ts)"
+        using blocked(2) by simp
+      have current_inactive: "i \<notin> csr_dp_root_mu \<mu>
+          (Sharp f,length (map (\<lambda>u. u \<cdot> \<sigma>) ts))"
+        using blocked(3) by simp
+      from i4_innermost_steps_inactive_marked_arg_preserved[
+        OF fresh current_i current_inactive steps[unfolded current_shape]]
+      obtain vs where sshape': "s' = Fun (Sharp f) vs"
+        and same: "vs ! i = (map (\<lambda>u. u \<cdot> \<sigma>) ts) ! i"
+        by auto
+      have vs_us: "vs = us" using sshape sshape' by simp
+      have selected: "us ! i = \<sigma> z"
+        using same vs_us blocked(2,5) by simp
+      have selected_x: "x = \<sigma> z"
+        using blocked(1,4) x selected unfolding us by simp
+      from bridge obtain a b \<theta> where ab: "(a,b) \<in> set B"
+        and xa: "x = a \<cdot> \<theta>" and tb: "t' = b \<cdot> \<theta>"
+        unfolding rrstep_def' by blast
+      have source_nf: "\<sigma> z \<in> NF (csstep \<mu> (set Rs))"
+        by (rule innermost_pair_source_active_subst_NF[
+          OF source l0 marked blocked(6)])
+      from blocked(7) ab have a_blocked: "muterm_active_lhs_blocked a"
+        unfolding muterm_all_bridge_sources_active_blocked_def
+          list_all_iff by auto
+      have source_not_nf: "a \<cdot> \<theta> \<notin> NF (csstep \<mu> (set Rs))"
+        by (rule muterm_active_lhs_blocked_instance_not_NF[OF a_blocked])
+      from source_nf source_not_nf selected_x xa show ?thesis by simp
+    next
+      case (exposure i)
+      have selected: "us ! i = x"
+        using exposure(1,4) x unfolding us by simp
+      show ?thesis
+        by (rule disjI2, rule exI[of _ i], rule exI[of _ us],
+          use exposure sshape coll_x bridge selected in auto)
+    qed
+  qed
+qed
+
 lemma i4_frozen_unary_symbolic_target_check_safe:
   fixes m :: "((('f,'l) lab) muL)"
   assumes mu: "\<mu> = mu_of m"
     and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "set B =
+    and exact: "set B \<subseteq>
       set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
     and rhs: "r = Fun (Sharp f) ts"
@@ -3241,17 +3966,454 @@ proof -
   qed
 qed
 
+lemma i4_frozen_argument_symbolic_target_check_safe:
+  fixes m :: "((('f,'l) lab) muL)"
+  assumes mu: "\<mu> = mu_of m"
+    and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
+      w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
+    and exact: "set B \<subseteq>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
+    and rhs: "r = Fun (Sharp f) ts"
+    and i: "i < length ts"
+    and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+    and frozen: "ts ! i = v"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+    and successors:
+      "muterm_root_successors_select_or_block_check P B f i ts"
+    and symbolic: "i4_symbolically_covered {v} r"
+    and unmarked_subst: "\<And>x. x \<in> vars_term r \<Longrightarrow>
+      unmarked_term (\<sigma> x)"
+  shows "i4_safe r \<sigma>"
+proof -
+  from muterm_root_successors_select_or_block_sound[
+    OF successors fresh rhs inactive steps next_event]
+  obtain us where following: "s' = Fun (Sharp f) us"
+    and collapsing: "muterm_collapsing_rrstep (set P) s' (us ! i)"
+    and bridge: "(us ! i,t') \<in> rrstep (set B)" by blast
+  have current: "r \<cdot> \<sigma> =
+      Fun (Sharp f) (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+    unfolding rhs by simp
+  have ci: "i < length (map (\<lambda>q. q \<cdot> \<sigma>) ts)" using i by simp
+  have cinactive: "i \<notin> csr_dp_root_mu \<mu>
+      (Sharp f,length (map (\<lambda>q. q \<cdot> \<sigma>) ts))"
+    using inactive by simp
+  from i4_innermost_steps_inactive_marked_arg_preserved[
+    OF fresh ci cinactive steps[unfolded current]]
+  obtain ws where following': "s' = Fun (Sharp f) ws"
+    and same: "ws ! i = (map (\<lambda>q. q \<cdot> \<sigma>) ts) ! i"
+    by auto
+  have ws_us: "ws = us" using following following' by simp
+  have exposed: "us ! i = v \<cdot> \<sigma>"
+    using same ws_us i frozen by simp
+  have covered: "i4_covered_or_exposed {v \<cdot> \<sigma>} r \<sigma>"
+    using i4_symbolically_covered_subst[OF symbolic unmarked_subst] by simp
+  show ?thesis
+    by (rule i4_covered_by_next_collapsing_imp_safe[
+      OF mu lift_minimal exact next_event collapsing[unfolded exposed]
+        bridge[unfolded exposed] covered])
+qed
+
+lemma i4_branching_inactive_arguments_symbolic_target_check_safe:
+  fixes m :: "((('f,'l) lab) muL)"
+  assumes mu: "\<mu> = mu_of m"
+    and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
+      w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
+    and exact: "set B \<subseteq>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
+    and rhs: "r = Fun (Sharp f) ts"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+    and successors:
+      "muterm_root_successors_select_symbolic_arg_check P f ts"
+    and unmarked_subst: "\<And>x. x \<in> vars_term r \<Longrightarrow>
+      unmarked_term (\<sigma> x)"
+  shows "i4_safe r \<sigma>"
+proof -
+  from muterm_root_successors_select_symbolic_arg_sound[
+    OF successors fresh rhs steps next_event]
+  obtain i us where i: "i < length ts"
+    and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+    and symbolic: "i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts)"
+    and following: "s' = Fun (Sharp f) us"
+    and collapsing: "muterm_collapsing_rrstep (set P) s' (us ! i)"
+    and bridge: "(us ! i,t') \<in> rrstep (set B)" by blast
+  have current: "r \<cdot> \<sigma> =
+      Fun (Sharp f) (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+    unfolding rhs by simp
+  have ci: "i < length (map (\<lambda>q. q \<cdot> \<sigma>) ts)" using i by simp
+  have cinactive: "i \<notin> csr_dp_root_mu \<mu>
+      (Sharp f,length (map (\<lambda>q. q \<cdot> \<sigma>) ts))"
+    using inactive by simp
+  from i4_innermost_steps_inactive_marked_arg_preserved[
+    OF fresh ci cinactive steps[unfolded current]]
+  obtain ws where following': "s' = Fun (Sharp f) ws"
+    and same: "ws ! i = (map (\<lambda>q. q \<cdot> \<sigma>) ts) ! i"
+    by auto
+  have ws_us: "ws = us" using following following' by simp
+  have exposed: "us ! i = (ts ! i) \<cdot> \<sigma>"
+    using same ws_us i by simp
+  have covered: "i4_covered_or_exposed {(ts ! i) \<cdot> \<sigma>} r \<sigma>"
+    using i4_symbolically_covered_subst[
+      OF symbolic[unfolded rhs[symmetric]] unmarked_subst] by simp
+  show ?thesis
+    by (rule i4_covered_by_next_collapsing_imp_safe[
+      OF mu lift_minimal exact next_event collapsing[unfolded exposed]
+        bridge[unfolded exposed] covered])
+qed
+
+lemma i4_branching_inactive_arguments_symbolic_or_source_blocked_target_safe:
+  fixes m :: "((('f,'l) lab) muL)"
+  assumes mu: "\<mu> = mu_of m"
+    and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
+      w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
+    and exact: "set B \<subseteq>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
+    and l0: "l0 = Fun (Sharp k) ks"
+    and marked: "\<mu> (Sharp k,length ks) = \<mu> (k,length ks)"
+    and source: "innermost_pair_source Sharp \<mu> (set Rs) (l0 \<cdot> \<sigma>)"
+    and rhs: "r = Fun (Sharp f) ts"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+    and successors:
+      "muterm_root_successors_select_symbolic_or_source_blocked_check
+        (mu_vars_term \<mu> l0) B P f ts"
+    and unmarked_subst: "\<And>x. x \<in> vars_term r \<Longrightarrow>
+      unmarked_term (\<sigma> x)"
+  shows "i4_safe r \<sigma>"
+proof -
+  from muterm_root_successors_select_symbolic_or_source_blocked_sound[
+    OF successors fresh l0 marked source rhs steps next_event]
+  consider
+    (symbolic) i us where "i < length ts"
+      "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+      "i4_symbolically_covered {ts ! i} (Fun (Sharp f) ts)"
+      "s' = Fun (Sharp f) us"
+      "muterm_collapsing_rrstep (set P) s' (us ! i)"
+      "(us ! i,t') \<in> rrstep (set B)"
+  | (exposure) i us where "i < length ts"
+      "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+      "muterm_bridge_exposure_check B (ts ! i) (Fun (Sharp f) ts)"
+      "s' = Fun (Sharp f) us"
+      "muterm_collapsing_rrstep (set P) s' (us ! i)"
+      "(us ! i,t') \<in> rrstep (set B)" by blast
+  then show ?thesis
+  proof cases
+    case (symbolic i us)
+    have current: "r \<cdot> \<sigma> =
+        Fun (Sharp f) (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+      unfolding rhs by simp
+    have ci: "i < length (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+      using symbolic(1) by simp
+    have cinactive: "i \<notin> csr_dp_root_mu \<mu>
+        (Sharp f,length (map (\<lambda>q. q \<cdot> \<sigma>) ts))"
+      using symbolic(2) by simp
+    from i4_innermost_steps_inactive_marked_arg_preserved[
+      OF fresh ci cinactive steps[unfolded current]]
+    obtain ws where following': "s' = Fun (Sharp f) ws"
+      and same: "ws ! i = (map (\<lambda>q. q \<cdot> \<sigma>) ts) ! i" by auto
+    have ws_us: "ws = us" using symbolic(4) following' by simp
+    have exposed: "us ! i = (ts ! i) \<cdot> \<sigma>"
+      using same ws_us symbolic(1) by simp
+    have covered: "i4_covered_or_exposed {(ts ! i) \<cdot> \<sigma>} r \<sigma>"
+      using i4_symbolically_covered_subst[
+        OF symbolic(3)[unfolded rhs[symmetric]] unmarked_subst] by simp
+    show ?thesis
+      by (rule i4_covered_by_next_collapsing_imp_safe[
+        OF mu lift_minimal exact next_event symbolic(5)[unfolded exposed]
+          symbolic(6)[unfolded exposed] covered])
+  next
+    case (exposure i us)
+    have current: "r \<cdot> \<sigma> =
+        Fun (Sharp f) (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+      unfolding rhs by simp
+    have ci: "i < length (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+      using exposure(1) by simp
+    have cinactive: "i \<notin> csr_dp_root_mu \<mu>
+        (Sharp f,length (map (\<lambda>q. q \<cdot> \<sigma>) ts))"
+      using exposure(2) by simp
+    from i4_innermost_steps_inactive_marked_arg_preserved[
+      OF fresh ci cinactive steps[unfolded current]]
+    obtain ws where following': "s' = Fun (Sharp f) ws"
+      and same: "ws ! i = (map (\<lambda>q. q \<cdot> \<sigma>) ts) ! i" by auto
+    have ws_us: "ws = us" using exposure(4) following' by simp
+    have exposed_v: "us ! i = (ts ! i) \<cdot> \<sigma>"
+      using same ws_us exposure(1) by simp
+    from exposure(6) obtain a b \<theta> where ab: "(a,b) \<in> set B"
+      and source_theta: "us ! i = a \<cdot> \<theta>"
+      and target_theta: "t' = b \<cdot> \<theta>"
+      unfolding rrstep_def' by blast
+    from muterm_bridge_exposure_check_memberE[OF exposure(3) ab]
+    obtain g gs where a: "a = ts ! i" and b: "b = Fun (Sharp g) gs"
+      and symbolic_target:
+        "i4_symbolically_covered {ts ! i,Fun g gs} (Fun (Sharp f) ts)" by blast
+    let ?u = "Fun g gs"
+    have source_eq: "(ts ! i) \<cdot> \<sigma> = (ts ! i) \<cdot> \<theta>"
+      using exposed_v source_theta unfolding a by simp
+    have exact_rule: "(ts ! i,sharp_term Sharp ?u) \<in>
+        set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+      using exact ab unfolding a b by auto
+    from exact_rule obtain h q where
+        active: "muterm_active_defined_call_on (mu_of m) (set D) (ts ! i) q"
+        and sharp_eq: "sharp_term Sharp ?u = sharp_term Sharp q"
+      unfolding muterm_exact_unhiding_rules_list_set by blast
+    have q: "q = ?u"
+      by (rule sharp_term_Sharp_inject[THEN iffD1], use sharp_eq in simp)
+    from active[unfolded q muterm_active_defined_call_on_def]
+    obtain p where p: "p \<in> mu_fun_poss (mu_of m) (ts ! i)"
+      and at: "(ts ! i) |_ p = ?u" by blast
+    have vars_u: "vars_term ?u \<subseteq> vars_term (ts ! i)"
+      using vars_term_subt_at[OF fun_poss_imp_poss[
+        OF mu_fun_poss_imp_fun_poss[OF p]]] unfolding at by simp
+    have subst_agree: "\<And>x. x \<in> vars_term (ts ! i) \<Longrightarrow>
+        \<sigma> x = \<theta> x"
+      using term_subst_eq_rev[OF source_eq] by blast
+    have u_inst: "?u \<cdot> \<sigma> = ?u \<cdot> \<theta>"
+      by (rule term_subst_eq, use vars_u subst_agree in blast)
+    from next_event obtain w where target: "t' = sharp_term Sharp w"
+      and wT_inner: "w \<in> mu_Tinf \<mu> (innermost_csstep \<mu> (set Rs))"
+      unfolding muterm_innermost_min_typed_pair_step_def by auto
+    have sharp_inst: "sharp_term Sharp w = sharp_term Sharp (?u \<cdot> \<theta>)"
+      using target target_theta unfolding b
+      by (simp add: sharp_term_subst_distr_2)
+    have w: "w = ?u \<cdot> \<theta>"
+      by (rule sharp_term_Sharp_inject[THEN iffD1, OF sharp_inst])
+    have u_not: "\<not> SN_on (csstep \<mu> (set Rs)) {?u \<cdot> \<sigma>}"
+      using lift_minimal[OF wT_inner] unfolding mu_Tinf_def w u_inst by auto
+    have v_not: "\<not> SN_on (csstep \<mu> (set Rs)) {(ts ! i) \<cdot> \<sigma>}"
+      by (rule i4_next_collapsing_hidden_not_SN[
+        OF mu lift_minimal exact next_event exposure(5)[unfolded exposed_v]
+          exposure(6)[unfolded exposed_v]])
+    have covered: "i4_covered_or_exposed
+        {(ts ! i) \<cdot> \<sigma>,?u \<cdot> \<sigma>} r \<sigma>"
+      using i4_symbolically_covered_subst[
+        OF symbolic_target[unfolded rhs[symmetric]] unmarked_subst] by simp
+    show ?thesis
+      by (rule i4_covered_or_exposed_imp_safe[OF covered],
+        use v_not u_not in auto)
+  qed
+qed
+
+lemma i4_frozen_singleton_bridge_symbolic_target_check_safe:
+  fixes m :: "((('f,'l) lab) muL)"
+  assumes mu: "\<mu> = mu_of m"
+    and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
+      w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
+    and exact: "set B \<subseteq>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
+    and rhs: "r = Fun (Sharp f) ts"
+    and i: "i < length ts"
+    and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+    and frozen: "ts ! i = v"
+    and singleton: "B = [(v,Fun (Sharp g) gs)]"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+    and successors:
+      "muterm_root_successors_select_or_block_check P B f i ts"
+    and symbolic: "i4_symbolically_covered {v,Fun g gs} r"
+    and unmarked_subst: "\<And>x. x \<in> vars_term r \<Longrightarrow>
+      unmarked_term (\<sigma> x)"
+  shows "i4_safe r \<sigma>"
+proof -
+  let ?u = "Fun g gs"
+  from muterm_root_successors_select_or_block_sound[
+    OF successors fresh rhs inactive steps next_event]
+  obtain us where following: "s' = Fun (Sharp f) us"
+    and collapsing: "muterm_collapsing_rrstep (set P) s' (us ! i)"
+    and bridge: "(us ! i,t') \<in> rrstep (set B)" by blast
+  have current: "r \<cdot> \<sigma> =
+      Fun (Sharp f) (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+    unfolding rhs by simp
+  have ci: "i < length (map (\<lambda>q. q \<cdot> \<sigma>) ts)" using i by simp
+  have cinactive: "i \<notin> csr_dp_root_mu \<mu>
+      (Sharp f,length (map (\<lambda>q. q \<cdot> \<sigma>) ts))"
+    using inactive by simp
+  from i4_innermost_steps_inactive_marked_arg_preserved[
+    OF fresh ci cinactive steps[unfolded current]]
+  obtain ws where following': "s' = Fun (Sharp f) ws"
+    and same: "ws ! i = (map (\<lambda>q. q \<cdot> \<sigma>) ts) ! i"
+    by auto
+  have ws_us: "ws = us" using following following' by simp
+  have exposed_v: "us ! i = v \<cdot> \<sigma>"
+    using same ws_us i frozen by simp
+  from bridge obtain a b \<theta> where ab: "(a,b) \<in> set B"
+    and source_theta: "us ! i = a \<cdot> \<theta>"
+    and target_theta: "t' = b \<cdot> \<theta>"
+    unfolding rrstep_def' by blast
+  from ab singleton have a: "a = v" and b: "b = sharp_term Sharp ?u"
+    by simp_all
+  have source_eq: "v \<cdot> \<sigma> = v \<cdot> \<theta>"
+    using exposed_v source_theta unfolding a by simp
+  have exact_rule: "(v,sharp_term Sharp ?u) \<in>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    using exact singleton by auto
+  from exact_rule obtain h q where
+      active: "muterm_active_defined_call_on (mu_of m) (set D) v q"
+      and sharp_eq: "sharp_term Sharp ?u = sharp_term Sharp q"
+    unfolding muterm_exact_unhiding_rules_list_set by blast
+  have q: "q = ?u"
+    by (rule sharp_term_Sharp_inject[THEN iffD1], use sharp_eq in simp)
+  from active[unfolded q muterm_active_defined_call_on_def]
+  obtain p where p: "p \<in> mu_fun_poss (mu_of m) v"
+    and at: "v |_ p = ?u" by blast
+  have vars_u: "vars_term ?u \<subseteq> vars_term v"
+    using vars_term_subt_at[OF fun_poss_imp_poss[
+      OF mu_fun_poss_imp_fun_poss[OF p]]] unfolding at by simp
+  have subst_agree: "\<And>x. x \<in> vars_term v \<Longrightarrow> \<sigma> x = \<theta> x"
+    using term_subst_eq_rev[OF source_eq] by blast
+  have u_inst: "?u \<cdot> \<sigma> = ?u \<cdot> \<theta>"
+    by (rule term_subst_eq, use vars_u subst_agree in blast)
+  from next_event obtain w where target: "t' = sharp_term Sharp w"
+    and wT_inner: "w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs))"
+    unfolding muterm_innermost_min_typed_pair_step_def by auto
+  have sharp_inst: "sharp_term Sharp w = sharp_term Sharp (?u \<cdot> \<theta>)"
+    using target target_theta unfolding b
+    by (simp add: sharp_term_subst_distr_2)
+  have w: "w = ?u \<cdot> \<theta>"
+    by (rule sharp_term_Sharp_inject[THEN iffD1, OF sharp_inst])
+  have u_not: "\<not> SN_on (csstep \<mu> (set Rs)) {?u \<cdot> \<sigma>}"
+    using lift_minimal[OF wT_inner] unfolding mu_Tinf_def w u_inst by auto
+  have v_not: "\<not> SN_on (csstep \<mu> (set Rs)) {v \<cdot> \<sigma>}"
+    by (rule i4_next_collapsing_hidden_not_SN[
+      OF mu lift_minimal exact next_event collapsing[unfolded exposed_v]
+        bridge[unfolded exposed_v]])
+  have covered: "i4_covered_or_exposed
+      {v \<cdot> \<sigma>,?u \<cdot> \<sigma>} r \<sigma>"
+    using i4_symbolically_covered_subst[OF symbolic unmarked_subst] by simp
+  show ?thesis
+    by (rule i4_covered_or_exposed_imp_safe[OF covered], use v_not u_not in auto)
+qed
+
+lemma i4_frozen_bridge_symbolic_target_check_safe:
+  fixes m :: "((('f,'l) lab) muL)"
+  assumes mu: "\<mu> = mu_of m"
+    and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
+      w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
+    and exact: "set B \<subseteq>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
+    and rhs: "r = Fun (Sharp f) ts"
+    and i: "i < length ts"
+    and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+    and frozen: "ts ! i = v"
+    and exposure: "muterm_bridge_exposure_check B v r"
+    and steps: "(r \<cdot> \<sigma>,s') \<in>
+      (innermost_csdp_step Sharp \<mu> (set Rs))\<^sup>*"
+    and next_event: "(s',t') \<in>
+      muterm_innermost_min_typed_pair_step
+        Sharp \<mu> (set Rs) (set P) (set B)"
+    and successors:
+      "muterm_root_successors_select_or_block_check P B f i ts"
+    and unmarked_subst: "\<And>x. x \<in> vars_term r \<Longrightarrow>
+      unmarked_term (\<sigma> x)"
+  shows "i4_safe r \<sigma>"
+proof -
+  from muterm_root_successors_select_or_block_sound[
+    OF successors fresh rhs inactive steps next_event]
+  obtain us where following: "s' = Fun (Sharp f) us"
+    and collapsing: "muterm_collapsing_rrstep (set P) s' (us ! i)"
+    and bridge: "(us ! i,t') \<in> rrstep (set B)" by blast
+  have current: "r \<cdot> \<sigma> =
+      Fun (Sharp f) (map (\<lambda>q. q \<cdot> \<sigma>) ts)"
+    unfolding rhs by simp
+  have ci: "i < length (map (\<lambda>q. q \<cdot> \<sigma>) ts)" using i by simp
+  have cinactive: "i \<notin> csr_dp_root_mu \<mu>
+      (Sharp f,length (map (\<lambda>q. q \<cdot> \<sigma>) ts))"
+    using inactive by simp
+  from i4_innermost_steps_inactive_marked_arg_preserved[
+    OF fresh ci cinactive steps[unfolded current]]
+  obtain ws where following': "s' = Fun (Sharp f) ws"
+    and same: "ws ! i = (map (\<lambda>q. q \<cdot> \<sigma>) ts) ! i" by auto
+  have ws_us: "ws = us" using following following' by simp
+  have exposed_v: "us ! i = v \<cdot> \<sigma>"
+    using same ws_us i frozen by simp
+  from bridge obtain a b \<theta> where ab: "(a,b) \<in> set B"
+    and source_theta: "us ! i = a \<cdot> \<theta>"
+    and target_theta: "t' = b \<cdot> \<theta>"
+    unfolding rrstep_def' by blast
+  from muterm_bridge_exposure_check_memberE[OF exposure ab]
+  obtain g gs where a: "a = v" and b: "b = Fun (Sharp g) gs"
+    and symbolic: "i4_symbolically_covered {v,Fun g gs} r" by blast
+  let ?u = "Fun g gs"
+  have source_eq: "v \<cdot> \<sigma> = v \<cdot> \<theta>"
+    using exposed_v source_theta unfolding a by simp
+  have exact_rule: "(v,sharp_term Sharp ?u) \<in>
+      set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
+    using exact ab unfolding a b by auto
+  from exact_rule obtain h q where
+      active: "muterm_active_defined_call_on (mu_of m) (set D) v q"
+      and sharp_eq: "sharp_term Sharp ?u = sharp_term Sharp q"
+    unfolding muterm_exact_unhiding_rules_list_set by blast
+  have q: "q = ?u"
+    by (rule sharp_term_Sharp_inject[THEN iffD1], use sharp_eq in simp)
+  from active[unfolded q muterm_active_defined_call_on_def]
+  obtain p where p: "p \<in> mu_fun_poss (mu_of m) v"
+    and at: "v |_ p = ?u" by blast
+  have vars_u: "vars_term ?u \<subseteq> vars_term v"
+    using vars_term_subt_at[OF fun_poss_imp_poss[
+      OF mu_fun_poss_imp_fun_poss[OF p]]] unfolding at by simp
+  have subst_agree: "\<And>x. x \<in> vars_term v \<Longrightarrow> \<sigma> x = \<theta> x"
+    using term_subst_eq_rev[OF source_eq] by blast
+  have u_inst: "?u \<cdot> \<sigma> = ?u \<cdot> \<theta>"
+    by (rule term_subst_eq, use vars_u subst_agree in blast)
+  from next_event obtain w where target: "t' = sharp_term Sharp w"
+    and wT_inner: "w \<in> mu_Tinf \<mu>
+      (innermost_csstep \<mu> (set Rs))"
+    unfolding muterm_innermost_min_typed_pair_step_def by auto
+  have sharp_inst: "sharp_term Sharp w = sharp_term Sharp (?u \<cdot> \<theta>)"
+    using target target_theta unfolding b
+    by (simp add: sharp_term_subst_distr_2)
+  have w: "w = ?u \<cdot> \<theta>"
+    by (rule sharp_term_Sharp_inject[THEN iffD1, OF sharp_inst])
+  have u_not: "\<not> SN_on (csstep \<mu> (set Rs)) {?u \<cdot> \<sigma>}"
+    using lift_minimal[OF wT_inner] unfolding mu_Tinf_def w u_inst by auto
+  have v_not: "\<not> SN_on (csstep \<mu> (set Rs)) {v \<cdot> \<sigma>}"
+    by (rule i4_next_collapsing_hidden_not_SN[
+      OF mu lift_minimal exact next_event collapsing[unfolded exposed_v]
+        bridge[unfolded exposed_v]])
+  have covered: "i4_covered_or_exposed
+      {v \<cdot> \<sigma>,?u \<cdot> \<sigma>} r \<sigma>"
+    using i4_symbolically_covered_subst[OF symbolic unmarked_subst] by simp
+  show ?thesis
+    by (rule i4_covered_or_exposed_imp_safe[OF covered], use v_not u_not in auto)
+qed
+
 theorem muterm_recursive_checks_block_safe:
   fixes m :: "((('f,'l) lab) muL)"
   assumes mu: "\<mu> = mu_of m"
     and lift_minimal: "\<And>w. w \<in> mu_Tinf \<mu>
       (innermost_csstep \<mu> (set Rs)) \<Longrightarrow>
       w \<in> mu_Tinf \<mu> (csstep \<mu> (set Rs))"
-    and exact: "set B =
+    and exact: "set B \<subseteq>
       set (muterm_exact_unhiding_rules_list Sharp m D Rs)"
     and fresh: "\<And>h n. \<not> defined (set Rs) (Sharp h,n)"
+    and marked: "\<And>f n. \<not> is_sharp_lab f \<Longrightarrow>
+      \<mu> (Sharp f,n) = \<mu> (f,n)"
     and pairs_check: "muterm_recursive_pairs_safe_check P B"
     and bridges_check: "muterm_recursive_bridges_safe_check B"
+    and target_shape: "muterm_recursive_target_shape_check P B"
     and good: "i4_chain_good s"
     and event: "(s,t) \<in> muterm_innermost_min_typed_pair_step
       Sharp \<mu> (set Rs) (set P) (set B)"
@@ -3272,16 +4434,18 @@ proof (rule conjI)
   from muterm_recursive_pair_safe_check_sound[
       OF muterm_recursive_pairs_safe_check_member[OF pairs_check pair]]
   obtain k ls where l: "l = Fun (Sharp k) ls"
+    and k_plain: "\<not> is_sharp_lab k"
     and lhs_symbolic: "i4_symbolically_covered {} l"
     and vars: "vars_term r \<subseteq> vars_term l"
-    and target: "is_Var r \<or> (\<exists>f ts. r = Fun (Sharp f) ts \<and>
-      (i4_symbolically_covered {} r \<or>
-       (\<exists>i g u. i < length ts \<and> ts ! i = Fun g [u] \<and>
-         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
-         \<not> defined (set Rs) (g,1) \<and>
-         i4_symbolically_covered {u} r \<and>
-         muterm_root_successors_select_or_block_check P B f i ts)))"
+    and target: "muterm_recursive_target_safe_check
+      (mu_vars_term \<mu> l) P B r"
     by blast
+  have marked_k: "\<mu> (Sharp k,length ls) = \<mu> (k,length ls)"
+    by (rule marked[OF k_plain])
+  from event have pair_source:
+      "innermost_pair_source Sharp \<mu> (set Rs) (l \<cdot> \<sigma>)"
+    unfolding muterm_innermost_min_typed_pair_step_def
+      muterm_innermost_typed_pair_step_def se by auto
   have subst_l: "\<And>x. x \<in> vars_term l \<Longrightarrow>
       unmarked_term (\<sigma> x)"
     by (rule i4_chain_good_marked_instance_varD[OF good l se])
@@ -3292,16 +4456,28 @@ proof (rule conjI)
       unmarked_term (\<sigma> x)"
     using vars subst_l by blast
   from rfun obtain q ts where r0: "r = Fun q ts" by (cases r; auto)
-  from target[unfolded r0] obtain f where q: "q = Sharp f"
+  from target[unfolded muterm_recursive_target_safe_check_def r0]
+  obtain f where q: "q = Sharp f"
     by (cases q; auto)
   have r: "r = Fun (Sharp f) ts" unfolding r0 q ..
   have target_cases: "i4_symbolically_covered {} r \<or>
+       muterm_root_successors_select_symbolic_or_source_blocked_check
+         (mu_vars_term \<mu> l) B P f ts \<or>
+       (\<exists>i<length ts.
+         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+         i4_symbolically_covered {ts ! i} r \<and>
+         muterm_root_successors_select_or_block_check P B f i ts) \<or>
+       (\<exists>i<length ts.
+         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+         muterm_bridge_exposure_check B (ts ! i) r \<and>
+         muterm_root_successors_select_or_block_check P B f i ts) \<or>
        (\<exists>i g u. i < length ts \<and> ts ! i = Fun g [u] \<and>
          i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
          \<not> defined (set Rs) (g,1) \<and>
          i4_symbolically_covered {u} r \<and>
          muterm_root_successors_select_or_block_check P B f i ts)"
-    using target unfolding r by blast
+    using muterm_recursive_target_safe_check_Sharp_iff[
+      THEN iffD1, OF target[unfolded r]] unfolding r .
   have rsafe: "i4_safe r \<sigma>"
   using target_cases
   proof
@@ -3309,13 +4485,98 @@ proof (rule conjI)
     show ?thesis by (rule i4_symbolically_covered_empty_safe[
       OF direct subst_r])
   next
-    assume exceptional: "\<exists>i g u. i < length ts \<and>
+    assume remaining:
+      "muterm_root_successors_select_symbolic_or_source_blocked_check
+        (mu_vars_term \<mu> l) B P f ts \<or>
+      (\<exists>i<length ts.
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        i4_symbolically_covered {ts ! i} r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts) \<or>
+      (\<exists>i<length ts.
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        muterm_bridge_exposure_check B (ts ! i) r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts) \<or>
+      (\<exists>i g u. i < length ts \<and>
+        ts ! i = Fun g [u] \<and>
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        \<not> defined (set Rs) (g,1) \<and>
+        i4_symbolically_covered {u} r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts)"
+    from remaining show ?thesis
+    proof
+      assume branching:
+        "muterm_root_successors_select_symbolic_or_source_blocked_check
+          (mu_vars_term \<mu> l) B P f ts"
+      show ?thesis
+        by (rule
+          i4_branching_inactive_arguments_symbolic_or_source_blocked_target_safe[
+            OF mu lift_minimal exact fresh l marked_k pair_source r
+              steps[unfolded te] next_event branching subst_r])
+    next
+    assume exceptional: "(\<exists>i<length ts.
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        i4_symbolically_covered {ts ! i} r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts) \<or>
+      (\<exists>i<length ts.
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        muterm_bridge_exposure_check B (ts ! i) r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts) \<or>
+      (\<exists>i g u. i < length ts \<and> ts ! i = Fun g [u] \<and>
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        \<not> defined (set Rs) (g,1) \<and>
+        i4_symbolically_covered {u} r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts)"
+    from exceptional show ?thesis
+    proof
+      assume general: "\<exists>i<length ts.
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        i4_symbolically_covered {ts ! i} r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts"
+      then obtain i where i: "i < length ts"
+        and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+        and symbolic: "i4_symbolically_covered {ts ! i} r"
+        and successors:
+          "muterm_root_successors_select_or_block_check P B f i ts"
+        by blast
+      show ?thesis
+        by (rule i4_frozen_argument_symbolic_target_check_safe[
+          OF mu lift_minimal exact fresh r i inactive refl
+            steps[unfolded te] next_event successors symbolic subst_r])
+    next
+      assume later: "(\<exists>i<length ts.
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        muterm_bridge_exposure_check B (ts ! i) r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts) \<or>
+      (\<exists>i g u. i < length ts \<and>
+        ts ! i = Fun g [u] \<and>
+        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+        \<not> defined (set Rs) (g,1) \<and>
+        i4_symbolically_covered {u} r \<and>
+        muterm_root_successors_select_or_block_check P B f i ts)"
+      from later show ?thesis
+      proof
+        assume bridge_exposure: "\<exists>i<length ts.
+          i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+          muterm_bridge_exposure_check B (ts ! i) r \<and>
+          muterm_root_successors_select_or_block_check P B f i ts"
+        then obtain i where i: "i < length ts"
+          and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
+          and exposure: "muterm_bridge_exposure_check B (ts ! i) r"
+          and successors:
+            "muterm_root_successors_select_or_block_check P B f i ts"
+          by blast
+        show ?thesis
+          by (rule i4_frozen_bridge_symbolic_target_check_safe[
+            OF mu lift_minimal exact fresh r i inactive refl exposure
+              steps[unfolded te] next_event successors subst_r])
+      next
+      assume unary: "\<exists>i g u. i < length ts \<and>
         ts ! i = Fun g [u] \<and>
         i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
         \<not> defined (set Rs) (g,1) \<and>
         i4_symbolically_covered {u} r \<and>
         muterm_root_successors_select_or_block_check P B f i ts"
-    then obtain i g u where i: "i < length ts"
+      then obtain i g u where i: "i < length ts"
       and frozen: "ts ! i = Fun g [u]"
       and inactive: "i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts)"
       and undef: "\<not> defined (set Rs) (g,1)"
@@ -3327,6 +4588,9 @@ proof (rule conjI)
       by (rule i4_frozen_unary_symbolic_target_check_safe[
         OF mu lift_minimal exact fresh r i inactive frozen undef
           steps[unfolded te] next_event successors symbolic subst_r])
+      qed
+    qed
+    qed
   qed
     show "i4_safe l \<sigma> \<and> i4_safe r \<sigma>" using lsafe rsafe by simp
   qed
@@ -3361,7 +4625,9 @@ next
   have bridge_vars: "vars_term b \<subseteq> vars_term a"
     and source_cases: "i4_symbolically_covered {a} a \<or>
       (\<exists>f u. a = Fun f [u] \<and> \<not> defined (set Rs) (f,1) \<and>
-        i4_symbolically_covered {u} a)"
+        i4_symbolically_covered {u} a) \<or>
+      (\<exists>g us. b = Fun (Sharp g) us \<and>
+        i4_symbolically_covered {a,Fun g us} a)"
     and target_symbolic: "i4_symbolically_covered {} b" by auto
   have source_subst: "\<And>z. z \<in> vars_term a \<Longrightarrow>
       unmarked_term (\<theta> z)"
@@ -3374,21 +4640,30 @@ next
   have event_bridge: "(a \<cdot> \<theta>,t) \<in> rrstep (set B)"
     unfolding te using bridge by auto
   have safe_bridge: "i4_safe a \<theta> \<and> i4_safe b \<theta>"
-  using source_cases
-  proof
-    assume source_symbolic: "i4_symbolically_covered {a} a"
+  proof -
+    consider (direct) "i4_symbolically_covered {a} a"
+      | (unary) f u where "a = Fun f [u]"
+          "\<not> defined (set Rs) (f,1)" "i4_symbolically_covered {u} a"
+      | (target) g us where "b = Fun (Sharp g) us"
+          "i4_symbolically_covered {a,Fun g us} a"
+      using source_cases by blast
+    then show ?thesis
+    proof cases
+    case direct
     show ?thesis by (rule i4_exact_bridge_symbolic_safe[
       OF mu lift_minimal exact event collapsing bridge refl
-        source_symbolic target_symbolic source_subst target_subst event_bridge])
+        direct target_symbolic source_subst target_subst event_bridge])
   next
-    assume "\<exists>f u. a = Fun f [u] \<and>
-        \<not> defined (set Rs) (f,1) \<and> i4_symbolically_covered {u} a"
-    then obtain f u where source: "a = Fun f [u]"
-      and undef: "\<not> defined (set Rs) (f,1)"
-      and source_symbolic: "i4_symbolically_covered {u} a" by blast
+    case (unary f u)
     show ?thesis by (rule i4_exact_bridge_unary_symbolic_safe[
-      OF mu lift_minimal exact event collapsing bridge refl source undef
-        source_symbolic target_symbolic source_subst target_subst event_bridge])
+      OF mu lift_minimal exact event collapsing bridge refl unary(1) unary(2)
+        unary(3) target_symbolic source_subst target_subst event_bridge])
+  next
+    case (target g us)
+    show ?thesis by (rule i4_exact_bridge_target_symbolic_safe[
+      OF mu lift_minimal exact event collapsing event_bridge te target(1)
+        target(2) target_symbolic source_subst target_subst])
+    qed
   qed
     show "i4_safe l \<sigma> \<and> i4_safe a \<theta> \<and> i4_safe b \<theta>"
       using lsafe safe_bridge by simp
@@ -4075,7 +5350,7 @@ qed
 qed
 
 definition muterm_recursive_rta08_ur_redpair_proc where
-  "muterm_recursive_rta08_ur_redpair_proc J m rp Premove U B dpp =
+  "muterm_recursive_rta08_ur_redpair_proc J m rp Premove U Bcheck B dpp =
     check_return (do {
       rel_impl_redpair rp;
       let (ps,pns) = dpp_ops.split_pairs J dpp Premove;
@@ -4350,11 +5625,12 @@ theorem muterm_recursive_rta08_ur_redpair_proc_sound:
     and proc: "muterm_i4.muterm_recursive_rta08_ur_redpair_proc
       (dpp_ops.rules J dpp) (mu_of m)
       (csr_u3_delta (set (dpp_ops.rules J dpp)) (set U))
-      J m rp Premove U B dpp = return dpp'"
+      J m rp Premove U Bcheck B dpp = return dpp'"
     and wf: "wf_trs (set (dpp_ops.rules J dpp))"
     and overlay: "csr_switch_overlay (set (dpp_ops.rules J dpp))"
-    and exact: "set B = set (muterm_exact_unhiding_rules_list
+    and exact: "set Bcheck = set (muterm_exact_unhiding_rules_list
       Sharp m D (dpp_ops.rules J dpp))"
+    and local: "set B \<subseteq> set Bcheck"
     and fresh: "\<And>h n. \<not> defined
       (set (dpp_ops.rules J dpp)) (Sharp h,n)"
     and rules_unmarked: "\<And>fn. fn \<in>
@@ -4563,6 +5839,9 @@ next
       (innermost_csstep (mu_of m) (set (rules dpp))) \<Longrightarrow>
       w \<in> mu_Tinf (mu_of m) (csstep (mu_of m) (set (rules dpp)))"
     by (rule mu_Tinf_innermost_imp_mu_Tinf[OF overlay wf])
+  have local_exact: "set B \<subseteq> set (muterm_exact_unhiding_rules_list
+      Sharp m D (rules dpp))"
+    using local exact by auto
   have block_safe: "\<And>s t s' t'. M.i4_chain_good s \<Longrightarrow>
       (s,t) \<in> muterm_innermost_min_typed_pair_step Sharp (mu_of m)
         (set (rules dpp)) (set (pairs dpp)) (set B) \<Longrightarrow>
@@ -4571,8 +5850,20 @@ next
       (s',t') \<in> muterm_innermost_min_typed_pair_step Sharp (mu_of m)
         (set (rules dpp)) (set (pairs dpp)) (set B) \<Longrightarrow>
       M.i4_typed_step_safe (set (pairs dpp)) (set B) s t"
-    by (rule M.muterm_recursive_checks_block_safe[
-      OF refl lift_minimal exact fresh pairs_check bridges_check])
+  proof -
+    fix s t s' t'
+    assume good: "M.i4_chain_good s"
+      and event: "(s,t) \<in> muterm_innermost_min_typed_pair_step Sharp
+        (mu_of m) (set (rules dpp)) (set (pairs dpp)) (set B)"
+      and steps: "(t,s') \<in> (innermost_csdp_step Sharp (mu_of m)
+        (set (rules dpp)))\<^sup>*"
+      and next_event: "(s',t') \<in> muterm_innermost_min_typed_pair_step Sharp
+        (mu_of m) (set (rules dpp)) (set (pairs dpp)) (set B)"
+    show "M.i4_typed_step_safe (set (pairs dpp)) (set B) s t"
+      by (rule M.muterm_recursive_checks_block_safe[
+        OF refl lift_minimal local_exact fresh marked pairs_check bridges_check
+          target_check good event steps next_event])
+  qed
   have pairs': "set (pairs dpp') = set (pairs dpp) - set Premove"
     using dpp' delete_P_Pw_sound[of dpp Premove Premove]
       pairs_sound[of dpp'] by auto

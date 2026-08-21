@@ -844,47 +844,176 @@ definition muterm_root_successors_select_or_block_check_exec where
     list_all
       (muterm_root_pair_selects_or_ground_blocked_exec Rs \<mu> \<Delta> B f i ts) P"
 
+definition muterm_root_pair_selects_symbolic_arg_exec where
+  "muterm_root_pair_selects_symbolic_arg_exec Rs \<mu> \<Delta> f ts lr \<longleftrightarrow>
+    (case lr of (l,r) \<Rightarrow> case l of
+      Var x \<Rightarrow> False
+    | Fun h ls \<Rightarrow> (case h of
+        Sharp g \<Rightarrow> if g \<noteq> f then True else
+          (case r of
+            Fun k rs \<Rightarrow> False
+          | Var y \<Rightarrow> list_ex (\<lambda>(i,v).
+              i < length ts \<and>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              v = Var y \<and>
+              muterm_i4_symbolically_covered_exec \<mu> \<Delta> {ts ! i}
+                (Fun (Sharp f) ts))
+              (zip [0..<length ls] ls))
+      | _ \<Rightarrow> False))"
+
+definition muterm_root_successors_select_symbolic_arg_check_exec where
+  "muterm_root_successors_select_symbolic_arg_check_exec Rs \<mu> \<Delta> P f ts =
+    list_all (muterm_root_pair_selects_symbolic_arg_exec Rs \<mu> \<Delta> f ts) P"
+
+definition muterm_active_lhs_blocked_exec where
+  "muterm_active_lhs_blocked_exec Rs m a \<longleftrightarrow>
+    list_ex (\<lambda>w. list_ex (\<lambda>(l,r). matches w l) Rs)
+      (mu_supt_list m a)"
+
+definition muterm_all_bridge_sources_active_blocked_exec where
+  "muterm_all_bridge_sources_active_blocked_exec Rs m B \<longleftrightarrow>
+    list_all (\<lambda>(a,b). muterm_active_lhs_blocked_exec Rs m a) B"
+
+definition muterm_bridge_exposure_check_exec where
+  "muterm_bridge_exposure_check_exec Rs \<mu> \<Delta> B v r \<longleftrightarrow>
+    B \<noteq> [] \<and> list_all (\<lambda>(a,b). a = v \<and> (case b of
+      Var x \<Rightarrow> False
+    | Fun h us \<Rightarrow> (case h of
+        Sharp g \<Rightarrow>
+          muterm_i4_symbolically_covered_exec \<mu> \<Delta> {v,Fun g us} r
+      | _ \<Rightarrow> False))) B"
+
+definition muterm_root_pair_selects_symbolic_or_source_blocked_exec where
+  "muterm_root_pair_selects_symbolic_or_source_blocked_exec
+      Rs m \<mu> \<Delta> A B f ts lr \<longleftrightarrow>
+    muterm_root_pair_selects_symbolic_arg_exec Rs \<mu> \<Delta> f ts lr \<or>
+    (case lr of (l,r) \<Rightarrow> case l of
+      Var x \<Rightarrow> False
+    | Fun h ls \<Rightarrow> (case h of
+        Sharp g \<Rightarrow> if g \<noteq> f then True else
+          (case r of
+            Fun k rs \<Rightarrow> False
+          | Var y \<Rightarrow> list_ex (\<lambda>(i,v).
+              i < length ts \<and>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              v = Var y \<and> (case ts ! i of
+                Var z \<Rightarrow> z \<in> A
+              | Fun q qs \<Rightarrow> False) \<and>
+              muterm_all_bridge_sources_active_blocked_exec Rs m B)
+            (zip [0..<length ls] ls) \<or>
+            list_ex (\<lambda>(i,v).
+              i < length ts \<and>
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              v = Var y \<and>
+              muterm_bridge_exposure_check_exec Rs \<mu> \<Delta> B (ts ! i)
+                (Fun (Sharp f) ts))
+            (zip [0..<length ls] ls))
+      | _ \<Rightarrow> False))"
+
+definition muterm_root_successors_select_symbolic_or_source_blocked_check_exec where
+  "muterm_root_successors_select_symbolic_or_source_blocked_check_exec
+      Rs m \<mu> \<Delta> A B P f ts =
+    list_all
+      (muterm_root_pair_selects_symbolic_or_source_blocked_exec
+        Rs m \<mu> \<Delta> A B f ts) P"
+
+definition muterm_singleton_bridge_exposure_check_exec where
+  "muterm_singleton_bridge_exposure_check_exec Rs \<mu> \<Delta> B v r \<longleftrightarrow>
+    (case B of
+      [(a,b)] \<Rightarrow> a = v \<and> (case b of
+          Var x \<Rightarrow> False
+        | Fun h us \<Rightarrow> (case h of
+            Sharp g \<Rightarrow>
+              muterm_i4_symbolically_covered_exec
+                \<mu> \<Delta> {v,Fun g us} r
+          | _ \<Rightarrow> False))
+    | _ \<Rightarrow> False)"
+
+definition muterm_recursive_target_safe_check_exec where
+  "muterm_recursive_target_safe_check_exec Rs m \<mu> \<Delta> A P B r \<longleftrightarrow>
+    (case r of
+      Var y \<Rightarrow> True
+    | Fun q ts \<Rightarrow> (case q of
+        Sharp f \<Rightarrow>
+          muterm_i4_symbolically_covered_exec \<mu> \<Delta> {} r \<or>
+          muterm_root_successors_select_symbolic_or_source_blocked_check_exec
+            Rs m \<mu> \<Delta> A B P f ts \<or>
+          list_ex (\<lambda>(i,v).
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              muterm_i4_symbolically_covered_exec \<mu> \<Delta> {v} r \<and>
+              muterm_root_successors_select_or_block_check_exec
+                Rs \<mu> \<Delta> P B f i ts)
+            (zip [0..<length ts] ts) \<or>
+          list_ex (\<lambda>(i,v).
+              i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+              muterm_bridge_exposure_check_exec
+                Rs \<mu> \<Delta> B v r \<and>
+              muterm_root_successors_select_or_block_check_exec
+                Rs \<mu> \<Delta> P B f i ts)
+            (zip [0..<length ts] ts) \<or>
+          list_ex (\<lambda>(i,v). case v of
+              Var z \<Rightarrow> False
+            | Fun g us \<Rightarrow> (case us of
+                [u] \<Rightarrow>
+                  i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
+                  (g,1) \<notin> set (defined_list Rs) \<and>
+                  muterm_i4_symbolically_covered_exec \<mu> \<Delta> {u} r \<and>
+                  muterm_root_successors_select_or_block_check_exec
+                    Rs \<mu> \<Delta> P B f i ts
+              | _ \<Rightarrow> False))
+            (zip [0..<length ts] ts)
+      | _ \<Rightarrow> False))"
+
+definition muterm_active_vars_exec where
+  "muterm_active_vars_exec m l = set (mu_vars_term_list m l)"
+
 definition muterm_recursive_pair_safe_check_exec where
-  "muterm_recursive_pair_safe_check_exec Rs \<mu> \<Delta> P B lr \<longleftrightarrow>
+  "muterm_recursive_pair_safe_check_exec Rs m \<mu> \<Delta> P B lr \<longleftrightarrow>
     (case lr of (l,r) \<Rightarrow> case l of
       Var x \<Rightarrow> False
     | Fun h ls \<Rightarrow> (case h of
         Sharp k \<Rightarrow>
+          \<not> is_sharp_lab k \<and>
           muterm_i4_symbolically_covered_exec \<mu> \<Delta> {} l \<and>
           vars_term r \<subseteq> vars_term l \<and>
-          (case r of
-            Var y \<Rightarrow> True
-          | Fun q ts \<Rightarrow> (case q of
-              Sharp f \<Rightarrow>
-                muterm_i4_symbolically_covered_exec \<mu> \<Delta> {} r \<or>
-                list_ex (\<lambda>(i,v). case v of
-                    Var z \<Rightarrow> False
-                  | Fun g us \<Rightarrow> (case us of
-                      [u] \<Rightarrow>
-                        i \<notin> csr_dp_root_mu \<mu> (Sharp f,length ts) \<and>
-                        (g,1) \<notin> set (defined_list Rs) \<and>
-                        muterm_i4_symbolically_covered_exec \<mu> \<Delta> {u} r \<and>
-                        muterm_root_successors_select_or_block_check_exec
-                          Rs \<mu> \<Delta> P B f i ts
-                    | _ \<Rightarrow> False))
-                  (zip [0..<length ts] ts)
-            | _ \<Rightarrow> False))
+          muterm_recursive_target_safe_check_exec Rs m \<mu> \<Delta>
+            (muterm_active_vars_exec m l) P B r
       | _ \<Rightarrow> False))"
 
 definition muterm_recursive_pairs_safe_check_exec where
-  "muterm_recursive_pairs_safe_check_exec Rs \<mu> \<Delta> P B =
-    list_all (muterm_recursive_pair_safe_check_exec Rs \<mu> \<Delta> P B) P"
+  "muterm_recursive_pairs_safe_check_exec Rs m \<mu> \<Delta> P B =
+    list_all (muterm_recursive_pair_safe_check_exec Rs m \<mu> \<Delta> P B) P"
+
+definition muterm_recursive_bridge_unary_source_check_exec where
+  "muterm_recursive_bridge_unary_source_check_exec Ds \<mu> \<Delta> a =
+    (case a of
+      Var x \<Rightarrow> False
+    | Fun f ts \<Rightarrow> (case ts of
+        [u] \<Rightarrow> (f,1) \<notin> set Ds \<and>
+          muterm_i4_symbolically_covered_exec \<mu> \<Delta> {u} a
+      | _ \<Rightarrow> False))"
+
+definition muterm_recursive_bridge_target_source_check_exec where
+  "muterm_recursive_bridge_target_source_check_exec \<mu> \<Delta> a b =
+    (case b of
+      Fun (Sharp g) us \<Rightarrow>
+        muterm_i4_symbolically_covered_exec
+          \<mu> \<Delta> {a,Fun g us} a
+    | _ \<Rightarrow> False)"
+
+definition muterm_recursive_bridge_source_safe_check_exec where
+  "muterm_recursive_bridge_source_safe_check_exec Ds \<mu> \<Delta> lr =
+    (muterm_i4_symbolically_covered_exec \<mu> \<Delta>
+        {fst lr} (fst lr) \<or>
+      muterm_recursive_bridge_unary_source_check_exec
+        Ds \<mu> \<Delta> (fst lr) \<or>
+      muterm_recursive_bridge_target_source_check_exec
+        \<mu> \<Delta> (fst lr) (snd lr))"
 
 definition muterm_recursive_bridges_safe_check_exec where
   "muterm_recursive_bridges_safe_check_exec Ds \<mu> \<Delta> B = list_all (\<lambda>lr.
     vars_term (snd lr) \<subseteq> vars_term (fst lr) \<and>
-    (muterm_i4_symbolically_covered_exec \<mu> \<Delta> {fst lr} (fst lr) \<or>
-      (case fst lr of
-        Var x \<Rightarrow> False
-      | Fun f ts \<Rightarrow> (case ts of
-          [u] \<Rightarrow> (f,1) \<notin> set Ds \<and>
-            muterm_i4_symbolically_covered_exec \<mu> \<Delta> {u} (fst lr)
-        | _ \<Rightarrow> False))) \<and>
+    muterm_recursive_bridge_source_safe_check_exec Ds \<mu> \<Delta> lr \<and>
     muterm_i4_symbolically_covered_exec \<mu> \<Delta> {} (snd lr)) B"
 
 definition muterm_recursive_target_shape_check_exec where
@@ -942,7 +1071,7 @@ definition muterm_recursive_i4_shape_check_exec where
          (muterm_i4_mu_vars_term_list_exec \<mu> (snd lr))) B)"
 
 definition muterm_recursive_rta08_ur_redpair_proc_exec where
-  "muterm_recursive_rta08_ur_redpair_proc_exec Rs \<mu> \<Delta> J m rp Premove U B dpp =
+  "muterm_recursive_rta08_ur_redpair_proc_exec Rs \<mu> \<Delta> J m rp Premove U Bcheck B dpp =
     check_return (do {
       rel_impl_redpair rp;
       let (ps,pns) = dpp_ops.split_pairs J dpp Premove;
@@ -954,7 +1083,7 @@ definition muterm_recursive_rta08_ur_redpair_proc_exec where
         (showsl_lit (STR ''recursive MU-TERM strong-conservativity check failed''));
       check (list_all (is_Fun \<circ> fst) T)
         (showsl_lit (STR ''recursive MU-TERM rule has a variable left-hand side''));
-      check (muterm_recursive_pairs_safe_check_exec Rs \<mu> \<Delta>
+      check (muterm_recursive_pairs_safe_check_exec Rs m \<mu> \<Delta>
           (dpp_ops.pairs J dpp) B)
         (showsl_lit (STR ''recursive MU-TERM pair safety check failed''));
       check (muterm_recursive_bridges_safe_check_exec
@@ -1011,32 +1140,237 @@ lemma muterm_root_successors_select_or_block_check_exec_eq:
   by (simp add: list_all_iff
       muterm_root_pair_selects_or_ground_blocked_exec_eq)
 
-lemma muterm_recursive_pair_safe_check_exec_eq:
-  "muterm_recursive_pair_safe_check_exec Rs \<mu> \<Delta> P B lr =
-    muterm_recursive_pair_safe_check P B lr"
-  unfolding muterm_recursive_pair_safe_check_exec_def
-    muterm_recursive_pair_safe_check_def
-  by (simp add: list_ex_iff set_defined_list muterm_i4_mu_exec_eq
+lemma muterm_root_pair_selects_symbolic_arg_exec_eq:
+  "muterm_root_pair_selects_symbolic_arg_exec Rs \<mu> \<Delta> f ts lr =
+    muterm_root_pair_selects_symbolic_arg f ts lr"
+  unfolding muterm_root_pair_selects_symbolic_arg_exec_def
+    muterm_root_pair_selects_symbolic_arg_def
+  by (simp add: list_ex_zip_upt_length
       muterm_i4_symbolically_covered_exec_eq
+      muterm_i4_mu_exec_def i4_mu_def
+      split: prod.splits term.splits lab.splits)
+
+lemma muterm_root_successors_select_symbolic_arg_check_exec_eq:
+  "muterm_root_successors_select_symbolic_arg_check_exec
+      Rs \<mu> \<Delta> P f ts =
+    muterm_root_successors_select_symbolic_arg_check P f ts"
+  unfolding muterm_root_successors_select_symbolic_arg_check_exec_def
+    muterm_root_successors_select_symbolic_arg_check_def
+  by (simp add: list_all_iff muterm_root_pair_selects_symbolic_arg_exec_eq)
+
+lemma muterm_active_lhs_blocked_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_active_lhs_blocked_exec Rs m a =
+    muterm_active_lhs_blocked a"
+  using mu unfolding muterm_active_lhs_blocked_exec_def
+    muterm_active_lhs_blocked_def
+  by (simp add: list_ex_iff matches_iff; blast)
+
+lemma muterm_all_bridge_sources_active_blocked_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_all_bridge_sources_active_blocked_exec Rs m B =
+    muterm_all_bridge_sources_active_blocked B"
+  using mu unfolding muterm_all_bridge_sources_active_blocked_exec_def
+    muterm_all_bridge_sources_active_blocked_def
+  by (simp add: list_all_iff
+      muterm_active_lhs_blocked_exec_eq[OF mu])
+
+lemma muterm_var_case_mem_iff:
+  "(\<exists>x. t = Var x \<and> x \<in> A) =
+    (case t of Var x \<Rightarrow> x \<in> A | Fun f ts \<Rightarrow> False)"
+  by (cases t) simp_all
+
+lemma muterm_root_pair_selects_symbolic_or_source_blocked_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_root_pair_selects_symbolic_or_source_blocked_exec
+      Rs m \<mu> \<Delta> A B f ts lr =
+    muterm_root_pair_selects_symbolic_or_source_blocked A B f ts lr"
+proof -
+  have blocked: "muterm_all_bridge_sources_active_blocked_exec Rs m B =
+      muterm_all_bridge_sources_active_blocked B"
+    by (rule muterm_all_bridge_sources_active_blocked_exec_eq[OF mu])
+  have exposure: "\<And>v r. muterm_bridge_exposure_check_exec
+      Rs \<mu> \<Delta> B v r = muterm_bridge_exposure_check B v r"
+    unfolding muterm_bridge_exposure_check_exec_def
+      muterm_bridge_exposure_check_def
+    by (simp add: list_all_iff muterm_i4_symbolically_covered_exec_eq
+        split: prod.splits term.splits lab.splits)
+  show ?thesis
+    unfolding muterm_root_pair_selects_symbolic_or_source_blocked_exec_def
+    apply (simp only: muterm_root_pair_selects_symbolic_arg_exec_eq blocked exposure)
+    unfolding
+    muterm_root_pair_selects_symbolic_or_source_blocked_def
+    by (simp add: list_ex_zip_upt_length muterm_var_case_mem_iff
+        split: prod.splits term.splits lab.splits)
+qed
+
+lemma muterm_root_successors_select_symbolic_or_source_blocked_check_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_root_successors_select_symbolic_or_source_blocked_check_exec
+      Rs m \<mu> \<Delta> A B P f ts =
+    muterm_root_successors_select_symbolic_or_source_blocked_check A B P f ts"
+  unfolding
+    muterm_root_successors_select_symbolic_or_source_blocked_check_exec_def
+    muterm_root_successors_select_symbolic_or_source_blocked_check_def
+  by (simp add: list_all_iff
+      muterm_root_pair_selects_symbolic_or_source_blocked_exec_eq[OF mu])
+
+lemma muterm_singleton_bridge_exposure_check_exec_eq:
+  "muterm_singleton_bridge_exposure_check_exec Rs \<mu> \<Delta> B v r =
+    muterm_singleton_bridge_exposure_check B v r"
+  unfolding muterm_singleton_bridge_exposure_check_exec_def
+    muterm_singleton_bridge_exposure_check_def
+  by (simp add: muterm_i4_symbolically_covered_exec_eq
+      split: list.splits prod.splits term.splits lab.splits)
+
+lemma muterm_bridge_exposure_check_exec_eq:
+  "muterm_bridge_exposure_check_exec Rs \<mu> \<Delta> B v r =
+    muterm_bridge_exposure_check B v r"
+  unfolding muterm_bridge_exposure_check_exec_def
+    muterm_bridge_exposure_check_def
+  by (simp add: list_all_iff muterm_i4_symbolically_covered_exec_eq
+      split: prod.splits term.splits lab.splits)
+
+lemma muterm_recursive_target_safe_check_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_recursive_target_safe_check_exec Rs m \<mu> \<Delta> A P B r =
+    muterm_recursive_target_safe_check A P B r"
+  unfolding muterm_recursive_target_safe_check_exec_def
+    muterm_recursive_target_safe_check_def
+  by (simp add: list_ex_iff set_defined_list
+      muterm_i4_mu_exec_eq
+      muterm_i4_symbolically_covered_exec_eq
+      muterm_bridge_exposure_check_exec_eq
+      muterm_root_successors_select_symbolic_or_source_blocked_check_exec_eq[OF mu]
       muterm_root_successors_select_or_block_check_exec_eq
       split: prod.splits term.splits lab.splits list.splits)
 
+lemma muterm_active_vars_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_active_vars_exec m l = mu_vars_term \<mu> l"
+  using mu unfolding muterm_active_vars_exec_def
+  by simp
+
+lemma muterm_recursive_pair_safe_check_exec_eq:
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_recursive_pair_safe_check_exec Rs m \<mu> \<Delta> P B lr =
+    muterm_recursive_pair_safe_check P B lr"
+  unfolding muterm_recursive_pair_safe_check_exec_def
+    muterm_recursive_pair_safe_check_def
+  by (simp add: muterm_i4_mu_exec_eq
+      muterm_i4_symbolically_covered_exec_eq
+      muterm_active_vars_exec_eq[OF mu]
+      muterm_recursive_target_safe_check_exec_eq[OF mu]
+      split: prod.splits term.splits lab.splits)
+
 lemma muterm_recursive_pairs_safe_check_exec_eq:
-  "muterm_recursive_pairs_safe_check_exec Rs \<mu> \<Delta> P B =
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_recursive_pairs_safe_check_exec Rs m \<mu> \<Delta> P B =
     muterm_recursive_pairs_safe_check P B"
   unfolding muterm_recursive_pairs_safe_check_exec_def
     muterm_recursive_pairs_safe_check_def
-  by (simp add: list_all_iff muterm_recursive_pair_safe_check_exec_eq)
+  by (simp add: list_all_iff
+      muterm_recursive_pair_safe_check_exec_eq[OF mu])
+
+lemma muterm_recursive_bridge_unary_source_check_exec_eq:
+  "muterm_recursive_bridge_unary_source_check_exec
+      (defined_list Rs) \<mu> \<Delta> a =
+    muterm_recursive_bridge_unary_source_check a"
+proof (cases a)
+  case (Var x)
+  then show ?thesis
+    unfolding muterm_recursive_bridge_unary_source_check_exec_def
+      muterm_recursive_bridge_unary_source_check_def
+    by (simp only: term.simps)
+next
+  case (Fun f ts)
+  show ?thesis
+  proof (cases ts)
+    case Nil
+    then show ?thesis using Fun
+      unfolding muterm_recursive_bridge_unary_source_check_exec_def
+        muterm_recursive_bridge_unary_source_check_def
+      by (simp only: term.simps list.simps)
+  next
+    case (Cons u rest)
+    note ts_Cons = Cons
+    show ?thesis
+    proof (cases rest)
+      case Nil
+      then show ?thesis using Fun ts_Cons
+        unfolding muterm_recursive_bridge_unary_source_check_exec_def
+          muterm_recursive_bridge_unary_source_check_def
+        by (simp only: term.simps list.simps
+            muterm_i4_symbolically_covered_exec_eq set_defined_list
+            mem_Collect_eq)
+    next
+      case (Cons v more)
+      then show ?thesis using Fun ts_Cons Cons
+        unfolding muterm_recursive_bridge_unary_source_check_exec_def
+          muterm_recursive_bridge_unary_source_check_def
+        by (simp only: term.simps list.simps)
+    qed
+  qed
+qed
+
+lemma muterm_recursive_bridge_target_source_check_exec_eq:
+  "muterm_recursive_bridge_target_source_check_exec \<mu> \<Delta> a b =
+    muterm_recursive_bridge_target_source_check a b"
+proof (cases b)
+  case (Var x)
+  then show ?thesis
+    unfolding muterm_recursive_bridge_target_source_check_exec_def
+      muterm_recursive_bridge_target_source_check_def
+    by (simp only: term.simps)
+next
+  case (Fun h us)
+  show ?thesis
+  proof (cases h)
+    case (Lab h l)
+    then show ?thesis using Fun
+      unfolding muterm_recursive_bridge_target_source_check_exec_def
+        muterm_recursive_bridge_target_source_check_def
+      by (simp only: term.simps lab.simps)
+  next
+    case (FunLab h ls)
+    then show ?thesis using Fun
+      unfolding muterm_recursive_bridge_target_source_check_exec_def
+        muterm_recursive_bridge_target_source_check_def
+      by (simp only: term.simps lab.simps)
+  next
+    case (UnLab f)
+    then show ?thesis using Fun
+      unfolding muterm_recursive_bridge_target_source_check_exec_def
+        muterm_recursive_bridge_target_source_check_def
+      by (simp only: term.simps lab.simps)
+  next
+    case (Sharp g)
+    then show ?thesis using Fun
+      unfolding muterm_recursive_bridge_target_source_check_exec_def
+        muterm_recursive_bridge_target_source_check_def
+      by (simp only: term.simps lab.simps
+          muterm_i4_symbolically_covered_exec_eq)
+  qed
+qed
+
+lemma muterm_recursive_bridge_source_safe_check_exec_eq:
+  "muterm_recursive_bridge_source_safe_check_exec
+      (defined_list Rs) \<mu> \<Delta> lr =
+    muterm_recursive_bridge_source_safe_check lr"
+  unfolding muterm_recursive_bridge_source_safe_check_exec_def
+    muterm_recursive_bridge_source_safe_check_def
+  by (simp add: muterm_i4_symbolically_covered_exec_eq
+      muterm_recursive_bridge_unary_source_check_exec_eq
+      muterm_recursive_bridge_target_source_check_exec_eq)
 
 lemma muterm_recursive_bridges_safe_check_exec_eq:
   "muterm_recursive_bridges_safe_check_exec (defined_list Rs) \<mu> \<Delta> B =
     muterm_recursive_bridges_safe_check B"
   unfolding muterm_recursive_bridges_safe_check_exec_def
     muterm_recursive_bridges_safe_check_def
-  by (simp add: muterm_i4_symbolically_covered_exec_eq
-      muterm_i4_mu_exec_eq muterm_unmarked_term_check_exec_eq
-      muterm_unmarked_term_check_sound set_defined_list
-      split: term.splits list.splits)
+  by (simp add: list_all_iff
+      muterm_i4_symbolically_covered_exec_eq
+      muterm_recursive_bridge_source_safe_check_exec_eq)
 
 lemma muterm_recursive_target_shape_check_exec_eq:
   "muterm_recursive_target_shape_check_exec P B =
@@ -1120,34 +1454,47 @@ lemma muterm_recursive_i4_shape_check_exec_eq:
       muterm_i4_non_mu_vars_term_list_exec_eq)
 
 lemma muterm_recursive_rta08_ur_redpair_proc_exec_eq:
-  "muterm_recursive_rta08_ur_redpair_proc_exec Rs \<mu> \<Delta>
-      J m rp Premove U B dpp =
-    muterm_recursive_rta08_ur_redpair_proc J m rp Premove U B dpp"
-  unfolding muterm_recursive_rta08_ur_redpair_proc_exec_def
-    muterm_recursive_rta08_ur_redpair_proc_def
-  by (simp add: muterm_recursive_pairs_safe_check_exec_eq
-      muterm_recursive_bridges_safe_check_exec_eq
-      muterm_recursive_target_shape_check_exec_eq
-      muterm_recursive_i4_shape_check_exec_eq)
+  assumes mu: "\<mu> = mu_of m"
+  shows "muterm_recursive_rta08_ur_redpair_proc_exec Rs \<mu> \<Delta>
+      J m rp Premove U Bcheck B dpp =
+    muterm_recursive_rta08_ur_redpair_proc J m rp Premove U Bcheck B dpp"
+proof -
+  have pairs: "\<And>P B. muterm_recursive_pairs_safe_check_exec
+      Rs m \<mu> \<Delta> P B = muterm_recursive_pairs_safe_check P B"
+    by (rule muterm_recursive_pairs_safe_check_exec_eq[OF mu])
+  have bridges: "\<And>B. muterm_recursive_bridges_safe_check_exec
+      (defined_list Rs) \<mu> \<Delta> B = muterm_recursive_bridges_safe_check B"
+    by (rule muterm_recursive_bridges_safe_check_exec_eq)
+  have target: "\<And>P B. muterm_recursive_target_shape_check_exec P B =
+      muterm_recursive_target_shape_check P B"
+    by (rule muterm_recursive_target_shape_check_exec_eq)
+  have shape: "\<And>P B. muterm_recursive_i4_shape_check_exec \<mu> P B =
+      muterm_recursive_i4_shape_check P B"
+    by (rule muterm_recursive_i4_shape_check_exec_eq)
+  show ?thesis
+    unfolding muterm_recursive_rta08_ur_redpair_proc_exec_def
+      muterm_recursive_rta08_ur_redpair_proc_def
+    by (simp only: pairs bridges target shape)
+qed
 
 end
 
 fun check_muterm_recursive_dp_proof where
-  "check_muterm_recursive_dp_proof J m i R B U P P_is_Empty =
+  "check_muterm_recursive_dp_proof J m i R Bcheck B U P P_is_Empty =
     check (P = [])
       (i \<circ> showsl_lit (STR '': recursive MU-TERM pairs are not empty''))"
-| "check_muterm_recursive_dp_proof J m i R B U P
+| "check_muterm_recursive_dp_proof J m i R Bcheck B U P
       (Redpair_Proc redp Pr child) =
     debug i (STR ''recursive MU-TERM reduction pair'') (do {
       let dpp = dpp_ops.mk J False False P [] [] [] R;
       dpp' \<leftarrow> muterm_recursive_rta08_ur_redpair_proc_exec
         (dpp_ops.rules J dpp) (mu_of m)
         (csr_u3_delta (set (dpp_ops.rules J dpp)) (set U)) J m
-        (get_rel_impl redp) Pr U B dpp;
-      check_muterm_recursive_dp_proof J m (add_index i 1) R B U
+        (get_rel_impl redp) Pr U Bcheck B dpp;
+      check_muterm_recursive_dp_proof J m (add_index i 1) R Bcheck B U
         (dpp_ops.pairs J dpp') child
     })"
-| "check_muterm_recursive_dp_proof J m i R B U P
+| "check_muterm_recursive_dp_proof J m i R Bcheck B U P
       (Dep_Graph_Proc edps) =
     debug i (STR ''terminal recursive MU-TERM dependency graph'') (do {
       check_muterm_typed_dep_graph m R B P edps;
@@ -1155,7 +1502,7 @@ fun check_muterm_recursive_dp_proof where
         (i \<circ> showsl_lit
           (STR '': recursive MU-TERM graph has a nonterminal component''))
     })"
-| "check_muterm_recursive_dp_proof J m i R B U P child =
+| "check_muterm_recursive_dp_proof J m i R Bcheck B U P child =
     error (i \<circ> showsl_lit
       (STR '': unsupported processor in recursive MU-TERM continuation''))"
 
@@ -1169,7 +1516,8 @@ lemma check_muterm_recursive_redpair_step_sound:
   assumes J: "dpp_spec J"
     and wf: "wf_trs (set R)"
     and overlay: "csr_switch_overlay (set R)"
-    and exact: "set B = set (muterm_exact_unhiding_rules_list Sharp m D R)"
+    and exact: "set Bcheck = set (muterm_exact_unhiding_rules_list Sharp m D R)"
+    and local: "set B \<subseteq> set Bcheck"
     and fresh: "\<And>h n. \<not> defined (set R) (Sharp h,n)"
     and rules_unmarked: "\<And>fn. fn \<in> funas_trs (set R) \<Longrightarrow>
       \<not> is_sharp_lab (fst fn)"
@@ -1179,7 +1527,7 @@ lemma check_muterm_recursive_redpair_step_sound:
       (dpp_ops.rules J (dpp_ops.mk J False False P [] [] [] R)) (mu_of m)
       (csr_u3_delta
         (set (dpp_ops.rules J (dpp_ops.mk J False False P [] [] [] R)))
-        (set U)) J m (get_rel_impl redp) Pr U B
+        (set U)) J m (get_rel_impl redp) Pr U Bcheck B
       (dpp_ops.mk J False False P [] [] [] R) = return d'"
     and child_fin: "muterm_i4.finite_muterm_i4_good_typed_dpp
       R (mu_of m) (set (dpp_ops.pairs J d')) (set B)"
@@ -1207,15 +1555,16 @@ proof -
       "csr_u3_delta (set (dpp_ops.rules J ?d)) (set U)" "undefined"
     by (unfold_locales, rule wf_d)
   have proc_locale: "M1.muterm_recursive_rta08_ur_redpair_proc
-      J m (get_rel_impl redp) Pr U B ?d = return d'"
+      J m (get_rel_impl redp) Pr U Bcheck B ?d = return d'"
   proof -
     have eq: "M1.muterm_recursive_rta08_ur_redpair_proc
-        J m (get_rel_impl redp) Pr U B ?d =
+        J m (get_rel_impl redp) Pr U Bcheck B ?d =
       muterm_recursive_rta08_ur_redpair_proc_exec
         (dpp_ops.rules J ?d) (mu_of m)
         (csr_u3_delta (set (dpp_ops.rules J ?d)) (set U))
-        J m (get_rel_impl redp) Pr U B ?d"
-      by (rule sym, rule M1.muterm_recursive_rta08_ur_redpair_proc_exec_eq)
+        J m (get_rel_impl redp) Pr U Bcheck B ?d"
+      by (rule sym, rule M1.muterm_recursive_rta08_ur_redpair_proc_exec_eq,
+        rule refl)
     show ?thesis by (subst eq, rule proc)
   qed
   obtain ps pns where split:
@@ -1246,15 +1595,15 @@ proof -
       muterm_i4.finite_muterm_i4_good_typed_dpp_def
       M'.muterm_i4_good_pair_step_def
       muterm_i4.muterm_i4_good_pair_step_def by simp
-  have exact': "set B = set (muterm_exact_unhiding_rules_list
+  have exact': "set Bcheck = set (muterm_exact_unhiding_rules_list
       Sharp m D (dpp_ops.rules J ?d))"
     using exact unfolding muterm_exact_unhiding_rules_list_set rules_d .
   have full: "muterm_i4.finite_muterm_i4_good_typed_dpp
       (dpp_ops.rules J ?d) (mu_of m)
       (set (dpp_ops.pairs J ?d)) (set B)"
     by (rule muterm_recursive_rta08_ur_redpair_proc_sound[
-      OF J get_rel_impl proc_locale _ _ _ _ _ _ child_fin''])
-       (use wf overlay exact' fresh rules_unmarked marked in
+      OF J get_rel_impl proc_locale _ _ exact' local _ _ _ child_fin''])
+       (use wf overlay fresh rules_unmarked marked in
           \<open>simp_all add: rules_d\<close>)
   show ?thesis using full
     unfolding M1.finite_muterm_i4_good_typed_dpp_def
@@ -1268,13 +1617,14 @@ theorem check_muterm_recursive_dp_proof_sound:
   assumes J: "dpp_spec J"
     and wf: "wf_trs (set R)"
     and overlay: "csr_switch_overlay (set R)"
-    and exact: "set B = set (muterm_exact_unhiding_rules_list Sharp m D R)"
+    and exact: "set Bcheck = set (muterm_exact_unhiding_rules_list Sharp m D R)"
+    and local: "set B \<subseteq> set Bcheck"
     and fresh: "\<And>h n. \<not> defined (set R) (Sharp h,n)"
     and rules_unmarked: "\<And>fn. fn \<in> funas_trs (set R) \<Longrightarrow>
       \<not> is_sharp_lab (fst fn)"
     and marked: "\<And>f n. \<not> is_sharp_lab f \<Longrightarrow>
       mu_of m (Sharp f,n) = mu_of m (f,n)"
-    and ok: "isOK (check_muterm_recursive_dp_proof J m i R B U P p)"
+    and ok: "isOK (check_muterm_recursive_dp_proof J m i R Bcheck B U P p)"
   shows "muterm_i4.finite_muterm_i4_good_typed_dpp
     R (mu_of m) (set P) (set B)"
   using ok
@@ -1307,9 +1657,9 @@ proof (induct "muterm_recursive_proof_depth p" arbitrary: p i P
         "muterm_recursive_rta08_ur_redpair_proc_exec
           (dpp_ops.rules J ?d) (mu_of m)
           (csr_u3_delta (set (dpp_ops.rules J ?d)) (set U)) J m
-          (get_rel_impl redp) Pr U B ?d = return d'"
+          (get_rel_impl redp) Pr U Bcheck B ?d = return d'"
       and rec: "isOK (check_muterm_recursive_dp_proof J m
-          (add_index i 1) R B U (dpp_ops.pairs J d') child)"
+          (add_index i 1) R Bcheck B U (dpp_ops.pairs J d') child)"
       by (auto simp: Let_def)
     have depth: "muterm_recursive_proof_depth child <
         muterm_recursive_proof_depth p"
@@ -1319,7 +1669,7 @@ proof (induct "muterm_recursive_proof_depth p" arbitrary: p i P
       by (rule less.hyps[OF depth rec])
     show ?thesis
       by (rule check_muterm_recursive_redpair_step_sound[
-        OF J wf overlay exact fresh rules_unmarked marked proc child_fin])
+        OF J wf overlay exact local fresh rules_unmarked marked proc child_fin])
   next
     case (Dep_Graph_Proc edps)
     from less.prems Dep_Graph_Proc have graph:
@@ -1411,6 +1761,225 @@ proof (induct "muterm_recursive_proof_depth p" arbitrary: p i P
   qed
 qed
 
+definition muterm_component_unhiding_rules where
+  "muterm_component_unhiding_rules S P = filter (\<lambda>ab.
+    \<exists>dp\<in>set P. root (snd ab) = root (fst dp)) S"
+
+lemma muterm_typed_pair_step_source:
+  assumes step: "(s,t) \<in> muterm_typed_pair_step P B"
+  shows "\<exists>l r \<sigma>. (l,r) \<in> P \<and> s = l \<cdot> \<sigma>"
+  using step unfolding muterm_typed_pair_step_def
+    muterm_noncollapsing_rrstep_def muterm_collapsing_rrstep_def
+  by auto
+
+lemma muterm_typed_pair_step_component_unhiding:
+  fixes R :: "(((('f::{showl,compare_order},'l::{showl,compare_order}) lab),'v) trs)"
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and bridge_shape: "\<And>a b. (a,b) \<in> set B \<Longrightarrow>
+      \<exists>f bs. b = Fun (Sharp f) bs"
+    and pair_shape: "\<And>l r. (l,r) \<in> set P \<Longrightarrow>
+      \<exists>f ls. l = Fun (Sharp f) ls"
+    and event: "(s,t) \<in> muterm_typed_pair_step (set P) (set B)"
+    and steps: "(t,u) \<in> (innermost_csdp_step Sharp \<mu> R)\<^sup>*"
+    and following: "(u,v) \<in> muterm_typed_pair_step (set P) (set B)"
+  shows "(s,t) \<in> muterm_typed_pair_step (set P)
+    (set (muterm_component_unhiding_rules B P))"
+proof -
+  let ?B = "set (muterm_component_unhiding_rules B P)"
+  from event consider
+      (noncoll) "muterm_noncollapsing_rrstep (set P) s t"
+    | (coll) x where "muterm_collapsing_rrstep (set P) s x"
+        "(x,t) \<in> rrstep (set B)"
+    unfolding muterm_typed_pair_step_def by blast
+  then show ?thesis
+  proof cases
+    case noncoll
+    then show ?thesis unfolding muterm_typed_pair_step_def by blast
+  next
+    case (coll x)
+    from coll(2) obtain a b \<theta> where ab: "(a,b) \<in> set B"
+      and x: "x = a \<cdot> \<theta>" and t: "t = b \<cdot> \<theta>"
+      unfolding rrstep_def' by blast
+    from bridge_shape[OF ab] obtain f bs where b: "b = Fun (Sharp f) bs"
+      by blast
+    have t_shape: "t = Fun (Sharp f) (map (\<lambda>z. z \<cdot> \<theta>) bs)"
+      unfolding t b by simp
+    have full_steps: "(t,u) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+      by (rule rtrancl_mono[OF innermost_csdp_step_subset_csdp_step,
+        THEN subsetD, OF steps])
+    from cssteps_Fun_undefined_root_preserved[
+      OF wf fresh full_steps[unfolded t_shape]]
+    obtain us where u: "u = Fun (Sharp f) us"
+      and ulen: "length us = length bs" by auto
+    from muterm_typed_pair_step_source[OF following]
+    obtain l r \<sigma> where lr: "(l,r) \<in> set P" and usource: "u = l \<cdot> \<sigma>"
+      by blast
+    from pair_shape[OF lr] obtain g ls where l: "l = Fun (Sharp g) ls"
+      by blast
+    have fg: "f = g" and mapped: "map (\<lambda>z. z \<cdot> \<sigma>) ls = us"
+      using u usource unfolding l by simp_all
+    have glen: "length ls = length us"
+      using arg_cong[OF mapped, of length] by simp
+    have roots: "root b = root l" unfolding b l fg using glen ulen by simp
+    have ab_local: "(a,b) \<in> ?B"
+      unfolding muterm_component_unhiding_rules_def
+      apply simp
+      apply (intro conjI)
+       apply (rule ab)
+      apply (rule bexI[of _ "(l,r)"])
+       apply (simp add: roots)
+      apply (rule lr)
+      done
+    have bridge_local: "(x,t) \<in> rrstep ?B"
+      unfolding rrstep_def' using ab_local x t by blast
+    show ?thesis unfolding muterm_typed_pair_step_def
+      using coll(1) bridge_local by blast
+  qed
+qed
+
+lemma finite_muterm_component_unhiding_imp_full:
+  fixes R :: "(((('f::{showl,compare_order},label_type) lab),'v) trs)"
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and bridge_shape: "\<And>a b. (a,b) \<in> set B \<Longrightarrow>
+      \<exists>f bs. b = Fun (Sharp f) bs"
+    and pair_shape: "\<And>l r. (l,r) \<in> set P \<Longrightarrow>
+      \<exists>f ls. l = Fun (Sharp f) ls"
+    and fin: "finite_muterm_innermost_min_typed_dpp Sharp \<mu> R
+      (set P) (set (muterm_component_unhiding_rules B P))"
+  shows "finite_muterm_innermost_min_typed_dpp Sharp \<mu> R
+    (set P) (set B)"
+proof (unfold finite_muterm_innermost_min_typed_dpp_def
+    SN_rel_on_def SN_on_def, intro notI)
+  let ?W = "innermost_csdp_step Sharp \<mu> R"
+  let ?S = "muterm_innermost_min_typed_pair_step Sharp \<mu> R
+    (set P) (set B)"
+  let ?Sc = "muterm_innermost_min_typed_pair_step Sharp \<mu> R
+    (set P) (set (muterm_component_unhiding_rules B P))"
+  assume infinite: "\<exists>f. f 0 \<in> UNIV \<and>
+    (\<forall>i. (f i,f (Suc i)) \<in> ?W\<^sup>* O ?S O ?W\<^sup>*)"
+  then obtain ch where chain: "\<And>i. (ch i,ch (Suc i)) \<in>
+      ?W\<^sup>* O ?S O ?W\<^sup>*" by auto
+  have local_step: "\<And>i. (ch i,ch (Suc i)) \<in>
+      ?W\<^sup>* O ?Sc O ?W\<^sup>*"
+  proof -
+    fix i
+    from chain[of i] obtain a b where pre: "(ch i,a) \<in> ?W\<^sup>*"
+      and strict: "(a,b) \<in> ?S"
+      and post: "(b,ch (Suc i)) \<in> ?W\<^sup>*" by auto
+    from chain[of "Suc i"] obtain c d where
+      next_pre: "(ch (Suc i),c) \<in> ?W\<^sup>*"
+      and next_strict: "(c,d) \<in> ?S" by auto
+    from strict have typed: "(a,b) \<in> muterm_typed_pair_step
+        (set P) (set B)"
+      unfolding muterm_innermost_min_typed_pair_step_def
+        muterm_innermost_typed_pair_step_def by auto
+    from next_strict have next_typed: "(c,d) \<in> muterm_typed_pair_step
+        (set P) (set B)"
+      unfolding muterm_innermost_min_typed_pair_step_def
+        muterm_innermost_typed_pair_step_def by auto
+    have between: "(b,c) \<in> ?W\<^sup>*"
+      by (rule rtrancl_trans[OF post next_pre])
+    have typed_local: "(a,b) \<in> muterm_typed_pair_step (set P)
+        (set (muterm_component_unhiding_rules B P))"
+      by (rule muterm_typed_pair_step_component_unhiding[
+        OF wf fresh bridge_shape pair_shape typed between next_typed])
+    have strict_local: "(a,b) \<in> ?Sc"
+      using strict typed_local
+      unfolding muterm_innermost_min_typed_pair_step_def
+        muterm_innermost_typed_pair_step_def by auto
+    show "(ch i,ch (Suc i)) \<in> ?W\<^sup>* O ?Sc O ?W\<^sup>*"
+      using pre strict_local post by auto
+  qed
+  have local_chain: "chain (?W\<^sup>* O ?Sc O ?W\<^sup>*) ch"
+    using local_step by simp
+  have not_sn: "\<not> SN (?W\<^sup>* O ?Sc O ?W\<^sup>*)"
+    by (rule not_SN_onI[of ch], simp, rule local_chain)
+  from fin have sn: "SN (?W\<^sup>* O ?Sc O ?W\<^sup>*)"
+    unfolding finite_muterm_innermost_min_typed_dpp_def SN_rel_on_def .
+  from not_sn sn show False ..
+qed
+
+context muterm_i4
+begin
+
+lemma finite_muterm_i4_good_component_unhiding_imp_full:
+  assumes fresh: "\<And>f n. \<not> defined (set Rs) (Sharp f,n)"
+    and bridge_shape: "\<And>a b. (a,b) \<in> set B \<Longrightarrow>
+      \<exists>f bs. b = Fun (Sharp f) bs"
+    and pair_shape: "\<And>l r. (l,r) \<in> set P \<Longrightarrow>
+      \<exists>f ls. l = Fun (Sharp f) ls"
+    and fin: "finite_muterm_i4_good_typed_dpp
+      (set P) (set (muterm_component_unhiding_rules B P))"
+  shows "finite_muterm_i4_good_typed_dpp (set P) (set B)"
+proof (unfold finite_muterm_i4_good_typed_dpp_def
+    SN_rel_on_def SN_on_def, intro notI)
+  let ?W = "innermost_csdp_step Sharp \<mu> (set Rs)"
+  let ?S = "muterm_i4_good_pair_step (set P) (set B)"
+  let ?Sc = "muterm_i4_good_pair_step (set P)
+    (set (muterm_component_unhiding_rules B P))"
+  assume infinite: "\<exists>f. f 0 \<in> UNIV \<and>
+    (\<forall>i. (f i,f (Suc i)) \<in> ?W\<^sup>* O ?S O ?W\<^sup>*)"
+  then obtain ch where chain: "\<And>i. (ch i,ch (Suc i)) \<in>
+      ?W\<^sup>* O ?S O ?W\<^sup>*" by auto
+  have local_step: "\<And>i. (ch i,ch (Suc i)) \<in>
+      ?W\<^sup>* O ?Sc O ?W\<^sup>*"
+  proof -
+    fix i
+    from chain[of i] obtain a b where pre: "(ch i,a) \<in> ?W\<^sup>*"
+      and strict: "(a,b) \<in> ?S"
+      and post: "(b,ch (Suc i)) \<in> ?W\<^sup>*" by auto
+    from chain[of "Suc i"] obtain c d where
+      next_pre: "(ch (Suc i),c) \<in> ?W\<^sup>*"
+      and next_strict: "(c,d) \<in> ?S" by auto
+    from strict have min_event:
+        "(a,b) \<in> muterm_innermost_min_typed_pair_step Sharp \<mu>
+          (set Rs) (set P) (set B)"
+      and good: "i4_chain_good a \<and> i4_chain_good b"
+      unfolding muterm_i4_good_pair_step_def by auto
+    from next_strict have next_min:
+        "(c,d) \<in> muterm_innermost_min_typed_pair_step Sharp \<mu>
+          (set Rs) (set P) (set B)"
+      unfolding muterm_i4_good_pair_step_def by auto
+    from min_event have typed: "(a,b) \<in>
+        muterm_typed_pair_step (set P) (set B)"
+      unfolding muterm_innermost_min_typed_pair_step_def
+        muterm_innermost_typed_pair_step_def by auto
+    from next_min have next_typed: "(c,d) \<in>
+        muterm_typed_pair_step (set P) (set B)"
+      unfolding muterm_innermost_min_typed_pair_step_def
+        muterm_innermost_typed_pair_step_def by auto
+    have between: "(b,c) \<in> ?W\<^sup>*"
+      by (rule rtrancl_trans[OF post next_pre])
+    have typed_local: "(a,b) \<in> muterm_typed_pair_step (set P)
+        (set (muterm_component_unhiding_rules B P))"
+      by (rule muterm_typed_pair_step_component_unhiding[
+        where R="set Rs" and \<mu>=\<mu> and P=P and B=B
+          and s=a and t=b and u=c and v=d,
+        OF wf fresh bridge_shape pair_shape typed between next_typed])
+    have min_local: "(a,b) \<in>
+        muterm_innermost_min_typed_pair_step Sharp \<mu> (set Rs) (set P)
+          (set (muterm_component_unhiding_rules B P))"
+      using min_event typed_local
+      unfolding muterm_innermost_min_typed_pair_step_def
+        muterm_innermost_typed_pair_step_def by auto
+    have strict_local: "(a,b) \<in> ?Sc"
+      unfolding muterm_i4_good_pair_step_def using min_local good by auto
+    show "(ch i,ch (Suc i)) \<in> ?W\<^sup>* O ?Sc O ?W\<^sup>*"
+      using pre strict_local post by auto
+  qed
+  have local_chain: "chain (?W\<^sup>* O ?Sc O ?W\<^sup>*) ch"
+    using local_step by simp
+  have not_sn: "\<not> SN (?W\<^sup>* O ?Sc O ?W\<^sup>*)"
+    by (rule not_SN_onI[of ch], simp, rule local_chain)
+  from fin have sn: "SN (?W\<^sup>* O ?Sc O ?W\<^sup>*)"
+    unfolding finite_muterm_i4_good_typed_dpp_def SN_rel_on_def .
+  from not_sn sn show False ..
+qed
+
+end
+
 fun check_muterm_typed_dp_proof_production
 and check_muterm_innermost_typed_graph_components where
   "check_muterm_typed_dp_proof_production I J \<mu> i R S P
@@ -1429,10 +1998,16 @@ and check_muterm_innermost_typed_graph_components where
       (Muterm_Typed_General_Usable redp Pr U child) =
     debug i (STR ''innermost typed RTA'08 MU-TERM usable-rule reduction pair'') (do {
       let dpp = dpp_ops.mk J False False P [] [] [] R;
-      dpp' \<leftarrow> muterm_general_rta08_ur_redpair_proc J \<mu>
-        (get_rel_impl redp) Pr U S dpp;
-      check_muterm_typed_dp_proof_production I J \<mu> (add_index i 1)
-        R S (dpp_ops.pairs J dpp') child
+      case muterm_general_rta08_ur_redpair_proc J \<mu>
+          (get_rel_impl redp) Pr U S dpp of
+        Inr dpp' \<Rightarrow> check_muterm_typed_dp_proof_production I J \<mu>
+          (add_index i 1) R S (dpp_ops.pairs J dpp') child
+      | Inl _ \<Rightarrow> do {
+          dpp' \<leftarrow> muterm_general_ur_redpair_proc J \<mu>
+            (get_rel_impl redp) Pr U S dpp;
+          check_muterm_typed_dp_proof I J \<mu> (add_index i 1)
+            R S (dpp_ops.pairs J dpp') child
+        }
     })"
 | "check_muterm_typed_dp_proof_production I J \<mu> i R S P
       (Muterm_Typed_Pair_Augmentation st sts child) =
@@ -1485,6 +2060,16 @@ and check_muterm_innermost_typed_graph_components where
         (dpp_ops.mk J False False E [] [] [] U) child
     })"
 | "check_muterm_typed_dp_proof_production I J \<mu> i R S P
+      (Muterm_Typed_Expanded_Strong_Usable U redp Pr child) =
+    debug i (STR ''expanded strong MU-TERM usable-rule reduction pair'') (do {
+      let E = muterm_expanded_pairs_list string_renameN P S;
+      let dpp = dpp_ops.mk J False False E [] [] [] R;
+      dpp' \<leftarrow> muterm_strong_ur_redpair_proc J \<mu>
+        (get_rel_impl redp) Pr U dpp;
+      check_csr_dp_termination_proof_min I J \<mu> False
+        (add_index i 1) dpp' child
+    })"
+| "check_muterm_typed_dp_proof_production I J \<mu> i R S P
       (Muterm_Typed_Expanded_Ordinary child) =
     debug i (STR ''expanded typed MU-TERM ordinary DP continuation'') (do {
       let E = muterm_expanded_pairs_list string_renameN P S;
@@ -1497,9 +2082,6 @@ and check_muterm_innermost_typed_graph_components where
       check_muterm_typed_dep_graph \<mu> R S P edps;
       check_muterm_innermost_typed_graph_components I J \<mu> i R S P edps
     })"
-| "check_muterm_typed_dp_proof_production I J \<mu> i R S P child =
-    error (i \<circ> showsl_lit
-      (STR '': processor is not supported inside an innermost typed MU-TERM chain''))"
 | "check_muterm_innermost_typed_graph_components I J \<mu> i R S P [] = succeed"
 | "check_muterm_innermost_typed_graph_components I J \<mu> i R S P
       ((None,C)#rest) =
@@ -1507,8 +2089,13 @@ and check_muterm_innermost_typed_graph_components where
       (add_index i 1) R S P rest"
 | "check_muterm_innermost_typed_graph_components I J \<mu> i R S P
       ((Some child,C)#rest) = do {
+    let Pc = filter (\<lambda>dp. dp \<in> set C) P;
+    let Sc = muterm_component_unhiding_rules S Pc;
+    check (muterm_innermost_typed_shape_check \<mu> Pc S)
+      (i \<circ> showsl_lit
+        (STR '': component-local MU-TERM bridge shape check failed''));
     check_muterm_typed_dp_proof_production I J \<mu> (add_index i 1)
-      R S (filter (\<lambda>dp. dp \<in> set C) P) child;
+      R Sc Pc child;
     check_muterm_innermost_typed_graph_components I J \<mu>
       (add_index i 1) R S P rest
   }"
@@ -1517,8 +2104,13 @@ lemma check_muterm_innermost_typed_graph_components_member:
   assumes ok: "isOK (check_muterm_innermost_typed_graph_components
       I J \<mu> i R S P edps)"
     and mem: "(Some child,C) \<in> set edps"
-  shows "\<exists>j. isOK (check_muterm_typed_dp_proof_production
-    I J \<mu> j R S (filter (\<lambda>dp. dp \<in> set C) P) child)"
+  shows "muterm_innermost_typed_shape_check \<mu>
+      (filter (\<lambda>dp. dp \<in> set C) P) S \<and>
+    (\<exists>j. isOK (check_muterm_typed_dp_proof_production
+      I J \<mu> j R
+      (muterm_component_unhiding_rules S
+        (filter (\<lambda>dp. dp \<in> set C) P))
+      (filter (\<lambda>dp. dp \<in> set C) P) child))"
   using ok mem
 proof (induct edps arbitrary: i)
   case Nil
@@ -1529,7 +2121,12 @@ next
   show ?case
   proof (cases po)
     case None
-    from Cons.prems head None show ?thesis by (auto intro: Cons.hyps)
+    have rest_ok: "isOK (check_muterm_innermost_typed_graph_components
+        I J \<mu> (add_index i 1) R S P rest)"
+      using Cons.prems(1) head None by simp
+    have rest_mem: "(Some child,C) \<in> set rest"
+      using Cons.prems(2) head None by auto
+    show ?thesis by (rule Cons.hyps[OF rest_ok rest_mem])
   next
     case (Some p)
     show ?thesis
@@ -1538,8 +2135,12 @@ next
       with Cons.prems head Some show ?thesis by auto
     next
       case False
-      from Cons.prems head Some False show ?thesis
-        by (auto intro: Cons.hyps)
+      have rest_ok: "isOK (check_muterm_innermost_typed_graph_components
+          I J \<mu> (add_index i 1) R S P rest)"
+        using Cons.prems(1) head Some by simp
+      have rest_mem: "(Some child,C) \<in> set rest"
+        using Cons.prems(2) False by auto
+      show ?thesis by (rule Cons.hyps[OF rest_ok rest_mem])
     qed
   qed
 qed
@@ -1548,12 +2149,16 @@ fun check_muterm_i4_graph_component where
   "check_muterm_i4_graph_component I J m i R B P (None,C) = succeed"
 | "check_muterm_i4_graph_component I J m i R B P
       (Some (Muterm_Typed_Local_Usable U child),C) = do {
+    let Pc = filter (\<lambda>dp. dp \<in> set C) P;
+    let Bc = muterm_component_unhiding_rules B Pc;
+    check (muterm_innermost_typed_shape_check m Pc B)
+      (i \<circ> showsl_lit
+        (STR '': component-local recursive MU-TERM bridge shape check failed''));
     check (list_all (\<lambda>lr. lr \<in> set R \<or> lr \<in> set B) U)
       (i \<circ> showsl_lit
         (STR '': extraneous recursive MU-TERM usable rule''));
     let U0 = filter (\<lambda>lr. lr \<in> set R) U;
-    check_muterm_recursive_dp_proof J m (add_index i 1) R B U0
-      (filter (\<lambda>dp. dp \<in> set C) P) child
+    check_muterm_recursive_dp_proof J m (add_index i 1) R B Bc U0 Pc child
   }"
 | "check_muterm_i4_graph_component I J m i R B P (Some child,C) =
     check_muterm_typed_dp_proof_production I J m (add_index i 1)
@@ -1585,9 +2190,13 @@ lemma check_muterm_i4_graph_components_local_member:
   assumes ok: "isOK (check_muterm_i4_graph_components
       I J m i R B P edps)"
     and mem: "(Some (Muterm_Typed_Local_Usable U child),C) \<in> set edps"
-  shows "\<exists>j. isOK (check_muterm_recursive_dp_proof J m j R B
-    (filter (\<lambda>lr. lr \<in> set R) U)
-    (filter (\<lambda>x. x \<in> set C) P) child)"
+  shows "muterm_innermost_typed_shape_check m
+      (filter (\<lambda>x. x \<in> set C) P) B \<and>
+    (\<exists>j. isOK (check_muterm_recursive_dp_proof J m j R B
+      (muterm_component_unhiding_rules B
+        (filter (\<lambda>x. x \<in> set C) P))
+      (filter (\<lambda>lr. lr \<in> set R) U)
+      (filter (\<lambda>x. x \<in> set C) P) child))"
   using ok mem
 proof (induct edps arbitrary: i)
   case Nil
@@ -1748,6 +2357,49 @@ by (rule muterm_innermost_general_ur_redpair_proc_mk_sound[
   where J=J and \<mu>=\<mu> and rp="get_rel_impl redp" and Premove=Pr
     and U=U and B=S and P=P and R=R and dpp'=d',
   OF J wf overlay fresh proc get_rel_impl child_fin])
+
+lemma muterm_typed_general_usable_legacy_production_sound:
+  fixes J :: "('dpp,('f::{showl,compare_order,countable},label_type) lab,string) dpp_ops"
+  assumes J: "dpp_spec J"
+    and wf: "wf_trs (set R)"
+    and overlay: "csr_switch_overlay (set R)"
+    and fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
+    and proc: "muterm_general_ur_redpair_proc J \<mu>
+      (get_rel_impl redp) Pr U S
+      (dpp_ops.mk J False False P [] [] [] R) = return d'"
+    and child_fin: "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set (dpp_ops.pairs J d')) (set S)"
+  shows "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
+    (set R) (set P) (set S)"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "dpp_ops.mk J False False P [] [] [] R"
+  have sem: "dpp ?d = (False,False,set P,{},{},{},set R)"
+    using mk_sound[of False False P "[]" "[]" "[]" R] by simp
+  have rules_d: "set (rules ?d) = set R"
+    using sem dpp_sound[of ?d] rules_sound[of ?d] by auto
+  have pairs_d: "set (pairs ?d) = set P"
+    using sem dpp_sound[of ?d] pairs_sound[of ?d] by auto
+  have d'_def: "d' = delete_pairs ?d Pr"
+    using proc unfolding muterm_general_ur_redpair_proc_def
+    by (cases "rel_impl.not_wst (get_rel_impl redp)"; auto)
+  have rules': "set (rules d') = set (rules ?d)"
+    using d'_def delete_P_Pw_sound[of ?d Pr Pr] rules_sound[of d'] by auto
+  have child_fin': "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+      (set (rules d')) (set (pairs d')) (set S)"
+    using child_fin unfolding rules' rules_d .
+  have full: "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+      (set (rules ?d)) (set (pairs ?d)) (set S)"
+    by (rule muterm_general_ur_redpair_proc_sound[
+      OF J get_rel_impl proc _ _ child_fin'])
+       (use wf fresh in \<open>simp_all add: rules_d\<close>)
+  have full': "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
+    using full unfolding rules_d pairs_d .
+  show ?thesis
+    by (rule finite_muterm_min_typed_imp_finite_innermost_min_typed_overlay[
+      OF overlay wf fresh full'])
+qed
 
 lemma muterm_typed_pair_augmentation_production_sound:
   fixes J :: "('dpp,('f::{showl,compare_order,countable},label_type) lab,string) dpp_ops"
@@ -1993,17 +2645,33 @@ proof (induct p arbitrary: i P
 next
   case (Muterm_Typed_General_Usable redp Pr U child)
   let ?d = "dpp_ops.mk J False False P [] [] [] R"
-  from Muterm_Typed_General_Usable.prems obtain d' where proc:
-      "muterm_general_rta08_ur_redpair_proc J \<mu>
-        (get_rel_impl redp) Pr U S ?d = return d'"
-    and rec: "isOK (check_muterm_typed_dp_proof_production I J \<mu>
-      (add_index i 1) R S (dpp_ops.pairs J d') child)"
-    by (auto simp: Let_def)
-  have child_fin: "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
-      (set R) (set (dpp_ops.pairs J d')) (set S)"
-    by (rule Muterm_Typed_General_Usable.hyps[OF rec])
-  show ?case by (rule muterm_typed_general_usable_production_sound[
-    OF J wf overlay fresh proc child_fin])
+  show ?case
+  proof (cases "muterm_general_rta08_ur_redpair_proc J \<mu>
+      (get_rel_impl redp) Pr U S ?d")
+    case (Inr d')
+    from Muterm_Typed_General_Usable.prems Inr have rec:
+        "isOK (check_muterm_typed_dp_proof_production I J \<mu>
+          (add_index i 1) R S (dpp_ops.pairs J d') child)"
+      by (simp add: Let_def)
+    have child_fin: "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
+        (set R) (set (dpp_ops.pairs J d')) (set S)"
+      by (rule Muterm_Typed_General_Usable.hyps[OF rec])
+    show ?thesis by (rule muterm_typed_general_usable_production_sound[
+      OF J wf overlay fresh Inr child_fin])
+  next
+    case (Inl error)
+    from Muterm_Typed_General_Usable.prems Inl obtain d' where proc:
+        "muterm_general_ur_redpair_proc J \<mu>
+          (get_rel_impl redp) Pr U S ?d = return d'"
+      and rec: "isOK (check_muterm_typed_dp_proof I J \<mu>
+        (add_index i 1) R S (dpp_ops.pairs J d') child)"
+      by (auto simp: Let_def)
+    have child_fin: "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+        (set R) (set (dpp_ops.pairs J d')) (set S)"
+      by (rule check_muterm_typed_dp_proof_sound[OF I J wf fresh rec])
+    show ?thesis by (rule muterm_typed_general_usable_legacy_production_sound[
+      OF J wf overlay fresh proc child_fin])
+  qed
 next
   case (Muterm_Typed_Pair_Augmentation st sts child)
   let ?d = "dpp_ops.mk J False False P [] [] [] R"
@@ -2154,26 +2822,43 @@ next
   have overlay_R: "csr_switch_overlay (set R)" by (rule 3(5))
   have fresh_R: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
     by (rule 3(6))
-  from 3(7) obtain d' where proc:
-      "muterm_general_rta08_ur_redpair_proc J \<mu>
-        (get_rel_impl redp) Pr U S ?d = return d'"
-    and rec: "isOK (check_muterm_typed_dp_proof_production I J \<mu>
-      (add_index i 1) R S (dpp_ops.pairs J d') child)"
-    by (auto simp: Let_def)
-  have child_fin: "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
-      (set R) (set (dpp_ops.pairs J d')) (set S)"
-    by (rule 3(1)[OF refl proc I_spec J_spec wf_R overlay_R fresh_R rec])
   show ?case
-    apply (rule muterm_typed_general_usable_production_sound[
-      where J=J and R=R and P=P and S=S and \<mu>=\<mu>
-        and redp=redp and Pr=Pr and U=U and d'=d'])
+  proof (cases "muterm_general_rta08_ur_redpair_proc J \<mu>
+      (get_rel_impl redp) Pr U S ?d")
+    case (Inr d')
+    from 3(7) Inr have rec:
+        "isOK (check_muterm_typed_dp_proof_production I J \<mu>
+          (add_index i 1) R S (dpp_ops.pairs J d') child)"
+      by (simp add: Let_def)
+    have child_fin: "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
+        (set R) (set (dpp_ops.pairs J d')) (set S)"
+      apply (rule 3(1))
+          apply (rule refl)
+         apply (rule Inr)
+        apply (rule I_spec)
        apply (rule J_spec)
       apply (rule wf_R)
      apply (rule overlay_R)
-      apply (rule fresh_R)
-     apply (rule proc)
-    apply (rule child_fin)
-    done
+    apply (rule fresh_R)
+   apply (rule rec)
+      done
+    show ?thesis by (rule muterm_typed_general_usable_production_sound[
+      OF J_spec wf_R overlay_R fresh_R Inr child_fin])
+  next
+    case (Inl error)
+    from 3(7) Inl obtain d' where proc:
+        "muterm_general_ur_redpair_proc J \<mu>
+          (get_rel_impl redp) Pr U S ?d = return d'"
+      and rec: "isOK (check_muterm_typed_dp_proof I J \<mu>
+        (add_index i 1) R S (dpp_ops.pairs J d') child)"
+      by (auto simp: Let_def)
+    have child_fin: "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+        (set R) (set (dpp_ops.pairs J d')) (set S)"
+      by (rule check_muterm_typed_dp_proof_sound[
+        OF I_spec J_spec wf_R fresh_R rec])
+    show ?thesis by (rule muterm_typed_general_usable_legacy_production_sound[
+      OF J_spec wf_R overlay_R fresh_R proc child_fin])
+  qed
 next
   case (4 I J \<mu> i R S P st sts child)
   let ?d = "dpp_ops.mk J False False P [] [] [] R"
@@ -2247,18 +2932,74 @@ next
     apply (rule child_ok)
     done
 next
-  case (9 I J \<mu> i R S P child)
+  case (9 I J \<mu> i R S P U redp Pr child)
+  let ?E = "muterm_expanded_pairs_list string_renameN P S"
+  let ?d = "dpp_ops.mk J False False ?E [] [] [] R"
+  have I_spec: "tp_spec I" by (rule 9(1))
+  have J_spec: "dpp_spec J" by (rule 9(2))
+  have wf_R: "wf_trs (set R)" by (rule 9(3))
+  have overlay_R: "csr_switch_overlay (set R)" by (rule 9(4))
+  have fresh_R: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
+    by (rule 9(5))
+  from 9(6) obtain d' where proc:
+      "muterm_strong_ur_redpair_proc J \<mu> (get_rel_impl redp) Pr U ?d = return d'"
+    and child_ok: "isOK (check_csr_dp_termination_proof_min I J \<mu> False
+      (add_index i 1) d' child)" by (auto simp: Let_def)
+  have deleted: "d' = dpp_spec.delete_pairs J ?d Pr"
+    using proc unfolding muterm_strong_ur_redpair_proc_def by auto
+  have plain: "plain_csr_dpp J ?d"
+    unfolding plain_csr_dpp_def
+    using dpp_spec.mk_sound[OF J_spec,of False False ?E "[]" "[]" "[]" R]
+      dpp_spec.dpp_sound[OF J_spec,of ?d] by auto
+  have plain': "plain_csr_dpp J d'"
+    unfolding deleted by (rule plain_csr_dpp_delete_pairs[OF J_spec plain])
+  interpret dpp_spec J by (rule J_spec)
+  have rules_d: "set (rules ?d) = set R"
+    using mk_sound[of False False ?E "[]" "[]" "[]" R]
+      rules_sound[of ?d] dpp_sound[of ?d] by auto
+  have rules': "set (rules d') = set (rules ?d)"
+    using deleted delete_P_Pw_sound[of ?d Pr Pr] rules_sound[of d'] by auto
+  have wf_d: "wf_trs (set (rules ?d))" using wf_R unfolding rules_d .
+  have fresh_d: "\<And>f n. \<not> defined (set (rules ?d)) (Sharp f,n)"
+    using fresh_R unfolding rules_d .
+  have wf': "wf_trs (set (rules d'))" using wf_d unfolding rules' .
+  have fresh': "\<And>f n. \<not> defined (set (rules d')) (Sharp f,n)"
+    using fresh_d unfolding rules' .
+  have child_fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs d')) (set (rules d'))"
+    by (rule check_csr_dp_termination_proof_min_sound[
+      OF I_spec J_spec plain' wf' fresh' child_ok])
+  have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs ?d)) (set (rules ?d))"
+    by (rule muterm_strong_ur_redpair_proc_sound[
+      OF J_spec get_rel_impl proc wf_d fresh_d child_fin])
+  have sem: "dpp_ops.dpp J ?d =
+      (False,False,set ?E,{},{},{},set R)"
+    using mk_sound[of False False ?E "[]" "[]" "[]" R] by simp
+  have expanded_fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (muterm_expanded_pairs string_renameN (set P) (set S)) (set R)"
+    using fin sem pairs_sound[of ?d] rules_sound[of ?d] dpp_sound[of ?d]
+      set_muterm_expanded_pairs_list[of string_renameN P S] by auto
+  have full: "finite_muterm_min_typed_dpp Sharp (mu_of \<mu>)
+      (set R) (set P) (set S)"
+    by (rule finite_min_csr_dpp_expanded_imp_finite_muterm_min_typed[
+      OF expanded_fin])
+  show ?case
+    by (rule finite_muterm_min_typed_imp_finite_innermost_min_typed_overlay[
+      OF overlay_R wf_R fresh_R full])
+next
+  case (10 I J \<mu> i R S P child)
   then show ?case by (solves \<open>auto simp: Let_def
     intro: check_muterm_typed_expanded_ordinary_innermost_sound\<close>)
 next
-  case (10 I J \<mu> i R S P edps)
-  have I_spec: "tp_spec I" by (rule 10(2))
-  have J_spec: "dpp_spec J" by (rule 10(3))
-  have wf_R: "wf_trs (set R)" by (rule 10(4))
-  have overlay_R: "csr_switch_overlay (set R)" by (rule 10(5))
+  case (11 I J \<mu> i R S P edps)
+  have I_spec: "tp_spec I" by (rule 11(2))
+  have J_spec: "dpp_spec J" by (rule 11(3))
+  have wf_R: "wf_trs (set R)" by (rule 11(4))
+  have overlay_R: "csr_switch_overlay (set R)" by (rule 11(5))
   have fresh_R: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
-    by (rule 10(6))
-  from 10(7) obtain z where graph_eq:
+    by (rule 11(6))
+  from 11(7) obtain z where graph_eq:
       "check_muterm_typed_dep_graph \<mu> R S P edps = return z"
     and components: "isOK (check_muterm_innermost_typed_graph_components
       I J \<mu> i R S P edps)" by (auto simp: Let_def)
@@ -2267,13 +3008,10 @@ next
   have all_components: "\<forall>child C. (Some child,C) \<in> set edps \<longrightarrow>
       finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
         (set R) (set (filter (\<lambda>dp. dp \<in> set C) P)) (set S)"
-    by (rule 10(1)[OF graph_eq I_spec J_spec wf_R overlay_R fresh_R components])
+    by (rule 11(1)[OF graph_eq I_spec J_spec wf_R overlay_R fresh_R components])
   show ?case by (solves \<open>
     rule muterm_typed_dep_graph_production_sound[OF graph];
     use all_components in auto\<close>)
-next
-  case (11 I J \<mu> i R S P child)
-  then show ?case by (solves \<open>simp\<close>)
 next
   case (12 I J \<mu> i R S P)
   then show ?case by (solves \<open>simp\<close>)
@@ -2282,6 +3020,8 @@ next
   then show ?case by (solves \<open>auto\<close>)
 next
   case (14 I J \<mu> i R S P child C rest)
+  let ?Pc = "filter (\<lambda>dp. dp \<in> set C) P"
+  let ?Sc = "muterm_component_unhiding_rules S ?Pc"
   show ?case
   proof (intro allI impI)
     fix requested D
@@ -2292,23 +3032,27 @@ next
     have overlay_R: "csr_switch_overlay (set R)" by (rule 14(6))
     have fresh_R: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
       by (rule 14(7))
-    from 14(8) obtain z where child_eq:
+    from 14(8) obtain z where shape:
+        "muterm_innermost_typed_shape_check \<mu> ?Pc S"
+      and child_eq:
         "check_muterm_typed_dp_proof_production
-          I J \<mu> (add_index i 1) R S
-            (filter (\<lambda>dp. dp \<in> set C) P) child = return z"
+          I J \<mu> (add_index i 1) R ?Sc ?Pc child = return z"
       and rest_ok: "isOK (check_muterm_innermost_typed_graph_components
         I J \<mu> (add_index i 1) R S P rest)" by auto
     have child_ok: "isOK (check_muterm_typed_dp_proof_production
-        I J \<mu> (add_index i 1) R S
-          (filter (\<lambda>dp. dp \<in> set C) P) child)"
+        I J \<mu> (add_index i 1) R ?Sc ?Pc child)"
       using child_eq by simp
     show "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
         (set R) (set (filter (\<lambda>dp. dp \<in> set D) P)) (set S)"
     proof (cases "requested = child \<and> D = C")
       case True
-      have child_fin: "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
-          (set R) (set (filter (\<lambda>dp. dp \<in> set C) P)) (set S)"
+      have child_fin_local:
+          "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
+            (set R) (set ?Pc) (set ?Sc)"
         apply (rule 14(1))
+                apply (rule refl)
+               apply (rule refl)
+              apply (simp add: shape check_def)
              apply (rule I_spec)
             apply (rule J_spec)
            apply (rule wf_R)
@@ -2316,6 +3060,27 @@ next
          apply (rule fresh_R)
         apply (rule child_ok)
         done
+      from muterm_innermost_typed_shape_check_sound[OF shape]
+      have pair_all: "\<forall>(l,r)\<in>set ?Pc. \<exists>f ls.
+          l = Fun (Sharp f) ls \<and>
+          mu_of \<mu> (Sharp f,length ls) = mu_of \<mu> (f,length ls) \<and>
+          (is_Var r \<or> (\<exists>g rs. r = Fun (Sharp g) rs \<and>
+            mu_of \<mu> (Sharp g,length rs) = mu_of \<mu> (g,length rs)))"
+        and bridge_all: "\<forall>(a,b)\<in>set S. is_Fun a \<and> (\<exists>f bs.
+          b = Fun (Sharp f) bs \<and>
+          mu_of \<mu> (Sharp f,length bs) = mu_of \<mu> (f,length bs))"
+        by auto
+      have pair_shape: "\<And>l r. (l,r) \<in> set ?Pc \<Longrightarrow>
+          \<exists>f ls. l = Fun (Sharp f) ls"
+        using pair_all by fastforce
+      have bridge_shape: "\<And>a b. (a,b) \<in> set S \<Longrightarrow>
+          \<exists>f bs. b = Fun (Sharp f) bs"
+        using bridge_all by auto
+      have child_fin:
+          "finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
+            (set R) (set ?Pc) (set S)"
+        by (rule finite_muterm_component_unhiding_imp_full[
+          OF wf_R fresh_R bridge_shape pair_shape child_fin_local])
       then show ?thesis using True by simp
     next
       case False
@@ -2324,6 +3089,9 @@ next
           finite_muterm_innermost_min_typed_dpp Sharp (mu_of \<mu>)
             (set R) (set (filter (\<lambda>dp. dp \<in> set E) P)) (set S)"
         apply (rule 14(2))
+                apply (rule refl)
+               apply (rule refl)
+              apply (simp add: shape check_def)
              apply (rule child_eq)
             apply (rule I_spec)
            apply (rule J_spec)
@@ -2332,7 +3100,7 @@ next
         apply (rule fresh_R)
        apply (rule rest_ok)
         done
-      show ?thesis using rest_sound rest_mem by blast
+      show ?thesis by (rule rest_sound[rule_format, OF rest_mem])
     qed
   qed
 qed
@@ -2396,17 +3164,43 @@ lemma check_muterm_i4_graph_local_component_sound:
 proof -
   interpret M: muterm_i4_label R "mu_of m" "{}" "undefined"
     by (unfold_locales, rule wf)
+  let ?Pc = "filter (\<lambda>x. x \<in> set C) P"
+  let ?Bc = "muterm_component_unhiding_rules B ?Pc"
   from check_muterm_i4_graph_components_local_member[
     OF components mem]
-  obtain j where rec: "isOK (check_muterm_recursive_dp_proof
-    J m j R B (filter (\<lambda>lr. lr \<in> set R) U)
-      (filter (\<lambda>x. x \<in> set C) P) dp)" by blast
-  have good: "M.finite_muterm_i4_good_typed_dpp
-    (set (filter (\<lambda>x. x \<in> set C) P)) (set B)"
+  have shape: "muterm_innermost_typed_shape_check m ?Pc B"
+    and rec_ex: "\<exists>j. isOK (check_muterm_recursive_dp_proof
+      J m j R B ?Bc (filter (\<lambda>lr. lr \<in> set R) U) ?Pc dp)"
+    by blast+
+  from rec_ex obtain j where rec: "isOK (check_muterm_recursive_dp_proof
+      J m j R B ?Bc (filter (\<lambda>lr. lr \<in> set R) U) ?Pc dp)"
+    by blast
+  have local: "set ?Bc \<subseteq> set B"
+    unfolding muterm_component_unhiding_rules_def by auto
+  have good_local: "M.finite_muterm_i4_good_typed_dpp
+    (set ?Pc) (set ?Bc)"
     by (rule check_muterm_recursive_dp_proof_sound[
-      OF J wf overlay exact fresh rules_unmarked marked rec])
-  have set_filter: "set (filter (\<lambda>x. x \<in> set C) P) =
-      set P \<inter> set C" by auto
+      OF J wf overlay exact local fresh rules_unmarked marked rec])
+  from muterm_innermost_typed_shape_check_sound[OF shape]
+  have pair_all: "\<forall>(l,r)\<in>set ?Pc. \<exists>f ls.
+      l = Fun (Sharp f) ls \<and>
+      mu_of m (Sharp f,length ls) = mu_of m (f,length ls) \<and>
+      (is_Var r \<or> (\<exists>g rs. r = Fun (Sharp g) rs \<and>
+        mu_of m (Sharp g,length rs) = mu_of m (g,length rs)))"
+    and bridge_all: "\<forall>(a,b)\<in>set B. is_Fun a \<and> (\<exists>f bs.
+      b = Fun (Sharp f) bs \<and>
+      mu_of m (Sharp f,length bs) = mu_of m (f,length bs))"
+    by auto
+  have pair_shape: "\<And>l r. (l,r) \<in> set ?Pc \<Longrightarrow>
+      \<exists>f ls. l = Fun (Sharp f) ls"
+    using pair_all by fastforce
+  have bridge_shape: "\<And>a b. (a,b) \<in> set B \<Longrightarrow>
+      \<exists>f bs. b = Fun (Sharp f) bs"
+    using bridge_all by auto
+  have good: "M.finite_muterm_i4_good_typed_dpp (set ?Pc) (set B)"
+    by (rule M.finite_muterm_i4_good_component_unhiding_imp_full[
+      OF fresh bridge_shape pair_shape good_local])
+  have set_filter: "set ?Pc = set P \<inter> set C" by auto
   show "M.finite_muterm_i4_good_typed_dpp
       (set P \<inter> set C) (set B)"
     using good unfolding set_filter .
