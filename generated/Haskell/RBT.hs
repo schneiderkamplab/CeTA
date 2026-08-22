@@ -43,10 +43,10 @@ delete :: forall a b. (Compare.Compare_order a) => a -> Rbt a b -> Rbt a b;
 delete xb xc = RBT (Arith.rbt_delete xb (impl_of xc));
 
 insert :: forall a b. (Compare.Compare_order a) => a -> b -> Rbt a b -> Rbt a b;
-insert xc xd xe = RBT (Arith.rbt_insert xc xd (impl_of xe));
+insert xc xd xe = RBT (Arith.rbt_inserta xc xd (impl_of xe));
 
 lookup :: forall a b. (Compare.Compare_order a) => Rbt a b -> a -> Maybe b;
-lookup x = Arith.rbt_lookup (impl_of x);
+lookup x = Arith.rbt_lookupa (impl_of x);
 
 entries :: forall a b. (Quasi_Order.Linorder a) => Rbt a b -> [(a, b)];
 entries x = Arith.entries (impl_of x);

@@ -56,28 +56,28 @@ module
          Semilattice_set, nat, bex, nth, upt, ball, drop, find, last, take,
          foldb, image, foldr, map_option, those, membera, inserta, union,
          funpow, filtera, bind, hda, tla, butlast, extract, productc, set_Cons,
-         listset, remdups, remove1, these, is_empty, distinct, superset,
+         listset, remdups, remove1, these, mapa, is_empty, distinct, superset,
          enumerate, partition, removeAll, replicate, implode, list_update,
          remdups_adj, max_sls, sup_cfi, rec_list, product_lists, curry,
          set_fold1, inter_list_set, list_all2, dvd, set_fold_cfi, swap,
-         char_of_integer, explode, power, gcd_int, lcm_int, rel_option,
-         set_option, int_of_nat, of_nat, char_0x20, char_0x21, char_0x22,
-         char_0x23, char_0x26, char_0x27, char_0x28, char_0x29, char_0x2A,
-         char_0x2B, char_0x2C, char_0x2D, char_0x2F, char_0x30, char_0x31,
-         char_0x32, char_0x33, char_0x34, char_0x35, char_0x36, char_0x37,
-         char_0x38, char_0x39, char_0x3A, char_0x3B, char_0x3C, char_0x3D,
-         char_0x3E, char_0x3F, char_0x41, char_0x42, char_0x43, char_0x44,
-         char_0x45, char_0x46, char_0x47, char_0x48, char_0x49, char_0x4A,
-         char_0x4B, char_0x4C, char_0x4D, char_0x4E, char_0x4F, char_0x50,
-         char_0x51, char_0x52, char_0x53, char_0x54, char_0x55, char_0x56,
-         char_0x57, char_0x58, char_0x59, char_0x5A, char_0x5B, char_0x5D,
-         char_0x5F, char_0x61, char_0x62, char_0x63, char_0x64, char_0x65,
-         char_0x66, char_0x67, char_0x68, char_0x69, char_0x6A, char_0x6B,
-         char_0x6C, char_0x6D, char_0x6E, char_0x6F, char_0x70, char_0x71,
-         char_0x72, char_0x73, char_0x74, char_0x75, char_0x76, char_0x77,
-         char_0x78, char_0x79, char_0x7A, interval, sort_key, rbt_union,
-         minus_set, rbt_delete, rbt_insert, rbt_lookup, rbt_bulkload,
-         all_interval, sorted_list_of_set, divide_int)
+         char_of_integer, explode, power, rbt_insert, rbt_lookup, gcd_int,
+         lcm_int, rel_option, set_option, int_of_nat, of_nat, char_0x20,
+         char_0x21, char_0x22, char_0x23, char_0x26, char_0x27, char_0x28,
+         char_0x29, char_0x2A, char_0x2B, char_0x2C, char_0x2D, char_0x2F,
+         char_0x30, char_0x31, char_0x32, char_0x33, char_0x34, char_0x35,
+         char_0x36, char_0x37, char_0x38, char_0x39, char_0x3A, char_0x3B,
+         char_0x3C, char_0x3D, char_0x3E, char_0x3F, char_0x41, char_0x42,
+         char_0x43, char_0x44, char_0x45, char_0x46, char_0x47, char_0x48,
+         char_0x49, char_0x4A, char_0x4B, char_0x4C, char_0x4D, char_0x4E,
+         char_0x4F, char_0x50, char_0x51, char_0x52, char_0x53, char_0x54,
+         char_0x55, char_0x56, char_0x57, char_0x58, char_0x59, char_0x5A,
+         char_0x5B, char_0x5D, char_0x5F, char_0x61, char_0x62, char_0x63,
+         char_0x64, char_0x65, char_0x66, char_0x67, char_0x68, char_0x69,
+         char_0x6A, char_0x6B, char_0x6C, char_0x6D, char_0x6E, char_0x6F,
+         char_0x70, char_0x71, char_0x72, char_0x73, char_0x74, char_0x75,
+         char_0x76, char_0x77, char_0x78, char_0x79, char_0x7A, interval,
+         sort_key, rbt_union, minus_set, rbt_delete, rbt_inserta, rbt_lookupa,
+         rbt_bulkload, all_interval, sorted_list_of_set, divide_int)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -4138,6 +4138,10 @@ image_filter f (Set_Monad xs) = Set_Monad (map_filter f xs);
 these :: forall a. (Ceq a, Ccompare a, Set_impl a) => Set (Maybe a) -> Set a;
 these a = image_filter (\ x -> x) a;
 
+mapa :: forall a b c. (a -> b -> c) -> Rbt a b -> Rbt a c;
+mapa f Empty = Empty;
+mapa f (Branch c lt k v rt) = Branch c (mapa f lt) k (f k v) (mapa f rt);
+
 is_emptya :: forall a b. (Ccompare a) => Mapping_rbt a b -> Bool;
 is_emptya xa = (case impl_of xa of {
                  Empty -> True;
@@ -4347,6 +4351,19 @@ list_all2 p (x : xs) (y : ys) = p x y && list_all2 p xs ys;
 dvd :: forall a. (Eq a, Semidom_modulo a) => a -> a -> Bool;
 dvd a b = modulo b a == zero;
 
+rbt_ins ::
+  forall a b.
+    (a -> a -> Bool) -> (a -> b -> b -> b) -> a -> b -> Rbt a b -> Rbt a b;
+rbt_ins less f k v Empty = Branch R Empty k v Empty;
+rbt_ins less f k v (Branch B l x y r) =
+  (if less k x then balance (rbt_ins less f k v l) x y r
+    else (if less x k then balance l x y (rbt_ins less f k v r)
+           else Branch B l x (f k y v) r));
+rbt_ins less f k v (Branch R l x y r) =
+  (if less k x then Branch R (rbt_ins less f k v l) x y r
+    else (if less x k then Branch R l x y (rbt_ins less f k v r)
+           else Branch R l x (f k y v) r));
+
 comp_fun_idem_apply :: forall b a. Comp_fun_idem b a -> b -> a -> a;
 comp_fun_idem_apply (Abs_comp_fun_idem x) = x;
 
@@ -4393,6 +4410,20 @@ power :: forall a. (Power a) => a -> Nat -> a;
 power a n =
   (if equal_nat n zero_nat then one
     else times a (power a (minus_nat n one_nat)));
+
+rbt_insert_with_key ::
+  forall a b.
+    (a -> a -> Bool) -> (a -> b -> b -> b) -> a -> b -> Rbt a b -> Rbt a b;
+rbt_insert_with_key less f k v t = paint B (rbt_ins less f k v t);
+
+rbt_insert :: forall a b. (a -> a -> Bool) -> a -> b -> Rbt a b -> Rbt a b;
+rbt_insert less = rbt_insert_with_key less (\ _ _ nv -> nv);
+
+rbt_lookup :: forall a b. (a -> a -> Bool) -> Rbt a b -> a -> Maybe b;
+rbt_lookup less Empty k = Nothing;
+rbt_lookup less (Branch uu l x y r) k =
+  (if less k x then rbt_lookup less l k
+    else (if less x k then rbt_lookup less r k else Just y));
 
 gcd_int :: Int -> Int -> Int;
 gcd_int (Int_of_integer x) (Int_of_integer y) =
@@ -4454,22 +4485,22 @@ rbt_del_from_right x a y s Empty = Branch R a y s (rbt_del x Empty);
 rbt_del_from_right x a y s (Branch R va vb vc vd) =
   Branch R a y s (rbt_del x (Branch R va vb vc vd));
 
-rbt_ins ::
+rbt_insa ::
   forall a b.
     (Compare.Compare_order a) => (a -> b -> b -> b) ->
                                    a -> b -> Rbt a b -> Rbt a b;
-rbt_ins f k v Empty = Branch R Empty k v Empty;
-rbt_ins f k v (Branch B l x y r) =
+rbt_insa f k v Empty = Branch R Empty k v Empty;
+rbt_insa f k v (Branch B l x y r) =
   (case Compare.compare k x of {
     Comparator.Eqa -> Branch B l x (f k y v) r;
-    Comparator.Lt -> balance (rbt_ins f k v l) x y r;
-    Comparator.Gt -> balance l x y (rbt_ins f k v r);
+    Comparator.Lt -> balance (rbt_insa f k v l) x y r;
+    Comparator.Gt -> balance l x y (rbt_insa f k v r);
   });
-rbt_ins f k v (Branch R l x y r) =
+rbt_insa f k v (Branch R l x y r) =
   (case Compare.compare k x of {
     Comparator.Eqa -> Branch R l x (f k y v) r;
-    Comparator.Lt -> Branch R (rbt_ins f k v l) x y r;
-    Comparator.Gt -> Branch R l x y (rbt_ins f k v r);
+    Comparator.Lt -> Branch R (rbt_insa f k v l) x y r;
+    Comparator.Gt -> Branch R l x y (rbt_insa f k v r);
   });
 
 of_nat :: forall a. (Semiring_1 a) => Nat -> a;
@@ -4756,11 +4787,11 @@ rbt_split (Branch uu l a b r) x =
                      });
   });
 
-rbt_insert_with_key ::
+rbt_insert_with_keya ::
   forall a b.
     (Compare.Compare_order a) => (a -> b -> b -> b) ->
                                    a -> b -> Rbt a b -> Rbt a b;
-rbt_insert_with_key f k v t = paint B (rbt_ins f k v t);
+rbt_insert_with_keya f k v t = paint B (rbt_insa f k v t);
 
 rbt_union_swap_rec ::
   forall a b.
@@ -4772,7 +4803,7 @@ rbt_union_swap_rec f gamma t1 t2 =
     (gammaa, (t2a, t1a)) ->
       let {
         fa = (if gammaa then (\ k v va -> f k va v) else f);
-      } in (if small_rbt t2a then folda (rbt_insert_with_key fa) t2a t1a
+      } in (if small_rbt t2a then folda (rbt_insert_with_keya fa) t2a t1a
              else (case t1a of {
                     Empty -> t2a;
                     Branch _ l1 a b r1 ->
@@ -4812,20 +4843,20 @@ minus_set a b = inf_set a (uminus_set b);
 rbt_delete :: forall a b. (Compare.Compare_order a) => a -> Rbt a b -> Rbt a b;
 rbt_delete k t = paint B (rbt_del k t);
 
-rbt_insert ::
+rbt_inserta ::
   forall a b. (Compare.Compare_order a) => a -> b -> Rbt a b -> Rbt a b;
-rbt_insert = rbt_insert_with_key (\ _ _ nv -> nv);
+rbt_inserta = rbt_insert_with_keya (\ _ _ nv -> nv);
 
-rbt_lookup :: forall a b. (Compare.Compare_order a) => Rbt a b -> a -> Maybe b;
-rbt_lookup Empty k = Nothing;
-rbt_lookup (Branch uu l x y r) k = (case Compare.compare k x of {
-                                     Comparator.Eqa -> Just y;
-                                     Comparator.Lt -> rbt_lookup l k;
-                                     Comparator.Gt -> rbt_lookup r k;
-                                   });
+rbt_lookupa :: forall a b. (Compare.Compare_order a) => Rbt a b -> a -> Maybe b;
+rbt_lookupa Empty k = Nothing;
+rbt_lookupa (Branch uu l x y r) k = (case Compare.compare k x of {
+                                      Comparator.Eqa -> Just y;
+                                      Comparator.Lt -> rbt_lookupa l k;
+                                      Comparator.Gt -> rbt_lookupa r k;
+                                    });
 
 rbt_bulkload :: forall a b. (Compare.Compare_order a) => [(a, b)] -> Rbt a b;
-rbt_bulkload xs = foldr (\ (a, b) -> rbt_insert a b) xs Empty;
+rbt_bulkload xs = foldr (\ (a, b) -> rbt_inserta a b) xs Empty;
 
 all_interval :: forall a. (Eq a, Interval a) => (a -> Bool) -> a -> a -> Bool;
 all_interval p a b =

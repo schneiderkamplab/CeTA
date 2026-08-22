@@ -127,6 +127,23 @@ check_improved_csr_dp_termination_proof ia j u mu a i dpp
         check_improved_csr_dp_termination_proof ia j u mu a
           (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc st sts prf) =
+  FOR_Preliminaries.debug i "CSR forward instantiation"
+    (Error_Monad.bind
+      (CSR_Minimal_CSDP_Proofs.csr_forward_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_improved_csr_dp_termination_proof ia j u mu a
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
+check_improved_csr_dp_termination_proof ia j u mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc redp pr us prf) =
+  FOR_Preliminaries.debug i "LPAR08 U3 reduction pair"
+    (Error_Monad.bind
+      (CSR_Minimal_CSDP_Proofs.csr_u3_redpair_proc j mu
+        (Reduction_Pair_Implementations.get_rel_impl redp) pr us dpp)
+      (\ dppa ->
+        check_improved_csr_dp_termination_proof ia j u mu a
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
+check_improved_csr_dp_termination_proof ia j u mu a i dpp
   (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs) =
   (if unhiding_subterm_pairs_check u (Dependency_Pair_Problem_Spec.pairs j dpp)
     then FOR_Preliminaries.debug i "LPAR08 unhiding subterm" (Sum_Type.Inr ())
@@ -134,17 +151,12 @@ check_improved_csr_dp_termination_proof ia j u mu a i dpp
            dpp (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc graphs));
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
-  (if CSR_Mixed_Subterm_Proofs.csr_mixed_unhiding_present u
-        (Dependency_Pair_Problem_Spec.pairs j dpp)
-    then FOR_Preliminaries.debug i "LPAR08 mixed marked/unhiding subterm"
-           (Error_Monad.bind
-             (CSR_Mixed_Subterm_Proofs.csr_mixed_subterm_proc j u mu p rseq pr
-               dpp)
-             (\ dppa ->
-               check_improved_csr_dp_termination_proof ia j u mu a
-                 (Term_Rewriting.add_index i Arith.one_nat) dppa prf))
-    else CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i
-           dpp (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf));
+  FOR_Preliminaries.debug i "LPAR08 marked/unhiding subterm"
+    (Error_Monad.bind
+      (CSR_Mixed_Subterm_Proofs.csr_mixed_subterm_proc j u mu p rseq pr dpp)
+      (\ dppa ->
+        check_improved_csr_dp_termination_proof ia j u mu a
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
   CSR_Checker_Base.CSR_DP_P_is_Empty =
   CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp

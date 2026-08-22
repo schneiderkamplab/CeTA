@@ -3,7 +3,8 @@
 module
   RFC_Matchbounds_Ext(rfc_relative_bounds_tt, rfc_automaton_closed_bounds_tt,
                        rfc_matchbox_relative_bounds_tt,
-                       rfc_automaton_closed_relative_bounds_tt)
+                       rfc_automaton_closed_relative_bounds_tt,
+                       rfc_native_rel_matchbox_relative_bounds_tt)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -22,6 +23,7 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
+import qualified Product_Lexorder;
 import qualified List_Lexorder;
 import qualified Map_Choice;
 import qualified Check_Monad;
@@ -293,6 +295,35 @@ rfc_lifted_lhs_top_impl ::
 rfc_lifted_lhs_top_impl c l =
   all (\ (f, _) -> Arith.equal_nat (Matchbounds.height f) c)
     (Term_Rewriting.funas_term_list l);
+
+rfc_native_word_res_impl ::
+  forall a b.
+    (Compare.Compare_order a,
+      Compare.Compare_order b) => RBT.Rbt ((a, Arith.Nat), Arith.Nat)
+                                    [Tree_Automata_Impl.Ta_rule_impl b
+                                       (a, Arith.Nat)] ->
+                                    (b -> RBT.Rbt b ()) ->
+                                      b -> Arith.Nat -> [a] -> RBT.Rbt b ();
+rfc_native_word_res_impl ta eps q h [] =
+  RBTSetImpl.g_from_list_dflt_basic_oops_rm_basic_ops [q];
+rfc_native_word_res_impl ta eps q h (f : fs) =
+  let {
+    rec0 = rfc_native_word_res_impl ta eps q h fs;
+    rec = (if null fs then rec0
+            else RBT_Map_Set_Extension.rs_Union
+                   (map eps
+                     (RBTSetImpl.g_to_list_dflt_basic_oops_rm_basic_ops rec0)));
+    rules = RBT_Map_Set_Extension.rm_set_lookup ta ((f, h), Arith.one_nat);
+    arules =
+      filter
+        (\ rule ->
+          RBTSetImpl.memb_rm_basic_ops
+            (Arith.nth (Tree_Automata_Impl.r_lhs_states_impl rule)
+              Arith.zero_nat)
+            rec)
+        rules;
+  } in RBTSetImpl.g_from_list_dflt_basic_oops_rm_basic_ops
+         (map Tree_Automata_Impl.r_rhs_impl arules);
 
 rfc_rule_automaton_closed_impl ::
   forall a b.
@@ -851,6 +882,94 @@ rfc_matchbox_relative_bounds_tt i info initial_terms rdelete tp =
                                        rdelete)))))))))))))))));
   });
 
+rfc_rule_native_matchbox_closed_impl ::
+  forall a b.
+    (Compare.Compare_order a, Eq a,
+      Compare.Compare_order b) => Tree_Automata_Impl.Ta_impl a (b, Arith.Nat) ->
+                                    Tree_Automata_Impl.Ta_relation a ->
+                                      [a] ->
+(Term_Rewriting.Term b [Arith.Char], Term_Rewriting.Term b [Arith.Char]) ->
+  Bool;
+rfc_rule_native_matchbox_closed_impl ta rel qs lr =
+  (case rfc_rule_words lr of {
+    Nothing -> False;
+    Just (lw, rw) ->
+      all (\ q ->
+            Arith.is_none
+              (Tree_Automata_Impl.rel_checker rel
+                (rfc_native_word_res_impl (Tree_Automata_Impl.ta_rules_impl ta)
+                  (Tree_Automata_Impl.ta_epss_impl ta) q Arith.zero_nat lw)
+                (rfc_native_word_res_impl (Tree_Automata_Impl.ta_rules_impl ta)
+                  (Tree_Automata_Impl.ta_epss_impl ta) q Arith.zero_nat rw)))
+        qs;
+  });
+
+rfc_native_matchbox_closed_impl ::
+  forall a b.
+    (Compare.Compare_order a, Eq a,
+      Compare.Compare_order b) => Tree_Automata_Impl.Ta_impl a (b, Arith.Nat) ->
+                                    Tree_Automata_Impl.Ta_relation a ->
+                                      [a] ->
+[(Term_Rewriting.Term b [Arith.Char], Term_Rewriting.Term b [Arith.Char])] ->
+  Bool;
+rfc_native_matchbox_closed_impl ta rel qs r =
+  all (rfc_rule_native_matchbox_closed_impl ta rel qs) r;
+
+rfc_tail_states_eps_closed_impl ::
+  forall a b.
+    (Compare.Compare_order a,
+      Quasi_Order.Linorder b) => Tree_Automata_Impl.Ta_impl a b -> [a] -> Bool;
+rfc_tail_states_eps_closed_impl ta tails =
+  let {
+    qset = RBTSetImpl.g_from_list_dflt_basic_oops_rm_basic_ops tails;
+  } in all (\ q ->
+             all (\ p -> RBTSetImpl.memb_rm_basic_ops p qset)
+               (RBTSetImpl.g_to_list_dflt_basic_oops_rm_basic_ops
+                 (Tree_Automata_Impl.ta_epss_impl ta q)))
+         tails;
+
+rfc_rule_native_matchbox_ext_right_impl ::
+  forall a b.
+    (Compare.Compare_order a, Eq a,
+      Compare.Compare_order b) => Tree_Automata_Impl.Ta_impl a (b, Arith.Nat) ->
+                                    Tree_Automata_Impl.Ta_relation a ->
+                                      [a] ->
+(Term_Rewriting.Term b [Arith.Char], Term_Rewriting.Term b [Arith.Char]) ->
+  Bool;
+rfc_rule_native_matchbox_ext_right_impl ta rel tails lr =
+  (case rfc_rule_words lr of {
+    Nothing -> False;
+    Just (lw, rw) ->
+      not (null lw) &&
+        all (\ q ->
+              let {
+                rhs = rfc_native_word_res_impl
+                        (Tree_Automata_Impl.ta_rules_impl ta)
+                        (Tree_Automata_Impl.ta_epss_impl ta) q Arith.zero_nat
+                        rw;
+              } in all (\ i ->
+                         Arith.is_none
+                           (Tree_Automata_Impl.rel_checker rel
+                             (rfc_native_word_res_impl
+                               (Tree_Automata_Impl.ta_rules_impl ta)
+                               (Tree_Automata_Impl.ta_epss_impl ta) q
+                               Arith.zero_nat (Arith.take i lw))
+                             rhs))
+                     (Arith.upt Arith.one_nat (Arith.size_list lw)))
+          tails;
+  });
+
+rfc_native_matchbox_ext_right_impl ::
+  forall a b.
+    (Compare.Compare_order a, Eq a,
+      Compare.Compare_order b) => Tree_Automata_Impl.Ta_impl a (b, Arith.Nat) ->
+                                    Tree_Automata_Impl.Ta_relation a ->
+                                      [a] ->
+[(Term_Rewriting.Term b [Arith.Char], Term_Rewriting.Term b [Arith.Char])] ->
+  Bool;
+rfc_native_matchbox_ext_right_impl ta rel tails r =
+  all (rfc_rule_native_matchbox_ext_right_impl ta rel tails) r;
+
 rfc_automaton_closed_relative_bounds_tt ::
   forall a b c.
     (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b, Arith.Ccompare c,
@@ -961,6 +1080,131 @@ rfc_automaton_closed_relative_bounds_tt i info initial_terms rdelete tp =
                                    (Termination_Problem_Spec.nfs i tp)
                                    (Termination_Problem_Spec.q i tp) rkeep
                                    rdelete))))))))))))))));
+  });
+
+rfc_native_rel_matchbox_relative_bounds_tt ::
+  forall a b c.
+    (Compare.Compare_order b, Eq b, Term_Rewriting.Showl b, Arith.Ccompare c,
+      Compare.Compare_order c, Eq c, Mapping.Mapping_impl c,
+      Term_Rewriting.Showl c) => Termination_Problem_Spec.Tp_ops_ext a b
+                                   [Arith.Char] () ->
+                                   Matchbounds_Impl.Bounds_info b c ->
+                                     [Term_Rewriting.Term b [Arith.Char]] ->
+                                       [(Term_Rewriting.Term b [Arith.Char],
+  Term_Rewriting.Term b [Arith.Char])] ->
+ a -> Sum_Type.Sum (String -> String) a;
+rfc_native_rel_matchbox_relative_bounds_tt i info initial_terms rdelete tp =
+  (case Matchbounds_Impl.get_integer_bounds_info info of {
+    (Matchbounds_Impl.Bounds_Info _ c qfin preTA rel, _) ->
+      Error_Monad.bind (Tree_Automata_Impl.generate_ta_cond preTA rel)
+        (\ ta ->
+          let {
+            states =
+              Arith.remdups
+                (Matchbounds_Impl.states_of_tree_automata_dup preTA);
+            rstrict = Termination_Problem_Spec.r i tp;
+            rkeep = Map_Choice.ceta_list_diff rstrict rdelete;
+          } in Error_Monad.bind
+                 (Check_Monad.check (Termination_Problem_Spec.q_empty i tp)
+                   (Term_Rewriting.showsl_lit
+                     "native relational RFC bounds require an empty Q component"))
+                 (\ _ ->
+                   Error_Monad.bind
+                     (Check_Monad.check
+                       (null (Termination_Problem_Spec.rw i tp))
+                       (Term_Rewriting.showsl_lit
+                         "native relational RFC bounds require no weak rules"))
+                     (\ _ ->
+                       Error_Monad.bind
+                         (Check_Monad.check
+                           (not (Termination_Problem_Spec.nfs i tp))
+                           (Term_Rewriting.showsl_lit
+                             "native relational RFC bounds certify full rewriting"))
+                         (\ _ ->
+                           Error_Monad.bind
+                             (Error_Monad.catch_error
+                               (Check_Monad.check_subseteq rdelete rstrict)
+                               (\ x ->
+                                 Sum_Type.Inl
+                                   (Term_Rewriting.showsl_lit
+                                      "could not find removed rule " .
+                                     Term_Rewriting.showsl_rule x)))
+                             (\ _ ->
+                               Error_Monad.bind
+                                 (Check_Monad.check
+                                   (Matchbounds_Impl.equal_boundstype
+                                     (Matchbounds_Impl.boundstype info)
+                                     Matchbounds_Impl.Match)
+                                   (Term_Rewriting.showsl_lit
+                                     "native relational RFC bounds require boundstype match"))
+                                 (\ _ ->
+                                   Error_Monad.bind
+                                     (Term_Rewriting.check_wf_trs rstrict)
+                                     (\ _ ->
+                                       Error_Monad.bind
+ (Check_Monad.check (all (\ (_, a) -> Term_Rewriting.linear_term a) rstrict)
+   (Term_Rewriting.showsl_lit
+     "native relational RFC bounds require right-linear rules"))
+ (\ _ ->
+   Error_Monad.bind
+     (Check_Monad.check (rfc_initial_single_var initial_terms)
+       (Term_Rewriting.showsl_lit
+         "native relational RFC initial templates contain too many variables"))
+     (\ _ ->
+       Error_Monad.bind
+         (Check_Monad.check (rfc_initial_covers rstrict initial_terms)
+           (Term_Rewriting.showsl_lit
+             "native relational RFC initial language misses a right-hand side"))
+         (\ _ ->
+           Error_Monad.bind
+             (Check_Monad.check
+               (all (\ q ->
+                      RBTSetImpl.memb_rm_basic_ops q
+                        (Tree_Automata_Impl.ta_rhs_states_set ta))
+                 qfin)
+               (Term_Rewriting.showsl_lit
+                 "native relational RFC tail state is not a right-hand-side state"))
+             (\ _ ->
+               Error_Monad.bind
+                 (Check_Monad.check
+                   (rfc_initial_paired_accepted_impl HOL.Type ta qfin
+                     initial_terms)
+                   (Term_Rewriting.showsl_lit
+                     "native relational RFC initial language is not accepted"))
+                 (\ _ ->
+                   Error_Monad.bind
+                     (Check_Monad.check
+                       (rfc_native_matchbox_closed_impl ta rel states rstrict)
+                       (Term_Rewriting.showsl_lit
+                         "native relational RFC merge closure failed"))
+                     (\ _ ->
+                       Error_Monad.bind
+                         (Check_Monad.check
+                           (rfc_tail_states_eps_closed_impl ta qfin)
+                           (Term_Rewriting.showsl_lit
+                             "native relational RFC tail states are not epsilon-closed"))
+                         (\ _ ->
+                           Error_Monad.bind
+                             (Check_Monad.check
+                               (rfc_native_matchbox_ext_right_impl ta rel qfin
+                                 rstrict)
+                               (Term_Rewriting.showsl_lit
+                                 "native relational RFC right-extension closure failed"))
+                             (\ _ ->
+                               Error_Monad.bind
+                                 (Check_Monad.check
+                                   (rfc_no_top_redex_indexed_impl ta states c
+                                     rdelete)
+                                   (Term_Rewriting.showsl_lit
+                                     "native relational RFC removed rule has a top-layer redex"))
+                                 (\ _ ->
+                                   Error_Monad.bind
+                                     (check_bounds_generic_rfc_relative info
+                                       rdelete rkeep)
+                                     (\ _ ->
+                                       Sum_Type.Inr
+ (Termination_Problem_Spec.mk i (Termination_Problem_Spec.nfs i tp)
+   (Termination_Problem_Spec.q i tp) rkeep rdelete))))))))))))))))));
   });
 
 }

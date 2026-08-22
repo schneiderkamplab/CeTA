@@ -86,6 +86,262 @@ next
   show ?case by contradiction
 qed
 
+text \<open>
+  Improved CS-DPs contain one fresh, unsharp unhiding symbol.  Unlike an
+  ordinary marked right-hand side, a term rooted by that symbol admits no
+  context-sensitive rewrite step at all.  The standard QCS usable-rule
+  predicate rejects such a target syntactically; the following conservative
+  extension records the frozen alternative explicitly.
+\<close>
+
+definition improved_qcs_ur_closed_dp_rhs where
+  "improved_qcs_ur_closed_dp_rhs U R W \<mu> t \<longleftrightarrow>
+    qcs_ur_closed_dp_rhs R W \<mu> t \<or> (\<exists>ts. t = Fun U ts)"
+
+definition improved_qcs_csr_ur_closed where
+  "improved_qcs_csr_ur_closed U R W \<mu> P \<longleftrightarrow>
+    W \<subseteq> R \<and>
+    (\<forall>lr\<in>W. qcs_ur_closed_term R W \<mu> (snd lr)) \<and>
+    (\<forall>dp\<in>P. improved_qcs_ur_closed_dp_rhs U R W \<mu> (snd dp))"
+
+lemma improved_qcs_rrstep_target:
+  assumes closed: "\<forall>dp\<in>P.
+      improved_qcs_ur_closed_dp_rhs U R W \<mu> (snd dp)"
+    and step: "(s,t) \<in> rrstep P"
+  shows "improved_qcs_ur_closed_dp_rhs U R W \<mu> t"
+proof -
+  from step obtain l r \<sigma> where lr: "(l,r) \<in> P" and t: "t = r \<cdot> \<sigma>"
+    unfolding rrstep_def' by auto
+  from closed lr have rhs:
+      "qcs_ur_closed_dp_rhs R W \<mu> r \<or> (\<exists>ts. r = Fun U ts)"
+    unfolding improved_qcs_ur_closed_dp_rhs_def by auto
+  from rhs show ?thesis
+  proof
+    assume old: "qcs_ur_closed_dp_rhs R W \<mu> r"
+    from qcs_ur_closed_dp_rhs_subst[OF old, of \<sigma>]
+    show ?thesis unfolding improved_qcs_ur_closed_dp_rhs_def t by auto
+  next
+    assume "\<exists>ts. r = Fun U ts"
+    then obtain ts where r: "r = Fun U ts" by auto
+    show ?thesis unfolding improved_qcs_ur_closed_dp_rhs_def t r by auto
+  qed
+qed
+
+lemma improved_qcs_csdp_steps:
+  assumes wf: "wf_trs R"
+    and fresh_sharp: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and fresh_U: "\<And>n. \<not> defined R (U,n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and subset: "W \<subseteq> R"
+    and rules: "\<And>lr. lr \<in> W \<Longrightarrow>
+      qcs_ur_closed_term R W \<mu> (snd lr)"
+    and closed: "improved_qcs_ur_closed_dp_rhs U R W \<mu> s"
+    and steps: "(s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "(s,t) \<in> (csdp_step Sharp \<mu> W)\<^sup>* \<and>
+    improved_qcs_ur_closed_dp_rhs U R W \<mu> t"
+proof -
+  from closed have cases:
+      "qcs_ur_closed_dp_rhs R W \<mu> s \<or> (\<exists>ts. s = Fun U ts)"
+    unfolding improved_qcs_ur_closed_dp_rhs_def .
+  from cases show ?thesis
+  proof
+    assume old: "qcs_ur_closed_dp_rhs R W \<mu> s"
+    from qcs_ur_closed_csdp_steps[OF wf fresh_sharp rules old steps]
+    show ?thesis unfolding improved_qcs_ur_closed_dp_rhs_def by auto
+  next
+    assume "\<exists>ts. s = Fun U ts"
+    then obtain ts where s: "s = Fun U ts" by auto
+    from fresh_unsharp_Fun_csdp_steps_eq[OF wf fresh_U unsharp,
+        of ts t] steps[unfolded s]
+    have "t = s" unfolding s by simp
+    with closed show ?thesis by simp
+  qed
+qed
+
+lemma improved_qcs_csr_relto_transfer:
+  assumes wf: "wf_trs R"
+    and fresh_sharp: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and fresh_U: "\<And>n. \<not> defined R (U,n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and closed: "improved_qcs_csr_ur_closed U R W \<mu> P"
+    and closed_s: "improved_qcs_ur_closed_dp_rhs U R W \<mu> s"
+    and step: "(s,t) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>* O
+      csr_min_pair_step Sharp \<mu> P R O
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+  shows "(s,t) \<in>
+      (csdp_step Sharp \<mu> W)\<^sup>* O
+      csr_min_pair_step Sharp \<mu> P W O
+      (csdp_step Sharp \<mu> W)\<^sup>* \<and>
+    improved_qcs_ur_closed_dp_rhs U R W \<mu> t"
+proof -
+  from closed have subset: "W \<subseteq> R"
+    and rules: "\<And>lr. lr \<in> W \<Longrightarrow>
+      qcs_ur_closed_term R W \<mu> (snd lr)"
+    and pairs: "\<forall>dp\<in>P.
+      improved_qcs_ur_closed_dp_rhs U R W \<mu> (snd dp)"
+    unfolding improved_qcs_csr_ur_closed_def by auto
+  from step obtain a b where prefix:
+      "(s,a) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and pair: "(a,b) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and suffix: "(b,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>*" by auto
+  from improved_qcs_csdp_steps[OF wf fresh_sharp fresh_U unsharp subset
+      rules closed_s prefix]
+  have prefix_W: "(s,a) \<in> (csdp_step Sharp \<mu> W)\<^sup>*" by auto
+  from csr_min_pair_step_usable_mono[OF subset] pair
+  have pair_W: "(a,b) \<in> csr_min_pair_step Sharp \<mu> P W" by auto
+  from pair have rr: "(a,b) \<in> rrstep P"
+    unfolding csr_min_pair_step_def by auto
+  from improved_qcs_rrstep_target[OF pairs rr]
+  have closed_b: "improved_qcs_ur_closed_dp_rhs U R W \<mu> b" .
+  from improved_qcs_csdp_steps[OF wf fresh_sharp fresh_U unsharp subset
+      rules closed_b suffix]
+  have suffix_W: "(b,t) \<in> (csdp_step Sharp \<mu> W)\<^sup>*"
+    and closed_t: "improved_qcs_ur_closed_dp_rhs U R W \<mu> t" by auto
+  show ?thesis using prefix_W pair_W suffix_W closed_t by auto
+qed
+
+theorem finite_min_csr_dpp_improved_qcs_usable_rules:
+  assumes wf: "wf_trs R"
+    and fresh_sharp: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and fresh_U: "\<And>n. \<not> defined R (U,n)"
+    and unsharp: "\<not> is_sharp_lab U"
+    and closed: "improved_qcs_csr_ur_closed U R W \<mu> P"
+    and fin: "finite_min_csr_dpp Sharp \<mu> P W"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof (rule ccontr)
+  assume not_fin: "\<not> finite_min_csr_dpp Sharp \<mu> P R"
+  let ?PR = "csr_min_pair_step Sharp \<mu> P R"
+  let ?SR = "csdp_step Sharp \<mu> R"
+  let ?PW = "csr_min_pair_step Sharp \<mu> P W"
+  let ?SW = "csdp_step Sharp \<mu> W"
+  from not_fin obtain f where chain:
+      "\<And>n. (f n,f (Suc n)) \<in> ?SR\<^sup>* O ?PR O ?SR\<^sup>*"
+    unfolding finite_min_csr_dpp_def SN_rel_on_def SN_on_def by auto
+  from closed have pair_closed: "\<forall>dp\<in>P.
+      improved_qcs_ur_closed_dp_rhs U R W \<mu> (snd dp)"
+    unfolding improved_qcs_csr_ur_closed_def by auto
+  from chain[of 0] obtain a b where pair: "(a,b) \<in> ?PR"
+    and suffix: "(b,f (Suc 0)) \<in> ?SR\<^sup>*" by auto
+  from pair have rr: "(a,b) \<in> rrstep P"
+    unfolding csr_min_pair_step_def by auto
+  from improved_qcs_rrstep_target[OF pair_closed rr]
+  have closed_b: "improved_qcs_ur_closed_dp_rhs U R W \<mu> b" .
+  from closed have subset: "W \<subseteq> R"
+    and rules: "\<And>lr. lr \<in> W \<Longrightarrow>
+      qcs_ur_closed_term R W \<mu> (snd lr)"
+    unfolding improved_qcs_csr_ur_closed_def by auto
+  from improved_qcs_csdp_steps[OF wf fresh_sharp fresh_U unsharp subset
+      rules closed_b suffix]
+  have closed_1:
+      "improved_qcs_ur_closed_dp_rhs U R W \<mu> (f (Suc 0))" by auto
+  let ?g = "\<lambda>n. f (Suc n)"
+  have closed_g: "improved_qcs_ur_closed_dp_rhs U R W \<mu> (?g n)" for n
+  proof (induct n)
+    case 0
+    show ?case using closed_1 by simp
+  next
+    case (Suc n)
+    from improved_qcs_csr_relto_transfer[OF wf fresh_sharp fresh_U
+      unsharp closed Suc.hyps chain[of "Suc n"]]
+    show ?case by auto
+  qed
+  have g_step: "(?g n,?g (Suc n)) \<in> ?SW\<^sup>* O ?PW O ?SW\<^sup>*" for n
+    using improved_qcs_csr_relto_transfer[OF wf fresh_sharp fresh_U
+      unsharp closed closed_g[of n] chain[of "Suc n"]] by auto
+  have infinite_W: "\<exists>h. h 0 \<in> UNIV \<and>
+      (\<forall>i. (h i,h (Suc i)) \<in> ?SW\<^sup>* O ?PW O ?SW\<^sup>*)"
+  proof
+    show "?g 0 \<in> UNIV \<and>
+      (\<forall>i. (?g i,?g (Suc i)) \<in> ?SW\<^sup>* O ?PW O ?SW\<^sup>*)"
+      using g_step by auto
+  qed
+  have "\<not> SN_on (?SW\<^sup>* O ?PW O ?SW\<^sup>*) UNIV"
+    unfolding SN_on_def using infinite_W by auto
+  moreover from fin have "SN_on (?SW\<^sup>* O ?PW O ?SW\<^sup>*) UNIV"
+    unfolding finite_min_csr_dpp_def SN_rel_on_def .
+  ultimately show False by contradiction
+qed
+
+fun improved_qcs_ur_closed_dp_rhs_check where
+  "improved_qcs_ur_closed_dp_rhs_check U R W \<mu> t =
+    (qcs_ur_closed_dp_rhs_check R W \<mu> t \<or>
+      (case t of Fun f ts \<Rightarrow> f = U | Var x \<Rightarrow> False))"
+
+definition improved_qcs_csr_ur_closed_check where
+  "improved_qcs_csr_ur_closed_check U R W \<mu> P \<longleftrightarrow>
+    set W \<subseteq> set R \<and>
+    list_all (\<lambda>lr. qcs_ur_closed_term_check R W \<mu> (snd lr)) W \<and>
+    list_all (\<lambda>dp. improved_qcs_ur_closed_dp_rhs_check
+      U R W \<mu> (snd dp)) P"
+
+lemma improved_qcs_csr_ur_closed_check_sound:
+  assumes "improved_qcs_csr_ur_closed_check U R W \<mu> P"
+  shows "improved_qcs_csr_ur_closed U (set R) (set W) (mu_of \<mu>) (set P)"
+proof -
+  from assms have subset: "set W \<subseteq> set R"
+    and rule_checks:
+      "\<forall>lr\<in>set W. qcs_ur_closed_term_check R W \<mu> (snd lr)"
+    and pair_checks:
+      "\<forall>dp\<in>set P. improved_qcs_ur_closed_dp_rhs_check
+        U R W \<mu> (snd dp)"
+    unfolding improved_qcs_csr_ur_closed_check_def list_all_iff by auto
+  have rules: "\<forall>lr\<in>set W.
+      qcs_ur_closed_term (set R) (set W) (mu_of \<mu>) (snd lr)"
+    using rule_checks qcs_ur_closed_term_check_sound by blast
+  have pairs: "\<forall>dp\<in>set P.
+      improved_qcs_ur_closed_dp_rhs U (set R) (set W)
+        (mu_of \<mu>) (snd dp)"
+  proof (intro ballI)
+    fix dp
+    assume dp: "dp \<in> set P"
+    from pair_checks dp have check:
+      "improved_qcs_ur_closed_dp_rhs_check U R W \<mu> (snd dp)" by auto
+    show "improved_qcs_ur_closed_dp_rhs U (set R) (set W)
+        (mu_of \<mu>) (snd dp)"
+    proof (cases "snd dp")
+      case (Var x)
+      from check Var have old:
+        "qcs_ur_closed_dp_rhs_check R W \<mu> (snd dp)" by simp
+      from qcs_ur_closed_dp_rhs_check_sound[OF old]
+      show ?thesis unfolding improved_qcs_ur_closed_dp_rhs_def by auto
+    next
+      case (Fun f ts)
+      from check Fun have cases:
+        "qcs_ur_closed_dp_rhs_check R W \<mu> (snd dp) \<or> f = U" by simp
+      then show ?thesis
+      proof
+        assume old: "qcs_ur_closed_dp_rhs_check R W \<mu> (snd dp)"
+        from qcs_ur_closed_dp_rhs_check_sound[OF old]
+        show ?thesis unfolding improved_qcs_ur_closed_dp_rhs_def by auto
+      next
+        assume "f = U"
+        with Fun show ?thesis
+          unfolding improved_qcs_ur_closed_dp_rhs_def by auto
+      qed
+    qed
+  qed
+  show ?thesis
+    unfolding improved_qcs_csr_ur_closed_def using subset rules pairs by auto
+qed
+
+definition csr_improved_qcs_usable_rules_proc where
+  "csr_improved_qcs_usable_rules_proc J U \<mu> W dpp =
+    check_return (do {
+      check (improved_qcs_csr_ur_closed_check U
+        (dpp_ops.rules J dpp) W \<mu> (dpp_ops.pairs J dpp))
+        (showsl_lit (STR ''error when checking improved QCS usable-rule closure''))
+    }) (dpp_ops.intersect_rules J dpp W)"
+
+lemma csr_improved_qcs_usable_rules_proc_sound:
+  assumes proc: "csr_improved_qcs_usable_rules_proc J U \<mu> W dpp = return dpp'"
+  shows "dpp' = dpp_ops.intersect_rules J dpp W"
+    and "improved_qcs_csr_ur_closed U (set (dpp_ops.rules J dpp))
+      (set W) (mu_of \<mu>) (set (dpp_ops.pairs J dpp))"
+  using proc improved_qcs_csr_ur_closed_check_sound
+  unfolding csr_improved_qcs_usable_rules_proc_def
+  by (auto simp: isOK_check)
+
 lemma rrstep_unhiding_subterm:
   assumes pairs: "unhiding_subterm_pairs U P"
     and step: "(s,t) \<in> rrstep P"
@@ -290,7 +546,7 @@ where
   "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp
       (CSR_DP_Usable_Rules_Proc Us prf) =
     debug i (STR ''improved QCS usable rules'') (do {
-      dpp' \<leftarrow> csr_qcs_usable_rules_proc J \<mu> Us dpp;
+      dpp' \<leftarrow> csr_improved_qcs_usable_rules_proc J U \<mu> Us dpp;
       check_improved_csr_dp_termination_proof I J U \<mu> a
         (add_index i 1) dpp' prf
     })"
@@ -329,14 +585,11 @@ where
        (CSR_DP_Size_Change_Subterm_Proc graphs))"
 | "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp
       (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf) =
-    (if csr_mixed_unhiding_present U (dpp_ops.pairs J dpp)
-     then debug i (STR ''LPAR08 mixed marked/unhiding subterm'') (do {
-       dpp' \<leftarrow> csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp;
-       check_improved_csr_dp_termination_proof I J U \<mu> a
-         (add_index i 1) dpp' prf
-     })
-     else check_csr_dp_termination_proof_min I J \<mu> a i dpp
-       (CSR_DP_Subterm_Criterion_Proc p rseq Pr prf))"
+    debug i (STR ''LPAR08 marked/unhiding subterm'') (do {
+      dpp' \<leftarrow> csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp;
+      check_improved_csr_dp_termination_proof I J U \<mu> a
+        (add_index i 1) dpp' prf
+    })"
 | "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp prf =
     check_csr_dp_termination_proof_min I J \<mu> a i dpp prf"
 | "check_improved_csr_dp_graph_components I J U \<mu> a i dpp [] =
@@ -719,55 +972,42 @@ next
       CSR_DP_Ordinary_Proof.prems(4) old])
 next
   case (CSR_DP_Subterm_Criterion_Proc p rseq Pr sub)
-  show ?case
-  proof (cases "csr_mixed_unhiding_present U (dpp_ops.pairs J dpp)")
-    case True
-    from CSR_DP_Subterm_Criterion_Proc.prems(1) True
-    obtain dpp' where proc:
-        "csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp = return dpp'"
-      and rec: "isOK (check_improved_csr_dp_termination_proof
-        I J U \<mu> False (add_index i 1) dpp' sub)" by auto
-    from proc have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
-      unfolding csr_mixed_subterm_proc_def by auto
-    have plain': "plain_csr_dpp J dpp'"
-      unfolding dpp' by (rule plain_csr_dpp_delete_pairs[
-        OF J CSR_DP_Subterm_Criterion_Proc.prems(2)])
-    interpret dpp_spec J by fact
-    have sem: "dpp_ops.dpp J dpp' =
-      (NFS dpp, M dpp, set (P dpp) - set Pr,
-       set (Pw dpp) - set Pr, set (Q dpp), set (R dpp), set (Rw dpp))"
-      unfolding dpp' by (rule delete_P_Pw_sound)
-    have sem': "dpp_ops.dpp J dpp' =
-      (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'),
-       set (Q dpp'), set (R dpp'), set (Rw dpp'))" by (rule dpp_sound)
-    have rules': "set (rules dpp') = set (rules dpp)"
-      using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
-    have wf': "wf_trs (set (rules dpp'))"
-      using CSR_DP_Subterm_Criterion_Proc.prems(3) unfolding rules' .
-    have fresh_sharp': "\<And>f n.
-      \<not> defined (set (rules dpp')) (Sharp f,n)"
-      using CSR_DP_Subterm_Criterion_Proc.prems(4) unfolding rules' .
-    have fresh_U': "\<And>n. \<not> defined (set (rules dpp')) (U,n)"
-      using CSR_DP_Subterm_Criterion_Proc.prems(5) unfolding rules' .
-    from CSR_DP_Subterm_Criterion_Proc.hyps[
-      OF rec plain' wf' fresh_sharp' fresh_U']
-    have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
-      (set (pairs dpp')) (set (rules dpp'))" .
-    show ?thesis by (rule csr_mixed_subterm_proc_sound[
-      OF J CSR_DP_Subterm_Criterion_Proc.prems(2)
-        CSR_DP_Subterm_Criterion_Proc.prems(3)
-        CSR_DP_Subterm_Criterion_Proc.prems(4)
-        CSR_DP_Subterm_Criterion_Proc.prems(5) unsharp proc fin'])
-  next
-    case False
-    from CSR_DP_Subterm_Criterion_Proc.prems(1) False have old:
-      "isOK (check_csr_dp_termination_proof_min I J \<mu> False i dpp
-        (CSR_DP_Subterm_Criterion_Proc p rseq Pr sub))" by simp
-    show ?thesis by (rule check_csr_dp_termination_proof_min_sound[
-      OF I J CSR_DP_Subterm_Criterion_Proc.prems(2)
-        CSR_DP_Subterm_Criterion_Proc.prems(3)
-        CSR_DP_Subterm_Criterion_Proc.prems(4) old])
-  qed
+  from CSR_DP_Subterm_Criterion_Proc.prems(1)
+  obtain dpp' where proc:
+      "csr_mixed_subterm_proc J U \<mu> p rseq Pr dpp = return dpp'"
+    and rec: "isOK (check_improved_csr_dp_termination_proof
+      I J U \<mu> False (add_index i 1) dpp' sub)" by auto
+  from proc have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
+    unfolding csr_mixed_subterm_proc_def by auto
+  have plain': "plain_csr_dpp J dpp'"
+    unfolding dpp' by (rule plain_csr_dpp_delete_pairs[
+      OF J CSR_DP_Subterm_Criterion_Proc.prems(2)])
+  interpret dpp_spec J by fact
+  have sem: "dpp_ops.dpp J dpp' =
+    (NFS dpp, M dpp, set (P dpp) - set Pr,
+     set (Pw dpp) - set Pr, set (Q dpp), set (R dpp), set (Rw dpp))"
+    unfolding dpp' by (rule delete_P_Pw_sound)
+  have sem': "dpp_ops.dpp J dpp' =
+    (NFS dpp', M dpp', set (P dpp'), set (Pw dpp'),
+     set (Q dpp'), set (R dpp'), set (Rw dpp'))" by (rule dpp_sound)
+  have rules': "set (rules dpp') = set (rules dpp)"
+    using sem sem' rules_sound[of dpp] rules_sound[of dpp'] by auto
+  have wf': "wf_trs (set (rules dpp'))"
+    using CSR_DP_Subterm_Criterion_Proc.prems(3) unfolding rules' .
+  have fresh_sharp': "\<And>f n.
+    \<not> defined (set (rules dpp')) (Sharp f,n)"
+    using CSR_DP_Subterm_Criterion_Proc.prems(4) unfolding rules' .
+  have fresh_U': "\<And>n. \<not> defined (set (rules dpp')) (U,n)"
+    using CSR_DP_Subterm_Criterion_Proc.prems(5) unfolding rules' .
+  from CSR_DP_Subterm_Criterion_Proc.hyps[
+    OF rec plain' wf' fresh_sharp' fresh_U']
+  have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (pairs dpp')) (set (rules dpp'))" .
+  show ?case by (rule csr_mixed_subterm_proc_sound[
+    OF J CSR_DP_Subterm_Criterion_Proc.prems(2)
+      CSR_DP_Subterm_Criterion_Proc.prems(3)
+      CSR_DP_Subterm_Criterion_Proc.prems(4)
+      CSR_DP_Subterm_Criterion_Proc.prems(5) unsharp proc fin'])
 next
   case (CSR_DP_Gen_Subterm_Criterion_Proc p Pr sub)
   from CSR_DP_Gen_Subterm_Criterion_Proc.prems(1) have old:
@@ -782,13 +1022,14 @@ next
   case (CSR_DP_Usable_Rules_Proc U0 sub)
   from CSR_DP_Usable_Rules_Proc.prems(1)
   obtain dpp' where proc:
-      "csr_qcs_usable_rules_proc J \<mu> U0 dpp = return dpp'"
+      "csr_improved_qcs_usable_rules_proc J U \<mu> U0 dpp = return dpp'"
     and rec: "isOK (check_improved_csr_dp_termination_proof
       I J U \<mu> False (add_index i 1) dpp' sub)"
     by auto
-  from csr_qcs_usable_rules_proc_sound[OF J proc]
+  from csr_improved_qcs_usable_rules_proc_sound[OF proc]
   have dpp': "dpp' = dpp_ops.intersect_rules J dpp U0"
-    and closed: "qcs_csr_ur_closed (set (dpp_ops.rules J dpp)) (set U0)
+    and closed: "improved_qcs_csr_ur_closed U
+      (set (dpp_ops.rules J dpp)) (set U0)
       (mu_of \<mu>) (set (dpp_ops.pairs J dpp))"
     by auto
   interpret dpp_spec J by fact
@@ -801,7 +1042,7 @@ next
       set (R dpp'), set (Rw dpp'))"
     by (rule dpp_sound)
   from closed have subset: "set U0 \<subseteq> set (rules dpp)"
-    unfolding qcs_csr_ur_closed_def by auto
+    unfolding improved_qcs_csr_ur_closed_def by auto
   have P': "set (pairs dpp') = set (pairs dpp)"
     using sem sem' pairs_sound[of dpp] pairs_sound[of dpp'] by auto
   have R': "set (rules dpp') = set U0"
@@ -824,10 +1065,11 @@ next
   have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
     (set (pairs dpp')) (set (rules dpp'))" .
   show ?case
-    by (rule finite_min_csr_dpp_qcs_usable_rules[
+    by (rule finite_min_csr_dpp_improved_qcs_usable_rules[
       OF CSR_DP_Usable_Rules_Proc.prems(3)
         CSR_DP_Usable_Rules_Proc.prems(4)
-        closed fin'[unfolded P' R']])
+        CSR_DP_Usable_Rules_Proc.prems(5)
+        unsharp closed fin'[unfolded P' R']])
 qed
 
 lemma improved_hiding_context_unhides_min:

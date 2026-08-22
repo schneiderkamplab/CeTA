@@ -1,6 +1,8 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module Tree_Automata_Wit_Impl(Ta_code, det, make_ls, check_comcoh_wit_ls)
+module
+  Tree_Automata_Wit_Impl(Ta_code, det, ta_make_ls_code, make_ls,
+                          check_comcoh_wit_ls)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
