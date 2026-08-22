@@ -161,17 +161,18 @@ lemma innermost_rrstep_target_NF_csdp:
   shows "t \<in> NF (csdp_step Sharp \<mu> R)"
 proof -
   from step have rr: "(s,t) \<in> rrstep P"
-    and source: "innermost_pair_source Sharp \<mu> R s"
-    unfolding innermost_rrstep_def by auto
-  from rrstepE[OF rr] obtain u v \<tau> where pair: "(u,v) \<in> P"
+    unfolding innermost_rrstep_def by simp
+  from step have source: "innermost_pair_source Sharp \<mu> R s"
+    unfolding innermost_rrstep_def by simp
+  from rr obtain u v \<tau> where pair: "(u,v) \<in> P"
     and s: "s = u \<cdot> \<tau>" and t: "t = v \<cdot> \<tau>"
-    by blast
+    by (elim rrstepE)
   from covered pair obtain f us g vs where u: "u = Fun (Sharp f) us"
     and v: "v = Fun (Sharp g) vs"
     and cover: "\<And>j. j < length vs \<Longrightarrow>
       j \<in> \<mu> (g, length vs) \<Longrightarrow>
       csr_dp_root_supt \<mu> u (vs ! j)"
-    unfolding innermost_csr_sct_target_covered_def by blast
+    unfolding innermost_csr_sct_target_covered_def by auto
   have args_NF: "map (\<lambda>x. x \<cdot> \<tau>) vs ! j \<in> NF (csstep \<mu> R)"
     if j: "j < length (map (\<lambda>x. x \<cdot> \<tau>) vs)"
       and active: "j \<in> \<mu> (g, length (map (\<lambda>x. x \<cdot> \<tau>) vs))"

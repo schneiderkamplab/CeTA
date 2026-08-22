@@ -830,9 +830,17 @@ proof (cases "prf")
           by (rule bspec)
         then show "is_Var (snd dp)" by simp
       qed
-      show ?thesis
-        by (rule conjunct2[OF csr_rta08_redpair_proc_innermost_sound[
-          OF J get_rel_impl proc]], rule collapsing)
+      note sound_pair = csr_rta08_redpair_proc_innermost_sound[
+        OF J get_rel_impl proc]
+      from sound_pair have terminal:
+          "(\<forall>dp\<in>set (dpp_ops.pairs J dpp'). is_Var (snd dp)) \<longrightarrow>
+          finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+            (set (dpp_ops.rules J dpp))
+            (csr_rta08_defined_target
+              (set (defined_list (dpp_ops.rules J dpp))))
+            (set (dpp_ops.pairs J dpp))"
+        by (rule conjunct2)
+      from terminal collapsing show ?thesis by (rule mp)
     qed (use ok CSR_DP_Ordinary_Proof Redpair_UR_Proc in simp_all)
   qed (use ok CSR_DP_Ordinary_Proof in simp_all)
 qed (use ok in simp_all)
@@ -857,7 +865,7 @@ where
     })"
 | "check_innermost_csr_rta08_dp_proof J \<mu> i dpp
       (CSR_DP_Redpair_UR_Proc redp Pr U subprf) =
-    try (debug i (STR ''recursive innermost RTA08 reduction pair'') (do {
+    (try (debug i (STR ''recursive innermost RTA08 reduction pair'') (do {
         dpp' \<leftarrow> csr_rta08_redpair_proc J \<mu> (get_rel_impl redp) Pr dpp
           <+? (\<lambda>s. i \<circ> showsl_lit
             (STR '': error when applying recursive innermost RTA08 reduction pair\<newline>'') \<circ> s);
@@ -866,7 +874,7 @@ where
             (STR '': error below recursive innermost RTA08 reduction pair\<newline>'') \<circ> s)
       }))
       catch (\<lambda>_. check_innermost_csr_rta08_terminal J \<mu> i dpp
-        (CSR_DP_Redpair_UR_Proc redp Pr U subprf))"
+        (CSR_DP_Redpair_UR_Proc redp Pr U subprf)))"
 | "check_innermost_csr_rta08_dp_proof J \<mu> i dpp prf =
     check_innermost_csr_rta08_terminal J \<mu> i dpp prf"
 | "check_innermost_csr_rta08_graph_components J \<mu> i dpp [] = succeed"
@@ -1046,14 +1054,15 @@ next
         <+? (\<lambda>s. i \<circ> showsl_lit
           (STR '': error below recursive innermost RTA08 reduction pair\<newline>'') \<circ> s)
     })"
+  define rec_result where "rec_result = ?recursive"
   show ?case
-  proof (cases ?recursive)
-    case (Inr value)
-    from Inr CSR_DP_Redpair_UR_Proc.prems(1) obtain dpp' where
+  proof (cases rec_result)
+    case (Inr result)
+    from Inr rec_result_def CSR_DP_Redpair_UR_Proc.prems(1) obtain dpp' where
       proc: "csr_rta08_redpair_proc J \<mu> (get_rel_impl x1) x2 dpp = return dpp'"
       and rec: "isOK (check_innermost_csr_rta08_dp_proof J \<mu>
         (add_index i 1) dpp' subproof)" by auto
-    have dpp': "dpp' = dpp_ops.delete_pairs J dpp x2"
+    have dpp': "dpp' = dpp_spec.delete_pairs J dpp x2"
       using proc unfolding csr_rta08_redpair_proc_def
       by (cases "rel_impl.not_wst (get_rel_impl x1)", auto)
     have plain': "plain_csr_dpp J dpp'"
@@ -1065,12 +1074,24 @@ next
         (set (defined_list (dpp_ops.rules J dpp'))))
       (set (dpp_ops.pairs J dpp'))"
       by (rule CSR_DP_Redpair_UR_Proc.hyps[OF rec plain'])
-    show ?thesis
-      by (rule conjunct1[OF csr_rta08_redpair_proc_innermost_sound[
-        OF J get_rel_impl proc]], rule fin')
+    note sound_pair = csr_rta08_redpair_proc_innermost_sound[
+      OF J get_rel_impl proc]
+    from sound_pair have recursive_sound:
+        "finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+          (set (dpp_ops.rules J dpp'))
+          (csr_rta08_defined_target
+            (set (defined_list (dpp_ops.rules J dpp'))))
+          (set (dpp_ops.pairs J dpp')) \<longrightarrow>
+        finite_innermost_csr_rta08_dpp Sharp (mu_of \<mu>)
+          (set (dpp_ops.rules J dpp))
+          (csr_rta08_defined_target
+            (set (defined_list (dpp_ops.rules J dpp))))
+          (set (dpp_ops.pairs J dpp))"
+      by (rule conjunct1)
+    from recursive_sound fin' show ?thesis by (rule mp)
   next
     case (Inl error)
-    from Inl CSR_DP_Redpair_UR_Proc.prems(1) have terminal:
+    from Inl rec_result_def CSR_DP_Redpair_UR_Proc.prems(1) have terminal:
       "isOK (check_innermost_csr_rta08_terminal J \<mu> i dpp
         (CSR_DP_Redpair_UR_Proc x1 x2 x3 subproof))" by simp
     show ?thesis

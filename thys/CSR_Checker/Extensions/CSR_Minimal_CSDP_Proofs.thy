@@ -7819,6 +7819,8 @@ where
         (if csr_nested_unhiding_subterm_check
               (dpp_ops.rules J dpp) (dpp_ops.pairs J dpp)
          then debug i (STR ''fresh unhiding subterm component'') succeed
+         else if isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)
+         then debug i (STR ''active CSR size-change component'') succeed
          else check_csr_dp_termination_proof_core I J \<mu> a i dpp
            (CSR_DP_Ordinary_Proof prf))
     | _ \<Rightarrow> check_csr_dp_termination_proof_core I J \<mu> a i dpp
@@ -7897,13 +7899,22 @@ next
     qed
   next
     case False
-    from ok False prf_shape have core:
-      "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
-        (CSR_DP_Ordinary_Proof prf))"
-      unfolding check_csr_dp_component_core_def by simp
+    note nested_False = False
     show ?thesis
-      by (rule finite_csr_dpp_imp_finite_min_csr_dpp,
-        rule check_csr_dp_termination_proof_core_sound[OF I J plain core])
+    proof (cases "isOK (csr_sct_active_subterm_proc J \<mu> graphs dpp)")
+      case True
+      show ?thesis
+        by (rule csr_sct_active_subterm_proc_sound[OF J wf fresh True])
+    next
+      case False
+      from ok nested_False False prf_shape have core:
+        "isOK (check_csr_dp_termination_proof_core I J \<mu> False i dpp
+          (CSR_DP_Ordinary_Proof prf))"
+        unfolding check_csr_dp_component_core_def by simp
+      show ?thesis
+        by (rule finite_csr_dpp_imp_finite_min_csr_dpp,
+          rule check_csr_dp_termination_proof_core_sound[OF I J plain core])
+    qed
   qed
 next
   case False
@@ -7953,21 +7964,21 @@ where
         })
     | _ \<Rightarrow> check_csr_dp_component_core I J \<mu> a i dpp prf)"
 
-definition check_csr_dp_tail_core ::
+fun check_csr_dp_tail_core ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
    (('f, label_type) lab) muL \<Rightarrow> bool \<Rightarrow>
    showsl \<Rightarrow> 'dpp \<Rightarrow>
    ('f, label_type, string) dp_termination_proof \<Rightarrow> showsl check"
 where
-  "check_csr_dp_tail_core I J \<mu> a i dpp prf =
-    (case prf of
-      Redpair_UR_Proc redp Pr U subprf \<Rightarrow> debug i
+  "check_csr_dp_tail_core I J \<mu> a i dpp
+      (Redpair_UR_Proc redp Pr U subprf) = debug i
         (STR ''nested CSR U3 reduction pair in ordinary continuation'') (do {
           dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp;
-          check_csr_dp_after_u3_tail I J \<mu> a (add_index i 1) dpp' subprf
-        })
-    | _ \<Rightarrow> check_csr_dp_after_u3_tail I J \<mu> a i dpp prf)"
+          check_csr_dp_tail_core I J \<mu> a (add_index i 1) dpp' subprf
+        })"
+| "check_csr_dp_tail_core I J \<mu> a i dpp prf =
+    check_csr_dp_after_u3_tail I J \<mu> a i dpp prf"
 
 lemma check_csr_dp_graph_components_core_member:
   assumes ok: "isOK (check_csr_dp_graph_components_core
@@ -8108,8 +8119,7 @@ where
                     (CSR_DP_Ordinary_Proof tail))
             }
           | _ \<Rightarrow>
-              check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
-                (CSR_DP_Ordinary_Proof subprf))
+              check_csr_dp_tail_core I J \<mu> a (add_index i 1) dpp' subprf)
           <+? (\<lambda>s. i \<circ> showsl_lit
             (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
         })
@@ -8143,8 +8153,7 @@ lemma check_csr_dp_ordinary_min_Redpair_UR_Proc:
                 (CSR_DP_Ordinary_Proof tail))
         }
       | _ \<Rightarrow>
-          check_csr_dp_termination_proof_core I J \<mu> a (add_index i 1) dpp'
-            (CSR_DP_Ordinary_Proof subprf))
+          check_csr_dp_tail_core I J \<mu> a (add_index i 1) dpp' subprf)
       <+? (\<lambda>s. i \<circ> showsl_lit
         (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
     })"
@@ -8319,48 +8328,238 @@ proof -
     by auto
 qed
 
-lemma check_csr_dp_tail_core_sound:
+lemma rules_csr_dpp_delete_pairs:
+  assumes J: "dpp_spec J"
+  shows "set (dpp_ops.rules J
+      (dpp_ops.delete_P_Pw J dpp Pr Pr)) =
+    set (dpp_ops.rules J dpp)"
+proof -
+  interpret dpp_spec J by fact
+  let ?d = "delete_pairs dpp Pr"
+  have sem: "dpp_ops.dpp J ?d =
+    (NFS dpp, M dpp, set (P dpp) - set Pr,
+      set (Pw dpp) - set Pr, set (Q dpp),
+      set (R dpp), set (Rw dpp))"
+    by (rule delete_P_Pw_sound)
+  have sem': "dpp_ops.dpp J ?d =
+    (NFS ?d, M ?d, set (P ?d), set (Pw ?d),
+      set (Q ?d), set (R ?d), set (Rw ?d))"
+    by (rule dpp_sound)
+  show ?thesis using sem sem' rules_sound[of dpp] rules_sound[of ?d]
+    by auto
+qed
+
+lemma check_csr_dp_tail_core_non_u3_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
+    and inactive: "a = False"
     and plain: "plain_csr_dpp J dpp"
     and wf: "wf_trs (set (dpp_ops.rules J dpp))"
     and fresh: "\<And>f n. \<not> defined
       (set (dpp_ops.rules J dpp)) (Sharp f, n)"
-    and ok: "isOK (check_csr_dp_tail_core I J \<mu> False i dpp prf)"
+    and ok: "isOK (check_csr_dp_tail_core I J \<mu> a i dpp prf)"
+    and nr: "\<And>redp Pr U subprf.
+      prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
   shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
     (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
-proof (cases "\<exists>redp Pr U subprf.
-    prf = Redpair_UR_Proc redp Pr U subprf")
-  case True
-  then obtain redp Pr U subprf where prf_shape:
-    "prf = Redpair_UR_Proc redp Pr U subprf" by blast
+proof -
+  from nr have eq: "check_csr_dp_tail_core I J \<mu> a i dpp prf =
+      check_csr_dp_after_u3_tail I J \<mu> a i dpp prf"
+    by (cases "prf"; auto)
+  from ok eq inactive have tail:
+    "isOK (check_csr_dp_after_u3_tail I J \<mu> False i dpp prf)"
+    by simp
+  show ?thesis by (rule check_csr_dp_after_u3_tail_sound[
+    OF I J plain wf fresh tail])
+qed
+
+lemma check_csr_dp_tail_core_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and inactive: "a = False"
+    and plain: "plain_csr_dpp J dpp"
+    and wf: "wf_trs (set (dpp_ops.rules J dpp))"
+    and fresh: "\<And>f n. \<not> defined
+      (set (dpp_ops.rules J dpp)) (Sharp f, n)"
+    and ok: "isOK (check_csr_dp_tail_core I J \<mu> a i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+using I J inactive plain wf fresh ok
+proof (induct I J \<mu> a i dpp "prf" rule: check_csr_dp_tail_core.induct)
+  case (1 I J \<mu> a i dpp redp Pr U subprf)
   let ?proc = "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp"
-  from ok prf_shape obtain dpp' where proc: "?proc = return dpp'"
-    and tail: "isOK (check_csr_dp_after_u3_tail I J \<mu> False
+  from "1.prems"(7) obtain dpp' where proc: "?proc = return dpp'"
+    and tail: "isOK (check_csr_dp_tail_core I J \<mu> a
       (add_index i 1) dpp' subprf)"
-    unfolding check_csr_dp_tail_core_def by (cases ?proc; auto)
+    by (cases ?proc; auto)
   have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
     using proc unfolding csr_u3_redpair_proc_def by auto
   have plain': "plain_csr_dpp J dpp'"
-    unfolding dpp' by (rule plain_csr_dpp_delete_pairs[OF J plain])
-  interpret dpp_spec J by (rule J)
-  have rules': "set (rules dpp') = set (rules dpp)"
-    using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp'] by auto
-  have wf': "wf_trs (set (rules dpp'))" using wf unfolding rules' .
+    unfolding dpp' by (rule plain_csr_dpp_delete_pairs[OF "1.prems"(2) "1.prems"(4)])
+  have rules': "set (dpp_ops.rules J dpp') =
+      set (dpp_ops.rules J dpp)"
+    using dpp' rules_csr_dpp_delete_pairs[OF "1.prems"(2), of dpp Pr]
+    by simp
+  have wf': "wf_trs (set (dpp_ops.rules J dpp'))"
+    using "1.prems"(5) unfolding rules' .
   have fresh': "\<And>f n. \<not> defined
-      (set (rules dpp')) (Sharp f, n)"
-    using fresh unfolding rules' .
-  from check_csr_dp_after_u3_tail_sound[OF I J plain' wf' fresh' tail]
+      (set (dpp_ops.rules J dpp')) (Sharp f, n)"
+    using "1.prems"(6) unfolding rules' .
+  from "1.hyps"[OF proc "1.prems"(1) "1.prems"(2) "1.prems"(3)
+      plain' wf' fresh' tail]
   have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
-    (set (pairs dpp')) (set (rules dpp'))" .
-  show ?thesis by (rule csr_u3_redpair_proc_sound[
-    OF J get_rel_impl proc wf fresh fin'])
+    (set (dpp_ops.pairs J dpp')) (set (dpp_ops.rules J dpp'))" .
+  from csr_u3_redpair_proc_sound[
+    OF "1.prems"(2) get_rel_impl proc "1.prems"(5) "1.prems"(6) fin']
+  show ?case .
 next
-  case False
-  from ok False have tail:
-    "isOK (check_csr_dp_after_u3_tail I J \<mu> False i dpp prf)"
-    unfolding check_csr_dp_tail_core_def by (cases "prf"; auto)
-  show ?thesis by (rule check_csr_dp_after_u3_tail_sound[
-    OF I J plain wf fresh tail])
+  case "2_1"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_1.prems"(1) "2_1.prems"(2) "2_1.prems"(3)
+      "2_1.prems"(4) "2_1.prems"(5) "2_1.prems"(6)
+      "2_1.prems"(7)]; simp)
+next
+  case "2_2"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_2.prems"(1) "2_2.prems"(2) "2_2.prems"(3)
+      "2_2.prems"(4) "2_2.prems"(5) "2_2.prems"(6)
+      "2_2.prems"(7)]; simp)
+next
+  case "2_3"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_3.prems"(1) "2_3.prems"(2) "2_3.prems"(3)
+      "2_3.prems"(4) "2_3.prems"(5) "2_3.prems"(6)
+      "2_3.prems"(7)]; simp)
+next
+  case "2_4"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_4.prems"(1) "2_4.prems"(2) "2_4.prems"(3)
+      "2_4.prems"(4) "2_4.prems"(5) "2_4.prems"(6)
+      "2_4.prems"(7)]; simp)
+next
+  case "2_5"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_5.prems"(1) "2_5.prems"(2) "2_5.prems"(3)
+      "2_5.prems"(4) "2_5.prems"(5) "2_5.prems"(6)
+      "2_5.prems"(7)]; simp)
+next
+  case "2_6"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_6.prems"(1) "2_6.prems"(2) "2_6.prems"(3)
+      "2_6.prems"(4) "2_6.prems"(5) "2_6.prems"(6)
+      "2_6.prems"(7)]; simp)
+next
+  case "2_7"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_7.prems"(1) "2_7.prems"(2) "2_7.prems"(3)
+      "2_7.prems"(4) "2_7.prems"(5) "2_7.prems"(6)
+      "2_7.prems"(7)]; simp)
+next
+  case "2_8"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_8.prems"(1) "2_8.prems"(2) "2_8.prems"(3)
+      "2_8.prems"(4) "2_8.prems"(5) "2_8.prems"(6)
+      "2_8.prems"(7)]; simp)
+next
+  case "2_9"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_9.prems"(1) "2_9.prems"(2) "2_9.prems"(3)
+      "2_9.prems"(4) "2_9.prems"(5) "2_9.prems"(6)
+      "2_9.prems"(7)]; simp)
+next
+  case "2_10"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_10.prems"(1) "2_10.prems"(2) "2_10.prems"(3)
+      "2_10.prems"(4) "2_10.prems"(5) "2_10.prems"(6)
+      "2_10.prems"(7)]; simp)
+next
+  case "2_11"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_11.prems"(1) "2_11.prems"(2) "2_11.prems"(3)
+      "2_11.prems"(4) "2_11.prems"(5) "2_11.prems"(6)
+      "2_11.prems"(7)]; simp)
+next
+  case "2_12"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_12.prems"(1) "2_12.prems"(2) "2_12.prems"(3)
+      "2_12.prems"(4) "2_12.prems"(5) "2_12.prems"(6)
+      "2_12.prems"(7)]; simp)
+next
+  case "2_13"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_13.prems"(1) "2_13.prems"(2) "2_13.prems"(3)
+      "2_13.prems"(4) "2_13.prems"(5) "2_13.prems"(6)
+      "2_13.prems"(7)]; simp)
+next
+  case "2_14"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_14.prems"(1) "2_14.prems"(2) "2_14.prems"(3)
+      "2_14.prems"(4) "2_14.prems"(5) "2_14.prems"(6)
+      "2_14.prems"(7)]; simp)
+next
+  case "2_15"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_15.prems"(1) "2_15.prems"(2) "2_15.prems"(3)
+      "2_15.prems"(4) "2_15.prems"(5) "2_15.prems"(6)
+      "2_15.prems"(7)]; simp)
+next
+  case "2_16"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_16.prems"(1) "2_16.prems"(2) "2_16.prems"(3)
+      "2_16.prems"(4) "2_16.prems"(5) "2_16.prems"(6)
+      "2_16.prems"(7)]; simp)
+next
+  case "2_17"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_17.prems"(1) "2_17.prems"(2) "2_17.prems"(3)
+      "2_17.prems"(4) "2_17.prems"(5) "2_17.prems"(6)
+      "2_17.prems"(7)]; simp)
+next
+  case "2_18"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_18.prems"(1) "2_18.prems"(2) "2_18.prems"(3)
+      "2_18.prems"(4) "2_18.prems"(5) "2_18.prems"(6)
+      "2_18.prems"(7)]; simp)
+next
+  case "2_19"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_19.prems"(1) "2_19.prems"(2) "2_19.prems"(3)
+      "2_19.prems"(4) "2_19.prems"(5) "2_19.prems"(6)
+      "2_19.prems"(7)]; simp)
+next
+  case "2_20"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_20.prems"(1) "2_20.prems"(2) "2_20.prems"(3)
+      "2_20.prems"(4) "2_20.prems"(5) "2_20.prems"(6)
+      "2_20.prems"(7)]; simp)
+next
+  case "2_21"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_21.prems"(1) "2_21.prems"(2) "2_21.prems"(3)
+      "2_21.prems"(4) "2_21.prems"(5) "2_21.prems"(6)
+      "2_21.prems"(7)]; simp)
+next
+  case "2_22"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_22.prems"(1) "2_22.prems"(2) "2_22.prems"(3)
+      "2_22.prems"(4) "2_22.prems"(5) "2_22.prems"(6)
+      "2_22.prems"(7)]; simp)
+next
+  case "2_23"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_23.prems"(1) "2_23.prems"(2) "2_23.prems"(3)
+      "2_23.prems"(4) "2_23.prems"(5) "2_23.prems"(6)
+      "2_23.prems"(7)]; simp)
+next
+  case "2_24"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_24.prems"(1) "2_24.prems"(2) "2_24.prems"(3)
+      "2_24.prems"(4) "2_24.prems"(5) "2_24.prems"(6)
+      "2_24.prems"(7)]; simp)
+next
+  case "2_25"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_25.prems"(1) "2_25.prems"(2) "2_25.prems"(3)
+      "2_25.prems"(4) "2_25.prems"(5) "2_25.prems"(6)
+      "2_25.prems"(7)]; simp)
 qed
 
 lemma csr_instantiation_proc_finite_sound:
@@ -8560,7 +8759,7 @@ proof (cases "\<exists>redp Pr U subprf.
       have fresh''': "\<And>f n. \<not> defined
           (set (rules dpp''')) (Sharp f, n)"
         using fresh unfolding rules''' rules'' rules' .
-      from check_csr_dp_tail_core_sound[OF I J plain''' wf''' fresh''' core2]
+      from check_csr_dp_tail_core_sound[OF I J refl plain''' wf''' fresh''' core2]
       have fin''': "finite_min_csr_dpp Sharp (mu_of \<mu>)
           (set (pairs dpp''')) (set (rules dpp'''))" .
       have fresh'': "\<And>f n. \<not> defined (set (rules dpp'')) (Sharp f, n)"
@@ -8591,8 +8790,8 @@ proof (cases "\<exists>redp Pr U subprf.
     case False
     from ok mode Redpair_UR_Proc False obtain dpp' where
       proc: "csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp = return dpp'"
-      and core: "isOK (check_csr_dp_termination_proof_core I J \<mu> False
-        (add_index i 1) dpp' (CSR_DP_Ordinary_Proof subprf))"
+      and core: "isOK (check_csr_dp_tail_core I J \<mu> False
+        (add_index i 1) dpp' subprf)"
       by (cases subprf; auto simp add: check_csr_dp_ordinary_min_Redpair_UR_Proc)
     have dpp': "dpp' = dpp_spec.delete_pairs J dpp Pr"
       using proc unfolding csr_u3_redpair_proc_def by auto
@@ -8600,10 +8799,16 @@ proof (cases "\<exists>redp Pr U subprf.
       unfolding dpp'
       by (rule plain_csr_dpp_delete_pairs[OF J plain])
     interpret dpp_spec J by (rule J)
-    from check_csr_dp_termination_proof_core_sound[OF I J plain' core]
+    have rules': "set (rules dpp') = set (rules dpp)"
+      using dpp' delete_P_Pw_sound[of dpp Pr Pr] rules_sound[of dpp']
+      by auto
+    have wf': "wf_trs (set (rules dpp'))" using wf unfolding rules' .
+    have fresh': "\<And>f n. \<not> defined
+        (set (rules dpp')) (Sharp f, n)"
+      using fresh unfolding rules' .
+    from check_csr_dp_tail_core_sound[OF I J refl plain' wf' fresh' core]
     have fin': "finite_min_csr_dpp Sharp (mu_of \<mu>)
-        (set (pairs dpp')) (set (rules dpp'))"
-      by (rule finite_csr_dpp_imp_finite_min_csr_dpp)
+        (set (pairs dpp')) (set (rules dpp'))" .
     show ?thesis
       by (rule csr_u3_redpair_proc_sound[
         OF J get_rel_impl proc wf fresh fin'])
