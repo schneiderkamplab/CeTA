@@ -2,7 +2,8 @@
 
 module
   Semantic_Labeling_Carrier(ArithFun(..), Sl_inter(..), Sl_variant(..), rl_slm,
-                             qmodel_cge, qsli_to_sl, sli_to_slm, semlab_fin_tt,
+                             enum_vectors_nat, qmodel_cge, get_largest_element,
+                             qsli_to_sl, sli_to_slm, semlab_fin_tt,
                              semlab_fin_proc)
   where {
 

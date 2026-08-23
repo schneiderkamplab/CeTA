@@ -7,6 +7,7 @@ theory CSR_Conservative_Checker
     CSR_Innermost_Switch
     CSR_Improved_CSDP_Proofs
     CSR_Frozen_Recursive_Subterm
+    CSR_Finite_Semantic_Labeling
 begin
 
 lemma fresh_unsharp_Fun_no_csdp_step:
@@ -592,7 +593,7 @@ where
         (add_index i 1) dpp' prf
     })"
 | "check_improved_csr_dp_termination_proof I J U \<mu> a i dpp prf =
-    check_csr_dp_termination_proof_min I J \<mu> a i dpp prf"
+    check_csr_dp_termination_proof_finite_semantic I J \<mu> a i dpp prf"
 | "check_improved_csr_dp_graph_components I J U \<mu> a i dpp [] =
     succeed"
 | "check_improved_csr_dp_graph_components I J U \<mu> a i dpp
@@ -955,22 +956,22 @@ next
   qed
 next
   case CSR_DP_P_is_Empty
-  from CSR_DP_P_is_Empty.prems(1) have old:
-    "isOK (check_csr_dp_termination_proof_min I J \<mu> False i dpp
+  from CSR_DP_P_is_Empty.prems(1) have checked:
+    "isOK (check_csr_dp_termination_proof_finite_semantic I J \<mu> False i dpp
       CSR_DP_P_is_Empty)"
     by simp
-  show ?case by (rule check_csr_dp_termination_proof_min_sound[
+  show ?case by (rule check_csr_dp_termination_proof_finite_semantic_sound[
     OF I J CSR_DP_P_is_Empty.prems(2) CSR_DP_P_is_Empty.prems(3)
-      CSR_DP_P_is_Empty.prems(4) old])
+      CSR_DP_P_is_Empty.prems(4) checked])
 next
   case (CSR_DP_Ordinary_Proof p0)
-  from CSR_DP_Ordinary_Proof.prems(1) have old:
-    "isOK (check_csr_dp_termination_proof_min I J \<mu> False i dpp
+  from CSR_DP_Ordinary_Proof.prems(1) have checked:
+    "isOK (check_csr_dp_termination_proof_finite_semantic I J \<mu> False i dpp
       (CSR_DP_Ordinary_Proof p0))"
     by simp
-  show ?case by (rule check_csr_dp_termination_proof_min_sound[
+  show ?case by (rule check_csr_dp_termination_proof_finite_semantic_sound[
     OF I J CSR_DP_Ordinary_Proof.prems(2) CSR_DP_Ordinary_Proof.prems(3)
-      CSR_DP_Ordinary_Proof.prems(4) old])
+      CSR_DP_Ordinary_Proof.prems(4) checked])
 next
   case (CSR_DP_Subterm_Criterion_Proc p rseq Pr sub)
   have mixed_sound: ?case if
@@ -1064,14 +1065,14 @@ next
   qed
 next
   case (CSR_DP_Gen_Subterm_Criterion_Proc p Pr sub)
-  from CSR_DP_Gen_Subterm_Criterion_Proc.prems(1) have old:
-    "isOK (check_csr_dp_termination_proof_min I J \<mu> False i dpp
+  from CSR_DP_Gen_Subterm_Criterion_Proc.prems(1) have checked:
+    "isOK (check_csr_dp_termination_proof_finite_semantic I J \<mu> False i dpp
       (CSR_DP_Gen_Subterm_Criterion_Proc p Pr sub))"
     by simp
-  show ?case by (rule check_csr_dp_termination_proof_min_sound[
+  show ?case by (rule check_csr_dp_termination_proof_finite_semantic_sound[
     OF I J CSR_DP_Gen_Subterm_Criterion_Proc.prems(2)
       CSR_DP_Gen_Subterm_Criterion_Proc.prems(3)
-      CSR_DP_Gen_Subterm_Criterion_Proc.prems(4) old])
+      CSR_DP_Gen_Subterm_Criterion_Proc.prems(4) checked])
 next
   case (CSR_DP_Usable_Rules_Proc U0 sub)
   from CSR_DP_Usable_Rules_Proc.prems(1)

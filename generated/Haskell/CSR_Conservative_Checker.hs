@@ -21,21 +21,24 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
+import qualified CSR_Finite_Semantic_Labeling;
+import qualified CSR_Frozen_Recursive_Subterm;
 import qualified CSR_Mixed_Subterm_Proofs;
 import qualified CSR_Checker;
 import qualified Check_Termination;
 import qualified Subterm_Criterion_Impl;
 import qualified Compare_Order_Instances;
 import qualified CSR_Improved_CSDP_Proofs;
-import qualified CSR_Minimal_CSDP_Proofs;
 import qualified CSR_Innermost_Switch;
 import qualified FOR_Preliminaries;
 import qualified Error_Monad;
-import qualified Dependency_Pair_Problem_Spec;
 import qualified Termination_Problem_Spec;
-import qualified Sum_Type;
 import qualified Countable;
 import qualified Compare;
+import qualified Check_Monad;
+import qualified Dependency_Pair_Problem_Spec;
+import qualified Sum_Type;
+import qualified CSR_Minimal_CSDP_Proofs;
 import qualified Arith;
 import qualified Reduction_Pair_Implementations;
 import qualified CSR_Checker_Base;
@@ -87,6 +90,61 @@ unhiding_subterm_pairs_check ::
                       Bool;
 unhiding_subterm_pairs_check u p = all (unhiding_subterm_pair_check u) p;
 
+improved_qcs_ur_closed_dp_rhs_check ::
+  forall a b c d e.
+    (Eq a, Eq b, Eq c,
+      Eq d) => Labelings.Lab a b ->
+                 [(Term_Rewriting.Term (Labelings.Lab a b) c, d)] ->
+                   [(Term_Rewriting.Term (Labelings.Lab a b) c, d)] ->
+                     [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                       Term_Rewriting.Term (Labelings.Lab a b) e -> Bool;
+improved_qcs_ur_closed_dp_rhs_check u r w mu t =
+  CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check r w mu t ||
+    (case t of {
+      Term_Rewriting.Var _ -> False;
+      Term_Rewriting.Fun f _ -> Labelings.equal_lab f u;
+    });
+
+improved_qcs_csr_ur_closed_check ::
+  forall a b c d e f.
+    (Eq a, Eq b, Eq c,
+      Eq d) => Labelings.Lab a b ->
+                 [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) d)] ->
+                   [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                      Term_Rewriting.Term (Labelings.Lab a b) d)] ->
+                     [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])] ->
+                       [(e, Term_Rewriting.Term (Labelings.Lab a b) f)] -> Bool;
+improved_qcs_csr_ur_closed_check u r w mu p =
+  Arith.superset r w &&
+    all (\ lr ->
+          CSR_Minimal_CSDP_Proofs.qcs_ur_closed_term_check r w mu (snd lr))
+      w &&
+      all (\ dp -> improved_qcs_ur_closed_dp_rhs_check u r w mu (snd dp)) p;
+
+csr_improved_qcs_usable_rules_proc ::
+  forall a b c d e.
+    (Eq b, Eq c,
+      Eq d) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a (Labelings.Lab b c) d
+                 e ->
+                 Labelings.Lab b c ->
+                   [((Labelings.Lab b c, Arith.Nat), [Arith.Nat])] ->
+                     [(Term_Rewriting.Term (Labelings.Lab b c) d,
+                        Term_Rewriting.Term (Labelings.Lab b c) d)] ->
+                       a -> Sum_Type.Sum (String -> String) a;
+csr_improved_qcs_usable_rules_proc j u mu w dpp =
+  (case Check_Monad.check
+          (improved_qcs_csr_ur_closed_check u
+            (Dependency_Pair_Problem_Spec.rules j dpp) w mu
+            (Dependency_Pair_Problem_Spec.pairs j dpp))
+          (Term_Rewriting.showsl_lit
+            "error when checking improved QCS usable-rule closure")
+    of {
+    Sum_Type.Inl a -> Sum_Type.Inl a;
+    Sum_Type.Inr _ ->
+      Sum_Type.Inr (Dependency_Pair_Problem_Spec.intersect_rules j dpp w);
+  });
+
 check_improved_csr_dp_termination_proof ::
   forall a b c.
     (Compare.Compare_order b, Countable.Countable b, Eq b,
@@ -108,8 +166,7 @@ check_improved_csr_dp_termination_proof ::
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
   (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc us prf) =
   FOR_Preliminaries.debug i "improved QCS usable rules"
-    (Error_Monad.bind
-      (CSR_Minimal_CSDP_Proofs.csr_qcs_usable_rules_proc j mu us dpp)
+    (Error_Monad.bind (csr_improved_qcs_usable_rules_proc j u mu us dpp)
       (\ dppa ->
         check_improved_csr_dp_termination_proof ia j u mu a
           (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
@@ -153,22 +210,26 @@ check_improved_csr_dp_termination_proof ia j u mu a i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc p rseq pr prf) =
   FOR_Preliminaries.debug i "LPAR08 marked/unhiding subterm"
     (Error_Monad.bind
-      (CSR_Mixed_Subterm_Proofs.csr_mixed_subterm_proc j u mu p rseq pr dpp)
+      (Error_Monad.catch_error
+        (CSR_Mixed_Subterm_Proofs.csr_mixed_subterm_proc j u mu p rseq pr dpp)
+        (\ _ ->
+          CSR_Frozen_Recursive_Subterm.csr_frozen_recursive_subterm_proc j u mu
+            p rseq pr dpp))
       (\ dppa ->
         check_improved_csr_dp_termination_proof ia j u mu a
           (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
   CSR_Checker_Base.CSR_DP_P_is_Empty =
-  CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp
-    CSR_Checker_Base.CSR_DP_P_is_Empty;
+  CSR_Finite_Semantic_Labeling.check_csr_dp_termination_proof_finite_semantic ia
+    j mu a i dpp CSR_Checker_Base.CSR_DP_P_is_Empty;
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof v) =
-  CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp
-    (CSR_Checker_Base.CSR_DP_Ordinary_Proof v);
+  CSR_Finite_Semantic_Labeling.check_csr_dp_termination_proof_finite_semantic ia
+    j mu a i dpp (CSR_Checker_Base.CSR_DP_Ordinary_Proof v);
 check_improved_csr_dp_termination_proof ia j u mu a i dpp
   (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
-  CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp
-    (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+  CSR_Finite_Semantic_Labeling.check_csr_dp_termination_proof_finite_semantic ia
+    j mu a i dpp (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
 
 check_improved_csr_dp_graph_components ::
   forall a b c.

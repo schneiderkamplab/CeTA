@@ -8160,6 +8160,35 @@ next
   show ?thesis .
 qed
 
+theorem finite_dpp_nonminimal_imp_finite_min_csr_dpp:
+  fixes P R :: "('f::{showl,compare_order},'v) trs"
+  assumes fin: "finite_dpp (False,False,P,{}, {},{},R)"
+  shows "finite_min_csr_dpp shp \<mu> P R"
+proof -
+  have target: "SN_rel (rrstep P) (rstep R)"
+    using fin unfolding finite_dpp_iff_SN_rel CS_rrstep_conv by simp
+  let ?M = "csr_min_pair_step shp \<mu> P R"
+  let ?S = "csdp_step shp \<mu> R"
+  have strict: "\<And>s t. (s,t) \<in> ?M \<Longrightarrow>
+      (s,t) \<in> (rrstep P \<union> rstep R)\<^sup>* O rrstep P O
+        (rrstep P \<union> rstep R)\<^sup>*"
+    unfolding csr_min_pair_step_def by auto
+  have weak: "\<And>s t. (s,t) \<in> ?S \<Longrightarrow>
+      (s,t) \<in> (rrstep P \<union> rstep R)\<^sup>*"
+  proof -
+    fix s t
+    assume "(s,t) \<in> ?S"
+    then obtain p lr \<sigma> where
+      "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+      unfolding csdp_step_def csdp_step_p_def by blast
+    then have "(s,t) \<in> rstep R" by (rule rstep_r_p_s_imp_rstep)
+    then show "(s,t) \<in> (rrstep P \<union> rstep R)\<^sup>*" by auto
+  qed
+  from SN_rel_map[where R="?M" and Rw="?S" and R'="rrstep P"
+      and Rw'="rstep R" and f=id, OF target strict weak]
+  show ?thesis unfolding finite_min_csr_dpp_def by simp
+qed
+
 fun check_csr_dp_ordinary_min ::
   "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
    ('dpp, ('f, label_type) lab, string) dpp_ops \<Rightarrow>
@@ -8169,7 +8198,18 @@ fun check_csr_dp_ordinary_min ::
 where
   "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
     (case prf of
-      Redpair_UR_Proc redp Pr U subprf \<Rightarrow>
+      Semlab_Proc sli lP lQ lR subprf \<Rightarrow>
+        debug i (STR ''nonminimal CSR semantic labeling'') (do {
+          let base = dpp_ops.mk J False False (dpp_ops.pairs J dpp)
+            [] [] [] (dpp_ops.rules J dpp);
+          dpp' \<leftarrow> semlab_fin_proc J sli lP lQ lR base
+            <+? (\<lambda>s. i \<circ> showsl_lit
+              (STR '': error when applying nonminimal CSR semantic labeling\<newline>'') \<circ> s);
+          check_dp_termination_proof I J a (add_index i 1) dpp' subprf
+            <+? (\<lambda>s. i \<circ> showsl_lit
+              (STR '': error below nonminimal CSR semantic labeling\<newline>'') \<circ> s)
+        })
+    | Redpair_UR_Proc redp Pr U subprf \<Rightarrow>
         debug i (STR ''CSR U3 reduction pair'') (do {
           dpp' \<leftarrow> csr_u3_redpair_proc J \<mu> (get_rel_impl redp) Pr U dpp
             <+? (\<lambda>s. i \<circ> showsl_lit
@@ -8231,6 +8271,21 @@ lemma check_csr_dp_ordinary_min_Redpair_UR_Proc:
           check_csr_dp_tail_core I J \<mu> a (add_index i 1) dpp' subprf)
       <+? (\<lambda>s. i \<circ> showsl_lit
         (STR '': error below CSR U3 reduction pair\<newline>'') \<circ> s)
+    })"
+  by (subst check_csr_dp_ordinary_min.simps, simp)
+
+lemma check_csr_dp_ordinary_min_Semlab_Proc:
+  "check_csr_dp_ordinary_min I J \<mu> a i dpp
+      (Semlab_Proc sli lP lQ lR subprf) =
+    debug i (STR ''nonminimal CSR semantic labeling'') (do {
+      let base = dpp_ops.mk J False False (dpp_ops.pairs J dpp)
+        [] [] [] (dpp_ops.rules J dpp);
+      dpp' \<leftarrow> semlab_fin_proc J sli lP lQ lR base
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error when applying nonminimal CSR semantic labeling\<newline>'') \<circ> s);
+      check_dp_termination_proof I J a (add_index i 1) dpp' subprf
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below nonminimal CSR semantic labeling\<newline>'') \<circ> s)
     })"
   by (subst check_csr_dp_ordinary_min.simps, simp)
 
@@ -8710,6 +8765,33 @@ proof -
   qed
 qed
 
+lemma check_csr_dp_ordinary_min_Semlab_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J" and mode: "a = False"
+    and shape: "prf = Semlab_Proc sli lP lQ lR subprf"
+    and ok: "isOK (check_csr_dp_ordinary_min I J \<mu> a i dpp prf)"
+  shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
+    (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
+proof -
+  let ?base = "dpp_ops.mk J False False (dpp_ops.pairs J dpp)
+    [] [] [] (dpp_ops.rules J dpp)"
+  let ?proc = "semlab_fin_proc J sli lP lQ lR ?base"
+  from ok mode shape obtain dpp' where proc: "?proc = return dpp'"
+    and rec: "isOK (check_dp_termination_proof I J False
+      (add_index i 1) dpp' subprf)"
+    by (cases ?proc; auto simp: check_csr_dp_ordinary_min_Semlab_Proc)
+  have fin': "finite_dpp (dpp_ops.dpp J dpp')"
+    by (rule check_dp_termination_proof[OF I J rec])
+  have base_fin: "finite_dpp (dpp_ops.dpp J ?base)"
+    by (rule dpp_spec.sound_proc_impl[
+      OF J semlab_fin_proc[OF J] proc fin'])
+  interpret dpp_spec J by (rule J)
+  have "finite_dpp (False,False,set (pairs dpp),{},
+      {},{},set (rules dpp))"
+    using base_fin unfolding mk_sound by simp
+  then show ?thesis
+    by (rule finite_dpp_nonminimal_imp_finite_min_csr_dpp)
+qed
+
 lemma check_csr_dp_ordinary_min_fallback_sound:
   assumes eq: "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
       check_csr_dp_termination_proof_core I J \<mu> a i dpp
@@ -8732,15 +8814,19 @@ qed
 lemma check_csr_dp_ordinary_min_fallback_eq:
   assumes nr: "\<And>redp Pr U subprf.
     prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
+    and ns: "\<And>sli lP lQ lR subprf.
+      prf \<noteq> Semlab_Proc sli lP lQ lR subprf"
   shows "check_csr_dp_ordinary_min I J \<mu> a i dpp prf =
     check_csr_dp_termination_proof_core I J \<mu> a i dpp
       (CSR_DP_Ordinary_Proof prf)"
-  using nr
+  using nr ns
   by (cases "prf"; simp add: check_csr_dp_ordinary_min.simps)
 
 lemma check_csr_dp_ordinary_min_non_u3_sound:
   assumes nr: "\<And>redp Pr U subprf.
       prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
+    and ns: "\<And>sli lP lQ lR subprf.
+      prf \<noteq> Semlab_Proc sli lP lQ lR subprf"
     and I: "tp_spec I" and J: "dpp_spec J"
     and plain: "plain_csr_dpp J dpp"
     and mode: "a = False"
@@ -8750,6 +8836,7 @@ lemma check_csr_dp_ordinary_min_non_u3_sound:
   apply (rule check_csr_dp_ordinary_min_fallback_sound)
        apply (rule check_csr_dp_ordinary_min_fallback_eq)
        apply (rule nr)
+       apply (rule ns)
       apply (rule I)
      apply (rule J)
     apply (rule plain)
@@ -8766,8 +8853,18 @@ lemma check_csr_dp_ordinary_min_sound:
     and ok: "isOK (check_csr_dp_ordinary_min I J \<mu> a i dpp prf)"
   shows "finite_min_csr_dpp Sharp (mu_of \<mu>)
     (set (dpp_ops.pairs J dpp)) (set (dpp_ops.rules J dpp))"
-proof (cases "\<exists>redp Pr U subprf.
-    prf = Redpair_UR_Proc redp Pr U subprf")
+proof (cases "\<exists>sli lP lQ lR subprf.
+    prf = Semlab_Proc sli lP lQ lR subprf")
+  case True
+  then obtain sli lP lQ lR subprf where shape:
+    "prf = Semlab_Proc sli lP lQ lR subprf" by blast
+  show ?thesis by (rule check_csr_dp_ordinary_min_Semlab_sound[
+    OF I J mode shape ok])
+next
+  case no_semlab: False
+  show ?thesis
+  proof (cases "\<exists>redp Pr U subprf.
+      prf = Redpair_UR_Proc redp Pr U subprf")
   case True
   then obtain redp Pr U subprf where
     Redpair_UR_Proc: "prf = Redpair_UR_Proc redp Pr U subprf"
@@ -8896,9 +8993,13 @@ next
   have nr: "\<And>redp Pr U subprf.
       prf \<noteq> Redpair_UR_Proc redp Pr U subprf"
     using False by blast
+  have ns: "\<And>sli lP lQ lR subprf.
+      prf \<noteq> Semlab_Proc sli lP lQ lR subprf"
+    using no_semlab by blast
   from check_csr_dp_ordinary_min_non_u3_sound[
-    OF nr I J plain mode ok]
+    OF nr ns I J plain mode ok]
   show ?thesis .
+qed
 qed
 
 lemma check_csr_dp_termination_proof_min_sound:
