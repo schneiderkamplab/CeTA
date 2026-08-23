@@ -155,6 +155,33 @@ definition csr_guard_requirements_realized where
     (\<forall>x A. (x,A) \<in> set req \<longrightarrow>
       csr_guard_rank z su len ni co ta zs A (\<sigma> x) = Some (\<rho> (x,A)))"
 
+lemma csr_guard_requirements_realized_append [simp]:
+  "csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> (xs @ ys) \<longleftrightarrow>
+    csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> xs \<and>
+    csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> ys"
+  unfolding csr_guard_requirements_realized_def by auto
+
+lemma csr_guard_symbolic_rank_Var_sound:
+  assumes form:
+    "csr_guard_symbolic_rank z su len ni co ta zs A (Var x) = Some F"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  shows "csr_guard_rank z su len ni co ta zs A (Var x \<cdot> \<sigma>) =
+    Some (csr_guard_form_value \<rho> F)"
+  using form realized
+  unfolding csr_guard_requirements_realized_def by auto
+
+lemma csr_guard_symbolic_rank_zero [simp]:
+  "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
+    Some (Guard_Form [] [] 0)"
+  by simp
+
+lemma csr_guard_symbolic_rank_nil:
+  assumes "ni \<noteq> co" "ni \<noteq> ta"
+  shows "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (Fun ni []) =
+    Some (Guard_Form [] [] 0)"
+  using assms by simp
+
 lemma csr_guard_rank_cons_list:
   assumes distinct: "co \<noteq> ni" "co \<noteq> ta"
     and arity: "csr_guard_rank z su len ni co ta zs Guard_Nat n = Some kn"
