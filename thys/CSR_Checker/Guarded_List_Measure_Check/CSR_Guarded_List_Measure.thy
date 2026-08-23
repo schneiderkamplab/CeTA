@@ -17,6 +17,82 @@ text \<open>
 
 datatype csr_guard_sort = Guard_Nat | Guard_List | Guard_IList
 
+datatype ('v) csr_guard_form = Guard_Form
+  "('v \<times> csr_guard_sort) list"
+  "('v \<times> csr_guard_sort) list"
+  nat
+
+fun csr_guard_form_requirements where
+  "csr_guard_form_requirements (Guard_Form req cs c) = req"
+
+fun csr_guard_form_coefficients where
+  "csr_guard_form_coefficients (Guard_Form req cs c) = cs"
+
+fun csr_guard_form_constant where
+  "csr_guard_form_constant (Guard_Form req cs c) = c"
+
+text \<open>
+  A symbolic form contains, in order, the variable-sort requirements needed
+  for definedness, the variables occurring with coefficient one in the rank,
+  and the natural constant.  Repetition represents larger coefficients.  The
+  distinction between requirements and coefficients matters for constructor
+  heads: a list element must be a natural although its numerical value does
+  not contribute to list length.
+\<close>
+
+fun csr_guard_symbolic_rank ::
+  "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> csr_guard_sort \<Rightarrow>
+   ('f,'v) term \<Rightarrow> 'v csr_guard_form option"
+where
+  "csr_guard_symbolic_rank z su len ni co ta zs A (Var x) =
+    Some (Guard_Form [(x,A)] [(x,A)] 0)"
+| "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun f ts) =
+    (if f = z \<and> ts = [] then Some (Guard_Form [] [] 0)
+     else if f = su \<and> length ts = 1 then
+       (case csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) of
+          None \<Rightarrow> None
+        | Some (Guard_Form req cs c) \<Rightarrow>
+            Some (Guard_Form req cs (Suc c)))
+     else if f = len \<and> length ts = 1 then
+       csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 0)
+     else None)"
+| "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (Fun f ts) =
+    (if f = ni \<and> ts = [] then Some (Guard_Form [] [] 0)
+     else if f = co \<and> length ts = 2 then
+       (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
+              csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1)) of
+          (Some (Guard_Form reqn coeffn cn),
+           Some (Guard_Form reql coeffl cl)) \<Rightarrow>
+             Some (Guard_Form (reqn @ reql) coeffl (Suc cl))
+        | _ \<Rightarrow> None)
+     else if f = ta \<and> length ts = 2 then
+       (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
+              csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1)) of
+          (Some (Guard_Form reqn coeffn cn),
+           Some (Guard_Form reqi coeffi ci)) \<Rightarrow>
+             Some (Guard_Form (reqn @ reqi) coeffn cn)
+        | _ \<Rightarrow> None)
+     else None)"
+| "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (Fun f ts) =
+    (if f = zs \<and> ts = [] then Some (Guard_Form [] [] 0)
+     else if f = co \<and> length ts = 2 then
+       (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
+              csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1)) of
+          (Some (Guard_Form reqn coeffn cn),
+           Some (Guard_Form reqi coeffi ci)) \<Rightarrow>
+             Some (Guard_Form (reqn @ reqi) [] 0)
+        | _ \<Rightarrow> None)
+     else if f = ni \<and> ts = [] then Some (Guard_Form [] [] 0)
+     else if f = ta \<and> length ts = 2 then
+       (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
+              csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1)) of
+          (Some (Guard_Form reqn coeffn cn),
+           Some (Guard_Form reqi coeffi ci)) \<Rightarrow>
+             Some (Guard_Form (reqn @ reqi) [] 0)
+        | _ \<Rightarrow> None)
+     else None)"
+
 fun csr_guard_rank ::
   "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
    'f \<Rightarrow> 'f \<Rightarrow> csr_guard_sort \<Rightarrow>
@@ -66,6 +142,18 @@ where
                None \<Rightarrow> None
              | Some m \<Rightarrow> Some 0))
      else None)"
+
+fun csr_guard_form_value ::
+  "(('v \<times> csr_guard_sort) \<Rightarrow> nat) \<Rightarrow>
+   'v csr_guard_form \<Rightarrow> nat"
+where
+  "csr_guard_form_value \<rho> (Guard_Form req cs c) =
+    c + sum_list (map \<rho> cs)"
+
+definition csr_guard_requirements_realized where
+  "csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> req \<longleftrightarrow>
+    (\<forall>x A. (x,A) \<in> set req \<longrightarrow>
+      csr_guard_rank z su len ni co ta zs A (\<sigma> x) = Some (\<rho> (x,A)))"
 
 lemma csr_guard_rank_cons_list:
   assumes distinct: "co \<noteq> ni" "co \<noteq> ta"
