@@ -4113,7 +4113,7 @@ proof -
     unfolding mu_supt_def by blast
 qed
 
-lemma csr_sct_with_active_subterm:
+lemma csr_sct_with_guarded_subterm:
   assumes wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
     and pair: "\<And>k. (s k, t k) \<in> P"
@@ -4123,17 +4123,20 @@ lemma csr_sct_with_active_subterm:
     and target_SN: "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
     and steps: "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
       (csdp_step Sharp \<mu> R)\<^sup>*"
+    and guarded_SN: "\<And>k i. guarded (s (Suc k)) i \<Longrightarrow>
+      SN_on (csstep \<mu> R)
+        {get_arg (s (Suc k)) i \<cdot> \<sigma> (Suc k)}"
     and graphs: "\<forall>(u, v)\<in>P. \<exists>stri nstri.
       Scg (info (u, v)) (info (u, v))
         (remdups_sort stri) (remdups_sort nstri) \<in> set Gs \<and>
       (\<forall>(i, j)\<in>set stri.
-        csr_sct_active_index \<mu> u i \<and>
+        guarded u i \<and>
         csr_sct_index v j \<and>
         mu_supt \<mu> (get_arg u i) (get_arg v j)) \<and>
       (\<forall>(i, j)\<in>set nstri.
         csr_sct_index u i \<and> csr_sct_index v j \<and>
         (get_arg u i = get_arg v j \<or>
-          (csr_sct_active_index \<mu> u i \<and>
+          (guarded u i \<and>
             mu_supt \<mu> (get_arg u i) (get_arg v j))))"
     and edge: "\<And>k. edg (info (s k, t k)) (info (s (Suc k), t (Suc k)))"
     and check: "check_SCT edg Gs"
@@ -4239,7 +4242,7 @@ proof -
         (remdups_sort stri) (remdups_sort nstri) \<in> set Gs"
       and strict_edges:
         "\<forall>(i, j)\<in>set stri.
-          csr_sct_active_index \<mu> (?ss k) i \<and>
+          guarded (?ss k) i \<and>
           csr_sct_index (?tt k) j \<and>
           mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)"
       and nonstrict_edges:
@@ -4247,19 +4250,9 @@ proof -
           csr_sct_index (?ss k) i \<and>
           csr_sct_index (?tt k) j \<and>
           (get_arg (?ss k) i = get_arg (?tt k) j \<or>
-            (csr_sct_active_index \<mu> (?ss k) i \<and>
+            (guarded (?ss k) i \<and>
               mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)))"
       by auto
-    have whole_source_SN:
-      "SN_on (csdp_step Sharp \<mu> R) {?ss k \<cdot> ?subst k}"
-    proof -
-      have prev:
-        "(t k \<cdot> \<sigma> k, ?ss k \<cdot> ?subst k) \<in>
-          (csdp_step Sharp \<mu> R)\<^sup>*"
-        using steps[of k] by simp
-      show ?thesis
-        by (rule steps_preserve_SN_on[OF prev target_SN[of k]])
-    qed
     have between:
       "(?tt k \<cdot> ?subst k, ?ss (Suc k) \<cdot> ?subst (Suc k)) \<in>
         (csdp_step Sharp \<mu> R)\<^sup>*"
@@ -4286,7 +4279,7 @@ proof -
           "csr_sct_index (?ss k) i"
           and index_j: "csr_sct_index (?tt k) j"
           and sub: "get_arg (?ss k) i = get_arg (?tt k) j \<or>
-            (csr_sct_active_index \<mu> (?ss k) i \<and>
+            (guarded (?ss k) i \<and>
               mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j))"
           by auto
         from pair_shape inP_next have shape_next:
@@ -4313,12 +4306,11 @@ proof -
             by auto
         next
           assume 2:
-            "csr_sct_active_index \<mu> (?ss k) i \<and>
+            "guarded (?ss k) i \<and>
               mu_supt \<mu> (get_arg (?ss k) i) (get_arg (?tt k) j)"
           from 2 have source_arg_SN:
             "SN_on ?step {get_arg (?ss k) i \<cdot> ?subst k}"
-            by (intro csr_sct_active_index_subst_SN[OF _ whole_source_SN],
-              auto)
+            using guarded_SN[of k i] by simp
           from 2 have sub_inst:
             "mu_supt \<mu> (get_arg (?ss k) i \<cdot> ?subst k)
               (get_arg (?tt k) j \<cdot> ?subst k)"
@@ -4359,8 +4351,8 @@ proof -
       proof clarify
         fix i j
         assume ij: "(i, j) \<in> set stri"
-        from strict_edges ij have active_i:
-          "csr_sct_active_index \<mu> (?ss k) i"
+        from strict_edges ij have guarded_i:
+          "guarded (?ss k) i"
           and index_j: "csr_sct_index (?tt k) j"
           and sub: "mu_supt \<mu>
             (get_arg (?ss k) i) (get_arg (?tt k) j)"
@@ -4380,8 +4372,7 @@ proof -
               target_SN[of "Suc k", simplified] between])
         have source_arg_SN:
           "SN_on ?step {get_arg (?ss k) i \<cdot> ?subst k}"
-          by (rule csr_sct_active_index_subst_SN[
-            OF active_i whole_source_SN])
+          using guarded_SN[of k i] guarded_i by simp
         have sub_inst:
           "mu_supt \<mu> (get_arg (?ss k) i \<cdot> ?subst k)
             (get_arg (?tt k) j \<cdot> ?subst k)"
@@ -4479,6 +4470,75 @@ proof -
     unfolding SN_on_def
     using witness by simp
   then show False using \<open>SN ?rel\<close> by contradiction
+qed
+
+lemma csr_sct_with_active_subterm:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f, n)"
+    and pair: "\<And>k. (s k, t k) \<in> P"
+    and pair_shape: "\<forall>(u, v)\<in>P.
+      (\<exists>f us. u = Fun (Sharp f) us) \<and>
+      (\<exists>g vs. v = Fun (Sharp g) vs)"
+    and target_SN: "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+    and steps: "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+      (csdp_step Sharp \<mu> R)\<^sup>*"
+    and graphs: "\<forall>(u, v)\<in>P. \<exists>stri nstri.
+      Scg (info (u, v)) (info (u, v))
+        (remdups_sort stri) (remdups_sort nstri) \<in> set Gs \<and>
+      (\<forall>(i, j)\<in>set stri.
+        csr_sct_active_index \<mu> u i \<and>
+        csr_sct_index v j \<and>
+        mu_supt \<mu> (get_arg u i) (get_arg v j)) \<and>
+      (\<forall>(i, j)\<in>set nstri.
+        csr_sct_index u i \<and> csr_sct_index v j \<and>
+        (get_arg u i = get_arg v j \<or>
+          (csr_sct_active_index \<mu> u i \<and>
+            mu_supt \<mu> (get_arg u i) (get_arg v j))))"
+    and edge: "\<And>k. edg (info (s k, t k))
+      (info (s (Suc k), t (Suc k)))"
+    and check: "check_SCT edg Gs"
+  shows False
+proof (rule csr_sct_with_guarded_subterm[
+    where guarded = "csr_sct_active_index \<mu>" and s = s and t = t
+      and \<sigma> = \<sigma> and P = P and R = R and \<mu> = \<mu>
+      and info = info and Gs = Gs and edg = edg])
+  show "wf_trs R" by (rule wf)
+  show "\<And>f n. \<not> defined R (Sharp f, n)" by (rule fresh)
+  show "\<And>k. (s k, t k) \<in> P" by (rule pair)
+  show "\<forall>(u, v)\<in>P.
+    (\<exists>f us. u = Fun (Sharp f) us) \<and>
+    (\<exists>g vs. v = Fun (Sharp g) vs)" by (rule pair_shape)
+  show "\<And>k. SN_on (csdp_step Sharp \<mu> R) {t k \<cdot> \<sigma> k}"
+    by (rule target_SN)
+  show "\<And>k. (t k \<cdot> \<sigma> k, s (Suc k) \<cdot> \<sigma> (Suc k)) \<in>
+    (csdp_step Sharp \<mu> R)\<^sup>*" by (rule steps)
+  show "\<And>k i. csr_sct_active_index \<mu> (s (Suc k)) i \<Longrightarrow>
+    SN_on (csstep \<mu> R) {get_arg (s (Suc k)) i \<cdot> \<sigma> (Suc k)}"
+  proof -
+    fix k i
+    assume active: "csr_sct_active_index \<mu> (s (Suc k)) i"
+    have source_SN:
+      "SN_on (csdp_step Sharp \<mu> R) {s (Suc k) \<cdot> \<sigma> (Suc k)}"
+      by (rule steps_preserve_SN_on[OF steps[of k] target_SN[of k]])
+    show "SN_on (csstep \<mu> R)
+      {get_arg (s (Suc k)) i \<cdot> \<sigma> (Suc k)}"
+      by (rule csr_sct_active_index_subst_SN[OF active source_SN])
+  qed
+  show "\<forall>(u, v)\<in>P. \<exists>stri nstri.
+    Scg (info (u, v)) (info (u, v))
+      (remdups_sort stri) (remdups_sort nstri) \<in> set Gs \<and>
+    (\<forall>(i, j)\<in>set stri.
+      csr_sct_active_index \<mu> u i \<and>
+      csr_sct_index v j \<and>
+      mu_supt \<mu> (get_arg u i) (get_arg v j)) \<and>
+    (\<forall>(i, j)\<in>set nstri.
+      csr_sct_index u i \<and> csr_sct_index v j \<and>
+      (get_arg u i = get_arg v j \<or>
+        (csr_sct_active_index \<mu> u i \<and>
+          mu_supt \<mu> (get_arg u i) (get_arg v j))))" by (rule graphs)
+  show "\<And>k. edg (info (s k, t k))
+    (info (s (Suc k), t (Suc k)))" by (rule edge)
+  show "check_SCT edg Gs" by (rule check)
 qed
 
 lemma not_finite_min_csr_dpp_obtain_chain:
