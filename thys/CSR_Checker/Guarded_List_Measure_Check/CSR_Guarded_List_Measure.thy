@@ -22,6 +22,42 @@ datatype ('v) csr_guard_form = Guard_Form
   "('v \<times> csr_guard_sort) list"
   nat
 
+text \<open>
+  Administrative symbols produced by the standard conditional-rule
+  compilation are erased to the constructor expression they resume.  This
+  makes the semantic rank stable across U11/U21/U31 steps without assigning
+  an ad-hoc value to a guard term.
+\<close>
+
+fun csr_guard_erase_admin ::
+  "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> ('f,'v) term \<Rightarrow> ('f,'v) term"
+where
+  "csr_guard_erase_admin u11 u21 u31 su len ni co ta (Var x) = Var x"
+| "csr_guard_erase_admin u11 u21 u31 su len ni co ta (Fun f ts) =
+    (if f = u11 \<and> length ts = 2 then
+       Fun su [Fun len [csr_guard_erase_admin u11 u21 u31 su len ni co ta (ts ! 1)]]
+     else if f = u21 \<and> length ts = 1 then Fun ni []
+     else if f = u31 \<and> length ts = 4 then
+       Fun co
+         [csr_guard_erase_admin u11 u21 u31 su len ni co ta (ts ! 3),
+          Fun ta
+            [csr_guard_erase_admin u11 u21 u31 su len ni co ta (ts ! 2),
+             csr_guard_erase_admin u11 u21 u31 su len ni co ta (ts ! 1)]]
+     else Fun f (map (csr_guard_erase_admin u11 u21 u31 su len ni co ta) ts))"
+
+lemma csr_guard_erase_admin_subst:
+  "csr_guard_erase_admin u11 u21 u31 su len ni co ta (t \<cdot> \<sigma>) =
+    csr_guard_erase_admin u11 u21 u31 su len ni co ta t \<cdot>
+      (\<lambda>x. csr_guard_erase_admin u11 u21 u31 su len ni co ta (\<sigma> x))"
+proof (induction t)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  then show ?case by (simp split: if_splits)
+qed
+
 fun csr_guard_form_requirements where
   "csr_guard_form_requirements (Guard_Form req cs c) = req"
 
@@ -142,6 +178,16 @@ where
                None \<Rightarrow> None
              | Some m \<Rightarrow> Some 0))
      else None)"
+
+definition csr_guard_erased_rank where
+  "csr_guard_erased_rank u11 u21 u31 z su len ni co ta zs A t =
+    csr_guard_rank z su len ni co ta zs A
+      (csr_guard_erase_admin u11 u21 u31 su len ni co ta t)"
+
+definition csr_guard_erased_symbolic_rank where
+  "csr_guard_erased_symbolic_rank u11 u21 u31 z su len ni co ta zs A t =
+    csr_guard_symbolic_rank z su len ni co ta zs A
+      (csr_guard_erase_admin u11 u21 u31 su len ni co ta t)"
 
 fun csr_guard_form_value ::
   "(('v \<times> csr_guard_sort) \<Rightarrow> nat) \<Rightarrow>
@@ -353,6 +399,30 @@ next
       show ?thesis unfolding Guard_IList using take child_n child_i distinct by fastforce
     qed
   qed
+qed
+
+lemma csr_guard_erased_symbolic_rank_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and symbolic:
+      "csr_guard_erased_symbolic_rank u11 u21 u31 z su len ni co ta zs A t =
+        Some F"
+    and realized: "csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_erase_admin u11 u21 u31 su len ni co ta (\<sigma> x))
+      \<rho> (csr_guard_form_requirements F)"
+  shows "csr_guard_erased_rank u11 u21 u31 z su len ni co ta zs A (t \<cdot> \<sigma>) =
+    Some (csr_guard_form_value \<rho> F)"
+proof -
+  have symbolic': "csr_guard_symbolic_rank z su len ni co ta zs A
+      (csr_guard_erase_admin u11 u21 u31 su len ni co ta t) = Some F"
+    using symbolic unfolding csr_guard_erased_symbolic_rank_def .
+  have sound: "csr_guard_rank z su len ni co ta zs A
+      (csr_guard_erase_admin u11 u21 u31 su len ni co ta t \<cdot>
+        (\<lambda>x. csr_guard_erase_admin u11 u21 u31 su len ni co ta (\<sigma> x))) =
+      Some (csr_guard_form_value \<rho> F)"
+    by (rule csr_guard_symbolic_rank_sound[OF distinct symbolic' realized])
+  show ?thesis
+    unfolding csr_guard_erased_rank_def csr_guard_erase_admin_subst
+    by (rule sound)
 qed
 
 fun csr_guard_coefficients_le where
