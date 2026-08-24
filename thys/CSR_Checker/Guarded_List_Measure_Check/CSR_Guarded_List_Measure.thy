@@ -1784,6 +1784,73 @@ proof -
     using target_rank source_rank by simp
 qed
 
+lemma csr_guard_normal_pair_rank_csdp_length:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and marked: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp len \<noteq> Sharp u11"
+    and checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and step: "(sharp_term Sharp (Fun len [l]),v) \<in> csdp_step Sharp \<mu> R"
+    and target: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs v = Some n"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs
+      (sharp_term Sharp (Fun len [l])) = Some n"
+proof -
+  from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp step]
+  obtain t where v: "v = sharp_term Sharp t"
+    and st: "(Fun len [l],t) \<in> csnrstep \<mu> R"
+    by blast
+  have ex: "\<exists>i ts. i < length [l] \<and>
+      i \<in> \<mu> (len,length [l]) \<and> t = Fun len ts \<and>
+      length ts = length [l] \<and>
+      ([l] ! i, ts ! i) \<in> csstep \<mu> R \<and>
+      (\<forall>j<length [l]. j \<noteq> i \<longrightarrow> ts ! j = [l] ! j)"
+  proof -
+    from st show ?thesis
+    proof (rule csnrstep_FunE)
+      fix i ts
+      assume i: "i < length [l]" "i \<in> \<mu> (len,length [l])"
+        and t: "t = Fun len ts" and len_ts: "length ts = length [l]"
+        and substep: "([l] ! i, ts ! i) \<in> csstep \<mu> R"
+        and same: "\<And>j. j < length [l] \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+          ts ! j = [l] ! j"
+      show ?thesis using i t len_ts substep same by blast
+    qed
+  qed
+  then obtain i ts where i: "i < length [l]"
+    and t: "t = Fun len ts" and len_ts: "length ts = length [l]"
+    and substep: "([l] ! i, ts ! i) \<in> csstep \<mu> R"
+    by blast
+  have i0: "i = 0" using i by (cases i; simp_all)
+  have shape: "t = Fun len [ts ! 0]"
+    using t len_ts by (cases ts; auto)
+  have target_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+        z su len ni co ta zs (sharp_term Sharp (Fun len [ts ! 0])) =
+       csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs
+        Guard_List (ts ! 0)"
+    by (rule csr_guard_normal_pair_rank_sharp_length[OF symbols marked wrappers])
+  have target_child: "csr_guard_normal_rank a u11 u21 u31
+      z su len ni co ta zs Guard_List (ts ! 0) = Some n"
+    using target v shape target_rank by simp
+  have child_step: "(l,ts ! 0) \<in> csstep \<mu> R"
+    using substep i0 by simp
+  have source_child: "csr_guard_normal_rank a u11 u21 u31
+      z su len ni co ta zs Guard_List l = Some n"
+    by (rule csr_guard_normal_rules_csstep_backward[
+        OF symbols constructors checked child_step target_child])
+  have source_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+        z su len ni co ta zs (sharp_term Sharp (Fun len [l])) =
+       csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs Guard_List l"
+    by (rule csr_guard_normal_pair_rank_sharp_length[OF symbols marked wrappers])
+  show ?thesis using source_rank source_child by simp
+qed
+
 lemma csr_guard_pair_symbolic_rank_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and symbolic:
