@@ -1718,6 +1718,30 @@ lemma csr_guard_normal_pair_rank_sharp_length:
   using marked wrappers
   by (simp add: csr_guard_normalize_Fun[OF symbols])
 
+lemma sharp_csdp_step_Fun_shape:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>g n. \<not> defined R (Sharp g,n)"
+    and step: "(sharp_term Sharp (Fun f ss),v) \<in> csdp_step Sharp \<mu> R"
+  obtains ts where "v = sharp_term Sharp (Fun f ts)"
+    "length ts = length ss"
+proof -
+  from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp step]
+  obtain t where v: "v = sharp_term Sharp t"
+    and st: "(Fun f ss,t) \<in> csnrstep \<mu> R"
+    by blast
+  from st show thesis
+  proof (rule csnrstep_FunE)
+    fix i ts
+    assume i: "i < length ss" and active: "i \<in> \<mu> (f,length ss)"
+      and t: "t = Fun f ts" and len: "length ts = length ss"
+      and substep: "(ss ! i,ts ! i) \<in> csstep \<mu> R"
+      and same: "\<And>j. j < length ss \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+        ts ! j = ss ! j"
+    have v': "v = sharp_term Sharp (Fun f ts)" using v t by simp
+    show thesis by (rule that[OF v' len])
+  qed
+qed
+
 lemma csr_guard_normal_pair_rank_csdp_u11:
   assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
     and marked: "Sharp u11 \<notin> set [a,u11,u21,u31]"
@@ -1849,6 +1873,86 @@ proof -
        csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs Guard_List l"
     by (rule csr_guard_normal_pair_rank_sharp_length[OF symbols marked wrappers])
   show ?thesis using source_rank source_child by simp
+qed
+
+lemma csr_guard_normal_pair_rank_csdp_steps_u11:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and marked: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and shape: "\<exists>q l. s = sharp_term Sharp (Fun u11 [q,l])"
+    and steps: "(s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and target: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs t = Some n"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs s = Some n"
+  using steps shape target
+proof (induction rule: converse_rtrancl_induct)
+  case base
+  then show ?case by simp
+next
+  case (step s u)
+  from step.prems(1) obtain q l where
+    s: "s = sharp_term Sharp (Fun u11 [q,l])" by blast
+  from sharp_csdp_step_Fun_shape[OF wf fresh step.hyps(1)[unfolded s]]
+  obtain ts where u: "u = sharp_term Sharp (Fun u11 ts)"
+    and len_ts: "length ts = length [q,l]" .
+  have ts_shape: "ts = [ts ! 0,ts ! 1]"
+    using len_ts by (cases ts; cases "tl ts"; auto)
+  have u_shape: "\<exists>q l. u = sharp_term Sharp (Fun u11 [q,l])"
+    by (rule exI[of _ "ts ! 0"], rule exI[of _ "ts ! 1"],
+        use u ts_shape in simp)
+  have u_rank: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs u = Some n"
+    by (rule step.IH[OF u_shape step.prems(2)])
+  have eq: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs u =
+    csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs s"
+    unfolding s by (rule csr_guard_normal_pair_rank_csdp_u11[
+        OF symbols marked wrappers wf fresh frozen step.hyps(1)[unfolded s]])
+  show ?case using eq u_rank by simp
+qed
+
+lemma csr_guard_normal_pair_rank_csdp_steps_length:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and marked: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp len \<noteq> Sharp u11"
+    and checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and shape: "\<exists>l. s = sharp_term Sharp (Fun len [l])"
+    and steps: "(s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and target: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs t = Some n"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs s = Some n"
+  using steps shape target
+proof (induction rule: converse_rtrancl_induct)
+  case base
+  then show ?case by simp
+next
+  case (step s u)
+  from step.prems(1) obtain l where
+    s: "s = sharp_term Sharp (Fun len [l])" by blast
+  from sharp_csdp_step_Fun_shape[OF wf fresh step.hyps(1)[unfolded s]]
+  obtain ts where u: "u = sharp_term Sharp (Fun len ts)"
+    and len_ts: "length ts = length [l]" .
+  have ts_shape: "ts = [ts ! 0]" using len_ts by (cases ts; auto)
+  have u_shape: "\<exists>l. u = sharp_term Sharp (Fun len [l])"
+    by (rule exI[of _ "ts ! 0"], use u ts_shape in simp)
+  have u_rank: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs u = Some n"
+    by (rule step.IH[OF u_shape step.prems(2)])
+  show ?case
+    unfolding s
+    by (rule csr_guard_normal_pair_rank_csdp_length[
+        OF symbols constructors marked wrappers checked wf fresh
+          step.hyps(1)[unfolded s] u_rank])
 qed
 
 lemma csr_guard_pair_symbolic_rank_sound:
