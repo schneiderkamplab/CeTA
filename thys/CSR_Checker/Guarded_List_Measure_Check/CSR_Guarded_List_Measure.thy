@@ -119,6 +119,41 @@ lemma csr_guard_normalize_subst:
   unfolding csr_guard_normalize_def csr_guard_erase_admin_subst
     csr_guard_erase_and_subst by simp
 
+lemma csr_guard_normalize_Fun:
+  assumes distinct: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+  shows "csr_guard_normalize a u11 u21 u31 su len ni co ta (Fun f ts) =
+    (if f = u11 \<and> length ts = 2 then
+       Fun su [Fun len [csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)]]
+     else if f = u21 \<and> length ts = 1 then Fun ni []
+     else if f = u31 \<and> length ts = 4 then
+       Fun co
+         [csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 3),
+          Fun ta
+            [csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 2),
+             csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)]]
+     else if f = a \<and> length ts = 2 then
+       csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)
+     else Fun f (map (csr_guard_normalize a u11 u21 u31 su len ni co ta) ts))"
+  using distinct unfolding csr_guard_normalize_def
+  by (auto simp: nth_map split: if_splits)
+
+lemma csr_guard_normalize_Fun_cong:
+  assumes distinct: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and args: "map (csr_guard_normalize a u11 u21 u31 su len ni co ta) xs =
+      map (csr_guard_normalize a u11 u21 u31 su len ni co ta) ys"
+  shows "csr_guard_normalize a u11 u21 u31 su len ni co ta (Fun f xs) =
+    csr_guard_normalize a u11 u21 u31 su len ni co ta (Fun f ys)"
+proof -
+  have lengths: "length xs = length ys" using args by (metis length_map)
+  have nth: "\<And>i. i < length xs \<Longrightarrow>
+      csr_guard_normalize a u11 u21 u31 su len ni co ta (xs ! i) =
+      csr_guard_normalize a u11 u21 u31 su len ni co ta (ys ! i)"
+    using args lengths by (metis nth_map)
+  show ?thesis
+    unfolding csr_guard_normalize_Fun[OF distinct]
+    using args lengths distinct by (auto intro: nth)
+qed
+
 fun csr_guard_form_requirements where
   "csr_guard_form_requirements (Guard_Form req cs c) = req"
 
