@@ -1560,6 +1560,19 @@ proof -
   show ?thesis using result source by simp
 qed
 
+lemma csr_guard_normal_rules_csnrstep_backward:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and step: "(s,t) \<in> csnrstep \<mu> R"
+    and target: "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A t = Some n"
+  shows "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A s = Some n"
+  by (rule csr_guard_normal_rules_csstep_backward[
+      OF symbols constructors checked csnrstep_imp_csstep[OF step] target])
+
 lemma csr_guard_symbolic_rank_ge_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and lhs: "csr_guard_symbolic_rank z su len ni co ta zs A l = Some F"
