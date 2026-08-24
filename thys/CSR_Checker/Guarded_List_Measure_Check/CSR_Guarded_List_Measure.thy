@@ -1622,6 +1622,263 @@ proof -
   show ?thesis using result source by simp
 qed
 
+lemma csr_guard_truth_Fun_backward:
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and len: "length xs = length ys"
+    and truth_args: "\<And>i. i < length ys \<Longrightarrow>
+      csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs (ys ! i) \<Longrightarrow>
+      csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs (xs ! i)"
+    and rank_args: "\<And>i k n. i < length ys \<Longrightarrow>
+      csr_guard_rank z su guard_len ni co ta zs k (ys ! i) = Some n \<Longrightarrow>
+      csr_guard_rank z su guard_len ni co ta zs k (xs ! i) = Some n"
+    and target: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (Fun f ys)"
+  shows "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (Fun f xs)"
+proof -
+  consider
+      (truth) "f = tt" "ys = []"
+    | (conj) "f = a" "length ys = 2"
+        "csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs (ys ! 0)"
+        "csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs (ys ! 1)"
+    | (nat) m where "f = natp" "length ys = 1"
+        "csr_guard_rank z su guard_len ni co ta zs Guard_Nat (ys ! 0) = Some m"
+    | (list) m where "f = listp" "length ys = 1"
+        "csr_guard_rank z su guard_len ni co ta zs Guard_List (ys ! 0) = Some m"
+    | (ilist) m where "f = ilistp" "length ys = 1"
+        "csr_guard_rank z su guard_len ni co ta zs Guard_IList (ys ! 0) = Some m"
+    using target names by (auto simp: csr_guard_truth.simps
+        split: if_splits option.splits)
+  then show ?thesis
+  proof cases
+    case truth
+    with len have "xs = []" by simp
+    with truth show ?thesis by simp
+  next
+    case conj
+    have left: "csr_guard_truth tt a natp listp ilistp
+        z su guard_len ni co ta zs (xs ! 0)"
+      by (rule truth_args[OF _ conj(3)], use conj(2) in simp)
+    have right: "csr_guard_truth tt a natp listp ilistp
+        z su guard_len ni co ta zs (xs ! 1)"
+      by (rule truth_args[OF _ conj(4)], use conj(2) in simp)
+    show ?thesis using conj len left right names by (simp add: neq_commute)
+  next
+    case (nat m)
+    have child: "csr_guard_rank z su guard_len ni co ta zs
+        Guard_Nat (xs ! 0) = Some m"
+      by (rule rank_args[OF _ nat(3)], use nat(2) in simp)
+    show ?thesis using nat len child names by (simp add: neq_commute)
+  next
+    case (list m)
+    have child: "csr_guard_rank z su guard_len ni co ta zs
+        Guard_List (xs ! 0) = Some m"
+      by (rule rank_args[OF _ list(3)], use list(2) in simp)
+    show ?thesis using list len child names by (simp add: neq_commute)
+  next
+    case (ilist m)
+    have child: "csr_guard_rank z su guard_len ni co ta zs
+        Guard_IList (xs ! 0) = Some m"
+      by (rule rank_args[OF _ ilist(3)], use ilist(2) in simp)
+    show ?thesis using ilist len child names by (simp add: neq_commute)
+  qed
+qed
+
+lemma csr_guard_truth_ctxt_backward:
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and constructors: "distinct [z,su,guard_len,ni,co,ta,zs]"
+    and local_truth:
+      "csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs y \<Longrightarrow>
+       csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs x"
+    and local_rank: "\<And>k n.
+      csr_guard_rank z su guard_len ni co ta zs k y = Some n \<Longrightarrow>
+      csr_guard_rank z su guard_len ni co ta zs k x = Some n"
+    and target: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs C\<langle>y\<rangle>"
+  shows "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs C\<langle>x\<rangle>"
+  using target
+proof (induction C)
+  case Hole
+  have target_y: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs y" using Hole.prems by simp
+  have source_x: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs x" by (rule local_truth[OF target_y])
+  show ?case using source_x by simp
+next
+  case (More f ss1 C ss2)
+  let ?xs = "ss1 @ C\<langle>x\<rangle> # ss2"
+  let ?ys = "ss1 @ C\<langle>y\<rangle> # ss2"
+  have len: "length ?xs = length ?ys" by simp
+  have truth_args: "\<And>i. i < length ?ys \<Longrightarrow>
+      csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs (?ys ! i) \<Longrightarrow>
+      csr_guard_truth tt a natp listp ilistp z su guard_len ni co ta zs (?xs ! i)"
+  proof -
+    fix i
+    assume ilen: "i < length ?ys"
+      and truth: "csr_guard_truth tt a natp listp ilistp
+        z su guard_len ni co ta zs (?ys ! i)"
+    show "csr_guard_truth tt a natp listp ilistp
+        z su guard_len ni co ta zs (?xs ! i)"
+    proof (cases "i < length ss1")
+      case True
+      then show ?thesis using truth by (simp add: nth_append)
+    next
+      case False
+      show ?thesis
+      proof (cases "i = length ss1")
+        case True
+        from More.IH[OF truth[unfolded True, simplified]]
+        show ?thesis unfolding True by simp
+      next
+        case False2: False
+        then have "i > length ss1" using False by auto
+        then show ?thesis using truth ilen by (simp add: nth_append)
+      qed
+    qed
+  qed
+  have rank_args: "\<And>i k n. i < length ?ys \<Longrightarrow>
+      csr_guard_rank z su guard_len ni co ta zs k (?ys ! i) = Some n \<Longrightarrow>
+      csr_guard_rank z su guard_len ni co ta zs k (?xs ! i) = Some n"
+  proof -
+    fix i k n
+    assume ilen: "i < length ?ys"
+      and rank: "csr_guard_rank z su guard_len ni co ta zs k (?ys ! i) = Some n"
+    show "csr_guard_rank z su guard_len ni co ta zs k (?xs ! i) = Some n"
+    proof (cases "i < length ss1")
+      case True
+      then show ?thesis using rank by (simp add: nth_append)
+    next
+      case False
+      show ?thesis
+      proof (cases "i = length ss1")
+        case True
+        have hole: "csr_guard_rank z su guard_len ni co ta zs k C\<langle>y\<rangle> = Some n"
+          using rank unfolding True by simp
+        have "csr_guard_rank z su guard_len ni co ta zs k C\<langle>x\<rangle> = Some n"
+          by (rule csr_guard_rank_ctxt_backward[OF constructors local_rank hole])
+        then show ?thesis unfolding True by simp
+      next
+        case False2: False
+        then have "i > length ss1" using False by auto
+        then show ?thesis using rank ilen by (simp add: nth_append)
+      qed
+    qed
+  qed
+  have target_fun: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (Fun f ?ys)"
+    using More.prems by simp
+  have result: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (Fun f ?xs)"
+    by (rule csr_guard_truth_Fun_backward[
+        OF names len truth_args rank_args target_fun])
+  show ?case using result by simp
+qed
+
+lemma csr_guard_truth_rules_csstep_backward:
+  fixes R :: "('f,'v) trs"
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and constructors: "distinct [z,su,guard_len,ni,co,ta,zs]"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su guard_len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward
+      R z su guard_len ni co ta zs"
+    and step: "(s,t) \<in> csstep \<mu> R"
+    and target: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs t"
+  shows "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs s"
+proof -
+  from step obtain p lr \<sigma> where rewrite:
+      "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    unfolding csstep_def csstep_p_def by auto
+  from rewrite[unfolded rstep_r_p_s_def'] have lr: "lr \<in> R"
+    and pos: "p \<in> poss s"
+    and redex: "s |_ p = fst lr \<cdot> \<sigma>"
+    and reduct: "t = replace_at s p (snd lr \<cdot> \<sigma>)" by auto
+  let ?C = "ctxt_of_pos_term p s"
+  have source: "s = ?C\<langle>fst lr \<cdot> \<sigma>\<rangle>"
+    using ctxt_supt_id[OF pos] redex by simp
+  have target_ctxt: "t = ?C\<langle>snd lr \<cdot> \<sigma>\<rangle>"
+    using ctxt_supt_id[OF pos] redex reduct by simp
+  have local_truth: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (snd lr \<cdot> \<sigma>) \<Longrightarrow>
+    csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (fst lr \<cdot> \<sigma>)"
+    using truth_checked lr unfolding csr_guard_truth_rules_backward_def by blast
+  have local_rank: "\<And>k n.
+      csr_guard_rank z su guard_len ni co ta zs k (snd lr \<cdot> \<sigma>) = Some n \<Longrightarrow>
+    csr_guard_rank z su guard_len ni co ta zs k (fst lr \<cdot> \<sigma>) = Some n"
+  proof -
+    fix k n
+    have one: "(snd lr \<cdot> \<sigma>,fst lr \<cdot> \<sigma>)
+        \<in> {(y,x). csr_guard_rank z su guard_len ni co ta zs k y = Some n \<longrightarrow>
+          csr_guard_rank z su guard_len ni co ta zs k x = Some n}"
+      using rank_checked lr unfolding csr_guard_rank_rules_backward_def
+      by (cases k; blast)
+    show "csr_guard_rank z su guard_len ni co ta zs k (snd lr \<cdot> \<sigma>) = Some n \<Longrightarrow>
+      csr_guard_rank z su guard_len ni co ta zs k (fst lr \<cdot> \<sigma>) = Some n"
+      using one by auto
+  qed
+  have target': "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs ?C\<langle>snd lr \<cdot> \<sigma>\<rangle>"
+    using target target_ctxt by simp
+  have result: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs ?C\<langle>fst lr \<cdot> \<sigma>\<rangle>"
+    by (rule csr_guard_truth_ctxt_backward[
+        OF names constructors local_truth local_rank target'])
+  show ?thesis using result source by simp
+qed
+
+lemma csr_guard_truth_rules_cssteps_backward:
+  fixes R :: "('f,'v) trs"
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and constructors: "distinct [z,su,guard_len,ni,co,ta,zs]"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su guard_len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward
+      R z su guard_len ni co ta zs"
+    and steps: "(s,t) \<in> (csstep \<mu> R)\<^sup>*"
+    and target: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs t"
+  shows "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs s"
+  using steps target
+proof (induction rule: converse_rtrancl_induct)
+  case base
+  then show ?case .
+next
+  case (step s u)
+  have truth_u: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs u"
+    by (rule step.IH[OF step.prems])
+  show ?case
+    by (rule csr_guard_truth_rules_csstep_backward[
+        OF names constructors truth_checked rank_checked step.hyps(1) truth_u])
+qed
+
+lemma csr_guard_successful_nat_list_test:
+  fixes R :: "('f,'v) trs"
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and constructors: "distinct [z,su,guard_len,ni,co,ta,zs]"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su guard_len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward
+      R z su guard_len ni co ta zs"
+    and steps: "(Fun a [Fun listp [L], Fun natp [N]], Fun tt [])
+      \<in> (csstep \<mu> R)\<^sup>*"
+  shows "csr_guard_rank z su guard_len ni co ta zs Guard_List L \<noteq> None"
+proof -
+  have target: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (Fun tt [])"
+    using names by simp
+  have source: "csr_guard_truth tt a natp listp ilistp
+      z su guard_len ni co ta zs (Fun a [Fun listp [L], Fun natp [N]])"
+    by (rule csr_guard_truth_rules_cssteps_backward[
+        OF names constructors truth_checked rank_checked steps target])
+  show ?thesis using source names by (simp add: neq_commute)
+qed
+
 lemma csdp_step_preserves_fresh_target_root:
   fixes R :: "('f::{showl,compare_order},'v) trs" and s t :: "('f,'v) term"
   assumes step: "(s,t) \<in> csdp_step shp \<mu> R"
@@ -1855,6 +2112,69 @@ proof -
   show ?thesis
     unfolding v shape
     using target_rank source_rank by simp
+qed
+
+lemma sharp_csdp_step_u11_guard:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and step: "(sharp_term Sharp (Fun u11 [q,l]),v)
+      \<in> csdp_step Sharp \<mu> R"
+  obtains q' where
+    "v = sharp_term Sharp (Fun u11 [q',l])"
+    "(q,q') \<in> csstep \<mu> R"
+proof -
+  from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp step]
+  obtain t where v: "v = sharp_term Sharp t"
+    and st: "(Fun u11 [q,l],t) \<in> csnrstep \<mu> R"
+    by blast
+  from st show thesis
+  proof (rule csnrstep_FunE)
+    fix i ts
+    assume i: "i < length [q,l]" "i \<in> \<mu> (u11,length [q,l])"
+      and t: "t = Fun u11 ts" and len: "length ts = length [q,l]"
+      and substep: "([q,l] ! i,ts ! i) \<in> csstep \<mu> R"
+      and same: "\<And>j. j < length [q,l] \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+        ts ! j = [q,l] ! j"
+    have cases: "i = 0 \<or> i = 1"
+      using i(1) by (cases i; simp; rename_tac j; cases j; simp_all)
+    have imu: "i \<in> \<mu> (u11,Suc (Suc 0))" using i(2) by simp
+    have i0: "i = 0" using cases imu frozen by blast
+    have tail: "ts ! 1 = l"
+      using same[of 1] i0 by simp
+    have shape: "ts = [ts ! 0,l]"
+      using len tail by (cases ts; cases "tl ts"; auto)
+    have v': "v = sharp_term Sharp (Fun u11 [ts ! 0,l])"
+      using v t shape by simp
+    have child: "(q,ts ! 0) \<in> csstep \<mu> R"
+      using substep i0 by simp
+    show thesis by (rule that[OF v' child])
+  qed
+qed
+
+lemma sharp_csdp_steps_u11_guard:
+  assumes wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and shape: "s = sharp_term Sharp (Fun u11 [q,l])"
+    and steps: "(s,v) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and target: "v = sharp_term Sharp (Fun u11 [q',l'])"
+  shows "l' = l \<and> (q,q') \<in> (csstep \<mu> R)\<^sup>*"
+  using steps shape target
+proof (induction arbitrary: q l rule: converse_rtrancl_induct)
+  case base
+  then show ?case using sharp_term_Sharp_inject by auto
+next
+  case (step s u)
+  have source: "s = sharp_term Sharp (Fun u11 [q,l])"
+    by (rule step.prems(1))
+  from sharp_csdp_step_u11_guard[
+      OF wf fresh frozen step.hyps(1)[unfolded source]]
+  obtain q1 where u: "u = sharp_term Sharp (Fun u11 [q1,l])"
+    and child: "(q,q1) \<in> csstep \<mu> R" .
+  have tail: "l' = l \<and> (q1,q') \<in> (csstep \<mu> R)\<^sup>*"
+    by (rule step.IH[OF u step.prems(2)])
+  show ?case using child tail by auto
 qed
 
 lemma csr_guard_normal_pair_rank_csdp_length:
