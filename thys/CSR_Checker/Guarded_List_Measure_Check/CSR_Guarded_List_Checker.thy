@@ -257,4 +257,111 @@ next
       OF J terminal])
 qed
 
+datatype (dead 'f, dead 'l, dead 'v) guarded_csr_termination_proof =
+    Guarded_CSR_Rule_Removal
+      "('f,'l) lab redtriple_impl" "('f,'l,'v) trsLL"
+      "('f,'l,'v) guarded_csr_termination_proof"
+  | Guarded_CSR_Dependency_Pairs
+      "('f,'l,'v) trsLL" "('f,'l,'v) guarded_csr_dp_proof"
+
+primrec check_guarded_csr_termination_proof ::
+  "('tp, ('f::{showl,compare_order,countable}, label_type) lab, string) tp_ops \<Rightarrow>
+   ('dpp, ('f,label_type) lab, string) dpp_ops \<Rightarrow>
+   showsl \<Rightarrow> ((('f,label_type) lab) muL) \<Rightarrow>
+   ('f,label_type,string) trsLL \<Rightarrow>
+   ('f,label_type,string) guarded_csr_termination_proof \<Rightarrow> showsl check"
+where
+  "check_guarded_csr_termination_proof I J i \<mu> R
+      (Guarded_CSR_Rule_Removal redp Rr prf) =
+    debug i (STR ''guarded CSR rule removal'')
+      (case csr_rule_removal_impl redp \<mu> Rr R of
+        Inl e \<Rightarrow> Inl e
+      | Inr R2 \<Rightarrow> check_guarded_csr_termination_proof I J
+          (add_index i 1) \<mu> R2 prf)"
+| "check_guarded_csr_termination_proof I J i \<mu> R
+      (Guarded_CSR_Dependency_Pairs P prf) =
+    debug i (STR ''guarded CSR dependency pairs'') (do {
+      csr_sharp_mu_check \<mu>;
+      check (list_all (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True)
+        (defined_list R))
+        (showsl_lit (STR ''guarded CSR source defines a reserved marked symbol''));
+      dpp \<leftarrow> mu_csr_dependency_pairs_tt Sharp J \<mu> R P;
+      check_guarded_csr_dp_proof I J \<mu> (add_index i 1) dpp prf
+    })"
+
+lemma check_guarded_csr_termination_proof_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_guarded_csr_termination_proof I J i \<mu> R prf)"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+  using ok
+proof (induct "prf" arbitrary: R i)
+  case (Guarded_CSR_Rule_Removal redp rr child)
+  from Guarded_CSR_Rule_Removal.prems obtain R2 where
+      proc: "csr_rule_removal_impl redp \<mu> rr R = return R2"
+    and rec: "isOK (check_guarded_csr_termination_proof I J
+      (add_index i 1) \<mu> R2 child)"
+    by (cases "csr_rule_removal_impl redp \<mu> rr R"; auto)
+  have sn: "SN (csstep (mu_of \<mu>) (set R2))"
+    by (rule Guarded_CSR_Rule_Removal.hyps[OF rec])
+  show ?case by (rule csr_rule_removal_impl[OF proc sn])
+next
+  case (Guarded_CSR_Dependency_Pairs P dp_prf)
+  let ?idx = "add_index i 1"
+  from Guarded_CSR_Dependency_Pairs.prems obtain dpp where
+      no_sharp: "list_all
+        (\<lambda>(f,n). case f of Sharp _ \<Rightarrow> False | _ \<Rightarrow> True)
+        (defined_list R)"
+    and tt: "mu_csr_dependency_pairs_tt Sharp J \<mu> R P = return dpp"
+    and rec: "isOK (check_guarded_csr_dp_proof I J \<mu> ?idx dpp dp_prf)"
+    by (cases "mu_csr_dependency_pairs_tt Sharp J \<mu> R P"; auto)
+  note tt' = tt[unfolded mu_csr_dependency_pairs_tt_def Let_def, simplified]
+  have wf: "wf_trs (set R)" using tt' by auto
+  have vc: "rhs_mu_vars_condition (mu_of \<mu>) (set R)"
+    by (rule rhs_mu_vars_condition_list_sound, insert tt', auto)
+  have D: "{f. defined (set R) f} \<subseteq> set (defined_list R)"
+    using tt' by auto
+  have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
+  proof -
+    fix f n
+    from no_sharp show "\<not> defined (set R) (Sharp f,n)"
+      by (auto simp: list_all_iff)
+  qed
+  interpret dpp_spec J by fact
+  have dpp: "dpp = dpp_ops.mk J False False P [] [] [] R"
+    using tt' by auto
+  have sem: "dpp_ops.dpp J dpp =
+    (False,False,set P,{},{},{},set R)"
+    using dpp unfolding dpp_spec.mk_sound[OF J] by simp
+  have sem': "dpp_ops.dpp J dpp =
+    (NFS dpp,M dpp,set (local.P dpp),set (Pw dpp),set (Q dpp),
+      set (local.R dpp),set (Rw dpp))"
+    by (rule dpp_sound)
+  have plain: "plain_csr_dpp J dpp"
+    using sem sem' unfolding plain_csr_dpp_def by auto
+  have rules: "set (rules dpp) = set R"
+    using sem sem' rules_sound[of dpp] by auto
+  have pairs: "set (pairs dpp) = set P"
+    using sem sem' pairs_sound[of dpp] by auto
+  have fin_dpp: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp)) (set (rules dpp))"
+    by (rule check_guarded_csr_dp_proof_sound[
+        OF I J plain wf[unfolded rules[symmetric]]
+          fresh[unfolded rules[symmetric]] rec])
+  have finP: "finite_min_csr_dpp Sharp (mu_of \<mu>) (set P) (set R)"
+    using fin_dpp unfolding rules pairs .
+  have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R)) (set R)) (set R)"
+    apply (rule finite_min_csr_dpp_rename_vars[
+        where P' = "set P" and
+          P = "mu_CSDP_on Sharp (mu_of \<mu>) (set (defined_list R)) (set R)" and
+          R = "set R"])
+     apply (rule finP)
+    subgoal for st
+      using tt' eq_rule_mod_vars_refl[of st]
+      unfolding mu_CSDP_list by blast
+    done
+  show ?case by (rule finite_min_csr_mu_CSDP_on_imp_SN_csstep[
+      OF wf fresh vc D fin])
+qed
+
 end
