@@ -679,6 +679,18 @@ fun csr_guard_pair_rank where
        csr_guard_rank z su len ni co ta zs Guard_List (ts ! 0)
      else None)"
 
+definition csr_guard_normal_pair_symbolic_rank where
+  "csr_guard_normal_pair_symbolic_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs t =
+    csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t)"
+
+definition csr_guard_normal_pair_rank where
+  "csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs t =
+    csr_guard_pair_rank u11s lens z su len ni co ta zs
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t)"
+
 lemma csr_guard_pair_symbolic_rank_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and symbolic:
@@ -714,6 +726,30 @@ next
       by (rule csr_guard_symbolic_rank_sound[OF distinct length(4) realized])
     show ?thesis unfolding Fun using length child by simp
   qed
+qed
+
+lemma csr_guard_normal_pair_symbolic_rank_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and symbolic:
+      "csr_guard_normal_pair_symbolic_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs t = Some F"
+    and realized: "csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      \<rho> (csr_guard_form_requirements F)"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs (t \<cdot> \<sigma>) = Some (csr_guard_form_value \<rho> F)"
+proof -
+  have symbolic': "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t) = Some F"
+    using symbolic unfolding csr_guard_normal_pair_symbolic_rank_def .
+  have sound: "csr_guard_pair_rank u11s lens z su len ni co ta zs
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t \<cdot>
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))) =
+      Some (csr_guard_form_value \<rho> F)"
+    by (rule csr_guard_pair_symbolic_rank_sound[OF distinct symbolic' realized])
+  show ?thesis
+    unfolding csr_guard_normal_pair_rank_def csr_guard_normalize_subst
+    by (rule sound)
 qed
 
 lemma csr_guard_pair_symbolic_rank_ge_sound:
