@@ -971,6 +971,34 @@ next
   then show ?case by (rule preserve[OF step.hyps(1)])
 qed
 
+definition csr_guard_rank_backward_preserving where
+  "csr_guard_rank_backward_preserving u11 u21 u31 z su len ni co ta zs \<mu> R \<longleftrightarrow>
+    (\<forall>A s t n. (s,t) \<in> csstep \<mu> R \<longrightarrow>
+      csr_guard_erased_rank u11 u21 u31 z su len ni co ta zs A t = Some n \<longrightarrow>
+      csr_guard_erased_rank u11 u21 u31 z su len ni co ta zs A s = Some n)"
+
+lemma csr_guard_rank_backward_cssteps:
+  assumes preserving: "csr_guard_rank_backward_preserving
+      u11 u21 u31 z su len ni co ta zs \<mu> R"
+    and steps: "(s,t) \<in> (csstep \<mu> R)\<^sup>*"
+    and target: "csr_guard_erased_rank
+      u11 u21 u31 z su len ni co ta zs A t = Some n"
+  shows "csr_guard_erased_rank
+      u11 u21 u31 z su len ni co ta zs A s = Some n"
+proof (rule option_measure_backward_rtrancl[
+    where measure = "csr_guard_erased_rank
+      u11 u21 u31 z su len ni co ta zs A"
+    and A = "csstep \<mu> R", OF _ steps target])
+  fix x y n
+  assume xy: "(x,y) \<in> csstep \<mu> R"
+    and yn: "csr_guard_erased_rank
+      u11 u21 u31 z su len ni co ta zs A y = Some n"
+  show "csr_guard_erased_rank
+      u11 u21 u31 z su len ni co ta zs A x = Some n"
+    using preserving xy yn
+    unfolding csr_guard_rank_backward_preserving_def by blast
+qed
+
 lemma csr_guard_symbolic_rank_zero [simp]:
   "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
     Some (Guard_Form [] [] 0)"
