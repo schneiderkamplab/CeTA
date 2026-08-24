@@ -488,6 +488,125 @@ proof
     by (rule csr_guard_form_gt_value[OF orient])
 qed
 
+text \<open>
+  The guarded list measure is observed at the two marked roots of the hard
+  component.  Both marked calls denote the length of their list argument;
+  the surrounding guard argument of the marked U-call is deliberately
+  ignored by the numerical measure but remains available to the later
+  recognizer check.
+\<close>
+
+fun csr_guard_pair_symbolic_rank where
+  "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs (Var x) = None"
+| "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs (Fun f ts) =
+    (if f = u11s \<and> length ts = 2 then
+       csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1)
+     else if f = lens \<and> length ts = 1 then
+       csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 0)
+     else None)"
+
+fun csr_guard_pair_rank where
+  "csr_guard_pair_rank u11s lens z su len ni co ta zs (Var x) = None"
+| "csr_guard_pair_rank u11s lens z su len ni co ta zs (Fun f ts) =
+    (if f = u11s \<and> length ts = 2 then
+       csr_guard_rank z su len ni co ta zs Guard_List (ts ! 1)
+     else if f = lens \<and> length ts = 1 then
+       csr_guard_rank z su len ni co ta zs Guard_List (ts ! 0)
+     else None)"
+
+lemma csr_guard_pair_symbolic_rank_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and symbolic:
+      "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs t = Some F"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  shows "csr_guard_pair_rank u11s lens z su len ni co ta zs (t \<cdot> \<sigma>) =
+    Some (csr_guard_form_value \<rho> F)"
+proof (cases t)
+  case (Var x)
+  then show ?thesis using symbolic by simp
+next
+  case (Fun f ts)
+  consider
+      (u11) "f = u11s" "length ts = 2"
+        "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1) = Some F"
+    | (length) "\<not> (f = u11s \<and> length ts = 2)"
+        "f = lens" "length ts = 1"
+        "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 0) = Some F"
+    using symbolic unfolding Fun
+    by (auto split: if_splits)
+  then show ?thesis
+  proof cases
+    case u11
+    have child: "csr_guard_rank z su len ni co ta zs Guard_List
+        (ts ! 1 \<cdot> \<sigma>) = Some (csr_guard_form_value \<rho> F)"
+      by (rule csr_guard_symbolic_rank_sound[OF distinct u11(3) realized])
+    show ?thesis unfolding Fun using u11 child by simp
+  next
+    case length
+    have child: "csr_guard_rank z su len ni co ta zs Guard_List
+        (ts ! 0 \<cdot> \<sigma>) = Some (csr_guard_form_value \<rho> F)"
+      by (rule csr_guard_symbolic_rank_sound[OF distinct length(4) realized])
+    show ?thesis unfolding Fun using length child by simp
+  qed
+qed
+
+lemma csr_guard_pair_symbolic_rank_ge_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and lhs: "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l = Some F"
+    and rhs: "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r = Some G"
+    and orient: "csr_guard_form_ge F G"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  obtains m n where
+    "csr_guard_pair_rank u11s lens z su len ni co ta zs (l \<cdot> \<sigma>) = Some m"
+    "csr_guard_pair_rank u11s lens z su len ni co ta zs (r \<cdot> \<sigma>) = Some n"
+    "m \<ge> n"
+proof
+  have req_subset: "set (csr_guard_form_requirements G) \<subseteq>
+      set (csr_guard_form_requirements F)"
+    using orient by (cases F; cases G) simp
+  have realized_r: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements G)"
+    by (rule csr_guard_requirements_realized_mono[OF realized req_subset])
+  show "csr_guard_pair_rank u11s lens z su len ni co ta zs (l \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> F)"
+    by (rule csr_guard_pair_symbolic_rank_sound[OF distinct lhs realized])
+  show "csr_guard_pair_rank u11s lens z su len ni co ta zs (r \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> G)"
+    by (rule csr_guard_pair_symbolic_rank_sound[OF distinct rhs realized_r])
+  show "csr_guard_form_value \<rho> F \<ge> csr_guard_form_value \<rho> G"
+    by (rule csr_guard_form_ge_value[OF orient])
+qed
+
+lemma csr_guard_pair_symbolic_rank_gt_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and lhs: "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l = Some F"
+    and rhs: "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r = Some G"
+    and orient: "csr_guard_form_gt F G"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  obtains m n where
+    "csr_guard_pair_rank u11s lens z su len ni co ta zs (l \<cdot> \<sigma>) = Some m"
+    "csr_guard_pair_rank u11s lens z su len ni co ta zs (r \<cdot> \<sigma>) = Some n"
+    "m > n"
+proof
+  have req_subset: "set (csr_guard_form_requirements G) \<subseteq>
+      set (csr_guard_form_requirements F)"
+    using orient by (cases F; cases G) simp
+  have realized_r: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements G)"
+    by (rule csr_guard_requirements_realized_mono[OF realized req_subset])
+  show "csr_guard_pair_rank u11s lens z su len ni co ta zs (l \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> F)"
+    by (rule csr_guard_pair_symbolic_rank_sound[OF distinct lhs realized])
+  show "csr_guard_pair_rank u11s lens z su len ni co ta zs (r \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> G)"
+    by (rule csr_guard_pair_symbolic_rank_sound[OF distinct rhs realized_r])
+  show "csr_guard_form_value \<rho> F > csr_guard_form_value \<rho> G"
+    by (rule csr_guard_form_gt_value[OF orient])
+qed
+
 lemma csr_guard_symbolic_rank_zero [simp]:
   "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
     Some (Guard_Form [] [] 0)"
