@@ -58,6 +58,29 @@ next
   then show ?case by (simp split: if_splits)
 qed
 
+lemma csr_guard_erase_admin_u11:
+  assumes distinct: "distinct [u11,u21,u31,su,len,ni,co,ta]"
+  shows "csr_guard_erase_admin u11 u21 u31 su len ni co ta
+      (Fun u11 [q,l]) =
+    csr_guard_erase_admin u11 u21 u31 su len ni co ta
+      (Fun su [Fun len [l]])"
+  using distinct by (simp; fastforce)
+
+lemma csr_guard_erase_admin_u21:
+  assumes distinct: "distinct [u11,u21,u31,su,len,ni,co,ta]"
+  shows "csr_guard_erase_admin u11 u21 u31 su len ni co ta
+      (Fun u21 [q]) =
+    csr_guard_erase_admin u11 u21 u31 su len ni co ta (Fun ni [])"
+  using distinct by (simp; fastforce)
+
+lemma csr_guard_erase_admin_u31:
+  assumes distinct: "distinct [u11,u21,u31,su,len,ni,co,ta]"
+  shows "csr_guard_erase_admin u11 u21 u31 su len ni co ta
+      (Fun u31 [q,il,m,n]) =
+    csr_guard_erase_admin u11 u21 u31 su len ni co ta
+      (Fun co [n, Fun ta [m,il]])"
+  using distinct by (simp; fastforce)
+
 fun csr_guard_form_requirements where
   "csr_guard_form_requirements (Guard_Form req cs c) = req"
 
