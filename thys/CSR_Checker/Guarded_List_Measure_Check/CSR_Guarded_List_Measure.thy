@@ -2880,6 +2880,89 @@ proof -
   qed
 qed
 
+lemma csr_guard_strict_successor_weak:
+  assumes different: "u11 \<noteq> len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and connector:
+      "(snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>,u)
+        \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+  obtains \<tau> where
+    "u = fst (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>"
+    "v = snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>"
+    "\<tau> L = \<sigma> L"
+proof -
+  have source: "snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+        a listp natp N L) \<cdot> \<sigma> =
+      sharp_term Sharp (Fun u11
+        [Fun a [Fun listp [\<sigma> L],Fun natp [\<sigma> N]],\<sigma> L])"
+    unfolding csr_guard_strict_pair_def by simp
+  from csr_guard_two_pair_stepE[OF pairs next_pair]
+  show thesis
+  proof cases
+    case (1 \<tau>)
+    have target: "u = sharp_term Sharp
+        (Fun len [Fun co [\<tau> N,\<tau> L]])"
+      using 1(1) unfolding csr_guard_strict_pair_def by simp
+    from sharp_csdp_steps_Fun_shape[OF wf fresh source connector]
+    obtain ts where same_root: "u = sharp_term Sharp (Fun u11 ts)" by blast
+    have "u11 = len" using same_root target sharp_term_Sharp_inject by auto
+    with different have contradiction: False by auto
+    show thesis by (rule FalseE[OF contradiction])
+  next
+    case (2 \<tau>)
+    have target: "u = sharp_term Sharp (Fun u11 [Fun tt [],\<tau> L])"
+      using 2(1) unfolding csr_guard_weak_pair_def by simp
+    from sharp_csdp_steps_u11_guard[
+        OF wf fresh frozen source connector target]
+    have lists: "\<tau> L = \<sigma> L" by auto
+    show thesis by (rule that[OF 2 lists])
+  qed
+qed
+
+lemma csr_guard_weak_successor_strict:
+  assumes different: "u11 \<noteq> len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and connector:
+      "(snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,u)
+        \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+  obtains \<tau> where
+    "u = fst (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+      a listp natp N L) \<cdot> \<tau>"
+    "v = snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+      a listp natp N L) \<cdot> \<tau>"
+proof -
+  have source: "snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma> =
+      sharp_term Sharp (Fun len [\<sigma> L])"
+    unfolding csr_guard_weak_pair_def by simp
+  from csr_guard_two_pair_stepE[OF pairs next_pair]
+  show thesis
+  proof cases
+    case (1 \<tau>)
+    show thesis by (rule that[OF 1])
+  next
+    case (2 \<tau>)
+    have target: "u = sharp_term Sharp (Fun u11 [Fun tt [],\<tau> L])"
+      using 2(1) unfolding csr_guard_weak_pair_def by simp
+    from sharp_csdp_steps_Fun_shape[OF wf fresh source connector]
+    obtain ts where same_root: "u = sharp_term Sharp (Fun len ts)" by blast
+    have "len = u11" using same_root target sharp_term_Sharp_inject by auto
+    with different have contradiction: False by auto
+    show thesis by (rule FalseE[OF contradiction])
+  qed
+qed
+
 definition csr_guard_normal_pair_rank_gt where
   "csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs =
     {(s,t). \<exists>m n.
@@ -3033,6 +3116,428 @@ proof -
     using rhs_eq ranked unfolding csr_guard_weak_pair_def by simp
   show ?thesis
     unfolding csr_guard_normal_pair_rank_ge_def using lhs rhs by auto
+qed
+
+lemma csr_guard_weak_pair_lookahead_ge:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and connector:
+      "(snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,u)
+        \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and next_connector: "(v,w) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and following_pair: "(w,x) \<in> csr_min_pair_step Sharp \<mu> P R"
+  shows "(fst (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,
+      snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>)
+    \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs"
+proof -
+  have different: "u11 \<noteq> len" using symbols by auto
+  have admin: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    using symbols by simp
+  have constructors: "distinct [z,su,len,ni,co,ta,zs]" using symbols by simp
+  have rank_symbols: "distinct [a,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    using symbols by simp
+  have wrappers_rev: "Sharp len \<noteq> Sharp u11" using wrappers by auto
+  from csr_guard_weak_successor_strict[
+      OF different pairs wf fresh connector next_pair]
+  obtain \<tau> where u: "u = fst (csr_guard_strict_pair (Sharp len) co
+      (Sharp u11) a listp natp N L) \<cdot> \<tau>"
+    and v: "v = snd (csr_guard_strict_pair (Sharp len) co
+      (Sharp u11) a listp natp N L) \<cdot> \<tau>" .
+  from csr_guard_strict_return_rank[
+      OF symbols pairs wf fresh frozen truth_checked rank_checked
+        next_connector[unfolded v] following_pair]
+  obtain n where tail_rank: "csr_guard_rank z su len ni co ta zs
+      Guard_List (\<tau> L) = Some n" by blast
+  have strict_order:
+      "(fst (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<tau>,
+        snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<tau>)
+      \<in> csr_guard_normal_pair_rank_gt a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+    by (rule csr_guard_strict_pair_instance_gt[
+        where listp = listp and natp = natp and N = N and L = L and \<sigma> = \<tau>,
+        OF rank_symbols marked_u11 marked_len wrappers tail_rank])
+  from strict_order obtain m k where u_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs u = Some m"
+    unfolding csr_guard_normal_pair_rank_gt_def u by auto
+  have source_shape: "\<exists>l. snd (csr_guard_weak_pair
+      (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma> =
+      sharp_term Sharp (Fun len [l])"
+    unfolding csr_guard_weak_pair_def by simp
+  have source_rank: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs
+      (snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>) = Some m"
+    by (rule csr_guard_normal_pair_rank_csdp_steps_length[
+        OF admin constructors marked_len wrappers_rev normal_checked wf fresh
+          source_shape connector u_rank])
+  have source_eq: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs
+      (snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>) =
+    csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs
+      Guard_List (\<sigma> L)"
+  proof -
+    have marked_eq: "csr_guard_normal_pair_rank a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs
+        (sharp_term Sharp (Fun len [\<sigma> L])) =
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs
+        Guard_List (\<sigma> L)"
+      by (rule csr_guard_normal_pair_rank_sharp_length[
+          OF admin marked_len wrappers_rev])
+    show ?thesis using marked_eq unfolding csr_guard_weak_pair_def by simp
+  qed
+  have normal_tail: "csr_guard_normal_rank a u11 u21 u31
+      z su len ni co ta zs Guard_List (\<sigma> L) = Some m"
+    using source_rank source_eq by simp
+  show ?thesis by (rule csr_guard_weak_pair_instance_ge_normal[
+      where tt = tt and L = L and \<sigma> = \<sigma>,
+      OF admin marked_u11 marked_len wrappers normal_tail])
+qed
+
+lemma csr_guard_strict_connector_ge:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and connector:
+      "(snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>,u)
+        \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+  shows "(snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+        a listp natp N L) \<cdot> \<sigma>,u)
+    \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs"
+proof -
+  have different: "u11 \<noteq> len" using symbols by auto
+  have admin: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    using symbols by simp
+  from csr_guard_strict_successor_weak[
+      OF different pairs wf fresh frozen connector next_pair]
+  obtain \<tau> where u: "u = fst (csr_guard_weak_pair
+      (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>"
+    and v: "v = snd (csr_guard_weak_pair
+      (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>"
+    and lists: "\<tau> L = \<sigma> L" .
+  from csr_guard_strict_return_rank[
+      OF symbols pairs wf fresh frozen truth_checked rank_checked
+        connector next_pair]
+  obtain n where ranked: "csr_guard_rank z su len ni co ta zs
+      Guard_List (\<sigma> L) = Some n" by blast
+  have weak_order:
+      "(fst (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>,
+        snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>)
+      \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+    by (rule csr_guard_weak_pair_instance_ge[
+        where tt = tt and L = L and \<sigma> = \<tau>,
+        OF _ marked_u11 marked_len wrappers _],
+        use symbols ranked lists in auto)
+  from weak_order obtain m k where target_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs u = Some m"
+    unfolding csr_guard_normal_pair_rank_ge_def u by auto
+  have source_shape: "\<exists>q l.
+      snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+        a listp natp N L) \<cdot> \<sigma> =
+      sharp_term Sharp (Fun u11 [q,l])"
+    unfolding csr_guard_strict_pair_def by simp
+  have source_rank: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs
+      (snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+        a listp natp N L) \<cdot> \<sigma>) = Some m"
+    by (rule csr_guard_normal_pair_rank_csdp_steps_u11[
+        OF admin marked_u11 wrappers wf fresh frozen
+          source_shape connector target_rank])
+  show ?thesis unfolding csr_guard_normal_pair_rank_ge_def
+    using source_rank target_rank by auto
+qed
+
+lemma csr_guard_weak_connector_lookahead_ge:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and connector:
+      "(snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,u)
+        \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and next_connector: "(v,w) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and following_pair: "(w,x) \<in> csr_min_pair_step Sharp \<mu> P R"
+  shows "(snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,u)
+    \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs"
+proof -
+  have different: "u11 \<noteq> len" using symbols by auto
+  have admin: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    using symbols by simp
+  have constructors: "distinct [z,su,len,ni,co,ta,zs]" using symbols by simp
+  have rank_symbols: "distinct [a,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    using symbols by simp
+  have wrappers_rev: "Sharp len \<noteq> Sharp u11" using wrappers by auto
+  from csr_guard_weak_successor_strict[
+      OF different pairs wf fresh connector next_pair]
+  obtain \<tau> where u: "u = fst (csr_guard_strict_pair (Sharp len) co
+      (Sharp u11) a listp natp N L) \<cdot> \<tau>"
+    and v: "v = snd (csr_guard_strict_pair (Sharp len) co
+      (Sharp u11) a listp natp N L) \<cdot> \<tau>" .
+  from csr_guard_strict_return_rank[
+      OF symbols pairs wf fresh frozen truth_checked rank_checked
+        next_connector[unfolded v] following_pair]
+  obtain n where tail_rank: "csr_guard_rank z su len ni co ta zs
+      Guard_List (\<tau> L) = Some n" by blast
+  have strict_order:
+      "(fst (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<tau>,
+        snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<tau>)
+      \<in> csr_guard_normal_pair_rank_gt a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+    by (rule csr_guard_strict_pair_instance_gt[
+        where listp = listp and natp = natp and N = N and L = L and \<sigma> = \<tau>,
+        OF rank_symbols marked_u11 marked_len wrappers tail_rank])
+  from strict_order obtain m k where target_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs u = Some m"
+    unfolding csr_guard_normal_pair_rank_gt_def u by auto
+  have source_shape: "\<exists>l. snd (csr_guard_weak_pair
+      (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma> =
+      sharp_term Sharp (Fun len [l])"
+    unfolding csr_guard_weak_pair_def by simp
+  have source_rank: "csr_guard_normal_pair_rank a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs
+      (snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>) = Some m"
+    by (rule csr_guard_normal_pair_rank_csdp_steps_length[
+        OF admin constructors marked_len wrappers_rev normal_checked wf fresh
+          source_shape connector target_rank])
+  show ?thesis unfolding csr_guard_normal_pair_rank_ge_def
+    using source_rank target_rank by auto
+qed
+
+lemma csr_guard_two_pair_lookahead_order:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and current: "(s,t) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and connector: "(t,u) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and next_connector: "(v,w) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and following_pair: "(w,x) \<in> csr_min_pair_step Sharp \<mu> P R"
+  shows "(s,t) \<in>
+      csr_guard_normal_pair_rank_gt a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs \<union>
+      csr_guard_normal_pair_rank_ge a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+proof -
+  have rank_symbols: "distinct [a,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    using symbols by simp
+  from csr_guard_two_pair_stepE[OF pairs current]
+  show ?thesis
+  proof cases
+    case (1 \<sigma>)
+    from csr_guard_strict_return_rank[
+        OF symbols pairs wf fresh frozen truth_checked rank_checked
+          connector[unfolded 1(2)] next_pair]
+    obtain n where ranked: "csr_guard_rank z su len ni co ta zs
+        Guard_List (\<sigma> L) = Some n" by blast
+    have strict: "(fst (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>,
+        snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>)
+      \<in> csr_guard_normal_pair_rank_gt a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+      by (rule csr_guard_strict_pair_instance_gt[
+          where listp = listp and natp = natp and N = N and L = L and \<sigma> = \<sigma>,
+          OF rank_symbols marked_u11 marked_len wrappers ranked])
+    show ?thesis using strict 1 by auto
+  next
+    case (2 \<sigma>)
+    have weak: "(fst (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,
+        snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>)
+      \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+      by (rule csr_guard_weak_pair_lookahead_ge[
+          OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+            truth_checked rank_checked normal_checked
+            connector[unfolded 2(2)] next_pair next_connector following_pair])
+    show ?thesis using weak 2 by auto
+  qed
+qed
+
+lemma csr_guard_two_pair_between_ge:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and previous: "(p,s) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and connector: "(s,t) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(t,u) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and next_connector: "(u,v) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and following_pair: "(v,w) \<in> csr_min_pair_step Sharp \<mu> P R"
+  shows "(s,t) \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+      (Sharp u11) (Sharp len) z su len ni co ta zs"
+proof -
+  from csr_guard_two_pair_stepE[OF pairs previous]
+  show ?thesis
+  proof cases
+    case (1 \<sigma>)
+    have result: "(snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>,t)
+        \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+          (Sharp u11) (Sharp len) z su len ni co ta zs"
+      by (rule csr_guard_strict_connector_ge[
+          OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+            truth_checked rank_checked connector[unfolded 1(2)] next_pair])
+    show ?thesis using result 1(2) by simp
+  next
+    case (2 \<sigma>)
+    have result: "(snd (csr_guard_weak_pair (Sharp u11) tt (Sharp len) L) \<cdot> \<sigma>,t)
+        \<in> csr_guard_normal_pair_rank_ge a u11 u21 u31
+          (Sharp u11) (Sharp len) z su len ni co ta zs"
+      by (rule csr_guard_weak_connector_lookahead_ge[
+          OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+            truth_checked rank_checked normal_checked connector[unfolded 2(2)]
+            next_pair next_connector following_pair])
+    show ?thesis using result 2(2) by simp
+  qed
+qed
+
+lemma csr_guard_two_pair_alternating_strict:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and current: "(s,t) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and connector: "(t,u) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and next_connector: "(v,w) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
+    and following_pair: "(w,x) \<in> csr_min_pair_step Sharp \<mu> P R"
+    and not_strict: "(s,t) \<notin> csr_guard_normal_pair_rank_gt
+      a u11 u21 u31 (Sharp u11) (Sharp len) z su len ni co ta zs"
+  shows "(u,v) \<in> csr_guard_normal_pair_rank_gt
+      a u11 u21 u31 (Sharp u11) (Sharp len) z su len ni co ta zs"
+proof -
+  have different: "u11 \<noteq> len" using symbols by auto
+  have rank_symbols: "distinct [a,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    using symbols by simp
+  from csr_guard_two_pair_stepE[OF pairs current]
+  show ?thesis
+  proof cases
+    case (1 \<sigma>)
+    from csr_guard_strict_return_rank[
+        OF symbols pairs wf fresh frozen truth_checked rank_checked
+          connector[unfolded 1(2)] next_pair]
+    obtain n where ranked: "csr_guard_rank z su len ni co ta zs
+        Guard_List (\<sigma> L) = Some n" by blast
+    have strict: "(fst (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>,
+        snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<sigma>)
+      \<in> csr_guard_normal_pair_rank_gt a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+      by (rule csr_guard_strict_pair_instance_gt[
+          where listp = listp and natp = natp and N = N and L = L and \<sigma> = \<sigma>,
+          OF rank_symbols marked_u11 marked_len wrappers ranked])
+    have contradiction: False using not_strict strict 1 by auto
+    show ?thesis by (rule FalseE[OF contradiction])
+  next
+    case (2 \<sigma>)
+    from csr_guard_weak_successor_strict[
+        OF different pairs wf fresh connector[unfolded 2(2)] next_pair]
+    obtain \<tau> where u: "u = fst (csr_guard_strict_pair (Sharp len) co
+        (Sharp u11) a listp natp N L) \<cdot> \<tau>"
+      and v: "v = snd (csr_guard_strict_pair (Sharp len) co
+        (Sharp u11) a listp natp N L) \<cdot> \<tau>" .
+    from csr_guard_strict_return_rank[
+        OF symbols pairs wf fresh frozen truth_checked rank_checked
+          next_connector[unfolded v] following_pair]
+    obtain n where ranked: "csr_guard_rank z su len ni co ta zs
+        Guard_List (\<tau> L) = Some n" by blast
+    have strict: "(fst (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<tau>,
+        snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
+          a listp natp N L) \<cdot> \<tau>)
+      \<in> csr_guard_normal_pair_rank_gt a u11 u21 u31
+        (Sharp u11) (Sharp len) z su len ni co ta zs"
+      by (rule csr_guard_strict_pair_instance_gt[
+          where listp = listp and natp = natp and N = N and L = L and \<sigma> = \<tau>,
+          OF rank_symbols marked_u11 marked_len wrappers ranked])
+    show ?thesis using strict u v by simp
+  qed
 qed
 
 definition csr_guard_pair_rank_gt where
@@ -3377,6 +3882,180 @@ proof (rule ccontr)
   moreover have "\<not> SN_on ?PC UNIV"
     by (rule not_SN_onI[OF _ residual_chain], simp)
   ultimately show False by contradiction
+qed
+
+lemma SN_rel_min_endpoint_order_alternating:
+  assumes sn: "SN S"
+    and compat_NS_S: "NS O S \<subseteq> S"
+    and compat_S_NS: "S O NS \<subseteq> S"
+    and trans_NS: "trans NS"
+    and target_SN: "\<And>s t. (s,t) \<in> B \<Longrightarrow> SN_on A {t}"
+    and pair_order: "\<And>s t u v w x. SN_on A {s} \<Longrightarrow>
+      (s,t) \<in> B \<Longrightarrow> (t,u) \<in> A\<^sup>* \<Longrightarrow> (u,v) \<in> B \<Longrightarrow>
+      (v,w) \<in> A\<^sup>* \<Longrightarrow> (w,x) \<in> B \<Longrightarrow>
+      (s,t) \<in> S \<union> NS"
+    and steps_order: "\<And>p s t u v w. SN_on A {s} \<Longrightarrow>
+      (p,s) \<in> B \<Longrightarrow> (s,t) \<in> A\<^sup>* \<Longrightarrow> (t,u) \<in> B \<Longrightarrow>
+      (u,v) \<in> A\<^sup>* \<Longrightarrow> (v,w) \<in> B \<Longrightarrow> (s,t) \<in> NS"
+    and alternating: "\<And>s t u v w x.
+      (s,t) \<in> B \<Longrightarrow> (t,u) \<in> A\<^sup>* \<Longrightarrow> (u,v) \<in> B \<Longrightarrow>
+      (v,w) \<in> A\<^sup>* \<Longrightarrow> (w,x) \<in> B \<Longrightarrow>
+      (s,t) \<notin> S \<Longrightarrow> (u,v) \<in> S"
+  shows "SN_rel B A"
+proof (rule ccontr)
+  let ?PB = "A\<^sup>* O B O A\<^sup>*"
+  assume not_fin: "\<not> SN_rel B A"
+  then obtain f where chain: "chain ?PB f"
+    unfolding SN_rel_on_def SN_defs by auto
+  have ex_mid: "\<forall>i. \<exists>a b. (f i,a) \<in> A\<^sup>* \<and>
+      (a,b) \<in> B \<and> (b,f (Suc i)) \<in> A\<^sup>*"
+  proof
+    fix i
+    from chain[rule_format, of i] obtain a b where
+      pre: "(f i,a) \<in> A\<^sup>*" and pair: "(a,b) \<in> B"
+      and post: "(b,f (Suc i)) \<in> A\<^sup>*" by auto
+    show "\<exists>a b. (f i,a) \<in> A\<^sup>* \<and> (a,b) \<in> B \<and>
+      (b,f (Suc i)) \<in> A\<^sup>*" using pre pair post by auto
+  qed
+  from choice[OF ex_mid] obtain a where choose_a:
+      "\<forall>i. \<exists>b. (f i,a i) \<in> A\<^sup>* \<and>
+        (a i,b) \<in> B \<and> (b,f (Suc i)) \<in> A\<^sup>*" by auto
+  from choice[OF choose_a] obtain b where chosen:
+      "\<forall>i. (f i,a i) \<in> A\<^sup>* \<and>
+        (a i,b i) \<in> B \<and> (b i,f (Suc i)) \<in> A\<^sup>*" by auto
+  from chosen have pre: "\<And>i. (f i,a i) \<in> A\<^sup>*"
+    and pair: "\<And>i. (a i,b i) \<in> B"
+    and post: "\<And>i. (b i,f (Suc i)) \<in> A\<^sup>*" by auto
+  have between: "(b i,a (Suc i)) \<in> A\<^sup>*" for i
+    by (rule rtrancl_trans[OF post[of i] pre[of "Suc i"]])
+  have b_sn: "SN_on A {b i}" for i by (rule target_SN[OF pair])
+  have a_sn: "SN_on A {a (Suc i)}" for i
+  proof (rule ccontr)
+    assume not_sn: "\<not> SN_on A {a (Suc i)}"
+    from steps_notSN_on_source[OF between[of i] not_sn]
+      b_sn[of i] show False by contradiction
+  qed
+  have weak: "(b i,a (Suc i)) \<in> NS" for i
+    by (rule steps_order[OF b_sn pair between pair between pair])
+  have pord: "(a (Suc i),b (Suc i)) \<in> S \<union> NS" for i
+    by (rule pair_order[OF a_sn pair between pair between pair])
+  let ?x = "\<lambda>i. a (Suc i)"
+  have xstep: "(?x i,?x (Suc i)) \<in> NS \<union> S" for i
+  proof (cases "(a (Suc i),b (Suc i)) \<in> S")
+    case True
+    have comp: "(a (Suc i),a (Suc (Suc i))) \<in> S O NS"
+      by (rule relcompI[OF True weak[of "Suc i"]])
+    have "(a (Suc i),a (Suc (Suc i))) \<in> S"
+      by (rule compat_S_NS[THEN subsetD, OF comp])
+    then show ?thesis by simp
+  next
+    case False
+    with pord[of i] have first: "(a (Suc i),b (Suc i)) \<in> NS" by auto
+    from transD[OF trans_NS first weak[of "Suc i"]] show ?thesis by simp
+  qed
+  have xchain: "chain (NS \<union> S) ?x" using xstep by simp
+  have sn0: "SN_on S {?x 0}" using sn unfolding SN_on_def by auto
+  from non_strict_ending[OF xchain compat_NS_S sn0]
+  obtain j where tail: "\<And>k. k \<ge> j \<Longrightarrow>
+    (?x k,?x (Suc k)) \<in> NS - S" by auto
+  have current_not_strict: "(a (Suc j),b (Suc j)) \<notin> S"
+  proof
+    assume strict: "(a (Suc j),b (Suc j)) \<in> S"
+    have comp: "(a (Suc j),a (Suc (Suc j))) \<in> S O NS"
+      by (rule relcompI[OF strict weak[of "Suc j"]])
+    have "(?x j,?x (Suc j)) \<in> S"
+      by (rule compat_S_NS[THEN subsetD, OF comp])
+    moreover from tail[of j] have "(?x j,?x (Suc j)) \<notin> S" by auto
+    ultimately show False by contradiction
+  qed
+  have next_strict: "(a (Suc (Suc j)),b (Suc (Suc j))) \<in> S"
+    by (rule alternating[
+        OF pair between pair between pair current_not_strict])
+  have comp: "(a (Suc (Suc j)),a (Suc (Suc (Suc j)))) \<in> S O NS"
+    by (rule relcompI[OF next_strict weak[of "Suc (Suc j)"]])
+  have strict_step: "(?x (Suc j),?x (Suc (Suc j))) \<in> S"
+    by (rule compat_S_NS[THEN subsetD, OF comp])
+  moreover from tail[of "Suc j"] have
+    "(?x (Suc j),?x (Suc (Suc j))) \<notin> S" by auto
+  ultimately show False by contradiction
+qed
+
+lemma finite_min_csr_dpp_guarded_two_pair:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof -
+  let ?S = "csr_guard_normal_pair_rank_gt a u11 u21 u31
+    (Sharp u11) (Sharp len) z su len ni co ta zs"
+  let ?NS = "csr_guard_normal_pair_rank_ge a u11 u21 u31
+    (Sharp u11) (Sharp len) z su len ni co ta zs"
+  let ?A = "csdp_step Sharp \<mu> R"
+  let ?B = "csr_min_pair_step Sharp \<mu> P R"
+  have target: "\<And>s t. (s,t) \<in> ?B \<Longrightarrow> SN_on ?A {t}"
+    unfolding csr_min_pair_step_def by auto
+  have pair_order: "\<And>s t u v w x. SN_on ?A {s} \<Longrightarrow>
+      (s,t) \<in> ?B \<Longrightarrow> (t,u) \<in> ?A\<^sup>* \<Longrightarrow> (u,v) \<in> ?B \<Longrightarrow>
+      (v,w) \<in> ?A\<^sup>* \<Longrightarrow> (w,x) \<in> ?B \<Longrightarrow>
+      (s,t) \<in> ?S \<union> ?NS"
+  proof -
+    fix s t u v w x
+    assume "SN_on ?A {s}" and st: "(s,t) \<in> ?B"
+      and tu: "(t,u) \<in> ?A\<^sup>*" and uv: "(u,v) \<in> ?B"
+      and vw: "(v,w) \<in> ?A\<^sup>*" and wx: "(w,x) \<in> ?B"
+    show "(s,t) \<in> ?S \<union> ?NS"
+      by (rule csr_guard_two_pair_lookahead_order[
+          OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+            truth_checked rank_checked normal_checked st tu uv vw wx])
+  qed
+  have between_order: "\<And>p s t u v w. SN_on ?A {s} \<Longrightarrow>
+      (p,s) \<in> ?B \<Longrightarrow> (s,t) \<in> ?A\<^sup>* \<Longrightarrow> (t,u) \<in> ?B \<Longrightarrow>
+      (u,v) \<in> ?A\<^sup>* \<Longrightarrow> (v,w) \<in> ?B \<Longrightarrow> (s,t) \<in> ?NS"
+  proof -
+    fix p s t u v w
+    assume "SN_on ?A {s}" and ps: "(p,s) \<in> ?B"
+      and st: "(s,t) \<in> ?A\<^sup>*" and tu: "(t,u) \<in> ?B"
+      and uv: "(u,v) \<in> ?A\<^sup>*" and vw: "(v,w) \<in> ?B"
+    show "(s,t) \<in> ?NS"
+      by (rule csr_guard_two_pair_between_ge[
+          OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+            truth_checked rank_checked normal_checked ps st tu uv vw])
+  qed
+  have alternating: "\<And>s t u v w x.
+      (s,t) \<in> ?B \<Longrightarrow> (t,u) \<in> ?A\<^sup>* \<Longrightarrow> (u,v) \<in> ?B \<Longrightarrow>
+      (v,w) \<in> ?A\<^sup>* \<Longrightarrow> (w,x) \<in> ?B \<Longrightarrow>
+      (s,t) \<notin> ?S \<Longrightarrow> (u,v) \<in> ?S"
+  proof -
+    fix s t u v w x
+    assume st: "(s,t) \<in> ?B" and tu: "(t,u) \<in> ?A\<^sup>*"
+      and uv: "(u,v) \<in> ?B" and vw: "(v,w) \<in> ?A\<^sup>*"
+      and wx: "(w,x) \<in> ?B" and not_strict: "(s,t) \<notin> ?S"
+    show "(u,v) \<in> ?S"
+      by (rule csr_guard_two_pair_alternating_strict[
+          OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+            truth_checked rank_checked st tu uv vw wx not_strict])
+  qed
+  have rel: "SN_rel ?B ?A"
+    by (rule SN_rel_min_endpoint_order_alternating[
+        OF SN_csr_guard_normal_pair_rank_gt
+          csr_guard_normal_pair_rank_ge_gt_comp
+          csr_guard_normal_pair_rank_gt_ge_comp
+          csr_guard_normal_pair_rank_ge_trans target
+          pair_order between_order alternating])
+  show ?thesis unfolding finite_min_csr_dpp_def by (rule rel)
 qed
 
 lemma finite_min_csr_dpp_guarded_normal_lookahead_delete:
