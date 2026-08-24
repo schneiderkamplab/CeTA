@@ -1879,6 +1879,30 @@ proof -
   then show ?thesis by (rule SN_subset[OF _ sub])
 qed
 
+lemma SN_rel_csr_guard_normal_pair_rank:
+  "SN_rel
+    (csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs)
+    (csr_guard_normal_pair_rank_ge a u11 u21 u31 u11s lens z su len ni co ta zs)"
+proof -
+  let ?S = "csr_guard_normal_pair_rank_gt
+    a u11 u21 u31 u11s lens z su len ni co ta zs"
+  let ?NS = "csr_guard_normal_pair_rank_ge
+    a u11 u21 u31 u11s lens z su len ni co ta zs"
+  have compat: "?NS O ?S \<subseteq> ?S"
+    by (rule csr_guard_normal_pair_rank_ge_gt_comp)
+  have sn: "SN ((?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*)"
+    by (rule compatible_SN'[OF compat SN_csr_guard_normal_pair_rank_gt])
+  have sub: "?NS\<^sup>* O ?S O ?NS\<^sup>*
+      \<subseteq> (?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*"
+  proof -
+    have ns: "?NS\<^sup>* \<subseteq> (?NS \<union> ?S)\<^sup>*"
+      by (rule rtrancl_mono, auto)
+    show ?thesis
+      by (rule relcomp_mono[OF ns relcomp_mono[OF subset_refl ns]])
+  qed
+  show ?thesis unfolding SN_rel_defs by (rule SN_subset[OF sn sub])
+qed
+
 lemma csr_guard_pair_rank_gt_ge_comp:
   "csr_guard_pair_rank_gt u11s lens z su len ni co ta zs O
       csr_guard_pair_rank_ge u11s lens z su len ni co ta zs
