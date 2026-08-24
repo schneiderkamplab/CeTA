@@ -2820,6 +2820,12 @@ proof -
   qed
 qed
 
+definition csr_guard_successful_tests where
+  "csr_guard_successful_tests tt a natp listp ilistp z su len ni co ta zs \<mu> R \<longleftrightarrow>
+    (\<forall>L N. (Fun a [Fun listp [L], Fun natp [N]], Fun tt [])
+      \<in> (csstep \<mu> R)\<^sup>* \<longrightarrow>
+      csr_guard_rank z su len ni co ta zs Guard_List L \<noteq> None)"
+
 lemma csr_guard_strict_return_rank:
   assumes symbols: "distinct
       [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
@@ -2829,9 +2835,8 @@ lemma csr_guard_strict_return_rank:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and connector:
       "(snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
           a listp natp N L) \<cdot> \<sigma>,u)
@@ -2839,8 +2844,6 @@ lemma csr_guard_strict_return_rank:
     and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
   shows "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_List (\<sigma> L) = Some n"
 proof -
-  have names: "distinct [tt,a,natp,listp,ilistp]" using symbols by simp
-  have constructors: "distinct [z,su,len,ni,co,ta,zs]" using symbols by simp
   have source: "snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
         a listp natp N L) \<cdot> \<sigma> =
       sharp_term Sharp (Fun u11
@@ -2873,8 +2876,8 @@ proof -
       by auto
     have ranked: "csr_guard_rank z su len ni co ta zs
         Guard_List (\<sigma> L) \<noteq> None"
-      by (rule csr_guard_successful_nat_list_test[
-          OF names constructors truth_checked rank_checked guards])
+      using guard_checked guards
+      unfolding csr_guard_successful_tests_def by blast
     show ?thesis using ranked by (cases "csr_guard_rank z su len ni co ta zs
         Guard_List (\<sigma> L)"; auto)
   qed
@@ -3130,9 +3133,8 @@ lemma csr_guard_weak_pair_lookahead_ge:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and normal_checked: "csr_guard_normal_rules_backward_eq
       a u11 u21 u31 z su len ni co ta zs R"
     and connector:
@@ -3160,7 +3162,7 @@ proof -
     and v: "v = snd (csr_guard_strict_pair (Sharp len) co
       (Sharp u11) a listp natp N L) \<cdot> \<tau>" .
   from csr_guard_strict_return_rank[
-      OF symbols pairs wf fresh frozen truth_checked rank_checked
+      OF symbols pairs wf fresh frozen guard_checked
         next_connector[unfolded v] following_pair]
   obtain n where tail_rank: "csr_guard_rank z su len ni co ta zs
       Guard_List (\<tau> L) = Some n" by blast
@@ -3223,9 +3225,8 @@ lemma csr_guard_strict_connector_ge:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and connector:
       "(snd (csr_guard_strict_pair (Sharp len) co (Sharp u11)
           a listp natp N L) \<cdot> \<sigma>,u)
@@ -3247,7 +3248,7 @@ proof -
       (Sharp u11) tt (Sharp len) L) \<cdot> \<tau>"
     and lists: "\<tau> L = \<sigma> L" .
   from csr_guard_strict_return_rank[
-      OF symbols pairs wf fresh frozen truth_checked rank_checked
+      OF symbols pairs wf fresh frozen guard_checked
         connector next_pair]
   obtain n where ranked: "csr_guard_rank z su len ni co ta zs
       Guard_List (\<sigma> L) = Some n" by blast
@@ -3292,9 +3293,8 @@ lemma csr_guard_weak_connector_lookahead_ge:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and normal_checked: "csr_guard_normal_rules_backward_eq
       a u11 u21 u31 z su len ni co ta zs R"
     and connector:
@@ -3321,7 +3321,7 @@ proof -
     and v: "v = snd (csr_guard_strict_pair (Sharp len) co
       (Sharp u11) a listp natp N L) \<cdot> \<tau>" .
   from csr_guard_strict_return_rank[
-      OF symbols pairs wf fresh frozen truth_checked rank_checked
+      OF symbols pairs wf fresh frozen guard_checked
         next_connector[unfolded v] following_pair]
   obtain n where tail_rank: "csr_guard_rank z su len ni co ta zs
       Guard_List (\<tau> L) = Some n" by blast
@@ -3365,9 +3365,8 @@ lemma csr_guard_two_pair_lookahead_order:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and normal_checked: "csr_guard_normal_rules_backward_eq
       a u11 u21 u31 z su len ni co ta zs R"
     and current: "(s,t) \<in> csr_min_pair_step Sharp \<mu> P R"
@@ -3388,7 +3387,7 @@ proof -
   proof cases
     case (1 \<sigma>)
     from csr_guard_strict_return_rank[
-        OF symbols pairs wf fresh frozen truth_checked rank_checked
+        OF symbols pairs wf fresh frozen guard_checked
           connector[unfolded 1(2)] next_pair]
     obtain n where ranked: "csr_guard_rank z su len ni co ta zs
         Guard_List (\<sigma> L) = Some n" by blast
@@ -3410,7 +3409,7 @@ proof -
         (Sharp u11) (Sharp len) z su len ni co ta zs"
       by (rule csr_guard_weak_pair_lookahead_ge[
           OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
-            truth_checked rank_checked normal_checked
+            guard_checked normal_checked
             connector[unfolded 2(2)] next_pair next_connector following_pair])
     show ?thesis using weak 2 by auto
   qed
@@ -3428,9 +3427,8 @@ lemma csr_guard_two_pair_between_ge:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and normal_checked: "csr_guard_normal_rules_backward_eq
       a u11 u21 u31 z su len ni co ta zs R"
     and previous: "(p,s) \<in> csr_min_pair_step Sharp \<mu> P R"
@@ -3451,7 +3449,7 @@ proof -
           (Sharp u11) (Sharp len) z su len ni co ta zs"
       by (rule csr_guard_strict_connector_ge[
           OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
-            truth_checked rank_checked connector[unfolded 1(2)] next_pair])
+            guard_checked connector[unfolded 1(2)] next_pair])
     show ?thesis using result 1(2) by simp
   next
     case (2 \<sigma>)
@@ -3460,7 +3458,7 @@ proof -
           (Sharp u11) (Sharp len) z su len ni co ta zs"
       by (rule csr_guard_weak_connector_lookahead_ge[
           OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
-            truth_checked rank_checked normal_checked connector[unfolded 2(2)]
+            guard_checked normal_checked connector[unfolded 2(2)]
             next_pair next_connector following_pair])
     show ?thesis using result 2(2) by simp
   qed
@@ -3478,9 +3476,8 @@ lemma csr_guard_two_pair_alternating_strict:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and current: "(s,t) \<in> csr_min_pair_step Sharp \<mu> P R"
     and connector: "(t,u) \<in> (csdp_step Sharp \<mu> R)\<^sup>*"
     and next_pair: "(u,v) \<in> csr_min_pair_step Sharp \<mu> P R"
@@ -3499,7 +3496,7 @@ proof -
   proof cases
     case (1 \<sigma>)
     from csr_guard_strict_return_rank[
-        OF symbols pairs wf fresh frozen truth_checked rank_checked
+        OF symbols pairs wf fresh frozen guard_checked
           connector[unfolded 1(2)] next_pair]
     obtain n where ranked: "csr_guard_rank z su len ni co ta zs
         Guard_List (\<sigma> L) = Some n" by blast
@@ -3523,7 +3520,7 @@ proof -
       and v: "v = snd (csr_guard_strict_pair (Sharp len) co
         (Sharp u11) a listp natp N L) \<cdot> \<tau>" .
     from csr_guard_strict_return_rank[
-        OF symbols pairs wf fresh frozen truth_checked rank_checked
+        OF symbols pairs wf fresh frozen guard_checked
           next_connector[unfolded v] following_pair]
     obtain n where ranked: "csr_guard_rank z su len ni co ta zs
         Guard_List (\<tau> L) = Some n" by blast
@@ -3992,9 +3989,8 @@ lemma finite_min_csr_dpp_guarded_two_pair:
     and wf: "wf_trs R"
     and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
     and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
-    and truth_checked: "csr_guard_truth_rules_backward
-      tt a natp listp ilistp z su len ni co ta zs R"
-    and rank_checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
     and normal_checked: "csr_guard_normal_rules_backward_eq
       a u11 u21 u31 z su len ni co ta zs R"
   shows "finite_min_csr_dpp Sharp \<mu> P R"
@@ -4019,7 +4015,7 @@ proof -
     show "(s,t) \<in> ?S \<union> ?NS"
       by (rule csr_guard_two_pair_lookahead_order[
           OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
-            truth_checked rank_checked normal_checked st tu uv vw wx])
+            guard_checked normal_checked st tu uv vw wx])
   qed
   have between_order: "\<And>p s t u v w. SN_on ?A {s} \<Longrightarrow>
       (p,s) \<in> ?B \<Longrightarrow> (s,t) \<in> ?A\<^sup>* \<Longrightarrow> (t,u) \<in> ?B \<Longrightarrow>
@@ -4032,7 +4028,7 @@ proof -
     show "(s,t) \<in> ?NS"
       by (rule csr_guard_two_pair_between_ge[
           OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
-            truth_checked rank_checked normal_checked ps st tu uv vw])
+            guard_checked normal_checked ps st tu uv vw])
   qed
   have alternating: "\<And>s t u v w x.
       (s,t) \<in> ?B \<Longrightarrow> (t,u) \<in> ?A\<^sup>* \<Longrightarrow> (u,v) \<in> ?B \<Longrightarrow>
@@ -4046,7 +4042,7 @@ proof -
     show "(u,v) \<in> ?S"
       by (rule csr_guard_two_pair_alternating_strict[
           OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
-            truth_checked rank_checked st tu uv vw wx not_strict])
+            guard_checked st tu uv vw wx not_strict])
   qed
   have rel: "SN_rel ?B ?A"
     by (rule SN_rel_min_endpoint_order_alternating[
@@ -4379,5 +4375,373 @@ lemma finite_min_csr_dpp_by_guard_rank:
   shows "finite_min_csr_dpp shp \<mu> P R"
   unfolding finite_min_csr_dpp_def
   by (rule SN_rel_mono[OF strict weak SN_rel_csr_guard_rank])
+
+text \<open>
+  The executable processor initially recognizes the complete residual of the
+  standard conditional specification of guarded finite and infinite lists.
+  The parameters make this a syntactic family (and hence invariant under
+  renaming), rather than a benchmark-name exception.
+\<close>
+
+lemma csr_guard_rank_list_imp_ilist:
+  assumes constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and rank: "csr_guard_rank z su len ni co ta zs Guard_List t = Some n"
+  shows "\<exists>m. csr_guard_rank z su len ni co ta zs Guard_IList t = Some m"
+  using rank
+proof (induction t arbitrary: n)
+  case (Var x)
+  then show ?case by simp
+next
+  case (Fun f ts)
+  have ni_co: "ni \<noteq> co" and ni_ta: "ni \<noteq> ta" and ni_zs: "ni \<noteq> zs"
+    and co_ni: "co \<noteq> ni" and co_ta: "co \<noteq> ta" and co_zs: "co \<noteq> zs"
+    and ta_ni: "ta \<noteq> ni" and ta_co: "ta \<noteq> co" and ta_zs: "ta \<noteq> zs"
+    and zs_ni: "zs \<noteq> ni" and zs_co: "zs \<noteq> co" and zs_ta: "zs \<noteq> ta"
+    using constructors by auto
+  consider
+      (nil) "f = ni" "ts = []"
+    | (cons) k where "f = co" "length ts = 2"
+        "csr_guard_rank z su len ni co ta zs Guard_List (ts ! 1) = Some k"
+    | (take) k m where "f = ta" "length ts = 2"
+        "csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some k"
+        "csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some m"
+    using Fun.prems
+    by (auto split: if_splits option.splits)
+  then show ?case
+  proof cases
+    case nil
+    then show ?thesis using ni_co ni_ta ni_zs by simp
+  next
+    case (cons k)
+    from Fun.IH[of "ts ! 1" k] cons obtain m where tail:
+      "csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some m"
+      by auto
+    show ?thesis using cons tail co_ni co_ta co_zs by simp
+  next
+    case (take k m)
+    then show ?thesis using ta_ni ta_co ta_zs by simp
+  qed
+qed
+
+lemma csr_guard_truth_replace_at_active_backward:
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and mu_and: "\<mu> (a,2) \<subseteq> {0}"
+    and mu_nat: "\<mu> (natp,1) = {}"
+    and mu_list: "\<mu> (listp,1) = {}"
+    and mu_ilist: "\<mu> (ilistp,1) = {}"
+    and pos: "p \<in> poss s"
+    and cond: "csstep_cond \<mu> p s"
+    and local: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs y
+      \<Longrightarrow> csr_guard_truth tt a natp listp ilistp z su len ni co ta zs x"
+    and target: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (replace_at s p y)"
+  shows "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (replace_at s p x)"
+  using pos cond target
+proof (induction p arbitrary: s)
+  case Nil
+  then show ?case using local by simp
+next
+  case (Cons i p)
+  from Cons.prems(1) obtain f ts where s: "s = Fun f ts"
+    and i: "i < length ts" and p: "p \<in> poss (ts ! i)"
+    by (cases s; auto)
+  from csstep_cond_Cons_FunD[OF Cons.prems(2)[unfolded s]] i p
+  have active: "i \<in> \<mu> (f,length ts)"
+    and child_cond: "csstep_cond \<mu> p (ts ! i)" by auto
+  let ?ys = "ts[i := replace_at (ts ! i) p y]"
+  let ?xs = "ts[i := replace_at (ts ! i) p x]"
+  have upd_y: "ts[i := replace_at (ts ! i) p y] =
+      take i ts @ replace_at (ts ! i) p y # drop (Suc i) ts"
+    by (rule upd_conv_take_nth_drop[OF i])
+  have rep_y: "replace_at s (i # p) y = Fun f ?ys"
+    unfolding s by (simp add: ctxt_of_pos_term.simps upd_y)
+  have target_fun: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (Fun f ?ys)"
+    using Cons.prems(3) unfolding rep_y .
+  have tt_a: "tt \<noteq> a" and tt_nat: "tt \<noteq> natp"
+    and tt_list: "tt \<noteq> listp" and tt_ilist: "tt \<noteq> ilistp"
+    and a_nat: "a \<noteq> natp" and a_list: "a \<noteq> listp"
+    and a_ilist: "a \<noteq> ilistp" and nat_list: "natp \<noteq> listp"
+    and nat_ilist: "natp \<noteq> ilistp" and list_ilist: "listp \<noteq> ilistp"
+    using names by auto
+  note name_neq = tt_a tt_nat tt_list tt_ilist a_nat a_list a_ilist
+    nat_list nat_ilist list_ilist
+  consider
+      (truth) "f = tt" "?ys = []"
+    | (conj) "f = a" "length ?ys = 2"
+        "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (?ys ! 0)"
+        "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (?ys ! 1)"
+    | (nat) "f = natp" "length ?ys = 1"
+    | (list) "f = listp" "length ?ys = 1"
+    | (ilist) "f = ilistp" "length ?ys = 1"
+    using target_fun names
+    by (auto simp: csr_guard_truth.simps
+        split: if_splits option.splits)
+  then show ?case
+  proof cases
+    case truth
+    then show ?thesis using i by simp
+  next
+    case conj
+    have fi: "f = a" and len: "length ts = 2" using conj by auto
+    have iz: "i = 0" using active mu_and fi len by auto
+    have child_target: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+        (replace_at (ts ! i) p y)"
+      using conj(3) i iz by simp
+    have child_source: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+        (replace_at (ts ! i) p x)"
+      by (rule Cons.IH[OF p child_cond child_target])
+    show ?thesis using names conj(4) fi len i iz child_source unfolding s
+      by (simp add: neq_commute)
+  next
+    case nat
+    then show ?thesis using active mu_nat i by simp
+  next
+    case list
+    then show ?thesis using active mu_list i by simp
+  next
+    case ilist
+    then show ?thesis using active mu_ilist i by simp
+  qed
+qed
+
+lemma csr_guard_truth_csstep_backward_active:
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and mu_and: "\<mu> (a,2) \<subseteq> {0}"
+    and mu_nat: "\<mu> (natp,1) = {}"
+    and mu_list: "\<mu> (listp,1) = {}"
+    and mu_ilist: "\<mu> (ilistp,1) = {}"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and step: "(s,t) \<in> csstep \<mu> R"
+    and target: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs t"
+  shows "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs s"
+proof -
+  from step obtain p lr \<sigma> where rewrite:
+      "(s,t) \<in> rstep_r_p_s R lr p \<sigma>" and cond: "csstep_cond \<mu> p s"
+    unfolding csstep_def csstep_p_def by auto
+  from rewrite[unfolded rstep_r_p_s_def'] have lr: "lr \<in> R"
+    and pos: "p \<in> poss s" and redex: "s |_ p = fst lr \<cdot> \<sigma>"
+    and reduct: "t = replace_at s p (snd lr \<cdot> \<sigma>)" by auto
+  have local: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (snd lr \<cdot> \<sigma>) \<Longrightarrow>
+    csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (fst lr \<cdot> \<sigma>)"
+    using truth_checked lr unfolding csr_guard_truth_rules_backward_def by blast
+  have target_replaced: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (replace_at s p (snd lr \<cdot> \<sigma>))"
+    using target reduct by simp
+  have replaced: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (replace_at s p (fst lr \<cdot> \<sigma>))"
+    by (rule csr_guard_truth_replace_at_active_backward[
+        OF names mu_and mu_nat mu_list mu_ilist pos cond local target_replaced])
+  have source_eq: "replace_at s p (fst lr \<cdot> \<sigma>) = s"
+    by (rule replace_at_ident[OF pos redex])
+  show ?thesis using replaced source_eq by simp
+qed
+
+lemma csr_guard_truth_cssteps_backward_active:
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and mu_and: "\<mu> (a,2) \<subseteq> {0}"
+    and mu_nat: "\<mu> (natp,1) = {}"
+    and mu_list: "\<mu> (listp,1) = {}"
+    and mu_ilist: "\<mu> (ilistp,1) = {}"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    and steps: "(s,t) \<in> (csstep \<mu> R)\<^sup>*"
+    and target: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs t"
+  shows "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs s"
+  using steps target
+proof (induction rule: converse_rtrancl_induct)
+  case base
+  then show ?case .
+next
+  case (step s u)
+  show ?case by (rule csr_guard_truth_csstep_backward_active[
+      OF names mu_and mu_nat mu_list mu_ilist truth_checked step.hyps(1)
+        step.IH[OF step.prems]])
+qed
+
+lemma csr_guard_successful_tests_active:
+  assumes names: "distinct [tt,a,natp,listp,ilistp]"
+    and mu_and: "\<mu> (a,2) \<subseteq> {0}"
+    and mu_nat: "\<mu> (natp,1) = {}"
+    and mu_list: "\<mu> (listp,1) = {}"
+    and mu_ilist: "\<mu> (ilistp,1) = {}"
+    and truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+  shows "csr_guard_successful_tests tt a natp listp ilistp
+    z su len ni co ta zs \<mu> R"
+  unfolding csr_guard_successful_tests_def
+proof (intro allI impI)
+  fix L N
+  assume steps: "(Fun a [Fun listp [L], Fun natp [N]], Fun tt [])
+    \<in> (csstep \<mu> R)\<^sup>*"
+  have target: "csr_guard_truth tt a natp listp ilistp
+      z su len ni co ta zs (Fun tt [])" using names by simp
+  have source: "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs
+      (Fun a [Fun listp [L], Fun natp [N]])"
+    by (rule csr_guard_truth_cssteps_backward_active[
+        OF names mu_and mu_nat mu_list mu_ilist truth_checked steps target])
+  show "csr_guard_rank z su len ni co ta zs Guard_List L \<noteq> None"
+    using source names by (simp add: neq_commute)
+qed
+
+definition csr_guard_ovcons_residual ::
+  "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'v \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow>
+   'v \<Rightarrow> 'v \<Rightarrow> 'v \<Rightarrow> ('f,'v) trs"
+where
+  "csr_guard_ovcons_residual tt a natp listp ilistp u11 u21 u31
+      z su len ni co ta zs X L IL M N V V1 V2 = {
+    (Fun zs [], Fun co [Fun z [], Fun zs []]),
+    (Fun u11 [Fun tt [], Var L], Fun su [Fun len [Var L]]),
+    (Fun u31 [Fun tt [], Var IL, Var M, Var N],
+      Fun co [Var N, Fun ta [Var M, Var IL]]),
+    (Fun a [Fun tt [], Var X], Var X),
+    (Fun natp [Fun z []], Fun tt []),
+    (Fun natp [Fun len [Var V1]], Fun listp [Var V1]),
+    (Fun natp [Fun su [Var V1]], Fun natp [Var V1]),
+    (Fun ilistp [Var V], Fun listp [Var V]),
+    (Fun ilistp [Fun zs []], Fun tt []),
+    (Fun ilistp [Fun co [Var V1, Var V2]],
+      Fun a [Fun natp [Var V1], Fun ilistp [Var V2]]),
+    (Fun listp [Fun ni []], Fun tt []),
+    (Fun listp [Fun co [Var V1, Var V2]],
+      Fun a [Fun natp [Var V1], Fun listp [Var V2]]),
+    (Fun listp [Fun ta [Var V1, Var V2]],
+      Fun a [Fun natp [Var V1], Fun ilistp [Var V2]]),
+    (Fun len [Fun co [Var N, Var L]],
+      Fun u11 [Fun a [Fun listp [Var L], Fun natp [Var N]], Var L]),
+    (Fun ta [Fun su [Var M], Fun co [Var N, Var IL]],
+      Fun u31
+        [Fun a [Fun ilistp [Var IL],
+          Fun a [Fun natp [Var M], Fun natp [Var N]]],
+         Var IL, Var M, Var N])}"
+
+lemma csr_guard_ovcons_residual_truth_backward:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+  shows "csr_guard_truth_rules_backward tt a natp listp ilistp
+    z su len ni co ta zs
+    (csr_guard_ovcons_residual tt a natp listp ilistp u11 u21 u31
+      z su len ni co ta zs X L IL M N V V1 V2)"
+proof -
+  have constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    using symbols by simp
+  from symbols have neqs:
+    "tt \<notin> set [a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs] \<and>
+     a \<notin> set [natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs] \<and>
+     natp \<notin> set [listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs] \<and>
+     listp \<notin> set [ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs] \<and>
+     ilistp \<notin> set [u11,u21,u31,z,su,len,ni,co,ta,zs] \<and>
+     u11 \<notin> set [u21,u31,z,su,len,ni,co,ta,zs] \<and>
+     u21 \<notin> set [u31,z,su,len,ni,co,ta,zs] \<and>
+     u31 \<notin> set [z,su,len,ni,co,ta,zs] \<and>
+     z \<notin> set [su,len,ni,co,ta,zs] \<and>
+     su \<notin> set [len,ni,co,ta,zs] \<and>
+     len \<notin> set [ni,co,ta,zs] \<and>
+     ni \<notin> set [co,ta,zs] \<and>
+     co \<notin> set [ta,zs] \<and> ta \<noteq> zs"
+    using symbols by simp
+  from neqs show ?thesis
+  unfolding csr_guard_truth_rules_backward_def csr_guard_ovcons_residual_def
+  apply (intro ballI allI)
+  apply (simp only: insert_iff singleton_iff)
+  apply (elim disjE)
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply (clarsimp dest!: csr_guard_rank_list_imp_ilist[OF constructors])
+  apply simp
+done
+qed
+
+lemma csr_guard_ovcons_residual_normal_backward:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+  shows "csr_guard_normal_rules_backward_eq a u11 u21 u31
+    z su len ni co ta zs
+    (csr_guard_ovcons_residual tt a natp listp ilistp u11 u21 u31
+      z su len ni co ta zs X L IL M N V V1 V2)"
+  unfolding csr_guard_normal_rules_backward_eq_def
+proof (intro allI impI)
+  fix l r A
+  assume rule: "(l,r) \<in> csr_guard_ovcons_residual tt a natp listp ilistp
+    u11 u21 u31 z su len ni co ta zs X L IL M N V V1 V2"
+  show "csr_guard_normal_rule_backward_eq
+      a u11 u21 u31 z su len ni co ta zs A l r"
+  proof (cases A)
+    case Guard_Nat
+    then show ?thesis using symbols rule
+      unfolding csr_guard_ovcons_residual_def
+      by (auto simp: csr_guard_normal_rule_backward_eq_def
+          csr_guard_normal_symbolic_rank_def csr_guard_normalize_def)
+  next
+    case Guard_List
+    then show ?thesis using symbols rule
+      unfolding csr_guard_ovcons_residual_def
+      by (auto simp: csr_guard_normal_rule_backward_eq_def
+          csr_guard_normal_symbolic_rank_def csr_guard_normalize_def)
+  next
+    case Guard_IList
+    then show ?thesis using symbols rule
+      unfolding csr_guard_ovcons_residual_def
+      by (auto simp: csr_guard_normal_rule_backward_eq_def
+          csr_guard_normal_symbolic_rank_def csr_guard_normalize_def)
+  qed
+qed
+
+theorem finite_min_csr_dpp_ovcons_guarded_two_pair:
+  assumes symbols: "distinct
+      [tt,a,natp,listp,ilistp,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and rules: "R = csr_guard_ovcons_residual tt a natp listp ilistp
+      u11 u21 u31 z su len ni co ta zs X L IL M N V V1 V2"
+    and pairs: "P = {
+      csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
+      csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and mu_and: "\<mu> (a,2) \<subseteq> {0}"
+    and mu_nat: "\<mu> (natp,1) = {}"
+    and mu_list: "\<mu> (listp,1) = {}"
+    and mu_ilist: "\<mu> (ilistp,1) = {}"
+  shows "finite_min_csr_dpp Sharp \<mu> P R"
+proof -
+  have names: "distinct [tt,a,natp,listp,ilistp]" using symbols by simp
+  have truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs R"
+    unfolding rules
+    by (rule csr_guard_ovcons_residual_truth_backward[OF symbols])
+  have guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs \<mu> R"
+    by (rule csr_guard_successful_tests_active[
+        OF names mu_and mu_nat mu_list mu_ilist truth_checked])
+  have normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    unfolding rules
+    by (rule csr_guard_ovcons_residual_normal_backward[OF symbols])
+  show ?thesis
+    by (rule finite_min_csr_dpp_guarded_two_pair[
+        OF symbols marked_u11 marked_len wrappers pairs wf fresh frozen
+          guard_checked normal_checked])
+qed
 
 end
