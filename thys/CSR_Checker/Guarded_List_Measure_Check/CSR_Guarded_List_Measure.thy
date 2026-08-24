@@ -272,6 +272,10 @@ definition csr_guard_requirements_realized where
     (\<forall>x A. (x,A) \<in> set req \<longrightarrow>
       csr_guard_rank z su len ni co ta zs A (\<sigma> x) = Some (\<rho> (x,A)))"
 
+lemma csr_guard_requirements_realized_Nil [simp]:
+  "csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> []"
+  unfolding csr_guard_requirements_realized_def by simp
+
 lemma csr_guard_requirements_realized_append [simp]:
   "csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> (xs @ ys) \<longleftrightarrow>
     csr_guard_requirements_realized z su len ni co ta zs \<sigma> \<rho> xs \<and>
@@ -468,6 +472,251 @@ next
           (ts ! 1 \<cdot> \<sigma>) = Some n"
         using Fun.IH[OF mem1 take(4)] realized_i by fastforce
       show ?thesis unfolding Guard_IList using take child_n child_i distinct by fastforce
+    qed
+  qed
+qed
+
+definition csr_guard_rank_environment where
+  "csr_guard_rank_environment z su len ni co ta zs \<sigma> xA =
+    (case xA of (x,A) \<Rightarrow>
+      the_default 0 (csr_guard_rank z su len ni co ta zs A (\<sigma> x)))"
+
+lemma csr_guard_symbolic_rank_complete:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and ground:
+      "csr_guard_rank z su len ni co ta zs A (t \<cdot> \<sigma>) = Some n"
+  shows "\<exists>F.
+    csr_guard_symbolic_rank z su len ni co ta zs A t = Some F \<and>
+    csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+      (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+      (csr_guard_form_requirements F) \<and>
+    csr_guard_form_value
+      (csr_guard_rank_environment z su len ni co ta zs \<sigma>) F = n"
+  using ground
+proof (induction t arbitrary: A n)
+  case (Var x)
+  show ?case
+  proof (intro exI conjI)
+    show "csr_guard_symbolic_rank z su len ni co ta zs A (Var x) =
+        Some (Guard_Form [(x,A)] [(x,A)] 0)"
+      by simp
+    show "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+        (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+        (csr_guard_form_requirements (Guard_Form [(x,A)] [(x,A)] 0))"
+      using Var.prems
+      unfolding csr_guard_requirements_realized_def
+        csr_guard_rank_environment_def by simp
+    show "csr_guard_form_value
+        (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+        (Guard_Form [(x,A)] [(x,A)] 0) = n"
+      using Var.prems unfolding csr_guard_rank_environment_def by simp
+  qed
+next
+  case (Fun f ts)
+  show ?case
+  proof (cases A)
+    case Guard_Nat
+    have ground': "csr_guard_rank z su len ni co ta zs Guard_Nat
+        (Fun f ts \<cdot> \<sigma>) = Some n"
+      using Fun.prems Guard_Nat by simp
+    consider
+        (zero) "f = z" "ts = []" "n = 0"
+      | (succ) m where "f = su" "length ts = 1"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat
+            (ts ! 0 \<cdot> \<sigma>) = Some m" "n = Suc m"
+      | (length) m where "f = len" "length ts = 1"
+          "csr_guard_rank z su len ni co ta zs Guard_List
+            (ts ! 0 \<cdot> \<sigma>) = Some m" "n = m"
+      using ground' distinct
+      by (auto simp: csr_guard_rank.simps
+          split: if_splits option.splits)
+    then show ?thesis
+    proof cases
+      case zero
+      then show ?thesis unfolding Guard_Nat by simp
+    next
+      case (succ m)
+      have mem: "ts ! 0 \<in> set ts" using succ(2) by simp
+      obtain F where symbolic:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat
+            (ts ! 0) = Some F"
+        and realized: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+            (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+            (csr_guard_form_requirements F)"
+        and valF: "csr_guard_form_value
+            (csr_guard_rank_environment z su len ni co ta zs \<sigma>) F = m"
+        using Fun.IH[OF mem succ(3)] by blast
+      obtain req cs c where F: "F = Guard_Form req cs c" by (cases F)
+      show ?thesis
+        unfolding Guard_Nat using succ symbolic realized valF F distinct
+        by (intro exI[of _ "Guard_Form req cs (Suc c)"]) simp
+    next
+      case (length m)
+      have mem: "ts ! 0 \<in> set ts" using length(2) by simp
+      obtain F where symbolic:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_List
+            (ts ! 0) = Some F"
+        and realized: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+            (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+            (csr_guard_form_requirements F)"
+        and valF: "csr_guard_form_value
+            (csr_guard_rank_environment z su len ni co ta zs \<sigma>) F = m"
+        using Fun.IH[OF mem length(3)] by blast
+      show ?thesis unfolding Guard_Nat using length symbolic realized valF distinct by force
+    qed
+  next
+    case Guard_List
+    have ground': "csr_guard_rank z su len ni co ta zs Guard_List
+        (Fun f ts \<cdot> \<sigma>) = Some n"
+      using Fun.prems Guard_List by simp
+    consider
+        (nil) "f = ni" "ts = []" "n = 0"
+      | (cons) p q where "f = co" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat
+            (ts ! 0 \<cdot> \<sigma>) = Some p"
+          "csr_guard_rank z su len ni co ta zs Guard_List
+            (ts ! 1 \<cdot> \<sigma>) = Some q" "n = Suc q"
+      | (take) p q where "f = ta" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat
+            (ts ! 0 \<cdot> \<sigma>) = Some p"
+          "csr_guard_rank z su len ni co ta zs Guard_IList
+            (ts ! 1 \<cdot> \<sigma>) = Some q" "n = p"
+      using ground' distinct
+      by (auto simp: csr_guard_rank.simps
+          split: if_splits option.splits)
+    then show ?thesis
+    proof cases
+      case nil
+      then show ?thesis unfolding Guard_List by simp
+    next
+      case (cons p q)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using cons(2) by auto
+      obtain Fn where sn:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some Fn"
+        and rn: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fn)"
+        and vn: "csr_guard_form_value
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>) Fn = p"
+        using Fun.IH[OF mem0 cons(3)] by blast
+      obtain Fl where sl:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1) = Some Fl"
+        and rl: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fl)"
+        and vl: "csr_guard_form_value
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>) Fl = q"
+        using Fun.IH[OF mem1 cons(4)] by blast
+      obtain reqn csn cn where Fn: "Fn = Guard_Form reqn csn cn" by (cases Fn)
+      obtain reql csl cl where Fl: "Fl = Guard_Form reql csl cl" by (cases Fl)
+      have co_ni: "co \<noteq> ni" using distinct by auto
+      show ?thesis
+        unfolding Guard_List using cons sn rn vn sl rl vl Fn Fl co_ni
+        by (intro exI[of _ "Guard_Form (reqn @ reql) csl (Suc cl)"]) simp
+    next
+      case (take p q)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using take(2) by auto
+      obtain Fn where sn:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some Fn"
+        and rn: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fn)"
+        and vn: "csr_guard_form_value
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>) Fn = p"
+        using Fun.IH[OF mem0 take(3)] by blast
+      obtain Fi where si:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some Fi"
+        and ri: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fi)"
+        and vi: "csr_guard_form_value
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>) Fi = q"
+        using Fun.IH[OF mem1 take(4)] by blast
+      obtain reqn csn cn where Fn: "Fn = Guard_Form reqn csn cn" by (cases Fn)
+      obtain reqi csi ci where Fi: "Fi = Guard_Form reqi csi ci" by (cases Fi)
+      have ta_ni: "ta \<noteq> ni" and ta_co: "ta \<noteq> co"
+        using distinct by auto
+      show ?thesis
+        unfolding Guard_List using take sn rn vn si ri vi Fn Fi ta_ni ta_co
+        by (intro exI[of _ "Guard_Form (reqn @ reqi) csn cn"]) simp
+    qed
+  next
+    case Guard_IList
+    have ground': "csr_guard_rank z su len ni co ta zs Guard_IList
+        (Fun f ts \<cdot> \<sigma>) = Some n"
+      using Fun.prems Guard_IList by simp
+    consider
+        (zeros) "f = zs" "ts = []" "n = 0"
+      | (cons) p q where "f = co" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat
+            (ts ! 0 \<cdot> \<sigma>) = Some p"
+          "csr_guard_rank z su len ni co ta zs Guard_IList
+            (ts ! 1 \<cdot> \<sigma>) = Some q" "n = 0"
+      | (nil) "f = ni" "ts = []" "n = 0"
+      | (take) p q where "f = ta" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat
+            (ts ! 0 \<cdot> \<sigma>) = Some p"
+          "csr_guard_rank z su len ni co ta zs Guard_IList
+            (ts ! 1 \<cdot> \<sigma>) = Some q" "n = 0"
+      using ground' distinct
+      by (auto simp: csr_guard_rank.simps
+          split: if_splits option.splits)
+    then show ?thesis
+    proof cases
+      case zeros
+      then show ?thesis unfolding Guard_IList by simp
+    next
+      case (cons p q)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using cons(2) by auto
+      obtain Fn where sn:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some Fn"
+        and rn: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fn)"
+        using Fun.IH[OF mem0 cons(3)] by blast
+      obtain Fi where si:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some Fi"
+        and ri: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fi)"
+        using Fun.IH[OF mem1 cons(4)] by blast
+      obtain reqn csn cn where Fn: "Fn = Guard_Form reqn csn cn" by (cases Fn)
+      obtain reqi csi ci where Fi: "Fi = Guard_Form reqi csi ci" by (cases Fi)
+      have co_zs: "co \<noteq> zs" using distinct by auto
+      show ?thesis
+        unfolding Guard_IList using cons sn rn si ri Fn Fi co_zs
+        by (intro exI[of _ "Guard_Form (reqn @ reqi) [] 0"]) simp
+    next
+      case nil
+      have ni_zs: "ni \<noteq> zs" and ni_co: "ni \<noteq> co"
+        using distinct by auto
+      show ?thesis unfolding Guard_IList using nil ni_zs ni_co by simp
+    next
+      case (take p q)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using take(2) by auto
+      obtain Fn where sn:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some Fn"
+        and rn: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fn)"
+        using Fun.IH[OF mem0 take(3)] by blast
+      obtain Fi where si:
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some Fi"
+        and ri: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+          (csr_guard_form_requirements Fi)"
+        using Fun.IH[OF mem1 take(4)] by blast
+      obtain reqn csn cn where Fn: "Fn = Guard_Form reqn csn cn" by (cases Fn)
+      obtain reqi csi ci where Fi: "Fi = Guard_Form reqi csi ci" by (cases Fi)
+      have ta_zs: "ta \<noteq> zs" and ta_co: "ta \<noteq> co" and ta_ni: "ta \<noteq> ni"
+        using distinct by auto
+      show ?thesis
+        unfolding Guard_IList using take sn rn si ri Fn Fi ta_zs ta_co ta_ni
+        by (intro exI[of _ "Guard_Form (reqn @ reqi) [] 0"]) simp
     qed
   qed
 qed
