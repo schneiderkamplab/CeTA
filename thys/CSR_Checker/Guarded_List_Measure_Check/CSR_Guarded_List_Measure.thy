@@ -1142,6 +1142,52 @@ next
   show ?case using result by simp
 qed
 
+definition csr_guard_context_normalizes where
+  "csr_guard_context_normalizes a u11 u21 u31 su len ni co ta C \<longleftrightarrow>
+    ((\<exists>D. \<forall>t. csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> =
+        D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>) \<or>
+     (\<exists>u. \<forall>t. csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> = u))"
+
+lemma csr_guard_normal_rank_ctxt_backward_if:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and normalized: "csr_guard_context_normalizes
+      a u11 u21 u31 su len ni co ta C"
+    and local: "\<And>A n.
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A y = Some n \<Longrightarrow>
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A x = Some n"
+    and target: "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A C\<langle>y\<rangle> = Some n"
+  shows "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A C\<langle>x\<rangle> = Some n"
+proof -
+  from normalized consider
+      (dependent) D where "\<And>t. csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> =
+        D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+    | (independent) u where "\<And>t.
+        csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> = u"
+    unfolding csr_guard_context_normalizes_def by blast
+  then show ?thesis
+  proof cases
+    case (dependent D)
+    have local': "\<And>A n.
+        csr_guard_rank z su len ni co ta zs A
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta y) = Some n \<Longrightarrow>
+        csr_guard_rank z su len ni co ta zs A
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta x) = Some n"
+      using local unfolding csr_guard_normal_rank_def by blast
+    have target': "csr_guard_rank z su len ni co ta zs A
+        D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta y\<rangle> = Some n"
+      using target dependent unfolding csr_guard_normal_rank_def by simp
+    have "csr_guard_rank z su len ni co ta zs A
+        D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta x\<rangle> = Some n"
+      by (rule csr_guard_rank_ctxt_backward[OF distinct local' target'])
+    then show ?thesis using dependent unfolding csr_guard_normal_rank_def by simp
+  next
+    case (independent u)
+    then show ?thesis using target unfolding csr_guard_normal_rank_def by simp
+  qed
+qed
+
 lemma csr_guard_symbolic_rank_ge_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and lhs: "csr_guard_symbolic_rank z su len ni co ta zs A l = Some F"
