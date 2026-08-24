@@ -235,6 +235,7 @@ where
      else if f = len \<and> length ts = 1 then
        csr_guard_rank z su len ni co ta zs Guard_List (ts ! 0)
      else None)"
+
 | "csr_guard_rank z su len ni co ta zs Guard_List (Var x) = None"
 | "csr_guard_rank z su len ni co ta zs Guard_List (Fun f ts) =
     (if f = ni \<and> ts = [] then Some 0
@@ -249,6 +250,7 @@ where
                None \<Rightarrow> None
              | Some m \<Rightarrow> Some n))
      else None)"
+
 | "csr_guard_rank z su len ni co ta zs Guard_IList (Var x) = None"
 | "csr_guard_rank z su len ni co ta zs Guard_IList (Fun f ts) =
     (if f = zs \<and> ts = [] then Some 0
@@ -265,6 +267,48 @@ where
                None \<Rightarrow> None
              | Some m \<Rightarrow> Some 0))
      else None)"
+
+fun csr_guard_truth ::
+  "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   ('f,'v) term \<Rightarrow> bool"
+where
+  "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (Var x) = False"
+| "csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (Fun f ts) =
+    (if f = tt \<and> ts = [] then True
+     else if f = a \<and> length ts = 2 then
+       csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (ts ! 0) \<and>
+       csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (ts ! 1)
+     else if f = natp \<and> length ts = 1 then
+       csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) \<noteq> None
+     else if f = listp \<and> length ts = 1 then
+       csr_guard_rank z su len ni co ta zs Guard_List (ts ! 0) \<noteq> None
+     else if f = ilistp \<and> length ts = 1 then
+       csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 0) \<noteq> None
+     else False)"
+
+definition csr_guard_truth_rules_backward ::
+  "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   ('f,'v) trs \<Rightarrow> bool"
+where
+  "csr_guard_truth_rules_backward tt a natp listp ilistp z su len ni co ta zs rules \<longleftrightarrow>
+    (\<forall>lr \<in> rules. \<forall>(\<sigma> :: 'v \<Rightarrow> ('f,'v) term).
+      csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (snd lr \<cdot> \<sigma>) \<longrightarrow>
+      csr_guard_truth tt a natp listp ilistp z su len ni co ta zs (fst lr \<cdot> \<sigma>))"
+
+definition csr_guard_rank_rules_backward ::
+  "('f,'v) trs \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
+   'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"
+where
+  "csr_guard_rank_rules_backward rules z su len ni co ta zs \<longleftrightarrow>
+    (\<forall>lr \<in> rules. \<forall>(\<sigma> :: 'v \<Rightarrow> ('f,'v) term) n.
+      (csr_guard_rank z su len ni co ta zs Guard_Nat (snd lr \<cdot> \<sigma>) = Some n \<longrightarrow>
+       csr_guard_rank z su len ni co ta zs Guard_Nat (fst lr \<cdot> \<sigma>) = Some n) \<and>
+      (csr_guard_rank z su len ni co ta zs Guard_List (snd lr \<cdot> \<sigma>) = Some n \<longrightarrow>
+       csr_guard_rank z su len ni co ta zs Guard_List (fst lr \<cdot> \<sigma>) = Some n) \<and>
+      (csr_guard_rank z su len ni co ta zs Guard_IList (snd lr \<cdot> \<sigma>) = Some n \<longrightarrow>
+       csr_guard_rank z su len ni co ta zs Guard_IList (fst lr \<cdot> \<sigma>) = Some n))"
 
 definition csr_guard_erased_rank where
   "csr_guard_erased_rank u11 u21 u31 z su len ni co ta zs A t =
@@ -1519,6 +1563,64 @@ lemma csr_guard_normal_rules_csnrstep_backward:
       a u11 u21 u31 z su len ni co ta zs A s = Some n"
   by (rule csr_guard_normal_rules_csstep_backward[
       OF symbols constructors checked csnrstep_imp_csstep[OF step] target])
+
+lemma csr_guard_rank_rules_csstep_backward:
+  fixes z su len ni co ta zs :: 'f and R :: "('f,'v) trs"
+  assumes constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and checked: "csr_guard_rank_rules_backward R z su len ni co ta zs"
+    and step: "(s,t) \<in> csstep \<mu> R"
+    and target: "csr_guard_rank z su len ni co ta zs A t = Some n"
+  shows "csr_guard_rank z su len ni co ta zs A s = Some n"
+proof -
+  from step obtain p lr \<sigma> where rewrite:
+      "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    unfolding csstep_def csstep_p_def by auto
+  from rewrite[unfolded rstep_r_p_s_def'] have lr: "lr \<in> R"
+    and pos: "p \<in> poss s"
+    and redex: "s |_ p = fst lr \<cdot> \<sigma>"
+    and reduct: "t = replace_at s p (snd lr \<cdot> \<sigma>)" by auto
+  let ?C = "ctxt_of_pos_term p s"
+  have source: "s = ?C\<langle>fst lr \<cdot> \<sigma>\<rangle>"
+    using ctxt_supt_id[OF pos] redex by simp
+  have target_ctxt: "t = ?C\<langle>snd lr \<cdot> \<sigma>\<rangle>"
+    using ctxt_supt_id[OF pos] redex reduct by simp
+  have local: "\<And>B m. csr_guard_rank z su len ni co ta zs B
+      (snd lr \<cdot> \<sigma>) = Some m \<Longrightarrow>
+    csr_guard_rank z su len ni co ta zs B (fst lr \<cdot> \<sigma>) = Some m"
+  proof -
+    fix B m
+    assume rhs: "csr_guard_rank z su len ni co ta zs B
+      (snd lr \<cdot> \<sigma>) = Some m"
+    have obligations:
+      "(csr_guard_rank z su len ni co ta zs Guard_Nat (snd lr \<cdot> \<sigma>) = Some m \<longrightarrow>
+        csr_guard_rank z su len ni co ta zs Guard_Nat (fst lr \<cdot> \<sigma>) = Some m) \<and>
+       (csr_guard_rank z su len ni co ta zs Guard_List (snd lr \<cdot> \<sigma>) = Some m \<longrightarrow>
+        csr_guard_rank z su len ni co ta zs Guard_List (fst lr \<cdot> \<sigma>) = Some m) \<and>
+       (csr_guard_rank z su len ni co ta zs Guard_IList (snd lr \<cdot> \<sigma>) = Some m \<longrightarrow>
+        csr_guard_rank z su len ni co ta zs Guard_IList (fst lr \<cdot> \<sigma>) = Some m)"
+      using checked[unfolded csr_guard_rank_rules_backward_def,
+          rule_format, OF lr, of \<sigma> m] .
+    show "csr_guard_rank z su len ni co ta zs B
+      (fst lr \<cdot> \<sigma>) = Some m"
+    proof (cases B)
+      case Guard_Nat
+      then show ?thesis using obligations rhs unfolding Guard_Nat by blast
+    next
+      case Guard_List
+      then show ?thesis using obligations rhs unfolding Guard_List by blast
+    next
+      case Guard_IList
+      then show ?thesis using obligations rhs unfolding Guard_IList by blast
+    qed
+  qed
+  have target': "csr_guard_rank z su len ni co ta zs A
+      ?C\<langle>snd lr \<cdot> \<sigma>\<rangle> = Some n"
+    using target target_ctxt by simp
+  have result: "csr_guard_rank z su len ni co ta zs A
+      ?C\<langle>fst lr \<cdot> \<sigma>\<rangle> = Some n"
+    by (rule csr_guard_rank_ctxt_backward[OF constructors local target'])
+  show ?thesis using result source by simp
+qed
 
 lemma csdp_step_preserves_fresh_target_root:
   fixes R :: "('f::{showl,compare_order},'v) trs" and s t :: "('f,'v) term"
