@@ -1183,6 +1183,27 @@ definition csr_guard_context_normalizes where
         D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>) \<or>
      (\<exists>u. \<forall>t. csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> = u))"
 
+lemma csr_guard_context_normalizes_More_independent:
+  assumes distinct: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and independent: "\<And>t.
+      csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> = u"
+  shows "csr_guard_context_normalizes a u11 u21 u31 su len ni co ta
+    (More f bef C aft)"
+  unfolding csr_guard_context_normalizes_def
+proof (intro disjI2 exI allI)
+  fix t
+  have maps: "map (csr_guard_normalize a u11 u21 u31 su len ni co ta)
+      (bef @ C\<langle>t\<rangle> # aft) =
+    map (csr_guard_normalize a u11 u21 u31 su len ni co ta)
+      (bef @ C\<langle>undefined\<rangle> # aft)"
+    using independent by simp
+  show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+      (More f bef C aft)\<langle>t\<rangle> =
+    csr_guard_normalize a u11 u21 u31 su len ni co ta
+      (More f bef C aft)\<langle>undefined\<rangle>"
+    by (simp, rule csr_guard_normalize_Fun_cong[OF distinct maps])
+qed
+
 lemma csr_guard_normal_rank_ctxt_backward_if:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and normalized: "csr_guard_context_normalizes
