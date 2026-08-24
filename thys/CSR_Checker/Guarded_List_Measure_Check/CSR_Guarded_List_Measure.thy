@@ -1718,6 +1718,72 @@ lemma csr_guard_normal_pair_rank_sharp_length:
   using marked wrappers
   by (simp add: csr_guard_normalize_Fun[OF symbols])
 
+lemma csr_guard_normal_pair_rank_csdp_u11:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and marked: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+    and wf: "wf_trs R"
+    and fresh: "\<And>f n. \<not> defined R (Sharp f,n)"
+    and frozen: "1 \<notin> \<mu> (u11,Suc (Suc 0))"
+    and step: "(sharp_term Sharp (Fun u11 [q,l]),v) \<in> csdp_step Sharp \<mu> R"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+      z su len ni co ta zs v =
+    csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+      z su len ni co ta zs (sharp_term Sharp (Fun u11 [q,l]))"
+proof -
+  from sharp_csdp_step_imp_csnrstep[OF wf fresh inj_Sharp step]
+  obtain t where v: "v = sharp_term Sharp t"
+    and st: "(Fun u11 [q,l],t) \<in> csnrstep \<mu> R"
+    by blast
+  have ex: "\<exists>i ts. i < length [q,l] \<and>
+      i \<in> \<mu> (u11,length [q,l]) \<and> t = Fun u11 ts \<and>
+      length ts = length [q,l] \<and>
+      ([q,l] ! i, ts ! i) \<in> csstep \<mu> R \<and>
+      (\<forall>j<length [q,l]. j \<noteq> i \<longrightarrow> ts ! j = [q,l] ! j)"
+  proof -
+    from st show ?thesis
+    proof (rule csnrstep_FunE)
+      fix i ts
+      assume i: "i < length [q,l]" "i \<in> \<mu> (u11,length [q,l])"
+        and t: "t = Fun u11 ts" and len: "length ts = length [q,l]"
+        and substep: "([q,l] ! i, ts ! i) \<in> csstep \<mu> R"
+        and same: "\<And>j. j < length [q,l] \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+          ts ! j = [q,l] ! j"
+      show ?thesis using i t len substep same by blast
+    qed
+  qed
+  then obtain i ts where i: "i < length [q,l]"
+      "i \<in> \<mu> (u11,length [q,l])"
+    and t: "t = Fun u11 ts" and len: "length ts = length [q,l]"
+    and substep: "([q,l] ! i, ts ! i) \<in> csstep \<mu> R"
+    and same: "\<And>j. j < length [q,l] \<Longrightarrow> j \<noteq> i \<Longrightarrow>
+      ts ! j = [q,l] ! j"
+    by blast
+  have cases: "i = 0 \<or> i = 1"
+    using i(1) by (cases i; simp; rename_tac j; cases j; simp_all)
+  have imu: "i \<in> \<mu> (u11,Suc (Suc 0))" using i(2) by simp
+  have i0: "i = 0" using cases imu frozen by blast
+  have one_lt: "1 < length [q,l]" by simp
+  have one_ne: "1 \<noteq> i" using i0 by simp
+  have tail0: "ts ! 1 = [q,l] ! 1" by (rule same[OF one_lt one_ne])
+  have tail: "ts ! 1 = l" using tail0 by simp
+  have shape: "t = Fun u11 [ts ! 0,l]"
+    using t len tail by (cases ts; cases "tl ts"; auto)
+  have target_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+        z su len ni co ta zs (sharp_term Sharp (Fun u11 [ts ! 0,l])) =
+       csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs Guard_List l"
+    by (rule csr_guard_normal_pair_rank_sharp_u11[OF symbols marked wrappers])
+  have source_rank:
+      "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+        z su len ni co ta zs (sharp_term Sharp (Fun u11 [q,l])) =
+       csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs Guard_List l"
+    by (rule csr_guard_normal_pair_rank_sharp_u11[OF symbols marked wrappers])
+  show ?thesis
+    unfolding v shape
+    using target_rank source_rank by simp
+qed
+
 lemma csr_guard_pair_symbolic_rank_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and symbolic:
