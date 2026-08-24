@@ -917,6 +917,43 @@ proof (rule ccontr)
   ultimately show False by contradiction
 qed
 
+lemma finite_min_csr_dpp_guarded_endpoint_delete:
+  assumes pair_order: "\<And>s t.
+      SN_on (csdp_step shp \<mu> R) {s} \<Longrightarrow>
+      (s,t) \<in> csr_min_pair_step shp \<mu> P R \<Longrightarrow>
+      (s,t) \<in> csr_guard_pair_rank_gt u11s lens z su len ni co ta zs \<union>
+        csr_guard_pair_rank_ge u11s lens z su len ni co ta zs"
+    and pair_residual: "\<And>s t.
+      SN_on (csdp_step shp \<mu> R) {s} \<Longrightarrow>
+      (s,t) \<in> csr_min_pair_step shp \<mu> P R \<Longrightarrow>
+      (s,t) \<notin> csr_guard_pair_rank_gt u11s lens z su len ni co ta zs \<Longrightarrow>
+      (s,t) \<in> csr_min_pair_step shp \<mu> Q R"
+    and between_order: "\<And>s t u.
+      SN_on (csdp_step shp \<mu> R) {s} \<Longrightarrow>
+      (s,t) \<in> (csdp_step shp \<mu> R)\<^sup>* \<Longrightarrow>
+      (t,u) \<in> csr_min_pair_step shp \<mu> P R \<Longrightarrow>
+      (s,t) \<in> csr_guard_pair_rank_ge u11s lens z su len ni co ta zs"
+    and fin: "finite_min_csr_dpp shp \<mu> Q R"
+  shows "finite_min_csr_dpp shp \<mu> P R"
+proof -
+  let ?S = "csr_guard_pair_rank_gt u11s lens z su len ni co ta zs"
+  let ?NS = "csr_guard_pair_rank_ge u11s lens z su len ni co ta zs"
+  let ?A = "csdp_step shp \<mu> R"
+  let ?B = "csr_min_pair_step shp \<mu> P R"
+  let ?C = "csr_min_pair_step shp \<mu> Q R"
+  have target: "\<And>s t. (s,t) \<in> ?B \<Longrightarrow> SN_on ?A {t}"
+    unfolding csr_min_pair_step_def by auto
+  have rel: "SN_rel ?B ?A"
+    by (rule SN_rel_min_endpoint_order[
+        OF SN_csr_guard_pair_rank_gt
+          csr_guard_pair_rank_ge_gt_comp
+          csr_guard_pair_rank_gt_ge_comp
+          csr_guard_pair_rank_ge_trans target
+          pair_order pair_residual between_order
+          fin[unfolded finite_min_csr_dpp_def]])
+  show ?thesis unfolding finite_min_csr_dpp_def by (rule rel)
+qed
+
 lemma csr_guard_symbolic_rank_zero [simp]:
   "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
     Some (Guard_Form [] [] 0)"
