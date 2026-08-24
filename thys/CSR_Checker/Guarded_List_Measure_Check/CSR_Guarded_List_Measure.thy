@@ -954,6 +954,23 @@ proof -
   show ?thesis unfolding finite_min_csr_dpp_def by (rule rel)
 qed
 
+lemma option_measure_backward_rtrancl:
+  fixes measure :: "'a \<Rightarrow> nat option"
+  assumes preserve: "\<And>x y n. (x,y) \<in> A \<Longrightarrow>
+      measure y = Some n \<Longrightarrow> measure x = Some n"
+    and steps: "(s,t) \<in> A\<^sup>*"
+    and target: "measure t = Some n"
+  shows "measure s = Some n"
+  using steps target
+proof (induction rule: converse_rtrancl_induct)
+  case base
+  then show ?case .
+next
+  case (step s u)
+  have "measure u = Some n" by (rule step.IH[OF step.prems])
+  then show ?case by (rule preserve[OF step.hyps(1)])
+qed
+
 lemma csr_guard_symbolic_rank_zero [simp]:
   "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
     Some (Guard_Form [] [] 0)"
