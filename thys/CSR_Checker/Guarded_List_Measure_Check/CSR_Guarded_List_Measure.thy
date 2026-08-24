@@ -171,6 +171,323 @@ lemma csr_guard_symbolic_rank_Var_sound:
   using form realized
   unfolding csr_guard_requirements_realized_def by auto
 
+lemma csr_guard_symbolic_rank_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and symbolic:
+    "csr_guard_symbolic_rank z su len ni co ta zs A t = Some F"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  shows "csr_guard_rank z su len ni co ta zs A (t \<cdot> \<sigma>) =
+    Some (csr_guard_form_value \<rho> F)"
+  using symbolic realized
+proof (induction t arbitrary: A F)
+  case (Var x)
+  then show ?case
+    unfolding csr_guard_requirements_realized_def by auto
+next
+  case (Fun f ts)
+  show ?case
+  proof (cases A)
+    case Guard_Nat
+    have symbolic':
+      "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun f ts) = Some F"
+      using Fun.prems(1) Guard_Nat by simp
+    consider
+        (zero) "f = z" "ts = []" "F = Guard_Form [] [] 0"
+      | (succ) req cs c where
+          "f = su" "length ts = 1"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
+             Some (Guard_Form req cs c)"
+          "F = Guard_Form req cs (Suc c)"
+      | (length) "f = len" "length ts = 1"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 0) = Some F"
+      using symbolic'
+      by (auto simp: csr_guard_symbolic_rank.simps
+          split: if_splits option.splits csr_guard_form.splits)
+    then show ?thesis
+    proof cases
+      case zero
+      then show ?thesis unfolding Guard_Nat by simp
+    next
+      case (succ req cs c)
+      have mem: "ts ! 0 \<in> set ts" using succ(2) by simp
+      have realized_child: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> req"
+        using Fun.prems(2) succ(4) by simp
+      have child: "csr_guard_rank z su len ni co ta zs Guard_Nat
+          (ts ! 0 \<cdot> \<sigma>) = Some (c + sum_list (map \<rho> cs))"
+        using Fun.IH[OF mem succ(3)] realized_child by simp
+      show ?thesis unfolding Guard_Nat using succ child distinct by simp
+    next
+      case length
+      have mem: "ts ! 0 \<in> set ts" using length(2) by simp
+      have child: "csr_guard_rank z su len ni co ta zs Guard_List
+          (ts ! 0 \<cdot> \<sigma>) = Some (csr_guard_form_value \<rho> F)"
+        using Fun.IH[OF mem length(3)] Fun.prems(2) by simp
+      show ?thesis unfolding Guard_Nat using length child distinct by fastforce
+    qed
+  next
+    case Guard_List
+    have symbolic':
+      "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (Fun f ts) = Some F"
+      using Fun.prems(1) Guard_List by simp
+    consider
+        (nil) "f = ni" "ts = []" "F = Guard_Form [] [] 0"
+      | (cons) reqn coeffn cn reql coeffl cl where
+          "f = co" "length ts = 2"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
+             Some (Guard_Form reqn coeffn cn)"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1) =
+             Some (Guard_Form reql coeffl cl)"
+          "F = Guard_Form (reqn @ reql) coeffl (Suc cl)"
+      | (take) reqn coeffn cn reqi coeffi ci where
+          "f = ta" "length ts = 2"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
+             Some (Guard_Form reqn coeffn cn)"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) =
+             Some (Guard_Form reqi coeffi ci)"
+          "F = Guard_Form (reqn @ reqi) coeffn cn"
+      using symbolic'
+      by (auto simp: csr_guard_symbolic_rank.simps
+          split: if_splits option.splits csr_guard_form.splits prod.splits)
+    then show ?thesis
+    proof cases
+      case nil
+      then show ?thesis unfolding Guard_List by simp
+    next
+      case (cons reqn coeffn cn reql coeffl cl)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using cons(2) by auto
+      have realized_n: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqn"
+        and realized_l: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reql"
+        using Fun.prems(2) cons(5) by simp_all
+      have child_n: "csr_guard_rank z su len ni co ta zs Guard_Nat
+          (ts ! 0 \<cdot> \<sigma>) = Some (cn + sum_list (map \<rho> coeffn))"
+        using Fun.IH[OF mem0 cons(3)] realized_n by simp
+      have child_l: "csr_guard_rank z su len ni co ta zs Guard_List
+          (ts ! 1 \<cdot> \<sigma>) = Some (cl + sum_list (map \<rho> coeffl))"
+        using Fun.IH[OF mem1 cons(4)] realized_l by simp
+      show ?thesis unfolding Guard_List using cons child_n child_l distinct by fastforce
+    next
+      case (take reqn coeffn cn reqi coeffi ci)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using take(2) by auto
+      have realized_n: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqn"
+        and realized_i: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqi"
+        using Fun.prems(2) take(5) by simp_all
+      have child_n: "csr_guard_rank z su len ni co ta zs Guard_Nat
+          (ts ! 0 \<cdot> \<sigma>) = Some (cn + sum_list (map \<rho> coeffn))"
+        using Fun.IH[OF mem0 take(3)] realized_n by simp
+      have child_i: "csr_guard_rank z su len ni co ta zs Guard_IList
+          (ts ! 1 \<cdot> \<sigma>) = Some (ci + sum_list (map \<rho> coeffi))"
+        using Fun.IH[OF mem1 take(4)] realized_i by simp
+      show ?thesis unfolding Guard_List using take child_n child_i distinct by fastforce
+    qed
+  next
+    case Guard_IList
+    have symbolic':
+      "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (Fun f ts) = Some F"
+      using Fun.prems(1) Guard_IList by simp
+    consider
+        (zeros) "f = zs" "ts = []" "F = Guard_Form [] [] 0"
+      | (cons) reqn coeffn cn reqi coeffi ci where
+          "f = co" "length ts = 2"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
+             Some (Guard_Form reqn coeffn cn)"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) =
+             Some (Guard_Form reqi coeffi ci)"
+          "F = Guard_Form (reqn @ reqi) [] 0"
+      | (nil) "f = ni" "ts = []" "F = Guard_Form [] [] 0"
+      | (take) reqn coeffn cn reqi coeffi ci where
+          "f = ta" "length ts = 2"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
+             Some (Guard_Form reqn coeffn cn)"
+          "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) =
+             Some (Guard_Form reqi coeffi ci)"
+          "F = Guard_Form (reqn @ reqi) [] 0"
+      using symbolic'
+      by (auto simp: csr_guard_symbolic_rank.simps
+          split: if_splits option.splits csr_guard_form.splits prod.splits)
+    then show ?thesis
+    proof cases
+      case zeros
+      then show ?thesis unfolding Guard_IList by simp
+    next
+      case (cons reqn coeffn cn reqi coeffi ci)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using cons(2) by auto
+      have realized_n: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqn"
+        and realized_i: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqi"
+        using Fun.prems(2) cons(5) by simp_all
+      have child_n: "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_Nat
+          (ts ! 0 \<cdot> \<sigma>) = Some n"
+        using Fun.IH[OF mem0 cons(3)] realized_n by fastforce
+      have child_i: "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_IList
+          (ts ! 1 \<cdot> \<sigma>) = Some n"
+        using Fun.IH[OF mem1 cons(4)] realized_i by fastforce
+      show ?thesis unfolding Guard_IList using cons child_n child_i distinct by fastforce
+    next
+      case nil
+      then show ?thesis unfolding Guard_IList using distinct by simp
+    next
+      case (take reqn coeffn cn reqi coeffi ci)
+      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
+        using take(2) by auto
+      have realized_n: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqn"
+        and realized_i: "csr_guard_requirements_realized
+          z su len ni co ta zs \<sigma> \<rho> reqi"
+        using Fun.prems(2) take(5) by simp_all
+      have child_n: "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_Nat
+          (ts ! 0 \<cdot> \<sigma>) = Some n"
+        using Fun.IH[OF mem0 take(3)] realized_n by fastforce
+      have child_i: "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_IList
+          (ts ! 1 \<cdot> \<sigma>) = Some n"
+        using Fun.IH[OF mem1 take(4)] realized_i by fastforce
+      show ?thesis unfolding Guard_IList using take child_n child_i distinct by fastforce
+    qed
+  qed
+qed
+
+fun csr_guard_coefficients_le where
+  "csr_guard_coefficients_le [] ys = True"
+| "csr_guard_coefficients_le (x # xs) ys =
+    (x \<in> set ys \<and> csr_guard_coefficients_le xs (remove1 x ys))"
+
+lemma csr_guard_coefficients_le_sum:
+  fixes \<rho> :: "'a \<Rightarrow> nat"
+  assumes "csr_guard_coefficients_le xs ys"
+  shows "sum_list (map \<rho> xs) \<le> sum_list (map \<rho> ys)"
+  using assms
+proof (induction xs arbitrary: ys)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons x xs)
+  then have x: "x \<in> set ys"
+    and rest: "csr_guard_coefficients_le xs (remove1 x ys)"
+    by simp_all
+  have ih: "sum_list (map \<rho> xs) \<le>
+      sum_list (map \<rho> (remove1 x ys))"
+    by (rule Cons.IH[OF rest])
+  have decompose: "sum_list (map \<rho> ys) =
+      \<rho> x + sum_list (map \<rho> (remove1 x ys))"
+    by (rule sum_list_map_remove1[OF x])
+  show ?case using ih decompose by simp
+qed
+
+fun csr_guard_form_ge where
+  "csr_guard_form_ge (Guard_Form req_l cs_l c_l)
+      (Guard_Form req_r cs_r c_r) =
+    (set req_r \<subseteq> set req_l \<and>
+     csr_guard_coefficients_le cs_r cs_l \<and> c_r \<le> c_l)"
+
+fun csr_guard_form_gt where
+  "csr_guard_form_gt (Guard_Form req_l cs_l c_l)
+      (Guard_Form req_r cs_r c_r) =
+    (set req_r \<subseteq> set req_l \<and>
+     csr_guard_coefficients_le cs_r cs_l \<and> c_r < c_l)"
+
+lemma csr_guard_requirements_realized_mono:
+  assumes realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> req_l"
+    and subset: "set req_r \<subseteq> set req_l"
+  shows "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> req_r"
+  using realized subset unfolding csr_guard_requirements_realized_def by auto
+
+lemma csr_guard_form_ge_value:
+  assumes "csr_guard_form_ge F G"
+  shows "csr_guard_form_value \<rho> F \<ge> csr_guard_form_value \<rho> G"
+proof (cases F; cases G)
+  fix req_l cs_l c_l req_r cs_r c_r
+  assume F: "F = Guard_Form req_l cs_l c_l"
+    and G: "G = Guard_Form req_r cs_r c_r"
+  have constants: "c_r \<le> c_l" and coefficients:
+      "csr_guard_coefficients_le cs_r cs_l"
+    using assms unfolding F G by simp_all
+  have sums: "sum_list (map \<rho> cs_r) \<le> sum_list (map \<rho> cs_l)"
+    by (rule csr_guard_coefficients_le_sum[OF coefficients])
+  show ?thesis unfolding F G using add_le_mono[OF constants sums] by simp
+qed
+
+lemma csr_guard_form_gt_value:
+  assumes "csr_guard_form_gt F G"
+  shows "csr_guard_form_value \<rho> F > csr_guard_form_value \<rho> G"
+proof (cases F; cases G)
+  fix req_l cs_l c_l req_r cs_r c_r
+  assume F: "F = Guard_Form req_l cs_l c_l"
+    and G: "G = Guard_Form req_r cs_r c_r"
+  have constants: "c_r < c_l" and coefficients:
+      "csr_guard_coefficients_le cs_r cs_l"
+    using assms unfolding F G by simp_all
+  have sums: "sum_list (map \<rho> cs_r) \<le> sum_list (map \<rho> cs_l)"
+    by (rule csr_guard_coefficients_le_sum[OF coefficients])
+  show ?thesis unfolding F G using add_less_le_mono[OF constants sums] by simp
+qed
+
+lemma csr_guard_symbolic_rank_ge_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and lhs: "csr_guard_symbolic_rank z su len ni co ta zs A l = Some F"
+    and rhs: "csr_guard_symbolic_rank z su len ni co ta zs A r = Some G"
+    and orient: "csr_guard_form_ge F G"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  obtains m n where
+    "csr_guard_rank z su len ni co ta zs A (l \<cdot> \<sigma>) = Some m"
+    "csr_guard_rank z su len ni co ta zs A (r \<cdot> \<sigma>) = Some n"
+    "m \<ge> n"
+proof
+  have req_subset: "set (csr_guard_form_requirements G) \<subseteq>
+      set (csr_guard_form_requirements F)"
+    using orient by (cases F; cases G) simp
+  have realized_r: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements G)"
+    by (rule csr_guard_requirements_realized_mono[OF realized req_subset])
+  show "csr_guard_rank z su len ni co ta zs A (l \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> F)"
+    by (rule csr_guard_symbolic_rank_sound[OF distinct lhs realized])
+  show "csr_guard_rank z su len ni co ta zs A (r \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> G)"
+    by (rule csr_guard_symbolic_rank_sound[OF distinct rhs realized_r])
+  show "csr_guard_form_value \<rho> F \<ge> csr_guard_form_value \<rho> G"
+    by (rule csr_guard_form_ge_value[OF orient])
+qed
+
+lemma csr_guard_symbolic_rank_gt_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and lhs: "csr_guard_symbolic_rank z su len ni co ta zs A l = Some F"
+    and rhs: "csr_guard_symbolic_rank z su len ni co ta zs A r = Some G"
+    and orient: "csr_guard_form_gt F G"
+    and realized: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements F)"
+  obtains m n where
+    "csr_guard_rank z su len ni co ta zs A (l \<cdot> \<sigma>) = Some m"
+    "csr_guard_rank z su len ni co ta zs A (r \<cdot> \<sigma>) = Some n"
+    "m > n"
+proof
+  have req_subset: "set (csr_guard_form_requirements G) \<subseteq>
+      set (csr_guard_form_requirements F)"
+    using orient by (cases F; cases G) simp
+  have realized_r: "csr_guard_requirements_realized
+      z su len ni co ta zs \<sigma> \<rho> (csr_guard_form_requirements G)"
+    by (rule csr_guard_requirements_realized_mono[OF realized req_subset])
+  show "csr_guard_rank z su len ni co ta zs A (l \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> F)"
+    by (rule csr_guard_symbolic_rank_sound[OF distinct lhs realized])
+  show "csr_guard_rank z su len ni co ta zs A (r \<cdot> \<sigma>) =
+      Some (csr_guard_form_value \<rho> G)"
+    by (rule csr_guard_symbolic_rank_sound[OF distinct rhs realized_r])
+  show "csr_guard_form_value \<rho> F > csr_guard_form_value \<rho> G"
+    by (rule csr_guard_form_gt_value[OF orient])
+qed
+
 lemma csr_guard_symbolic_rank_zero [simp]:
   "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
     Some (Guard_Form [] [] 0)"
