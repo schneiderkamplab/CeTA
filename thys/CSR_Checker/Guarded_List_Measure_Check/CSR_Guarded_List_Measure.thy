@@ -1573,6 +1573,35 @@ lemma csr_guard_normal_rules_csnrstep_backward:
   by (rule csr_guard_normal_rules_csstep_backward[
       OF symbols constructors checked csnrstep_imp_csstep[OF step] target])
 
+lemma csdp_step_preserves_fresh_target_root:
+  fixes R :: "('f::{showl,compare_order},'v) trs" and s t :: "('f,'v) term"
+  assumes step: "(s,t) \<in> csdp_step shp \<mu> R"
+    and target_root: "root t = Some (g,n)"
+    and rhs_fresh: "\<And>lr (\<sigma> :: 'v \<Rightarrow> ('f,'v) term). lr \<in> R \<Longrightarrow>
+      root (snd lr \<cdot> \<sigma>) \<noteq> Some (g,n)"
+  shows "root s = Some (g,n)"
+proof -
+  from step obtain p lr \<sigma> where rewrite:
+      "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    unfolding csdp_step_def csdp_step_p_def by auto
+  from rewrite[unfolded rstep_r_p_s_def'] have lr: "lr \<in> R"
+    and pos: "p \<in> poss s"
+    and reduct: "t = replace_at s p (snd lr \<cdot> \<sigma>)"
+    by auto
+  have p_ne: "p \<noteq> []"
+  proof
+    assume "p = []"
+    then have "t = snd lr \<cdot> \<sigma>" using reduct by simp
+    with target_root rhs_fresh[OF lr, of \<sigma>] show False by simp
+  qed
+  from p_ne obtain i q where p: "p = i # q" by (cases p) auto
+  from pos p obtain f ts where s: "s = Fun f ts" and i: "i < length ts"
+    by (cases s) auto
+  have "root t = root s"
+    using rewrite p s unfolding rstep_r_p_s_def' by auto
+  then show ?thesis using target_root by simp
+qed
+
 lemma csr_guard_symbolic_rank_ge_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and lhs: "csr_guard_symbolic_rank z su len ni co ta zs A l = Some F"
