@@ -1667,6 +1667,28 @@ definition csr_guard_normal_pair_rank where
     csr_guard_pair_rank u11s lens z su len ni co ta zs
       (csr_guard_normalize a u11 u21 u31 su len ni co ta t)"
 
+lemma csr_guard_normal_pair_rank_sharp_u11:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and marked: "Sharp u11 \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp u11 \<noteq> Sharp len"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+      z su len ni co ta zs (sharp_term Sharp (Fun u11 [q,l])) =
+    csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs Guard_List l"
+  unfolding csr_guard_normal_pair_rank_def csr_guard_normal_rank_def
+  using marked wrappers
+  by (simp add: csr_guard_normalize_Fun[OF symbols])
+
+lemma csr_guard_normal_pair_rank_sharp_length:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and marked: "Sharp len \<notin> set [a,u11,u21,u31]"
+    and wrappers: "Sharp len \<noteq> Sharp u11"
+  shows "csr_guard_normal_pair_rank a u11 u21 u31 (Sharp u11) (Sharp len)
+      z su len ni co ta zs (sharp_term Sharp (Fun len [l])) =
+    csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs Guard_List l"
+  unfolding csr_guard_normal_pair_rank_def csr_guard_normal_rank_def
+  using marked wrappers
+  by (simp add: csr_guard_normalize_Fun[OF symbols])
+
 lemma csr_guard_pair_symbolic_rank_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and symbolic:
