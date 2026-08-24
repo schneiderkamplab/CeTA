@@ -1204,6 +1204,250 @@ proof (intro disjI2 exI allI)
     by (simp, rule csr_guard_normalize_Fun_cong[OF distinct maps])
 qed
 
+lemma csr_guard_context_normalizes_More_dependent:
+  assumes distinct: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and dependent: "\<And>t.
+      csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> =
+        D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+  shows "csr_guard_context_normalizes a u11 u21 u31 su len ni co ta
+    (More f bef C aft)"
+proof (cases "f = u11 \<and> length (bef @ C\<langle>undefined\<rangle> # aft) = 2")
+  case True
+  then have f: "f = u11" and arity: "length bef + length aft = 1" by auto
+  show ?thesis
+  proof (cases bef)
+    case Nil
+    then obtain q where aft: "aft = [q]" using arity by (cases aft) auto
+    show ?thesis unfolding csr_guard_context_normalizes_def
+    proof (intro disjI2 exI allI)
+      fix t
+      show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+          (More f bef C aft)\<langle>t\<rangle> =
+        Fun su [Fun len [csr_guard_normalize a u11 u21 u31 su len ni co ta q]]"
+        using f Nil aft by (simp add: csr_guard_normalize_Fun[OF distinct])
+    qed
+  next
+    case (Cons b bs)
+    then have bs: "bs = []" and aft: "aft = []" using arity by auto
+    show ?thesis unfolding csr_guard_context_normalizes_def
+    proof (intro disjI1 exI allI)
+      fix t
+      show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+          (More f bef C aft)\<langle>t\<rangle> =
+        (More su [] (More len [] D []) [])\<langle>
+          csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+        using f Cons bs aft dependent
+        by (simp add: csr_guard_normalize_Fun[OF distinct])
+    qed
+  qed
+next
+  case False
+  note not_u11 = False
+  show ?thesis
+  proof (cases "f = u21 \<and> length (bef @ C\<langle>undefined\<rangle> # aft) = 1")
+    case True
+    then have f: "f = u21" and bef: "bef = []" and aft: "aft = []" by auto
+    show ?thesis unfolding csr_guard_context_normalizes_def
+    proof (intro disjI2 exI allI)
+      fix t
+      show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+          (More f bef C aft)\<langle>t\<rangle> = Fun ni []"
+        using f bef aft not_u11
+        by (simp add: csr_guard_normalize_Fun[OF distinct])
+    qed
+  next
+    case False
+    note not_u21 = False
+    show ?thesis
+    proof (cases "f = u31 \<and> length (bef @ C\<langle>undefined\<rangle> # aft) = 4")
+      case True
+      then have f: "f = u31" and arity: "length bef + length aft = 3" by auto
+      show ?thesis
+      proof (cases bef)
+        case Nil
+        then obtain q1 q2 q3 where aft: "aft = [q1,q2,q3]"
+          using arity by (cases aft; cases "tl aft"; cases "tl (tl aft)") auto
+        show ?thesis unfolding csr_guard_context_normalizes_def
+        proof (intro disjI2 exI allI)
+          fix t
+          show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+              (More f bef C aft)\<langle>t\<rangle> =
+            Fun co
+              [csr_guard_normalize a u11 u21 u31 su len ni co ta q3,
+               Fun ta
+                [csr_guard_normalize a u11 u21 u31 su len ni co ta q2,
+                 csr_guard_normalize a u11 u21 u31 su len ni co ta q1]]"
+            using f Nil aft not_u11 not_u21
+            by (simp add: csr_guard_normalize_Fun[OF distinct])
+        qed
+      next
+        case (Cons b0 bs)
+        note bef_Cons = Cons
+        show ?thesis
+        proof (cases bs)
+          case Nil
+          then obtain q2 q3 where aft: "aft = [q2,q3]"
+            using arity bef_Cons Nil by (cases aft; cases "tl aft") auto
+          show ?thesis unfolding csr_guard_context_normalizes_def
+          proof (intro disjI1 exI allI)
+            fix t
+            show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+                (More f bef C aft)\<langle>t\<rangle> =
+              (More co [csr_guard_normalize a u11 u21 u31 su len ni co ta q3]
+                (More ta [csr_guard_normalize a u11 u21 u31 su len ni co ta q2] D []) [])\<langle>
+                csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+              using f bef_Cons Nil aft dependent not_u11 not_u21
+              by (simp add: csr_guard_normalize_Fun[OF distinct])
+          qed
+        next
+          case (Cons b1 bs')
+          note bs_Cons = Cons
+          show ?thesis
+          proof (cases bs')
+            case Nil
+            then obtain q3 where aft: "aft = [q3]"
+              using arity bef_Cons bs_Cons Nil by (cases aft) auto
+            show ?thesis unfolding csr_guard_context_normalizes_def
+            proof (intro disjI1 exI allI)
+              fix t
+              show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+                  (More f bef C aft)\<langle>t\<rangle> =
+                (More co [csr_guard_normalize a u11 u21 u31 su len ni co ta q3]
+                  (More ta [] D [csr_guard_normalize a u11 u21 u31 su len ni co ta b1]) [])\<langle>
+                  csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+                using f bef_Cons bs_Cons Nil aft dependent not_u11 not_u21
+                by (simp add: csr_guard_normalize_Fun[OF distinct])
+            qed
+          next
+            case (Cons b2 bs'')
+            note bs'_Cons = Cons
+            then have tail: "bs'' = []" and aft: "aft = []"
+              using arity bef_Cons bs_Cons by auto
+            show ?thesis unfolding csr_guard_context_normalizes_def
+            proof (intro disjI1 exI allI)
+              fix t
+              show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+                  (More f bef C aft)\<langle>t\<rangle> =
+                (More co [] D
+                  [Fun ta
+                    [csr_guard_normalize a u11 u21 u31 su len ni co ta b2,
+                     csr_guard_normalize a u11 u21 u31 su len ni co ta b1]])\<langle>
+                  csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+                using f bef_Cons bs_Cons bs'_Cons tail aft dependent not_u11 not_u21
+                by (simp add: csr_guard_normalize_Fun[OF distinct])
+            qed
+          qed
+        qed
+      qed
+    next
+      case False
+      note not_u31 = False
+      show ?thesis
+      proof (cases "f = a \<and> length (bef @ C\<langle>undefined\<rangle> # aft) = 2")
+        case True
+        then have f: "f = a" and arity: "length bef + length aft = 1" by auto
+        show ?thesis
+        proof (cases bef)
+          case Nil
+          then obtain q where aft: "aft = [q]" using arity by (cases aft) auto
+          show ?thesis unfolding csr_guard_context_normalizes_def
+          proof (intro disjI2 exI allI)
+            fix t
+            show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+                (More f bef C aft)\<langle>t\<rangle> =
+              csr_guard_normalize a u11 u21 u31 su len ni co ta q"
+              using f Nil aft not_u11 not_u21 not_u31
+              by (simp add: csr_guard_normalize_Fun[OF distinct])
+          qed
+        next
+          case (Cons b bs)
+          then have bs: "bs = []" and aft: "aft = []" using arity by auto
+          show ?thesis unfolding csr_guard_context_normalizes_def
+          proof (intro disjI1 exI allI)
+            fix t
+            show "csr_guard_normalize a u11 u21 u31 su len ni co ta
+                (More f bef C aft)\<langle>t\<rangle> =
+              D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+              using f Cons bs aft dependent not_u11 not_u21 not_u31
+              by (simp add: csr_guard_normalize_Fun[OF distinct])
+          qed
+        qed
+      next
+        case False
+        note not_and = False
+        have n11: "\<not> (f = u11 \<and> length bef + length aft = 1)"
+          using not_u11 by simp
+        have n21: "\<not> (f = u21 \<and> length bef + length aft = 0)"
+          using not_u21 by simp
+        have n31: "\<not> (f = u31 \<and> length bef + length aft = 3)"
+          using not_u31 by simp
+        have na: "\<not> (f = a \<and> length bef + length aft = 1)"
+          using not_and by simp
+        show ?thesis unfolding csr_guard_context_normalizes_def
+        proof (intro disjI1 exI allI)
+          fix t
+          let ?N = "csr_guard_normalize a u11 u21 u31 su len ni co ta"
+          have b11: "\<not> (f = u11 \<and> length (bef @ C\<langle>t\<rangle> # aft) = 2)"
+            using not_u11 by simp
+          have b21: "\<not> (f = u21 \<and> length (bef @ C\<langle>t\<rangle> # aft) = 1)"
+            using not_u21 by simp
+          have b31: "\<not> (f = u31 \<and> length (bef @ C\<langle>t\<rangle> # aft) = 4)"
+            using not_u31 by simp
+          have ba: "\<not> (f = a \<and> length (bef @ C\<langle>t\<rangle> # aft) = 2)"
+            using not_and by simp
+          have top: "?N (Fun f (bef @ C\<langle>t\<rangle> # aft)) =
+            (if f = u11 \<and> length (bef @ C\<langle>t\<rangle> # aft) = 2 then
+               Fun su [Fun len [?N ((bef @ C\<langle>t\<rangle> # aft) ! 1)]]
+             else if f = u21 \<and> length (bef @ C\<langle>t\<rangle> # aft) = 1 then Fun ni []
+             else if f = u31 \<and> length (bef @ C\<langle>t\<rangle> # aft) = 4 then
+               Fun co [?N ((bef @ C\<langle>t\<rangle> # aft) ! 3),
+                 Fun ta [?N ((bef @ C\<langle>t\<rangle> # aft) ! 2),
+                   ?N ((bef @ C\<langle>t\<rangle> # aft) ! 1)]]
+             else if f = a \<and> length (bef @ C\<langle>t\<rangle> # aft) = 2 then
+               ?N ((bef @ C\<langle>t\<rangle> # aft) ! 1)
+             else Fun f (map ?N (bef @ C\<langle>t\<rangle> # aft)))"
+            by (rule csr_guard_normalize_Fun[OF distinct])
+          have top': "?N (Fun f (bef @ C\<langle>t\<rangle> # aft)) =
+              Fun f (map ?N (bef @ C\<langle>t\<rangle> # aft))"
+            using top by (simp only: b11 b21 b31 ba if_False)
+          show "?N (More f bef C aft)\<langle>t\<rangle> =
+            (More f (map ?N bef) D (map ?N aft))\<langle>?N t\<rangle>"
+            using top' dependent
+            by simp
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma csr_guard_context_normalizes_all:
+  assumes distinct: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+  shows "csr_guard_context_normalizes a u11 u21 u31 su len ni co ta C"
+proof (induction C)
+  case Hole
+  show ?case unfolding csr_guard_context_normalizes_def
+    by (intro disjI1 exI[of _ Hole] allI) simp
+next
+  case (More f bef C aft)
+  from More.IH consider
+      (dependent) D where "\<And>t.
+        csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> =
+          D\<langle>csr_guard_normalize a u11 u21 u31 su len ni co ta t\<rangle>"
+    | (independent) u where "\<And>t.
+        csr_guard_normalize a u11 u21 u31 su len ni co ta C\<langle>t\<rangle> = u"
+    unfolding csr_guard_context_normalizes_def by blast
+  then show ?case
+  proof cases
+    case (dependent D)
+    show ?thesis
+      by (rule csr_guard_context_normalizes_More_dependent[OF distinct dependent])
+  next
+    case (independent u)
+    show ?thesis
+      by (rule csr_guard_context_normalizes_More_independent[OF distinct independent])
+  qed
+qed
+
 lemma csr_guard_normal_rank_ctxt_backward_if:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and normalized: "csr_guard_context_normalizes
@@ -1242,6 +1486,78 @@ proof -
     case (independent u)
     then show ?thesis using target unfolding csr_guard_normal_rank_def by simp
   qed
+qed
+
+lemma csr_guard_normal_rank_ctxt_backward:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and local: "\<And>A n.
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A y = Some n \<Longrightarrow>
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A x = Some n"
+    and target: "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A C\<langle>y\<rangle> = Some n"
+  shows "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A C\<langle>x\<rangle> = Some n"
+  by (rule csr_guard_normal_rank_ctxt_backward_if[
+      OF constructors csr_guard_context_normalizes_all[OF symbols] local target])
+
+definition csr_guard_normal_rules_backward_eq where
+  "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R \<longleftrightarrow>
+    (\<forall>l r. (l,r) \<in> R \<longrightarrow> (\<forall>A.
+      csr_guard_normal_rule_backward_eq
+        a u11 u21 u31 z su len ni co ta zs A l r))"
+
+lemma csr_guard_normal_rules_csstep_backward:
+  assumes symbols: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    and constructors: "distinct [z,su,len,ni,co,ta,zs]"
+    and checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs R"
+    and step: "(s,t) \<in> csstep \<mu> R"
+    and target: "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A t = Some n"
+  shows "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A s = Some n"
+proof -
+  from step obtain p lr \<sigma> where rewrite:
+      "(s,t) \<in> rstep_r_p_s R lr p \<sigma>"
+    unfolding csstep_def csstep_p_def by auto
+  from rewrite[unfolded rstep_r_p_s_def'] have lr: "lr \<in> R"
+    and pos: "p \<in> poss s"
+    and redex: "s |_ p = fst lr \<cdot> \<sigma>"
+    and reduct: "t = replace_at s p (snd lr \<cdot> \<sigma>)"
+    by auto
+  let ?C = "ctxt_of_pos_term p s"
+  have source: "s = ?C\<langle>fst lr \<cdot> \<sigma>\<rangle>"
+    using ctxt_supt_id[OF pos] redex by simp
+  have target_ctxt: "t = ?C\<langle>snd lr \<cdot> \<sigma>\<rangle>"
+    using ctxt_supt_id[OF pos] redex reduct by simp
+  have local: "\<And>A n.
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+        (snd lr \<cdot> \<sigma>) = Some n \<Longrightarrow>
+      csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+        (fst lr \<cdot> \<sigma>) = Some n"
+  proof -
+    fix A n
+    assume rhs: "csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+      (snd lr \<cdot> \<sigma>) = Some n"
+    have rule_checked: "csr_guard_normal_rule_backward_eq
+        a u11 u21 u31 z su len ni co ta zs A (fst lr) (snd lr)"
+      using checked lr unfolding csr_guard_normal_rules_backward_eq_def
+      by (cases lr) auto
+    show "csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+        (fst lr \<cdot> \<sigma>) = Some n"
+      by (rule csr_guard_normal_rule_backward_eq_sound[
+          OF constructors rule_checked rhs])
+  qed
+  have target': "csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+      ?C\<langle>snd lr \<cdot> \<sigma>\<rangle> = Some n"
+    using target target_ctxt by simp
+  have result: "csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+      ?C\<langle>fst lr \<cdot> \<sigma>\<rangle> = Some n"
+    by (rule csr_guard_normal_rank_ctxt_backward[
+        OF symbols constructors local target'])
+  show ?thesis using result source by simp
 qed
 
 lemma csr_guard_symbolic_rank_ge_sound:
