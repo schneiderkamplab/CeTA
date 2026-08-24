@@ -1829,6 +1829,56 @@ definition csr_guard_pair_rank_ge where
       csr_guard_pair_rank u11s lens z su len ni co ta zs s = Some m \<and>
       csr_guard_pair_rank u11s lens z su len ni co ta zs t = Some n \<and> m \<ge> n}"
 
+definition csr_guard_normal_pair_rank_gt where
+  "csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs =
+    {(s,t). \<exists>m n.
+      csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs s = Some m \<and>
+      csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs t = Some n \<and> m > n}"
+
+definition csr_guard_normal_pair_rank_ge where
+  "csr_guard_normal_pair_rank_ge a u11 u21 u31 u11s lens z su len ni co ta zs =
+    {(s,t). \<exists>m n.
+      csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs s = Some m \<and>
+      csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs t = Some n \<and> m \<ge> n}"
+
+lemma csr_guard_normal_pair_rank_gt_ge_comp:
+  "csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs O
+      csr_guard_normal_pair_rank_ge a u11 u21 u31 u11s lens z su len ni co ta zs
+    \<subseteq> csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs"
+  unfolding csr_guard_normal_pair_rank_gt_def csr_guard_normal_pair_rank_ge_def by auto
+
+lemma csr_guard_normal_pair_rank_ge_gt_comp:
+  "csr_guard_normal_pair_rank_ge a u11 u21 u31 u11s lens z su len ni co ta zs O
+      csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs
+    \<subseteq> csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs"
+  unfolding csr_guard_normal_pair_rank_gt_def csr_guard_normal_pair_rank_ge_def by auto
+
+lemma csr_guard_normal_pair_rank_ge_trans:
+  "trans (csr_guard_normal_pair_rank_ge
+      a u11 u21 u31 u11s lens z su len ni co ta zs)"
+  unfolding trans_def csr_guard_normal_pair_rank_ge_def by auto
+
+lemma SN_csr_guard_normal_pair_rank_gt:
+  "SN (csr_guard_normal_pair_rank_gt
+      a u11 u21 u31 u11s lens z su len ni co ta zs)"
+proof -
+  have sub: "csr_guard_normal_pair_rank_gt
+      a u11 u21 u31 u11s lens z su len ni co ta zs
+      \<subseteq> inv_image {(m,n). m > n}
+        (the \<circ> csr_guard_normal_pair_rank
+          a u11 u21 u31 u11s lens z su len ni co ta zs)"
+    unfolding csr_guard_normal_pair_rank_gt_def inv_image_def by auto
+  have "SN (inv_image {(m,n). m > n}
+      (the \<circ> csr_guard_normal_pair_rank
+        a u11 u21 u31 u11s lens z su len ni co ta zs))"
+    by (rule SN_inv_image[OF SN_nat_gt])
+  then show ?thesis by (rule SN_subset[OF _ sub])
+qed
+
 lemma csr_guard_pair_rank_gt_ge_comp:
   "csr_guard_pair_rank_gt u11s lens z su len ni co ta zs O
       csr_guard_pair_rank_ge u11s lens z su len ni co ta zs
