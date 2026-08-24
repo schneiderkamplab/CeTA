@@ -607,6 +607,52 @@ proof
     by (rule csr_guard_form_gt_value[OF orient])
 qed
 
+lemma csr_guard_pair_u11_length_weak:
+  fixes q :: "('f,'v) term" and L :: 'v
+  assumes wrappers: "u11s \<noteq> lens"
+  defines "l \<equiv> Fun u11s [q, Var L]"
+    and "r \<equiv> Fun lens [Var L]"
+  obtains F G where
+    "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l = Some F"
+    "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r = Some G"
+    "csr_guard_form_ge F G"
+proof
+  show "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l =
+      Some (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
+    unfolding l_def by simp
+  show "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r =
+      Some (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
+    unfolding r_def using wrappers by simp
+  show "csr_guard_form_ge
+      (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)
+      (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
+    by simp
+qed
+
+lemma csr_guard_pair_length_cons_u11_strict:
+  fixes q :: "('f,'v) term" and N L :: 'v
+  assumes wrappers: "lens \<noteq> u11s"
+    and constructors: "co \<noteq> ni" "co \<noteq> ta"
+  defines "l \<equiv> Fun lens [Fun co [Var N, Var L]]"
+    and "r \<equiv> Fun u11s [q, Var L]"
+  obtains F G where
+    "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l = Some F"
+    "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r = Some G"
+    "csr_guard_form_gt F G"
+proof
+  show "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l =
+      Some (Guard_Form
+        [(N,Guard_Nat),(L,Guard_List)] [(L,Guard_List)] 1)"
+    unfolding l_def using wrappers constructors by simp
+  show "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r =
+      Some (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
+    unfolding r_def by simp
+  show "csr_guard_form_gt
+      (Guard_Form [(N,Guard_Nat),(L,Guard_List)] [(L,Guard_List)] 1)
+      (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
+    by simp
+qed
+
 lemma csr_guard_symbolic_rank_zero [simp]:
   "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (Fun z []) =
     Some (Guard_Form [] [] 0)"
