@@ -10,6 +10,7 @@ theory CSR_GM_Transformation
     CSR_Muterm_Typed_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08
     CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress
+    CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker
 begin
 
 text \<open>
@@ -1302,6 +1303,7 @@ lemma csstep_mu_mono:
 
 datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
     Existing_CSR_Proof "('f, 'l, 'v) extended_csr_termination_proof"
+  | Guarded_CSR_Proof "('f,'l,'v) guarded_csr_termination_proof"
   | Innermost_CSR_Dependency_Pairs
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) trsLL"
@@ -1348,6 +1350,9 @@ where
   "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Existing_CSR_Proof prf) =
     check_extended_csr_termination_proof I J a i \<mu> R prf"
+| "check_gm_extended_csr_termination_proof I J a i \<mu> R
+      (Guarded_CSR_Proof prf) =
+    check_guarded_csr_termination_proof I J i \<mu> R prf"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
       (Innermost_CSR_Dependency_Pairs P S prf) =
     (if S = [] then
@@ -1518,6 +1523,15 @@ proof (cases p)
     by simp
   from check_extended_csr_termination_proof_sound[OF I J old_ok]
   show ?thesis .
+next
+  case (Guarded_CSR_Proof child)
+  from ok Guarded_CSR_Proof have child_ok:
+      "isOK (check_guarded_csr_termination_proof I J i \<mu> R child)"
+    by simp
+  have "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule check_guarded_csr_termination_proof_sound[OF I J child_ok])
+  then show ?thesis
+    by (rule SN_subset, unfold sig_step_def, auto)
 next
   case (Innermost_CSR_Dependency_Pairs P S child)
   show ?thesis

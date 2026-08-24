@@ -2819,6 +2819,75 @@ where [code]: "symbol_parser x = (
       | Inr ls \<Rightarrow> FunLab f ls)
   ) x"
 
+partial_function_mr (sum_bot)
+  xml2guarded_csr_termination_proof ::
+    "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
+      (string,label_type,string) guarded_csr_termination_proof xmlt"
+  and xml2guarded_csr_dp_proof ::
+    "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
+      (string,label_type,string) guarded_csr_dp_proof xmlt"
+where
+  "xml2guarded_csr_termination_proof termIndexMap ruleMap x = (
+    XMLdo (STR ''csrGuardedRuleRemoval'') {
+      redp \<leftarrow> CPF_Proof_Parser.redtriple symbol_parser Sharp False;
+      Rr \<leftarrow> xml_singleton (STR ''trs'')
+        (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2guarded_csr_termination_proof termIndexMap ruleMap;
+      xml_return (Guarded_CSR_Rule_Removal redp Rr prf)
+    } XMLor XMLdo (STR ''csrGuardedDependencyPairs'') {
+      P \<leftarrow> xml_singleton (STR ''dps'')
+        (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2guarded_csr_dp_proof termIndexMap ruleMap;
+      xml_return (Guarded_CSR_Dependency_Pairs P prf)
+    } XMLor XMLdo (STR ''csrGuardedImprovedDependencyPairs'') {
+      U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
+      P \<leftarrow> xml_singleton (STR ''dps'')
+        (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2guarded_csr_dp_proof termIndexMap ruleMap;
+      xml_return (Guarded_CSR_Improved_Dependency_Pairs U P prf)
+    }) x"
+| "xml2guarded_csr_dp_proof termIndexMap ruleMap x = (
+    XMLdo (STR ''csrGuardedExistingDpProof'') {
+      prf \<leftarrow> xml2csr_dp_termination_proof
+        symbol_parser termIndexMap ruleMap;
+      xml_return (Guarded_CSR_DP_Existing prf)
+    } XMLor XMLdo (STR ''csrGuardedDepGraphProc'') {
+      cs \<leftarrow>* XMLdo (STR ''component'') {
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow>? xml2guarded_csr_dp_proof termIndexMap ruleMap;
+        xml_return (prf,P)
+      };
+      xml_return (Guarded_CSR_DP_Dep_Graph cs)
+    } XMLor XMLdo (STR ''csrGuardedOvConsTerminal'') {
+      tt \<leftarrow> xml_singleton (STR ''truthSymbol'') symbol_parser id;
+      a \<leftarrow> xml_singleton (STR ''andSymbol'') symbol_parser id;
+      natp \<leftarrow> xml_singleton (STR ''natPredicateSymbol'') symbol_parser id;
+      listp \<leftarrow> xml_singleton (STR ''listPredicateSymbol'') symbol_parser id;
+      ilistp \<leftarrow> xml_singleton (STR ''ilistPredicateSymbol'') symbol_parser id;
+      u11 \<leftarrow> xml_singleton (STR ''u11Symbol'') symbol_parser id;
+      u21 \<leftarrow> xml_singleton (STR ''u21Symbol'') symbol_parser id;
+      u31 \<leftarrow> xml_singleton (STR ''u31Symbol'') symbol_parser id;
+      z \<leftarrow> xml_singleton (STR ''zeroSymbol'') symbol_parser id;
+      su \<leftarrow> xml_singleton (STR ''successorSymbol'') symbol_parser id;
+      len \<leftarrow> xml_singleton (STR ''lengthSymbol'') symbol_parser id;
+      ni \<leftarrow> xml_singleton (STR ''nilSymbol'') symbol_parser id;
+      co \<leftarrow> xml_singleton (STR ''consSymbol'') symbol_parser id;
+      ta \<leftarrow> xml_singleton (STR ''takeSymbol'') symbol_parser id;
+      zs \<leftarrow> xml_singleton (STR ''zerosSymbol'') symbol_parser id;
+      X \<leftarrow> xml_text (STR ''xVariable'');
+      L \<leftarrow> xml_text (STR ''listVariable'');
+      IL \<leftarrow> xml_text (STR ''ilistVariable'');
+      M \<leftarrow> xml_text (STR ''mVariable'');
+      N \<leftarrow> xml_text (STR ''nVariable'');
+      V \<leftarrow> xml_text (STR ''valueVariable'');
+      V1 \<leftarrow> xml_text (STR ''leftValueVariable'');
+      V2 \<leftarrow> xml_text (STR ''rightValueVariable'');
+      xml_return (Guarded_CSR_DP_OvCons (CSR_Guarded_OvCons_Witness
+        tt a natp listp ilistp u11 u21 u31 z su len ni co ta zs
+        X L IL M N V V1 V2))
+    }) x"
+
 definition xml2conservative_csr_termination_proof ::
   "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
     (string, label_type, string) gm_extended_csr_termination_proof xmlt"
@@ -2958,7 +3027,9 @@ where
         prf \<leftarrow> xml2trs_termination_proof
           symbol_parser termIndexMap ruleMap;
         xml_return (GM_CSR_Transformation mark c active prf)
-      }
+      };
+      guarded = xml_singleton (STR ''csrGuardedTerminationProof'')
+        (xml2guarded_csr_termination_proof termIndexMap ruleMap) Guarded_CSR_Proof
     in orthogonality
       XMLor improved
       XMLor rta08
@@ -2974,6 +3045,7 @@ where
         (STR ''conservativeCsrTerminationProof'') conservative id
       XMLor xml_singleton
         (STR ''nativeConservativeCsrTerminationProof'') conservative id
+      XMLor guarded
       XMLor gm)"
 
 definition xml2outermost_rz_termination_proof ::

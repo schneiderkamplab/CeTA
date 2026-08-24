@@ -326,12 +326,6 @@ session CSR_Checker_Extensions in "CSR_Checker/Extensions" = CSR_Checker_Core +
     CSR_Finite_Semantic_Labeling
     CSR_Conservative_Checker
 
-session CSR_Guarded_List_Measure_Check in "CSR_Checker/Guarded_List_Measure_Check" = CSR_Checker_Extensions +
-  options [document = false]
-  theories
-    CSR_Guarded_List_Measure
-    CSR_Guarded_List_Checker
-
 session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
   options [document = false]
   theories
@@ -354,6 +348,12 @@ session CSR_Muterm_Typed_Recursive_Redpair in "CSR_Checker/Muterm_Typed_Recursiv
   theories
     CSR_Muterm_Typed_Recursive_Redpair
 
+session CSR_Guarded_List_Measure_Check in "CSR_Checker/Guarded_List_Measure_Check" = CSR_Muterm_Typed_Recursive_Redpair +
+  options [document = false]
+  theories
+    CSR_Guarded_List_Measure
+    CSR_Guarded_List_Checker
+
 session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
   options [document = false, timeout = 600]
   sessions
@@ -363,7 +363,7 @@ session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
     Outermost_Signature_Extension
     Outermost_RZ_Checker
 
-session Proof_Checker in Proof_Checker = CSR_Muterm_Typed_Recursive_Redpair +
+session Proof_Checker in Proof_Checker = CSR_Guarded_List_Measure_Check +
   options [document = false]
   sessions
     LTS
