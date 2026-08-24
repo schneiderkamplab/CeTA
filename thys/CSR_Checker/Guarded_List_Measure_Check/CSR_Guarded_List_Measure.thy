@@ -769,6 +769,47 @@ proof -
     by (rule sound)
 qed
 
+definition csr_guard_normal_rank_environment where
+  "csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma> =
+    csr_guard_rank_environment z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))"
+
+lemma csr_guard_normal_symbolic_rank_complete:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and ground:
+      "csr_guard_normal_rank a u11 u21 u31 z su len ni co ta zs A
+        (t \<cdot> \<sigma>) = Some n"
+  shows "\<exists>F.
+    csr_guard_normal_symbolic_rank a u11 u21 u31 z su len ni co ta zs A t = Some F \<and>
+    csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>)
+      (csr_guard_form_requirements F) \<and>
+    csr_guard_form_value
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>) F = n"
+proof -
+  have ground': "csr_guard_rank z su len ni co ta zs A
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t \<cdot>
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))) = Some n"
+    using ground unfolding csr_guard_normal_rank_def csr_guard_normalize_subst .
+  obtain F where symbolic:
+      "csr_guard_symbolic_rank z su len ni co ta zs A
+        (csr_guard_normalize a u11 u21 u31 su len ni co ta t) = Some F"
+    and realized: "csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      (csr_guard_rank_environment z su len ni co ta zs
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x)))
+      (csr_guard_form_requirements F)"
+    and valF: "csr_guard_form_value
+      (csr_guard_rank_environment z su len ni co ta zs
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))) F = n"
+    using csr_guard_symbolic_rank_complete[OF distinct ground'] by blast
+  show ?thesis
+    using symbolic realized valF
+    unfolding csr_guard_normal_symbolic_rank_def
+      csr_guard_normal_rank_environment_def by blast
+qed
+
 fun csr_guard_coefficients_le where
   "csr_guard_coefficients_le [] ys = True"
 | "csr_guard_coefficients_le (x # xs) ys =
