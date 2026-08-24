@@ -268,6 +268,160 @@ where
              | Some m \<Rightarrow> Some 0))
      else None)"
 
+lemma csr_guard_normalize_constructor:
+  assumes symbols: "distinct [a,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and constructor: "f \<in> set [z,su,len,ni,co,ta,zs]"
+  shows "csr_guard_normalize a u11 u21 u31 su len ni co ta (Fun f ts) =
+    Fun f (map (csr_guard_normalize a u11 u21 u31 su len ni co ta) ts)"
+proof -
+  have admin: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    using symbols by simp
+  have no_admin: "f \<noteq> a \<and> f \<noteq> u11 \<and> f \<noteq> u21 \<and> f \<noteq> u31"
+    using symbols constructor by auto
+  show ?thesis
+    using no_admin by (simp add: csr_guard_normalize_Fun[OF admin])
+qed
+
+lemma csr_guard_rank_normalize_defined:
+  assumes symbols: "distinct [a,u11,u21,u31,z,su,len,ni,co,ta,zs]"
+    and rank: "csr_guard_rank z su len ni co ta zs A t = Some n"
+  shows "csr_guard_rank z su len ni co ta zs A
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t) = Some n"
+  using rank
+proof (induction t arbitrary: A n)
+  case (Var x)
+  then show ?case by (cases A; simp)
+next
+  case (Fun f ts)
+  have admin: "distinct [a,u11,u21,u31,su,len,ni,co,ta]"
+    using symbols by simp
+  have z_su: "z \<noteq> su" and z_len: "z \<noteq> len"
+    and su_z: "su \<noteq> z" and su_len: "su \<noteq> len"
+    and len_z: "len \<noteq> z" and len_su: "len \<noteq> su"
+    and ni_co: "ni \<noteq> co" and ni_ta: "ni \<noteq> ta" and ni_zs: "ni \<noteq> zs"
+    and co_ni: "co \<noteq> ni" and co_ta: "co \<noteq> ta" and co_zs: "co \<noteq> zs"
+    and ta_ni: "ta \<noteq> ni" and ta_co: "ta \<noteq> co" and ta_zs: "ta \<noteq> zs"
+    and zs_ni: "zs \<noteq> ni" and zs_co: "zs \<noteq> co" and zs_ta: "zs \<noteq> ta"
+    using symbols by auto
+  note ctor_neq = z_su z_len su_z su_len len_z len_su
+    ni_co ni_ta ni_zs co_ni co_ta co_zs ta_ni ta_co ta_zs zs_ni zs_co zs_ta
+  have child: "\<And>i B m. i < length ts \<Longrightarrow>
+      csr_guard_rank z su len ni co ta zs B (ts ! i) = Some m \<Longrightarrow>
+      csr_guard_rank z su len ni co ta zs B
+        (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! i)) = Some m"
+    by (rule Fun.IH, simp)
+  show ?case
+  proof (cases A)
+    case Guard_Nat
+    consider
+        (zero) "f = z" "ts = []" "n = 0"
+      | (suc) k where "f = su" "length ts = 1"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some k"
+          "n = Suc k"
+      | (length) "f = len" "length ts = 1"
+          "csr_guard_rank z su len ni co ta zs Guard_List (ts ! 0) = Some n"
+      using Fun.prems unfolding Guard_Nat
+      by (auto split: if_splits option.splits)
+    then show ?thesis
+    proof cases
+      case zero
+      then show ?thesis using ctor_neq Guard_Nat
+        by (simp add: csr_guard_normalize_constructor[OF symbols] neq_commute)
+    next
+      case (suc k)
+      have c: "csr_guard_rank z su len ni co ta zs Guard_Nat
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 0)) = Some k"
+        by (rule child[OF _ suc(3)], use suc(2) in simp)
+      show ?thesis using ctor_neq Guard_Nat suc c
+        by (simp add: csr_guard_normalize_constructor[OF symbols] nth_map neq_commute)
+    next
+      case length
+      have c: "csr_guard_rank z su len ni co ta zs Guard_List
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 0)) = Some n"
+        by (rule child[OF _ length(3)], use length(2) in simp)
+      show ?thesis using ctor_neq Guard_Nat length c
+        by (simp add: csr_guard_normalize_constructor[OF symbols] nth_map neq_commute)
+    qed
+  next
+    case Guard_List
+    consider
+        (nil) "f = ni" "ts = []" "n = 0"
+      | (cons) k where "f = co" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_List (ts ! 1) = Some k"
+          "n = Suc k"
+      | (take) k m where "f = ta" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some k"
+          "csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some m"
+          "n = k"
+      using Fun.prems unfolding Guard_List
+      by (auto split: if_splits option.splits)
+    then show ?thesis
+    proof cases
+      case nil
+      then show ?thesis using ctor_neq Guard_List
+        by (simp add: csr_guard_normalize_constructor[OF symbols] neq_commute)
+    next
+      case (cons k)
+      have c: "csr_guard_rank z su len ni co ta zs Guard_List
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)) = Some k"
+        by (rule child[OF _ cons(3)], use cons(2) in simp)
+      show ?thesis using ctor_neq Guard_List cons c
+        by (simp add: csr_guard_normalize_constructor[OF symbols] nth_map neq_commute)
+    next
+      case (take k m)
+      have c0: "csr_guard_rank z su len ni co ta zs Guard_Nat
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 0)) = Some k"
+        by (rule child[OF _ take(3)], use take(2) in simp)
+      have c1: "csr_guard_rank z su len ni co ta zs Guard_IList
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)) = Some m"
+        by (rule child[OF _ take(4)], use take(2) in simp)
+      show ?thesis using ctor_neq Guard_List take c0 c1
+        by (simp add: csr_guard_normalize_constructor[OF symbols] nth_map neq_commute)
+    qed
+  next
+    case Guard_IList
+    consider
+        (zeros) "f = zs" "ts = []" "n = 0"
+      | (cons) m where "f = co" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some m"
+          "n = 0"
+      | (nil) "f = ni" "ts = []" "n = 0"
+      | (take) k m where "f = ta" "length ts = 2"
+          "csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some k"
+          "csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some m"
+          "n = 0"
+      using Fun.prems unfolding Guard_IList
+      by (auto split: if_splits option.splits)
+    then show ?thesis
+    proof cases
+      case zeros
+      then show ?thesis using ctor_neq Guard_IList
+        by (simp add: csr_guard_normalize_constructor[OF symbols] neq_commute)
+    next
+      case (cons m)
+      have c: "csr_guard_rank z su len ni co ta zs Guard_IList
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)) = Some m"
+        by (rule child[OF _ cons(3)], use cons(2) in simp)
+      show ?thesis using ctor_neq Guard_IList cons c
+        by (simp add: csr_guard_normalize_constructor[OF symbols] nth_map neq_commute)
+    next
+      case nil
+      then show ?thesis using ctor_neq Guard_IList
+        by (simp add: csr_guard_normalize_constructor[OF symbols] neq_commute)
+    next
+      case (take k m)
+      have c0: "csr_guard_rank z su len ni co ta zs Guard_Nat
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 0)) = Some k"
+        by (rule child[OF _ take(3)], use take(2) in simp)
+      have c1: "csr_guard_rank z su len ni co ta zs Guard_IList
+          (csr_guard_normalize a u11 u21 u31 su len ni co ta (ts ! 1)) = Some m"
+        by (rule child[OF _ take(4)], use take(2) in simp)
+      show ?thesis using ctor_neq Guard_IList take c0 c1
+        by (simp add: csr_guard_normalize_constructor[OF symbols] nth_map neq_commute)
+    qed
+  qed
+qed
+
 fun csr_guard_truth ::
   "'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
    'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow>
