@@ -192,12 +192,10 @@ where
 | "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (Fun f ts) =
     (if f = ni \<and> ts = [] then Some (Guard_Form [] [] 0)
      else if f = co \<and> length ts = 2 then
-       (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
-              csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1)) of
-          (Some (Guard_Form reqn coeffn cn),
-           Some (Guard_Form reql coeffl cl)) \<Rightarrow>
-             Some (Guard_Form (reqn @ reql) coeffl (Suc cl))
-        | _ \<Rightarrow> None)
+       (case csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1) of
+          Some (Guard_Form reql coeffl cl) \<Rightarrow>
+            Some (Guard_Form reql coeffl (Suc cl))
+        | None \<Rightarrow> None)
      else if f = ta \<and> length ts = 2 then
        (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
               csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1)) of
@@ -209,12 +207,10 @@ where
 | "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (Fun f ts) =
     (if f = zs \<and> ts = [] then Some (Guard_Form [] [] 0)
      else if f = co \<and> length ts = 2 then
-       (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
-              csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1)) of
-          (Some (Guard_Form reqn coeffn cn),
-           Some (Guard_Form reqi coeffi ci)) \<Rightarrow>
-             Some (Guard_Form (reqn @ reqi) [] 0)
-        | _ \<Rightarrow> None)
+       (case csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) of
+          Some (Guard_Form reqi coeffi ci) \<Rightarrow>
+            Some (Guard_Form reqi [] 0)
+        | None \<Rightarrow> None)
      else if f = ni \<and> ts = [] then Some (Guard_Form [] [] 0)
      else if f = ta \<and> length ts = 2 then
        (case (csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0),
@@ -243,10 +239,8 @@ where
 | "csr_guard_rank z su len ni co ta zs Guard_List (Fun f ts) =
     (if f = ni \<and> ts = [] then Some 0
      else if f = co \<and> length ts = 2 then
-       (case csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) of
-          None \<Rightarrow> None
-        | Some n \<Rightarrow> map_option Suc
-            (csr_guard_rank z su len ni co ta zs Guard_List (ts ! 1)))
+       map_option Suc
+         (csr_guard_rank z su len ni co ta zs Guard_List (ts ! 1))
      else if f = ta \<and> length ts = 2 then
        (case csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) of
           None \<Rightarrow> None
@@ -259,12 +253,9 @@ where
 | "csr_guard_rank z su len ni co ta zs Guard_IList (Fun f ts) =
     (if f = zs \<and> ts = [] then Some 0
      else if f = co \<and> length ts = 2 then
-       (case csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) of
+       (case csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) of
           None \<Rightarrow> None
-        | Some n \<Rightarrow>
-            (case csr_guard_rank z su len ni co ta zs Guard_IList (ts ! 1) of
-               None \<Rightarrow> None
-             | Some m \<Rightarrow> Some 0))
+        | Some m \<Rightarrow> Some 0)
      else if f = ni \<and> ts = [] then Some 0
      else if f = ta \<and> length ts = 2 then
        (case csr_guard_rank z su len ni co ta zs Guard_Nat (ts ! 0) of
@@ -389,13 +380,11 @@ next
       using Fun.prems(1) Guard_List by simp
     consider
         (nil) "f = ni" "ts = []" "F = Guard_Form [] [] 0"
-      | (cons) reqn coeffn cn reql coeffl cl where
+      | (cons) reql coeffl cl where
           "f = co" "length ts = 2"
-          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
-             Some (Guard_Form reqn coeffn cn)"
           "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1) =
              Some (Guard_Form reql coeffl cl)"
-          "F = Guard_Form (reqn @ reql) coeffl (Suc cl)"
+          "F = Guard_Form reql coeffl (Suc cl)"
       | (take) reqn coeffn cn reqi coeffi ci where
           "f = ta" "length ts = 2"
           "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
@@ -411,21 +400,15 @@ next
       case nil
       then show ?thesis unfolding Guard_List by simp
     next
-      case (cons reqn coeffn cn reql coeffl cl)
-      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
-        using cons(2) by auto
-      have realized_n: "csr_guard_requirements_realized
-          z su len ni co ta zs \<sigma> \<rho> reqn"
-        and realized_l: "csr_guard_requirements_realized
+      case (cons reql coeffl cl)
+      have mem1: "ts ! 1 \<in> set ts" using cons(2) by auto
+      have realized_l: "csr_guard_requirements_realized
           z su len ni co ta zs \<sigma> \<rho> reql"
-        using Fun.prems(2) cons(5) by simp_all
-      have child_n: "csr_guard_rank z su len ni co ta zs Guard_Nat
-          (ts ! 0 \<cdot> \<sigma>) = Some (cn + sum_list (map \<rho> coeffn))"
-        using Fun.IH[OF mem0 cons(3)] realized_n by simp
+        using Fun.prems(2) cons(4) by simp
       have child_l: "csr_guard_rank z su len ni co ta zs Guard_List
           (ts ! 1 \<cdot> \<sigma>) = Some (cl + sum_list (map \<rho> coeffl))"
-        using Fun.IH[OF mem1 cons(4)] realized_l by simp
-      show ?thesis unfolding Guard_List using cons child_n child_l distinct by fastforce
+        using Fun.IH[OF mem1 cons(3)] realized_l by simp
+      show ?thesis unfolding Guard_List using cons child_l distinct by fastforce
     next
       case (take reqn coeffn cn reqi coeffi ci)
       have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
@@ -450,13 +433,11 @@ next
       using Fun.prems(1) Guard_IList by simp
     consider
         (zeros) "f = zs" "ts = []" "F = Guard_Form [] [] 0"
-      | (cons) reqn coeffn cn reqi coeffi ci where
+      | (cons) reqi coeffi ci where
           "f = co" "length ts = 2"
-          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) =
-             Some (Guard_Form reqn coeffn cn)"
           "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) =
              Some (Guard_Form reqi coeffi ci)"
-          "F = Guard_Form (reqn @ reqi) [] 0"
+          "F = Guard_Form reqi [] 0"
       | (nil) "f = ni" "ts = []" "F = Guard_Form [] [] 0"
       | (take) reqn coeffn cn reqi coeffi ci where
           "f = ta" "length ts = 2"
@@ -473,21 +454,15 @@ next
       case zeros
       then show ?thesis unfolding Guard_IList by simp
     next
-      case (cons reqn coeffn cn reqi coeffi ci)
-      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
-        using cons(2) by auto
-      have realized_n: "csr_guard_requirements_realized
-          z su len ni co ta zs \<sigma> \<rho> reqn"
-        and realized_i: "csr_guard_requirements_realized
+      case (cons reqi coeffi ci)
+      have mem1: "ts ! 1 \<in> set ts" using cons(2) by auto
+      have realized_i: "csr_guard_requirements_realized
           z su len ni co ta zs \<sigma> \<rho> reqi"
-        using Fun.prems(2) cons(5) by simp_all
-      have child_n: "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_Nat
-          (ts ! 0 \<cdot> \<sigma>) = Some n"
-        using Fun.IH[OF mem0 cons(3)] realized_n by fastforce
+        using Fun.prems(2) cons(4) by simp
       have child_i: "\<exists>n. csr_guard_rank z su len ni co ta zs Guard_IList
           (ts ! 1 \<cdot> \<sigma>) = Some n"
-        using Fun.IH[OF mem1 cons(4)] realized_i by fastforce
-      show ?thesis unfolding Guard_IList using cons child_n child_i distinct by fastforce
+        using Fun.IH[OF mem1 cons(3)] realized_i by fastforce
+      show ?thesis unfolding Guard_IList using cons child_i distinct by fastforce
     next
       case nil
       then show ?thesis unfolding Guard_IList using distinct by simp
@@ -606,9 +581,7 @@ next
       using Fun.prems Guard_List by simp
     consider
         (nil) "f = ni" "ts = []" "n = 0"
-      | (cons) p q where "f = co" "length ts = 2"
-          "csr_guard_rank z su len ni co ta zs Guard_Nat
-            (ts ! 0 \<cdot> \<sigma>) = Some p"
+      | (cons) q where "f = co" "length ts = 2"
           "csr_guard_rank z su len ni co ta zs Guard_List
             (ts ! 1 \<cdot> \<sigma>) = Some q" "n = Suc q"
       | (take) p q where "f = ta" "length ts = 2"
@@ -624,17 +597,8 @@ next
       case nil
       then show ?thesis unfolding Guard_List by simp
     next
-      case (cons p q)
-      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
-        using cons(2) by auto
-      obtain Fn where sn:
-          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some Fn"
-        and rn: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
-          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
-          (csr_guard_form_requirements Fn)"
-        and vn: "csr_guard_form_value
-          (csr_guard_rank_environment z su len ni co ta zs \<sigma>) Fn = p"
-        using Fun.IH[OF mem0 cons(3)] by blast
+      case (cons q)
+      have mem1: "ts ! 1 \<in> set ts" using cons(2) by auto
       obtain Fl where sl:
           "csr_guard_symbolic_rank z su len ni co ta zs Guard_List (ts ! 1) = Some Fl"
         and rl: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
@@ -642,13 +606,12 @@ next
           (csr_guard_form_requirements Fl)"
         and vl: "csr_guard_form_value
           (csr_guard_rank_environment z su len ni co ta zs \<sigma>) Fl = q"
-        using Fun.IH[OF mem1 cons(4)] by blast
-      obtain reqn csn cn where Fn: "Fn = Guard_Form reqn csn cn" by (cases Fn)
+        using Fun.IH[OF mem1 cons(3)] by blast
       obtain reql csl cl where Fl: "Fl = Guard_Form reql csl cl" by (cases Fl)
       have co_ni: "co \<noteq> ni" using distinct by auto
       show ?thesis
-        unfolding Guard_List using cons sn rn vn sl rl vl Fn Fl co_ni
-        by (intro exI[of _ "Guard_Form (reqn @ reql) csl (Suc cl)"]) simp
+        unfolding Guard_List using cons sl rl vl Fl co_ni
+        by (intro exI[of _ "Guard_Form reql csl (Suc cl)"]) simp
     next
       case (take p q)
       have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
@@ -684,9 +647,7 @@ next
       using Fun.prems Guard_IList by simp
     consider
         (zeros) "f = zs" "ts = []" "n = 0"
-      | (cons) p q where "f = co" "length ts = 2"
-          "csr_guard_rank z su len ni co ta zs Guard_Nat
-            (ts ! 0 \<cdot> \<sigma>) = Some p"
+      | (cons) q where "f = co" "length ts = 2"
           "csr_guard_rank z su len ni co ta zs Guard_IList
             (ts ! 1 \<cdot> \<sigma>) = Some q" "n = 0"
       | (nil) "f = ni" "ts = []" "n = 0"
@@ -703,27 +664,19 @@ next
       case zeros
       then show ?thesis unfolding Guard_IList by simp
     next
-      case (cons p q)
-      have mem0: "ts ! 0 \<in> set ts" and mem1: "ts ! 1 \<in> set ts"
-        using cons(2) by auto
-      obtain Fn where sn:
-          "csr_guard_symbolic_rank z su len ni co ta zs Guard_Nat (ts ! 0) = Some Fn"
-        and rn: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
-          (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
-          (csr_guard_form_requirements Fn)"
-        using Fun.IH[OF mem0 cons(3)] by blast
+      case (cons q)
+      have mem1: "ts ! 1 \<in> set ts" using cons(2) by auto
       obtain Fi where si:
           "csr_guard_symbolic_rank z su len ni co ta zs Guard_IList (ts ! 1) = Some Fi"
         and ri: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
           (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
           (csr_guard_form_requirements Fi)"
-        using Fun.IH[OF mem1 cons(4)] by blast
-      obtain reqn csn cn where Fn: "Fn = Guard_Form reqn csn cn" by (cases Fn)
+        using Fun.IH[OF mem1 cons(3)] by blast
       obtain reqi csi ci where Fi: "Fi = Guard_Form reqi csi ci" by (cases Fi)
       have co_zs: "co \<noteq> zs" using distinct by auto
       show ?thesis
-        unfolding Guard_IList using cons sn rn si ri Fn Fi co_zs
-        by (intro exI[of _ "Guard_Form (reqn @ reqi) [] 0"]) simp
+        unfolding Guard_IList using cons si ri Fi co_zs
+        by (intro exI[of _ "Guard_Form reqi [] 0"]) simp
     next
       case nil
       have ni_zs: "ni \<noteq> zs" and ni_co: "ni \<noteq> co"
@@ -1047,8 +1000,7 @@ next
   case Guard_List
   consider
       (nil) "f = ni" "ys = []" "n = 0"
-    | (cons) p q where "f = co" "length ys = 2"
-        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some p"
+    | (cons) q where "f = co" "length ys = 2"
         "csr_guard_rank z su guard_len_sym ni co ta zs Guard_List (ys ! 1) = Some q"
         "n = Suc q"
     | (take) p q where "f = ta" "length ys = 2"
@@ -1063,13 +1015,11 @@ next
     with len have "xs = []" by simp
     with nil show ?thesis unfolding Guard_List by simp
   next
-    case (cons p q)
-    have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
-      by (rule args[OF _ cons(3)], use cons(2) in simp)
+    case (cons q)
     have child1: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_List (xs ! 1) = Some q"
-      by (rule args[OF _ cons(4)], use cons(2) in simp)
+      by (rule args[OF _ cons(3)], use cons(2) in simp)
     have co_ni: "co \<noteq> ni" using distinct by auto
-    show ?thesis unfolding Guard_List using len cons child0 child1 co_ni by simp
+    show ?thesis unfolding Guard_List using len cons child1 co_ni by simp
   next
     case (take p q)
     have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
@@ -1083,8 +1033,7 @@ next
   case Guard_IList
   consider
       (zeros) "f = zs" "ys = []" "n = 0"
-    | (cons) p q where "f = co" "length ys = 2"
-        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some p"
+    | (cons) q where "f = co" "length ys = 2"
         "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (ys ! 1) = Some q"
         "n = 0"
     | (nil) "f = ni" "ys = []" "n = 0"
@@ -1100,13 +1049,11 @@ next
     with len have "xs = []" by simp
     with zeros show ?thesis unfolding Guard_IList by simp
   next
-    case (cons p q)
-    have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
-      by (rule args[OF _ cons(3)], use cons(2) in simp)
+    case (cons q)
     have child1: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (xs ! 1) = Some q"
-      by (rule args[OF _ cons(4)], use cons(2) in simp)
+      by (rule args[OF _ cons(3)], use cons(2) in simp)
     have co_zs: "co \<noteq> zs" using distinct by auto
-    show ?thesis unfolding Guard_IList using len cons child0 child1 co_zs by simp
+    show ?thesis unfolding Guard_IList using len cons child1 co_zs by simp
   next
     case nil
     with len have "xs = []" by simp
@@ -2107,13 +2054,13 @@ lemma csr_guard_pair_length_cons_u11_strict:
 proof
   show "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs l =
       Some (Guard_Form
-        [(N,Guard_Nat),(L,Guard_List)] [(L,Guard_List)] 1)"
+        [(L,Guard_List)] [(L,Guard_List)] 1)"
     unfolding l_def using wrappers constructors by simp
   show "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs r =
       Some (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
     unfolding r_def by simp
   show "csr_guard_form_gt
-      (Guard_Form [(N,Guard_Nat),(L,Guard_List)] [(L,Guard_List)] 1)
+      (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 1)
       (Guard_Form [(L,Guard_List)] [(L,Guard_List)] 0)"
     by simp
 qed
