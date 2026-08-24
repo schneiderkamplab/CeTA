@@ -849,6 +849,13 @@ fun csr_guard_form_gt where
     (set req_r \<subseteq> set req_l \<and>
      csr_guard_coefficients_le cs_r cs_l \<and> c_r < c_l)"
 
+fun csr_guard_form_backward_eq where
+  "csr_guard_form_backward_eq (Guard_Form req_l cs_l c_l)
+      (Guard_Form req_r cs_r c_r) =
+    (set req_l \<subseteq> set req_r \<and>
+     csr_guard_coefficients_le cs_l cs_r \<and>
+     csr_guard_coefficients_le cs_r cs_l \<and> c_l = c_r)"
+
 lemma csr_guard_requirements_realized_mono:
   assumes realized: "csr_guard_requirements_realized
       z su len ni co ta zs \<sigma> \<rho> req_l"
@@ -885,6 +892,84 @@ proof (cases F; cases G)
   have sums: "sum_list (map \<rho> cs_r) \<le> sum_list (map \<rho> cs_l)"
     by (rule csr_guard_coefficients_le_sum[OF coefficients])
   show ?thesis unfolding F G using add_less_le_mono[OF constants sums] by simp
+qed
+
+lemma csr_guard_form_backward_eq_value:
+  assumes "csr_guard_form_backward_eq F G"
+  shows "csr_guard_form_value \<rho> F = csr_guard_form_value \<rho> G"
+proof (cases F; cases G)
+  fix req_l cs_l c_l req_r cs_r c_r
+  assume F: "F = Guard_Form req_l cs_l c_l"
+    and G: "G = Guard_Form req_r cs_r c_r"
+  have constants: "c_l = c_r"
+    and lr: "csr_guard_coefficients_le cs_l cs_r"
+    and rl: "csr_guard_coefficients_le cs_r cs_l"
+    using assms unfolding F G by simp_all
+  have sums: "sum_list (map \<rho> cs_l) = sum_list (map \<rho> cs_r)"
+    using csr_guard_coefficients_le_sum[OF lr]
+      csr_guard_coefficients_le_sum[OF rl] by (rule antisym)
+  show ?thesis unfolding F G using constants sums by simp
+qed
+
+definition csr_guard_normal_rule_backward_eq where
+  "csr_guard_normal_rule_backward_eq a u11 u21 u31 z su len ni co ta zs A l r \<longleftrightarrow>
+    (case csr_guard_normal_symbolic_rank
+              a u11 u21 u31 z su len ni co ta zs A r of
+       None \<Rightarrow> True
+     | Some G \<Rightarrow>
+         (case csr_guard_normal_symbolic_rank
+                a u11 u21 u31 z su len ni co ta zs A l of
+            None \<Rightarrow> False
+          | Some F \<Rightarrow> csr_guard_form_backward_eq F G))"
+
+lemma csr_guard_normal_rule_backward_eq_sound:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and checked: "csr_guard_normal_rule_backward_eq
+      a u11 u21 u31 z su len ni co ta zs A l r"
+    and target: "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A (r \<cdot> \<sigma>) = Some n"
+  shows "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A (l \<cdot> \<sigma>) = Some n"
+proof -
+  obtain F G where lhs:
+      "csr_guard_normal_symbolic_rank
+        a u11 u21 u31 z su len ni co ta zs A l = Some F"
+    and rhs: "csr_guard_normal_symbolic_rank
+        a u11 u21 u31 z su len ni co ta zs A r = Some G"
+    and eq: "csr_guard_form_backward_eq F G"
+    using checked unfolding csr_guard_normal_rule_backward_eq_def
+    using csr_guard_normal_symbolic_rank_complete[OF distinct target]
+    by (auto split: option.splits)
+  obtain H where rhs_again:
+      "csr_guard_normal_symbolic_rank
+        a u11 u21 u31 z su len ni co ta zs A r = Some H"
+    and realized_H: "csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>)
+      (csr_guard_form_requirements H)"
+    and value_H: "csr_guard_form_value
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>) H = n"
+    using csr_guard_normal_symbolic_rank_complete[OF distinct target] by blast
+  have HG: "H = G" using rhs rhs_again by simp
+  have req_subset: "set (csr_guard_form_requirements F) \<subseteq>
+      set (csr_guard_form_requirements G)"
+    using eq by (cases F; cases G) simp
+  have realized_F: "csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>)
+      (csr_guard_form_requirements F)"
+    by (rule csr_guard_requirements_realized_mono[OF realized_H[unfolded HG] req_subset])
+  have source: "csr_guard_normal_rank
+      a u11 u21 u31 z su len ni co ta zs A (l \<cdot> \<sigma>) =
+      Some (csr_guard_form_value
+        (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>) F)"
+    by (rule csr_guard_normal_symbolic_rank_sound[OF distinct lhs realized_F])
+  have vals: "csr_guard_form_value
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>) F =
+      csr_guard_form_value
+      (csr_guard_normal_rank_environment a u11 u21 u31 z su len ni co ta zs \<sigma>) G"
+    by (rule csr_guard_form_backward_eq_value[OF eq])
+  show ?thesis using source value_H vals HG by simp
 qed
 
 lemma csr_guard_symbolic_rank_ge_sound:
