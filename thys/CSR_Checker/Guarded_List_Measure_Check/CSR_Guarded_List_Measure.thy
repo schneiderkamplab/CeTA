@@ -1939,6 +1939,61 @@ next
   qed
 qed
 
+lemma csr_guard_pair_symbolic_rank_complete:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and nonvar: "is_Fun t"
+    and ground: "csr_guard_pair_rank u11s lens z su len ni co ta zs
+      (t \<cdot> \<sigma>) = Some n"
+  shows "\<exists>F.
+    csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs t = Some F \<and>
+    csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+      (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+      (csr_guard_form_requirements F) \<and>
+    csr_guard_form_value (csr_guard_rank_environment
+      z su len ni co ta zs \<sigma>) F = n"
+proof (cases t)
+  case (Var x)
+  then show ?thesis using nonvar by simp
+next
+  case (Fun f ts)
+  consider
+      (u11) "f = u11s" "length ts = 2"
+        "csr_guard_rank z su len ni co ta zs Guard_List
+          (ts ! 1 \<cdot> \<sigma>) = Some n"
+    | (length) "\<not> (f = u11s \<and> length ts = 2)"
+        "f = lens" "length ts = 1"
+        "csr_guard_rank z su len ni co ta zs Guard_List
+          (ts ! 0 \<cdot> \<sigma>) = Some n"
+    using ground unfolding Fun by (auto split: if_splits)
+  then show ?thesis
+  proof cases
+    case u11
+    have mem: "ts ! 1 \<in> set ts" using u11(2) by auto
+    obtain F where symbolic:
+        "csr_guard_symbolic_rank z su len ni co ta zs Guard_List
+          (ts ! 1) = Some F"
+      and realized: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+        (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+        (csr_guard_form_requirements F)"
+      and valF: "csr_guard_form_value
+        (csr_guard_rank_environment z su len ni co ta zs \<sigma>) F = n"
+      using csr_guard_symbolic_rank_complete[OF distinct u11(3)] by blast
+    show ?thesis unfolding Fun using u11 symbolic realized valF by auto
+  next
+    case length
+    obtain F where symbolic:
+        "csr_guard_symbolic_rank z su len ni co ta zs Guard_List
+          (ts ! 0) = Some F"
+      and realized: "csr_guard_requirements_realized z su len ni co ta zs \<sigma>
+        (csr_guard_rank_environment z su len ni co ta zs \<sigma>)
+        (csr_guard_form_requirements F)"
+      and valF: "csr_guard_form_value
+        (csr_guard_rank_environment z su len ni co ta zs \<sigma>) F = n"
+      using csr_guard_symbolic_rank_complete[OF distinct length(4)] by blast
+    show ?thesis unfolding Fun using length symbolic realized valF by auto
+  qed
+qed
+
 lemma csr_guard_normal_pair_symbolic_rank_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and symbolic:
@@ -1959,8 +2014,54 @@ proof -
       Some (csr_guard_form_value \<rho> F)"
     by (rule csr_guard_pair_symbolic_rank_sound[OF distinct symbolic' realized])
   show ?thesis
-    unfolding csr_guard_normal_pair_rank_def csr_guard_normalize_subst
+  unfolding csr_guard_normal_pair_rank_def csr_guard_normalize_subst
     by (rule sound)
+qed
+
+definition csr_guard_normal_pair_rank_environment where
+  "csr_guard_normal_pair_rank_environment a u11 u21 u31
+      z su len ni co ta zs \<sigma> =
+    csr_guard_rank_environment z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))"
+
+lemma csr_guard_normal_pair_symbolic_rank_complete:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and nonvar: "is_Fun
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t)"
+    and ground: "csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs (t \<cdot> \<sigma>) = Some n"
+  shows "\<exists>F.
+    csr_guard_normal_pair_symbolic_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs t = Some F \<and>
+    csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      (csr_guard_normal_pair_rank_environment a u11 u21 u31
+        z su len ni co ta zs \<sigma>)
+      (csr_guard_form_requirements F) \<and>
+    csr_guard_form_value (csr_guard_normal_pair_rank_environment
+      a u11 u21 u31 z su len ni co ta zs \<sigma>) F = n"
+proof -
+  have ground': "csr_guard_pair_rank u11s lens z su len ni co ta zs
+      (csr_guard_normalize a u11 u21 u31 su len ni co ta t \<cdot>
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))) =
+      Some n"
+    using ground unfolding csr_guard_normal_pair_rank_def csr_guard_normalize_subst .
+  obtain F where symbolic:
+      "csr_guard_pair_symbolic_rank u11s lens z su len ni co ta zs
+        (csr_guard_normalize a u11 u21 u31 su len ni co ta t) = Some F"
+    and realized: "csr_guard_requirements_realized z su len ni co ta zs
+      (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))
+      (csr_guard_rank_environment z su len ni co ta zs
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x)))
+      (csr_guard_form_requirements F)"
+    and valF: "csr_guard_form_value
+      (csr_guard_rank_environment z su len ni co ta zs
+        (\<lambda>x. csr_guard_normalize a u11 u21 u31 su len ni co ta (\<sigma> x))) F = n"
+    using csr_guard_pair_symbolic_rank_complete[OF distinct nonvar ground'] by blast
+  show ?thesis
+    using symbolic realized valF
+    unfolding csr_guard_normal_pair_symbolic_rank_def
+      csr_guard_normal_pair_rank_environment_def by blast
 qed
 
 lemma csr_guard_pair_symbolic_rank_ge_sound:
