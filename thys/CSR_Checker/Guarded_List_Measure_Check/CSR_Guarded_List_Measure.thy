@@ -972,6 +972,176 @@ proof -
   show ?thesis using source value_H vals HG by simp
 qed
 
+lemma csr_guard_rank_Fun_backward:
+  assumes distinct: "distinct [z,su,guard_len_sym,ni,co,ta,zs]"
+    and len: "length xs = length ys"
+    and args: "\<And>i A n. i < length ys \<Longrightarrow>
+      csr_guard_rank z su guard_len_sym ni co ta zs A (ys ! i) = Some n \<Longrightarrow>
+      csr_guard_rank z su guard_len_sym ni co ta zs A (xs ! i) = Some n"
+    and target: "csr_guard_rank z su guard_len_sym ni co ta zs A (Fun f ys) = Some n"
+  shows "csr_guard_rank z su guard_len_sym ni co ta zs A (Fun f xs) = Some n"
+proof (cases A)
+  case Guard_Nat
+  consider
+      (zero) "f = z" "ys = []" "n = 0"
+    | (succ) m where "f = su" "length ys = 1"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some m"
+        "n = Suc m"
+    | (length) m where "f = guard_len_sym" "length ys = 1"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_List (ys ! 0) = Some m"
+        "n = m"
+    using target unfolding Guard_Nat
+    by (auto simp: csr_guard_rank.simps split: if_splits option.splits)
+  then show ?thesis
+  proof cases
+    case zero
+    with len have "xs = []" by simp
+    with zero show ?thesis unfolding Guard_Nat by simp
+  next
+    case (succ m)
+    have child: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some m"
+      by (rule args[OF _ succ(3)], use succ(2) in simp)
+    show ?thesis unfolding Guard_Nat using len succ child distinct by simp
+  next
+    case (length m)
+    have child: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_List (xs ! 0) = Some m"
+      by (rule args[OF _ length(3)], use length(2) in simp)
+    show ?thesis unfolding Guard_Nat using len length child distinct by fastforce
+  qed
+next
+  case Guard_List
+  consider
+      (nil) "f = ni" "ys = []" "n = 0"
+    | (cons) p q where "f = co" "length ys = 2"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some p"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_List (ys ! 1) = Some q"
+        "n = Suc q"
+    | (take) p q where "f = ta" "length ys = 2"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some p"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (ys ! 1) = Some q"
+        "n = p"
+    using target unfolding Guard_List
+    by (auto simp: csr_guard_rank.simps split: if_splits option.splits)
+  then show ?thesis
+  proof cases
+    case nil
+    with len have "xs = []" by simp
+    with nil show ?thesis unfolding Guard_List by simp
+  next
+    case (cons p q)
+    have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
+      by (rule args[OF _ cons(3)], use cons(2) in simp)
+    have child1: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_List (xs ! 1) = Some q"
+      by (rule args[OF _ cons(4)], use cons(2) in simp)
+    have co_ni: "co \<noteq> ni" using distinct by auto
+    show ?thesis unfolding Guard_List using len cons child0 child1 co_ni by simp
+  next
+    case (take p q)
+    have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
+      by (rule args[OF _ take(3)], use take(2) in simp)
+    have child1: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (xs ! 1) = Some q"
+      by (rule args[OF _ take(4)], use take(2) in simp)
+    have ta_ni: "ta \<noteq> ni" and ta_co: "ta \<noteq> co" using distinct by auto
+    show ?thesis unfolding Guard_List using len take child0 child1 ta_ni ta_co by simp
+  qed
+next
+  case Guard_IList
+  consider
+      (zeros) "f = zs" "ys = []" "n = 0"
+    | (cons) p q where "f = co" "length ys = 2"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some p"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (ys ! 1) = Some q"
+        "n = 0"
+    | (nil) "f = ni" "ys = []" "n = 0"
+    | (take) p q where "f = ta" "length ys = 2"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (ys ! 0) = Some p"
+        "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (ys ! 1) = Some q"
+        "n = 0"
+    using target unfolding Guard_IList
+    by (auto simp: csr_guard_rank.simps split: if_splits option.splits)
+  then show ?thesis
+  proof cases
+    case zeros
+    with len have "xs = []" by simp
+    with zeros show ?thesis unfolding Guard_IList by simp
+  next
+    case (cons p q)
+    have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
+      by (rule args[OF _ cons(3)], use cons(2) in simp)
+    have child1: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (xs ! 1) = Some q"
+      by (rule args[OF _ cons(4)], use cons(2) in simp)
+    have co_zs: "co \<noteq> zs" using distinct by auto
+    show ?thesis unfolding Guard_IList using len cons child0 child1 co_zs by simp
+  next
+    case nil
+    with len have "xs = []" by simp
+    moreover have ni_zs: "ni \<noteq> zs" and ni_co: "ni \<noteq> co"
+      using distinct by auto
+    ultimately show ?thesis unfolding Guard_IList using nil by simp
+  next
+    case (take p q)
+    have child0: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_Nat (xs ! 0) = Some p"
+      by (rule args[OF _ take(3)], use take(2) in simp)
+    have child1: "csr_guard_rank z su guard_len_sym ni co ta zs Guard_IList (xs ! 1) = Some q"
+      by (rule args[OF _ take(4)], use take(2) in simp)
+    have ta_zs: "ta \<noteq> zs" and ta_co: "ta \<noteq> co" and ta_ni: "ta \<noteq> ni"
+      using distinct by auto
+    show ?thesis unfolding Guard_IList using len take child0 child1 ta_zs ta_co ta_ni by simp
+  qed
+qed
+
+lemma csr_guard_rank_ctxt_backward:
+  assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
+    and local: "\<And>A n.
+      csr_guard_rank z su len ni co ta zs A y = Some n \<Longrightarrow>
+      csr_guard_rank z su len ni co ta zs A x = Some n"
+    and target: "csr_guard_rank z su len ni co ta zs A C\<langle>y\<rangle> = Some n"
+  shows "csr_guard_rank z su len ni co ta zs A C\<langle>x\<rangle> = Some n"
+  using target
+proof (induction C arbitrary: A n)
+  case Hole
+  then show ?case using local by simp
+next
+  case (More f bef C aft)
+  have nth_backward: "\<And>i A n.
+      i < length (bef @ C\<langle>y\<rangle> # aft) \<Longrightarrow>
+      csr_guard_rank z su len ni co ta zs A
+        ((bef @ C\<langle>y\<rangle> # aft) ! i) = Some n \<Longrightarrow>
+      csr_guard_rank z su len ni co ta zs A
+        ((bef @ C\<langle>x\<rangle> # aft) ! i) = Some n"
+  proof -
+    fix i A n
+    assume bound: "i < length (bef @ C\<langle>y\<rangle> # aft)"
+      and target: "csr_guard_rank z su len ni co ta zs A
+        ((bef @ C\<langle>y\<rangle> # aft) ! i) = Some n"
+    show "csr_guard_rank z su len ni co ta zs A
+        ((bef @ C\<langle>x\<rangle> # aft) ! i) = Some n"
+    proof (cases "i < length bef")
+      case True
+      then show ?thesis using target by (simp add: nth_append)
+    next
+      case False
+      note not_less = False
+      show ?thesis
+      proof (cases "i = length bef")
+        case True
+        then show ?thesis using More.IH target by (simp add: nth_append)
+      next
+        case False
+        with not_less have "length bef < i" by simp
+        then show ?thesis using target bound by (simp add: nth_append)
+      qed
+    qed
+  qed
+  have target': "csr_guard_rank z su len ni co ta zs A
+      (Fun f (bef @ C\<langle>y\<rangle> # aft)) = Some n"
+    using More.prems by simp
+  have result: "csr_guard_rank z su len ni co ta zs A
+      (Fun f (bef @ C\<langle>x\<rangle> # aft)) = Some n"
+    by (rule csr_guard_rank_Fun_backward[OF distinct _ nth_backward target'], simp)
+  show ?case using result by simp
+qed
+
 lemma csr_guard_symbolic_rank_ge_sound:
   assumes distinct: "distinct [z,su,len,ni,co,ta,zs]"
     and lhs: "csr_guard_symbolic_rank z su len ni co ta zs A l = Some F"
