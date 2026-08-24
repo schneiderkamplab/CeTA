@@ -330,6 +330,7 @@ session CSR_Guarded_List_Measure_Check in "CSR_Checker/Guarded_List_Measure_Chec
   options [document = false]
   theories
     CSR_Guarded_List_Measure
+    CSR_Guarded_List_Checker
 
 session CSR_Muterm_Ext in "CSR_Checker/Muterm_Ext" = CSR_Checker_Extensions +
   options [document = false]
