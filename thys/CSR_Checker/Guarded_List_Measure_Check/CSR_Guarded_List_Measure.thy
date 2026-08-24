@@ -2158,6 +2158,29 @@ next
   then show ?case by (rule preserve[OF step.hyps(1)])
 qed
 
+lemma csr_guard_normal_pair_rank_between:
+  assumes preserve: "\<And>x y n.
+      (x,y) \<in> csdp_step shp \<mu> R \<Longrightarrow>
+      csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs y = Some n \<Longrightarrow>
+      csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+        z su len ni co ta zs x = Some n"
+    and steps: "(s,t) \<in> (csdp_step shp \<mu> R)\<^sup>*"
+    and target: "csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs t = Some n"
+  shows "(s,t) \<in> csr_guard_normal_pair_rank_ge
+    a u11 u21 u31 u11s lens z su len ni co ta zs"
+proof -
+  have source: "csr_guard_normal_pair_rank a u11 u21 u31 u11s lens
+      z su len ni co ta zs s = Some n"
+    by (rule option_measure_backward_rtrancl[
+        where measure = "csr_guard_normal_pair_rank
+          a u11 u21 u31 u11s lens z su len ni co ta zs"
+        and A = "csdp_step shp \<mu> R", OF preserve steps target])
+  show ?thesis
+    unfolding csr_guard_normal_pair_rank_ge_def using source target by auto
+qed
+
 definition csr_guard_rank_backward_preserving where
   "csr_guard_rank_backward_preserving u11 u21 u31 z su len ni co ta zs \<mu> R \<longleftrightarrow>
     (\<forall>A s t n. (s,t) \<in> csstep \<mu> R \<longrightarrow>
