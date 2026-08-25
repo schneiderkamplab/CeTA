@@ -2859,6 +2859,33 @@ where
         xml_return (prf,P)
       };
       xml_return (Guarded_CSR_DP_Dep_Graph cs)
+    } XMLor XMLdo (STR ''csrGuardedListTerminal'') {
+      tt \<leftarrow> xml_singleton (STR ''truthSymbol'') symbol_parser id;
+      a \<leftarrow> xml_singleton (STR ''andSymbol'') symbol_parser id;
+      natp \<leftarrow> xml_singleton (STR ''natPredicateSymbol'') symbol_parser id;
+      listp \<leftarrow> xml_singleton (STR ''listPredicateSymbol'') symbol_parser id;
+      ilistp \<leftarrow> xml_singleton (STR ''ilistPredicateSymbol'') symbol_parser id;
+      u11 \<leftarrow> xml_singleton (STR ''u11Symbol'') symbol_parser id;
+      u21 \<leftarrow> xml_singleton (STR ''u21Symbol'') symbol_parser id;
+      u31 \<leftarrow> xml_singleton (STR ''u31Symbol'') symbol_parser id;
+      z \<leftarrow> xml_singleton (STR ''zeroSymbol'') symbol_parser id;
+      su \<leftarrow> xml_singleton (STR ''successorSymbol'') symbol_parser id;
+      len \<leftarrow> xml_singleton (STR ''lengthSymbol'') symbol_parser id;
+      ni \<leftarrow> xml_singleton (STR ''nilSymbol'') symbol_parser id;
+      co \<leftarrow> xml_singleton (STR ''consSymbol'') symbol_parser id;
+      ta \<leftarrow> xml_singleton (STR ''takeSymbol'') symbol_parser id;
+      zs \<leftarrow> xml_singleton (STR ''zerosSymbol'') symbol_parser id;
+      X \<leftarrow> xml_text (STR ''xVariable'');
+      L \<leftarrow> xml_text (STR ''listVariable'');
+      IL \<leftarrow> xml_text (STR ''ilistVariable'');
+      M \<leftarrow> xml_text (STR ''mVariable'');
+      N \<leftarrow> xml_text (STR ''nVariable'');
+      V \<leftarrow> xml_text (STR ''valueVariable'');
+      V1 \<leftarrow> xml_text (STR ''leftValueVariable'');
+      V2 \<leftarrow> xml_text (STR ''rightValueVariable'');
+      xml_return (Guarded_CSR_DP_OvCons (CSR_Guarded_OvCons_Witness
+        tt a natp listp ilistp u11 u21 u31 z su len ni co ta zs
+        X L IL M N V V1 V2))
     } XMLor XMLdo (STR ''csrGuardedOvConsTerminal'') {
       tt \<leftarrow> xml_singleton (STR ''truthSymbol'') symbol_parser id;
       a \<leftarrow> xml_singleton (STR ''andSymbol'') symbol_parser id;

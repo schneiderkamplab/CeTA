@@ -4,7 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_Guarded_List_Checker
   imports
-    CSR_Guarded_List_Measure
+    CSR_Guarded_List_Generic_Checker
     CSR_Checker_Extensions.CSR_Conservative_Checker
 begin
 
@@ -22,7 +22,7 @@ where
   "check_csr_guarded_ovcons_terminal J \<mu> dpp
       (CSR_Guarded_OvCons_Witness
         tt a natp listp ilistp u11 u21 u31 z su len ni co ta zs
-        X L IL M N V V1 V2) = debug id (STR ''guarded OvConsOS CSR component'') (do {
+        X L IL M N V V1 V2) = debug id (STR ''guarded-list CSR component'') (do {
     check (plain_csr_dpp J dpp)
       (showsl_lit (STR ''guarded component is not a plain CSR-DP problem''));
     check (distinct
@@ -31,10 +31,9 @@ where
     check (Sharp u11 \<notin> set [a,u11,u21,u31] \<and>
       Sharp len \<notin> set [a,u11,u21,u31] \<and> Sharp u11 \<noteq> Sharp len)
       (showsl_lit (STR ''guarded component marked symbols are not fresh''));
-    check (set (dpp_ops.rules J dpp) =
-      csr_guard_ovcons_residual tt a natp listp ilistp u11 u21 u31
-        z su len ni co ta zs X L IL M N V V1 V2)
-      (showsl_lit (STR ''guarded component rules are not the exact residual''));
+    check (csr_guard_rules_check tt a natp listp ilistp u11 u21 u31
+      z su len ni co ta zs (dpp_ops.rules J dpp))
+      (showsl_lit (STR ''guarded residual violates semantic-rank obligations''));
     check (set (dpp_ops.pairs J dpp) = {
       csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
       csr_guard_weak_pair (Sharp u11) tt (Sharp len) L})
@@ -67,9 +66,8 @@ proof (cases witness)
     and marked_u11: "Sharp u11 \<notin> set [a,u11,u21,u31]"
     and marked_len: "Sharp len \<notin> set [a,u11,u21,u31]"
     and wrappers: "Sharp u11 \<noteq> Sharp len"
-    and rules: "set (dpp_ops.rules J dpp) =
-      csr_guard_ovcons_residual tt a natp listp ilistp u11 u21 u31
-        z su len ni co ta zs X L IL M N V V1 V2"
+    and rules_checked: "csr_guard_rules_check tt a natp listp ilistp
+      u11 u21 u31 z su len ni co ta zs (dpp_ops.rules J dpp)"
     and pairs: "set (dpp_ops.pairs J dpp) = {
       csr_guard_strict_pair (Sharp len) co (Sharp u11) a listp natp N L,
       csr_guard_weak_pair (Sharp u11) tt (Sharp len) L}"
@@ -95,23 +93,34 @@ proof (cases witness)
     by (simp add: numeral_2_eq_2)
   have frozen': "1 \<notin> mu_of \<mu> (u11,Suc (Suc 0))"
     using frozen unfolding arity_two[symmetric] .
+  from csr_guard_rules_check_sound[OF rules_checked symbols]
+  have truth_checked: "csr_guard_truth_rules_backward
+      tt a natp listp ilistp z su len ni co ta zs
+      (set (dpp_ops.rules J dpp))"
+    and normal_checked: "csr_guard_normal_rules_backward_eq
+      a u11 u21 u31 z su len ni co ta zs
+      (set (dpp_ops.rules J dpp))"
+    by auto
+  have names: "distinct [tt,a,natp,listp,ilistp]" using symbols by simp
+  have guard_checked: "csr_guard_successful_tests
+      tt a natp listp ilistp z su len ni co ta zs (mu_of \<mu>)
+      (set (dpp_ops.rules J dpp))"
+    by (rule csr_guard_successful_tests_active[
+        OF names mu_and mu_nat mu_list mu_ilist truth_checked])
   show ?thesis
-    apply (rule finite_min_csr_dpp_ovcons_guarded_two_pair[
+    apply (rule finite_min_csr_dpp_guarded_two_pair[
         where R = "set (dpp_ops.rules J dpp)" and
           P = "set (dpp_ops.pairs J dpp)" and \<mu> = "mu_of \<mu>"])
                 apply (rule symbols)
                apply (rule marked_u11)
               apply (rule marked_len)
              apply (rule wrappers)
-            apply (rule rules)
-           apply (rule pairs)
-          apply (rule wf)
-         apply (rule fresh)
-        apply (rule frozen')
-       apply (rule mu_and)
-      apply (rule mu_nat)
-     apply (rule mu_list)
-    apply (rule mu_ilist)
+            apply (rule pairs)
+           apply (rule wf)
+          apply (rule fresh)
+         apply (rule frozen')
+        apply (rule guard_checked)
+       apply (rule normal_checked)
     done
 qed
 
