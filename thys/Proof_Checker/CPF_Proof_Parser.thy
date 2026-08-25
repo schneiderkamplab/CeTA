@@ -3031,6 +3031,21 @@ where
         xml_return (Existing_CSR_Proof
           (CSR_Rule_Removal_Then_Improved redp Rr U P prf))
       };
+      removals_improved = XMLdo (STR ''csrRuleRemovalsThenImproved'') {
+        removals \<leftarrow>* XMLdo (STR ''ruleRemoval'') {
+          redp \<leftarrow> CPF_Proof_Parser.redtriple symbol_parser Sharp False;
+          Rr \<leftarrow> xml_singleton (STR ''trs'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          xml_return (redp, Rr)
+        };
+        U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
+        P \<leftarrow> xml_singleton (STR ''dps'')
+          (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+        prf \<leftarrow> xml2csr_dp_termination_proof
+          symbol_parser termIndexMap ruleMap;
+        xml_return (Existing_CSR_Proof
+          (CSR_Rule_Removals_Then_Improved removals U P prf))
+      };
       conservative = XMLdo (STR ''csrConservativeDependencyPairs'') {
         U \<leftarrow> xml_singleton (STR ''unhidingSymbol'') symbol_parser id;
         P \<leftarrow> xml_singleton (STR ''dps'')
@@ -3067,6 +3082,7 @@ where
       XMLor muterm_expanded_innermost_filtered_usable
       XMLor muterm_expanded_innermost_usable
       XMLor innermost
+      XMLor removals_improved
       XMLor removed_improved
       XMLor xml_singleton
         (STR ''conservativeCsrTerminationProof'') conservative id
