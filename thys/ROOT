@@ -372,6 +372,8 @@ session Proof_Checker in Proof_Checker = CSR_Guarded_List_Measure_Check +
   theories
     CSR_Muterm_Typed_Checker
     CSR_GM_Transformation
+    GM04_Complete_Transformation
+    GM04_Complete_Checker
     All_of_Proof_Checker
     Code_CSR_Production
 

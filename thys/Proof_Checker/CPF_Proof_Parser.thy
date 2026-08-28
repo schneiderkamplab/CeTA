@@ -3075,6 +3075,30 @@ where
       XMLor guarded
       XMLor gm)"
 
+definition xml2gm04_complete_transformation_proof ::
+  "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
+    (string,label_type,string) gm04_complete_transformation_proof xmlt"
+where
+  "xml2gm04_complete_transformation_proof termIndexMap ruleMap =
+    XMLdo (STR ''gm04CompleteTransformation'') {
+      \<mu> \<leftarrow> xml_singleton (STR ''sourceReplacementMap'')
+        (CPF_Input_Parser.replacement_map symbol_parser) id;
+      R \<leftarrow> xml_singleton (STR ''sourceTrs'')
+        (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+      active \<leftarrow> xml_singleton (STR ''activeSymbol'') symbol_parser id;
+      mark \<leftarrow> xml_singleton (STR ''markSymbol'') symbol_parser id;
+      proper \<leftarrow> xml_singleton (STR ''properSymbol'') symbol_parser id;
+      ok \<leftarrow> xml_singleton (STR ''okSymbol'') symbol_parser id;
+      top_sym \<leftarrow> xml_singleton (STR ''topSymbol'') symbol_parser id;
+      top_sharp \<leftarrow> xml_singleton (STR ''topSharpSymbol'') symbol_parser id;
+      child \<leftarrow> xml_singleton (STR ''transformedProof'')
+        (xml2trs_termination_proof_body symbol_parser termIndexMap ruleMap) id;
+      source_child \<leftarrow> xml_singleton (STR ''sourceProof'')
+        (xml2conservative_csr_termination_proof termIndexMap ruleMap) id;
+      xml_return (GM04_Complete_Transformation_Proof \<mu> R active mark proper ok
+        top_sym top_sharp child source_child)
+    }"
+
 definition xml2outermost_rz_termination_proof ::
   "lsymbol termIndexMap \<Rightarrow> lsymbol ruleIndexMap \<Rightarrow>
     (string, label_type, string) outermost_rz_termination_proof xmlt"
@@ -3102,7 +3126,9 @@ definition "proof_parser termIndexMap ruleMap =
   XMLdo (STR ''proof'') {
     p \<leftarrow>
       xml_singleton (STR ''trsTerminationProof'')
-        (xml_change (xml2outermost_rz_termination_proof termIndexMap ruleMap)
+        (xml_change (xml2gm04_complete_transformation_proof termIndexMap ruleMap)
+          (\<lambda>p. xml_return (GM04_Complete_TRS_Proof p))
+        XMLor xml_change (xml2outermost_rz_termination_proof termIndexMap ruleMap)
           (\<lambda>p. xml_return (Outermost_RZ_Termination_Proof p))
         XMLor xml_change
           (xml2trs_termination_proof_body symbol_parser termIndexMap ruleMap)

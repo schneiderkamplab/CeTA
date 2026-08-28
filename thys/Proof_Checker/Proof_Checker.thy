@@ -8,7 +8,7 @@ License: LGPL (see file COPYING.LESSER)
 theory Proof_Checker
   imports
     Proof_Checker_Base.Check_Termination
-    CSR_GM_Transformation
+    GM04_Complete_Checker
     Outermost_RZ_Ext.Outermost_RZ_Checker
     CSR_Check_Loops
     Check_CRP
@@ -34,6 +34,8 @@ datatype (dead 'f, dead 'l, dead 'v) "proof" =
 | Outermost_RZ_Termination_Proof
     "('f,'l,'v) outermost_rz_termination_proof"
 | CSR_Termination_Proof "('f,'l,'v) gm_extended_csr_termination_proof"
+| GM04_Complete_TRS_Proof
+    "('f,'l,'v) gm04_complete_transformation_proof"
 | FP_Nontermination_Proof "('f, 'l, 'v) fp_trs_nontermination_proof"
 | Relative_TRS_Nontermination_Proof "('f, 'l, 'v) reltrs_nontermination_proof"
 | TRS_Confluence_Proof "('f, 'l, 'v) cr_proof"
@@ -67,6 +69,8 @@ definition "proof_to_string proof =
   | Outermost_RZ_Termination_Proof _ \<Rightarrow>
       STR ''Raffelsieper-Zantema outermost termination proof''
   | CSR_Termination_Proof _ \<Rightarrow> STR ''CSR termination proof''
+  | GM04_Complete_TRS_Proof _ \<Rightarrow>
+      STR ''complete GM04 inverse-transformation proof''
   | FP_Nontermination_Proof _ \<Rightarrow> STR ''FP TRS nontermination proof''
   | Relative_TRS_Nontermination_Proof _ \<Rightarrow> STR ''relative TRS nontermination proof''
   | TRS_Confluence_Proof _ \<Rightarrow> STR ''TRS confluence proof''
@@ -95,6 +99,7 @@ primrec cert_assms :: "bool \<Rightarrow> ('f, 'l, 'v) proof \<Rightarrow> (('f,
 | "cert_assms a (FP_Termination_Proof p) = sn_fp_assms a p"
 | "cert_assms a (Outermost_RZ_Termination_Proof p) = []"
 | "cert_assms a (CSR_Termination_Proof p) = []"
+| "cert_assms a (GM04_Complete_TRS_Proof p) = []"
 | "cert_assms a (TRS_Confluence_Proof p) = cr_assms a p"
 | "cert_assms a (TRS_Non_Confluence_Proof p) = ncr_assms a p"
 | "cert_assms a (Completion_Proof p) = completion_assms a p"
@@ -236,6 +241,13 @@ where "check_cert a input property answer proof \<equiv>
        (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision True) \<Rightarrow>
        check_gm_extended_csr_termination_proof I J a
          (showsl_lit (STR ''1'')) \<mu> R prf
+    | _ \<Rightarrow> error mismatch)
+  | GM04_Complete_TRS_Proof prf \<Rightarrow>
+     (case triple of
+       (Inn_TRS_input Q R S, Termination, Decision True) \<Rightarrow>
+       check_gm04_complete_transformation_proof I J
+         (showsl_lit (STR ''1'')) (strategy_to_nfs Q)
+         (strategy_to_Q Q R) R S prf
     | _ \<Rightarrow> error mismatch)
   | FP_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
@@ -590,6 +602,20 @@ proof-
       by auto
     from check_gm_extended_csr_termination_proof_sound[OF I J check] show ?thesis
       by (simp add: desired_property_def)
+  next
+    case [simp]: (GM04_Complete_TRS_Proof pr)
+    obtain Q R S where [simp]: "input = Inn_TRS_input Q R S"
+      using check by (cases input, auto)
+    have [simp]: "property = Termination"
+      using check by (cases property, auto)
+    have [simp]: "answer = Decision True"
+      using check by (cases answer, auto split: bool.splits)
+    from check[simplified] have checked:
+      "isOK (check_gm04_complete_transformation_proof I J idx
+        (strategy_to_nfs Q) (strategy_to_Q Q R) R S pr)"
+      by auto
+    from check_gm04_complete_transformation_proof_sound[OF I J checked]
+    show ?thesis by (simp add: desired_property_def)
   next
     case [simp]: (Relative_TRS_Nontermination_Proof pr)
     obtain Q R S where [simp]: "input = Inn_TRS_input Q R S" using check by (cases input, auto)
