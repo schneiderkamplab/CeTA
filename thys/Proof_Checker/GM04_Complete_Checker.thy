@@ -34,10 +34,35 @@ lemma gm04_rules_variant_eq_right:
   using assms unfolding gm04_rules_variant_eq_def
   by (auto simp: list_all_iff list_ex_iff)
 
+definition gm04_rules_variant_subset where
+  "gm04_rules_variant_subset P P' \<longleftrightarrow>
+    list_all (\<lambda>p'. list_ex (eq_rule_mod_vars p') P) P'"
+
+lemma gm04_rules_variant_subset_right:
+  assumes "gm04_rules_variant_subset P P'" and "p' \<in> set P'"
+  shows "\<exists>p\<in>set P. p' =\<^sub>v p"
+  using assms unfolding gm04_rules_variant_subset_def
+  by (auto simp: list_all_iff list_ex_iff)
+
 definition gm04_roles_fresh_list where
   "gm04_roles_fresh_list active mark proper ok top_sym F \<longleftrightarrow>
     distinct [active,mark,proper,ok,top_sym] \<and>
     list_all (\<lambda>(f,n). f \<notin> {active,mark,proper,ok,top_sym}) F"
+
+fun gm04_extra_nullaries where
+  "gm04_extra_nullaries proper ok F [] = []"
+| "gm04_extra_nullaries proper ok F
+      ((Fun p [Fun c []], Fun q [Fun d []]) # R) =
+    (if p = proper \<and> q = ok \<and> c = d \<and> (c,0) \<notin> set F
+     then (c,0) # gm04_extra_nullaries proper ok F R
+     else gm04_extra_nullaries proper ok F R)"
+| "gm04_extra_nullaries proper ok F (r # R) =
+    gm04_extra_nullaries proper ok F R"
+
+fun gm04_source_proof_is_global where
+  "gm04_source_proof_is_global (Existing_CSR_Proof old) =
+    extended_csr_proof_is_global old"
+| "gm04_source_proof_is_global p = False"
 
 lemma gm04_roles_fresh_list_sound:
   assumes "gm04_roles_fresh_list active mark proper ok top_sym F"
@@ -81,7 +106,7 @@ where
       [Finite_assm [] (True,m,P',Pw,Q',R,Rw)] =
     (gm04_rules_variant_eq P P' \<and> Pw = [] \<and>
      isOK (check_NF_terms_eq Q Q') \<and> R = [] \<and>
-     gm04_rules_variant_eq S Rw)"
+     gm04_rules_variant_subset S Rw)"
 | "gm04_residual_assm P S Q _ = False"
 
 lemma finite_dpp_strict_rules_imp_weak_rules:
@@ -122,6 +147,45 @@ proof -
     done
 qed
 
+lemma gm04_finite_residual_rule_subset:
+  assumes fin: "\<And>m. finite_dpp (True,m,set P,{},set Q,set S,{})"
+    and pairs: "gm04_rules_variant_eq P P'"
+    and q: "isOK (check_NF_terms_eq Q Q')"
+    and rules: "gm04_rules_variant_subset S Rw"
+  shows "finite_dpp (True,m,set P',{},set Q',{},set Rw)"
+proof -
+  have rules_refl: "gm04_rules_variant_eq S S"
+  proof (unfold gm04_rules_variant_eq_def, intro conjI)
+    show "list_all (\<lambda>p. list_ex (eq_rule_mod_vars p) S) S"
+      unfolding list_all_iff list_ex_iff
+      using eq_rule_mod_vars_refl by blast
+    show "list_all (\<lambda>p'. list_ex (eq_rule_mod_vars p') S) S"
+      unfolding list_all_iff list_ex_iff
+      using eq_rule_mod_vars_refl by blast
+  qed
+  have full: "finite_dpp (True,False,set P',{},set Q',{},set S)"
+    by (rule gm04_finite_residual_variants[OF fin[of False] pairs q rules_refl])
+  show ?thesis
+    unfolding finite_dpp_def
+  proof (clarify)
+    fix s t \<sigma>
+    assume target: "min_ichain (True,m,set P',{},set Q',{},set Rw) s t \<sigma>"
+    then have target_i: "ichain (True,m,set P',{},set Q',{},set Rw) s t \<sigma>"
+      by simp
+    have target_i_false: "ichain (True,False,set P',{},set Q',{},set Rw) s t \<sigma>"
+      using target_i unfolding ichain.simps by simp
+    have rsub: "qrstep True (set Q') (set Rw) \<subseteq>
+        qrstep True (set Q') (set S)"
+      by (rule qrstep_rename_vars)
+         (use gm04_rules_variant_subset_right[OF rules] in blast)
+    have source_i: "ichain (True,False,set P',{},set Q',{},set S) s t \<sigma>"
+      by (rule ichain_mono_plain[OF target_i_false]) (use rsub in auto)
+    then have "min_ichain (True,False,set P',{},set Q',{},set S) s t \<sigma>"
+      by (simp add: minimal_cond_def)
+    with full show False unfolding finite_dpp_def by blast
+  qed
+qed
+
 lemma gm04_residual_assm_holds:
   assumes fin: "\<And>m. finite_dpp
       (True,m,set P,{},set Q,set S,{})"
@@ -143,7 +207,7 @@ next
     show ?thesis
       using check fin Cons tail Finite_assm dpp
     by (cases obligations; cases nfs; cases Pw; cases R';
-          simp_all add: gm04_finite_residual_variants[OF fin])
+          simp_all add: gm04_finite_residual_rule_subset[OF fin])
   next
     case SN_assm
     then show ?thesis using check Cons tail by simp
@@ -197,7 +261,10 @@ where
       check nfs (showsl_lit (STR ''transformed problem is not innermost''));
       check (Tw = []) (showsl_lit (STR ''transformed problem has weak rules''));
       check_wf_trs R;
-      let F = remdups (funas_trs_list R);
+      let F0 = remdups (funas_trs_list R);
+      let F = remdups (F0 @ gm04_extra_nullaries proper ok F0 T);
+      check (F = F0 \<or> gm04_source_proof_is_global source_child)
+        (showsl_lit (STR ''GM04 signature extension requires a global source proof''));
       check (gm04_roles_fresh_list active mark proper ok top_sym F)
         (showsl_lit (STR ''GM04 administrative symbols are not fresh''));
       let S = gm04_non_top_rules (mu_of \<mu>) active mark proper ok F R;
@@ -224,7 +291,8 @@ lemma check_gm04_complete_transformation_proof_sound:
 proof (cases p)
   case (GM04_Complete_Transformation_Proof \<mu> R active mark proper ok_sym
       top_sym top_sharp child source_child)
-  let ?F = "remdups (funas_trs_list R)"
+  let ?BaseSig = "remdups (funas_trs_list R)"
+  let ?F = "remdups (?BaseSig @ gm04_extra_nullaries proper ok_sym ?BaseSig T)"
   let ?S = "gm04_non_top_rules (mu_of \<mu>) active mark proper ok_sym ?F R"
   let ?P = "gm04_top_pairs active mark proper ok_sym top_sharp"
   have child_raw:
@@ -232,6 +300,10 @@ proof (cases p)
         (tp_ops.mk I nfs Q T Tw) child)"
     using ok GM04_Complete_Transformation_Proof
     by (auto simp: Let_def)
+  have global_or_same:
+      "?F = ?BaseSig \<or> gm04_source_proof_is_global source_child"
+    using ok GM04_Complete_Transformation_Proof
+    by (simp add: Let_def)
   from ok GM04_Complete_Transformation_Proof have nfs: nfs
     and weak: "Tw = []"
     and wf_source: "wf_trs (set R)"
@@ -253,10 +325,35 @@ proof (cases p)
       "isOK (check_trs_termination_proof I J True (add_index i 2)
         (tp_ops.mk I True Q T []) child)"
     using child_raw nfs weak by simp
+  have F0raw: "set ?BaseSig = set (funas_trs_list R)"
+    by simp
   have source: "SN (sig_step (set ?F)
       (csstep (mu_of \<mu>) (set R)))"
-    using check_gm_extended_csr_termination_proof_sound[OF I J source_ok]
-    by simp
+  proof (cases "?F = ?BaseSig")
+    case True
+    have source0: "SN (sig_step (set (funas_trs_list R))
+        (csstep (mu_of \<mu>) (set R)))"
+      by (rule check_gm_extended_csr_termination_proof_sound[OF I J source_ok])
+    have FF0: "set ?F = set ?BaseSig"
+      by (rule arg_cong[OF True])
+    have Fraw: "set ?F = set (funas_trs_list R)"
+      using FF0 F0raw by blast
+    show ?thesis
+      by (subst Fraw, rule source0)
+  next
+    case False
+    with global_or_same have global:
+      "gm04_source_proof_is_global source_child" by blast
+    then obtain old where source_child:
+      "source_child = Existing_CSR_Proof old"
+      and old_global: "extended_csr_proof_is_global old"
+      by (cases source_child) auto
+    have global_source: "SN (csstep (mu_of \<mu>) (set R))"
+      using check_gm_existing_global_sound[OF I J _ old_global]
+        source_ok source_child by simp
+    show ?thesis
+      by (rule SN_subset[OF global_source], unfold sig_step_def, auto)
+  qed
   have fresh: "gm04_roles_fresh active mark proper ok_sym top_sym ?F"
     by (rule gm04_roles_fresh_list_sound[OF fresh_list])
   have signature: "funas_trs (set R) \<subseteq> set ?F" by simp

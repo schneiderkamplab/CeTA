@@ -1522,7 +1522,7 @@ proof (cases p)
     "isOK (check_extended_csr_termination_proof I J a i \<mu> R old)"
     by simp
   from check_extended_csr_termination_proof_sound[OF I J old_ok]
-  show ?thesis .
+  show ?thesis by blast
 next
   case (Guarded_CSR_Proof child)
   from ok Guarded_CSR_Proof have child_ok:
@@ -1971,6 +1971,20 @@ next
       ?act mark ?F R ?D) \<subseteq> set ?T" by simp
   from gm_transformed_rules_list_sound[OF wf source_sig ground_c transformed child_SN]
   show ?thesis by simp
+qed
+
+lemma check_gm_existing_global_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_gm_extended_csr_termination_proof
+      I J a i \<mu> R (Existing_CSR_Proof old))"
+    and global: "extended_csr_proof_is_global old"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+proof -
+  from ok have old_ok:
+    "isOK (check_extended_csr_termination_proof I J a i \<mu> R old)"
+    by simp
+  from check_extended_csr_termination_proof_sound[OF I J old_ok]
+    global show ?thesis by blast
 qed
 
 end
