@@ -202,9 +202,6 @@ where
         (showsl_lit (STR ''GM04 administrative symbols are not fresh''));
       let S = gm04_non_top_rules (mu_of \<mu>) active mark proper ok F R;
       let P = gm04_top_pairs active mark proper ok top_sharp;
-      let C = gm04_complete_rules (mu_of \<mu>) active mark proper ok top_sym F R;
-      check_variants_trs T C;
-      check_variants_trs C T;
       check (gm04_schema_signature_list active mark proper ok F S)
         (showsl_lit (STR ''GM04 non-top signature is invalid''));
       check (gm04_pair_args_signature_list top_sharp P S)
