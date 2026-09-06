@@ -30,9 +30,6 @@ import qualified RenamingN_String;
 import qualified RenamingN;
 import qualified Lists_are_Infinite;
 import qualified Phantom_Type;
-import qualified CSR_Minimal_CSDP_Proofs;
-import qualified Context_Sensitive_Impl;
-import qualified FOR_Preliminaries;
 import qualified Complex_Constant_Removal_Impl;
 import qualified Check_Termination_Common;
 import qualified Bounded_Increase_Impl;
@@ -40,6 +37,9 @@ import qualified Semantic_Labeling_Carrier;
 import qualified Critical_Pairs_Impl;
 import qualified Subterm_Criterion_Impl;
 import qualified CSR_Muterm_Innermost_Usable_Exec;
+import qualified CSR_Minimal_CSDP_Proofs;
+import qualified Context_Sensitive_Impl;
+import qualified FOR_Preliminaries;
 import qualified Check_Monad;
 import qualified HOL;
 import qualified Mapping;
@@ -110,484 +110,6 @@ muterm_component_unhiding_rules s p =
       any (\ dp -> Term_Rewriting.root (snd ab) == Term_Rewriting.root (fst dp))
         p)
     s;
-
-check_muterm_expanded_extended_basic_proof ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- c -> CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
-        Sum_Type.Sum (String -> String) ();
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Dep_Graph_Proc edpts) =
-  FOR_Preliminaries.debug i "expanded extended-basic MU-TERM dependency graph"
-    (Error_Monad.bind (CSR_Checker.check_csr_dep_graph_proc j mu dpp edpts)
-      (\ _ ->
-        check_muterm_expanded_extended_basic_components ia j mu i dpp edpts));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Redpair_UR_Proc redp pr u subprf))
-  = FOR_Preliminaries.debug i "expanded extended-basic MU-TERM reduction pair"
-      (Error_Monad.bind
-        (CSR_Muterm_Extended_Basic.muterm_extended_basic_redpair_proc j mu
-          (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
-        (\ dppa ->
-          CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu
-            False (Term_Rewriting.add_index i Arith.one_nat) dppa
-            (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf)));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
-  FOR_Preliminaries.debug i "expanded extended-basic MU-TERM instantiation"
-    (Error_Monad.bind
-      (CSR_Minimal_CSDP_Proofs.csr_instantiation_proc j mu st sts dpp)
-      (\ dppa ->
-        check_muterm_expanded_extended_basic_proof ia j mu
-          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  CSR_Checker_Base.CSR_DP_P_is_Empty =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    CSR_Checker_Base.CSR_DP_P_is_Empty;
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof Check_Termination.P_is_Empty) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Ordinary_Proof Check_Termination.P_is_Empty);
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Subterm_Criterion_Proc va vb vc vd))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Subterm_Criterion_Proc va vb vc vd));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Gen_Subterm_Criterion_Proc va vb vc))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Gen_Subterm_Criterion_Proc va vb vc));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Redpair_Proc va vb vc))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Redpair_Proc va vb vc));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Usable_Rules_Proc va vb))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Usable_Rules_Proc va vb));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.Dep_Graph_Proc va))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Dep_Graph_Proc va));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Mono_Redpair_Proc va vb vc vd))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Mono_Redpair_Proc va vb vc vd));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Mono_URM_Redpair_Proc va vb vc vd))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Mono_URM_Redpair_Proc va vb vc vd));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Mono_Redpair_UR_Proc va vb vc vd ve))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Mono_Redpair_UR_Proc va vb vc vd ve));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Size_Change_Subterm_Proc va))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Size_Change_Subterm_Proc va));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Size_Change_Redpair_Proc va vb vc))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Size_Change_Redpair_Proc va vb vc));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Uncurry_Proc va vb vc vd ve))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Uncurry_Proc va vb vc vd ve));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Fcc_Proc va vb vc vd ve))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Fcc_Proc va vb vc vd ve));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Split_Proc va vb vc vd))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Split_Proc va vb vc vd));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Semlab_Proc va vb vc vd ve))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Semlab_Proc va vb vc vd ve));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Switch_Innermost_Proc va vb))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Switch_Innermost_Proc va vb));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Rewriting_Proc va vb vc vd ve vf vg))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Rewriting_Proc va vb vc vd ve vf vg));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Instantiation_Proc va vb vc))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Instantiation_Proc va vb vc));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Forward_Instantiation_Proc va vb vc vd))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Forward_Instantiation_Proc va vb vc vd));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Narrowing_Proc va vb vc vd))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Narrowing_Proc va vb vc vd));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Assume_Finite va vb))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Assume_Finite va vb));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Q_Reduction_Proc va vb))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Q_Reduction_Proc va vb));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.Complex_Constant_Removal_Proc va vb))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.Complex_Constant_Removal_Proc va vb));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-    (Check_Termination.General_Redpair_Proc va vb vc vd ve))
-  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
-        (Check_Termination.General_Redpair_Proc va vb vc vd ve));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va)) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va));
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc);
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va);
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb);
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc);
-check_muterm_expanded_extended_basic_proof ia j mu i dpp
-  (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v) =
-  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
-    (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v);
-
-check_muterm_expanded_extended_basic_components ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
-                [Arith.Char]),
-         [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-            Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
-              [Arith.Char])])] ->
-        Sum_Type.Sum (String -> String) ();
-check_muterm_expanded_extended_basic_components ia j mu i dpp [] =
-  Sum_Type.Inr ();
-check_muterm_expanded_extended_basic_components ia j mu i dpp
-  ((Nothing, c) : rest) =
-  check_muterm_expanded_extended_basic_components ia j mu
-    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
-check_muterm_expanded_extended_basic_components ia j mu i dpp
-  ((Just prf, c) : rest) =
-  Error_Monad.bind
-    (check_muterm_expanded_extended_basic_proof ia j mu
-      (Term_Rewriting.add_index i Arith.one_nat)
-      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp c) prf)
-    (\ _ ->
-      check_muterm_expanded_extended_basic_components ia j mu
-        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
-
-check_muterm_typed_dp_proof_production ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-       CSR_Muterm_Usable_Rules.Muterm_typed_dp_proof b [Arith.Nat]
-         [Arith.Char] ->
-         Sum_Type.Sum (String -> String) ();
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty =
-  Check_Monad.check (null p)
-    (i . Term_Rewriting.showsl_lit
-           ": innermost typed MU-TERM pairs are not empty");
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child)
-  = FOR_Preliminaries.debug i
-      "expanded typed extended-basic MU-TERM CSR component"
-      (let {
-         e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
-               RenamingN_String.string_renameN p s;
-         dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
-       } in check_muterm_expanded_extended_basic_proof ia j mu
-              (Term_Rewriting.add_index i Arith.one_nat) dpp child);
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable redp pr u child) =
-  FOR_Preliminaries.debug i
-    "innermost typed RTA\'08 MU-TERM usable-rule reduction pair"
-    (let {
-       dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
-     } in (case CSR_Muterm_Typed_General_Redpair.muterm_general_rta08_ur_redpair_proc
-                  j mu (Reduction_Pair_Implementations.get_rel_impl redp) pr u s
-                  dpp
-            of {
-            Sum_Type.Inl _ ->
-              Error_Monad.bind
-                (CSR_Muterm_Usable_Rules.muterm_general_ur_redpair_proc j mu
-                  (Reduction_Pair_Implementations.get_rel_impl redp) pr u s dpp)
-                (\ dppa ->
-                  CSR_Muterm_Usable_Rules.check_muterm_typed_dp_proof ia j mu
-                    (Term_Rewriting.add_index i Arith.one_nat) r s
-                    (Dependency_Pair_Problem_Spec.pairs j dppa) child);
-            Sum_Type.Inr dppa ->
-              check_muterm_typed_dp_proof_production ia j mu
-                (Term_Rewriting.add_index i Arith.one_nat) r s
-                (Dependency_Pair_Problem_Spec.pairs j dppa) child;
-          }));
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation st sts child) =
-  FOR_Preliminaries.debug i "innermost typed MU-TERM pair augmentation"
-    (let {
-       dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
-     } in Error_Monad.bind
-            (CSR_Minimal_CSDP_Proofs.csr_instantiation_proc j mu st sts dpp)
-            (\ dppa ->
-              Error_Monad.bind
-                (Error_Monad.catch_error
-                  (Check_Monad.check_subseteq p
-                    (Dependency_Pair_Problem_Spec.pairs j dppa))
-                  (\ _ ->
-                    Sum_Type.Inl
-                      (Term_Rewriting.showsl_lit
-                        "typed MU-TERM augmentation removed an original pair")))
-                (\ _ ->
-                  check_muterm_typed_dp_proof_production ia j mu
-                    (Term_Rewriting.add_index i Arith.one_nat) r s
-                    (Dependency_Pair_Problem_Spec.pairs j dppa) child)));
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof child) =
-  FOR_Preliminaries.debug i
-    "innermost typed MU-TERM noncollapsing CSR component"
-    (Error_Monad.bind
-      (Check_Monad.check (all ((\ t -> not (Term_Rewriting.is_Var t)) . snd) p)
-        (i . Term_Rewriting.showsl_lit
-               ": collapsing pair requires the typed MU-TERM processor"))
-      (\ _ ->
-        let {
-          dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
-        } in CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu
-               False (Term_Rewriting.add_index i Arith.one_nat) dpp child));
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable u child) =
-  Sum_Type.Inl
-    (i . Term_Rewriting.showsl_lit
-           ": recursive local usable rules require the invariant graph checker");
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof child) =
-  FOR_Preliminaries.debug i "expanded typed MU-TERM CSR component"
-    (let {
-       e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
-             RenamingN_String.string_renameN p s;
-       dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
-     } in CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu
-            (Term_Rewriting.add_index i Arith.one_nat) dpp child);
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable u child) =
-  FOR_Preliminaries.debug i
-    "expanded innermost typed MU-TERM local usable rules"
-    (Error_Monad.bind
-      (Check_Monad.check (all (Arith.membera r) u)
-        (i . Term_Rewriting.showsl_lit ": extraneous MU-TERM usable rule"))
-      (\ _ ->
-        Error_Monad.bind
-          (Check_Monad.check
-            (all (\ lr ->
-                   CSR_Minimal_CSDP_Proofs.qcs_ur_closed_term_check r u mu
-                     (snd lr))
-              u)
-            (i . Term_Rewriting.showsl_lit
-                   ": ordinary MU-TERM rule closure failed"))
-          (\ _ ->
-            Error_Monad.bind
-              (Check_Monad.check
-                (all (\ lr ->
-                       CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check r u mu
-                         (snd lr))
-                  s)
-                (i . Term_Rewriting.showsl_lit
-                       ": MU-TERM unhiding closure failed"))
-              (\ _ ->
-                Error_Monad.bind
-                  (Check_Monad.check
-                    (all (\ dp ->
-                           Term_Rewriting.is_Var (snd dp) ||
-                             CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check
-                               r u mu (snd dp))
-                      p)
-                    (i . Term_Rewriting.showsl_lit
-                           ": MU-TERM pair closure failed"))
-                  (\ _ ->
-                    let {
-                      e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
-                            RenamingN_String.string_renameN p s;
-                    } in Check_Termination.check_dp_termination_proof ia j False
-                           (Term_Rewriting.add_index i Arith.one_nat)
-                           (Dependency_Pair_Problem_Spec.mk j False False e []
-                             [] [] u)
-                           child)))));
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable u redp pr child)
-  = FOR_Preliminaries.debug i
-      "expanded strong MU-TERM usable-rule reduction pair"
-      (let {
-         e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
-               RenamingN_String.string_renameN p s;
-         dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
-       } in Error_Monad.bind
-              (CSR_Muterm_Usable_Rules.muterm_strong_ur_redpair_proc j mu
-                (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
-              (\ dppa ->
-                CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j
-                  mu False (Term_Rewriting.add_index i Arith.one_nat) dppa
-                  child));
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary child) =
-  FOR_Preliminaries.debug i "expanded typed MU-TERM ordinary DP continuation"
-    (let {
-       e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
-             RenamingN_String.string_renameN p s;
-     } in Check_Termination.check_dp_termination_proof ia j False
-            (Term_Rewriting.add_index i Arith.one_nat)
-            (Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r) child);
-check_muterm_typed_dp_proof_production ia j mu i r s p
-  (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph edps) =
-  FOR_Preliminaries.debug i "innermost typed MU-TERM dependency graph"
-    (Error_Monad.bind
-      (CSR_Muterm_Usable_Rules.check_muterm_typed_dep_graph mu r s p edps)
-      (\ _ ->
-        check_muterm_innermost_typed_graph_components ia j mu i r s p edps));
-
-check_muterm_innermost_typed_graph_components ::
-  forall a b c.
-    (Compare.Compare_order b, Countable.Countable b, Eq b,
-      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
-                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                   () ->
-                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
-                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
-                                     () ->
-                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
-[Arith.Nat])] ->
-                                       (String -> String) ->
- [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
-       [(Maybe (CSR_Muterm_Usable_Rules.Muterm_typed_dp_proof b [Arith.Nat]
-                 [Arith.Char]),
-          [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
-             Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
-               [Arith.Char])])] ->
-         Sum_Type.Sum (String -> String) ();
-check_muterm_innermost_typed_graph_components ia j mu i r s p [] =
-  Sum_Type.Inr ();
-check_muterm_innermost_typed_graph_components ia j mu i r s p
-  ((Nothing, c) : rest) =
-  check_muterm_innermost_typed_graph_components ia j mu
-    (Term_Rewriting.add_index i Arith.one_nat) r s p rest;
-check_muterm_innermost_typed_graph_components ia j mu i r s p
-  ((Just child, c) : rest) =
-  let {
-    pc = filter (Arith.membera c) p;
-    sc = muterm_component_unhiding_rules s pc;
-  } in Error_Monad.bind
-         (Check_Monad.check
-           (CSR_Muterm_Innermost_Usable_Exec.muterm_innermost_typed_shape_check
-             mu pc s)
-           (i . Term_Rewriting.showsl_lit
-                  ": component-local MU-TERM bridge shape check failed"))
-         (\ _ ->
-           Error_Monad.bind
-             (check_muterm_typed_dp_proof_production ia j mu
-               (Term_Rewriting.add_index i Arith.one_nat) r sc pc child)
-             (\ _ ->
-               check_muterm_innermost_typed_graph_components ia j mu
-                 (Term_Rewriting.add_index i Arith.one_nat) r s p rest));
 
 muterm_unmarked_term_check_exec ::
   forall a b c. Term_Rewriting.Term (Labelings.Lab a b) c -> Bool;
@@ -1435,6 +957,601 @@ check_muterm_recursive_dp_proof j m i r bcheck b u p
     (i . Term_Rewriting.showsl_lit
            ": unsupported processor in recursive MU-TERM continuation");
 
+check_muterm_expanded_extended_basic_proof ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ c -> CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat] [Arith.Char] ->
+        Sum_Type.Sum (String -> String) ();
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Dep_Graph_Proc edpts) =
+  FOR_Preliminaries.debug i "expanded extended-basic MU-TERM dependency graph"
+    (Error_Monad.bind (CSR_Checker.check_csr_dep_graph_proc j mu dpp edpts)
+      (\ _ ->
+        check_muterm_expanded_extended_basic_components ia j mu i dpp edpts));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Redpair_UR_Proc redp pr u subprf))
+  = FOR_Preliminaries.debug i "expanded extended-basic MU-TERM reduction pair"
+      (Error_Monad.bind
+        (CSR_Muterm_Extended_Basic.muterm_extended_basic_redpair_proc j mu
+          (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
+        (\ dppa ->
+          CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu
+            False (Term_Rewriting.add_index i Arith.one_nat) dppa
+            (CSR_Checker_Base.CSR_DP_Ordinary_Proof subprf)));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Instantiation_Proc st sts prf) =
+  FOR_Preliminaries.debug i "expanded extended-basic MU-TERM instantiation"
+    (Error_Monad.bind
+      (CSR_Minimal_CSDP_Proofs.csr_instantiation_proc j mu st sts dpp)
+      (\ dppa ->
+        check_muterm_expanded_extended_basic_proof ia j mu
+          (Term_Rewriting.add_index i Arith.one_nat) dppa prf));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  CSR_Checker_Base.CSR_DP_P_is_Empty =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    CSR_Checker_Base.CSR_DP_P_is_Empty;
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof Check_Termination.P_is_Empty) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Ordinary_Proof Check_Termination.P_is_Empty);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Subterm_Criterion_Proc va vb vc vd))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Subterm_Criterion_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Gen_Subterm_Criterion_Proc va vb vc))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Gen_Subterm_Criterion_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Redpair_Proc va vb vc))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Redpair_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Usable_Rules_Proc va vb))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Usable_Rules_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.Dep_Graph_Proc va))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Dep_Graph_Proc va));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Mono_Redpair_Proc va vb vc vd))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Mono_Redpair_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Mono_URM_Redpair_Proc va vb vc vd))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Mono_URM_Redpair_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Mono_Redpair_UR_Proc va vb vc vd ve))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Mono_Redpair_UR_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Size_Change_Subterm_Proc va))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Size_Change_Subterm_Proc va));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Size_Change_Redpair_Proc va vb vc))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Size_Change_Redpair_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Uncurry_Proc va vb vc vd ve))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Uncurry_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Fcc_Proc va vb vc vd ve))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Fcc_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Split_Proc va vb vc vd))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Split_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Semlab_Proc va vb vc vd ve))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Semlab_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Switch_Innermost_Proc va vb))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Switch_Innermost_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Rewriting_Proc va vb vc vd ve vf vg))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Rewriting_Proc va vb vc vd ve vf vg));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Instantiation_Proc va vb vc))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Instantiation_Proc va vb vc));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Forward_Instantiation_Proc va vb vc vd))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Forward_Instantiation_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Narrowing_Proc va vb vc vd))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Narrowing_Proc va vb vc vd));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Assume_Finite va vb))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Assume_Finite va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Q_Reduction_Proc va vb))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Q_Reduction_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Complex_Constant_Removal_Proc va vb))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Complex_Constant_Removal_Proc va vb));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.General_Redpair_Proc va vb vc vd ve))
+  = CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.General_Redpair_Proc va vb vc vd ve));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va)) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va));
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Gen_Subterm_Criterion_Proc v va vb);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Usable_Rules_Proc v va);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Forward_Instantiation_Proc v va vb);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Redpair_UR_Proc v va vb vc);
+check_muterm_expanded_extended_basic_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v) =
+  CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu i dpp
+    (CSR_Checker_Base.CSR_DP_Size_Change_Subterm_Proc v);
+
+check_muterm_expanded_extended_basic_components ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ c -> [(Maybe (CSR_Checker_Base.Csr_dp_termination_proof b [Arith.Nat]
+                [Arith.Char]),
+         [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+            Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+              [Arith.Char])])] ->
+        Sum_Type.Sum (String -> String) ();
+check_muterm_expanded_extended_basic_components ia j mu i dpp [] =
+  Sum_Type.Inr ();
+check_muterm_expanded_extended_basic_components ia j mu i dpp
+  ((Nothing, c) : rest) =
+  check_muterm_expanded_extended_basic_components ia j mu
+    (Term_Rewriting.add_index i Arith.one_nat) dpp rest;
+check_muterm_expanded_extended_basic_components ia j mu i dpp
+  ((Just prf, c) : rest) =
+  Error_Monad.bind
+    (check_muterm_expanded_extended_basic_proof ia j mu
+      (Term_Rewriting.add_index i Arith.one_nat)
+      (Dependency_Pair_Problem_Spec.intersect_pairs j dpp c) prf)
+    (\ _ ->
+      check_muterm_expanded_extended_basic_components ia j mu
+        (Term_Rewriting.add_index i Arith.one_nat) dpp rest);
+
+muterm_typed_recursive_pair ::
+  forall a b c d. (a, Term_Rewriting.Term (Labelings.Lab b c) d) -> Bool;
+muterm_typed_recursive_pair (l, Term_Rewriting.Var x) = True;
+muterm_typed_recursive_pair (l, Term_Rewriting.Fun (Labelings.Sharp f) ts) =
+  True;
+muterm_typed_recursive_pair (v, Term_Rewriting.Fun (Labelings.Lab va vd) vc) =
+  False;
+muterm_typed_recursive_pair (v, Term_Rewriting.Fun (Labelings.FunLab va vd) vc)
+  = False;
+muterm_typed_recursive_pair (v, Term_Rewriting.Fun (Labelings.UnLab va) vc) =
+  False;
+
+check_muterm_typed_dp_proof_production ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+       CSR_Muterm_Usable_Rules.Muterm_typed_dp_proof b [Arith.Nat]
+         [Arith.Char] ->
+         Sum_Type.Sum (String -> String) ();
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty =
+  Check_Monad.check (null p)
+    (i . Term_Rewriting.showsl_lit
+           ": innermost typed MU-TERM pairs are not empty");
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child)
+  = FOR_Preliminaries.debug i
+      "expanded typed extended-basic MU-TERM CSR component"
+      (let {
+         e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
+               RenamingN_String.string_renameN p s;
+         dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
+       } in check_muterm_expanded_extended_basic_proof ia j mu
+              (Term_Rewriting.add_index i Arith.one_nat) dpp child);
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable redp pr u child) =
+  FOR_Preliminaries.debug i
+    "innermost typed RTA\'08 MU-TERM usable-rule reduction pair"
+    (let {
+       dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
+     } in (case CSR_Muterm_Typed_General_Redpair.muterm_general_rta08_ur_redpair_proc
+                  j mu (Reduction_Pair_Implementations.get_rel_impl redp) pr u s
+                  dpp
+            of {
+            Sum_Type.Inl _ ->
+              Error_Monad.bind
+                (CSR_Muterm_Usable_Rules.muterm_general_ur_redpair_proc j mu
+                  (Reduction_Pair_Implementations.get_rel_impl redp) pr u s dpp)
+                (\ dppa ->
+                  CSR_Muterm_Usable_Rules.check_muterm_typed_dp_proof ia j mu
+                    (Term_Rewriting.add_index i Arith.one_nat) r s
+                    (Dependency_Pair_Problem_Spec.pairs j dppa) child);
+            Sum_Type.Inr dppa ->
+              check_muterm_typed_dp_proof_production ia j mu
+                (Term_Rewriting.add_index i Arith.one_nat) r s
+                (Dependency_Pair_Problem_Spec.pairs j dppa) child;
+          }));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation st sts child) =
+  FOR_Preliminaries.debug i "innermost typed MU-TERM pair augmentation"
+    (let {
+       dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
+     } in Error_Monad.bind
+            (CSR_Minimal_CSDP_Proofs.csr_instantiation_proc j mu st sts dpp)
+            (\ dppa ->
+              let {
+                pa = filter muterm_typed_recursive_pair
+                       (Dependency_Pair_Problem_Spec.pairs j dppa);
+              } in Error_Monad.bind
+                     (Error_Monad.catch_error (Check_Monad.check_subseteq p pa)
+                       (\ _ ->
+                         Sum_Type.Inl
+                           (Term_Rewriting.showsl_lit
+                             "typed MU-TERM augmentation removed an original pair")))
+                     (\ _ ->
+                       check_muterm_typed_dp_proof_production ia j mu
+                         (Term_Rewriting.add_index i Arith.one_nat) r s pa
+                         child)));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof child) =
+  FOR_Preliminaries.debug i
+    "innermost typed MU-TERM noncollapsing CSR component"
+    (Error_Monad.bind
+      (Check_Monad.check (all ((\ t -> not (Term_Rewriting.is_Var t)) . snd) p)
+        (i . Term_Rewriting.showsl_lit
+               ": collapsing pair requires the typed MU-TERM processor"))
+      (\ _ ->
+        let {
+          dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
+        } in CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu
+               False (Term_Rewriting.add_index i Arith.one_nat) dpp child));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable u child) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": recursive local usable rules require the invariant graph checker");
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof child) =
+  FOR_Preliminaries.debug i "expanded typed MU-TERM CSR component"
+    (let {
+       e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
+             RenamingN_String.string_renameN p s;
+       dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
+     } in CSR_Muterm_Usable_Rules.check_muterm_expanded_csr_proof ia j mu
+            (Term_Rewriting.add_index i Arith.one_nat) dpp child);
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable u child) =
+  FOR_Preliminaries.debug i
+    "expanded innermost typed MU-TERM local usable rules"
+    (Error_Monad.bind
+      (Check_Monad.check (all (Arith.membera r) u)
+        (i . Term_Rewriting.showsl_lit ": extraneous MU-TERM usable rule"))
+      (\ _ ->
+        Error_Monad.bind
+          (Check_Monad.check
+            (all (\ lr ->
+                   CSR_Minimal_CSDP_Proofs.qcs_ur_closed_term_check r u mu
+                     (snd lr))
+              u)
+            (i . Term_Rewriting.showsl_lit
+                   ": ordinary MU-TERM rule closure failed"))
+          (\ _ ->
+            Error_Monad.bind
+              (Check_Monad.check
+                (all (\ lr ->
+                       CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check r u mu
+                         (snd lr))
+                  s)
+                (i . Term_Rewriting.showsl_lit
+                       ": MU-TERM unhiding closure failed"))
+              (\ _ ->
+                Error_Monad.bind
+                  (Check_Monad.check
+                    (all (\ dp ->
+                           Term_Rewriting.is_Var (snd dp) ||
+                             CSR_Minimal_CSDP_Proofs.qcs_ur_closed_dp_rhs_check
+                               r u mu (snd dp))
+                      p)
+                    (i . Term_Rewriting.showsl_lit
+                           ": MU-TERM pair closure failed"))
+                  (\ _ ->
+                    let {
+                      e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
+                            RenamingN_String.string_renameN p s;
+                    } in Check_Termination.check_dp_termination_proof ia j False
+                           (Term_Rewriting.add_index i Arith.one_nat)
+                           (Dependency_Pair_Problem_Spec.mk j False False e []
+                             [] [] u)
+                           child)))));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable u redp pr child)
+  = FOR_Preliminaries.debug i
+      "expanded strong MU-TERM usable-rule reduction pair"
+      (let {
+         e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
+               RenamingN_String.string_renameN p s;
+         dpp = Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r;
+       } in Error_Monad.bind
+              (CSR_Muterm_Usable_Rules.muterm_strong_ur_redpair_proc j mu
+                (Reduction_Pair_Implementations.get_rel_impl redp) pr u dpp)
+              (\ dppa ->
+                CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j
+                  mu False (Term_Rewriting.add_index i Arith.one_nat) dppa
+                  child));
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary child) =
+  FOR_Preliminaries.debug i "expanded typed MU-TERM ordinary DP continuation"
+    (let {
+       e = CSR_Muterm_Usable_Rules.muterm_expanded_pairs_list
+             RenamingN_String.string_renameN p s;
+     } in Check_Termination.check_dp_termination_proof ia j False
+            (Term_Rewriting.add_index i Arith.one_nat)
+            (Dependency_Pair_Problem_Spec.mk j False False e [] [] [] r) child);
+check_muterm_typed_dp_proof_production ia j mu i r s p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph edps) =
+  FOR_Preliminaries.debug i "innermost typed MU-TERM dependency graph"
+    (Error_Monad.bind
+      (CSR_Muterm_Usable_Rules.check_muterm_typed_dep_graph mu r s p edps)
+      (\ _ ->
+        check_muterm_innermost_typed_graph_components ia j mu i r s p edps));
+
+check_muterm_innermost_typed_graph_components ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+       [(Maybe (CSR_Muterm_Usable_Rules.Muterm_typed_dp_proof b [Arith.Nat]
+                 [Arith.Char]),
+          [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+             Term_Rewriting.Term (Labelings.Lab b [Arith.Nat])
+               [Arith.Char])])] ->
+         Sum_Type.Sum (String -> String) ();
+check_muterm_innermost_typed_graph_components ia j mu i r s p [] =
+  Sum_Type.Inr ();
+check_muterm_innermost_typed_graph_components ia j mu i r s p
+  ((Nothing, c) : rest) =
+  check_muterm_innermost_typed_graph_components ia j mu
+    (Term_Rewriting.add_index i Arith.one_nat) r s p rest;
+check_muterm_innermost_typed_graph_components ia j mu i r s p
+  ((Just child, c) : rest) =
+  let {
+    pc = filter (Arith.membera c) p;
+    sc = muterm_component_unhiding_rules s pc;
+  } in Error_Monad.bind
+         (Check_Monad.check
+           (CSR_Muterm_Innermost_Usable_Exec.muterm_innermost_typed_shape_check
+             mu pc s)
+           (i . Term_Rewriting.showsl_lit
+                  ": component-local MU-TERM bridge shape check failed"))
+         (\ _ ->
+           Error_Monad.bind
+             (check_muterm_typed_dp_proof_production ia j mu
+               (Term_Rewriting.add_index i Arith.one_nat) r sc pc child)
+             (\ _ ->
+               check_muterm_innermost_typed_graph_components ia j mu
+                 (Term_Rewriting.add_index i Arith.one_nat) r s p rest));
+
+check_muterm_i4_linear_proof ::
+  forall a b c.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   Dependency_Pair_Problem_Spec.Dpp_ops_ext c
+                                     (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                     () ->
+                                     [((Labelings.Lab b [Arith.Nat], Arith.Nat),
+[Arith.Nat])] ->
+                                       (String -> String) ->
+ [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+    Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+   [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+      Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+     [(Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+        Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+       CSR_Muterm_Usable_Rules.Muterm_typed_dp_proof b [Arith.Nat]
+         [Arith.Char] ->
+         Sum_Type.Sum (String -> String) ();
+check_muterm_i4_linear_proof ia j m i r b p
+  CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty =
+  Check_Monad.check (null p)
+    (i . Term_Rewriting.showsl_lit ": recursive MU-TERM pairs are not empty");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation st sts child) =
+  FOR_Preliminaries.debug i "recursive MU-TERM pair augmentation"
+    (let {
+       dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
+     } in Error_Monad.bind
+            (CSR_Minimal_CSDP_Proofs.csr_instantiation_proc j m st sts dpp)
+            (\ dppa ->
+              let {
+                pa = filter muterm_typed_recursive_pair
+                       (Dependency_Pair_Problem_Spec.pairs j dppa);
+              } in Error_Monad.bind
+                     (Error_Monad.catch_error (Check_Monad.check_subseteq p pa)
+                       (\ _ ->
+                         Sum_Type.Inl
+                           (Term_Rewriting.showsl_lit
+                             "recursive MU-TERM augmentation removed an original pair")))
+                     (\ _ ->
+                       check_muterm_i4_linear_proof ia j m
+                         (Term_Rewriting.add_index i Arith.one_nat) r b pa
+                         child)));
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable redp pr u child) =
+  FOR_Preliminaries.debug i "recursive i4 MU-TERM reduction pair"
+    (let {
+       dpp = Dependency_Pair_Problem_Spec.mk j False False p [] [] [] r;
+     } in Error_Monad.bind
+            (muterm_recursive_rta08_ur_redpair_proc_exec
+              (Dependency_Pair_Problem_Spec.rules j dpp)
+              (Context_Sensitive_Impl.mu_of m)
+              (CSR_Minimal_CSDP_Proofs.csr_u3_delta
+                (Arith.set (Dependency_Pair_Problem_Spec.rules j dpp))
+                (Arith.set u))
+              j m (Reduction_Pair_Implementations.get_rel_impl redp) pr u b b
+              dpp)
+            (\ dppa ->
+              check_muterm_i4_linear_proof ia j m
+                (Term_Rewriting.add_index i Arith.one_nat) r b
+                (Dependency_Pair_Problem_Spec.pairs j dppa) child));
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof child) =
+  check_muterm_typed_dp_proof_production ia j m i r b p
+    (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof child);
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable v va) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof v) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable v va) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable v va vb vc) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary v) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+check_muterm_i4_linear_proof ia j m i r b p
+  (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph v) =
+  Sum_Type.Inl
+    (i . Term_Rewriting.showsl_lit
+           ": unsupported processor in recursive i4 MU-TERM continuation");
+
 check_muterm_i4_graph_component ::
   forall a b c.
     (Compare.Compare_order b, Countable.Countable b, Eq b,
@@ -1484,60 +1601,60 @@ check_muterm_i4_graph_component ia j m i r b p
                       child));
 check_muterm_i4_graph_component ia j m i r b p
   (Just CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty, c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty;
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable v va vb vc), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable v va vb vc);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation v va vb), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation v va vb);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof v), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof v);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof v), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof v);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
           v),
     c)
-  = check_muterm_typed_dp_proof_production ia j m
+  = check_muterm_i4_linear_proof ia j m
       (Term_Rewriting.add_index i Arith.one_nat) r b
       (filter (Arith.membera c) p)
       (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof
         v);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable v va), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable v va);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable v va vb
           vc),
     c)
-  = check_muterm_typed_dp_proof_production ia j m
+  = check_muterm_i4_linear_proof ia j m
       (Term_Rewriting.add_index i Arith.one_nat) r b
       (filter (Arith.membera c) p)
       (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable v va vb vc);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary v), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary v);
 check_muterm_i4_graph_component ia j m i r b p
   (Just (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph v), c) =
-  check_muterm_typed_dp_proof_production ia j m
-    (Term_Rewriting.add_index i Arith.one_nat) r b (filter (Arith.membera c) p)
+  check_muterm_i4_linear_proof ia j m (Term_Rewriting.add_index i Arith.one_nat)
+    r b (filter (Arith.membera c) p)
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Dep_Graph v);
 
 check_muterm_i4_graph_components ::
@@ -1599,43 +1716,43 @@ check_muterm_i4_root_proof ia j m i r b p
     (\ _ -> check_muterm_i4_graph_components ia j m i r b p edps);
 check_muterm_i4_root_proof ia j m i r b p
   CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     CSR_Muterm_Usable_Rules.Muterm_Typed_P_Is_Empty;
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable v va) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Local_Usable v va);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable v va vb vc) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_General_Usable v va vb vc);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation v va vb) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Pair_Augmentation v va vb);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof v) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_CSR_Proof v);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof v) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_CSR_Proof v);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Extended_Basic_CSR_Proof v);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable v va) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Local_Usable v va);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable v va vb vc) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Strong_Usable v va vb vc);
 check_muterm_i4_root_proof ia j m i r b p
   (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary v) =
-  check_muterm_typed_dp_proof_production ia j m i r b p
+  check_muterm_i4_linear_proof ia j m i r b p
     (CSR_Muterm_Usable_Rules.Muterm_Typed_Expanded_Ordinary v);
 
 }

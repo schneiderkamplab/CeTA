@@ -8,7 +8,7 @@ module
                            csr_u3_all_root_rules_check, csr_u3_mixed_term_check,
                            csr_sharp_pairs_check, csr_u3_redpair_proc,
                            csr_sct_active_subterm_proc,
-                           check_csr_dp_after_u3_tail, csr_instantiation_proc,
+                           check_csr_dp_component_core, csr_instantiation_proc,
                            csr_rta08_projection_rules_list,
                            csr_rta08_redpair_proc, qcs_ur_closed_term_check,
                            qcs_ur_closed_dp_rhs_check, qcs_csr_ur_closed_check,

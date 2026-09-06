@@ -46,6 +46,7 @@ import qualified Compare;
 import qualified HOL;
 import qualified Name;
 import qualified CSR_Conservative_Checker;
+import qualified CSR_Guarded_List_Checker;
 import qualified CSR_Muterm_Usable_Rules;
 import qualified CSR_Checker_Base;
 import qualified Check_Termination;
@@ -56,6 +57,8 @@ import qualified Arith;
 data Gm_extended_csr_termination_proof a b c =
   Existing_CSR_Proof
     (CSR_Conservative_Checker.Extended_csr_termination_proof a b c)
+  | Guarded_CSR_Proof
+      (CSR_Guarded_List_Checker.Guarded_csr_termination_proof a b c)
   | Innermost_CSR_Dependency_Pairs
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
@@ -444,6 +447,8 @@ check_gm_extended_csr_termination_proof ::
 check_gm_extended_csr_termination_proof ia j a i mu r (Existing_CSR_Proof prf) =
   CSR_Conservative_Checker.check_extended_csr_termination_proof ia j a i mu r
     prf;
+check_gm_extended_csr_termination_proof ia j a i mu r (Guarded_CSR_Proof prf) =
+  CSR_Guarded_List_Checker.check_guarded_csr_termination_proof ia j i mu r prf;
 check_gm_extended_csr_termination_proof ia j a i mu r
   (Innermost_CSR_Dependency_Pairs p s prf) =
   (if null s

@@ -3,7 +3,7 @@
 module
   CSR_Checker_Base(Csr_dp_termination_proof(..), Csr_termination_proof(..),
                     is_sharp_lab, mu_fun_poss_list, mu_poss_list, mu_supt_list,
-                    mu_CSDP_list, csr_root_tcap, csr_dp_root_mu,
+                    mu_CSDP_list, csr_root_tcap, plain_csr_dpp, csr_dp_root_mu,
                     mu_vars_term_list, csr_sharp_mu_check, graph_approx_csr_rt,
                     csr_rule_removal_impl, csr_dep_graph_edge_check,
                     csr_mu_usable_rules_proc, rhs_mu_vars_condition_list,
@@ -34,7 +34,6 @@ import qualified Shows_Literal_Matrix;
 import qualified Matrix_Carrier_Impl;
 import qualified Complexity_Carrier;
 import qualified Usable_Rules_Impl;
-import qualified Dependency_Pair_Problem_Spec;
 import qualified Phantom_Type;
 import qualified Map_Choice;
 import qualified Set_Interval;
@@ -58,6 +57,7 @@ import qualified Usable_Replacement_Map_Impl;
 import qualified Error_Monad;
 import qualified Check_Monad;
 import qualified Sum_Type;
+import qualified Dependency_Pair_Problem_Spec;
 import qualified Tcap_Impl;
 import qualified Context_Sensitive_Impl;
 import qualified Sharp_Syntax;
@@ -234,6 +234,19 @@ csr_root_tcap mu r (Term_Rewriting.Fun f ts) =
            (if Arith.member i (mu (f, Arith.size_list ts))
              then Tcap_Impl.tcapI r t else term_gctxt t))
       (zip (Arith.upt Arith.zero_nat (Arith.size_list ts)) ts));
+
+plain_csr_dpp ::
+  forall a b c.
+    (Compare.Compare_order b, Term_Rewriting.Showl b,
+      Term_Rewriting.Showl c) => Dependency_Pair_Problem_Spec.Dpp_ops_ext a b c
+                                   () ->
+                                   a -> Bool;
+plain_csr_dpp j dpp =
+  not (Dependency_Pair_Problem_Spec.nfs j dpp) &&
+    not (Dependency_Pair_Problem_Spec.minimal j dpp) &&
+      null (Dependency_Pair_Problem_Spec.pw j dpp) &&
+        null (Dependency_Pair_Problem_Spec.q j dpp) &&
+          null (Dependency_Pair_Problem_Spec.r j dpp);
 
 csr_dp_root_mu ::
   forall a b.

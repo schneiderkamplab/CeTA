@@ -1,6 +1,12 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module CSR_Frozen_Recursive_Subterm(csr_frozen_recursive_subterm_proc) where {
+module
+  CSR_Frozen_Recursive_Subterm(csr_frozen_projection_index,
+                                csr_projection_collapsing_afs,
+                                csr_frozen_projection_pair_weak,
+                                csr_frozen_projection_pair_strict,
+                                csr_frozen_recursive_subterm_proc)
+  where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,

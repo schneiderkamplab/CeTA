@@ -3,8 +3,9 @@
 module
   Check_Termination(Unknown_proof(..), Fptrs_termination_proof(..),
                      Trs_termination_proof(..), Dp_termination_proof(..),
-                     check_unknown_proof, check_fptrs_termination_proof,
-                     check_trs_termination_proof, check_dp_termination_proof)
+                     sn_assms, check_unknown_proof,
+                     check_fptrs_termination_proof, check_trs_termination_proof,
+                     check_dp_termination_proof)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -39,17 +40,18 @@ import qualified Dependency_Graph_Impl;
 import qualified Flat_Context_Closure_Impl;
 import qualified Q_Reduction_Impl;
 import qualified Uncurry_Impl;
-import qualified Renaming2_String;
 import qualified Rewriting_Impl;
 import qualified Narrowing_Impl;
 import qualified Split_Impl;
 import qualified Non_Inf_Order_Impl;
-import qualified Renaming2;
 import qualified Compare_Order_Instances;
 import qualified List_Lexorder;
-import qualified Lists_are_Infinite;
 import qualified FOR_Preliminaries;
+import qualified AAECC_Innermost_Switch;
+import qualified Renaming2_String;
+import qualified Renaming2;
 import qualified Mapping;
+import qualified Lists_are_Infinite;
 import qualified Q_Restricted_Rewriting_Impl;
 import qualified QDP_Framework_Impl;
 import qualified Check_Monad;
@@ -58,6 +60,7 @@ import qualified HOL;
 import qualified Sum_Type;
 import qualified Compare;
 import qualified Countable;
+import qualified Option_Util;
 import qualified Dependency_Pair_Problem_Spec;
 import qualified Termination_Problem_Spec;
 import qualified Monadic_Rewriting_Impl;
@@ -180,6 +183,13 @@ data Trs_termination_proof a b c =
       [Term_Rewriting.Term (Labelings.Lab a b) c]
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Trs_termination_proof a b c)
+  | AAECC_Innermost
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      [Labelings.Lab a b] (Critical_Pairs_Impl.Join_info (Labelings.Lab a b) c)
       (Trs_termination_proof a b c);
 
 data Dp_termination_proof a b c = P_is_Empty
@@ -374,6 +384,132 @@ mk_dpp ::
 mk_dpp i (nfs, (m, (p, (pw, (q, (r, rw)))))) =
   Dependency_Pair_Problem_Spec.mk i nfs m p pw q r rw;
 
+collect_assms ::
+  forall a b c d e f g.
+    (a -> [Check_Termination_Common.Assm b c d]) ->
+      (e -> [Check_Termination_Common.Assm b c d]) ->
+        (f -> [Check_Termination_Common.Assm b c d]) ->
+          (g -> [Check_Termination_Common.Assm b c d]) ->
+            Check_Termination_Common.Generic_assm_proof b c d a e f () g ->
+              [Check_Termination_Common.Assm b c d];
+collect_assms tp dpp fptp unk (Check_Termination_Common.SN_assm_proof t prf) =
+  tp prf;
+collect_assms tp dpp fptp unk (Check_Termination_Common.SN_FP_assm_proof t prf)
+  = fptp prf;
+collect_assms tp dpp fptp unk (Check_Termination_Common.Finite_assm_proof d prf)
+  = dpp prf;
+collect_assms tp dpp fptp unk
+  (Check_Termination_Common.Unknown_assm_proof p prf) = unk prf;
+collect_assms uu uv uw ux (Check_Termination_Common.Not_SN_assm_proof v va) =
+  [];
+collect_assms uu uv uw ux (Check_Termination_Common.Infinite_assm_proof v va) =
+  [];
+collect_assms uu uv uw ux (Check_Termination_Common.Not_RelSN_assm_proof v va) =
+  [];
+collect_assms uu uv uw ux (Check_Termination_Common.Not_SN_FP_assm_proof v va) =
+  [];
+collect_assms uu uv uw ux (Check_Termination_Common.Complexity_assm_proof v va)
+  = [];
+
+dp_assms ::
+  forall a b c.
+    Bool -> Dp_termination_proof a b c -> [Check_Termination_Common.Assm a b c];
+dp_assms a P_is_Empty = [];
+dp_assms a (Subterm_Criterion_Proc uu uv uw p) = dp_assms a p;
+dp_assms a (Gen_Subterm_Criterion_Proc ux uy p) = dp_assms a p;
+dp_assms a (Redpair_Proc uz va p) = dp_assms a p;
+dp_assms a (Redpair_UR_Proc vb vc vd p) = dp_assms a p;
+dp_assms a (Usable_Rules_Proc ve p) = dp_assms a p;
+dp_assms a (Dep_Graph_Proc ps) =
+  concat (concatMap ((map (dp_assms a) . Option_Util.option_to_list) . fst) ps);
+dp_assms a (Mono_Redpair_Proc vf vg vh p) = dp_assms a p;
+dp_assms a (Mono_URM_Redpair_Proc vi vj vk p) = dp_assms a p;
+dp_assms a (Mono_Redpair_UR_Proc vl vm vn vo p) = dp_assms a p;
+dp_assms a (Size_Change_Subterm_Proc vp) = [];
+dp_assms a (Size_Change_Redpair_Proc vq vr vs) = [];
+dp_assms a (Uncurry_Proc vt vu vv vw p) = dp_assms a p;
+dp_assms a (Fcc_Proc vx vy vz wa p) = dp_assms a p;
+dp_assms a (Split_Proc wb wc p q) = dp_assms a p ++ dp_assms a q;
+dp_assms a (Semlab_Proc wd we wf wg p) = dp_assms a p;
+dp_assms a (Switch_Innermost_Proc wh p) = dp_assms a p;
+dp_assms a (Rewriting_Proc wi wj wk wl wm wn p) = dp_assms a p;
+dp_assms a (Narrowing_Proc wo wp wq p) = dp_assms a p;
+dp_assms a (Instantiation_Proc wr ws p) = dp_assms a p;
+dp_assms a (Forward_Instantiation_Proc wt wu wv p) = dp_assms a p;
+dp_assms a (Q_Reduction_Proc ww p) = dp_assms a p;
+dp_assms a (General_Redpair_Proc wx wy wz xa ps) = concatMap (dp_assms a) ps;
+dp_assms a (Complex_Constant_Removal_Proc xb p) = dp_assms a p;
+dp_assms a (To_Trs_Proc p) = sn_assms a p;
+dp_assms a (Assume_Finite d dps) =
+  (if a then Check_Termination_Common.Finite_assm
+               (map Check_Termination_Common.assm_proof_to_problem dps) d :
+               concatMap
+                 (collect_assms (sn_assms a) (dp_assms a) (sn_fp_assms a)
+                   (unknown_assms a))
+                 dps
+    else []);
+
+unknown_assms ::
+  forall a b c.
+    Bool -> Unknown_proof a b c -> [Check_Termination_Common.Assm a b c];
+unknown_assms a (Assume_Unknown t tps) =
+  (if a then Check_Termination_Common.Unknown_assm
+               (map Check_Termination_Common.assm_proof_to_problem tps) t :
+               concatMap
+                 (collect_assms (sn_assms a) (dp_assms a) (sn_fp_assms a)
+                   (unknown_assms a))
+                 tps
+    else []);
+
+sn_fp_assms ::
+  forall a b c.
+    Bool ->
+      Fptrs_termination_proof a b c -> [Check_Termination_Common.Assm a b c];
+sn_fp_assms a (Assume_FP_SN t tps) =
+  (if a then Check_Termination_Common.SN_FP_assm
+               (map Check_Termination_Common.assm_proof_to_problem tps) t :
+               concatMap
+                 (collect_assms (sn_assms a) (dp_assms a) (sn_fp_assms a)
+                   (unknown_assms a))
+                 tps
+    else []);
+
+sn_assms ::
+  forall a b c.
+    Bool ->
+      Trs_termination_proof a b c -> [Check_Termination_Common.Assm a b c];
+sn_assms a (DP_Trans xc xd xe p) = dp_assms a p;
+sn_assms a (Rule_Removal xf xg p) = sn_assms a p;
+sn_assms a (String_Reversal p) = sn_assms a p;
+sn_assms a (Constant_String xh p) = sn_assms a p;
+sn_assms a (Bounds xi) = [];
+sn_assms a (Relative_Bounds xj xk p) = sn_assms a p;
+sn_assms a (Rfc_Bounds xl xm) = [];
+sn_assms a (Rfc_Automaton_Closed_Bounds xn xo) = [];
+sn_assms a (Rfc_Relative_Bounds xp xq xr p) = sn_assms a p;
+sn_assms a (Rfc_Automaton_Closed_Relative_Bounds xs xt xu p) = sn_assms a p;
+sn_assms a (Rfc_Matchbox_Relative_Bounds xv xw xx p) = sn_assms a p;
+sn_assms a (Rfc_Native_Matchbox_Relative_Bounds xy xz ya p) = sn_assms a p;
+sn_assms a (AAECC_Innermost yb yc yd ye p) = sn_assms a p;
+sn_assms a (Uncurry yf yg p) = sn_assms a p;
+sn_assms a (Semlab yh yi yj p) = sn_assms a p;
+sn_assms a R_is_Empty = [];
+sn_assms a (Fcc yk yl p) = sn_assms a p;
+sn_assms a (Split ym p q) = sn_assms a p ++ sn_assms a q;
+sn_assms a (Switch_Innermost yn p) = sn_assms a p;
+sn_assms a (Drop_Equality p) = sn_assms a p;
+sn_assms a (Remove_Nonapplicable_Rules yo p) = sn_assms a p;
+sn_assms a (Permuting_AFS yp p) = sn_assms a p;
+sn_assms a Right_Ground_Termination = [];
+sn_assms a (Assume_SN t tps) =
+  (if a then Check_Termination_Common.SN_assm
+               (map Check_Termination_Common.assm_proof_to_problem tps) t :
+               concatMap
+                 (collect_assms (sn_assms a) (dp_assms a) (sn_fp_assms a)
+                   (unknown_assms a))
+                 tps
+    else []);
+
 check_assm ::
   forall a b c d e f g.
     (Compare.Compare_order b, Countable.Countable b,
@@ -543,6 +679,92 @@ check_tp_subsumes i (nfs, (q, (r, rw))) tp =
             Term_Rewriting.showsl_literal "\n") .
            x) .
           Term_Rewriting.showsl_literal "\n"));
+
+aaecc_innermost_tt ::
+  forall a b.
+    (Compare.Compare_order b, Countable.Countable b, Eq b,
+      Term_Rewriting.Showl b) => Termination_Problem_Spec.Tp_ops_ext a
+                                   (Labelings.Lab b [Arith.Nat]) [Arith.Char]
+                                   () ->
+                                   [(Term_Rewriting.Term
+                                       (Labelings.Lab b [Arith.Nat])
+                                       [Arith.Char],
+                                      Term_Rewriting.Term
+(Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+                                     [(Term_Rewriting.Term
+ (Labelings.Lab b [Arith.Nat]) [Arith.Char],
+Term_Rewriting.Term (Labelings.Lab b [Arith.Nat]) [Arith.Char])] ->
+                                       [Labelings.Lab b [Arith.Nat]] ->
+ Critical_Pairs_Impl.Join_info (Labelings.Lab b [Arith.Nat]) [Arith.Char] ->
+   a -> Sum_Type.Sum (String -> String) a;
+aaecc_innermost_tt j r1 r2 fs joins tp =
+  Error_Monad.bind
+    (Check_Monad.check (not (Termination_Problem_Spec.nfs j tp))
+      (Term_Rewriting.showsl_lit
+        "AAECC requires an ordinary full-rewriting problem"))
+    (\ _ ->
+      Error_Monad.bind
+        (Check_Monad.check (null (Termination_Problem_Spec.q j tp))
+          (Term_Rewriting.showsl_lit "AAECC requires empty Q"))
+        (\ _ ->
+          Error_Monad.bind
+            (Check_Monad.check (null (Termination_Problem_Spec.rw j tp))
+              (Term_Rewriting.showsl_lit
+                "AAECC does not support relative rules"))
+            (\ _ ->
+              Error_Monad.bind
+                (Error_Monad.catch_error
+                  (Check_Monad.check_subseteq (Termination_Problem_Spec.r j tp)
+                    (r1 ++ r2))
+                  (\ x ->
+                    Sum_Type.Inl
+                      (Check_Termination_Common.missing "AAECC partition rule"
+                        (Term_Rewriting.showsl_rule x))))
+                (\ _ ->
+                  Error_Monad.bind
+                    (Error_Monad.catch_error
+                      (Check_Monad.check_subseteq (r1 ++ r2)
+                        (Termination_Problem_Spec.r j tp))
+                      (\ x ->
+                        Sum_Type.Inl
+                          (Check_Termination_Common.toomuch
+                            "AAECC partition rule"
+                            (Term_Rewriting.showsl_rule x))))
+                    (\ _ ->
+                      Error_Monad.bind
+                        (Check_Monad.check
+                          (AAECC_Innermost_Switch.aaecc_signature_separated_impl
+                            fs r1 r2)
+                          (Term_Rewriting.showsl_lit
+                            "AAECC signature-separation condition is violated"))
+                        (\ _ ->
+                          Error_Monad.bind
+                            (Term_Rewriting.check_wf_trs (r1 ++ r2))
+                            (\ _ ->
+                              let {
+                                cp = Critical_Pairs_Impl.critical_pairs_impl
+                                       Renaming2_String.string_rename r1 r1;
+                              } in Error_Monad.bind
+                                     (Error_Monad.catch_error
+                                       (Error_Monad.forallM
+ (\ (b, _) ->
+   Check_Monad.check b (Term_Rewriting.showsl_lit "AAECC R1 is not overlay"))
+ cp)
+                                       (\ x -> Sum_Type.Inl (snd x)))
+                                     (\ _ ->
+                                       Error_Monad.bind
+ (Critical_Pairs_Impl.check_critical_pairs r1 cp joins)
+ (\ _ ->
+   Error_Monad.bind
+     (Check_Monad.check
+       (null (Critical_Pairs_Impl.critical_pairs_impl
+               Renaming2_String.string_rename r2 r1))
+       (Term_Rewriting.showsl_lit "AAECC R2/R1 cross critical pairs exist"))
+     (\ _ ->
+       let {
+         r = r1 ++ r2;
+       } in Sum_Type.Inr
+              (Termination_Problem_Spec.mk j True (map fst r) r [])))))))))));
 
 check_dpp_subsumes ::
   forall a b c d.
@@ -1065,6 +1287,18 @@ check_trs_termination_proof j ia assms i tp (Switch_Innermost joins prf) =
               ((i . Term_Rewriting.showsl_lit
                       ": error below the switch to innermost\n") .
                 x))));
+check_trs_termination_proof j ia assms i tp (AAECC_Innermost r1 r2 fs joins prf)
+  = FOR_Preliminaries.debug i "AAECC Innermost"
+      (Error_Monad.bind (aaecc_innermost_tt j r1 r2 fs joins tp)
+        (\ tpa ->
+          Error_Monad.catch_error
+            (check_trs_termination_proof j ia assms
+              (Term_Rewriting.add_index i Arith.one_nat) tpa prf)
+            (\ x ->
+              Sum_Type.Inl
+                ((i . Term_Rewriting.showsl_lit
+                        ": error below the AAECC innermost transformation\n") .
+                  x))));
 check_trs_termination_proof j ia assms i tp (Drop_Equality prf) =
   FOR_Preliminaries.debug i "Drop Equality"
     (let {

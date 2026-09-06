@@ -4,7 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory GM04_Complete_Transformation
   imports
-    CSR_Checker_Extensions.CSR_Conservative_Checker
+    CSR_GM_Transformation
     Auxx.RenamingN_String
 begin
 
@@ -1790,6 +1790,238 @@ proof -
   show ?thesis
     by (rule gm04_search_step_simulation[OF source_rules active_rules
       mark_rules search])
+qed
+
+lemma gm04_search_step_complete_simulation:
+  fixes R :: "('f::countable,string) rules"
+  assumes finite_mu: "\<And>fn. finite (\<mu> fn)"
+    and signature: "funas_term s \<subseteq> set F"
+    and search: "(s,t) \<in> gm04_search_step \<mu> (set R)"
+  shows "(Fun active [s],Fun mark [t]) \<in>
+    (rstep (set (gm04_complete_rules
+      \<mu> active mark proper ok top_sym F R)))\<^sup>+"
+  using search signature
+proof induct
+  case (root l r \<sigma>)
+  have rule: "(Fun active [l],Fun mark [r]) \<in>
+      set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)"
+    using root.hyps unfolding gm04_complete_rules_def
+      gm04_non_top_rules_def gm04_source_rules_def by auto
+  from gm04_rule_instance_rstep[OF rule, of \<sigma>]
+  show ?case by (simp add: r_into_trancl)
+next
+  case (descend i ts f u)
+  let ?S = "set (gm04_complete_rules
+    \<mu> active mark proper ok top_sym F R)"
+  let ?A = "Fun f (ts[i := Fun active [ts ! i]])"
+  let ?M = "Fun f (ts[i := Fun mark [u]])"
+  let ?C = "More f (take i ts) \<box> (drop (Suc i) ts)"
+  from descend.prems have fn: "(f,length ts) \<in> set F" by simp
+  have i_sorted: "i \<in> set (sorted_list_of_set (\<mu> (f,length ts)))"
+    using descend.hyps(2) finite_mu[of "(f,length ts)"] by simp
+  have active_inner: "gm04_active_rule active (f,length ts) i \<in>
+      set (map (gm04_active_rule active (f,length ts))
+        (filter (\<lambda>j. j < length ts)
+          (sorted_list_of_set (\<mu> (f,length ts)))))"
+    using descend.hyps(1) i_sorted by simp
+  let ?active_for_fn = "map (gm04_active_rule active (f,length ts))
+    (filter (\<lambda>j. j < length ts)
+      (sorted_list_of_set (\<mu> (f,length ts))))"
+  have active_outer: "?active_for_fn \<in> set (map (\<lambda>fn.
+      map (gm04_active_rule active fn)
+        (filter (\<lambda>j. j < snd fn) (sorted_list_of_set (\<mu> fn)))) F)"
+    using fn by force
+  have active_union: "gm04_active_rule active (f,length ts) i \<in>
+      (\<Union>xs\<in>set (map (\<lambda>fn.
+        map (gm04_active_rule active fn)
+          (filter (\<lambda>j. j < snd fn) (sorted_list_of_set (\<mu> fn)))) F).
+        set xs)"
+    using active_outer active_inner by blast
+  have active_local: "gm04_active_rule active (f,length ts) i \<in>
+      set (gm04_active_rules \<mu> active F)"
+    using active_union unfolding gm04_active_rules_def by simp
+  have active_rule: "gm04_active_rule active (f,length ts) i \<in> ?S"
+    using active_local
+    unfolding gm04_complete_rules_def gm04_non_top_rules_def by auto
+  have first: "(Fun active [Fun f ts],?A) \<in> rstep ?S"
+    by (rule gm04_active_rule_instance[OF active_rule descend.hyps(1)])
+  have child: "ts ! i \<in> set ts"
+    using descend.hyps(1) by (rule nth_mem)
+  from descend.prems have args_sig:
+      "(\<Union>u\<in>set ts. funas_term u) \<subseteq> set F" by simp
+  have sub_sig: "funas_term (ts ! i) \<subseteq> set F"
+    using child args_sig by blast
+  from trancl_rstep_ctxt[OF descend.hyps(4)[OF sub_sig], of ?C]
+  have middle: "(?A,?M) \<in> (rstep ?S)\<^sup>+"
+    using descend.hyps(1) by (simp add: upd_conv_take_nth_drop)
+  have mark_inner: "gm04_mark_rule mark (f,length ts) i \<in>
+      set (map (gm04_mark_rule mark (f,length ts))
+        (filter (\<lambda>j. j < length ts)
+          (sorted_list_of_set (\<mu> (f,length ts)))))"
+    using descend.hyps(1) i_sorted by simp
+  let ?mark_for_fn = "map (gm04_mark_rule mark (f,length ts))
+    (filter (\<lambda>j. j < length ts)
+      (sorted_list_of_set (\<mu> (f,length ts))))"
+  have mark_outer: "?mark_for_fn \<in> set (map (\<lambda>fn.
+      map (gm04_mark_rule mark fn)
+        (filter (\<lambda>j. j < snd fn) (sorted_list_of_set (\<mu> fn)))) F)"
+    using fn by force
+  have mark_union: "gm04_mark_rule mark (f,length ts) i \<in>
+      (\<Union>xs\<in>set (map (\<lambda>fn.
+        map (gm04_mark_rule mark fn)
+          (filter (\<lambda>j. j < snd fn) (sorted_list_of_set (\<mu> fn)))) F).
+        set xs)"
+    using mark_outer mark_inner by blast
+  have mark_local: "gm04_mark_rule mark (f,length ts) i \<in>
+      set (gm04_mark_rules \<mu> mark F)"
+    using mark_union unfolding gm04_mark_rules_def by simp
+  have mark_rule: "gm04_mark_rule mark (f,length ts) i \<in> ?S"
+    using mark_local
+    unfolding gm04_complete_rules_def gm04_non_top_rules_def by auto
+  have mark_rule_updated:
+      "gm04_mark_rule mark (f,length (ts[i := u])) i \<in> ?S"
+    using mark_rule by simp
+  have last: "(?M,Fun mark [Fun f (ts[i := u])]) \<in> rstep ?S"
+    using gm04_mark_rule_instance[OF mark_rule_updated]
+      descend.hyps(1) by simp
+  from r_into_trancl[OF first] middle have prefix:
+      "(Fun active [Fun f ts],?M) \<in> (rstep ?S)\<^sup>+"
+    by (rule trancl_trans)
+  from prefix r_into_trancl[OF last]
+  show ?case by (rule trancl_trans)
+qed
+
+lemma gm04_complete_ground_step_simulation:
+  fixes R :: "('f::countable,string) rules"
+  assumes finite_mu: "\<And>fn. finite (\<mu> fn)"
+    and signature: "funas_term s \<subseteq> set F" "funas_term t \<subseteq> set F"
+    and ground: "ground t"
+    and step: "(s,t) \<in> csstep \<mu> (set R)"
+  shows "(Fun top_sym [Fun active [s]],Fun top_sym [Fun active [t]]) \<in>
+    (rstep (set (gm04_complete_rules
+      \<mu> active mark proper ok top_sym F R)))\<^sup>+"
+proof -
+  let ?S = "set (gm04_complete_rules
+    \<mu> active mark proper ok top_sym F R)"
+  let ?Top = "More top_sym [] \<box> []"
+  have search: "(s,t) \<in> gm04_search_step \<mu> (set R)"
+    using step unfolding gm04_search_step_iff_csstep .
+  from trancl_rstep_ctxt[
+      OF gm04_search_step_complete_simulation[
+        OF finite_mu signature(1) search], of ?Top]
+  have first: "(Fun top_sym [Fun active [s]],
+      Fun top_sym [Fun mark [t]]) \<in> (rstep ?S)\<^sup>+" by simp
+  have mark_proper: "(Fun top_sym [Fun mark [t]],
+      Fun top_sym [Fun proper [t]]) \<in> rstep ?S"
+  proof -
+    have pair: "(Fun top_sym [Fun mark [Var ''__gm04_x'']],
+        Fun top_sym [Fun proper [Var ''__gm04_x'']]) \<in> ?S"
+      by (simp add: gm04_complete_rules_def gm04_top_rules_def)
+    from gm04_rule_instance_rstep[OF pair,
+        of "\<lambda>x. if x = ''__gm04_x'' then t else Var x"]
+    show ?thesis by simp
+  qed
+  have source_t: "gm04_source_term F t"
+    using ground signature(2) unfolding gm04_source_term_def by simp
+  have proper_ok0: "(Fun proper [t],Fun ok [t]) \<in> (rstep ?S)\<^sup>+"
+  proof (rule gm04_proper_ok_phase[OF _ _ source_t])
+    show "\<And>fn. fn \<in> set F \<Longrightarrow>
+        gm04_proper_rule proper ok fn \<in> ?S"
+      unfolding gm04_complete_rules_def gm04_non_top_rules_def by auto
+    show "\<And>fn. fn \<in> set F \<Longrightarrow> 0 < snd fn \<Longrightarrow>
+        gm04_ok_rule proper ok fn \<in> ?S"
+      unfolding gm04_complete_rules_def gm04_non_top_rules_def by auto
+  qed
+  from trancl_rstep_ctxt[OF proper_ok0, of ?Top]
+  have proper_ok: "(Fun top_sym [Fun proper [t]],
+      Fun top_sym [Fun ok [t]]) \<in> (rstep ?S)\<^sup>+" by simp
+  have ok_active: "(Fun top_sym [Fun ok [t]],
+      Fun top_sym [Fun active [t]]) \<in> rstep ?S"
+  proof -
+    have pair: "(Fun top_sym [Fun ok [Var ''__gm04_x'']],
+        Fun top_sym [Fun active [Var ''__gm04_x'']]) \<in> ?S"
+      by (simp add: gm04_complete_rules_def gm04_top_rules_def)
+    from gm04_rule_instance_rstep[OF pair,
+        of "\<lambda>x. if x = ''__gm04_x'' then t else Var x"]
+    show ?thesis by simp
+  qed
+  from first r_into_trancl[OF mark_proper] have prefix:
+      "(Fun top_sym [Fun active [s]],Fun top_sym [Fun proper [t]])
+        \<in> (rstep ?S)\<^sup>+"
+    by (rule trancl_trans)
+  from prefix proper_ok have prefix':
+      "(Fun top_sym [Fun active [s]],Fun top_sym [Fun ok [t]])
+        \<in> (rstep ?S)\<^sup>+"
+    by (rule trancl_trans)
+  from prefix' r_into_trancl[OF ok_active] show ?thesis
+    by (rule trancl_trans)
+qed
+
+text \<open>
+  The complete transformation reflects nontermination.  Equivalently,
+  termination of the generated ordinary TRS implies context-sensitive
+  termination of the source.  A source constant grounds an arbitrary chain;
+  it is not otherwise used by the generated system.
+\<close>
+
+theorem gm04_complete_SN_imp_source_SN:
+  fixes R T :: "('f::countable,string) rules"
+  assumes transformed: "SN (rstep (set T))"
+    and has_constant: "(c,0) \<in> set F"
+    and finite_mu: "\<And>fn. finite (\<mu> fn)"
+    and schema:
+      "gm04_complete_schema_check \<mu> active mark proper ok top_sym F R T"
+    and complete: "set (gm04_complete_rules
+      \<mu> active mark proper ok top_sym F R) \<subseteq> set T"
+  shows "SN (sig_step (set F) (csstep \<mu> (set R)))"
+proof -
+  let ?ground = "\<lambda>(_::string). Fun c []"
+  let ?encode = "\<lambda>t. Fun top_sym [Fun active [t \<cdot> ?ground]]"
+  have complete_SN: "SN (rstep (set (gm04_complete_rules
+      \<mu> active mark proper ok top_sym F R)))"
+    by (rule SN_subset[OF transformed], rule rstep_mono[OF complete])
+  have target: "SN_rel (rstep (set (gm04_complete_rules
+      \<mu> active mark proper ok top_sym F R))) {}" using complete_SN by simp
+  have source: "SN_rel (sig_step (set F) (csstep \<mu> (set R))) {}"
+  proof (rule SN_rel_map[OF target, of _ ?encode])
+    fix s t :: "('f,string) term"
+    assume st: "(s,t) \<in> sig_step (set F) (csstep \<mu> (set R))"
+    from st have step: "(s,t) \<in> csstep \<mu> (set R)"
+      and fs: "funas_term s \<subseteq> set F"
+      and ft: "funas_term t \<subseteq> set F"
+      unfolding sig_step_def by auto
+    have grounded: "(s \<cdot> ?ground,t \<cdot> ?ground) \<in> csstep \<mu> (set R)"
+      by (rule csstep_subst_closed[OF step])
+    have fgs: "funas_term (s \<cdot> ?ground) \<subseteq> set F"
+      using fs has_constant unfolding funas_term_subst by auto
+    have fgt: "funas_term (t \<cdot> ?ground) \<subseteq> set F"
+      using ft has_constant unfolding funas_term_subst by auto
+    have gt: "ground (t \<cdot> ?ground)" by auto
+    from gm04_complete_ground_step_simulation[
+      OF finite_mu fgs fgt gt grounded]
+    have "(?encode s,?encode t) \<in>
+      rstep (set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)) O
+      (rstep (set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)))\<^sup>*"
+      unfolding trancl_unfold_left .
+    then show "(?encode s,?encode t) \<in>
+      (rstep (set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)) \<union> {})\<^sup>* O
+      rstep (set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)) O
+      (rstep (set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)) \<union> {})\<^sup>*"
+      by regexp
+  next
+    fix s t :: "('f,string) term"
+    assume "(s,t) \<in> {}"
+    then show "(?encode s,?encode t) \<in>
+      (rstep (set (gm04_complete_rules
+        \<mu> active mark proper ok top_sym F R)) \<union> {})\<^sup>*" by simp
+  qed
+  from source show ?thesis by simp
 qed
 
 lemma gm04_SN_rel_and_SN_imp_SN_union:

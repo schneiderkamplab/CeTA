@@ -4,8 +4,8 @@ module
   CPF_Input_Parser(position, pos, plain_var, term, conditions, crule, rule,
                     symbols, cPFsignature, rules, state, final_states,
                     tree_automaton, ta_normal_lhs, kbo_input, unknown_inputa,
-                    trs_input, dp_input, input, answer, property, lookupTables,
-                    innermostLhss, strategy_to_fp)
+                    replacement_map, trs_input, dp_input, input, answer,
+                    property, lookupTables, innermostLhss, strategy_to_fp)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),

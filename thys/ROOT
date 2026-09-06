@@ -295,7 +295,11 @@ session Proof_Checker_Base in Proof_Checker_Base = IsaFoR_2 +
     CTRS
     LTS
     RFC_Checker_Ext
+  directories
+    "../CSR_Checker/AAECC"
   theories
+    AAECC_Innermost_Switch
+    QDP_To_SRS_Zantema
     Check_Termination
 
 session CSR_Checker_Base in "CSR_Checker/Base" = Proof_Checker_Base +

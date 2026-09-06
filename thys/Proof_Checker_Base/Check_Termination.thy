@@ -5,6 +5,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Termination
   imports Check_Termination_Common RFC_Checker_Ext.RFC_Matchbounds_Ext
+    AAECC_Innermost_Switch QDP_To_SRS_Zantema
 begin
 
 fun collect_assms :: "('tp \<Rightarrow> ('f, 'l, 'v) assm list)
@@ -317,6 +318,7 @@ datatype (dead 'f, dead 'l, dead 'v) dp_termination_proof =
     "('f, 'l) lab redtriple_impl" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trsLL"
     "(('f, 'l) lab, 'v) cond_red_pair_prf" "('f, 'l, 'v) dp_termination_proof list" 
 | To_Trs_Proc "('f, 'l, 'v) trs_termination_proof"
+| Zantema_To_SRS_Proc "('f, 'l, 'v) trs_termination_proof"
 and ('f, 'l, 'v) trs_termination_proof =
   DP_Trans bool bool "(('f, 'l) lab, 'v) rules" "('f, 'l, 'v) dp_termination_proof"
 | Rule_Removal "('f, 'l) lab redtriple_impl" "('f, 'l, 'v) trsLL" "('f, 'l, 'v)trs_termination_proof"
@@ -343,6 +345,9 @@ and ('f, 'l, 'v) trs_termination_proof =
 | Assume_SN "('f, 'l, 'v) qreltrsLL" "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 | Rfc_Matchbox_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Rfc_Native_Matchbox_Relative_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
+| AAECC_Innermost "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trsLL"
+    "('f, 'l) lab list" "(('f, 'l) lab, 'v) join_info"
+    "('f, 'l, 'v) trs_termination_proof"
 and ('f, 'l, 'v) unknown_proof =
   Assume_Unknown unknown_info "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 and ('f, 'l, 'v) fptrs_termination_proof =
@@ -394,6 +399,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (Rfc_Automaton_Closed_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Native_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
+| "sn_assms a (AAECC_Innermost _ _ _ _ p) = sn_assms a p"
 | "sn_assms a (Uncurry _ _ p) = sn_assms a p"
 | "sn_assms a (Semlab _ _ _ p) = sn_assms a p"
 | "sn_assms a R_is_Empty = []"
@@ -410,6 +416,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
     # concat (map (collect_assms (sn_assms a) (dp_assms a) (sn_fp_assms a)  (unknown_assms a)) tps) else [])"
 | "unknown_assms a (Assume_Unknown t tps) = (if a then Unknown_assm (map assm_proof_to_problem tps) t 
     # concat (map (collect_assms (sn_assms a) (dp_assms a) (sn_fp_assms a)  (unknown_assms a)) tps) else [])"
+| "dp_assms a (Zantema_To_SRS_Proc p) = sn_assms a p"
 
 lemma assms_False [simp]: 
   "dp_assms False (p :: ('f,'l,'v)dp_termination_proof) = []" 
@@ -475,6 +482,97 @@ lemma check_assm:
   shows "isOK(check_assm tp dpp fptp unk i) \<Longrightarrow> satisfied (assm_proof_to_problem i)"
   using assms 
   by (cases i, auto)
+
+definition aaecc_innermost_tt ::
+  "('f,label_type,string) trsLL \<Rightarrow> ('f,label_type,string) trsLL
+    \<Rightarrow> ('f,label_type) lab list
+    \<Rightarrow> (('f,label_type) lab,string) join_info \<Rightarrow> 'tp proc"
+where
+  "aaecc_innermost_tt R1 R2 fs joins tp = (do {
+      check (\<not> tp_ops.nfs J tp)
+        (showsl_lit (STR ''AAECC requires an ordinary full-rewriting problem''));
+      check (tp_ops.Q J tp = [])
+        (showsl_lit (STR ''AAECC requires empty Q''));
+      check (tp_ops.Rw J tp = [])
+        (showsl_lit (STR ''AAECC does not support relative rules''));
+      check_subseteq (tp_ops.R J tp) (R1 @ R2)
+        <+? (\<lambda>r. missing (STR ''AAECC partition rule'') (showsl_rule r));
+      check_subseteq (R1 @ R2) (tp_ops.R J tp)
+        <+? (\<lambda>r. toomuch (STR ''AAECC partition rule'') (showsl_rule r));
+      check (aaecc_signature_separated_impl fs R1 R2)
+        (showsl_lit (STR ''AAECC signature-separation condition is violated''));
+      check_wf_trs (R1 @ R2);
+      let cp = critical_pairs_impl string_rename R1 R1;
+      check_allm (\<lambda>(b,st). check b
+        (showsl_lit (STR ''AAECC R1 is not overlay''))) cp;
+      check_critical_pairs R1 cp joins;
+      check (critical_pairs_impl string_rename R2 R1 = [])
+        (showsl_lit (STR ''AAECC R2/R1 cross critical pairs exist''));
+      let R = R1 @ R2;
+      return (tp_ops.mk J True (map fst R) R [])
+    })"
+
+lemma aaecc_innermost_tt_sound:
+  assumes J: "tp_spec J"
+  shows "tp_spec.sound_tt_impl J (aaecc_innermost_tt R1 R2 fs joins)"
+proof -
+  interpret tp_spec J by (rule J)
+  show ?thesis
+  proof
+    fix tp tp'
+    assume tt: "aaecc_innermost_tt R1 R2 fs joins tp = return tp'"
+      and child: "SN_qrel (qreltrs tp')"
+    from tt have nfs: "\<not> NFS tp" and Q: "Q tp = []" and Rw: "Rw tp = []"
+      and old_new: "set (R tp) \<subseteq> set (R1 @ R2)"
+      and new_old: "set (R1 @ R2) \<subseteq> set (R tp)"
+      and sep: "aaecc_signature_separated_impl fs R1 R2"
+      and wf: "wf_trs (set (R1 @ R2))"
+      and overlay: "\<And>l r. (False,l,r) \<notin>
+        set (critical_pairs_impl string_rename R1 R1)"
+      and joins: "isOK (check_critical_pairs R1
+        (critical_pairs_impl string_rename R1 R1) joins)"
+      and cp21: "critical_pairs_impl string_rename R2 R1 = []"
+      and tp': "tp' = mk True (map fst (R1 @ R2)) (R1 @ R2) []"
+      unfolding aaecc_innermost_tt_def by (auto simp: Let_def)
+    from child[unfolded tp'] have qraw:
+      "SN (qrstep True (lhss (set R1) \<union> lhss (set R2))
+        (set R1 \<union> set R2))"
+      by (simp add: SN_qrel_def)
+    have lhs_union:
+      "lhss (set R1 \<union> set R2) = lhss (set R1) \<union> lhss (set R2)"
+      by auto
+    have qinner: "SN (irstep True (set R1 \<union> set R2))"
+      unfolding irstep_def lhs_union by (rule qraw)
+    have wf': "wf_trs (set R1 \<union> set R2)" using wf by simp
+    have inner: "SN (inn_rstep (set R1 \<union> set R2))"
+      using qinner irstep_is_inn_step[OF wf', of True] by simp
+    have full: "SN (rstep (set R1 \<union> set R2))"
+    proof (rule aaecc_innermost_termination[
+      OF aaecc_signature_separated_impl_sound[OF sep] wf'])
+      show "aaecc_R1_ok string_rename (set R1)"
+      proof -
+        from check_critical_pairs[OF joins]
+        have WCR: "WCR (rstep (set R1))" .
+        have no_inner: "\<And>l r. (False,l,r) \<notin>
+            critical_pairs string_rename (set R1) (set R1)"
+          using overlay Critical_Pairs_Impl.critical_pairs_impl by auto
+        show ?thesis unfolding aaecc_R1_ok_def using WCR no_inner by blast
+      qed
+      show "critical_pairs string_rename (set R2) (set R1) = {}"
+      proof -
+        have "set (critical_pairs_impl string_rename R2 R1) =
+            critical_pairs string_rename (set R2) (set R1)"
+          by (rule Critical_Pairs_Impl.critical_pairs_impl)
+        with cp21 show ?thesis by simp
+      qed
+      show "SN (inn_rstep (set R1 \<union> set R2))" by (rule inner)
+    qed
+    have sets: "set (R tp) = set (R1 @ R2)" using old_new new_old by blast
+    show "SN_qrel (qreltrs tp)"
+      using full nfs Q Rw sets
+      by (simp add: qreltrs_sound SN_qrel_def)
+  qed
+qed
 
 function
   check_dp_termination_proof ::
@@ -832,6 +930,13 @@ where
          check_trs_termination_proof (add_index i 1) tp' prf
            <+? (\<lambda>s. i \<circ> showsl_lit (STR '': error below the switch to innermost\<newline>'') \<circ>  s)
    })" 
+| "check_trs_termination_proof i tp (AAECC_Innermost R1 R2 fs joins prf) =
+    debug i (STR ''AAECC Innermost'') (do {
+      tp' \<leftarrow> aaecc_innermost_tt R1 R2 fs joins tp;
+      check_trs_termination_proof (add_index i 1) tp' prf
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below the AAECC innermost transformation\<newline>'') \<circ> s)
+    })"
 |  "check_trs_termination_proof i tp (Drop_Equality prf) = debug i (STR ''Drop Equality'') (do {
          let tp' = tp_ops.mk J (tp_ops.nfs J tp) (tp_ops.Q J tp) (tp_ops.R J tp) (filter (\<lambda> (l,r). l \<noteq> r) (tp_ops.Rw J tp));
          check_trs_termination_proof (add_index i 1) tp' prf
@@ -915,6 +1020,25 @@ where
              ass
         }) else error (i \<circ> showsl_lit (STR '': the proof contains an unknown proof\<newline>''))
     )"
+| "check_dp_termination_proof i dpp (Zantema_To_SRS_Proc prf) =
+    debug i (STR ''Zantema QDP to SRS'') (do {
+      check (dpp_ops.Q I dpp = [])
+        (i \<circ> showsl_lit (STR '': QDP-to-SRS requires empty Q''));
+      check (dpp_ops.R I dpp = [])
+        (i \<circ> showsl_lit (STR '': QDP-to-SRS requires empty strict rules''));
+      check (dpp_ops.Pw I dpp = [])
+        (i \<circ> showsl_lit (STR '': QDP-to-SRS requires no weak pairs''));
+      check (dpp_ops.Rw I dpp = [])
+        (i \<circ> showsl_lit (STR '': QDP-to-SRS requires no weak rules''));
+      (case zantema_transform_impl (dpp_ops.P I dpp) of
+        None \<Rightarrow> error (i \<circ> showsl_lit
+          (STR '': dependency pairs do not have the certified two-stack shape''))
+      | Some S \<Rightarrow>
+          check_trs_termination_proof (add_index i 1)
+            (mk_tp J (False, [], S, [])) prf
+          <+? (\<lambda>s. i \<circ> showsl_lit
+            (STR '': error below the QDP-to-SRS transformation\<newline>'') \<circ> s))
+    })"
   by pat_completeness auto
 
 termination
@@ -1794,7 +1918,23 @@ next
     apply (rule tt)
   done
 next
-  case (43 i tp prof)
+  case (43 i tp R1 R2 fs joins prof)
+  note IH = this
+  interpret tp_spec J by fact
+  let ?i = "add_index i 1"
+  from IH(2) obtain tp' where
+    tt: "aaecc_innermost_tt R1 R2 fs joins tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof ?i tp' prof)"
+    by auto
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule sound_tt_impl)
+    apply (rule aaecc_innermost_tt_sound[OF J])
+    apply (rule tt)
+    apply (rule IH(1)[OF tt rec fin])
+    done
+next
+  case (44 i tp prof)
   note IH = this
   interpret tp_spec J by fact
   let ?Rw = "filter (\<lambda> (l,r). l \<noteq> r) (Rw tp)"
@@ -1823,7 +1963,7 @@ next
     finally show "?Q (set ?Rw') \<subseteq> Id" .
   qed
 next
-  case (44 i tp Rdelete prof)
+  case (45 i tp Rdelete prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1841,7 +1981,7 @@ next
   then show ?case
     by (simp add: id SN_qrel_def)
 next
-  case (45 i tp pi prof)
+  case (46 i tp pi prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1853,13 +1993,13 @@ next
   show ?case
     by (rule sound_tt_impl[OF argument_filter_tt[OF J] tt IH(1)[OF _ rec fin]], insert tt, auto)
 next
-  case (46 i tp)
+  case (47 i tp)
   then have tt: "isOK (right_ground_tt J tp)"
     by (auto simp: Let_def)
   interpret tp_spec J by fact
   show ?case by (rule right_ground_tt [OF tt])
 next
-  case (47 i tp tp' ass)
+  case (48 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -1922,7 +2062,7 @@ next
     qed
   qed
 next
-  case (48 i tp info initial_terms Rr prof)
+  case (49 i tp info initial_terms Rr prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1938,7 +2078,7 @@ next
     apply (rule tt)
     done
 next
-  case (49 i tp info initial_terms Rr prof)
+  case (50 i tp info initial_terms Rr prof)
   note IH = this
   interpret tp_spec J by fact
   let ?i = "add_index i 1"
@@ -1956,7 +2096,7 @@ next
     apply (rule tt)
     done
 next
-  case (50 i tp tp' ass)
+  case (51 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -2018,7 +2158,7 @@ next
     qed
   qed
 next
-  case (51 i tp tp' ass)
+  case (52 i tp tp' ass)
   note IH = this
   interpret J: tp_spec J by fact
   interpret dpp_spec I by fact
@@ -2077,6 +2217,29 @@ next
       qed
     qed
   qed
+next
+  case (53 i dpp prof)
+  note IH = this
+  interpret J: tp_spec J by fact
+  interpret I: dpp_spec I by fact
+  from IH(2) obtain S where
+    Q: "dpp_ops.Q I dpp = []" and R: "dpp_ops.R I dpp = []"
+    and Pw: "dpp_ops.Pw I dpp = []" and Rw: "dpp_ops.Rw I dpp = []"
+    and trans: "zantema_transform_impl (dpp_ops.P I dpp) = Some S"
+    and ok: "isOK (check_trs_termination_proof (add_index i 1)
+      (mk_tp J (False, [], S, [])) prof)"
+    by (cases "zantema_transform_impl (dpp_ops.P I dpp)") auto
+  from IH(3) have ass: "?Q prof" by simp
+  have rec: "SN_qrel (J.qreltrs (mk_tp J (False, [], S, [])))"
+    apply (rule IH(1))
+    using Q R Pw Rw trans ok ass by (auto simp: check_def)
+  from rec have SN: "SN (rstep (set S))"
+    unfolding J.qreltrs_sound SN_qrel_def by simp
+  have fin: "finite_dpp
+    (dpp_ops.nfs I dpp, dpp_ops.minimal I dpp,
+     set (dpp_ops.P I dpp), {}, {}, {}, {})"
+    by (rule zantema_qdp_to_srs_impl_sound[OF trans SN])
+  show ?case unfolding I.dpp_sound Q R Pw Rw using fin by simp
 qed
 
 end

@@ -1,6 +1,8 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module Check_Termination_Common(Generic_assm_proof(..), missing, toomuch)
+module
+  Check_Termination_Common(Problem, Assm(..), Generic_assm_proof(..), missing,
+                            toomuch, assm_proof_to_problem)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -37,6 +39,142 @@ default_lab = Labelings.UnLab HOL.defaulta;
 instance (HOL.Default a) => HOL.Default (Labelings.Lab a b) where {
   defaulta = default_lab;
 };
+
+data Problem a b c =
+  SN_TRS
+    (Bool,
+      ([Term_Rewriting.Term (Labelings.Lab a b) c],
+        ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Term (Labelings.Lab a b) c)],
+          [(Term_Rewriting.Term (Labelings.Lab a b) c,
+             Term_Rewriting.Term (Labelings.Lab a b) c)])))
+  | SN_FP_TRS
+      ([(Term_Rewriting.Actxt (Labelings.Lab a b)
+           (Term_Rewriting.Term (Labelings.Lab a b) c),
+          (Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Location))],
+        [(Term_Rewriting.Term (Labelings.Lab a b) c,
+           Term_Rewriting.Term (Labelings.Lab a b) c)])
+  | Finite_DPP
+      (Bool,
+        (Bool,
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                Term_Rewriting.Term (Labelings.Lab a b) c)],
+              ([Term_Rewriting.Term (Labelings.Lab a b) c],
+                ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) c)],
+                  [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                     Term_Rewriting.Term (Labelings.Lab a b) c)]))))))
+  | Unknown_Problem [Arith.Char]
+  | Not_SN_TRS
+      (Bool,
+        ([Term_Rewriting.Term (Labelings.Lab a b) c],
+          [(Term_Rewriting.Term (Labelings.Lab a b) c,
+             Term_Rewriting.Term (Labelings.Lab a b) c)]))
+  | Not_RelSN_TRS
+      (Bool,
+        ([Term_Rewriting.Term (Labelings.Lab a b) c],
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            [(Term_Rewriting.Term (Labelings.Lab a b) c,
+               Term_Rewriting.Term (Labelings.Lab a b) c)])))
+  | Infinite_DPP
+      (Bool,
+        (Bool,
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                Term_Rewriting.Term (Labelings.Lab a b) c)],
+              ([Term_Rewriting.Term (Labelings.Lab a b) c],
+                ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) c)],
+                  [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                     Term_Rewriting.Term (Labelings.Lab a b) c)]))))))
+  | Not_SN_FP_TRS
+      ([(Term_Rewriting.Actxt (Labelings.Lab a b)
+           (Term_Rewriting.Term (Labelings.Lab a b) c),
+          (Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Location))],
+        [(Term_Rewriting.Term (Labelings.Lab a b) c,
+           Term_Rewriting.Term (Labelings.Lab a b) c)])
+  | Complexity_Problem
+      ([Term_Rewriting.Term (Labelings.Lab a b) c],
+        ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Term (Labelings.Lab a b) c)],
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            (Term_Rewriting.Complexity_measure (Labelings.Lab a b) c,
+              Term_Rewriting.Complexity_class))));
+
+data Assm a b c =
+  SN_assm [Problem a b c]
+    (Bool,
+      ([Term_Rewriting.Term (Labelings.Lab a b) c],
+        ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Term (Labelings.Lab a b) c)],
+          [(Term_Rewriting.Term (Labelings.Lab a b) c,
+             Term_Rewriting.Term (Labelings.Lab a b) c)])))
+  | SN_FP_assm [Problem a b c]
+      ([(Term_Rewriting.Actxt (Labelings.Lab a b)
+           (Term_Rewriting.Term (Labelings.Lab a b) c),
+          (Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Location))],
+        [(Term_Rewriting.Term (Labelings.Lab a b) c,
+           Term_Rewriting.Term (Labelings.Lab a b) c)])
+  | Finite_assm [Problem a b c]
+      (Bool,
+        (Bool,
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                Term_Rewriting.Term (Labelings.Lab a b) c)],
+              ([Term_Rewriting.Term (Labelings.Lab a b) c],
+                ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) c)],
+                  [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                     Term_Rewriting.Term (Labelings.Lab a b) c)]))))))
+  | Unknown_assm [Problem a b c] [Arith.Char]
+  | Not_SN_assm [Problem a b c]
+      (Bool,
+        ([Term_Rewriting.Term (Labelings.Lab a b) c],
+          [(Term_Rewriting.Term (Labelings.Lab a b) c,
+             Term_Rewriting.Term (Labelings.Lab a b) c)]))
+  | Not_RelSN_assm [Problem a b c]
+      (Bool,
+        ([Term_Rewriting.Term (Labelings.Lab a b) c],
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            [(Term_Rewriting.Term (Labelings.Lab a b) c,
+               Term_Rewriting.Term (Labelings.Lab a b) c)])))
+  | Not_SN_FP_assm [Problem a b c]
+      ([(Term_Rewriting.Actxt (Labelings.Lab a b)
+           (Term_Rewriting.Term (Labelings.Lab a b) c),
+          (Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Location))],
+        [(Term_Rewriting.Term (Labelings.Lab a b) c,
+           Term_Rewriting.Term (Labelings.Lab a b) c)])
+  | Infinite_assm [Problem a b c]
+      (Bool,
+        (Bool,
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                Term_Rewriting.Term (Labelings.Lab a b) c)],
+              ([Term_Rewriting.Term (Labelings.Lab a b) c],
+                ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+                    Term_Rewriting.Term (Labelings.Lab a b) c)],
+                  [(Term_Rewriting.Term (Labelings.Lab a b) c,
+                     Term_Rewriting.Term (Labelings.Lab a b) c)]))))))
+  | Complexity_assm [Problem a b c]
+      ([Term_Rewriting.Term (Labelings.Lab a b) c],
+        ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Term (Labelings.Lab a b) c)],
+          ([(Term_Rewriting.Term (Labelings.Lab a b) c,
+              Term_Rewriting.Term (Labelings.Lab a b) c)],
+            (Term_Rewriting.Complexity_measure (Labelings.Lab a b) c,
+              Term_Rewriting.Complexity_class))));
 
 data Generic_assm_proof a b c d e f g h =
   SN_assm_proof
@@ -126,5 +264,17 @@ toomuch s x =
   ((Term_Rewriting.showsl_lit "superfluous " . Term_Rewriting.showsl_lit s) .
     Term_Rewriting.showsl_lit " ") .
     x;
+
+assm_proof_to_problem ::
+  forall a b c d e f g h. Generic_assm_proof a b c d e f g h -> Problem a b c;
+assm_proof_to_problem (SN_assm_proof t prf) = SN_TRS t;
+assm_proof_to_problem (SN_FP_assm_proof t prf) = SN_FP_TRS t;
+assm_proof_to_problem (Finite_assm_proof d prf) = Finite_DPP d;
+assm_proof_to_problem (Unknown_assm_proof p prf) = Unknown_Problem p;
+assm_proof_to_problem (Not_SN_assm_proof t prf) = Not_SN_TRS t;
+assm_proof_to_problem (Not_RelSN_assm_proof t prf) = Not_RelSN_TRS t;
+assm_proof_to_problem (Infinite_assm_proof d prf) = Infinite_DPP d;
+assm_proof_to_problem (Not_SN_FP_assm_proof t prf) = Not_SN_FP_TRS t;
+assm_proof_to_problem (Complexity_assm_proof t prf) = Complexity_Problem t;
 
 }

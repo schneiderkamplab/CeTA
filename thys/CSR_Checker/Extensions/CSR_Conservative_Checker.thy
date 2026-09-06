@@ -1499,6 +1499,36 @@ proof (rule ccontr)
   ultimately show False by contradiction
 qed
 
+fun csr_rule_removals_impl ::
+  "(('f::{showl,compare_order}) redtriple_impl \<times> ('f,string) rules) list \<Rightarrow>
+   'f muL \<Rightarrow> ('f,string) rules \<Rightarrow> showsl + ('f,string) rules"
+where
+  "csr_rule_removals_impl [] \<mu> R = return R"
+| "csr_rule_removals_impl ((redp,Rr) # ps) \<mu> R = do {
+     R' \<leftarrow> csr_rule_removal_impl redp \<mu> Rr R;
+     csr_rule_removals_impl ps \<mu> R'
+   }"
+
+lemma csr_rule_removals_impl_sound:
+  assumes proc: "csr_rule_removals_impl ps \<mu> R = return R'"
+    and fin: "SN (csstep (mu_of \<mu>) (set R'))"
+  shows "SN (csstep (mu_of \<mu>) (set R))"
+  using proc fin
+proof (induction ps arbitrary: R)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons p ps)
+  obtain redp Rr where p: "p = (redp,Rr)" by (cases p, auto)
+  from Cons.prems p obtain R2 where
+    step: "csr_rule_removal_impl redp \<mu> Rr R = return R2"
+    and rest: "csr_rule_removals_impl ps \<mu> R2 = return R'"
+    by (cases "csr_rule_removal_impl redp \<mu> Rr R", auto)
+  have residual: "SN (csstep (mu_of \<mu>) (set R2))"
+    by (rule Cons.IH[OF rest Cons.prems(2)])
+  show ?case by (rule csr_rule_removal_impl[OF step residual])
+qed
+
 datatype ('f, 'l, 'v) extended_csr_termination_proof =
     Direct_CSR_Proof "('f, 'l, 'v) csr_termination_proof"
   | Orthogonality_Checked_CSR_Proof
@@ -1510,6 +1540,11 @@ datatype ('f, 'l, 'v) extended_csr_termination_proof =
   | CSR_Rule_Removal_Then_Improved
       "('f, 'l) lab redtriple_impl"
       "('f, 'l, 'v) trsLL"
+      "('f, 'l) lab"
+      "('f, 'l, 'v) trsLL"
+      "('f, 'l, 'v) csr_dp_termination_proof"
+  | CSR_Rule_Removals_Then_Improved
+      "((('f, 'l) lab redtriple_impl) \<times> ('f, 'l, 'v) trsLL) list"
       "('f, 'l) lab"
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) csr_dp_termination_proof"
@@ -1563,6 +1598,18 @@ where
           (STR '': error below improved CSR dependency pairs after CSR rule removal\<newline>'') \<circ> s)
     })"
 | "check_extended_csr_termination_proof I J a i \<mu> R
+      (CSR_Rule_Removals_Then_Improved removals U P prf) =
+    debug i (STR ''CSR rule removals followed by improved CSR dependency pairs'') (do {
+      r2 \<leftarrow> csr_rule_removals_impl removals \<mu> R;
+      dpp \<leftarrow> improved_csr_dependency_pairs_tt J U \<mu> r2 P
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': invalid improved CSR-DP transformation after CSR rule removals\<newline>'') \<circ> s);
+      check_improved_csr_dp_termination_proof I J U \<mu> False
+        (add_index i 1) dpp prf
+        <+? (\<lambda>s. i \<circ> showsl_lit
+          (STR '': error below improved CSR dependency pairs after CSR rule removals\<newline>'') \<circ> s)
+    })"
+| "check_extended_csr_termination_proof I J a i \<mu> R
       (Conservative_CSR_Dependency_Pairs U P S prf) =
     debug i (STR ''conservative CSR dependency pairs'') (do {
       dpp \<leftarrow> conservative_csr_dependency_pairs_tt J U \<mu> R P S
@@ -1573,12 +1620,19 @@ where
           (STR '': error below conservative CSR dependency pairs\<newline>'') \<circ> s)
     })"
 
+fun extended_csr_proof_is_global where
+  "extended_csr_proof_is_global
+      (Conservative_CSR_Dependency_Pairs U P S prf) = False"
+| "extended_csr_proof_is_global prf = True"
+
 lemma check_extended_csr_termination_proof_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
     and ok: "isOK (check_extended_csr_termination_proof
       I J a i \<mu> R prf)"
   shows "SN (sig_step (set (funas_trs_list R))
-    (csstep (mu_of \<mu>) (set R)))"
+      (csstep (mu_of \<mu>) (set R))) \<and>
+    (extended_csr_proof_is_global prf \<longrightarrow>
+      SN (csstep (mu_of \<mu>) (set R)))"
   using ok
 proof (cases "prf")
   case (Direct_CSR_Proof old)
@@ -1587,8 +1641,8 @@ proof (cases "prf")
     by simp
   have global: "SN (csstep (mu_of \<mu>) (set R))"
     by (rule check_csr_termination_proof_min_sound[OF I J old_ok])
-  show ?thesis
-    by (rule SN_subset[OF global], unfold sig_step_def, auto)
+  show ?thesis using global Direct_CSR_Proof
+    by (auto intro: SN_subset simp: sig_step_def)
 next
   case (Orthogonality_Checked_CSR_Proof child)
   from ok Orthogonality_Checked_CSR_Proof have child_ok:
@@ -1596,8 +1650,8 @@ next
     by auto
   have global: "SN (csstep (mu_of \<mu>) (set R))"
     by (rule check_csr_termination_proof_min_sound[OF I J child_ok])
-  show ?thesis
-    by (rule SN_subset[OF global], unfold sig_step_def, auto)
+  show ?thesis using global Orthogonality_Checked_CSR_Proof
+    by (auto intro: SN_subset simp: sig_step_def)
 next
   case (Improved_CSR_Dependency_Pairs U P dp_prf)
   from ok Improved_CSR_Dependency_Pairs
@@ -1661,8 +1715,8 @@ next
   have global: "SN (csstep (mu_of \<mu>) (set R))"
     by (rule finite_min_improved_CSDP_imp_SN_csstep[
         OF wf defs cover fresh_U' unsharp fresh_sharp fin])
-  show ?thesis
-    by (rule SN_subset[OF global], unfold sig_step_def, auto)
+  show ?thesis using global Improved_CSR_Dependency_Pairs
+    by (auto intro: SN_subset simp: sig_step_def)
 next
   case (CSR_Rule_Removal_Then_Improved redp rr u ps dp_prf)
   from ok CSR_Rule_Removal_Then_Improved have remove_ok:
@@ -1737,8 +1791,78 @@ next
         OF wf defs cover fresh_U' unsharp fresh_sharp fin])
   have global: "SN (csstep (mu_of \<mu>) (set R))"
     by (rule csr_rule_removal_impl[OF remove residual])
-  show ?thesis
-    by (rule SN_subset[OF global], unfold sig_step_def, auto)
+  show ?thesis using global CSR_Rule_Removal_Then_Improved
+    by (auto intro: SN_subset simp: sig_step_def)
+next
+  case (CSR_Rule_Removals_Then_Improved removals u ps dp_prf)
+  from ok CSR_Rule_Removals_Then_Improved obtain r2 where remove:
+      "csr_rule_removals_impl removals \<mu> R = Inr r2"
+    by (cases "csr_rule_removals_impl removals \<mu> R", auto)
+  from ok CSR_Rule_Removals_Then_Improved remove obtain dpp where tt:
+      "improved_csr_dependency_pairs_tt J u \<mu> r2 ps = Inr dpp"
+    by (cases "improved_csr_dependency_pairs_tt J u \<mu> r2 ps", auto)
+  from ok CSR_Rule_Removals_Then_Improved remove tt have rec:
+    "isOK (check_improved_csr_dp_termination_proof
+      I J u \<mu> False (add_index i 1) dpp dp_prf)"
+    by simp
+  from improved_csr_dependency_pairs_tt_sound[OF J tt]
+  have dpp: "dpp = dpp_ops.mk J False False ps [] [] [] r2"
+    and wf: "wf_trs (set r2)"
+    and fresh_U: "\<And>n. (u,n) \<notin> set (funas_trs_list r2)"
+    and unsharp: "\<not> is_sharp_lab u"
+    and fresh_sharp: "\<And>f n. \<not> defined (set r2) (Sharp f,n)"
+    and cover: "improved_csdp_coverage Sharp u (mu_of \<mu>)
+      (set (defined_list r2)) (set r2) (set ps)"
+    by auto
+  interpret dpp_spec J by fact
+  have sem: "dpp_ops.dpp J dpp =
+      (False, False, set ps, {}, {}, {}, set r2)"
+    using dpp dpp_spec.mk_sound[OF J] by simp
+  have sem': "dpp_ops.dpp J dpp =
+      (NFS dpp, M dpp, set (local.P dpp), set (Pw dpp), set (Q dpp),
+        set (local.R dpp), set (Rw dpp))"
+    by (rule dpp_sound)
+  have plain: "plain_csr_dpp J dpp"
+    using sem sem' unfolding plain_csr_dpp_def by auto
+  have rules: "set (rules dpp) = set r2"
+    using sem sem' rules_sound[of dpp] by auto
+  have pairs: "set (pairs dpp) = set ps"
+    using sem sem' pairs_sound[of dpp] by auto
+  have wf_dpp: "wf_trs (set (rules dpp))"
+    using wf rules by simp
+  have fresh_dpp: "\<And>f n. \<not> defined (set (rules dpp)) (Sharp f,n)"
+    using fresh_sharp rules by simp
+  have fresh_U': "\<And>n. \<not> defined (set r2) (u,n)"
+  proof
+    fix n
+    assume def: "defined (set r2) (u,n)"
+    from def obtain l r where lr: "(l,r) \<in> set r2"
+      and root: "root l = Some (u,n)"
+      unfolding defined_def by blast
+    have root_mem: "(u,n) \<in> funas_term l"
+      using root by (cases l, auto)
+    have mem: "(u,n) \<in> set (funas_trs_list r2)"
+      using lr root_mem
+      by (force simp: funas_trs_def funas_rule_def)
+    with fresh_U show False by contradiction
+  qed
+  have fresh_U_dpp: "\<And>n. \<not> defined (set (rules dpp)) (u,n)"
+    using fresh_U' rules by simp
+  have fin_dpp: "finite_min_csr_dpp Sharp (mu_of \<mu>)
+      (set (pairs dpp)) (set (rules dpp))"
+    by (rule check_improved_csr_dp_termination_proof_sound[
+        OF I J plain wf_dpp fresh_dpp fresh_U_dpp unsharp rec])
+  have fin: "finite_min_csr_dpp Sharp (mu_of \<mu>) (set ps) (set r2)"
+    using fin_dpp unfolding rules pairs .
+  have defs: "{f. defined (set r2) f} \<subseteq> set (defined_list r2)"
+    by auto
+  have residual: "SN (csstep (mu_of \<mu>) (set r2))"
+    by (rule finite_min_improved_CSDP_imp_SN_csstep[
+        OF wf defs cover fresh_U' unsharp fresh_sharp fin])
+  have global: "SN (csstep (mu_of \<mu>) (set R))"
+    by (rule csr_rule_removals_impl_sound[OF remove residual])
+  show ?thesis using global CSR_Rule_Removals_Then_Improved
+    by (auto intro: SN_subset simp: sig_step_def)
 next
   case (Conservative_CSR_Dependency_Pairs U P S dp_prf)
   from ok Conservative_CSR_Dependency_Pairs
@@ -1750,9 +1874,11 @@ next
     by auto
   have fin: "finite_dpp (dpp_ops.dpp J dpp)"
     by (rule check_csr_dp_termination_proof_sound[OF I J rec])
-  show ?thesis
+  have sig: "SN (sig_step (set (funas_trs_list R))
+      (csstep (mu_of \<mu>) (set R)))"
     by (rule conservative_csr_dependency_pairs_tt_finite_imp_SN_sig[
       OF J tt fin])
+  show ?thesis using sig Conservative_CSR_Dependency_Pairs by simp
 qed
 
 end

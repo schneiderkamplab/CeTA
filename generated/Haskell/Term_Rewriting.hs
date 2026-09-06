@@ -43,7 +43,7 @@ module
                   is_root_step, is_rstep, nodes_lts_impl, rec_term, mk_subst,
                   mk_subst_domain, subst_eq, hole_pos, var_poss, funas_trs_list,
                   funs_rule_list, vars_rule_list, supteq_list, is_NF_trs,
-                  mgu_var_disjoint_generic, mgu_vd, poss_list, supt_impl,
+                  mgu_var_disjoint_generic, mgu_vd, afs, poss_list, supt_impl,
                   supt_list, r_sym, funas_rule_list, showsl_literal,
                   showsl_rulea, showsl_trsa, showsl_trs, merge, matcha,
                   succ_transitions, check_supt, r_lhs_states, r_rhs, ta_rules,
