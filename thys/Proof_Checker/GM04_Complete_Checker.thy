@@ -4,7 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory GM04_Complete_Checker
   imports
-    GM04_Complete_Transformation
+    GM04_Full_Transformation
     CSR_GM_Transformation
     CSR_Check_Loops
     TRS.Trs_Impl_More
@@ -244,6 +244,14 @@ datatype ('f,'l,'v) gm04_complete_transformation_proof =
     "('f,'l) lab" "('f,'l) lab"
     "('f,'l,'v) trs_termination_proof"
     "('f,'l,'v) gm_extended_csr_termination_proof"
+| GM04_Complete_Full_Transformation_Proof
+    "('f,'l) lab muL"
+    "('f,'l,'v) trsLL"
+    "('f,'l) lab" "('f,'l) lab" "('f,'l) lab" "('f,'l) lab"
+    "('f,'l) lab" "('f,'l) lab"
+    "(('f,'l) lab,'v) join_info"
+    "('f,'l,'v) trs_termination_proof"
+    "('f,'l,'v) gm_extended_csr_termination_proof"
 
 datatype ('f,'l,'v) gm04_complete_nontermination_proof =
   GM04_Complete_Nontermination_Proof
@@ -376,6 +384,40 @@ where
       check (gm04_residual_assm P S (map fst S) (sn_assms True child))
         (showsl_lit (STR ''ordinary proof does not have exactly the certified GM04 residual''))
     })"
+| "check_gm04_complete_transformation_proof I J i nfs Q T Tw
+      (GM04_Complete_Full_Transformation_Proof \<mu> R active mark proper ok
+        top_sym top_sharp joins administrative_child source_child) =
+    debug i (STR ''complete full Giesl-Middeldorp inverse transformation'') (do {
+      check (\<not> nfs) (showsl_lit (STR ''transformed problem is not full rewriting''));
+      check (Q = []) (showsl_lit (STR ''transformed problem has a nonempty Q component''));
+      check (Tw = []) (showsl_lit (STR ''transformed problem has weak rules''));
+      check_wf_trs R;
+      let F0 = remdups (funas_trs_list R);
+      let F = remdups (F0 @ gm04_extra_nullaries proper ok F0 T);
+      check (F = F0 \<or> gm04_source_proof_is_global source_child)
+        (showsl_lit (STR ''GM04 signature extension requires a global source proof''));
+      check (gm04_roles_fresh_list active mark proper ok top_sym F)
+        (showsl_lit (STR ''GM04 administrative symbols are not fresh''));
+      let S = gm04_non_top_rules (mu_of \<mu>) active mark proper ok F R;
+      let P = gm04_top_pairs active mark proper ok top_sharp;
+      let C = gm04_complete_rules (mu_of \<mu>) active mark proper ok top_sym F R;
+      check_variants_trs T C;
+      check_variants_trs C T;
+      check (gm04_schema_signature_list active mark proper ok F S)
+        (showsl_lit (STR ''GM04 non-top signature is invalid''));
+      check (gm04_pair_args_signature_list top_sharp P S)
+        (showsl_lit (STR ''GM04 residual pair arguments are outside the non-top signature''));
+      check (top_sharp \<notin> {active,mark,proper,ok,top_sym})
+        (showsl_lit (STR ''GM04 residual sharp symbol is not fresh''));
+      check (list_all (\<lambda>(f,n). f \<noteq> top_sharp) (funas_trs_list S))
+        (showsl_lit (STR ''GM04 residual sharp symbol occurs in administrative rules''));
+      check_gm_extended_csr_termination_proof I J False (add_index i 1)
+        \<mu> R source_child;
+      check_trs_termination_proof I J False (add_index i 2)
+        (tp_ops.mk I False [] S []) administrative_child;
+      check (sn_assms False administrative_child = [])
+        (showsl_lit (STR ''administrative proof has unresolved assumptions''))
+    })"
 
 lemma check_gm04_complete_transformation_proof_sound:
   assumes I: "tp_spec I" and J: "dpp_spec J"
@@ -493,6 +535,112 @@ proof (cases p)
       OF I J child_ok assumptions])
   interpret tp_spec I by (rule I)
   from root nfs weak show ?thesis by simp
+next
+  case (GM04_Complete_Full_Transformation_Proof \<mu> R active mark proper ok_sym
+      top_sym top_sharp joins administrative_child source_child)
+  let ?BaseSig = "remdups (funas_trs_list R)"
+  let ?F = "remdups (?BaseSig @ gm04_extra_nullaries proper ok_sym ?BaseSig T)"
+  let ?S = "gm04_non_top_rules (mu_of \<mu>) active mark proper ok_sym ?F R"
+  let ?P = "gm04_top_pairs active mark proper ok_sym top_sharp"
+  let ?C = "gm04_complete_rules (mu_of \<mu>) active mark proper ok_sym top_sym ?F R"
+  from ok GM04_Complete_Full_Transformation_Proof have nfs: "\<not> nfs"
+    and q: "Q = []" and weak: "Tw = []"
+    and wf_source: "wf_trs (set R)"
+    and global_or_same:
+      "?F = ?BaseSig \<or> gm04_source_proof_is_global source_child"
+    and fresh_list:
+      "gm04_roles_fresh_list active mark proper ok_sym top_sym ?F"
+    and variants_tc: "isOK (check_variants_trs T ?C)"
+    and variants_ct: "isOK (check_variants_trs ?C T)"
+    and schema_check:
+      "gm04_schema_signature_list active mark proper ok_sym ?F ?S"
+    and pair_check: "gm04_pair_args_signature_list top_sharp ?P ?S"
+    and sharp_roles: "top_sharp \<notin> {active,mark,proper,ok_sym,top_sym}"
+    and sharp_fresh:
+      "list_all (\<lambda>(f,n). f \<noteq> top_sharp) (funas_trs_list ?S)"
+    and source_ok:
+      "isOK (check_gm_extended_csr_termination_proof I J False
+        (add_index i 1) \<mu> R source_child)"
+    and administrative_ok:
+      "isOK (check_trs_termination_proof I J False (add_index i 2)
+        (tp_ops.mk I False [] ?S []) administrative_child)"
+    and no_assms: "sn_assms False administrative_child = []"
+    by (simp_all add: Let_def)
+  have F0raw: "set ?BaseSig = set (funas_trs_list R)" by simp
+  have source: "SN (sig_step (set ?F)
+      (csstep (mu_of \<mu>) (set R)))"
+  proof (cases "?F = ?BaseSig")
+    case True
+    have source0: "SN (sig_step (set (funas_trs_list R))
+        (csstep (mu_of \<mu>) (set R)))"
+      by (rule check_gm_extended_csr_termination_proof_sound[OF I J source_ok])
+    have FF0: "set ?F = set ?BaseSig" by (rule arg_cong[OF True])
+    have Fraw: "set ?F = set (funas_trs_list R)"
+      using FF0 F0raw by blast
+    show ?thesis by (subst Fraw, rule source0)
+  next
+    case False
+    with global_or_same have global:
+      "gm04_source_proof_is_global source_child" by blast
+    then obtain old where source_child:
+      "source_child = Existing_CSR_Proof old"
+      and old_global: "extended_csr_proof_is_global old"
+      by (cases source_child) auto
+    have global_source: "SN (csstep (mu_of \<mu>) (set R))"
+      using check_gm_existing_global_sound[OF I J _ old_global]
+        source_ok source_child by simp
+    show ?thesis
+      by (rule SN_subset[OF global_source], unfold sig_step_def, auto)
+  qed
+  have fresh: "gm04_roles_fresh active mark proper ok_sym top_sym ?F"
+    by (rule gm04_roles_fresh_list_sound[OF fresh_list])
+  have signature: "funas_trs (set R) \<subseteq> set ?F" by simp
+  have wf_S: "wf_trs (set ?S)"
+    by (rule gm04_non_top_rules_wf[OF wf_source])
+  have sharp_absent_arity: "\<And>n. (top_sharp,n) \<notin> funas_trs (set ?S)"
+  proof
+    fix n
+    assume member: "(top_sharp,n) \<in> funas_trs (set ?S)"
+    then have "(top_sharp,n) \<in> set (funas_trs_list ?S)" by simp
+    with sharp_fresh show False by (auto simp: list_all_iff)
+  qed
+  have sharp_absent: "top_sharp \<notin> funs_trs (set ?S)"
+    unfolding funs_trs_funas_trs using sharp_absent_arity by auto
+  have finite_mu: "\<And>f n. finite (mu_of \<mu> (f,n))"
+  proof -
+    fix f n
+    show "finite (mu_of \<mu> (f,n))"
+      unfolding mu_of_def Let_def
+      by (cases "map_of \<mu> (f,n)") simp_all
+  qed
+  have fresh_top: "\<not> defined (set ?S) (top_sharp,1)"
+  proof
+    assume "defined (set ?S) (top_sharp,1)"
+    from defined_funas_trs[OF this]
+    show False using sharp_absent_arity[of 1] by blast
+  qed
+  have finite_full: "finite_dpp (False,False,
+      set ?P,{},{},{},set ?S)"
+    by (rule gm04_finite_schema_top_pairs_full_ground_sig[
+        OF source _ refl fresh signature wf_source wf_S finite_mu fresh_top,
+        where c="Fun active []"], simp)
+  have assumptions: "\<forall>a\<in>set (sn_assms False administrative_child). holds a"
+    using no_assms by simp
+  have administrative_root:
+      "SN_qrel (tp_ops.qreltrs I (tp_ops.mk I False [] ?S []))"
+    by (rule check_trs_termination_proof_with_assms[
+        OF I J administrative_ok assumptions])
+  interpret tp: tp_spec I by (rule I)
+  have administrative: "SN (rstep (set ?S))"
+    using administrative_root by simp
+  have complete: "SN (rstep (set ?C))"
+    by (rule gm04_complete_full_SN_from_full_top_pairs[
+        OF refl fresh signature wf_source sharp_roles sharp_absent
+          administrative finite_full])
+  have transformed: "SN (rstep (set T))"
+    by (rule SN_subset[OF complete check_variants_trs_rstep[OF variants_tc]])
+  from transformed nfs q weak show ?thesis
+    unfolding SN_qrel_def by simp
 qed
 
 end
