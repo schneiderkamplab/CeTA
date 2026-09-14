@@ -44,6 +44,9 @@ data Strategy a b = No_Strategy | Innermost Bool
 data Input a b =
   DP_input Bool [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
     (Strategy a b) [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
+  | CSR_Improved_DP_input Bool a [((a, Arith.Nat), [Arith.Nat])]
+      [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
+      [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
   | Inn_TRS_input (Strategy a b)
       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
@@ -102,25 +105,27 @@ strategy_to_Q (Innermost_Q uw q) ux = q;
 
 input_to_string :: forall a b. Input a b -> String;
 input_to_string (DP_input uu uv uw ux) = "dependency pair problem";
-input_to_string (Inn_TRS_input uy uz va) =
+input_to_string (CSR_Improved_DP_input uy uz va vb vc) =
+  "minimal improved CSR dependency pair problem";
+input_to_string (Inn_TRS_input vd ve vf) =
   "(innermost) (relative) rewrite system(s)";
-input_to_string (FP_TRS_input vb vc) =
+input_to_string (FP_TRS_input vg vh) =
   "rewrite system with evaluation strategy";
-input_to_string (AC_input vd ve vf) = "AC rewrite system";
-input_to_string (LTS_input vg) = "integer transition system";
-input_to_string (LTS_safety_input vh vi) =
+input_to_string (AC_input vi vj vk) = "AC rewrite system";
+input_to_string (LTS_input vl) = "integer transition system";
+input_to_string (LTS_safety_input vm vn) =
   "integer transition system with potential error states";
-input_to_string (CTRS_input vj) = "conditional TRS";
-input_to_string (EQ_input vk) = "equational system";
-input_to_string (EQ_RO_input vl vm) = "equational system and reduction order";
-input_to_string (EQ_reasoning_input vn vo) =
+input_to_string (CTRS_input vo) = "conditional TRS";
+input_to_string (EQ_input vp) = "equational system";
+input_to_string (EQ_RO_input vq vr) = "equational system and reduction order";
+input_to_string (EQ_reasoning_input vs vt) =
   "equational system and explicit equation";
-input_to_string (TA_input vp vq) = "tree automation and rewrite system";
-input_to_string (Infeasibility_input vr vs) =
+input_to_string (TA_input vu vv) = "tree automation and rewrite system";
+input_to_string (Infeasibility_input vw vx) =
   "conditional TRS and list of term pairs";
-input_to_string (Two_TRS_input vt vu vv) = "two rewrite systems with signature";
-input_to_string (Single_TRS_input vw vx) = "rewrite system with signature";
-input_to_string (Unknown_input vy) = "unspecified input";
+input_to_string (Two_TRS_input vy vz wa) = "two rewrite systems with signature";
+input_to_string (Single_TRS_input wb wc) = "rewrite system with signature";
+input_to_string (Unknown_input wd) = "unspecified input";
 
 default_nfs_flag :: Bool;
 default_nfs_flag = False;

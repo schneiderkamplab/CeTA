@@ -35,6 +35,7 @@ import qualified AC_Subterm_Criterion_Impl;
 import qualified Innermost_Usable_Rules_Impl;
 import qualified Innermost_Switch_Impl;
 import qualified Reduction_Pair_Proc_Impl;
+import qualified QDP_To_SRS_Zantema;
 import qualified Instantiation_Impl;
 import qualified Dependency_Graph_Impl;
 import qualified Flat_Context_Closure_Impl;
@@ -358,7 +359,8 @@ data Dp_termination_proof a b c = P_is_Empty
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       (Bounded_Increase_Impl.Cond_red_pair_prf (Labelings.Lab a b) c)
       [Dp_termination_proof a b c]
-  | To_Trs_Proc (Trs_termination_proof a b c);
+  | To_Trs_Proc (Trs_termination_proof a b c)
+  | Zantema_To_SRS_Proc (Trs_termination_proof a b c);
 
 mk_tp ::
   forall a b c d.
@@ -448,6 +450,7 @@ dp_assms a (Assume_Finite d dps) =
                    (unknown_assms a))
                  dps
     else []);
+dp_assms a (Zantema_To_SRS_Proc p) = sn_assms a p;
 
 unknown_assms ::
   forall a b c.
@@ -601,6 +604,7 @@ get_fcc_option (Q_Reduction_Proc v va) = Nothing;
 get_fcc_option (Complex_Constant_Removal_Proc v va) = Nothing;
 get_fcc_option (General_Redpair_Proc v va vb vc vd) = Nothing;
 get_fcc_option (To_Trs_Proc v) = Nothing;
+get_fcc_option (Zantema_To_SRS_Proc v) = Nothing;
 
 check_compatible_nfs ::
   forall a b.
@@ -2123,5 +2127,45 @@ check_dp_termination_proof j ia assms i dpp (To_Trs_Proc prf) =
           ((i . Term_Rewriting.showsl_lit
                   ": error below the To-Trs processor\n") .
             x)));
+check_dp_termination_proof j ia assms i dpp (Zantema_To_SRS_Proc prf) =
+  FOR_Preliminaries.debug i "Zantema QDP to SRS"
+    (Error_Monad.bind
+      (Check_Monad.check (null (Dependency_Pair_Problem_Spec.q ia dpp))
+        (i . Term_Rewriting.showsl_lit ": QDP-to-SRS requires empty Q"))
+      (\ _ ->
+        Error_Monad.bind
+          (Check_Monad.check (null (Dependency_Pair_Problem_Spec.r ia dpp))
+            (i . Term_Rewriting.showsl_lit
+                   ": QDP-to-SRS requires empty strict rules"))
+          (\ _ ->
+            Error_Monad.bind
+              (Check_Monad.check (null (Dependency_Pair_Problem_Spec.pw ia dpp))
+                (i . Term_Rewriting.showsl_lit
+                       ": QDP-to-SRS requires no weak pairs"))
+              (\ _ ->
+                Error_Monad.bind
+                  (Check_Monad.check
+                    (null (Dependency_Pair_Problem_Spec.rw ia dpp))
+                    (i . Term_Rewriting.showsl_lit
+                           ": QDP-to-SRS requires no weak rules"))
+                  (\ _ ->
+                    (case QDP_To_SRS_Zantema.zantema_transform_impl
+                            (Dependency_Pair_Problem_Spec.p ia dpp)
+                      of {
+                      Nothing ->
+                        Sum_Type.Inl
+                          (i . Term_Rewriting.showsl_lit
+                                 ": dependency pairs do not have the certified two-stack shape");
+                      Just s ->
+                        Error_Monad.catch_error
+                          (check_trs_termination_proof j ia assms
+                            (Term_Rewriting.add_index i Arith.one_nat)
+                            (mk_tp j (False, ([], (s, [])))) prf)
+                          (\ x ->
+                            Sum_Type.Inl
+                              ((i . Term_Rewriting.showsl_lit
+                                      ": error below the QDP-to-SRS transformation\n") .
+                                x));
+                    }))))));
 
 }

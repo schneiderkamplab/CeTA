@@ -669,6 +669,10 @@ check_csr_dp_component_core ia j mu a i dpp prf =
                 Sum_Type.Inl
                   (Term_Rewriting.showsl_lit
                     "dependency graph required below nested U3 reduction pair");
+              Check_Termination.Zantema_To_SRS_Proc _ ->
+                Sum_Type.Inl
+                  (Term_Rewriting.showsl_lit
+                    "dependency graph required below nested U3 reduction pair");
             })));
     Check_Termination.Usable_Rules_Proc _ _ ->
       CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
@@ -739,6 +743,9 @@ check_csr_dp_component_core ia j mu a i dpp prf =
       CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
         (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
     Check_Termination.To_Trs_Proc _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Zantema_To_SRS_Proc _ ->
       CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
         (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
   });
@@ -846,6 +853,8 @@ check_csr_dp_after_u3_tail ia j mu a i dpp prf =
     Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
       check_csr_dp_component_core ia j mu a i dpp prf;
     Check_Termination.To_Trs_Proc _ ->
+      check_csr_dp_component_core ia j mu a i dpp prf;
+    Check_Termination.Zantema_To_SRS_Proc _ ->
       check_csr_dp_component_core ia j mu a i dpp prf;
   });
 
@@ -965,6 +974,9 @@ check_csr_dp_tail_core ia j mu a i dpp
     (Check_Termination.General_Redpair_Proc v va vb vc vd);
 check_csr_dp_tail_core ia j mu a i dpp (Check_Termination.To_Trs_Proc v) =
   check_csr_dp_after_u3_tail ia j mu a i dpp (Check_Termination.To_Trs_Proc v);
+check_csr_dp_tail_core ia j mu a i dpp (Check_Termination.Zantema_To_SRS_Proc v)
+  = check_csr_dp_after_u3_tail ia j mu a i dpp
+      (Check_Termination.Zantema_To_SRS_Proc v);
 
 csr_shared_instantiation_cap ::
   forall a b.
@@ -1442,6 +1454,12 @@ check_csr_rta08_redpair_first ia j mu i dpp
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
+check_csr_rta08_redpair_first ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Zantema_To_SRS_Proc va))
+  = Sum_Type.Inl
+      (i . Term_Rewriting.showsl_lit
+             ": RTA08 collapsing CS-DPs require an initial reduction-pair processor");
 check_csr_rta08_redpair_first ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
   Sum_Type.Inl
@@ -1946,6 +1964,13 @@ check_csr_dp_ordinary_min ia j mu a i dpp prf =
                               (Term_Rewriting.add_index i Arith.one_nat)
                               Arith.one_nat)
                             dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
+                        Check_Termination.Zantema_To_SRS_Proc _ ->
+                          CSR_Checker.check_csr_dp_termination_proof_core ia j
+                            mu a
+                            (Term_Rewriting.add_index
+                              (Term_Rewriting.add_index i Arith.one_nat)
+                              Arith.one_nat)
+                            dppb (CSR_Checker_Base.CSR_DP_Ordinary_Proof tail);
                       }));
                 Check_Termination.Forward_Instantiation_Proc _ _ _ _ ->
                   check_csr_dp_tail_core ia j mu a
@@ -1966,6 +1991,9 @@ check_csr_dp_ordinary_min ia j mu a i dpp prf =
                   check_csr_dp_tail_core ia j mu a
                     (Term_Rewriting.add_index i Arith.one_nat) dppa subprf;
                 Check_Termination.To_Trs_Proc _ ->
+                  check_csr_dp_tail_core ia j mu a
+                    (Term_Rewriting.add_index i Arith.one_nat) dppa subprf;
+                Check_Termination.Zantema_To_SRS_Proc _ ->
                   check_csr_dp_tail_core ia j mu a
                     (Term_Rewriting.add_index i Arith.one_nat) dppa subprf;
               })
@@ -2057,6 +2085,9 @@ check_csr_dp_ordinary_min ia j mu a i dpp prf =
       CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
         (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
     Check_Termination.To_Trs_Proc _ ->
+      CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
+    Check_Termination.Zantema_To_SRS_Proc _ ->
       CSR_Checker.check_csr_dp_termination_proof_core ia j mu a i dpp
         (CSR_Checker_Base.CSR_DP_Ordinary_Proof prf);
   });

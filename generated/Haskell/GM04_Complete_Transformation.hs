@@ -1,6 +1,9 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module GM04_Complete_Transformation(gm04_top_pairs, gm04_non_top_rules) where {
+module
+  GM04_Complete_Transformation(gm04_top_pairs, gm04_non_top_rules,
+                                gm04_complete_rules)
+  where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -82,6 +85,36 @@ gm04_top_pairs active mark proper ok top_sharp =
                Arith.char_0x5F, Arith.char_0x78]]],
       Term_Rewriting.Fun top_sharp
         [Term_Rewriting.Fun proper
+           [Term_Rewriting.Var
+              [Arith.char_0x5F, Arith.char_0x5F, Arith.char_0x67,
+                Arith.char_0x6D, Arith.char_0x30, Arith.char_0x34,
+                Arith.char_0x5F, Arith.char_0x78]]])];
+
+gm04_top_rules ::
+  forall a.
+    a -> a -> a -> a -> a -> [(Term_Rewriting.Term a [Arith.Char],
+                                Term_Rewriting.Term a [Arith.Char])];
+gm04_top_rules active mark proper ok top_sym =
+  [(Term_Rewriting.Fun top_sym
+      [Term_Rewriting.Fun mark
+         [Term_Rewriting.Var
+            [Arith.char_0x5F, Arith.char_0x5F, Arith.char_0x67, Arith.char_0x6D,
+              Arith.char_0x30, Arith.char_0x34, Arith.char_0x5F,
+              Arith.char_0x78]]],
+     Term_Rewriting.Fun top_sym
+       [Term_Rewriting.Fun proper
+          [Term_Rewriting.Var
+             [Arith.char_0x5F, Arith.char_0x5F, Arith.char_0x67,
+               Arith.char_0x6D, Arith.char_0x30, Arith.char_0x34,
+               Arith.char_0x5F, Arith.char_0x78]]]),
+    (Term_Rewriting.Fun top_sym
+       [Term_Rewriting.Fun ok
+          [Term_Rewriting.Var
+             [Arith.char_0x5F, Arith.char_0x5F, Arith.char_0x67,
+               Arith.char_0x6D, Arith.char_0x30, Arith.char_0x34,
+               Arith.char_0x5F, Arith.char_0x78]]],
+      Term_Rewriting.Fun top_sym
+        [Term_Rewriting.Fun active
            [Term_Rewriting.Var
               [Arith.char_0x5F, Arith.char_0x5F, Arith.char_0x67,
                 Arith.char_0x6D, Arith.char_0x30, Arith.char_0x34,
@@ -179,5 +212,17 @@ gm04_non_top_rules mu active mark proper ok f r =
               (if Arith.less_nat Arith.zero_nat (snd x)
                 then Just (gm04_ok_rule proper ok x) else Nothing))
             f;
+
+gm04_complete_rules ::
+  forall a.
+    ((a, Arith.Nat) -> Arith.Set Arith.Nat) ->
+      a -> a -> a -> a -> a -> [(a, Arith.Nat)] ->
+                                 [(Term_Rewriting.Term a [Arith.Char],
+                                    Term_Rewriting.Term a [Arith.Char])] ->
+                                   [(Term_Rewriting.Term a [Arith.Char],
+                                      Term_Rewriting.Term a [Arith.Char])];
+gm04_complete_rules mu active mark proper ok top_sym f r =
+  gm04_non_top_rules mu active mark proper ok f r ++
+    gm04_top_rules active mark proper ok top_sym;
 
 }

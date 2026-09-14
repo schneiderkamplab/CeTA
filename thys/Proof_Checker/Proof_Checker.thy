@@ -11,6 +11,7 @@ theory Proof_Checker
     GM04_Complete_Checker
     Outermost_RZ_Ext.Outermost_RZ_Checker
     CSR_Check_Loops
+    CSR_Standalone_DP_Checker
     Check_CRP
     Check_Conditional_CRP
     Check_Completion_Proof
@@ -34,6 +35,7 @@ datatype (dead 'f, dead 'l, dead 'v) "proof" =
 | Outermost_RZ_Termination_Proof
     "('f,'l,'v) outermost_rz_termination_proof"
 | CSR_Termination_Proof "('f,'l,'v) gm_extended_csr_termination_proof"
+| CSR_Improved_DP_Proof "('f,'l,'v) csr_dp_termination_proof"
 | GM04_Complete_TRS_Proof
     "('f,'l,'v) gm04_complete_transformation_proof"
 | GM04_Complete_TRS_Nontermination_Proof
@@ -71,6 +73,7 @@ definition "proof_to_string proof =
   | Outermost_RZ_Termination_Proof _ \<Rightarrow>
       STR ''Raffelsieper-Zantema outermost termination proof''
   | CSR_Termination_Proof _ \<Rightarrow> STR ''CSR termination proof''
+  | CSR_Improved_DP_Proof _ \<Rightarrow> STR ''standalone improved CSR-DP proof''
   | GM04_Complete_TRS_Proof _ \<Rightarrow>
       STR ''complete GM04 inverse-transformation proof''
   | GM04_Complete_TRS_Nontermination_Proof _ \<Rightarrow>
@@ -103,6 +106,7 @@ primrec cert_assms :: "bool \<Rightarrow> ('f, 'l, 'v) proof \<Rightarrow> (('f,
 | "cert_assms a (FP_Termination_Proof p) = sn_fp_assms a p"
 | "cert_assms a (Outermost_RZ_Termination_Proof p) = []"
 | "cert_assms a (CSR_Termination_Proof p) = []"
+| "cert_assms a (CSR_Improved_DP_Proof p) = []"
 | "cert_assms a (GM04_Complete_TRS_Proof p) = []"
 | "cert_assms a (GM04_Complete_TRS_Nontermination_Proof p) = []"
 | "cert_assms a (TRS_Confluence_Proof p) = cr_assms a p"
@@ -246,6 +250,11 @@ where "check_cert a input property answer proof \<equiv>
        (FP_TRS_input (Context_Sensitive \<mu>) R, Termination, Decision True) \<Rightarrow>
        check_gm_extended_csr_termination_proof I J a
          (showsl_lit (STR ''1'')) \<mu> R prf
+    | _ \<Rightarrow> error mismatch)
+  | CSR_Improved_DP_Proof prf \<Rightarrow>
+     (case triple of
+       (CSR_Improved_DP_input m U \<mu> P R, Termination, Decision True) \<Rightarrow>
+       check_standalone_improved_csr_dp I J (showsl_lit (STR ''1'')) m U \<mu> P R prf
     | _ \<Rightarrow> error mismatch)
   | GM04_Complete_TRS_Proof prf \<Rightarrow>
      (case triple of
@@ -614,6 +623,16 @@ proof-
       by auto
     from check_gm_extended_csr_termination_proof_sound[OF I J check] show ?thesis
       by (simp add: desired_property_def)
+  next
+    case [simp]: (CSR_Improved_DP_Proof pr)
+    obtain m U \<mu> P R where [simp]: "input = CSR_Improved_DP_input m U \<mu> P R"
+      using check by (cases input, auto)
+    have [simp]: "property = Termination" using check by (cases property, auto)
+    have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+    from check[simplified] have checked:
+      "isOK (check_standalone_improved_csr_dp I J idx m U \<mu> P R pr)" by auto
+    from check_standalone_improved_csr_dp_sound[OF I J checked]
+    show ?thesis by (simp add: desired_property_def)
   next
     case [simp]: (GM04_Complete_TRS_Proof pr)
     obtain Q R S where [simp]: "input = Inn_TRS_input Q R S"

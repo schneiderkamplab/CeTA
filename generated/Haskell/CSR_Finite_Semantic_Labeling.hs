@@ -154,6 +154,7 @@ csr_semantic_component_shape
 csr_semantic_component_shape
   (Check_Termination.General_Redpair_Proc v va vb vc vd) = False;
 csr_semantic_component_shape (Check_Termination.To_Trs_Proc v) = False;
+csr_semantic_component_shape (Check_Termination.Zantema_To_SRS_Proc v) = False;
 
 csr_semantic_tail_shape ::
   forall a b c. Check_Termination.Dp_termination_proof a b c -> Bool;
@@ -198,6 +199,7 @@ csr_semantic_tail_shape (Check_Termination.Complex_Constant_Removal_Proc v va) =
 csr_semantic_tail_shape (Check_Termination.General_Redpair_Proc v va vb vc vd) =
   False;
 csr_semantic_tail_shape (Check_Termination.To_Trs_Proc v) = False;
+csr_semantic_tail_shape (Check_Termination.Zantema_To_SRS_Proc v) = False;
 
 csr_bridge_semantic_component_proof ::
   forall a b c.
@@ -275,6 +277,8 @@ csr_bridge_semantic_component_proof
   Check_Termination.General_Redpair_Proc v va vb vc vd;
 csr_bridge_semantic_component_proof (Check_Termination.To_Trs_Proc v) =
   Check_Termination.To_Trs_Proc v;
+csr_bridge_semantic_component_proof (Check_Termination.Zantema_To_SRS_Proc v) =
+  Check_Termination.Zantema_To_SRS_Proc v;
 
 csr_bridge_semantic_rules ::
   forall a b c.
@@ -346,6 +350,8 @@ csr_bridge_semantic_tail (Check_Termination.General_Redpair_Proc v va vb vc vd)
   = Check_Termination.General_Redpair_Proc v va vb vc vd;
 csr_bridge_semantic_tail (Check_Termination.To_Trs_Proc v) =
   Check_Termination.To_Trs_Proc v;
+csr_bridge_semantic_tail (Check_Termination.Zantema_To_SRS_Proc v) =
+  Check_Termination.Zantema_To_SRS_Proc v;
 
 csr_frozen_sct_graph_tail ::
   forall a b c.
@@ -660,6 +666,10 @@ check_csr_finite_semantic_component ia j mu a i dpp
   (Check_Termination.To_Trs_Proc v) =
   CSR_Minimal_CSDP_Proofs.check_csr_dp_component_core ia j mu a i dpp
     (Check_Termination.To_Trs_Proc v);
+check_csr_finite_semantic_component ia j mu a i dpp
+  (Check_Termination.Zantema_To_SRS_Proc v) =
+  CSR_Minimal_CSDP_Proofs.check_csr_dp_component_core ia j mu a i dpp
+    (Check_Termination.Zantema_To_SRS_Proc v);
 
 check_csr_finite_semantic_components ::
   forall a b c.
@@ -762,6 +772,8 @@ check_csr_finite_semantic_tail ia j mu a i dpp prf =
     Check_Termination.General_Redpair_Proc _ _ _ _ _ ->
       check_csr_finite_semantic_component ia j mu a i dpp prf;
     Check_Termination.To_Trs_Proc _ ->
+      check_csr_finite_semantic_component ia j mu a i dpp prf;
+    Check_Termination.Zantema_To_SRS_Proc _ ->
       check_csr_finite_semantic_component ia j mu a i dpp prf;
   });
 
@@ -998,6 +1010,12 @@ check_csr_dp_termination_proof_finite_semantic ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va)) =
   CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp
     (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va));
+check_csr_dp_termination_proof_finite_semantic ia j mu a i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Zantema_To_SRS_Proc va))
+  = CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp
+      (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+        (Check_Termination.Zantema_To_SRS_Proc va));
 check_csr_dp_termination_proof_finite_semantic ia j mu a i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
   CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu a i dpp

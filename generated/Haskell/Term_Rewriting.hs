@@ -12,7 +12,7 @@ module
                   ceiling, ratreal, of_int, less_real, abs_real, one_real,
                   sgn_real, divide_real, less_eq_real, Term(..), equal_term,
                   set_impl_term, showsl_term, showsl_terma, Atom(..),
-                  Trans_var(..), showsl_lab, QDelta(..),
+                  Trans_var(..), set_impl_lab, showsl_lab, QDelta(..),
                   Linordered_rational_vector, Lrv, Formula(..), equal_formula,
                   showsl_prod, showsl_list_prod, Transition_rule(..),
                   equal_transition_rule, showsl_integer, Gctxt(..), equal_gctxt,

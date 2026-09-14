@@ -1,7 +1,9 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  GM04_Complete_Checker(Gm04_complete_transformation_proof(..),
+  GM04_Complete_Checker(Gm04_complete_nontermination_proof(..),
+                         Gm04_complete_transformation_proof(..),
+                         check_gm04_complete_nontermination_proof,
                          check_gm04_complete_transformation_proof)
   where {
 
@@ -21,15 +23,18 @@ import qualified Uint64;
 import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
+import qualified Dependency_Pair_Problem_Spec;
+import qualified Termination_Problem_Spec;
+import qualified Phantom_Type;
+import qualified Compare_Order_Instances;
 import qualified GM04_Complete_Transformation;
+import qualified Trs_Impl_More;
+import qualified CSR_Check_Loops;
 import qualified Context_Sensitive_Impl;
 import qualified FOR_Preliminaries;
 import qualified Check_Monad;
 import qualified HOL;
-import qualified Dependency_Pair_Problem_Spec;
-import qualified Termination_Problem_Spec;
 import qualified Countable;
-import qualified Compare_Order_Instances;
 import qualified CSR_Conservative_Checker;
 import qualified CSR_Guarded_List_Checker;
 import qualified CSR_Muterm_Usable_Rules;
@@ -42,9 +47,20 @@ import qualified Mapping;
 import qualified Compare;
 import qualified CSR_GM_Transformation;
 import qualified Check_Termination;
+import qualified Critical_Pairs_Impl;
+import qualified Loops_Impl;
 import qualified Labelings;
 import qualified Term_Rewriting;
 import qualified Arith;
+
+data Gm04_complete_nontermination_proof a b c =
+  GM04_Complete_Nontermination_Proof
+    [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])]
+    [(Term_Rewriting.Term (Labelings.Lab a b) c,
+       Term_Rewriting.Term (Labelings.Lab a b) c)]
+    (Labelings.Lab a b) (Labelings.Lab a b) (Labelings.Lab a b)
+    (Labelings.Lab a b) (Labelings.Lab a b)
+    (Loops_Impl.Trs_loop_prf (Labelings.Lab a b) c);
 
 data Gm04_complete_transformation_proof a b c =
   GM04_Complete_Transformation_Proof
@@ -54,7 +70,16 @@ data Gm04_complete_transformation_proof a b c =
     (Labelings.Lab a b) (Labelings.Lab a b) (Labelings.Lab a b)
     (Labelings.Lab a b) (Labelings.Lab a b) (Labelings.Lab a b)
     (Check_Termination.Trs_termination_proof a b c)
-    (CSR_GM_Transformation.Gm_extended_csr_termination_proof a b c);
+    (CSR_GM_Transformation.Gm_extended_csr_termination_proof a b c)
+  | GM04_Complete_Full_Transformation_Proof
+      [((Labelings.Lab a b, Arith.Nat), [Arith.Nat])]
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (Labelings.Lab a b) (Labelings.Lab a b) (Labelings.Lab a b)
+      (Labelings.Lab a b) (Labelings.Lab a b) (Labelings.Lab a b)
+      (Critical_Pairs_Impl.Join_info (Labelings.Lab a b) c)
+      (Check_Termination.Trs_termination_proof a b c)
+      (CSR_GM_Transformation.Gm_extended_csr_termination_proof a b c);
 
 gm04_rules_variant_subset ::
   forall a b.
@@ -231,6 +256,68 @@ gm04_pair_args_signature_list top_sharp p s =
   all (Arith.membera (Term_Rewriting.funas_trs_list s))
     (Term_Rewriting.funas_args_trs_list p);
 
+check_gm04_complete_nontermination_proof ::
+  forall a.
+    (Compare.Compare_order a, Countable.Countable a, Eq a,
+      Term_Rewriting.Showl a) => (String -> String) ->
+                                   Bool ->
+                                     [Term_Rewriting.Term
+(Labelings.Lab a [Arith.Nat]) [Arith.Char]] ->
+                                       [(Term_Rewriting.Term
+   (Labelings.Lab a [Arith.Nat]) [Arith.Char],
+  Term_Rewriting.Term (Labelings.Lab a [Arith.Nat]) [Arith.Char])] ->
+ [(Term_Rewriting.Term (Labelings.Lab a [Arith.Nat]) [Arith.Char],
+    Term_Rewriting.Term (Labelings.Lab a [Arith.Nat]) [Arith.Char])] ->
+   Gm04_complete_nontermination_proof a [Arith.Nat] [Arith.Char] ->
+     Sum_Type.Sum (String -> String) ();
+check_gm04_complete_nontermination_proof i nfs q t tw
+  (GM04_Complete_Nontermination_Proof mu r active mark proper ok top_sym
+    source_loop)
+  = FOR_Preliminaries.debug i
+      "complete Giesl-Middeldorp nontermination transformation"
+      (Error_Monad.bind
+        (Check_Monad.check (not nfs)
+          (Term_Rewriting.showsl_lit
+            "transformed problem is not full rewriting"))
+        (\ _ ->
+          Error_Monad.bind
+            (Check_Monad.check (null q)
+              (Term_Rewriting.showsl_lit
+                "transformed problem has a nonempty Q component"))
+            (\ _ ->
+              Error_Monad.bind
+                (Check_Monad.check (null tw)
+                  (Term_Rewriting.showsl_lit
+                    "transformed problem has weak rules"))
+                (\ _ ->
+                  Error_Monad.bind (Term_Rewriting.check_wf_trs r)
+                    (\ _ ->
+                      let {
+                        f = Arith.remdups (Term_Rewriting.funas_trs_list r);
+                      } in Error_Monad.bind
+                             (Check_Monad.check
+                               (any (\ (_, n) ->
+                                      Arith.equal_nat n Arith.zero_nat)
+                                 f)
+                               (Term_Rewriting.showsl_lit
+                                 "source signature has no constant for grounding"))
+                             (\ _ ->
+                               Error_Monad.bind
+                                 (Check_Monad.check
+                                   (gm04_roles_fresh_list active mark proper ok
+                                     top_sym f)
+                                   (Term_Rewriting.showsl_lit
+                                     "GM04 administrative symbols are not fresh"))
+                                 (\ _ ->
+                                   let {
+                                     c = GM04_Complete_Transformation.gm04_complete_rules
+   (Context_Sensitive_Impl.mu_of mu) active mark proper ok top_sym f r;
+                                   } in Error_Monad.bind
+  (Trs_Impl_More.check_variants_trs t c)
+  (\ _ ->
+    Error_Monad.bind (Trs_Impl_More.check_variants_trs c t)
+      (\ _ -> CSR_Check_Loops.check_csr_loop mu r source_loop)))))))));
+
 check_gm04_complete_transformation_proof ::
   forall a b c.
     (Compare.Compare_order b, Countable.Countable b, Eq b,
@@ -286,36 +373,148 @@ check_gm04_complete_transformation_proof ia j i nfs q t tw
                                        mark proper ok f r;
                                  p = GM04_Complete_Transformation.gm04_top_pairs
                                        active mark proper ok top_sharp;
+                                 c = GM04_Complete_Transformation.gm04_complete_rules
+                                       (Context_Sensitive_Impl.mu_of mu) active
+                                       mark proper ok top_sym f r;
                                } in Error_Monad.bind
-                                      (Check_Monad.check
-(gm04_schema_signature_list active mark proper ok f s)
-(Term_Rewriting.showsl_lit "GM04 non-top signature is invalid"))
+                                      (Trs_Impl_More.check_variants_trs t c)
                                       (\ _ ->
-Error_Monad.bind
-  (Check_Monad.check (gm04_pair_args_signature_list top_sharp p s)
-    (Term_Rewriting.showsl_lit
-      "GM04 residual pair arguments are outside the non-top signature"))
+Error_Monad.bind (Trs_Impl_More.check_variants_trs c t)
   (\ _ ->
     Error_Monad.bind
-      (Check_Monad.check
-        (all (\ (fa, _) -> not (Labelings.equal_lab fa top_sharp))
-          (Term_Rewriting.funas_trs_list s))
-        (Term_Rewriting.showsl_lit "GM04 residual sharp symbol is not fresh"))
+      (Check_Monad.check (gm04_schema_signature_list active mark proper ok f s)
+        (Term_Rewriting.showsl_lit "GM04 non-top signature is invalid"))
       (\ _ ->
         Error_Monad.bind
-          (CSR_GM_Transformation.check_gm_extended_csr_termination_proof ia j
-            False (Term_Rewriting.add_index i Arith.one_nat) mu r source_child)
+          (Check_Monad.check (gm04_pair_args_signature_list top_sharp p s)
+            (Term_Rewriting.showsl_lit
+              "GM04 residual pair arguments are outside the non-top signature"))
           (\ _ ->
             Error_Monad.bind
-              (Check_Termination.check_trs_termination_proof ia j True
-                (Term_Rewriting.add_index i
-                  (Arith.nat_of_integer (2 :: Integer)))
-                (Termination_Problem_Spec.mk ia nfs q t tw) child)
+              (Check_Monad.check
+                (all (\ (fa, _) -> not (Labelings.equal_lab fa top_sharp))
+                  (Term_Rewriting.funas_trs_list s))
+                (Term_Rewriting.showsl_lit
+                  "GM04 residual sharp symbol is not fresh"))
               (\ _ ->
-                Check_Monad.check
-                  (gm04_residual_assm p s (map fst s)
-                    (Check_Termination.sn_assms True child))
+                Error_Monad.bind
+                  (CSR_GM_Transformation.check_gm_extended_csr_termination_proof
+                    ia j False (Term_Rewriting.add_index i Arith.one_nat) mu r
+                    source_child)
+                  (\ _ ->
+                    Error_Monad.bind
+                      (Check_Termination.check_trs_termination_proof ia j True
+                        (Term_Rewriting.add_index i
+                          (Arith.nat_of_integer (2 :: Integer)))
+                        (Termination_Problem_Spec.mk ia nfs q t tw) child)
+                      (\ _ ->
+                        Check_Monad.check
+                          (gm04_residual_assm p s (map fst s)
+                            (Check_Termination.sn_assms True child))
+                          (Term_Rewriting.showsl_lit
+                            "ordinary proof does not have exactly the certified GM04 residual"))))))))))))));
+check_gm04_complete_transformation_proof ia j i nfs q t tw
+  (GM04_Complete_Full_Transformation_Proof mu r active mark proper ok top_sym
+    top_sharp joins administrative_child source_child)
+  = FOR_Preliminaries.debug i
+      "complete full Giesl-Middeldorp inverse transformation"
+      (Error_Monad.bind
+        (Check_Monad.check (not nfs)
+          (Term_Rewriting.showsl_lit
+            "transformed problem is not full rewriting"))
+        (\ _ ->
+          Error_Monad.bind
+            (Check_Monad.check (null q)
+              (Term_Rewriting.showsl_lit
+                "transformed problem has a nonempty Q component"))
+            (\ _ ->
+              Error_Monad.bind
+                (Check_Monad.check (null tw)
                   (Term_Rewriting.showsl_lit
-                    "ordinary proof does not have exactly the certified GM04 residual"))))))))))));
+                    "transformed problem has weak rules"))
+                (\ _ ->
+                  Error_Monad.bind (Term_Rewriting.check_wf_trs r)
+                    (\ _ ->
+                      let {
+                        f0 = Arith.remdups (Term_Rewriting.funas_trs_list r);
+                        f = Arith.remdups
+                              (f0 ++ gm04_extra_nullaries proper ok f0 t);
+                      } in Error_Monad.bind
+                             (Check_Monad.check
+                               (f == f0 ||
+                                 gm04_source_proof_is_global source_child)
+                               (Term_Rewriting.showsl_lit
+                                 "GM04 signature extension requires a global source proof"))
+                             (\ _ ->
+                               Error_Monad.bind
+                                 (Check_Monad.check
+                                   (gm04_roles_fresh_list active mark proper ok
+                                     top_sym f)
+                                   (Term_Rewriting.showsl_lit
+                                     "GM04 administrative symbols are not fresh"))
+                                 (\ _ ->
+                                   let {
+                                     s = GM04_Complete_Transformation.gm04_non_top_rules
+   (Context_Sensitive_Impl.mu_of mu) active mark proper ok f r;
+                                     p = GM04_Complete_Transformation.gm04_top_pairs
+   active mark proper ok top_sharp;
+                                     c = GM04_Complete_Transformation.gm04_complete_rules
+   (Context_Sensitive_Impl.mu_of mu) active mark proper ok top_sym f r;
+                                   } in Error_Monad.bind
+  (Trs_Impl_More.check_variants_trs t c)
+  (\ _ ->
+    Error_Monad.bind (Trs_Impl_More.check_variants_trs c t)
+      (\ _ ->
+        Error_Monad.bind
+          (Check_Monad.check
+            (gm04_schema_signature_list active mark proper ok f s)
+            (Term_Rewriting.showsl_lit "GM04 non-top signature is invalid"))
+          (\ _ ->
+            Error_Monad.bind
+              (Check_Monad.check (gm04_pair_args_signature_list top_sharp p s)
+                (Term_Rewriting.showsl_lit
+                  "GM04 residual pair arguments are outside the non-top signature"))
+              (\ _ ->
+                Error_Monad.bind
+                  (Check_Monad.check
+                    (not (Arith.member top_sharp
+                           (Arith.insert active
+                             (Arith.insert mark
+                               (Arith.insert proper
+                                 (Arith.insert ok
+                                   (Arith.insert top_sym
+                                     (Arith.set_empty
+                                       (Phantom_Type.of_phantom
+ Term_Rewriting.set_impl_lab)))))))))
+                    (Term_Rewriting.showsl_lit
+                      "GM04 residual sharp symbol is not fresh"))
+                  (\ _ ->
+                    Error_Monad.bind
+                      (Check_Monad.check
+                        (all (\ (fa, _) ->
+                               not (Labelings.equal_lab fa top_sharp))
+                          (Term_Rewriting.funas_trs_list s))
+                        (Term_Rewriting.showsl_lit
+                          "GM04 residual sharp symbol occurs in administrative rules"))
+                      (\ _ ->
+                        Error_Monad.bind
+                          (CSR_GM_Transformation.check_gm_extended_csr_termination_proof
+                            ia j False
+                            (Term_Rewriting.add_index i Arith.one_nat) mu r
+                            source_child)
+                          (\ _ ->
+                            Error_Monad.bind
+                              (Check_Termination.check_trs_termination_proof ia
+                                j False
+                                (Term_Rewriting.add_index i
+                                  (Arith.nat_of_integer (2 :: Integer)))
+                                (Termination_Problem_Spec.mk ia False [] s [])
+                                administrative_child)
+                              (\ _ ->
+                                Check_Monad.check
+                                  (null (Check_Termination.sn_assms False
+  administrative_child))
+                                  (Term_Rewriting.showsl_lit
+                                    "administrative proof has unresolved assumptions"))))))))))))))));
 
 }

@@ -9,6 +9,7 @@ imports
   LTS.LTS
   Processors
   TRS.Context_Sensitive_Impl
+  CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs
 begin
 
 hide_const (open) eq_object.eq
@@ -55,6 +56,7 @@ definition "fp_strategy_to_string strat \<equiv> case strat of
 
 datatype (dead 'f, dead 'v) input =
   DP_input bool "('f, 'v) rules" "('f, 'v) strategy" "('f, 'v) rules"
+| CSR_Improved_DP_input bool 'f "'f muL" "('f,'v) rules" "('f,'v) rules"
 | Inn_TRS_input "('f, 'v) strategy" "('f, 'v) rules" "('f, 'v) rules"
 | FP_TRS_input "('f, 'v) fp_strategy" "('f, 'v) rules"
 | AC_input "('f,'v) rules" "'f list" "'f list"
@@ -72,6 +74,7 @@ datatype (dead 'f, dead 'v) input =
 
 primrec input_to_string :: "(_,_)input \<Rightarrow> String.literal" where
   "input_to_string (DP_input _ _ _ _) = STR ''dependency pair problem''" 
+| "input_to_string (CSR_Improved_DP_input _ _ _ _ _) = STR ''minimal improved CSR dependency pair problem''"
 | "input_to_string (Inn_TRS_input _ _ _) = STR ''(innermost) (relative) rewrite system(s)''" 
 | "input_to_string (FP_TRS_input _ _) = STR ''rewrite system with evaluation strategy''" 
 | "input_to_string (AC_input _ _ _) = STR ''AC rewrite system''"
@@ -138,7 +141,7 @@ primrec answer_to_string :: "(_,_) answer \<Rightarrow> String.literal" where
 | "answer_to_string (Order_Completed_System _ _) = (STR ''some order-complete system (E,R)'')"
 
 
-definition desired_property :: "('f::compare_order, 'v) input \<Rightarrow> ('f,'v) property \<Rightarrow> ('f,'v) answer \<Rightarrow> bool" where
+definition desired_property :: "(('f::{compare_order,showl}, 'l::{compare_order,showl}) lab, 'v) input \<Rightarrow> (('f,'l) lab,'v) property \<Rightarrow> (('f,'l) lab,'v) answer \<Rightarrow> bool" where
 "desired_property input property answer \<equiv>
   case (input,property,answer) of
   \<comment> \<open>Termination of various formats\<close>
@@ -150,24 +153,26 @@ definition desired_property :: "('f::compare_order, 'v) input \<Rightarrow> ('f,
       b \<longleftrightarrow> SN (sig_step (set (funas_trs_list R))
         (csstep (mu_of \<mu>) (set R)))
   | (LTS_input r, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN_on (IA.transition (lts_of r)) (IA.initial_states (lts_of r))
-  | (CTRS_input ctrs, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (cstep (set ctrs))
+  | (CTRS_input ctrs, Termination, Decision b) \<Rightarrow> b \<longleftrightarrow> SN (Conditional_Rewriting.cstep (set ctrs))
   \<comment> \<open>for DP-problems, termination and non-termination are not dual!\<close> 
   | (DP_input m P Q R, Termination, Decision True) \<Rightarrow> finite_dpp (strategy_to_nfs Q, m, set P, {}, set (strategy_to_Q Q R), {}, set R)
   | (DP_input m P Q R, Termination, Decision False) \<Rightarrow> infinite_dpp (strategy_to_nfs Q, set P, set (strategy_to_Q Q R), set R)
+  | (CSR_Improved_DP_input m U \<mu> P R, Termination, Decision True) \<Rightarrow>
+      m \<and> finite_min_csr_dpp Sharp (mu_of \<mu>) (set P) (set R)
   \<comment> \<open>complexity\<close>
   | (Inn_TRS_input Q R S, Complexity cm, Upperbound_Poly ub) \<Rightarrow> 
       deriv_bound_measure_class (rel_qrstep (strategy_to_nfs Q, set (strategy_to_Q Q (R @ S)), set R, set S)) (complexity_measure_of R S cm) (Comp_Poly ub)
   \<comment> \<open>confluence and commutation\<close>
   | (Single_TRS_input F R, Confluence, Decision b) \<Rightarrow> b \<longleftrightarrow> CR (rstep (set R))
   | (Two_TRS_input F R S, Commutation, Decision b) \<Rightarrow> b \<longleftrightarrow> sig_commute (set F) (set R) (set S)
-  | (CTRS_input ctrs, Confluence, Decision b) \<Rightarrow> b \<longleftrightarrow> CR (cstep (set ctrs))
+  | (CTRS_input ctrs, Confluence, Decision b) \<Rightarrow> b \<longleftrightarrow> CR (Conditional_Rewriting.cstep (set ctrs))
   \<comment> \<open>safety\<close>
   | (LTS_safety_input r e, Safety, Decision b) \<Rightarrow> b \<longleftrightarrow> IA.lts_safe (lts_of r) (set e)
   \<comment> \<open>completion\<close>
   | (EQ_input E, Completion, Completed_System R) \<Rightarrow> completed_rewrite_system (set E) (set R)
   | (EQ_RO_input E\<^sub>0 ro, Completion, Order_Completed_System E R) \<Rightarrow> ordered_completed_rewrite_system (set E\<^sub>0) (set E) (set R) ro
   \<comment> \<open>equational consequences\<close>
-  | (EQ_reasoning_input E eq, Consequence, Decision b) \<Rightarrow> b \<longleftrightarrow> entails (TYPE(('f,'v)term set)) (set E) eq
+  | (EQ_reasoning_input E eq, Consequence, Decision b) \<Rightarrow> b \<longleftrightarrow> entails (TYPE((('f,'l)lab,'v)term set)) (set E) eq
   \<comment> \<open>closed under rewriting\<close>  
   | (TA_input ta R, Closed_Under_Rewriting, Decision b) \<Rightarrow> b \<longleftrightarrow> (rstep (set R))^* `` ta_lang (ta_of_ta ta) \<subseteq> ta_lang (ta_of_ta ta)
   \<comment> \<open>infeasibility\<close>  

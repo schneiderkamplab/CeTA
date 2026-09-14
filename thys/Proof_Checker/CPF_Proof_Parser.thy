@@ -3225,6 +3225,9 @@ definition "proof_parser termIndexMap ruleMap =
         XMLor xml_change
           (xml2trs_nontermination_proof_body symbol_parser termIndexMap ruleMap)
           (\<lambda>p. xml_return (TRS_Nontermination_Proof p))) id
+      XMLor xml_singleton (STR ''csrImprovedDpProof'')
+        (xml2csr_dp_termination_proof symbol_parser termIndexMap ruleMap)
+        CSR_Improved_DP_Proof
       XMLor proof_content symbol_parser termIndexMap ruleMap;
     xml_return p
   }"
