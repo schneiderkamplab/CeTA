@@ -29,13 +29,14 @@ datatype (dead 'f, dead 'l, dead 'v) "proof" =
   TRS_Termination_Proof "('f, 'l, 'v) trs_termination_proof"
 | Complexity_Proof "('f,'l,'v) complexity_proof"
 | DP_Termination_Proof "('f, 'l, 'v) dp_termination_proof"
+| Relative_DP_Termination_Proof "('f, 'l, 'v) dp_termination_proof"
 | DP_Nontermination_Proof "('f, 'l, 'v) dp_nontermination_proof"
 | TRS_Nontermination_Proof "('f, 'l, 'v) trs_nontermination_proof"
 | FP_Termination_Proof "('f,'l,'v) fptrs_termination_proof"
 | Outermost_RZ_Termination_Proof
     "('f,'l,'v) outermost_rz_termination_proof"
 | CSR_Termination_Proof "('f,'l,'v) gm_extended_csr_termination_proof"
-| CSR_Improved_DP_Proof "('f,'l,'v) csr_dp_termination_proof"
+| CSR_Improved_DP_Proof "('f,'l,'v) guarded_csr_dp_proof"
 | GM04_Complete_TRS_Proof
     "('f,'l,'v) gm04_complete_transformation_proof"
 | GM04_Complete_TRS_Nontermination_Proof
@@ -68,6 +69,7 @@ definition "proof_to_string proof =
   | Complexity_Proof _ \<Rightarrow> STR ''complexity proof''
   | DP_Termination_Proof _ \<Rightarrow> STR ''DP termination proof''
   | DP_Nontermination_Proof _ \<Rightarrow> STR ''DP nontermination proof''
+  | Relative_DP_Termination_Proof _ \<Rightarrow> STR ''relative DP termination proof''
   | TRS_Nontermination_Proof _ \<Rightarrow> STR ''TRS nontermination proof''
   | FP_Termination_Proof _ \<Rightarrow> STR ''FP TRS termination proof''
   | Outermost_RZ_Termination_Proof _ \<Rightarrow>
@@ -107,6 +109,7 @@ primrec cert_assms :: "bool \<Rightarrow> ('f, 'l, 'v) proof \<Rightarrow> (('f,
 | "cert_assms a (Outermost_RZ_Termination_Proof p) = []"
 | "cert_assms a (CSR_Termination_Proof p) = []"
 | "cert_assms a (CSR_Improved_DP_Proof p) = []"
+| "cert_assms a (Relative_DP_Termination_Proof p) = []"
 | "cert_assms a (GM04_Complete_TRS_Proof p) = []"
 | "cert_assms a (GM04_Complete_TRS_Nontermination_Proof p) = []"
 | "cert_assms a (TRS_Confluence_Proof p) = cr_assms a p"
@@ -218,6 +221,12 @@ where "check_cert a input property answer proof \<equiv>
      (case triple of 
        (DP_input m P Q R, Termination, Decision True) \<Rightarrow>
           check_dp_termination_proof I J a (showsl_lit (STR ''1'')) (dpp_ops.mk J (strategy_to_nfs Q) m P [] (strategy_to_Q Q R) [] R) prf
+      | _ \<Rightarrow> error mismatch)
+  | Relative_DP_Termination_Proof prf \<Rightarrow>
+     (case triple of
+       (Relative_DP_input nfs m P Pw Q R Rw, Termination, Decision True) \<Rightarrow>
+         check_dp_termination_proof I J False (showsl_lit (STR ''1''))
+           (dpp_ops.mk J nfs m P Pw Q R Rw) prf
       | _ \<Rightarrow> error mismatch)
   | DP_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
@@ -442,6 +451,18 @@ proof-
       by auto
     from check_dp_termination_proof_with_assms[OF I J check] a
     show ?thesis by simp
+  next
+    case [simp]: (Relative_DP_Termination_Proof pr)
+    obtain nfs m P Pw Q R Rw where [simp]:
+      "input = Relative_DP_input nfs m P Pw Q R Rw"
+      using check by (cases input, auto)
+    have [simp]: "property = Termination" using check by (cases property, auto)
+    have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+    from check[simplified] have checked:
+      "isOK (check_dp_termination_proof I J False idx (J.mk nfs m P Pw Q R Rw) pr)"
+      by auto
+    from check_dp_termination_proof[OF I J checked]
+    show ?thesis by (simp add: desired_property_def J.mk_sound)
   next
     case [simp]: (DP_Nontermination_Proof pr)
     obtain m R Q S where [simp]: "input = DP_input m R Q S" using check by (cases input, auto)

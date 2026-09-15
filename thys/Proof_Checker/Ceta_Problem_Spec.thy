@@ -56,6 +56,8 @@ definition "fp_strategy_to_string strat \<equiv> case strat of
 
 datatype (dead 'f, dead 'v) input =
   DP_input bool "('f, 'v) rules" "('f, 'v) strategy" "('f, 'v) rules"
+| Relative_DP_input bool bool "('f,'v) rules" "('f,'v) rules"
+    "('f,'v) term list" "('f,'v) rules" "('f,'v) rules"
 | CSR_Improved_DP_input bool 'f "'f muL" "('f,'v) rules" "('f,'v) rules"
 | Inn_TRS_input "('f, 'v) strategy" "('f, 'v) rules" "('f, 'v) rules"
 | FP_TRS_input "('f, 'v) fp_strategy" "('f, 'v) rules"
@@ -73,7 +75,8 @@ datatype (dead 'f, dead 'v) input =
 | Unknown_input unknown_info
 
 primrec input_to_string :: "(_,_)input \<Rightarrow> String.literal" where
-  "input_to_string (DP_input _ _ _ _) = STR ''dependency pair problem''" 
+  "input_to_string (DP_input _ _ _ _) = STR ''dependency pair problem''"
+| "input_to_string (Relative_DP_input _ _ _ _ _ _ _) = STR ''relative dependency pair problem''"
 | "input_to_string (CSR_Improved_DP_input _ _ _ _ _) = STR ''minimal improved CSR dependency pair problem''"
 | "input_to_string (Inn_TRS_input _ _ _) = STR ''(innermost) (relative) rewrite system(s)''" 
 | "input_to_string (FP_TRS_input _ _) = STR ''rewrite system with evaluation strategy''" 
@@ -157,8 +160,11 @@ definition desired_property :: "(('f::{compare_order,showl}, 'l::{compare_order,
   \<comment> \<open>for DP-problems, termination and non-termination are not dual!\<close> 
   | (DP_input m P Q R, Termination, Decision True) \<Rightarrow> finite_dpp (strategy_to_nfs Q, m, set P, {}, set (strategy_to_Q Q R), {}, set R)
   | (DP_input m P Q R, Termination, Decision False) \<Rightarrow> infinite_dpp (strategy_to_nfs Q, set P, set (strategy_to_Q Q R), set R)
+  | (Relative_DP_input nfs m P Pw Q R Rw, Termination, Decision True) \<Rightarrow>
+      finite_dpp (nfs, m, set P, set Pw, set Q, set R, set Rw)
   | (CSR_Improved_DP_input m U \<mu> P R, Termination, Decision True) \<Rightarrow>
-      m \<and> finite_min_csr_dpp Sharp (mu_of \<mu>) (set P) (set R)
+      (if m then finite_min_csr_dpp Sharp (mu_of \<mu>) (set P) (set R)
+       else finite_csr_dpp Sharp (mu_of \<mu>) (set P) (set R))
   \<comment> \<open>complexity\<close>
   | (Inn_TRS_input Q R S, Complexity cm, Upperbound_Poly ub) \<Rightarrow> 
       deriv_bound_measure_class (rel_qrstep (strategy_to_nfs Q, set (strategy_to_Q Q (R @ S)), set R, set S)) (complexity_measure_of R S cm) (Comp_Poly ub)

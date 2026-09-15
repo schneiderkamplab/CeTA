@@ -51,10 +51,10 @@ import qualified CSR_GM_Transformation;
 import qualified Outermost_RZ_Checker;
 import qualified Ordered_Completion_Impl;
 import qualified Reduction_Pair_Implementations;
+import qualified CSR_Guarded_List_Checker;
 import qualified Check_Quasi_Reductive;
 import qualified Check_Conditional_CRP;
 import qualified Check_AC_Termination;
-import qualified CSR_Checker_Base;
 import qualified LTS_Termination_Prover;
 import qualified Check_Equational_Proof;
 import qualified Check_Completion_Proof;
@@ -74,6 +74,7 @@ data Proof a b c =
   TRS_Termination_Proof (Check_Termination.Trs_termination_proof a b c)
   | Complexity_Proof (Check_Complexity.Complexity_proof a b c)
   | DP_Termination_Proof (Check_Termination.Dp_termination_proof a b c)
+  | Relative_DP_Termination_Proof (Check_Termination.Dp_termination_proof a b c)
   | DP_Nontermination_Proof (Check_Nontermination.Dp_nontermination_proof a b c)
   | TRS_Nontermination_Proof
       (Check_Nontermination.Trs_nontermination_proof a b c)
@@ -82,7 +83,7 @@ data Proof a b c =
       (Outermost_RZ_Checker.Outermost_rz_termination_proof a b c)
   | CSR_Termination_Proof
       (CSR_GM_Transformation.Gm_extended_csr_termination_proof a b c)
-  | CSR_Improved_DP_Proof (CSR_Checker_Base.Csr_dp_termination_proof a b c)
+  | CSR_Improved_DP_Proof (CSR_Guarded_List_Checker.Guarded_csr_dp_proof a b c)
   | GM04_Complete_TRS_Proof
       (GM04_Complete_Checker.Gm04_complete_transformation_proof a b c)
   | GM04_Complete_TRS_Nontermination_Proof
@@ -131,6 +132,7 @@ proof_to_string proof =
     TRS_Termination_Proof _ -> "TRS termination proof";
     Complexity_Proof _ -> "complexity proof";
     DP_Termination_Proof _ -> "DP termination proof";
+    Relative_DP_Termination_Proof _ -> "relative DP termination proof";
     DP_Nontermination_Proof _ -> "DP nontermination proof";
     TRS_Nontermination_Proof _ -> "TRS nontermination proof";
     FP_Termination_Proof _ -> "FP TRS termination proof";
@@ -201,6 +203,8 @@ check_cert i j k l a input property answer proof =
          TRS_Termination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input q r s,
@@ -276,6 +280,8 @@ check_cert i j k l a input property answer proof =
          Complexity_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
@@ -398,6 +404,82 @@ check_cert i j k l a input property answer proof =
              (Ceta_Problem_Spec.DP_input _ _ _ _,
                (Ceta_Problem_Spec.Unknown_Property, _))
                -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.AC_input _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.LTS_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.LTS_safety_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CTRS_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_RO_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_reasoning_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.TA_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Infeasibility_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Single_TRS_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Two_TRS_input _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Unknown_input _, _) -> Sum_Type.Inl mismatch;
+           });
+         Relative_DP_Termination_Proof prf ->
+           (case triple of {
+             (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input nfs m p pw q r rw,
+               (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
+               -> Check_Termination.check_dp_termination_proof i j False
+                    (Term_Rewriting.showsl_lit "1")
+                    (Dependency_Pair_Problem_Spec.mk j nfs m p pw q r rw) prf;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Decision False))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Upperbound_Poly _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Completed_System _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Order_Completed_System _ _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Confluence, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Commutation, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Completion, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Safety, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Entailment, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Complexity _, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Closed_Under_Rewriting, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Infeasibility, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _,
+               (Ceta_Problem_Spec.Unknown_Property, _))
+               -> Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -473,6 +555,8 @@ check_cert i j k l a input property answer proof =
              (Ceta_Problem_Spec.DP_input _ _ _ _,
                (Ceta_Problem_Spec.Unknown_Property, _))
                -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -499,6 +583,8 @@ check_cert i j k l a input property answer proof =
          TRS_Nontermination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
@@ -781,6 +867,8 @@ check_cert i j k l a input property answer proof =
          FP_Termination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -853,6 +941,8 @@ check_cert i j k l a input property answer proof =
          Outermost_RZ_Termination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -933,6 +1023,8 @@ check_cert i j k l a input property answer proof =
          CSR_Termination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1025,6 +1117,8 @@ check_cert i j k l a input property answer proof =
          CSR_Improved_DP_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input m u mu p r,
                (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
                -> CSR_Standalone_DP_Checker.check_standalone_improved_csr_dp i j
@@ -1096,6 +1190,8 @@ check_cert i j k l a input property answer proof =
          GM04_Complete_TRS_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input q r s,
@@ -1169,6 +1265,8 @@ check_cert i j k l a input property answer proof =
          GM04_Complete_TRS_Nontermination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
@@ -1242,6 +1340,8 @@ check_cert i j k l a input property answer proof =
          FP_Nontermination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1387,6 +1487,8 @@ check_cert i j k l a input property answer proof =
          Relative_TRS_Nontermination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
@@ -1462,6 +1564,8 @@ check_cert i j k l a input property answer proof =
          TRS_Confluence_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1532,6 +1636,8 @@ check_cert i j k l a input property answer proof =
          TRS_Non_Confluence_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1602,6 +1708,8 @@ check_cert i j k l a input property answer proof =
          TRS_Non_Commutation_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1673,6 +1781,8 @@ check_cert i j k l a input property answer proof =
          TRS_Commutation_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1744,6 +1854,8 @@ check_cert i j k l a input property answer proof =
          Completion_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1806,6 +1918,8 @@ check_cert i j k l a input property answer proof =
          Ordered_Completion_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1873,6 +1987,8 @@ check_cert i j k l a input property answer proof =
          Equational_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -1943,6 +2059,8 @@ check_cert i j k l a input property answer proof =
          Equational_Disproof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2013,6 +2131,8 @@ check_cert i j k l a input property answer proof =
          Quasi_Reductive_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2081,6 +2201,8 @@ check_cert i j k l a input property answer proof =
          Conditional_CR_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2149,6 +2271,8 @@ check_cert i j k l a input property answer proof =
          Conditional_Non_CR_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2217,6 +2341,8 @@ check_cert i j k l a input property answer proof =
          Tree_Automata_Closed_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2285,6 +2411,8 @@ check_cert i j k l a input property answer proof =
          AC_Termination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2357,6 +2485,8 @@ check_cert i j k l a input property answer proof =
          LTS_Termination_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2423,6 +2553,8 @@ check_cert i j k l a input property answer proof =
          LTS_Safety_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2496,6 +2628,8 @@ check_cert i j k l a input property answer proof =
          Infeasibility_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2568,6 +2702,8 @@ check_cert i j k l a input property answer proof =
          Feasibility_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2639,6 +2775,8 @@ check_cert i j k l a input property answer proof =
          Unknown_Proof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
@@ -2694,6 +2832,8 @@ check_cert i j k l a input property answer proof =
          Unknown_Disproof prf ->
            (case triple of {
              (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
                Sum_Type.Inl mismatch;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->

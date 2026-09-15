@@ -4,6 +4,7 @@ module
   CSR_Guarded_List_Checker(Csr_guarded_ovcons_witness(..),
                             Guarded_csr_dp_proof(..),
                             Guarded_csr_termination_proof(..),
+                            check_guarded_improved_csr_dp_proof,
                             check_guarded_csr_termination_proof)
   where {
 

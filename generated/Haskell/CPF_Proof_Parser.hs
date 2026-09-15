@@ -32,7 +32,6 @@ import qualified Narrowing_Impl;
 import qualified Loops_Impl;
 import qualified Exact_Tree_Automata_Completion_Impl;
 import qualified CSR_Muterm_Usable_Rules;
-import qualified CSR_Guarded_List_Checker;
 import qualified Complex_Constant_Removal_Impl;
 import qualified AC_Dependency_Pairs_Impl;
 import qualified Check_Nonreachability;
@@ -67,6 +66,7 @@ import qualified GM04_Complete_Checker;
 import qualified CSR_GM_Transformation;
 import qualified Outermost_RZ_Checker;
 import qualified Check_Nontermination;
+import qualified CSR_Guarded_List_Checker;
 import qualified CSR_Checker_Base;
 import qualified Check_Termination;
 import qualified Proof_Checker;
@@ -2882,6 +2882,8 @@ xml2inn_fp_trs_assm xml2name termIndexMap ruleMap =
     (\ a ->
       (case a of {
         Ceta_Problem_Spec.DP_input _ _ _ _ ->
+          Xmlt.xml_error "trs as input required";
+        Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _ ->
           Xmlt.xml_error "trs as input required";
         Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _ ->
           Xmlt.xml_error "trs as input required";
@@ -9221,13 +9223,27 @@ proof_parser termIndexMap ruleMap =
                         (Proof_Checker.TRS_Nontermination_Proof p))))
                 (\ x -> Xmlt.xml_return (id x))))
             (Xmlt.xml_or
-              (Xmlt.xml_do "csrImprovedDpProof"
+              (Xmlt.xml_do "relativeDpProof"
                 (Xmlt.xml_take
-                  (xml2csr_dp_termination_proof symbol_parser termIndexMap
-                    ruleMap)
+                  (xml2dp_termination_proof symbol_parser termIndexMap ruleMap)
                   (\ x ->
-                    Xmlt.xml_return (Proof_Checker.CSR_Improved_DP_Proof x))))
-              (proof_content symbol_parser termIndexMap ruleMap)))))
+                    Xmlt.xml_return
+                      (Proof_Checker.Relative_DP_Termination_Proof x))))
+              (Xmlt.xml_or
+                (Xmlt.xml_do "csrImprovedDpProof"
+                  (Xmlt.xml_take
+                    (Xmlt.xml_or
+                      (Xmlt.xml_change
+                        (xml2csr_dp_termination_proof symbol_parser termIndexMap
+                          ruleMap)
+                        (\ p ->
+                          Xmlt.xml_return
+                            (CSR_Guarded_List_Checker.Guarded_CSR_DP_Existing
+                              p)))
+                      (xml2guarded_csr_dp_proof termIndexMap ruleMap))
+                    (\ x ->
+                      Xmlt.xml_return (Proof_Checker.CSR_Improved_DP_Proof x))))
+                (proof_content symbol_parser termIndexMap ruleMap))))))
       Xmlt.xml_return);
 
 answer_parser ::

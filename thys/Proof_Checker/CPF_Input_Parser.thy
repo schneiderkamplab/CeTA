@@ -286,6 +286,20 @@ where
         (STR ''ordinary dpInput cannot discard replacement-map or outermost context; use a typed CSR-DP input'')
   }"
 
+definition relative_dp_input :: "('a,string)input xmlt" where
+  "relative_dp_input = XMLdo (STR ''relativeDpInput'') {
+    r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
+    p \<leftarrow> XMLdo (STR ''dps'') { ret \<leftarrow> rules; xml_return ret };
+    pw \<leftarrow> XMLdo (STR ''weakDps'') { ret \<leftarrow> rules; xml_return ret };
+    rs \<leftarrow> XMLdo (STR ''strictRules'') { ret \<leftarrow> rules; xml_return ret };
+    str \<leftarrow> inn_fp_strategy;
+    m \<leftarrow> xml_bool (STR ''minimal'');
+    case str of Inl s \<Rightarrow>
+      xml_return (Relative_DP_input (strategy_to_nfs s) m p pw
+        (strategy_to_Q s (rs @ r)) rs r)
+    | Inr _ \<Rightarrow> xml_error (STR ''relative DP input requires an explicit Q strategy'')
+  }"
+
 definition csr_improved_dp_input :: "('a,string)input xmlt" where
   "csr_improved_dp_input = XMLdo (STR ''csrImprovedDpInput'') {
     r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
@@ -392,7 +406,7 @@ where
      equations_input XMLor
      ac_rewrite_system XMLor
      dp_input XMLor
-     csr_improved_dp_input XMLor
+     csr_improved_dp_input XMLor relative_dp_input XMLor
      xml_change lts_input_parser (\<lambda> lts. xml_return (LTS_input lts)) XMLor
      xml_change lts_safety_input_parser (\<lambda> (lts,err). xml_return (LTS_safety_input lts err)) XMLor
      tree_automaton_and_trs XMLor
