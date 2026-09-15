@@ -3234,6 +3234,9 @@ definition "proof_parser termIndexMap ruleMap =
           (\<lambda>p. xml_return (Guarded_CSR_DP_Existing p))
         XMLor xml2guarded_csr_dp_proof termIndexMap ruleMap)
         CSR_Improved_DP_Proof
+      XMLor xml_singleton (STR ''csrMutermTypedDpProof'')
+        (xml2muterm_typed_dp_proof symbol_parser termIndexMap ruleMap)
+        CSR_Muterm_Typed_DP_Proof
       XMLor proof_content symbol_parser termIndexMap ruleMap;
     xml_return p
   }"

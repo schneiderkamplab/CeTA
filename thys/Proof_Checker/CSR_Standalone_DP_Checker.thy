@@ -1,5 +1,5 @@
 theory CSR_Standalone_DP_Checker
-  imports CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker
+  imports CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker CSR_GM_Transformation
 begin
 
 text \<open>A residual obligation, not a new dependency-pair construction.  In
@@ -117,5 +117,57 @@ lemma check_standalone_improved_csr_dp_sound:
   using ok check_standalone_minimal_csr_dp_sound[OF I J]
     check_standalone_nonminimal_csr_dp_sound[OF I J]
   unfolding check_standalone_improved_csr_dp_def by (cases m, auto)
+
+text \<open>Keep the typed innermost MU-TERM obligation, including its collapsing
+pairs and unhiding bridges; do not coerce it to ordinary or improved CS-DPs.\<close>
+
+definition check_standalone_muterm_typed_dp where
+  "check_standalone_muterm_typed_dp I J i m \<mu> P R B prf = do {
+    check m (showsl_lit (STR ''typed MU-TERM input requires its minimal-chain invariant''));
+    check_wf_trs R;
+    check_csr_orthogonal R;
+    check (list_all (\<lambda>(f,n). \<not> is_sharp_lab f) (funas_trs_list R))
+      (showsl_lit (STR ''typed MU-TERM source signature contains marked symbols''));
+    check (set B = set (muterm_exact_unhiding_rules_list Sharp \<mu> (defined_list R) R))
+      (showsl_lit (STR ''standalone typed MU-TERM unhiding rules are not exact''));
+    check (muterm_marked_mu_equal_check \<mu>)
+      (showsl_lit (STR ''typed MU-TERM marked replacement map differs from source''));
+    check_muterm_i4_root_proof I J \<mu> i R B P prf
+  }"
+
+lemma check_standalone_muterm_typed_dp_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_standalone_muterm_typed_dp I J i m \<mu> P R B prf)"
+  shows "m \<and> muterm_i4.finite_muterm_i4_good_typed_dpp R (mu_of \<mu>) (set P) (set B)"
+proof -
+  note checked = ok[unfolded check_standalone_muterm_typed_dp_def, simplified]
+  from checked have m: m and wf: "wf_trs (set R)"
+    and ortho: "isOK (check_csr_orthogonal R)"
+    and sig: "list_all (\<lambda>(f,n). \<not> is_sharp_lab f) (funas_trs_list R)"
+    and exact: "set B = set (muterm_exact_unhiding_rules_list Sharp \<mu> (defined_list R) R)"
+    and mu: "muterm_marked_mu_equal_check \<mu>"
+    and rec: "isOK (check_muterm_i4_root_proof I J \<mu> i R B P prf)" by auto
+  have overlay: "csr_switch_overlay (set R)"
+    by (rule check_csr_orthogonal_sound[OF ortho])
+  have unmarked: "\<And>fn. fn \<in> funas_trs (set R) \<Longrightarrow> \<not> is_sharp_lab (fst fn)"
+    using sig by (auto simp: list_all_iff)
+  have fresh: "\<And>h n. \<not> defined (set R) (Sharp h,n)"
+  proof
+    fix h n
+    assume "defined (set R) (Sharp h,n)"
+    then obtain l r where lr: "(l,r) \<in> set R"
+      and root: "root l = Some (Sharp h,n)" unfolding defined_def by auto
+    from root have fn: "(Sharp h,n) \<in> funas_term l" by (cases l, auto)
+    have "(Sharp h,n) \<in> funas_trs (set R)"
+      unfolding funas_trs_def
+      by (rule UN_I[OF lr], simp add: funas_rule_def fn)
+    from unmarked[OF this] show False by simp
+  qed
+  have marked: "\<And>f n. \<not> is_sharp_lab f \<Longrightarrow> mu_of \<mu> (Sharp f,n) = mu_of \<mu> (f,n)"
+    by (rule muterm_marked_mu_equal_check_sound[OF mu])
+  show ?thesis
+    by (rule conjI[OF m], rule check_muterm_i4_root_proof_sound[
+      OF I J wf overlay exact fresh unmarked marked rec])
+qed
 
 end

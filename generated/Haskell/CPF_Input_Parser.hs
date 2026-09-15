@@ -2,8 +2,8 @@
 
 module
   CPF_Input_Parser(position, pos, plain_var, term, conditions, crule, rule,
-                    symbols, cPFsignature, rules, state, final_states,
-                    tree_automaton, ta_normal_lhs, kbo_input, replacement_map,
+                    symbols, cPFsignature, rules, replacement_map, state,
+                    final_states, tree_automaton, ta_normal_lhs, kbo_input,
                     unknown_inputa, trs_input, dp_input, input, answer,
                     property, lookupTables, innermostLhss, strategy_to_fp)
   where {
@@ -351,6 +351,72 @@ equational_reasoning_input xml2name termMap ruleMap =
           (\ goal ->
             Xmlt.xml_return (Ceta_Problem_Spec.EQ_reasoning_input eqs goal))));
 
+replacement_map ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  (Xml.Xml,
+                                    ([([Arith.Char], [Arith.Char])],
+                                      (Bool, ([String], [String])))) ->
+                                    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                      [((a, Arith.Nat), [Arith.Nat])];
+replacement_map xml2name =
+  Xmlt.xml_do "contextSensitive"
+    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
+      (Xmlt.xml_do "replacementMapEntry"
+        (Xmlt.xml_take xml2name
+          (\ f ->
+            Xmlt.xml_take (Xmlt.xml_nat "arity")
+              (\ a ->
+                Xmlt.xml_take_many_sub [] Arith.zero_nat
+                  Extended_Nat.Infinity_enat position
+                  (\ is -> Xmlt.xml_return ((f, a), is))))))
+      Xmlt.xml_return);
+
+csr_muterm_typed_dp_input ::
+  forall a.
+    (Term_Rewriting.Showl a) => ((Xml.Xml,
+                                   ([([Arith.Char], [Arith.Char])],
+                                     (Bool, ([String], [String])))) ->
+                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+                                    a) ->
+                                  Mapping.Mapping [Arith.Char]
+                                    (Term_Rewriting.Term a [Arith.Char]) ->
+                                    Mapping.Mapping [Arith.Char]
+                                      (Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char]) ->
+                                      (Xml.Xml,
+([([Arith.Char], [Arith.Char])], (Bool, ([String], [String])))) ->
+Strict_Sum.Sum_bot (Xmlt.Xml_error String)
+  (Ceta_Problem_Spec.Input a [Arith.Char]);
+csr_muterm_typed_dp_input xml2name termMap ruleMap =
+  Xmlt.xml_do "csrMutermTypedDpInput"
+    (Xmlt.xml_take
+      (Xmlt.xml_do "trs"
+        (Xmlt.xml_take (rules xml2name termMap ruleMap) Xmlt.xml_return))
+      (\ r ->
+        Xmlt.xml_take
+          (Xmlt.xml_do "dps"
+            (Xmlt.xml_take (rules xml2name termMap ruleMap) Xmlt.xml_return))
+          (\ p ->
+            Xmlt.xml_take
+              (Xmlt.xml_do "unhidingRules"
+                (Xmlt.xml_take (rules xml2name termMap ruleMap)
+                  Xmlt.xml_return))
+              (\ b ->
+                Xmlt.xml_take
+                  (Xmlt.xml_do "strategy"
+                    (Xmlt.xml_take (replacement_map xml2name) Xmlt.xml_return))
+                  (\ mu ->
+                    Xmlt.xml_take (Xmlt.xml_bool "minimal")
+                      (\ m ->
+                        Xmlt.xml_return
+                          (Ceta_Problem_Spec.CSR_Muterm_Typed_DP_input m mu p r
+                            b)))))));
+
 trs_with_signature_input ::
   forall a.
     (Term_Rewriting.Showl a) => ((Xml.Xml,
@@ -583,31 +649,6 @@ equations_and_ro_input xml2name termMap ruleMap =
       (\ es0 ->
         Xmlt.xml_take (kbo_input xml2name)
           (\ ro -> Xmlt.xml_return (Ceta_Problem_Spec.EQ_RO_input es0 ro))));
-
-replacement_map ::
-  forall a.
-    (Term_Rewriting.Showl a) => ((Xml.Xml,
-                                   ([([Arith.Char], [Arith.Char])],
-                                     (Bool, ([String], [String])))) ->
-                                  Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                    a) ->
-                                  (Xml.Xml,
-                                    ([([Arith.Char], [Arith.Char])],
-                                      (Bool, ([String], [String])))) ->
-                                    Strict_Sum.Sum_bot (Xmlt.Xml_error String)
-                                      [((a, Arith.Nat), [Arith.Nat])];
-replacement_map xml2name =
-  Xmlt.xml_do "contextSensitive"
-    (Xmlt.xml_take_many_sub [] Arith.zero_nat Extended_Nat.Infinity_enat
-      (Xmlt.xml_do "replacementMapEntry"
-        (Xmlt.xml_take xml2name
-          (\ f ->
-            Xmlt.xml_take (Xmlt.xml_nat "arity")
-              (\ a ->
-                Xmlt.xml_take_many_sub [] Arith.zero_nat
-                  Extended_Nat.Infinity_enat position
-                  (\ is -> Xmlt.xml_return ((f, a), is))))))
-      Xmlt.xml_return);
 
 csr_improved_dp_input ::
   forall a.
@@ -1074,24 +1115,25 @@ input xml2name termMap ruleMap =
                       (Xmlt.xml_or (ac_rewrite_system xml2name termMap ruleMap)
                         (Xmlt.xml_or (dp_input xml2name termMap ruleMap)
                           (Xmlt.xml_or
-                            (csr_improved_dp_input xml2name termMap ruleMap)
+                            (csr_muterm_typed_dp_input xml2name termMap ruleMap)
                             (Xmlt.xml_or
-                              (relative_dp_input xml2name termMap ruleMap)
+                              (csr_improved_dp_input xml2name termMap ruleMap)
                               (Xmlt.xml_or
-                                (Xmlt.xml_change LTS_Parser.lts_input_parser
-                                  (\ lts ->
-                                    Xmlt.xml_return
-                                      (Ceta_Problem_Spec.LTS_input lts)))
+                                (relative_dp_input xml2name termMap ruleMap)
                                 (Xmlt.xml_or
-                                  (Xmlt.xml_change
-                                    LTS_Parser.lts_safety_input_parser
-                                    (\ (lts, err) ->
+                                  (Xmlt.xml_change LTS_Parser.lts_input_parser
+                                    (\ lts ->
                                       Xmlt.xml_return
-(Ceta_Problem_Spec.LTS_safety_input lts err)))
+(Ceta_Problem_Spec.LTS_input lts)))
                                   (Xmlt.xml_or
-                                    (tree_automaton_and_trs xml2name termMap
-                                      ruleMap)
-                                    unknown_input)))))))))))))))
+                                    (Xmlt.xml_change
+                                      LTS_Parser.lts_safety_input_parser
+                                      (\ (lts, err) ->
+Xmlt.xml_return (Ceta_Problem_Spec.LTS_safety_input lts err)))
+                                    (Xmlt.xml_or
+                                      (tree_automaton_and_trs xml2name termMap
+ruleMap)
+                                      unknown_input))))))))))))))))
       Xmlt.xml_return);
 
 answer ::

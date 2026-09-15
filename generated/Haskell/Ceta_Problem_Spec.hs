@@ -53,6 +53,10 @@ data Input a b =
   | CSR_Improved_DP_input Bool a [((a, Arith.Nat), [Arith.Nat])]
       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
+  | CSR_Muterm_Typed_DP_input Bool [((a, Arith.Nat), [Arith.Nat])]
+      [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
+      [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
+      [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
   | Inn_TRS_input (Strategy a b)
       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
       [(Term_Rewriting.Term a b, Term_Rewriting.Term a b)]
@@ -115,25 +119,27 @@ input_to_string (Relative_DP_input uy uz va vb vc vd ve) =
   "relative dependency pair problem";
 input_to_string (CSR_Improved_DP_input vf vg vh vi vj) =
   "minimal improved CSR dependency pair problem";
-input_to_string (Inn_TRS_input vk vl vm) =
+input_to_string (CSR_Muterm_Typed_DP_input vk vl vm vn vo) =
+  "minimal typed innermost MU-TERM dependency pair problem";
+input_to_string (Inn_TRS_input vp vq vr) =
   "(innermost) (relative) rewrite system(s)";
-input_to_string (FP_TRS_input vn vo) =
+input_to_string (FP_TRS_input vs vt) =
   "rewrite system with evaluation strategy";
-input_to_string (AC_input vp vq vr) = "AC rewrite system";
-input_to_string (LTS_input vs) = "integer transition system";
-input_to_string (LTS_safety_input vt vu) =
+input_to_string (AC_input vu vv vw) = "AC rewrite system";
+input_to_string (LTS_input vx) = "integer transition system";
+input_to_string (LTS_safety_input vy vz) =
   "integer transition system with potential error states";
-input_to_string (CTRS_input vv) = "conditional TRS";
-input_to_string (EQ_input vw) = "equational system";
-input_to_string (EQ_RO_input vx vy) = "equational system and reduction order";
-input_to_string (EQ_reasoning_input vz wa) =
+input_to_string (CTRS_input wa) = "conditional TRS";
+input_to_string (EQ_input wb) = "equational system";
+input_to_string (EQ_RO_input wc wd) = "equational system and reduction order";
+input_to_string (EQ_reasoning_input we wf) =
   "equational system and explicit equation";
-input_to_string (TA_input wb wc) = "tree automation and rewrite system";
-input_to_string (Infeasibility_input wd we) =
+input_to_string (TA_input wg wh) = "tree automation and rewrite system";
+input_to_string (Infeasibility_input wi wj) =
   "conditional TRS and list of term pairs";
-input_to_string (Two_TRS_input wf wg wh) = "two rewrite systems with signature";
-input_to_string (Single_TRS_input wi wj) = "rewrite system with signature";
-input_to_string (Unknown_input wk) = "unspecified input";
+input_to_string (Two_TRS_input wk wl wm) = "two rewrite systems with signature";
+input_to_string (Single_TRS_input wn wo) = "rewrite system with signature";
+input_to_string (Unknown_input wp) = "unspecified input";
 
 default_nfs_flag :: Bool;
 default_nfs_flag = False;

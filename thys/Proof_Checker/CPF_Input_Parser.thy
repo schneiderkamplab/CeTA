@@ -310,6 +310,16 @@ definition csr_improved_dp_input :: "('a,string)input xmlt" where
     xml_return (CSR_Improved_DP_input m u mu p r)
   }"
 
+definition csr_muterm_typed_dp_input :: "('a,string)input xmlt" where
+  "csr_muterm_typed_dp_input = XMLdo (STR ''csrMutermTypedDpInput'') {
+    r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
+    p \<leftarrow> XMLdo (STR ''dps'') { ret \<leftarrow> rules; xml_return ret };
+    b \<leftarrow> XMLdo (STR ''unhidingRules'') { ret \<leftarrow> rules; xml_return ret };
+    mu \<leftarrow> XMLdo (STR ''strategy'') { ret \<leftarrow> replacement_map; xml_return ret };
+    m \<leftarrow> xml_bool (STR ''minimal'');
+    xml_return (CSR_Muterm_Typed_DP_input m mu p r b)
+  }"
+
 definition
   trs_with_signature_input :: "('a,string)input xmlt"
 where
@@ -406,7 +416,7 @@ where
      equations_input XMLor
      ac_rewrite_system XMLor
      dp_input XMLor
-     csr_improved_dp_input XMLor relative_dp_input XMLor
+     csr_muterm_typed_dp_input XMLor csr_improved_dp_input XMLor relative_dp_input XMLor
      xml_change lts_input_parser (\<lambda> lts. xml_return (LTS_input lts)) XMLor
      xml_change lts_safety_input_parser (\<lambda> (lts,err). xml_return (LTS_safety_input lts err)) XMLor
      tree_automaton_and_trs XMLor
