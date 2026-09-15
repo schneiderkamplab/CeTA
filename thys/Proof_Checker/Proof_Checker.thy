@@ -9,6 +9,7 @@ theory Proof_Checker
   imports
     Proof_Checker_Base.Check_Termination
     GM04_Complete_Checker
+    GM04_Standalone_DP_Checker
     Outermost_RZ_Ext.Outermost_RZ_Checker
     CSR_Check_Loops
     CSR_Standalone_DP_Checker
@@ -40,6 +41,8 @@ datatype (dead 'f, dead 'l, dead 'v) "proof" =
 | CSR_Muterm_Typed_DP_Proof "('f,'l,'v) muterm_typed_dp_proof"
 | GM04_Complete_TRS_Proof
     "('f,'l,'v) gm04_complete_transformation_proof"
+| GM04_Standalone_DP_Proof_Node "('f,'l,'v) gm04_standalone_dp_proof"
+| GM04_Standalone_TRS_Proof_Node "('f,'l,'v) gm04_standalone_dp_proof" "('f,'l,'v) trs_termination_proof"
 | GM04_Complete_TRS_Nontermination_Proof
     "('f,'l,'v) gm04_complete_nontermination_proof"
 | FP_Nontermination_Proof "('f, 'l, 'v) fp_trs_nontermination_proof"
@@ -80,6 +83,8 @@ definition "proof_to_string proof =
   | CSR_Muterm_Typed_DP_Proof _ \<Rightarrow> STR ''standalone typed MU-TERM DP proof''
   | GM04_Complete_TRS_Proof _ \<Rightarrow>
       STR ''complete GM04 inverse-transformation proof''
+  | GM04_Standalone_DP_Proof_Node _ \<Rightarrow> STR ''standalone GM04 DP proof''
+  | GM04_Standalone_TRS_Proof_Node _ _ \<Rightarrow> STR ''TRS proof with independent GM04 CSR child''
   | GM04_Complete_TRS_Nontermination_Proof _ \<Rightarrow>
       STR ''complete GM04 nontermination-transformation proof''
   | FP_Nontermination_Proof _ \<Rightarrow> STR ''FP TRS nontermination proof''
@@ -114,6 +119,8 @@ primrec cert_assms :: "bool \<Rightarrow> ('f, 'l, 'v) proof \<Rightarrow> (('f,
 | "cert_assms a (CSR_Muterm_Typed_DP_Proof p) = []"
 | "cert_assms a (Relative_DP_Termination_Proof p) = []"
 | "cert_assms a (GM04_Complete_TRS_Proof p) = []"
+| "cert_assms a (GM04_Standalone_DP_Proof_Node p) = []"
+| "cert_assms a (GM04_Standalone_TRS_Proof_Node p q) = []"
 | "cert_assms a (GM04_Complete_TRS_Nontermination_Proof p) = []"
 | "cert_assms a (TRS_Confluence_Proof p) = cr_assms a p"
 | "cert_assms a (TRS_Non_Confluence_Proof p) = ncr_assms a p"
@@ -279,6 +286,18 @@ where "check_cert a input property answer proof \<equiv>
        check_gm04_complete_transformation_proof I J
          (showsl_lit (STR ''1'')) (strategy_to_nfs Q)
          (strategy_to_Q Q R) R S prf
+    | _ \<Rightarrow> error mismatch)
+  | GM04_Standalone_DP_Proof_Node prf \<Rightarrow>
+     (case triple of
+       (DP_input m P Q R, Termination, Decision True) \<Rightarrow>
+       check_gm04_standalone_dp_proof I J (showsl_lit (STR ''1''))
+         (dpp_ops.mk J (strategy_to_nfs Q) m P [] (strategy_to_Q Q R) [] R) prf
+    | _ \<Rightarrow> error mismatch)
+  | GM04_Standalone_TRS_Proof_Node context child \<Rightarrow>
+     (case triple of
+       (Inn_TRS_input Q R S, Termination, Decision True) \<Rightarrow>
+       check_gm04_standalone_trs_proof I J (showsl_lit (STR ''1''))
+         (tp_ops.mk I (strategy_to_nfs Q) (strategy_to_Q Q R) R S) context child
     | _ \<Rightarrow> error mismatch)
   | GM04_Complete_TRS_Nontermination_Proof prf \<Rightarrow>
      (case triple of
@@ -685,6 +704,28 @@ proof-
         (strategy_to_nfs Q) (strategy_to_Q Q R) R S pr)"
       by auto
     from check_gm04_complete_transformation_proof_sound[OF I J checked]
+    show ?thesis by (simp add: desired_property_def)
+  next
+    case [simp]: (GM04_Standalone_DP_Proof_Node pr)
+    obtain m P Q R where [simp]: "input = DP_input m P Q R"
+      using check by (cases input, auto)
+    have [simp]: "property = Termination" using check by (cases property, auto)
+    have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+    from check[simplified] have checked:
+      "isOK (check_gm04_standalone_dp_proof I J idx
+        (J.mk (strategy_to_nfs Q) m P [] (strategy_to_Q Q R) [] R) pr)" by auto
+    from check_gm04_standalone_dp_proof_sound[OF I J checked]
+    show ?thesis by (simp add: desired_property_def J.mk_sound)
+  next
+    case [simp]: (GM04_Standalone_TRS_Proof_Node ctx child)
+    obtain Q R S where [simp]: "input = Inn_TRS_input Q R S"
+      using check by (cases input, auto)
+    have [simp]: "property = Termination" using check by (cases property, auto)
+    have [simp]: "answer = Decision True" using check by (cases answer, auto split: bool.splits)
+    from check[simplified] have checked:
+      "isOK (check_gm04_standalone_trs_proof I J idx
+        (mk (strategy_to_nfs Q) (strategy_to_Q Q R) R S) ctx child)" by auto
+    from check_gm04_standalone_trs_proof_sound[OF I J checked]
     show ?thesis by (simp add: desired_property_def)
   next
     case [simp]: (GM04_Complete_TRS_Nontermination_Proof pr)

@@ -49,6 +49,7 @@ import qualified Lists_are_Infinite;
 import qualified GM04_Complete_Checker;
 import qualified CSR_GM_Transformation;
 import qualified Outermost_RZ_Checker;
+import qualified GM04_Standalone_DP_Checker;
 import qualified Ordered_Completion_Impl;
 import qualified Reduction_Pair_Implementations;
 import qualified CSR_Muterm_Usable_Rules;
@@ -89,6 +90,11 @@ data Proof a b c =
       (CSR_Muterm_Usable_Rules.Muterm_typed_dp_proof a b c)
   | GM04_Complete_TRS_Proof
       (GM04_Complete_Checker.Gm04_complete_transformation_proof a b c)
+  | GM04_Standalone_DP_Proof_Node
+      (GM04_Standalone_DP_Checker.Gm04_standalone_dp_proof a b c)
+  | GM04_Standalone_TRS_Proof_Node
+      (GM04_Standalone_DP_Checker.Gm04_standalone_dp_proof a b c)
+      (Check_Termination.Trs_termination_proof a b c)
   | GM04_Complete_TRS_Nontermination_Proof
       (GM04_Complete_Checker.Gm04_complete_nontermination_proof a b c)
   | FP_Nontermination_Proof
@@ -145,6 +151,9 @@ proof_to_string proof =
     CSR_Improved_DP_Proof _ -> "standalone improved CSR-DP proof";
     CSR_Muterm_Typed_DP_Proof _ -> "standalone typed MU-TERM DP proof";
     GM04_Complete_TRS_Proof _ -> "complete GM04 inverse-transformation proof";
+    GM04_Standalone_DP_Proof_Node _ -> "standalone GM04 DP proof";
+    GM04_Standalone_TRS_Proof_Node _ _ ->
+      "TRS proof with independent GM04 CSR child";
     GM04_Complete_TRS_Nontermination_Proof _ ->
       "complete GM04 nontermination-transformation proof";
     FP_Nontermination_Proof _ -> "FP TRS nontermination proof";
@@ -1301,6 +1310,164 @@ check_cert i j k l a input property answer proof =
                     i j (Term_Rewriting.showsl_lit "1")
                     (Ceta_Problem_Spec.strategy_to_nfs q)
                     (Ceta_Problem_Spec.strategy_to_Q q r) r s prf;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Decision False))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Upperbound_Poly _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Completed_System _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Order_Completed_System _ _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Confluence, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Commutation, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Completion, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Safety, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Entailment, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Complexity _, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Closed_Under_Rewriting, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Infeasibility, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
+               (Ceta_Problem_Spec.Unknown_Property, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.AC_input _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.LTS_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.LTS_safety_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CTRS_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_RO_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_reasoning_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.TA_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Infeasibility_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Single_TRS_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Two_TRS_input _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Unknown_input _, _) -> Sum_Type.Inl mismatch;
+           });
+         GM04_Standalone_DP_Proof_Node prf ->
+           (case triple of {
+             (Ceta_Problem_Spec.DP_input m p q r,
+               (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
+               -> GM04_Standalone_DP_Checker.check_gm04_standalone_dp_proof i j
+                    (Term_Rewriting.showsl_lit "1")
+                    (Dependency_Pair_Problem_Spec.mk j
+                      (Ceta_Problem_Spec.strategy_to_nfs q) m p []
+                      (Ceta_Problem_Spec.strategy_to_Q q r) [] r)
+                    prf;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Decision False))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Upperbound_Poly _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Completed_System _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Termination,
+                 Ceta_Problem_Spec.Order_Completed_System _ _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Confluence, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Commutation, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Completion, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _, (Ceta_Problem_Spec.Safety, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Entailment, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Complexity _, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Closed_Under_Rewriting, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Infeasibility, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.DP_input _ _ _ _,
+               (Ceta_Problem_Spec.Unknown_Property, _))
+               -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CSR_Muterm_Typed_DP_input _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.FP_TRS_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.AC_input _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.LTS_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.LTS_safety_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CTRS_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_input _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_RO_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.EQ_reasoning_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.TA_input _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Infeasibility_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Single_TRS_input _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Two_TRS_input _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Unknown_input _, _) -> Sum_Type.Inl mismatch;
+           });
+         GM04_Standalone_TRS_Proof_Node context child ->
+           (case triple of {
+             (Ceta_Problem_Spec.DP_input _ _ _ _, _) -> Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Relative_DP_input _ _ _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CSR_Improved_DP_input _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.CSR_Muterm_Typed_DP_input _ _ _ _ _, _) ->
+               Sum_Type.Inl mismatch;
+             (Ceta_Problem_Spec.Inn_TRS_input q r s,
+               (Ceta_Problem_Spec.Termination, Ceta_Problem_Spec.Decision True))
+               -> GM04_Standalone_DP_Checker.check_gm04_standalone_trs_proof i j
+                    (Term_Rewriting.showsl_lit "1")
+                    (Termination_Problem_Spec.mk i
+                      (Ceta_Problem_Spec.strategy_to_nfs q)
+                      (Ceta_Problem_Spec.strategy_to_Q q r) r s)
+                    context child;
              (Ceta_Problem_Spec.Inn_TRS_input _ _ _,
                (Ceta_Problem_Spec.Termination,
                  Ceta_Problem_Spec.Decision False))

@@ -3,6 +3,10 @@
 module
   GM04_Complete_Checker(Gm04_complete_nontermination_proof(..),
                          Gm04_complete_transformation_proof(..),
+                         gm04_residual_assm, gm04_roles_fresh_list,
+                         gm04_schema_signature_list,
+                         gm04_source_proof_is_global,
+                         gm04_pair_args_signature_list,
                          check_gm04_complete_nontermination_proof,
                          check_gm04_complete_transformation_proof)
   where {

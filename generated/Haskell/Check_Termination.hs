@@ -3,7 +3,7 @@
 module
   Check_Termination(Unknown_proof(..), Fptrs_termination_proof(..),
                      Trs_termination_proof(..), Dp_termination_proof(..),
-                     sn_assms, check_unknown_proof,
+                     dp_assms, sn_assms, check_unknown_proof,
                      check_fptrs_termination_proof, check_trs_termination_proof,
                      check_dp_termination_proof)
   where {
