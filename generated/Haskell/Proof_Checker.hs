@@ -1,6 +1,9 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module Proof_Checker(Proof(..), Cert_result(..), certify_cert_problem) where {
+module
+  Proof_Checker(Proof(..), Cert_result(..), check_cert, certify_cert_problem,
+                 equal_cert_result)
+  where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -3224,5 +3227,16 @@ certify_cert_problem i j k l a input property answer proof =
     Sum_Type.Inl err -> Error (err "");
     Sum_Type.Inr _ -> Certified;
   });
+
+equal_cert_result :: Cert_result -> Cert_result -> Bool;
+equal_cert_result (Unsupported x2) (Error x3) = False;
+equal_cert_result (Error x3) (Unsupported x2) = False;
+equal_cert_result Certified (Error x3) = False;
+equal_cert_result (Error x3) Certified = False;
+equal_cert_result Certified (Unsupported x2) = False;
+equal_cert_result (Unsupported x2) Certified = False;
+equal_cert_result (Error x3) (Error y3) = x3 == y3;
+equal_cert_result (Unsupported x2) (Unsupported y2) = x2 == y2;
+equal_cert_result Certified Certified = True;
 
 }

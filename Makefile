@@ -83,5 +83,8 @@ isabelle-csr-extensions:
 isabelle-proof-checker:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) Proof_Checker
 
+isabelle-rfc-absolute:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/RFC_Absolute_Ext RFC_Absolute_Ext
+
 .PHONY: all clean haskell ceta-relative-adp test-relative-adp test isabelle-proof-base isabelle-csr-base \
-	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker
+	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker isabelle-rfc-absolute

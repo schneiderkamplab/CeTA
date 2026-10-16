@@ -1,6 +1,6 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
-module AC_Equivalence(Acterm, equal_acterm, actop, aocnf) where {
+module AC_Equivalence(Acterm, equal_acterm, actop, acnf, aocnf) where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
   (>>=), (>>), (=<<), (&&), (||), (^), (^^), (.), ($), ($!), (++), (!!), Eq,
@@ -19,8 +19,8 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified HOL;
-import qualified Arith;
 import qualified Term_Rewriting;
+import qualified Arith;
 import qualified Multiset;
 
 data Acterm a b = AVar b | AFun a [Acterm a b]
@@ -42,15 +42,6 @@ equal_acterm (AAC x31 x32) (AAC y31 y32) =
 equal_acterm (AFun x21 x22) (AFun y21 y22) = x21 == y21 && x22 == y22;
 equal_acterm (AVar x1) (AVar y1) = x1 == y1;
 
-aABin :: forall a b. (Eq a) => a -> Acterm a b -> Acterm a b -> Acterm a b;
-aABin f (AFun g [s, t]) u =
-  (if f == g then AFun f [s, aABin f t u] else AFun f [AFun g [s, t], u]);
-aABin f (AVar v) t = AFun f [AVar v, t];
-aABin f (AFun v []) t = AFun f [AFun v [], t];
-aABin f (AFun v [vb]) t = AFun f [AFun v [vb], t];
-aABin f (AFun v (vb : vd : vf : vg)) t = AFun f [AFun v (vb : vd : vf : vg), t];
-aABin f (AAC v va) t = AFun f [AAC v va, t];
-
 actop ::
   forall a b.
     (Eq a,
@@ -69,6 +60,30 @@ actop f (Term_Rewriting.Fun v [vb]) =
 actop f (Term_Rewriting.Fun v (vb : vd : vf : vg)) =
   Multiset.add_mset (Term_Rewriting.Fun v (vb : vd : vf : vg))
     Multiset.zero_multiset;
+
+acnf ::
+  forall a b.
+    (Arith.Ceq a, Arith.Ccompare a, Eq a,
+      Eq b) => Arith.Set a -> Term_Rewriting.Term a b -> Acterm a b;
+acnf a (Term_Rewriting.Var x) = AVar x;
+acnf a (Term_Rewriting.Fun f [s, t]) =
+  (if Arith.member f a
+    then AAC f (Multiset.image_mset (acnf a)
+                 (actop f (Term_Rewriting.Fun f [s, t])))
+    else AFun f [acnf a s, acnf a t]);
+acnf a (Term_Rewriting.Fun f []) = AFun f [];
+acnf a (Term_Rewriting.Fun f [t]) = AFun f [acnf a t];
+acnf a (Term_Rewriting.Fun f (s : t : u : us)) =
+  AFun f (acnf a s : acnf a t : acnf a u : map (acnf a) us);
+
+aABin :: forall a b. (Eq a) => a -> Acterm a b -> Acterm a b -> Acterm a b;
+aABin f (AFun g [s, t]) u =
+  (if f == g then AFun f [s, aABin f t u] else AFun f [AFun g [s, t], u]);
+aABin f (AVar v) t = AFun f [AVar v, t];
+aABin f (AFun v []) t = AFun f [AFun v [], t];
+aABin f (AFun v [vb]) t = AFun f [AFun v [vb], t];
+aABin f (AFun v (vb : vd : vf : vg)) t = AFun f [AFun v (vb : vd : vf : vg), t];
+aABin f (AAC v va) t = AFun f [AAC v va, t];
 
 aocnf ::
   forall a b.
