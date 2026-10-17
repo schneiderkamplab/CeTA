@@ -1,0 +1,16 @@
+; @origtpdbfilename ./TRS/endrullis08/f4.trs
+; @xtcfilename "./TRS_Contextsensitive/Transformed_outermost_08/f4.xml"
+(format CSTRS)
+(fun *top*_0 1 :replacement-map (1))
+(fun a_1 0 :replacement-map ())
+(fun f_0 1 :replacement-map (1))
+(fun f_1 1 :replacement-map ())
+(fun c_0 0 :replacement-map ())
+(rule (*top*_0 a_1) (*top*_0 (f_0 a_1)))
+(rule (*top*_0 (f_0 a_1)) (*top*_0 (f_0 (f_0 a_1))))
+(rule (*top*_0 (f_0 (f_0 a_1))) (*top*_0 (f_0 (f_0 (f_0 a_1)))))
+(rule (f_0 (f_0 (f_0 a_1))) (f_1 (f_0 (f_0 (f_0 a_1)))))
+(rule (f_1 (f_1 (f_0 (f_0 x)))) c_0)
+(rule (f_1 (f_0 (f_0 (f_0 x)))) c_0)
+(rule (f_1 (f_1 (f_1 (f_0 x)))) c_0)
+(rule (f_1 (f_1 (f_1 (f_1 x)))) c_0)

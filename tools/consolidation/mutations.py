@@ -23,6 +23,15 @@ def main():
   for kind,xpath,diagnostic in CASES:
    tree=ET.parse(proof);node=tree.getroot().find(xpath)
    if node is None or not len(node):continue
+   criterion=None
+   if kind=='omitted-usable-rules':
+    parents={c:p for p in tree.getroot().iter() for c in p};cursor=node;ancestors=[]
+    while cursor in parents:cursor=parents[cursor];ancestors.append(cursor.tag)
+    wrapper=next((t for t in ancestors if t in {'dpProof','csrDpProof','csrMutermTypedDpProof'}),None)
+    if wrapper=='csrDpProof' and any(t in ancestors for t in {'csrImprovedDependencyPairs','csrRuleRemovalsThenImproved'}):
+     kind='omitted-improved-qcs-usable-rules';diagnostic=r'error when checking improved QCS usable-rule closure';criterion=dict(checker='csr_improved_qcs_usable_rules_proc',theorem='csr_improved_qcs_usable_rules_proc_sound',theory='thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy',violated_condition='improved_qcs_csr_ur_closed_check')
+    elif wrapper=='csrDpProof' and 'csrDependencyPairs' in ancestors:
+     kind='omitted-qcs-usable-rules';diagnostic=r'error when checking QCS usable-rule closure';criterion=dict(checker='csr_qcs_usable_rules_proc',theorem='csr_qcs_usable_rules_proc_sound',theory='thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy',violated_condition='qcs_csr_ur_closed_check')
    if kind=='omitted-graph-components' and not all(c.tag=='component' for c in node):continue
    if kind in {'zero-polynomial-offsets','zero-matrix-monotonicity'}:
     removed_rules=tree.getroot().find('.//ruleRemoval/trs/rules')
@@ -48,6 +57,7 @@ def main():
    # The original input is unchanged: only proof obligations are removed.
    assert ET.tostring(tree.getroot().find('input'))==ET.tostring(ET.parse(proof).getroot().find('input'))
    record=dict(id=run.name,source_id=rid,source_sha256=sha(proof),mutation_sha256=sha(dest),kind=kind,xpath=xpath,removed_obligations=removed,expected_diagnostic_regex=diagnostic,well_formed_xml=True,checks=[],validated=False)
+   if criterion:record['criterion']=criterion
    for i in [1,2]:
     prefix=run/f'check-{i}';c=execute([str(SNAP/'artifacts/production_checker'),str(dest)],run,os.environ,prefix,120)
     text=prefix.with_suffix('.stdout').read_text()+prefix.with_suffix('.stderr').read_text();c['semantic_rejection']=c['returncode']==1 and not c['timed_out'] and text.startswith('REJECTED') and bool(re.search(diagnostic,text,re.S|re.I));record['checks'].append(c)

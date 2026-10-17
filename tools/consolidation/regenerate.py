@@ -34,6 +34,13 @@ def main():
     for archive, directory in [('ferrum-source.tar.gz', 'source'), ('lp-tools.tar.gz', 'lp-tools')]:
         with tarfile.open(assets / archive) as t:
             t.extractall(output / directory, filter='data')
+    frozen_inputs=None
+    if manifest.get('input_archive'):
+        archive=inside(assets,manifest['input_archive'])
+        if sha(archive)!=manifest['input_archive_sha256']:
+            raise ValueError('Full replay input archive changed')
+        frozen_inputs=output/'frozen-inputs'
+        with tarfile.open(archive) as t:t.extractall(frozen_inputs,filter='data')
     oracle = output / 'oracle.jsonl'
     with gzip.open(assets / 'oracle.jsonl.gz', 'rb') as src, oracle.open('wb') as dst:
         shutil.copyfileobj(src, dst)
@@ -62,7 +69,7 @@ def main():
         run.mkdir()
         result = dict(id=row['id'], root=row['root'], expected_answer=row['answer'], passed=False)
         try:
-            source = inside(base, row['input'])
+            source = inside(frozen_inputs,row['root']) if frozen_inputs else inside(base, row['input'])
             if sha(source) != row['input_sha256']:
                 raise ValueError('Input hash changed')
             inp = inside(output / 'inputs', row['root'])

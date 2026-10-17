@@ -2,8 +2,8 @@
 
 The user approved proceeding beyond the assessment checkpoint. Work remains
 isolated on `consolidated`; no semantic theory, checker, parser or generated
-Haskell change has been made yet. The prerequisite full regression baseline is
-still in progress. The assessment document describes its earlier checkpoint;
+Haskell change has been made yet. The full replay and compact regression baseline now pass; the isolated
+Isabelle integration baseline is still building. The assessment document describes its earlier checkpoint;
 this document records subsequent implementation evidence.
 
 ## Passing committed infrastructure
@@ -52,12 +52,33 @@ these results. Their original failures remain retained. The final baseline
 must reconcile every failed identity and freeze effective per-root time budgets;
 simply excluding the failed attempts from the root set is forbidden.
 
+## Frozen regression baseline
+
+All 3,484 roots have fresh eligible replays with exact input/root/answer
+correspondence, twice production certification and optimized HPC agreement.
+The three calibrated recoveries are explicitly reconciled; none is dropped.
+`baseline-root-evidence.json.gz` retains per-root evidence. All original inputs
+and the full replay manifest are durable in `tests/certification/replay-assets`.
+
+The compact suite contains 208 positives and 384 validated semantic negatives.
+Its 45,753 observed structural/executable obligations are frozen. The optimizer
+proved minimum cardinality (207 unsatisfiable, 208 satisfiable); secondary timing
+and storage optimization was bounded. Compressed positive storage is about
+6.3 MB, with measured baseline single-pass checking around 36 seconds.
+The complete compact run passed acceptance and exact HPC coverage. Six timing
+outliers passed controlled interleaved repeats with no confirmed slowdown.
+
+The changed-source mapping observes 107 of 245 indexed checker declarations.
+Zero unknown proof nodes were found. This does not establish full criterion
+coverage: nested semantic states, uncovered declarations and side conditions
+remain explicit gaps and constrain which restructuring is justified.
+
 ## Gates still pending
 
 The isolated Isabelle build covers ordinary integration/export, absolute RFC
-and relative ADPs with private dependencies/heaps. The full replay, final set
-cover, complete semantic context mapping, additional paired negatives and
-consolidation batches are still pending. Preliminary source/HPC links are
+and relative ADPs with private dependencies/heaps. The ordinary checker, ordinary export and RFC export have passed.
+Relative-ADP integration, complete semantic context mapping, consolidation
+batches and the final post-consolidation full replay remain pending. Preliminary source/HPC links are
 candidate mappings, not a claim that runtime tests execute Isabelle proofs.
 
 Relative contexts now have genuine evidence, but these two proofs use ordinary

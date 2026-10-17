@@ -1,0 +1,203 @@
+{
+  "gaps": [
+    "map/Q preservation",
+    "mode-specific usable rules",
+    "minimality",
+    "freshness",
+    "order obligations beyond the listed polynomial/matrix cases",
+    "automaton closure and coverage beyond final-state validity"
+  ],
+  "scope": "Only listed mutations whose intended semantic diagnostics are confirmed count as negative coverage.",
+  "selected_sources_without_mutations": [
+    "05356a3fdf4b96f94d51f76e",
+    "076cbf9e68e8ca5d1d4a3f59",
+    "0d0ed88c27e1b03e3a2a2ac8",
+    "149783199f949cb47b9e0264",
+    "21246305e2e866a697e69520",
+    "353a687ae8f0105a973efb83",
+    "392a5b8d175dc3cce769b204",
+    "3ceb2ac4c410da71b3eba26c",
+    "42e15c11e84b4019f500b0ec",
+    "474bfc805f4ae1d6dc568ca6",
+    "51726cc006d6b34ab94182f0",
+    "57e8dfaf625c0856eb58dc57",
+    "58c53f8ae58528af4b3fd17f",
+    "5c2d79df63f40a59a901e223",
+    "5eb20a8721b7e5d8eb05836b",
+    "765c95daa61bb5601a6d36b0",
+    "8058d34eaba6d971b16c1dc6",
+    "89af640d166867e87f47713c",
+    "928c76530a1178d6a16a6824",
+    "95a947694f68a1b766848407",
+    "964becfe921b9d1adfa1db8d",
+    "a465c99f25a6e97f68f8d102",
+    "abc21bc38fe0705ec0b73b64",
+    "af31ed3d2530078173bdb98c",
+    "b017928af1506b58c93abafe",
+    "b22cd310ab27e818debfeb8d",
+    "b3b4453c2ba13e25da920ea2",
+    "b90ec2d46594c576c45c30c8",
+    "bfe0ce360f810fc592a9234e",
+    "c7296993a510a0012e81bf44",
+    "cb4e7247912a5d851bad7fcd",
+    "d4d04af4ec218289aa0b0d32",
+    "d7f2f1afde4bac3116b703ae",
+    "e2dafae93288729bdab07654",
+    "e48748f589e0072e943061f0",
+    "e6f05eb73e85d89f3313119b",
+    "f436c55ea5c2e6823c6162a4",
+    "f52114a29e55c35cf99ce109"
+  ],
+  "skipped_sources": [
+    {
+      "bytes": 23820,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "b90ec2d46594c576c45c30c8"
+    },
+    {
+      "bytes": 30536,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "e6f05eb73e85d89f3313119b"
+    },
+    {
+      "bytes": 19039,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "353a687ae8f0105a973efb83"
+    },
+    {
+      "bytes": 14549,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "964becfe921b9d1adfa1db8d"
+    },
+    {
+      "bytes": 31241,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "e48748f589e0072e943061f0"
+    },
+    {
+      "bytes": 123030,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "d7f2f1afde4bac3116b703ae"
+    },
+    {
+      "bytes": 27746,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "51726cc006d6b34ab94182f0"
+    },
+    {
+      "bytes": 7970,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "928c76530a1178d6a16a6824"
+    },
+    {
+      "bytes": 4955,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "abc21bc38fe0705ec0b73b64"
+    },
+    {
+      "bytes": 279034588,
+      "reason": "Streaming mutation implementation needed for this large proof",
+      "source_id": "e2dafae93288729bdab07654"
+    },
+    {
+      "bytes": 23720,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "f52114a29e55c35cf99ce109"
+    },
+    {
+      "bytes": 1729,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "392a5b8d175dc3cce769b204"
+    },
+    {
+      "bytes": 29542925,
+      "reason": "Streaming mutation implementation needed for this large proof",
+      "source_id": "076cbf9e68e8ca5d1d4a3f59"
+    },
+    {
+      "bytes": 82918,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "58c53f8ae58528af4b3fd17f"
+    },
+    {
+      "bytes": 7128,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "89af640d166867e87f47713c"
+    },
+    {
+      "bytes": 929437,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "0d0ed88c27e1b03e3a2a2ac8"
+    },
+    {
+      "bytes": 171678,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "57e8dfaf625c0856eb58dc57"
+    },
+    {
+      "bytes": 579550,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "765c95daa61bb5601a6d36b0"
+    },
+    {
+      "bytes": 691618,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "8058d34eaba6d971b16c1dc6"
+    },
+    {
+      "bytes": 67672,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "95a947694f68a1b766848407"
+    },
+    {
+      "bytes": 167348,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "05356a3fdf4b96f94d51f76e"
+    },
+    {
+      "bytes": 81139,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "d4d04af4ec218289aa0b0d32"
+    },
+    {
+      "bytes": 156609,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "bfe0ce360f810fc592a9234e"
+    },
+    {
+      "bytes": 10564341,
+      "reason": "Streaming mutation implementation needed for this large proof",
+      "source_id": "5eb20a8721b7e5d8eb05836b"
+    },
+    {
+      "bytes": 81288,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "21246305e2e866a697e69520"
+    },
+    {
+      "bytes": 7309,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "f436c55ea5c2e6823c6162a4"
+    },
+    {
+      "bytes": 293376,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "42e15c11e84b4019f500b0ec"
+    },
+    {
+      "bytes": 41571,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "a465c99f25a6e97f68f8d102"
+    },
+    {
+      "bytes": 16999,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "af31ed3d2530078173bdb98c"
+    },
+    {
+      "bytes": 2547,
+      "reason": "Nontermination mutation semantics not implemented",
+      "source_id": "b3b4453c2ba13e25da920ea2"
+    }
+  ]
+}

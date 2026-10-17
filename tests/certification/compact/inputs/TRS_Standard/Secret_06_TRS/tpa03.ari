@@ -1,0 +1,6 @@
+; @origtpdbfilename ./TRS/secret06/tpa03.trs
+; @xtcfilename "./TRS_Standard/Secret_06_TRS/tpa03.xml"
+(format TRS)
+(fun f 2)
+(fun a 0)
+(rule (f x (f y x)) (f (f x x) (f a y)))

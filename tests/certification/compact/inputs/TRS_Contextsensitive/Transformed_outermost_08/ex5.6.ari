@@ -1,0 +1,12 @@
+; @origtpdbfilename ./TRS/endrullis08/ex5.6.trs
+; @xtcfilename "./TRS_Contextsensitive/Transformed_outermost_08/ex5.6.xml"
+(format CSTRS)
+(fun f_1 2 :replacement-map ())
+(fun i_0 1 :replacement-map (1))
+(fun g_1 1 :replacement-map ())
+(fun a_0 0 :replacement-map ())
+(rule (f_1 x x) (f_1 (i_0 x) (g_1 (g_1 x))))
+(rule (f_1 x (i_0 (g_1 x))) a_0)
+(rule (f_1 x y) x)
+(rule (f_1 x (i_0 x)) (f_1 x x))
+(rule (g_1 x) (i_0 x))

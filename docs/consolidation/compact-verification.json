@@ -1,0 +1,27 @@
+{
+  "acceptance_passed": true,
+  "all_results_passed": true,
+  "checker_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+  "controlled_performance": {
+    "acceptance_passed": true,
+    "candidate_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+    "confirmed_slowdowns": [],
+    "method": "One warmup and alternating-order sequential repeats; median comparison.",
+    "reference_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73"
+  },
+  "coverage_passed": true,
+  "hpc_checker_sha256": "5537f183ac31d2042aed76e03940622e8f014599cb37018639c8ac987dc30c3e",
+  "missing_coverage": [],
+  "negatives": 384,
+  "performance_status": "Controlled reference repeats required for listed slowdown candidates; timings alone do not establish a regression.",
+  "positives": 208,
+  "scope": "Frozen 3484-root baseline with explicit calibrated search budgets; minimum cardinality proved for 45753 observed structural/executable obligations, with semantic coverage gaps retained.",
+  "slowdown_candidates": [
+    "d33e6e83a63640d662d9c57a",
+    "77ed8d5676a87c383cbfcdb2",
+    "7040aadf9e4ed05075843bb3",
+    "c744cf6653b4ef6ab03e7741",
+    "21f4291b35b958aff3a26866",
+    "1336d0e0c8a524558049fc55"
+  ]
+}

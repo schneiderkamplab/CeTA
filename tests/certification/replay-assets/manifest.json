@@ -17,6 +17,10 @@
     "lp-tools.tar.gz": {
       "sha256": "dcffd0f8b9560776541ff32dbe32fbec9532d3278a6f8d6262d6bb7fd46d15b4",
       "bytes": 25166101
+    },
+    "all-inputs.tar.gz": {
+      "sha256": "924a9edaad48c662a2a4a31ff3549f1c36640c12e44ca36f86e836410f8200f8",
+      "bytes": 1314117
     }
   },
   "lp_tools": "Frozen private search dependencies, including package metadata and licenses.",

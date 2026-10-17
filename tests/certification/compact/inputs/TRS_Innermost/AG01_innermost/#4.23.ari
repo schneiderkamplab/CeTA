@@ -1,0 +1,12 @@
+; @origtpdbfilename ./TRS/AG01/#4.23.trs
+; @xtcfilename "./TRS_Innermost/AG01_innermost/#4.23.xml"
+(format TRS)
+(fun quot 3)
+(fun |0| 0)
+(fun s 1)
+(fun plus 2)
+(rule (quot |0| (s y) (s z)) |0|)
+(rule (quot (s x) (s y) z) (quot x y z))
+(rule (plus |0| y) y)
+(rule (plus (s x) y) (s (plus x y)))
+(rule (quot x |0| (s z)) (s (quot x (plus z (s |0|)) (s z))))

@@ -74,3 +74,8 @@ The full baseline uses a freshly built pinned Ferrum and frozen search-only
 oracle. Neither prior certified status nor a matching benchmark name alone is
 enough to admit a proof. Full baseline/final replay and criterion-level mapping
 remain mandatory before claiming consolidation complete.
+
+The frozen full-corpus compact suite is now `tests/certification/compact`: 208
+positives and 384 semantic negatives. Run it with the same `suite.py` interface.
+Its denominator covers all observed eligible baseline obligations; uncovered
+semantic paths remain gaps, not evidence supporting removal.

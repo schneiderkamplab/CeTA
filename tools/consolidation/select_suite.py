@@ -28,7 +28,7 @@ def main():
  if summary['losses']:raise SystemExit('Baseline has unresolved losses; cannot freeze suite denominator')
  records=[json.loads(l) for l in (stage/'results.jsonl').read_text().splitlines()]
  if len(records)!=summary['roots'] or not all(r['eligible'] for r in records):raise SystemExit('Incomplete eligible corpus')
- records.sort(key=lambda r:r['root']);reg=registry();(stage/'processor-registry.json').write_text(json.dumps(reg,indent=2,sort_keys=True)+'\n')
+ records.sort(key=lambda r:r['root']);metadata=json.loads((stage/'metadata.json').read_text());reg=registry(metadata['hpc_source_revision']);(stage/'processor-registry.json').write_text(json.dumps(reg,indent=2,sort_keys=True)+'\n')
  with concurrent.futures.ProcessPoolExecutor(max_workers=a.jobs,initializer=init_worker,initargs=(reg,str(stage))) as pool:analyses=list(pool.map(analyze,records))
  unknown=[dict(id=r['id'],root=r['root'],unknown_tags=r['unknown_tags']) for r in analyses if r['unknown_tags']]
  (stage/'coverage-gaps.json').write_text(json.dumps(dict(unknown_proof_nodes=unknown,semantic_mapping=reg['limitations']),indent=2,sort_keys=True)+'\n')

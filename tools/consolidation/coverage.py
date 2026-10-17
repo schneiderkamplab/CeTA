@@ -6,13 +6,14 @@ semantic DP states. Unmapped state transitions remain gates on restructuring.
 import argparse,collections,gzip,hashlib,json,pathlib,re,subprocess,xml.etree.ElementTree as ET
 ROOT=pathlib.Path(__file__).resolve().parents[2];REV='17dbee4b822733cd25235a64178db2ccf590a10e'
 def git(*args):return subprocess.check_output(['git','-C',str(ROOT),*args]).decode('latin1')
-def registry():
-    paths=git('ls-tree','-r','--name-only',REV).splitlines();texts={};known=set();branches=collections.defaultdict(list)
+def registry(revision=REV):
+    revision=git('rev-parse',revision).strip()
+    paths=git('ls-tree','-r','--name-only',revision).splitlines();texts={};known=set();branches=collections.defaultdict(list)
     for path in paths:
         if not path.endswith('.thy') or not path.startswith(('thys/','dev/')):continue
         # All executable checker/parser theories and their imported semantic families.
         if not any(s in path for s in ('Checker','Check_','Parser','RFC_Absolute','Relative_ADP_Ceta')):continue
-        text=git('show',REV+':'+path);texts[path]=text
+        text=git('show',revision+':'+path);texts[path]=text
         if 'Parser' in path or 'Relative_ADP_Ceta' in path or 'RFC_Absolute' in path:
             known.update(re.findall(r"STR ''([A-Za-z][A-Za-z0-9_-]*)''",text))
         for m in re.finditer(r'"(check_[\w]+)[^"=\n]*(?:\n[^"=]*)?=',text):
@@ -35,7 +36,7 @@ def registry():
             returned=body[returns[-1].end():]
             cs=sorted(set(re.findall(r'\b[A-Z][A-Za-z_0-9]+\b',returned))&branches.keys())
             if cs:tags[m[1]].append(dict(parser_theory=path,parser_line=text.count('\n',0,m.start())+1,constructors=cs,checker_branches=[b for c in cs for b in branches[c]]))
-    return dict(revision=REV,structural_schema_version=2,known_xml_tags=sorted(known),processor_candidates=dict(tags),limitations=['Lexical links require review; runtime execution never executes Isabelle theorems.','Nested DP state transformations are not inferred from tag names.'])
+    return dict(revision=revision,structural_schema_version=2,known_xml_tags=sorted(known),processor_candidates=dict(tags),limitations=['Lexical links require review; runtime execution never executes Isabelle theorems.','Nested DP state transformations are not inferred from tag names.'])
 
 def inspect(path,category,reg):
     known=set(reg['known_xml_tags']);processors=reg['processor_candidates'];features=set();unknown=collections.Counter();observed=collections.Counter();nodes=[];stack=[];child_counts=[];proof_depth=None;frames=[];version=reg.get('structural_schema_version',1)

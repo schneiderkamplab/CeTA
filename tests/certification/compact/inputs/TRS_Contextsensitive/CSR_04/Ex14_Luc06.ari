@@ -1,0 +1,12 @@
+; @origtpdbfilename ./TRS/CSR/Ex14_Luc06.trs
+; @xtcfilename "./TRS_Contextsensitive/CSR_04/Ex14_Luc06.xml"
+(format CSTRS)
+(fun h 1 :replacement-map (1))
+(fun g 2 :replacement-map (1))
+(fun a 0 :replacement-map ())
+(fun f 2 :replacement-map (1))
+(fun b 0 :replacement-map ())
+(rule (h X) (g X X))
+(rule (g a X) (f b X))
+(rule (f X X) (h a))
+(rule a b)

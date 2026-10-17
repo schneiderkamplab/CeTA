@@ -30,3 +30,8 @@ checker twice. Proof bytes can differ because search may find another valid
 certificate. The result compares exact root names and answers, and retains
 commands, hashes, logs and timings. This command checks replay and certification;
 executable coverage remains a separate instrumented-suite gate.
+
+For all 3,484 frozen roots, use `--manifest
+tests/certification/replay-assets/full-replay.json`. The runner verifies and
+extracts `all-inputs.tar.gz` privately and preserves the calibrated per-root
+native search budgets. Use `--jobs 32` for parallel regeneration.

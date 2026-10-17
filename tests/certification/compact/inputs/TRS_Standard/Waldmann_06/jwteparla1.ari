@@ -1,0 +1,6 @@
+; @origtpdbfilename ./TRS/Waldmann/jwteparla1.trs
+; @xtcfilename "./TRS_Standard/Waldmann_06/jwteparla1.xml"
+(format TRS)
+(fun f 2)
+(fun a 0)
+(rule (f x (f a (f (f a a) a))) (f (f a x) x))

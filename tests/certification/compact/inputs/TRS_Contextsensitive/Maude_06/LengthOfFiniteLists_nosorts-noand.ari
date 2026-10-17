@@ -1,0 +1,17 @@
+; @origtpdbfilename ./TRS/CSR_Maude/length-lazy-list/LengthOfFiniteLists_nosorts-noand.trs
+; @xtcfilename "./TRS_Contextsensitive/Maude_06/LengthOfFiniteLists_nosorts-noand.xml"
+(format CSTRS)
+(fun zeros 0 :replacement-map ())
+(fun cons 2 :replacement-map (1))
+(fun |0| 0 :replacement-map ())
+(fun U11 2 :replacement-map (1))
+(fun tt 0 :replacement-map ())
+(fun U12 2 :replacement-map (1))
+(fun s 1 :replacement-map (1))
+(fun length 1 :replacement-map (1))
+(fun nil 0 :replacement-map ())
+(rule zeros (cons |0| zeros))
+(rule (U11 tt L) (U12 tt L))
+(rule (U12 tt L) (s (length L)))
+(rule (length nil) |0|)
+(rule (length (cons N L)) (U11 tt L))

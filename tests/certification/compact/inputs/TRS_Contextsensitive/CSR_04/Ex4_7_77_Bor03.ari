@@ -1,0 +1,9 @@
+; @origtpdbfilename ./TRS/CSR/Ex4_7_77_Bor03.trs
+; @xtcfilename "./TRS_Contextsensitive/CSR_04/Ex4_7_77_Bor03.xml"
+(format CSTRS)
+(fun zeros 0 :replacement-map ())
+(fun cons 2 :replacement-map (1))
+(fun |0| 0 :replacement-map ())
+(fun tail 1 :replacement-map (1))
+(rule zeros (cons |0| zeros))
+(rule (tail (cons X XS)) XS)

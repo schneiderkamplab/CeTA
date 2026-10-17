@@ -18,6 +18,8 @@ def main():
         r = subprocess.run(['git', 'rev-parse', revision + ':' + v['path']], cwd=ROOT, text=True, capture_output=True)
         if r.returncode == 0 and r.stdout.strip() == v['blob']:
             variants.append(v)
+    changed=subprocess.check_output(['git','diff','--name-only','--diff-filter=ACMRT',inventory['baseline'],revision,'--','*.thy'],cwd=ROOT,text=True).splitlines()
+    unindexed=sorted(set(changed)-{v['path'] for v in variants})
     modules = collections.defaultdict(list)
     hashes = {}
     for line in a.mix.read_text().splitlines():
@@ -80,6 +82,7 @@ def main():
                   scope='Completed eligible roots only; executable coverage does not execute Isabelle proofs.',
                   eligible_roots=len(eligible), expected_roots=len(metadata['roots']), complete=complete,
                   changed_declarations=len(mappings), observed_functions=sum(bool(r['supporting_roots']) for r in mappings),
+                  unindexed_changed_theories=[dict(theory=path,gap='Current source blob is not in the pinned declaration inventory; explicit inventory update and semantic mapping required.') for path in unindexed],
                   mappings=mappings)
     write(a.output, report)
     print(json.dumps({k: v for k, v in report.items() if k != 'mappings'}))

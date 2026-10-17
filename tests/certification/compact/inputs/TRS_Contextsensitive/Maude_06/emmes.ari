@@ -1,0 +1,17 @@
+; @origtpdbfilename ./TRS/aprove08-csr/emmes.trs
+; @xtcfilename "./TRS_Contextsensitive/Maude_06/emmes.xml"
+(format CSTRS)
+(fun plus 2 :replacement-map (1 2))
+(fun if 3 :replacement-map (1))
+(fun isZero 1 :replacement-map (1))
+(fun s 1 :replacement-map (1))
+(fun p 1 :replacement-map (1))
+(fun |0| 0 :replacement-map ())
+(fun true 0 :replacement-map ())
+(fun false 0 :replacement-map ())
+(rule (plus x y) (if (isZero x) y (s (plus (p x) y))))
+(rule (isZero |0|) true)
+(rule (isZero (s x)) false)
+(rule (p (s x)) x)
+(rule (if true x y) x)
+(rule (if false x y) y)
