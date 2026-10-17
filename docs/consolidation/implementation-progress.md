@@ -2,7 +2,7 @@
 
 The user approved proceeding beyond the assessment checkpoint. Work remains
 isolated on `consolidated`. The full baseline replay, compact regression suite and isolated Isabelle/export/compile
-baseline pass. The pinned mains are reconciled in the working tree and all four
+baseline pass. The pinned mains are reconciled and committed, and all four
 Isabelle targets pass. The reconciled focused, compact and full-corpus gates pass. The pinned-main
 reconciliation is committed as `a485775`. The assessment document describes its earlier checkpoint;
 this document records subsequent implementation evidence.
@@ -75,12 +75,11 @@ Zero unknown proof nodes were found. This does not establish full criterion
 coverage: nested semantic states, uncovered declarations and side conditions
 remain explicit gaps and constrain which restructuring is justified.
 
-## Gates still pending
+## Coverage limits and gate history
 
 The isolated Isabelle build covers ordinary integration/export, absolute RFC
 and relative ADPs with private dependencies/heaps. All baseline Isabelle integration/export targets and separate ordinary, RFC
-and relative-ADP binaries have passed. Complete semantic context mapping,
-consolidation batches and the final post-consolidation full replay remain pending. Preliminary source/HPC links are
+and relative-ADP binaries have passed. The reconciliation and export/build cleanup batches are verified below. Complete semantic context mapping remains partial. Preliminary source/HPC links are
 candidate mappings, not a claim that runtime tests execute Isabelle proofs.
 
 Relative contexts now have genuine evidence, but these two proofs use ordinary
@@ -158,5 +157,39 @@ in 99.9 seconds. The compact suite again passed 208 positives, 408 semantic
 negatives, production/HPC agreement and all retained coverage. Forty-one
 interleaved CPU-affinity-controlled repeats resolved the short-run timing
 candidates without a slowdown above 20%. `cleanup-verification.json` and
-`cleanup-evidence.json.gz` record the gates. The fresh 3,484-root final replay is
-running from durable assets against this frozen source tree.
+`cleanup-evidence.json.gz` record the gates. The fresh 3,484-root final replay passed from durable assets against this frozen source tree, as recorded below.
+
+## Final acceptance of the verified scope
+
+Production changes are committed in `a485775` (pinned-main reconciliation) and
+`bcc0f51` (shared exports and isolated build outputs). All work stays on the
+`consolidated` branch; no parent deployment or merge was performed.
+
+The final fresh Ferrum replay passed all 3,484 frozen root/input/answer identities,
+with original-input correspondence, twice production certification and optimized
+HPC agreement for every proof. There are no certified-root losses. Of the proofs,
+3,455 are byte-identical to baseline; the other 29 were parsed again. No unknown
+nodes or new unreviewed structural obligations were found. All 45,733 retained
+obligations were observed; the original 45,753 denominator remains recorded with
+20 explicitly retired obsolete counters, never counted as executed coverage.
+See `final-verification.json` and `final-replay-evidence.json.gz` for the exact
+comparison, per-root commands, identities, results and timings. Replay search
+times vary; the maximum final search was 952.1 seconds, within its frozen ceiling.
+
+The committed source was compared blob-by-blob with the verified private build.
+All four Isabelle targets revalidated against private heaps. A clean GHC rebuild
+reproduced all three production binaries byte-for-byte. An earlier incremental
+relink differed in GHC temporary FILE symbols and derived build IDs only; that
+failed equality assertion and its investigation are retained, not counted as an
+identical build. `committed-build-verification.json` and
+`committed-build-evidence.json.gz` record both outcomes.
+
+The 208-positive/408-negative compact gate passes, including HPC semantic
+rejections and retained coverage. Controlled repeats found no confirmed compact
+checker slowdown above 20%. No theorem or problem variant has been retired.
+Relative ADP positive replay coverage, positive outermost RZ coverage, and complete
+nested semantic-state/theorem mapping remain gaps. Semantic restructuring of
+those paths is deferred as required by the plan; build/integration verification
+does not fill their missing positive coverage. The feature-by-feature upstream
+outline is `deferred-upstream-series.md`; reconstructing that patch series remains
+outside this consolidation.

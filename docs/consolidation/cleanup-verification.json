@@ -38,7 +38,7 @@
       "removed": []
     }
   },
-  "final_fresh_replay_status": "Running separately against this exact immutable source tree; no final acceptance claimed yet.",
+  "final_fresh_replay_status": "Passed all 3484 roots with exact identities and retained coverage; see final-verification.json.",
   "focused_and_compact_passed": true,
   "isabelle": {
     "command": [

@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "production_commit": "bcc0f51f01160803015fc24e073d49b575ac94f3",
+  "source_tree": "d2ce39d43bf411e290ad4cd0d462dbcad5686650",
+  "fresh_roots": 3484,
+  "exact_root_input_answer_sets_preserved": true,
+  "certification": "Twice production plus optimized HPC for every original-input-audited fresh proof",
+  "compact_positives": 208,
+  "compact_semantic_negatives": 408,
+  "minimum_cardinality_proved_for_frozen_baseline": true,
+  "frozen_coverage": 45753,
+  "observed_retained_coverage": 45733,
+  "explicitly_retired_counters": 20,
+  "missing_coverage": [],
+  "unknown_node_roots": [],
+  "new_structural_obligations": [],
+  "byte_identical_regenerated_proofs": 3455,
+  "timings": {
+    "replay": {
+      "total_seconds": 41247.86210516724,
+      "maximum_seconds": 952.0637010009959
+    },
+    "hpc": {
+      "total_seconds": 19608.796803044155,
+      "maximum_seconds": 305.68946504499763
+    },
+    "production_twice": {
+      "total_seconds": 12332.159755540313,
+      "maximum_seconds": 136.06343027297407
+    }
+  },
+  "evidence_sha256": "5e1eddaf587fdcb57c6e0ec2776f5ab10045cbbc9285135b07cc629d6914e562",
+  "limitations": [
+    "Relative proofs exercise ordinary rule removal, not relative ADP processors.",
+    "Outermost evidence is nontermination; positive RZ transformation replay coverage is absent.",
+    "Nested semantic-state and theorem links remain partially mapped; unsupported semantic restructuring is deferred.",
+    "Runtime coverage does not execute Isabelle proofs. No theorem or problem variant was retired."
+  ],
+  "evidence": [
+    "final-replay-evidence.json.gz",
+    "committed-build-verification.json",
+    "committed-build-evidence.json.gz",
+    "cleanup-verification.json",
+    "reconciled-verification.json",
+    "processor-mode-coverage.json.gz"
+  ],
+  "comparison_execution": {
+    "command": [
+      "python3",
+      "/work/dfm/festschrift/CeTA-consolidated/tools/consolidation/compare_replay.py",
+      "--manifest",
+      "/work/dfm/festschrift/CeTA-consolidated/tests/certification/replay-assets/full-replay.json",
+      "--replay",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/final-full-replay",
+      "--compact",
+      "/work/dfm/festschrift/CeTA-consolidated/tests/certification/compact",
+      "--baseline-evidence",
+      "/work/dfm/festschrift/CeTA-consolidated/docs/consolidation/coverage-baseline",
+      "--transition",
+      "/work/dfm/festschrift/CeTA-consolidated/docs/consolidation/cleanup-coverage-transition.json.gz",
+      "--checker",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-cleanup/ceta",
+      "--hpc-checker",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-cleanup/ceta-hpc",
+      "--output",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/final-replay-comparison",
+      "--jobs",
+      "8"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+    "environment": {},
+    "returncode": 0,
+    "elapsed_seconds": 15.277323913993314,
+    "memory_used_at_start": 434462236672,
+    "max_child_rss_kib": 424904
+  }
+}

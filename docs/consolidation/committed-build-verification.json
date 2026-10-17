@@ -1,0 +1,71 @@
+{
+  "commit": "bcc0f51f01160803015fc24e073d49b575ac94f3",
+  "source_tree": "d2ce39d43bf411e290ad4cd0d462dbcad5686650",
+  "source_files_matched": 3839,
+  "binaries": {
+    "ceta": "a0f1d98394045935b8d399d3af55b7435e0a867845c3a7f7cae04e618c155b58",
+    "ceta-ordinary": "7e4be1154a49164cc9146912eed1b626975f0d8b41f15e0309727d1a6ed2c266",
+    "ceta-relative-adp": "e4fd7b66522d5d27a967a4aa264a88b86579218904cb91b36963cc669789d092"
+  },
+  "clean_build_byte_identical_to_tested_binaries": true,
+  "isabelle": {
+    "command": [
+      "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+      "build",
+      "-v",
+      "-j",
+      "2",
+      "-o",
+      "threads=8",
+      "-o",
+      "parallel_proofs=0",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics/Reduction_Pair",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Checker",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Integration",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+      "Proof_Checker",
+      "Code",
+      "RFC_Absolute_Ext",
+      "Relative_ADP_Ceta_Dev"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+    "environment": {
+      "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+      "ISABELLE_IDENTIFIER": "consolidated_committed_20261017",
+      "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+    },
+    "returncode": 0,
+    "elapsed_seconds": 25.94800089695491,
+    "memory_used_at_start": 511853850624,
+    "max_child_rss_kib": 3556096
+  },
+  "clean_compile": {
+    "command": [
+      "make",
+      "-j",
+      "2",
+      "ceta",
+      "ceta-ordinary",
+      "ceta-relative-adp",
+      "GHC=/work/dfm/festschrift/ferrum/.tools/.ghcup/bin/ghc",
+      "CETA_BUILD_DIR=/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-committed-clean",
+      "CETA_BIN_DIR=/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-committed-clean"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source",
+    "environment": {},
+    "returncode": 0,
+    "elapsed_seconds": 279.54311317414977,
+    "memory_used_at_start": 383461470208,
+    "max_child_rss_kib": 2682440
+  },
+  "incremental_link_note": "The initial whole-file equality assertion failed after incremental relinking. GHC temporary FILE symbols and the derived build ID differ; allocated code/data and loader headers agree. Clean compilation reproduces all three tested binaries exactly.",
+  "passed": true
+}
