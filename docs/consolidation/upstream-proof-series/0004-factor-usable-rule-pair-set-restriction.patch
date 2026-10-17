@@ -1,0 +1,127 @@
+From 2816f6a7f8f764a210bc24d3d0812d8e81b138d2 Mon Sep 17 00:00:00 2001
+From: CeTA consolidation <consolidation@example.invalid>
+Date: Sat, 17 Oct 2026 12:00:00 +0000
+Subject: [PATCH] Factor usable-rule pair-set restriction
+
+Preserve existing contracts and executable definitions.
+---
+ .../CSR_Muterm_Innermost_Usable_Exec.thy      | 82 ++++++++++---------
+ 1 file changed, 44 insertions(+), 38 deletions(-)
+
+diff --git a/thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy b/thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy
+index c76a8e16132aaef0ff65c5cae8a086a59652ba74..bb4b761c820580698900c512e5f3d676eff96fa3 100644
+--- a/thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy
++++ b/thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy
+@@ -2,6 +2,45 @@ theory CSR_Muterm_Innermost_Usable_Exec
+   imports CSR_Muterm_Innermost_Usable
+ begin
+ 
++lemma muterm_innermost_ur_closed_pairs_subset:
++  assumes "muterm_innermost_ur_closed R U \<mu> Q" and "P \<subseteq> Q"
++  shows "muterm_innermost_ur_closed R U \<mu> P"
++proof -
++  from assms(1) have subset: "U \<subseteq> R"
++    and pairs: "\<forall>dp\<in>Q. \<not> is_Var (snd dp) \<longrightarrow>
++      csr_u3_root_rules_closed R U (snd dp) (mu_fun_poss \<mu> (snd dp))"
++    and rules: "\<forall>lr\<in>U. csr_u3_root_rules_closed R U (snd lr)
++      (mu_fun_poss \<mu> (snd lr))"
++    unfolding muterm_innermost_ur_closed_def by simp_all
++  have restricted: "\<forall>dp\<in>P. \<not> is_Var (snd dp) \<longrightarrow>
++      csr_u3_root_rules_closed R U (snd dp) (mu_fun_poss \<mu> (snd dp))"
++  proof (intro ballI impI)
++    fix dp
++    assume dp: "dp \<in> P" and nonvar: "\<not> is_Var (snd dp)"
++    have dp_Q: "dp \<in> Q" by (rule subsetD[OF assms(2) dp])
++    show "csr_u3_root_rules_closed R U (snd dp) (mu_fun_poss \<mu> (snd dp))"
++      by (rule pairs[rule_format, OF dp_Q nonvar])
++  qed
++  show ?thesis unfolding muterm_innermost_ur_closed_def
++    by (intro conjI subset restricted rules)
++qed
++
++lemma rhs_mu_vars_condition_subset:
++  assumes "rhs_mu_vars_condition \<mu> Q" and "P \<subseteq> Q"
++  shows "rhs_mu_vars_condition \<mu> P"
++proof -
++  from assms(1) have condition: "\<forall>l r. (l,r) \<in> Q \<longrightarrow>
++    (\<forall>x. x \<in> mu_vars_term \<mu> r \<longrightarrow> x \<in> mu_vars_term \<mu> l)"
++    unfolding rhs_mu_vars_condition_def by blast
++  show ?thesis unfolding rhs_mu_vars_condition_def
++  proof (intro allI impI)
++    fix l r x
++    assume lr: "(l,r) \<in> P" and x: "x \<in> mu_vars_term \<mu> r"
++    have lr_Q: "(l,r) \<in> Q" by (rule subsetD[OF assms(2) lr])
++    show "x \<in> mu_vars_term \<mu> l" by (rule condition[rule_format, OF lr_Q x])
++  qed
++qed
++
+ lemma muterm_innermost_collapsing_target_safe:
+   fixes R U P S :: "(((('f::{showl,compare_order},'l::{showl,compare_order}) lab),'v) trs)"
+     and \<mu> :: "((('f,'l) lab) \<times> nat) \<Rightarrow> nat set"
+@@ -17,7 +56,7 @@ lemma muterm_innermost_collapsing_target_safe:
+   shows "muterm_innermost_ur_safe R U \<mu> (d \<cdot> \<theta>)"
+ proof -
+   have conservative_P: "rhs_mu_vars_condition \<mu> P"
+-    using conservative unfolding rhs_mu_vars_condition_def by blast
++    by (rule rhs_mu_vars_condition_subset[OF conservative], blast)
+   have y_rhs: "y \<in> mu_vars_term \<mu> (Var y)"
+     unfolding mu_vars_term_def by simp
+   have y_l: "y \<in> mu_vars_term \<mu> l"
+@@ -71,43 +110,10 @@ lemma muterm_innermost_noncollapsing_target_safe:
+     and source: "innermost_pair_source Sharp \<mu> R (l \<cdot> \<sigma>)"
+   shows "muterm_innermost_ur_safe R U \<mu> (r \<cdot> \<sigma>)"
+ proof -
+-  from closed have subset: "U \<subseteq> R"
+-    unfolding muterm_innermost_ur_closed_def by simp
+-  from closed have pair_closed: "\<forall>dp\<in>P \<union> S.
+-      \<not> is_Var (snd dp) \<longrightarrow>
+-      csr_u3_root_rules_closed R U (snd dp) (mu_fun_poss \<mu> (snd dp))"
+-    unfolding muterm_innermost_ur_closed_def by simp
+-  from closed have rule_closed: "\<forall>q\<in>U.
+-      csr_u3_root_rules_closed R U (snd q) (mu_fun_poss \<mu> (snd q))"
+-    unfolding muterm_innermost_ur_closed_def by simp
+   have closed_P: "muterm_innermost_ur_closed R U \<mu> P"
+-    unfolding muterm_innermost_ur_closed_def
+-  proof (intro conjI ballI impI)
+-    show "U \<subseteq> R" by (rule subset)
+-    fix dp
+-    assume dp: "dp \<in> P" and nonvar: "\<not> is_Var (snd dp)"
+-    have "dp \<in> P \<union> S" using dp by simp
+-    from pair_closed[rule_format, OF this nonvar] show
+-      "csr_u3_root_rules_closed R U (snd dp) (mu_fun_poss \<mu> (snd dp))" .
+-  next
+-    fix q
+-    assume "q \<in> U"
+-    from rule_closed[rule_format, OF this] show
+-      "csr_u3_root_rules_closed R U (snd q) (mu_fun_poss \<mu> (snd q))" .
+-  qed
++    by (rule muterm_innermost_ur_closed_pairs_subset[OF closed], blast)
+   have conservative_P: "rhs_mu_vars_condition \<mu> P"
+-    unfolding rhs_mu_vars_condition_def
+-  proof (intro allI impI)
+-    fix l r x
+-    assume lr: "(l,r) \<in> P" and xr: "x \<in> mu_vars_term \<mu> r"
+-    have lr_union: "(l,r) \<in> P \<union> S" using lr by simp
+-    from conservative have cons_union: "\<forall>l r. (l,r) \<in> P \<union> S
+-      \<longrightarrow> (\<forall>x. x \<in> mu_vars_term \<mu> r \<longrightarrow>
+-        x \<in> mu_vars_term \<mu> l)"
+-      unfolding rhs_mu_vars_condition_def by blast
+-    show "x \<in> mu_vars_term \<mu> l"
+-      by (rule cons_union[rule_format, OF lr_union xr])
+-  qed
++    by (rule rhs_mu_vars_condition_subset[OF conservative], blast)
+   show ?thesis
+     by (rule muterm_innermost_pair_target_safe[
+       OF closed_P conservative_P lr l r marked_l source])
+@@ -308,9 +314,9 @@ proof -
+     using rhs_mu_vars_condition_list_sound[OF conservative_check] by simp
+   have conservative_PS: "rhs_mu_vars_condition (mu_of \<mu>)
+       (set P \<union> set S)"
+-    using conservative_all unfolding rhs_mu_vars_condition_def by blast
++    by (rule rhs_mu_vars_condition_subset[OF conservative_all], blast)
+   have conservative_U: "rhs_mu_vars_condition (mu_of \<mu>) (set U)"
+-    using conservative_all unfolding rhs_mu_vars_condition_def by blast
++    by (rule rhs_mu_vars_condition_subset[OF conservative_all], blast)
+   from muterm_innermost_typed_shape_check_sound[OF shape_check]
+   have p_shape: "\<forall>(l,r)\<in>set P. \<exists>f ls.
+       l = Fun (Sharp f) ls \<and>

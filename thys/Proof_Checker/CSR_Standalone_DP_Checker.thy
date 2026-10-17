@@ -26,18 +26,10 @@ proof -
     using ok unfolding check_standalone_nonminimal_csr_dp_def d_def
     by (cases "prf", auto)
   interpret dpp_spec J by fact
-  have sem: "dpp_ops.dpp J d = (False, False, set P, {}, {}, {}, set R)"
-    by (simp add: d_def dpp_spec.mk_sound[OF J])
-  have sem': "dpp_ops.dpp J d =
-      (NFS d, M d, set (local.P d), set (Pw d), set (Q d),
-       set (local.R d), set (Rw d))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J d"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules d) = set R"
-    using sem sem' rules_sound[of d] by auto
-  have pairs: "set (pairs d) = set P"
-    using sem sem' pairs_sound[of d] by auto
+    and rules: "set (rules d) = set R"
+    and pairs: "set (pairs d) = set P"
+    using plain_csr_dpp_mk_context[OF J d_def] by auto
   from check_csr_dp_termination_proof_core_sound[OF I J plain checked]
   show ?thesis unfolding pairs rules .
 qed
@@ -80,18 +72,10 @@ proof -
   have fresh_U: "\<And>n. \<not> defined (set R) (U,n)"
     using checked by auto
   interpret dpp_spec J by fact
-  have sem: "dpp_ops.dpp J ?d = (False, False, set P, {}, {}, {}, set R)"
-    by (simp add: d_def dpp_spec.mk_sound[OF J])
-  have sem': "dpp_ops.dpp J ?d =
-      (NFS ?d, M ?d, set (local.P ?d), set (Pw ?d), set (Q ?d),
-       set (local.R ?d), set (Rw ?d))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J ?d"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules ?d) = set R"
-    using sem sem' rules_sound[of ?d] by auto
-  have pairs: "set (pairs ?d) = set P"
-    using sem sem' pairs_sound[of ?d] by auto
+    and rules: "set (rules ?d) = set R"
+    and pairs: "set (pairs ?d) = set P"
+    using plain_csr_dpp_mk_context[OF J d_def] by auto
   have wf_d: "wf_trs (set (rules ?d))"
     using wf by (simp only: rules)
   have sharp_d: "\<And>f n. \<not> defined (set (rules ?d)) (Sharp f,n)"

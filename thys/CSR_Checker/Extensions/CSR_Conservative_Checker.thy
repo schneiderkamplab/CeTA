@@ -10,6 +10,32 @@ theory CSR_Conservative_Checker
     CSR_Finite_Semantic_Labeling
 begin
 
+text \<open>The same plain dependency-pair representation is used for constructed
+root problems and residual obligations.  This interface establishes only its
+representation; construction coverage and minimality remain caller obligations.\<close>
+
+lemma plain_csr_dpp_mk_context:
+  assumes J: "dpp_spec J"
+    and d: "d = dpp_ops.mk J False False P [] [] [] R"
+  shows "plain_csr_dpp J d"
+    and "set (dpp_ops.rules J d) = set R"
+    and "set (dpp_ops.pairs J d) = set P"
+proof -
+  interpret dpp_spec J by fact
+  have sem: "dpp_ops.dpp J d = (False, False, set P, {}, {}, {}, set R)"
+    using d dpp_spec.mk_sound[OF J] by simp
+  have sem': "dpp_ops.dpp J d =
+      (NFS d, M d, set (local.P d), set (Pw d), set (Q d),
+       set (local.R d), set (Rw d))"
+    by (rule dpp_sound)
+  show "plain_csr_dpp J d"
+    using sem sem' unfolding plain_csr_dpp_def by auto
+  show "set (rules d) = set R"
+    using sem sem' rules_sound[of d] by auto
+  show "set (pairs d) = set P"
+    using sem sem' pairs_sound[of d] by auto
+qed
+
 lemma fresh_unsharp_Fun_no_csdp_step:
   assumes wf: "wf_trs R"
     and fresh: "\<And>n. \<not> defined R (U,n)"
@@ -1671,19 +1697,10 @@ next
       (set (defined_list R)) (set R) (set P)"
     by auto
   interpret dpp_spec J by fact
-  have sem: "dpp_ops.dpp J dpp =
-      (False, False, set P, {}, {}, {}, set R)"
-    using dpp dpp_spec.mk_sound[OF J] by simp
-  have sem': "dpp_ops.dpp J dpp =
-      (NFS dpp, M dpp, set (local.P dpp), set (Pw dpp), set (Q dpp),
-        set (local.R dpp), set (Rw dpp))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J dpp"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules dpp) = set R"
-    using sem sem' rules_sound[of dpp] by auto
-  have pairs: "set (pairs dpp) = set P"
-    using sem sem' pairs_sound[of dpp] by auto
+    and rules: "set (rules dpp) = set R"
+    and pairs: "set (pairs dpp) = set P"
+    using plain_csr_dpp_mk_context[OF J dpp] by auto
   have wf_dpp: "wf_trs (set (rules dpp))"
     using wf rules by simp
   have fresh_dpp: "\<And>f n. \<not> defined (set (rules dpp)) (Sharp f,n)"
@@ -1745,19 +1762,10 @@ next
       (set (defined_list r2)) (set r2) (set ps)"
     by auto
   interpret dpp_spec J by fact
-  have sem: "dpp_ops.dpp J dpp =
-      (False, False, set ps, {}, {}, {}, set r2)"
-    using dpp dpp_spec.mk_sound[OF J] by simp
-  have sem': "dpp_ops.dpp J dpp =
-      (NFS dpp, M dpp, set (local.P dpp), set (Pw dpp), set (Q dpp),
-        set (local.R dpp), set (Rw dpp))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J dpp"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules dpp) = set r2"
-    using sem sem' rules_sound[of dpp] by auto
-  have pairs: "set (pairs dpp) = set ps"
-    using sem sem' pairs_sound[of dpp] by auto
+    and rules: "set (rules dpp) = set r2"
+    and pairs: "set (pairs dpp) = set ps"
+    using plain_csr_dpp_mk_context[OF J dpp] by auto
   have wf_dpp: "wf_trs (set (rules dpp))"
     using wf rules by simp
   have fresh_dpp: "\<And>f n. \<not> defined (set (rules dpp)) (Sharp f,n)"
@@ -1815,19 +1823,10 @@ next
       (set (defined_list r2)) (set r2) (set ps)"
     by auto
   interpret dpp_spec J by fact
-  have sem: "dpp_ops.dpp J dpp =
-      (False, False, set ps, {}, {}, {}, set r2)"
-    using dpp dpp_spec.mk_sound[OF J] by simp
-  have sem': "dpp_ops.dpp J dpp =
-      (NFS dpp, M dpp, set (local.P dpp), set (Pw dpp), set (Q dpp),
-        set (local.R dpp), set (Rw dpp))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J dpp"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules dpp) = set r2"
-    using sem sem' rules_sound[of dpp] by auto
-  have pairs: "set (pairs dpp) = set ps"
-    using sem sem' pairs_sound[of dpp] by auto
+    and rules: "set (rules dpp) = set r2"
+    and pairs: "set (pairs dpp) = set ps"
+    using plain_csr_dpp_mk_context[OF J dpp] by auto
   have wf_dpp: "wf_trs (set (rules dpp))"
     using wf rules by simp
   have fresh_dpp: "\<And>f n. \<not> defined (set (rules dpp)) (Sharp f,n)"

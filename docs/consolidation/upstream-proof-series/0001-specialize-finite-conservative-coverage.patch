@@ -1,0 +1,83 @@
+From dfd317c76cc0ab9982a4810b1394bbfce3d9522d Mon Sep 17 00:00:00 2001
+From: CeTA consolidation <consolidation@example.invalid>
+Date: Sat, 17 Oct 2026 12:00:00 +0000
+Subject: [PATCH] Specialize finite conservative coverage
+
+Preserve existing contracts and executable definitions.
+---
+ .../Extensions/CSR_Improved_CSDP_Proofs.thy   | 41 ++++++++-----------
+ 1 file changed, 16 insertions(+), 25 deletions(-)
+
+diff --git a/thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy b/thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy
+index d502c77d810e9d0f431b4cd2f49e000674260f95..8981faf5a4e4766521af78b91acf10c3d312c43e 100644
+--- a/thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy
++++ b/thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy
+@@ -2641,6 +2641,16 @@ definition finite_conservative_csdp_coverage ::
+     'f sig \<Rightarrow> 'f mu \<Rightarrow> 'f sig \<Rightarrow> ('f, 'v) trs \<Rightarrow>
+     ('f, 'v) trs \<Rightarrow> ('f, 'v) trs \<Rightarrow> bool"
+ where
++  "finite_conservative_csdp_coverage shp U F \<mu> D R P S \<longleftrightarrow>
++    conservative_csdp_coverage shp U (restrict_mu_to_sig F \<mu>) D R P S"
++
++text \<open>
++  Finite-signature coverage is the general conservative criterion applied to
++  the signature-restricted replacement map. The explicit characterization
++  preserves the finite certificate interface without duplicating semantics.
++\<close>
++
++lemma finite_conservative_csdp_coverage_iff:
+   "finite_conservative_csdp_coverage shp U F \<mu> D R P S \<longleftrightarrow>
+     mu_CSDP_on shp (restrict_mu_to_sig F \<mu>) D R \<subseteq> P \<and>
+     collapsing_mu_CSDP_on shp U (restrict_mu_to_sig F \<mu>) R \<subseteq> P \<and>
+@@ -2650,6 +2660,10 @@ where
+       (Fun U [Fun f ts], Fun U [ts ! i]) \<in> rstep S) \<and>
+     (\<forall>f ts. (f,length ts) \<in> D \<longrightarrow>
+       (Fun U [Fun f ts], sharp_term shp (Fun f ts)) \<in> rstep S)"
++  unfolding finite_conservative_csdp_coverage_def conservative_csdp_coverage_def
++    restrict_mu_to_sig_def
++  by (auto split: if_splits)
++
+ 
+ lemma restrict_mu_to_sig_projection:
+   assumes projections:
+@@ -2676,30 +2690,7 @@ qed
+ lemma finite_conservative_csdp_coverage_imp:
+   assumes cover: "finite_conservative_csdp_coverage shp U F \<mu> D R P S"
+   shows "conservative_csdp_coverage shp U (restrict_mu_to_sig F \<mu>) D R P S"
+-proof -
+-  from cover have mu:
+-      "mu_CSDP_on shp (restrict_mu_to_sig F \<mu>) D R \<subseteq> P"
+-    and collapsing:
+-      "collapsing_mu_CSDP_on shp U (restrict_mu_to_sig F \<mu>) R \<subseteq> P"
+-    and rules: "R \<subseteq> S"
+-    and projections:
+-      "\<And>f ts i. (f,length ts) \<in> F \<Longrightarrow>
+-        i < length ts \<Longrightarrow> i \<in> \<mu> (f,length ts) \<Longrightarrow>
+-        (Fun U [Fun f ts], Fun U [ts ! i]) \<in> rstep S"
+-    and marks:
+-      "\<And>f ts. (f,length ts) \<in> D \<Longrightarrow>
+-        (Fun U [Fun f ts], sharp_term shp (Fun f ts)) \<in> rstep S"
+-    unfolding finite_conservative_csdp_coverage_def by auto
+-  have projections':
+-    "\<And>f ts i.
+-      i < length ts \<Longrightarrow>
+-      i \<in> restrict_mu_to_sig F \<mu> (f,length ts) \<Longrightarrow>
+-      (Fun U [Fun f ts], Fun U [ts ! i]) \<in> rstep S"
+-    by (rule restrict_mu_to_sig_projection[OF projections])
+-  show ?thesis
+-    unfolding conservative_csdp_coverage_def
+-    using mu collapsing rules projections' marks by blast
+-qed
++  using cover unfolding finite_conservative_csdp_coverage_def .
+ 
+ lemma finite_conservative_CSDP_imp_SN_sig_csstep:
+   assumes wf: "wf_trs R"
+@@ -3114,7 +3105,7 @@ proof -
+       rstep_mono[OF marks] by blast
+   show "finite_conservative_csdp_coverage Sharp U ?F (mu_of \<mu>) ?D
+     (set R) (set P) (set S)"
+-    unfolding finite_conservative_csdp_coverage_def
++    unfolding finite_conservative_csdp_coverage_iff
+     using mu_cover collapsing_cover rules projection_steps marking_steps
+     by blast
+ qed

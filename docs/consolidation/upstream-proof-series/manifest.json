@@ -1,0 +1,76 @@
+{
+  "base": "85b6876f502ad1be79c27596c15ab55139380362",
+  "deferred": [
+    "relative ADP",
+    "outermost-RZ",
+    "reconstruct feature prerequisites from CeTA 3.9"
+  ],
+  "exact_apply_verified": true,
+  "final_sources": {
+    "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy": "2d78fb9d1d1469038bd1b7f0545dad408f2340223c660d468edda88b87540a77",
+    "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy": "4ad24477923b582c353974b8b0ede236c58e60f84e52ede182d02ebeac4b2287",
+    "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy": "29137b3287513ee438665ea1ac9ab6eceff75cfb49a62bfaefd514bbdde7bf0d",
+    "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy": "cc0f8585748bcad8ed6f9f743815271e90a340aaafb588a9216f1349019c838d",
+    "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy": "35d9114ea7fe7ded0d604af45c7841e26e383b218054952dd81cbce1ea560d12",
+    "thys/Proof_Checker/CSR_GM_Transformation.thy": "c41edd78903584d2ecb335a40949ce6424fd248ca2e70dd8f154eeb34a96fd07",
+    "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy": "2b97da5942cabbfc0144f8afcd0bf741c990119a1aab7e5c42affc4eaa5ada0f"
+  },
+  "final_tree": "bb3e2b327b4448e969a07be8ffdf524754166bf9",
+  "series": [
+    {
+      "commit": "dfd317c76cc0ab9982a4810b1394bbfce3d9522d",
+      "file": "0001-specialize-finite-conservative-coverage.patch",
+      "parent": "85b6876f502ad1be79c27596c15ab55139380362",
+      "paths": [
+        "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy"
+      ],
+      "sha256": "7219ea364c9b3e4d657faa3b31b6a66c3669ffd18cccf4e7a13c4b23d20f9bac",
+      "tree": "51ea69098c293033e6a4578138ac6f734e2a5619"
+    },
+    {
+      "commit": "e272c2b8dc9c45d094c7d8e06fdef465a5182106",
+      "file": "0002-share-guarded-rank-and-endpoint-corollaries.patch",
+      "parent": "dfd317c76cc0ab9982a4810b1394bbfce3d9522d",
+      "paths": [
+        "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy"
+      ],
+      "sha256": "fbeb30c5fe70891f64e5600561fd42f4415f08e359b2453c3efc719deba3f698",
+      "tree": "49ccd3a2a4485c2a5e44bbab384cfec41c03ac53"
+    },
+    {
+      "commit": "d27c2632ecf9235cdad6572427ecb0d5e5bce1ca",
+      "file": "0003-share-the-non-strict-endpoint-tail-argument.patch",
+      "parent": "e272c2b8dc9c45d094c7d8e06fdef465a5182106",
+      "paths": [
+        "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy"
+      ],
+      "sha256": "956439d9183c538ae08a7d8c57ca6e1246c9c12d17ab448b1f92f88b4858e6e3",
+      "tree": "58f22d67f93bc1f248d5f797da38115742697a52"
+    },
+    {
+      "commit": "2816f6a7f8f764a210bc24d3d0812d8e81b138d2",
+      "file": "0004-factor-usable-rule-pair-set-restriction.patch",
+      "parent": "d27c2632ecf9235cdad6572427ecb0d5e5bce1ca",
+      "paths": [
+        "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy"
+      ],
+      "sha256": "c021bc75f5a22ea1a1c8ba8f2a759d8c9cb3d4fad6ff219f9dc910cab17d5f1a",
+      "tree": "d96bcb0da629f024c8a80bbba1dc675de83098f0"
+    },
+    {
+      "commit": "a46c3b582f690f4e02052514db4b951200824480",
+      "file": "0005-share-root-and-residual-dp-representation-proofs.patch",
+      "parent": "2816f6a7f8f764a210bc24d3d0812d8e81b138d2",
+      "paths": [
+        "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy",
+        "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy",
+        "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+        "thys/Proof_Checker/CSR_GM_Transformation.thy"
+      ],
+      "sha256": "d2a0e88d543b0249b77fa25cc7a9e111ac278842fb6e3829fd14df03db5b9610",
+      "tree": "bb3e2b327b4448e969a07be8ffdf524754166bf9"
+    }
+  ],
+  "status": "Draft proof-only series against a consolidated prerequisite, not upstream-ready CeTA 3.9 patches.",
+  "verification_limit": "These sources are checked in the consolidated integration context; this prerequisite series has not been built independently."
+}

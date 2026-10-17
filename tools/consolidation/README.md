@@ -128,3 +128,10 @@ contracts. It checks unchanged guarded executable declarations. The accompanying
 Isabelle/export evidence is required: this source audit alone does not prove
 equivalence or acceptance. Missing genuine replay coverage is reported separately
 from formally justified semantic specialization.
+
+`audit_sharing.py` checks the preserved theorem statements and executable
+interfaces for the root/residual sharing batch and records its common call sites.
+`prepare_proof_series.py` emits five draft proof-only patches against a pinned
+consolidated prerequisite. It uses a private index and exactly checks sequential
+application without moving branches. This is not an independent build of the
+series or a complete upstream CeTA 3.9 prerequisite reconstruction.

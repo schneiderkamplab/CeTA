@@ -1,0 +1,85 @@
+{
+  "all_targets_passed": true,
+  "base_commit": "7e9ac72a0c59653298161a7585b421a436a5ce8e",
+  "binaries": {
+    "ceta": "a0f1d98394045935b8d399d3af55b7435e0a867845c3a7f7cae04e618c155b58",
+    "ceta-ordinary": "7e4be1154a49164cc9146912eed1b626975f0d8b41f15e0309727d1a6ed2c266",
+    "ceta-relative-adp": "e4fd7b66522d5d27a967a4aa264a88b86579218904cb91b36963cc669789d092"
+  },
+  "clean_build_byte_identical": true,
+  "compact_positives": 208,
+  "compact_semantic_negatives": 408,
+  "coverage_limits": [
+    "The root/residual sharing audit is scoped to the listed CSR and typed MU-TERM routes.",
+    "Runtime coverage does not execute Isabelle proofs.",
+    "Genuine relative-ADP processor and positive outermost-RZ coverage gaps remain deferred."
+  ],
+  "deferred": [
+    "relative ADP development",
+    "outermost-RZ development"
+  ],
+  "draft_patch_series": {
+    "independent_build": false,
+    "manifest": "upstream-proof-series/manifest.json",
+    "sha256": "0341c3d9ad1272bcad8c62b7c914ac28c8272204d2d264b58f205aaef526d4f5"
+  },
+  "evidence": "shared-checking-evidence.json.gz",
+  "evidence_sha256": "99f50dac2795b9d18a560b487dd5f4de6896bedff0224549e7e9d61dc4189872",
+  "explicitly_retired_counters": 20,
+  "exports": {
+    "ordinary": {
+      "byte_identical": true,
+      "modules": 398
+    },
+    "relative": {
+      "byte_identical": true,
+      "modules": 9
+    },
+    "rfc": {
+      "byte_identical": true,
+      "modules": 401
+    }
+  },
+  "frozen_denominator": 45753,
+  "full_replay_evidence_reused": {
+    "reason": "The clean-built checker is byte-identical. No fresh Ferrum regeneration or current-frontier snapshot was performed in this proof-only batch.",
+    "report": "final-verification.json",
+    "report_sha256": "667e56369be4d633769528cd330ef1a0074f0a83e47364a9b7e2211b912e57d6",
+    "roots": 3484
+  },
+  "hpc_reuse": "Exact exported module and adapter identity; existing instrumented binary retained.",
+  "isabelle_targets": [
+    "CSR_Guarded_List_Measure_Check",
+    "Proof_Checker",
+    "Code",
+    "RFC_Absolute_Ext",
+    "Relative_ADP_Ceta_Dev",
+    "Outermost_RZ_Ext"
+  ],
+  "missing_coverage": [],
+  "passed": true,
+  "performance": {
+    "hpc": {
+      "passed": true,
+      "scope": "No slowdown candidates"
+    },
+    "production": {
+      "passed": true,
+      "scope": "No slowdown candidates"
+    }
+  },
+  "problem_kinds_removed": 0,
+  "production_source_files": 3847,
+  "proof_script_retry": "Interrupted expensive automatic search; replaced it with explicit subset proofs and corrected local fact references and an endpoint continuation application.",
+  "required_coverage_observed": 45733,
+  "shared_representation_sites": 9,
+  "source_sha256": {
+    "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy": "2d78fb9d1d1469038bd1b7f0545dad408f2340223c660d468edda88b87540a77",
+    "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy": "29137b3287513ee438665ea1ac9ab6eceff75cfb49a62bfaefd514bbdde7bf0d",
+    "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy": "cc0f8585748bcad8ed6f9f743815271e90a340aaafb588a9216f1349019c838d",
+    "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy": "35d9114ea7fe7ded0d604af45c7841e26e383b218054952dd81cbce1ea560d12",
+    "thys/Proof_Checker/CSR_GM_Transformation.thy": "c41edd78903584d2ecb335a40949ce6424fd248ca2e70dd8f154eeb34a96fd07",
+    "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy": "2b97da5942cabbfc0144f8afcd0bf741c990119a1aab7e5c42affc4eaa5ada0f"
+  },
+  "unchanged_theorem_statements": 180
+}

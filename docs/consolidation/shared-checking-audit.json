@@ -1,0 +1,133 @@
+{
+  "base": "7e9ac72a0c59653298161a7585b421a436a5ce8e",
+  "deferred": [
+    "relative ADP",
+    "outermost-RZ"
+  ],
+  "representation_call_sites": [
+    {
+      "line": 1703,
+      "path": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J dpp] by auto"
+    },
+    {
+      "line": 1768,
+      "path": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J dpp] by auto"
+    },
+    {
+      "line": 1829,
+      "path": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J dpp] by auto"
+    },
+    {
+      "line": 516,
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J dpp] by auto"
+    },
+    {
+      "line": 558,
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J dpp] by auto"
+    },
+    {
+      "line": 32,
+      "path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J d_def] by auto"
+    },
+    {
+      "line": 78,
+      "path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J d_def] by auto"
+    },
+    {
+      "line": 1729,
+      "path": "thys/Proof_Checker/CSR_GM_Transformation.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J refl, of ?E R] by auto"
+    },
+    {
+      "line": 1799,
+      "path": "thys/Proof_Checker/CSR_GM_Transformation.thy",
+      "text": "using plain_csr_dpp_mk_context[OF J refl, of ?E R] by auto"
+    }
+  ],
+  "runtime_coverage_is_not_theorem_coverage": true,
+  "scope": "Lexical audit of the listed CSR/MU-TERM routes; not an exhaustive equivalence proof for all problem types.",
+  "shared_engines": [
+    {
+      "contract": "finite_csr_dpp; standalone rejects processors requiring minimality",
+      "problem": "nonminimal CSR",
+      "residual_path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+      "root_path": "thys/CSR_Checker/Core/CSR_Checker.thy",
+      "shared_engine": "check_csr_dp_termination_proof_core",
+      "shared_soundness": "check_csr_dp_termination_proof_core_sound"
+    },
+    {
+      "contract": "finite_min_csr_dpp; root additionally checks construction coverage",
+      "problem": "minimal improved CSR",
+      "residual_path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+      "root_path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy",
+      "shared_engine": "check_guarded_improved_csr_dp_proof",
+      "shared_soundness": "check_guarded_improved_csr_dp_proof_sound"
+    },
+    {
+      "contract": "finite_muterm_i4_good_typed_dpp; preserve exact unhiding, map, signature and minimality guards",
+      "problem": "typed innermost MU-TERM",
+      "residual_path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+      "root_path": "thys/Proof_Checker/CSR_GM_Transformation.thy",
+      "shared_engine": "check_muterm_i4_root_proof",
+      "shared_soundness": "check_muterm_i4_root_proof_sound"
+    }
+  ],
+  "sources": [
+    {
+      "executable_declarations_unchanged": true,
+      "new_theorems": [
+        "plain_csr_dpp_mk_context"
+      ],
+      "path": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy",
+      "sha256": "2d78fb9d1d1469038bd1b7f0545dad408f2340223c660d468edda88b87540a77",
+      "unchanged_existing_theorems": 23
+    },
+    {
+      "executable_declarations_unchanged": true,
+      "new_theorems": [],
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy",
+      "sha256": "29137b3287513ee438665ea1ac9ab6eceff75cfb49a62bfaefd514bbdde7bf0d",
+      "unchanged_existing_theorems": 6
+    },
+    {
+      "executable_declarations_unchanged": true,
+      "new_theorems": [
+        "not_SN_rel_min_endpoint_tail"
+      ],
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "sha256": "cc0f8585748bcad8ed6f9f743815271e90a340aaafb588a9216f1349019c838d",
+      "unchanged_existing_theorems": 110
+    },
+    {
+      "executable_declarations_unchanged": true,
+      "new_theorems": [
+        "muterm_innermost_ur_closed_pairs_subset",
+        "rhs_mu_vars_condition_subset"
+      ],
+      "path": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable_Exec.thy",
+      "sha256": "35d9114ea7fe7ded0d604af45c7841e26e383b218054952dd81cbce1ea560d12",
+      "unchanged_existing_theorems": 6
+    },
+    {
+      "executable_declarations_unchanged": true,
+      "new_theorems": [],
+      "path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+      "sha256": "2b97da5942cabbfc0144f8afcd0bf741c990119a1aab7e5c42affc4eaa5ada0f",
+      "unchanged_existing_theorems": 4
+    },
+    {
+      "executable_declarations_unchanged": true,
+      "new_theorems": [],
+      "path": "thys/Proof_Checker/CSR_GM_Transformation.thy",
+      "sha256": "c41edd78903584d2ecb335a40949ce6424fd248ca2e70dd8f154eeb34a96fd07",
+      "unchanged_existing_theorems": 31
+    }
+  ]
+}

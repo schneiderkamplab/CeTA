@@ -228,3 +228,27 @@ retained obligations. Controlled repeats clear all four timing outliers.
 record the passing gates and the failed preliminary proof scripts separately.
 The frozen 3,484-root replay evidence is reused by exact binary identity;
 this batch makes no claim about a newly snapshotted current Ferrum frontier.
+
+## Shared root/residual checking and continued theorem consolidation
+
+The batch described in [shared-checking.md](shared-checking.md) replaces nine
+copies of the plain dependency-pair representation proof with one shared lemma.
+Root and standalone CSR/MU-TERM checking retain their existing common processor
+engines and soundness interfaces; construction coverage remains a root obligation.
+The alternating and lookahead endpoint criteria now share their infinite-chain
+argument, and usable-rule pair-set restriction uses general subset lemmas.
+All 180 existing theorem statements in the six changed theories are preserved.
+
+Focused Isabelle checking and all five integration/export targets pass. All three
+export sets and clean-built checker binaries are byte-identical to the preceding
+verified batch. The compact suite passes all 208 positives, 408 semantic negatives
+and 45,733 retained coverage obligations, with no timing slowdown candidates.
+`shared-checking-verification.json` and its compressed evidence record source
+identity, timings, final passing gates and preliminary proof-script failures.
+
+Five reproducible draft proof-only patches are now extracted and exactly
+apply-checked against consolidated prerequisite `85b6876`. This starts upstream
+series preparation; it does not reconstruct all prerequisites from CeTA 3.9 or
+claim an independent build of that draft series. Relative ADP and outermost-RZ
+development remain explicitly deferred. The frozen 3,484-root replay evidence is
+reused through exact binary identity; no current-frontier snapshot was taken.

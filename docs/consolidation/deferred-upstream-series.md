@@ -1,7 +1,11 @@
-# Deferred upstream patch-series outline
+# Upstream patch-series extraction and remaining outline
 
-This is a dependency outline for later reconstruction, not a series ready to
-submit. The consolidated branch and frozen source snapshots remain the source
+Extraction has started: `upstream-proof-series/manifest.json` records five
+proof-only draft patches against the pinned consolidated prerequisite `85b6876`,
+with exact sequential apply verification. See `shared-checking.md` for scope and
+verification limits. They are not yet a series ready to submit against CeTA 3.9.
+
+The remaining feature reconstruction follows this dependency outline. The consolidated branch and frozen source snapshots remain the source
 of truth. Do not replay entire development branches or merge into parent branches
 as part of this task.
 
@@ -23,7 +27,7 @@ as part of this task.
    actual child's residual assumptions; full and nontermination guards remain.
    Keep fixed-minimality rule-equivalence and all-minimality weak-rule-subset
    lemmas distinct. Preserve Q by the actual normal-form obligation.
-4. **Relative ADPs.** Retain annotations, graph child counts, variable-reposition
+4. **Relative ADPs — deferred by the latest user instruction.** Retain annotations, graph child counts, variable-reposition
    conditions and separate erasure/Com reduction-pair obligations. Build and
    export the integration target independently. The user subsequently authorized moving these theories into `thys/Relative_ADP`
    with formal and executable-equivalence verification. The retained hand-written
@@ -32,7 +36,7 @@ as part of this task.
    automaton closure, right-linearity and residual signature assumptions visible.
    Absolute and relative residual contracts stay distinct. Include their RFC
    export and genuine SRS evidence in reviewable increments.
-6. **Outermost.** Keep the committed RZ transformation and its cover/freshness
+6. **Outermost-RZ — deferred by the latest user instruction.** Keep the committed RZ transformation and its cover/freshness
    conditions. Positive RZ coverage is still missing. The user subsequently authorized
    extracting the transformation criterion from recursive checking, verified
    formally and by exact generated-code comparison. Four outermost nontermination
@@ -55,5 +59,6 @@ as part of this task.
 Each eventual patch should connect its theorem premises, executable guard,
 parser form, genuine positive and intended semantic rejection. Runtime coverage
 is not theorem coverage. Freeze the denominator for each milestone and explain
-any retired obligation. Reconstruct commits only after the final consolidated
-source, all integration exports, compact suite and fresh full replay pass.
+any retired obligation. The user has authorized starting draft extraction now. Promote the complete
+feature series to upstream-ready only after its prerequisites are reconstructed,
+its own integration builds pass, and the final replay gate is satisfied.

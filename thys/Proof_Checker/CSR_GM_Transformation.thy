@@ -1723,26 +1723,10 @@ next
     and rec: "isOK (check_muterm_expanded_innermost_proof
       I J ?\<mu>i (add_index i 1) ?d child)"
     by (auto simp: Let_def)
-  have sem: "dpp_ops.dpp J ?d =
-      (False,False,set ?E,{},{},{},set R)"
-    using dpp_spec.mk_sound[OF J, of False False ?E "[]" "[]" "[]" R]
-    by simp
   have plain: "plain_csr_dpp J ?d"
-  proof -
-    from ds.mk_sound[of False False ?E "[]" "[]" "[]" R]
-      ds.dpp_sound[of ?d]
-    have fields: "\<not> ds.NFS ?d" "\<not> ds.M ?d"
-      "set (ds.Pw ?d) = {}" "set (ds.Q ?d) = {}" "set (ds.R ?d) = {}"
-      by auto
-    have pw: "ds.Pw ?d = []" using fields(3)
-      by (cases "ds.Pw ?d"; auto)
-    have q: "ds.Q ?d = []" using fields(4)
-      by (cases "ds.Q ?d"; auto)
-    have r: "ds.R ?d = []" using fields(5)
-      by (cases "ds.R ?d"; auto)
-    show ?thesis
-      using fields(1,2) pw q r unfolding plain_csr_dpp_def by simp
-  qed
+    and rules_d: "set (dpp_ops.rules J ?d) = set R"
+    and pairs_d: "set (dpp_ops.pairs J ?d) = set ?E"
+    using plain_csr_dpp_mk_context[OF J refl, of ?E R] by auto
   have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
   proof
     fix f n
@@ -1750,10 +1734,6 @@ next
     have mem: "(Sharp f,n) \<in> set ?D" using def by auto
     from no_sharp mem show False by (auto simp: list_all_iff)
   qed
-  have pairs_d: "set (dpp_ops.pairs J ?d) = set ?E"
-    and rules_d: "set (dpp_ops.rules J ?d) = set R"
-    using sem ds.dpp_sound[of ?d] ds.pairs_sound[of ?d]
-      ds.rules_sound[of ?d] by auto
   have wf_d: "wf_trs (set (dpp_ops.rules J ?d))" using wf rules_d by simp
   have fresh_d: "\<And>f n. \<not> defined
       (set (dpp_ops.rules J ?d)) (Sharp f,n)" using fresh rules_d by simp
@@ -1813,26 +1793,10 @@ next
     and rec: "isOK (check_muterm_expanded_innermost_proof I J ?\<mu>i
       (add_index i 1) ?d child)"
     by (auto simp: Let_def)
-  have sem: "dpp_ops.dpp J ?d =
-      (False,False,set ?E,{},{},{},set R)"
-    using dpp_spec.mk_sound[OF J, of False False ?E "[]" "[]" "[]" R]
-    by simp
   have plain: "plain_csr_dpp J ?d"
-  proof -
-    from ds.mk_sound[of False False ?E "[]" "[]" "[]" R]
-      ds.dpp_sound[of ?d]
-    have fields: "\<not> ds.NFS ?d" "\<not> ds.M ?d"
-      "set (ds.Pw ?d) = {}" "set (ds.Q ?d) = {}" "set (ds.R ?d) = {}"
-      by auto
-    have pw: "ds.Pw ?d = []" using fields(3)
-      by (cases "ds.Pw ?d"; auto)
-    have q: "ds.Q ?d = []" using fields(4)
-      by (cases "ds.Q ?d"; auto)
-    have r: "ds.R ?d = []" using fields(5)
-      by (cases "ds.R ?d"; auto)
-    show ?thesis using fields(1,2) pw q r
-      unfolding plain_csr_dpp_def by simp
-  qed
+    and rules_d: "set (dpp_ops.rules J ?d) = set R"
+    and pairs_d: "set (dpp_ops.pairs J ?d) = set ?E"
+    using plain_csr_dpp_mk_context[OF J refl, of ?E R] by auto
   have fresh: "\<And>f n. \<not> defined (set R) (Sharp f,n)"
   proof
     fix f n
@@ -1840,10 +1804,6 @@ next
     have mem: "(Sharp f,n) \<in> set ?D" using def by auto
     from no_sharp mem show False by (auto simp: list_all_iff)
   qed
-  have pairs_d: "set (dpp_ops.pairs J ?d) = set ?E"
-    and rules_d: "set (dpp_ops.rules J ?d) = set R"
-    using sem ds.dpp_sound[of ?d] ds.pairs_sound[of ?d]
-      ds.rules_sound[of ?d] by auto
   have wf_d: "wf_trs (set (dpp_ops.rules J ?d))" using wf rules_d by simp
   have fresh_d: "\<And>f n. \<not> defined
       (set (dpp_ops.rules J ?d)) (Sharp f,n)" using fresh rules_d by simp

@@ -510,19 +510,10 @@ next
   interpret dpp_spec J by fact
   have dpp: "dpp = dpp_ops.mk J False False P [] [] [] R"
     using tt' by auto
-  have sem: "dpp_ops.dpp J dpp =
-    (False,False,set P,{},{},{},set R)"
-    using dpp unfolding dpp_spec.mk_sound[OF J] by simp
-  have sem': "dpp_ops.dpp J dpp =
-    (NFS dpp,M dpp,set (local.P dpp),set (Pw dpp),set (Q dpp),
-      set (local.R dpp),set (Rw dpp))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J dpp"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules dpp) = set R"
-    using sem sem' rules_sound[of dpp] by auto
-  have pairs: "set (pairs dpp) = set P"
-    using sem sem' pairs_sound[of dpp] by auto
+    and rules: "set (rules dpp) = set R"
+    and pairs: "set (pairs dpp) = set P"
+    using plain_csr_dpp_mk_context[OF J dpp] by auto
   have fin_dpp: "finite_min_csr_dpp Sharp (mu_of \<mu>)
       (set (pairs dpp)) (set (rules dpp))"
     by (rule check_guarded_csr_dp_proof_sound[
@@ -561,19 +552,10 @@ next
       (set (defined_list R)) (set R) (set P)"
     by auto
   interpret dpp_spec J by fact
-  have sem: "dpp_ops.dpp J dpp =
-      (False, False, set P, {}, {}, {}, set R)"
-    using dpp dpp_spec.mk_sound[OF J] by simp
-  have sem': "dpp_ops.dpp J dpp =
-      (NFS dpp,M dpp,set (local.P dpp),set (Pw dpp),set (Q dpp),
-        set (local.R dpp),set (Rw dpp))"
-    by (rule dpp_sound)
   have plain: "plain_csr_dpp J dpp"
-    using sem sem' unfolding plain_csr_dpp_def by auto
-  have rules: "set (rules dpp) = set R"
-    using sem sem' rules_sound[of dpp] by auto
-  have pairs: "set (pairs dpp) = set P"
-    using sem sem' pairs_sound[of dpp] by auto
+    and rules: "set (rules dpp) = set R"
+    and pairs: "set (pairs dpp) = set P"
+    using plain_csr_dpp_mk_context[OF J dpp] by auto
   have fresh_U': "\<And>n. \<not> defined (set R) (U,n)"
   proof
     fix n
