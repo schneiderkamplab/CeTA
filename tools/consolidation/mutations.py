@@ -11,7 +11,9 @@ CASES=[
  ('omitted-graph-components','.//depGraphProc',r'(?:Dependency Pair|CSR dependency pair).*is missing in decomposition'),
  ('omitted-usable-rules','.//usableRulesProc/usableRules/rules',r'is not closed under usable rules'),
  ('omitted-automaton-transitions','.//trsTerminationProof/bounds/treeAutomaton/transitions',r'did not find mentioned final state in TA'),
- ('omitted-rfc-automaton-transitions','.//rfcMatchboxRelativeBounds/bounds/treeAutomaton/transitions',r'RFC Matchbox-relative tail states must occur as automaton right-hand-side states')]
+ ('omitted-rfc-automaton-transitions','.//rfcMatchboxRelativeBounds/bounds/treeAutomaton/transitions',r'RFC Matchbox-relative tail states must occur as automaton right-hand-side states'),
+ ('zero-polynomial-offsets','.//ruleRemoval/interpretation',r'problem when orienting TRS.*could not ensure'),
+ ('zero-matrix-monotonicity','.//ruleRemoval/interpretation',r'problem with monotonicity.*problem in ensuring monotonicity of strict relation')]
 def main():
  p=argparse.ArgumentParser();p.add_argument('--stage',required=True);a=p.parse_args();stage=CORPUS/a.stage;selected=json.loads((stage/'selection.json').read_text())['selected_ids'];out=stage/'negatives';out.mkdir(exist_ok=False);results=[]
  for rid in selected:
@@ -21,7 +23,24 @@ def main():
    tree=ET.parse(proof);node=tree.getroot().find(xpath)
    if node is None or not len(node):continue
    if kind=='omitted-graph-components' and not all(c.tag=='component' for c in node):continue
-   run=out/(rid+'-'+kind);run.mkdir();removed=len(node);node.clear();dest=run/'proof.cpf.xml';tree.write(dest,encoding='utf-8',xml_declaration=True);ET.parse(dest)
+   if kind=='zero-polynomial-offsets':
+    if node.find('type/polynomial/domain/naturals') is None:continue
+    integers=node.findall('interpret//integer')
+    # Preserve all unit variable coefficients: only direct affine offsets are
+    # changed, so the intended failure is strict orientation, not monotonicity.
+    offsets=node.findall('interpret/sum/integer')
+    if not integers or set(integers)!=set(offsets) or node.findall('interpret//product'):continue
+    removed=sum((n.text or '').strip()!='0' for n in integers)
+    if not removed:continue
+    for n in integers:n.text='0'
+   elif kind=='zero-matrix-monotonicity':
+    if node.find('type/matrixInterpretation') is None:continue
+    if not any(int(n.findtext('arity','0'))>0 for n in node.findall('interpret')):continue
+    integers=node.findall('interpret//integer');removed=sum((n.text or '').strip()!='0' for n in integers)
+    if not removed:continue
+    for n in integers:n.text='0'
+   else:removed=len(node);node.clear()
+   run=out/(rid+'-'+kind);run.mkdir();dest=run/'proof.cpf.xml';tree.write(dest,encoding='utf-8',xml_declaration=True);ET.parse(dest)
    # The original input is unchanged: only proof obligations are removed.
    assert ET.tostring(tree.getroot().find('input'))==ET.tostring(ET.parse(proof).getroot().find('input'))
    record=dict(id=run.name,source_id=rid,source_sha256=sha(proof),mutation_sha256=sha(dest),kind=kind,xpath=xpath,removed_obligations=removed,expected_diagnostic_regex=diagnostic,well_formed_xml=True,checks=[],validated=False)

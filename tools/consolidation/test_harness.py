@@ -3,6 +3,7 @@ from oracle_audit import audit,SCHEMA
 from coverage import inspect
 from replay import certified
 from setcover import select
+from root_audit import compare as audit_root
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 class Harness(unittest.TestCase):
  def setUp(self):
@@ -32,4 +33,18 @@ class Harness(unittest.TestCase):
  def test_unique_obligations_are_never_discarded(self):
   rows=[dict(id=str(i),features={i},time_us=1,bytes=1) for i in range(20)]
   r=select(rows,seconds=10);self.assertEqual(len(r['selected']),20);self.assertTrue(r['minimum_cardinality_proved'])
+ def test_relative_partition_cannot_be_flattened(self):
+  source='(format TRS)(fun f 1)(fun a 0)(rule (f x) x)(rule a (f a) :cost 0)'
+  strict='<rule><funapp><name>f</name><var>x</var></funapp><var>x</var></rule>'
+  weak='<rule><funapp><name>a</name></funapp><funapp><name>f</name><funapp><name>a</name></funapp></funapp></rule>'
+  def document(s,w):return '<certificationProblem><input><trsInput><trs><rules>'+s+'</rules></trs><relativeRules><rules>'+w+'</rules></relativeRules></trsInput></input><property><termination/></property><answer><yes/></answer></certificationProblem>'
+  p=self.p/'relative.xml';p.write_text(document(strict,weak));audit_root(source,p,'yes','TRS_Relative')
+  p.write_text(document(strict+weak,''))
+  with self.assertRaises(ValueError):audit_root(source,p,'yes','TRS_Relative')
+ def test_outermost_strategy_cannot_be_lost(self):
+  source='(format TRS)(fun a 0)'
+  doc='<certificationProblem><input><trsInput><trs><rules/></trs><strategy><outermost/></strategy></trsInput></input><property><termination/></property><answer><yes/></answer></certificationProblem>'
+  p=self.p/'outermost.xml';p.write_text(doc);audit_root(source,p,'yes','TRS_Outermost')
+  p.write_text(doc.replace('<strategy><outermost/></strategy>',''))
+  with self.assertRaises(ValueError):audit_root(source,p,'yes','TRS_Outermost')
 if __name__=='__main__':unittest.main()

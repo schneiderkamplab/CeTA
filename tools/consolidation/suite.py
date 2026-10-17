@@ -2,6 +2,7 @@
 """Run committed proof artifacts with strict hash, root, acceptance and rejection gates."""
 import argparse,gzip,json,os,pathlib,re,shutil,statistics,sys,time
 from replay import execute,certified,sha,write
+from root_audit import compare as audit_root
 sys.path.insert(0,str(pathlib.Path(__file__).parent/'vendor'))
 import audit_trs_root_correspondence as trs
 import audit_csr_root_correspondence as csr
@@ -27,8 +28,7 @@ def main():
    proof=run/'proof.cpf.xml'
    with gzip.open(cert,'rb') as src,proof.open('wb') as dst:shutil.copyfileobj(src,dst)
    if sha(proof)!=row['cpf_sha256']:raise ValueError('Uncompressed proof hash mismatch')
-   if row['category']=='TRS_Contextsensitive':csr.compare(inp.read_text(),proof.read_text(),row['answer'])
-   else:trs.compare(inp.read_text(),trs.root_metadata(proof),row['answer'],row['category'])
+   audit_root(inp.read_text(),proof,row['answer'],row['category'])
    r['checks']=[];timeout=max(60,1.5*max(x['elapsed_seconds'] for x in row['reference_checks'])+30)
    for i in [1,2]:
     prefix=run/f'check-{i}';c=execute([str(checker),str(proof)],run,env,prefix,timeout);c['certified']=certified(c,prefix);r['checks'].append(c)

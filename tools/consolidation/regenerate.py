@@ -4,6 +4,7 @@ import argparse, concurrent.futures, gzip, json, math, os, pathlib, shutil, tarf
 from replay import execute, certified, sha, write, trs, csr
 from oracle_audit import audit
 from suite import inside
+from root_audit import compare as audit_root
 
 
 def main():
@@ -76,10 +77,7 @@ def main():
             if result['replay']['returncode'] != 0 or result['replay']['timed_out'] or not proof.is_file():
                 raise ValueError('Fresh replay failed')
             result['cpf_sha256'] = sha(proof)
-            if row['category'] == 'TRS_Contextsensitive':
-                result['correspondence'] = csr.compare(inp.read_text(), proof.read_text(), row['answer'])
-            else:
-                result['correspondence'] = trs.compare(inp.read_text(), trs.root_metadata(proof), row['answer'], row['category'])
+            result['correspondence'] = audit_root(inp.read_text(), proof, row['answer'], row['category'])
             result['checks'] = []
             timeout = max(600, 1.5 * max(c['elapsed_seconds'] for c in row['reference_checks']) + 30)
             for i in [1, 2]:

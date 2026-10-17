@@ -1,0 +1,65 @@
+{
+  "scope": "Six supplemental official relative/outermost inputs; same pinned source, checker and frozen oracle. Prospective fresh baseline gates required.",
+  "roots": [
+    {
+      "root": "TRS_Relative/Relative_05/rt1-3.ari",
+      "input_sha256": "e6d52aadc3dc3ad58a3bb122f7b25e716e0ddf807defcea3870accf956b896da",
+      "source": "/work/dfm/festschrift/TPDB-ARI/TRS_Relative/Relative_05/rt1-3.ari",
+      "reason": "Official original benchmark identified by pinned relative-ADP development documentation; fresh replay provenance required.",
+      "id": "5100de0c29b4d8fc4f5c3652",
+      "answer": "yes",
+      "category": "TRS_Relative",
+      "prior_replay_seconds": 5.074811082798988
+    },
+    {
+      "root": "TRS_Relative/Relative_05/rt2-2.ari",
+      "input_sha256": "7a96ccc709500b4b08124e254309e1bbb820f13536cfa6a60f0e1c38ff2371d6",
+      "source": "/work/dfm/festschrift/TPDB-ARI/TRS_Relative/Relative_05/rt2-2.ari",
+      "reason": "Official original benchmark identified by pinned relative-ADP development documentation; fresh replay provenance required.",
+      "id": "86454b3fcc5c2e792ce37c3f",
+      "answer": "yes",
+      "category": "TRS_Relative",
+      "prior_replay_seconds": 5.124310387996957
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/n002.ari",
+      "input_sha256": "a9f0bc159f5fdf1d50b7dfaa6296b6f21ee6f3446cdd8acde1be9c80aa6e52a4",
+      "source": "/work/dfm/festschrift/TPDB-ARI/TRS_Outermost/Strategy_outermost_added_08/n002.ari",
+      "reason": "Exploratory smallest-first official inputs; no synthetic examples or proof guidance.",
+      "id": "392a5b8d175dc3cce769b204",
+      "answer": "no",
+      "category": "TRS_Outermost",
+      "prior_replay_seconds": 5.929871643893421
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/n005.ari",
+      "input_sha256": "65aef593ab6b1168f22247b2209c6bf620641d5d8fb671af8ff0aee80eca3153",
+      "source": "/work/dfm/festschrift/TPDB-ARI/TRS_Outermost/Strategy_outermost_added_08/n005.ari",
+      "reason": "Exploratory smallest-first official inputs; no synthetic examples or proof guidance.",
+      "id": "0586bc2421321902d5418858",
+      "answer": "no",
+      "category": "TRS_Outermost",
+      "prior_replay_seconds": 5.929305796977133
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/n003.ari",
+      "input_sha256": "677c05181ca9b86d732f6991ad32724c193c03115d834bd01dd49ac38daf99a0",
+      "source": "/work/dfm/festschrift/TPDB-ARI/TRS_Outermost/Strategy_outermost_added_08/n003.ari",
+      "reason": "Exploratory smallest-first official inputs; no synthetic examples or proof guidance.",
+      "id": "3c57e26af3c3c5f40e098bd7",
+      "answer": "no",
+      "category": "TRS_Outermost",
+      "prior_replay_seconds": 6.431359903886914
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/n004.ari",
+      "input_sha256": "5b43ab0e9978adf9e1e8e0921a079a20596acf496f201e9bb6a1663f13cc86b4",
+      "source": "/work/dfm/festschrift/TPDB-ARI/TRS_Outermost/Strategy_outermost_added_08/n004.ari",
+      "reason": "Exploratory smallest-first official inputs; no synthetic examples or proof guidance.",
+      "id": "db453f6a220ce0be98be7795",
+      "answer": "no",
+      "category": "TRS_Outermost",
+      "prior_replay_seconds": 7.0322835019323975
+    }
+  ]
+}

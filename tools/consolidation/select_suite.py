@@ -24,6 +24,7 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--stage',required=True);p.add_argument('--seconds',type=int,default=300);p.add_argument('--jobs',type=int,default=8);a=p.parse_args()
  if memory_used()>2*1024**4:raise SystemExit('Memory launch ceiling exceeded')
  stage=ROOT/'target/consolidation-corpus'/a.stage;summary=json.loads((stage/'summary.json').read_text())
+ if (stage/'coverage-denominator.json').exists() or (stage/'selection.json').exists():raise SystemExit('Coverage denominator already frozen; create an explicit new stage for a new milestone')
  if summary['losses']:raise SystemExit('Baseline has unresolved losses; cannot freeze suite denominator')
  records=[json.loads(l) for l in (stage/'results.jsonl').read_text().splitlines()]
  if len(records)!=summary['roots'] or not all(r['eligible'] for r in records):raise SystemExit('Incomplete eligible corpus')

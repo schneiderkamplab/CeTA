@@ -7,6 +7,10 @@ or modify a parent worktree. Private builds, full corpora and logs belong under
 The committed `tests/certification/harness-smoke` data validates the harness:
 eight genuinely regenerated proofs and seven semantic mutations. It is **not**
 the minimized full-corpus suite or evidence of complete processor coverage.
+`tests/certification/category-smoke` adds four selected relative/outermost roots
+and two order-related mutations from six independently regenerated official
+inputs. Its instrumentation is the optimized build; do not mix its counters
+with the earlier smoke suite's unoptimized instrumentation.
 
 ```
 python3 tools/consolidation/test_harness.py
@@ -30,6 +34,14 @@ See each script's `--help` and the pinned snapshots in `docs/consolidation`.
 preserving the original failures. It cannot repair a failed production check or
 input audit. Build commands are recorded by `run_logged.py` with elapsed time,
 return status and the total-minus-available memory launch gate.
+
+`replay.py` accepts explicit checker binaries, source identity and frozen input
+manifests for final replays. `join_stages.py` unions only completed, disjoint root
+sets with matching source, oracle, checker and profile identities. A failed or
+interrupted stage cannot silently enter that union. `root_audit.py` additionally
+checks strict/weak rule partitions and outermost strategy without changing the
+vendored original auditors. `map_coverage.py` links changed declarations to HPC
+function positions and lists unobserved or unmapped declarations explicitly.
 
 `coverage.py` distinguishes structural CPF observations from theorem coverage.
 Its lexical parser/checker links require review; exact nested semantic states

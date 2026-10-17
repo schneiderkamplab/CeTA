@@ -1,0 +1,5223 @@
+{
+  "known_xml_tags": [
+    "ACKBO",
+    "Asymbols",
+    "Csymbols",
+    "DP_DP_1_1",
+    "DP_DP_1_2",
+    "DP_DP_2_1",
+    "DP_DP_2_2",
+    "DP_OC_1_1",
+    "DP_OC_1_2",
+    "DP_OC_2",
+    "DP_OC_3_1",
+    "DP_OC_3_2",
+    "E",
+    "M",
+    "OC1",
+    "OC2",
+    "OC2prime",
+    "OC3",
+    "OC3prime",
+    "OCintoDP1",
+    "OCintoDP2",
+    "aaeccInnermost",
+    "above",
+    "acDPTerminationProof",
+    "acDepGraphProc",
+    "acDependencyPairs",
+    "acMonoRedPairProc",
+    "acRIsEmpty",
+    "acRedPairProc",
+    "acRewriteSystem",
+    "acRuleRemoval",
+    "acSubtermProc",
+    "acTerminationProof",
+    "acTrivialProc",
+    "activeSymbol",
+    "additionalFormula",
+    "additionalFormulas",
+    "administrativeProof",
+    "adpCom0",
+    "adpCom2",
+    "after",
+    "al94",
+    "algebraic",
+    "algebraicNumbers",
+    "all",
+    "almostOrthogonal",
+    "almostOrthogonalModuloInfeasibility",
+    "andSymbol",
+    "answer",
+    "aoInfeasibilityProof",
+    "aoInfeasibleCondition",
+    "aoInfeasibleConditions",
+    "aoLhssEqual",
+    "applicativeTop",
+    "approxAndCompletionAndNormalization",
+    "approxAndOrderedCompletionAndNormalization",
+    "approxCompletionProof",
+    "arctic",
+    "args",
+    "argumentFilter",
+    "argumentFilterEntry",
+    "argumentFilterNonJoin",
+    "arithFunction",
+    "arity",
+    "as",
+    "assertion",
+    "assm",
+    "auto",
+    "aux",
+    "auxiliaryRules",
+    "base",
+    "baseIndices",
+    "before",
+    "below",
+    "block",
+    "blockSymbol",
+    "bool",
+    "bound",
+    "bounds",
+    "box",
+    "br",
+    "capNotUnif",
+    "carrierSize",
+    "certificationProblem",
+    "child",
+    "children",
+    "closedUnderRewriting",
+    "closing",
+    "coWeightedPathOrder",
+    "collapse",
+    "collapsing",
+    "comDisproof",
+    "comProof",
+    "commutation",
+    "compatibility",
+    "completedTrs",
+    "completion",
+    "completionAndNormalization",
+    "completionProof",
+    "complexConstantRemovalProc",
+    "complexity",
+    "complexityAssumption",
+    "complexityProof",
+    "component",
+    "compose",
+    "compositionalPcp",
+    "compositionalPcpRuleLabeling",
+    "compositionalPcps",
+    "compoundSymbols",
+    "conclusion",
+    "condRedPairProof",
+    "condbr",
+    "condition",
+    "conditionType",
+    "conditionalConstraint",
+    "conditionalConstraintProof",
+    "conditionalCrDisproof",
+    "conditionalCrProof",
+    "conditionalRewriteStep",
+    "conditionalRewritingSequence",
+    "conditionalRule",
+    "conditions",
+    "confluence",
+    "cong",
+    "conjunction",
+    "conjuncts",
+    "consSymbol",
+    "conservativeCsrTerminationProof",
+    "const",
+    "constMap",
+    "constant",
+    "constantToUnary",
+    "constraint",
+    "contextJoinabilityProof",
+    "contextJoinableCCP",
+    "contextJoinableCCPs",
+    "contextSensitive",
+    "conversion",
+    "conversions",
+    "coreMatrixInterpretation",
+    "coverEdge",
+    "cpfVersion",
+    "crDisproof",
+    "crProof",
+    "critPairInfo",
+    "criterion",
+    "criticalPairClosingSystem",
+    "csrConservativeDependencyPairs",
+    "csrDependencyPairs",
+    "csrDpProof",
+    "csrForwardInstantiationProc",
+    "csrGmTransformation",
+    "csrGuardedDepGraphProc",
+    "csrGuardedDependencyPairs",
+    "csrGuardedExistingDpProof",
+    "csrGuardedImprovedDependencyPairs",
+    "csrGuardedListTerminal",
+    "csrGuardedOvConsTerminal",
+    "csrGuardedRuleRemoval",
+    "csrGuardedTerminationProof",
+    "csrImprovedDependencyPairs",
+    "csrImprovedDpInput",
+    "csrImprovedDpProof",
+    "csrInnermostDependencyPairs",
+    "csrMutermExpandedInnermostDependencyPairs",
+    "csrMutermExpandedInnermostFilteredUsableDependencyPairs",
+    "csrMutermExpandedInnermostUsableDependencyPairs",
+    "csrMutermInnermostDependencyPairs",
+    "csrMutermTypedDependencyPairs",
+    "csrMutermTypedDpInput",
+    "csrMutermTypedDpProof",
+    "csrMutermUsableDependencyPairs",
+    "csrOrthogonalityCheck",
+    "csrRedPairUrProc",
+    "csrRta08DependencyPairs",
+    "csrRuleRemoval",
+    "csrRuleRemovalThenImproved",
+    "csrRuleRemovalsThenImproved",
+    "csrSafeDependencyPairs",
+    "csrTerminationProof",
+    "ctrs",
+    "ctrsInput",
+    "cutPoint",
+    "cutPoints",
+    "cutTransitionSplit",
+    "cutTransitions",
+    "cutTransitionsWithProof",
+    "decisionProcedure",
+    "decisionProcedureOld",
+    "decreasingDiagrams",
+    "deduce",
+    "degree",
+    "delete",
+    "deleteCondition",
+    "delta",
+    "denominator",
+    "depGraphProc",
+    "derivationPattern",
+    "derivationPatternProof",
+    "derivationPatterns",
+    "derivationalComplexity",
+    "description",
+    "developmentClosed",
+    "differentConstructor",
+    "differentInterpretation",
+    "dimension",
+    "disjunction",
+    "distinctNormalForms",
+    "dms",
+    "domain",
+    "domainRenaming",
+    "downSymbol",
+    "dpEquations",
+    "dpInput",
+    "dpNonterminationProof",
+    "dpProof",
+    "dpRuleRemoval",
+    "dpSequence",
+    "dpTrans",
+    "dps",
+    "dtTransformation",
+    "edge",
+    "edges",
+    "emptyTreeAutomataIntersection",
+    "entailment",
+    "entry",
+    "eq",
+    "eqSymbol",
+    "equalityRemoval",
+    "equation",
+    "equationStep",
+    "equationalDisproof",
+    "equationalProof",
+    "equationalProofTree",
+    "equationalReasoningInput",
+    "equations",
+    "equationsAndRedorderInput",
+    "equivalence",
+    "equivalenceProof",
+    "equivalent",
+    "equivalentState",
+    "error",
+    "etaRules",
+    "eval",
+    "expandedCsrProof",
+    "expandedExtendedBasicCsrProof",
+    "expandedLocalUsableRulesProc",
+    "expandedOrdinaryDpProof",
+    "expandedStrongUsableRulesProc",
+    "expression",
+    "extensions",
+    "factor",
+    "false",
+    "falseSymbol",
+    "feasibilityProof",
+    "filteredRedPair",
+    "final",
+    "finalStates",
+    "finiteModel",
+    "finitelyReachable",
+    "finitenessAssumption",
+    "firstAutomaton",
+    "flatContextClosure",
+    "flatContextClosureProc",
+    "flatContexts",
+    "flatSymbol",
+    "forbiddenPattern",
+    "forbiddenPatterns",
+    "formula",
+    "forwardInstantiationProc",
+    "freshSymbol",
+    "freshVariableAddition",
+    "funContext",
+    "funapp",
+    "funargIntoVar",
+    "function",
+    "gen",
+    "generalRedPairProc",
+    "generalUsableRulesProc",
+    "generalUsableRulesRedPairProc",
+    "generalizedWeightedPathOrder",
+    "geq",
+    "gm04CompleteFullTransformation",
+    "gm04CompleteNonterminationTransformation",
+    "gm04CompleteTransformation",
+    "gm04StandaloneDpProof",
+    "gm04StandaloneTrsProof",
+    "greater",
+    "groundConstant",
+    "grounding",
+    "height",
+    "here",
+    "hint",
+    "hints",
+    "icmp",
+    "ifEqual",
+    "ifritRules",
+    "ignoreRelativePart",
+    "ilistPredicateSymbol",
+    "ilistVariable",
+    "impact",
+    "implication",
+    "index",
+    "indexToRule",
+    "indexToTerm",
+    "indices",
+    "induction",
+    "infeasibility",
+    "infeasibilityInput",
+    "infeasibilityProof",
+    "infeasibilityQuery",
+    "infeasibleCompoundConditions",
+    "infeasibleCondition",
+    "infeasibleConditions",
+    "infeasibleEquation",
+    "infeasibleGoalLifting",
+    "infeasibleRhssEqual",
+    "infeasibleRule",
+    "infeasibleRuleRemoval",
+    "infeasibleRules",
+    "infeasibleSplitIf",
+    "infeasibleSubset",
+    "infeasibleTrans",
+    "infinitenessAssumption",
+    "initial",
+    "initialPumping",
+    "initialPumpingContext",
+    "initialTerms",
+    "initialnode",
+    "inlineConditions",
+    "inlinedConditions",
+    "inlinedRule",
+    "inlinedRules",
+    "innermost",
+    "innermostLhss",
+    "innermostLhssIncrease",
+    "innermostLhssIncreaseProc",
+    "innermostLhssRemovalProc",
+    "innermostMonoRedPairProc",
+    "input",
+    "instantiation",
+    "instantiationProc",
+    "instantiationPumping",
+    "instantiations",
+    "int",
+    "integer",
+    "integers",
+    "intercept",
+    "intermediateTerms",
+    "interpret",
+    "interpretation",
+    "invariant",
+    "invariants",
+    "irrelevant",
+    "isAC",
+    "isPair",
+    "joinAutoBfs",
+    "joinAutoNF",
+    "joinSequences",
+    "joinsRS",
+    "joinsSR",
+    "kb",
+    "key",
+    "knuthBendixOrder",
+    "label",
+    "labeledSymbol",
+    "labels",
+    "left",
+    "leftInlineConditions",
+    "leftRight",
+    "leftValueVariable",
+    "lengthSymbol",
+    "leq",
+    "less",
+    "level",
+    "levelMapping",
+    "levelMappingEntry",
+    "lex",
+    "lhs",
+    "lift",
+    "line",
+    "listPredicateSymbol",
+    "listVariable",
+    "llvmprog",
+    "localUsableRulesProc",
+    "location",
+    "locationAddition",
+    "locationDuplicate",
+    "locationId",
+    "lookupTables",
+    "loop",
+    "lts",
+    "ltsSafetyInput",
+    "ltsSafetyProof",
+    "ltsTerminationProof",
+    "ltsandproof",
+    "mVariable",
+    "mainIndices",
+    "manySortedFunction",
+    "manySortedSignature",
+    "markSymbol",
+    "match",
+    "matrices",
+    "matrix",
+    "matrixInterpretation",
+    "max",
+    "maxExt",
+    "maxExtEntry",
+    "maxLeft",
+    "maxMonus",
+    "maxPoly",
+    "min",
+    "minimal",
+    "minusInfinity",
+    "mode",
+    "model",
+    "modularityDisjoint",
+    "monoRedPairProc",
+    "monoRedPairUrProc",
+    "monotonicSemanticPathOrder",
+    "ms",
+    "mul",
+    "multisetArgumentFilter",
+    "multisetArgumentFilterEntry",
+    "mutermTypedDpProof",
+    "nVariable",
+    "name",
+    "narrowing",
+    "narrowingProc",
+    "narrowings",
+    "nat",
+    "natPredicateSymbol",
+    "nativeConservativeCsrTerminationProof",
+    "nativeCsrTerminationProof",
+    "natural",
+    "naturals",
+    "negativeIntegers",
+    "newInvariants",
+    "nfs",
+    "nilSymbol",
+    "no",
+    "node",
+    "nodeId",
+    "nodes",
+    "nonCollapsing",
+    "nonJoinableFork",
+    "nonLoop",
+    "nonRedexPattern",
+    "nonStrict",
+    "nonUsableRules",
+    "nonWcrAndSN",
+    "noncollapsingCsrProof",
+    "nonjoinabilityProof",
+    "nonjoinableTcap",
+    "nonreachabilityProof",
+    "nonreachableCorewritePair",
+    "nonreachableEquationalDisproof",
+    "nonreachableEtac",
+    "nonreachableFGCR",
+    "nonreachableReverse",
+    "nonreachableSubstApprox",
+    "nonreachableTcap",
+    "nonterminatingSRS",
+    "nonterminationAssumption",
+    "nonterminationInput",
+    "normalUnravelingEntry",
+    "not",
+    "notWNTreeAutomaton",
+    "nrSteps",
+    "number",
+    "numberLabel",
+    "numerator",
+    "okSymbol",
+    "orderCompletedSystem",
+    "orderedCompletion",
+    "orderedCompletionProof",
+    "orderedCompletionResult",
+    "orderedCompletionStep",
+    "ordinaryCriticalPairs",
+    "ordinaryDpProof",
+    "oriented",
+    "orientl",
+    "orientr",
+    "originalRule",
+    "orthogonal",
+    "outermost",
+    "outermostRaffelsieperZantemaTransformation",
+    "overlapClosureSRS",
+    "overlapPositions",
+    "pIsEmpty",
+    "parallelClosed",
+    "parallelCriticalPairs",
+    "patternEquivalence",
+    "patternRule",
+    "patternTerm",
+    "pcpClosed",
+    "pcpRuleLabeling",
+    "peak",
+    "permutingArgumentFilter",
+    "persistentDecomposition",
+    "phi",
+    "pointWise",
+    "polynomial",
+    "pos",
+    "position",
+    "positionInTerm",
+    "positionLevelEntry",
+    "post",
+    "power",
+    "precedence",
+    "precedenceList",
+    "precedenceListEntry",
+    "precedenceStatus",
+    "precedenceStatusEntry",
+    "precedenceWeight",
+    "precedenceWeightEntry",
+    "product",
+    "projectedRewriteSequence",
+    "proof",
+    "properSymbol",
+    "property",
+    "pumping",
+    "qdpToSrs",
+    "quasiReductiveProof",
+    "r1",
+    "r2",
+    "rIsEmpty",
+    "rankingFunction",
+    "rankingFunctions",
+    "rational",
+    "rationals",
+    "recursivePathOrder",
+    "redPairProc",
+    "redPairUrProc",
+    "reductionOrder",
+    "reductionPair",
+    "redundantRules",
+    "refine",
+    "refl",
+    "relation",
+    "relative",
+    "relativeAdpComReductionPair",
+    "relativeAdpDependencyGraph",
+    "relativeAdpDerelatification",
+    "relativeAdpEmpty",
+    "relativeAdpErasureReductionPair",
+    "relativeAdpTerminationProof",
+    "relativeBounds",
+    "relativeDpInput",
+    "relativeDpProof",
+    "relativeNonterminationProof",
+    "relativeRules",
+    "remove",
+    "removeNonApplicableRules",
+    "removedRules",
+    "renaming",
+    "renamingEntry",
+    "renamings",
+    "replacementMapEntry",
+    "result",
+    "return",
+    "rewrite",
+    "rewriteSequence",
+    "rewriteStep",
+    "rewriting",
+    "rewritingProc",
+    "rfcAutomatonClosedBounds",
+    "rfcAutomatonClosedRelativeBounds",
+    "rfcBounds",
+    "rfcMatchboxRelativeBounds",
+    "rfcNativeMatchboxRelativeBounds",
+    "rfcRelativeBounds",
+    "rhs",
+    "right",
+    "rightGroundNontermination",
+    "rightGroundTermination",
+    "rightInlineConditions",
+    "rightLeft",
+    "rightValueVariable",
+    "roof",
+    "rootLabeling",
+    "rule",
+    "ruleConstraintProof",
+    "ruleConstraintProofs",
+    "ruleIndex",
+    "ruleLabeling",
+    "ruleLabelingConv",
+    "ruleLabelingFunction",
+    "ruleLabelingFunctionEntry",
+    "ruleMap",
+    "ruleMapEntry",
+    "ruleRemoval",
+    "ruleShifting",
+    "ruleSimulation",
+    "ruleStrengthening",
+    "ruleSubsumptionProof",
+    "ruleTable",
+    "ruleWithDT",
+    "ruleWithWDP",
+    "rules",
+    "run",
+    "runtimeComplexity",
+    "safety",
+    "safetyViaInvariants",
+    "sameConstructor",
+    "scc",
+    "sccDecomposition",
+    "sccWithProof",
+    "scnp",
+    "secondAutomaton",
+    "seg",
+    "selfEmbeddingDP",
+    "selfEmbeddingOC",
+    "semlab",
+    "semlabProc",
+    "sharp",
+    "sigma",
+    "signature",
+    "simplification",
+    "simplifyCondition",
+    "simplifyl",
+    "simplifyr",
+    "simulations",
+    "simultaneousCriticalPairsClosed",
+    "sizeChangeGraph",
+    "sizeChangeProc",
+    "skipFormula",
+    "skipId",
+    "slope",
+    "sort",
+    "source",
+    "sourceProof",
+    "sourceReplacementMap",
+    "sourceSymbol",
+    "sourceTrs",
+    "split",
+    "splitIfInformation",
+    "splitProc",
+    "stack",
+    "startTerm",
+    "state",
+    "stateCompatibility",
+    "stateMap",
+    "status",
+    "statusPrecedence",
+    "statusPrecedenceEntry",
+    "stem",
+    "strategy",
+    "strict",
+    "strictDTs",
+    "strictDecrease",
+    "strictDimension",
+    "strictRules",
+    "strictWDPs",
+    "string",
+    "stringReversal",
+    "stronglyClosed",
+    "subProof",
+    "substEntry",
+    "substitution",
+    "substitutionAndSteps",
+    "subsumptionProof",
+    "subterm",
+    "subtermCoefficientEntries",
+    "subtermCriterion",
+    "subtermProc",
+    "subtermVarEntries",
+    "subtermVarEntry",
+    "successorSymbol",
+    "sum",
+    "swapTRSs",
+    "switchFullStrategy",
+    "switchFullStrategyProc",
+    "switchInnermost",
+    "switchInnermostProc",
+    "switchToCooperationTermination",
+    "switchToCrProof",
+    "switchToTRS",
+    "sym",
+    "symbol",
+    "symbolLabel",
+    "takeSymbol",
+    "target",
+    "targetAssertion",
+    "targetSymbol",
+    "termIndex",
+    "termIndexTable",
+    "termination",
+    "terminationAssumption",
+    "terms",
+    "topSharpSymbol",
+    "topSymbol",
+    "trans",
+    "transformedProof",
+    "transition",
+    "transitionDuplicate",
+    "transitionId",
+    "transitionRemoval",
+    "transitionStep",
+    "transitions",
+    "treeAutomaton",
+    "treeAutomatonAndTrs",
+    "treeAutomatonClosedProof",
+    "trivial",
+    "trs",
+    "trsC",
+    "trsD",
+    "trsInput",
+    "trsNonterminationProof",
+    "trsP",
+    "trsTerminationProof",
+    "trsWithSignature",
+    "true",
+    "trueSymbol",
+    "truthSymbol",
+    "tupleOrder",
+    "twoTrsWithSignature",
+    "type",
+    "typedInstantiationProc",
+    "u11Symbol",
+    "u21Symbol",
+    "u31Symbol",
+    "unconditional",
+    "uncurriedSymbolEntry",
+    "uncurriedSymbols",
+    "uncurry",
+    "uncurryInformation",
+    "uncurryProc",
+    "uncurryRules",
+    "unfeasibilityProof",
+    "unfeasibleCCP",
+    "unfeasibleCCPs",
+    "unhidingRules",
+    "unhidingSymbol",
+    "unknownAssumption",
+    "unknownInput",
+    "unknownInputProof",
+    "unknownProof",
+    "unknownProperty",
+    "unname",
+    "unraveling",
+    "unravelingEntry",
+    "unravelingInformation",
+    "upSymbol",
+    "upperBound",
+    "usableRules",
+    "usableRulesNonJoin",
+    "usableRulesProc",
+    "value",
+    "valueVariable",
+    "var",
+    "variable",
+    "variableConditionViolated",
+    "variableEquation",
+    "variableId",
+    "vector",
+    "w0",
+    "wcrAndSN",
+    "wcrProof",
+    "wdpTransformation",
+    "weakDTs",
+    "weakDps",
+    "weakWDPs",
+    "weight",
+    "weightedPathOrder",
+    "wordPattern",
+    "xVariable",
+    "yes",
+    "zeroSymbol",
+    "zerosSymbol"
+  ],
+  "limitations": [
+    "Lexical links require review; runtime execution never executes Isabelle theorems.",
+    "Nested DP state transformations are not inferred from tag names."
+  ],
+  "processor_candidates": {
+    "aaeccInnermost": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 935,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AAECC_Innermost"
+        ],
+        "parser_line": 1433,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "acDepGraphProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ac_dp_termination_proof",
+            "line": 114,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ac_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_AC_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AC_Dep_Graph_Proc"
+        ],
+        "parser_line": 1760,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "acDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ac_termination_proof",
+            "line": 220,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ac_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_AC_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AC_DP_Trans_Single"
+        ],
+        "parser_line": 1772,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "acMonoRedPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ac_dp_termination_proof",
+            "line": 106,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ac_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_AC_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AC_Mono_Redpair_UR_Proc"
+        ],
+        "parser_line": 1753,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "acRedPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ac_dp_termination_proof",
+            "line": 92,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ac_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_AC_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AC_Redpair_UR_Proc"
+        ],
+        "parser_line": 1740,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "acRuleRemoval": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ac_termination_proof",
+            "line": 227,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ac_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_AC_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AC_Rule_Removal"
+        ],
+        "parser_line": 1782,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "acSubtermProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ac_dp_termination_proof",
+            "line": 99,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ac_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_AC_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "AC_Subterm_Proc"
+        ],
+        "parser_line": 1746,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "approxCompletionProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_approx_completion_proof",
+            "line": 100,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_approx_completion_proof_with_assms_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_Completion_Proof.thy"
+          }
+        ],
+        "constructors": [
+          "SN_WCR_Subsumption"
+        ],
+        "parser_line": 2226,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "completionProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_completion_proof",
+            "line": 36,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_completion_proof_with_assms_sound",
+              "check_completion_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_Completion_Proof.thy"
+          }
+        ],
+        "constructors": [
+          "SN_WCR_Eq"
+        ],
+        "parser_line": 2214,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "complexConstantRemovalProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 818,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Complex_Constant_Removal_Proc"
+        ],
+        "parser_line": 1300,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "complexityAssumption": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 201,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Complexity_Assumption"
+        ],
+        "parser_line": 1731,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "compositionalPcp": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 83,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Compositional_PCP"
+        ],
+        "parser_line": 2127,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "compositionalPcpRuleLabeling": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 103,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Compositional_PCP_Rule_Lab"
+        ],
+        "parser_line": 2159,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 486,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "PCP_Compositional_Rule_Lab_Comm"
+        ],
+        "parser_line": 2634,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "compositionalPcps": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 91,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Compositional_PCPS"
+        ],
+        "parser_line": 2133,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 493,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Compositional_PCPS_Comm"
+        ],
+        "parser_line": 2647,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "cong": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_proves",
+            "line": 79,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_proves_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_Equational_Proof.thy"
+          }
+        ],
+        "constructors": [
+          "Cong"
+        ],
+        "parser_line": 1074,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "constantToUnary": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 861,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Constant_String"
+        ],
+        "parser_line": 1409,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 477,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Constant_String"
+        ],
+        "parser_line": 2028,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrConservativeDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_extended_csr_termination_proof",
+            "line": 1612,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1350,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Conservative_CSR_Dependency_Pairs",
+          "Existing_CSR_Proof"
+        ],
+        "parser_line": 3074,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 133,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9707,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Dependency_Pairs"
+        ],
+        "parser_line": 1482,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 133,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9707,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Dependency_Pairs"
+        ],
+        "parser_line": 1501,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrForwardInstantiationProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 97,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 567,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8406,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Forward_Instantiation_Proc"
+        ],
+        "parser_line": 1535,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGmTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1497,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "GM_CSR_Transformation"
+        ],
+        "parser_line": 3085,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedDepGraphProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_guarded_csr_dp_proof",
+            "line": 148,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          },
+          {
+            "checker": "check_guarded_improved_csr_dp_proof",
+            "line": 288,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_improved_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Guarded_CSR_DP_Dep_Graph"
+        ],
+        "parser_line": 2879,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_guarded_csr_termination_proof",
+            "line": 455,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Guarded_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 2862,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedExistingDpProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_guarded_csr_dp_proof",
+            "line": 146,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          },
+          {
+            "checker": "check_guarded_improved_csr_dp_proof",
+            "line": 285,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_improved_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Guarded_CSR_DP_Existing"
+        ],
+        "parser_line": 2875,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedImprovedDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_guarded_csr_termination_proof",
+            "line": 465,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Guarded_CSR_Improved_Dependency_Pairs"
+        ],
+        "parser_line": 2867,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedListTerminal": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_guarded_ovcons_terminal",
+            "line": 22,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_guarded_ovcons_terminal_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          },
+          {
+            "checker": "check_guarded_csr_dp_proof",
+            "line": 153,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          },
+          {
+            "checker": "check_guarded_improved_csr_dp_proof",
+            "line": 294,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_improved_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Guarded_OvCons_Witness",
+          "Guarded_CSR_DP_OvCons"
+        ],
+        "parser_line": 2887,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedOvConsTerminal": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_guarded_ovcons_terminal",
+            "line": 22,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_guarded_ovcons_terminal_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          },
+          {
+            "checker": "check_guarded_csr_dp_proof",
+            "line": 153,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          },
+          {
+            "checker": "check_guarded_improved_csr_dp_proof",
+            "line": 294,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_improved_csr_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Guarded_OvCons_Witness",
+          "Guarded_CSR_DP_OvCons"
+        ],
+        "parser_line": 2914,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrGuardedRuleRemoval": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_guarded_csr_termination_proof",
+            "line": 448,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_guarded_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Guarded_CSR_Rule_Removal"
+        ],
+        "parser_line": 2856,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrImprovedDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1350,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          },
+          {
+            "checker": "check_extended_csr_termination_proof",
+            "line": 1577,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Existing_CSR_Proof",
+          "Improved_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 3031,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrInnermostDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1356,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Innermost_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 2948,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrMutermExpandedInnermostDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1415,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Expanded_Innermost_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 2990,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrMutermExpandedInnermostFilteredUsableDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1470,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Expanded_Innermost_Filtered_Usable_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 3001,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrMutermExpandedInnermostUsableDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1442,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Expanded_Innermost_Usable_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 3012,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrMutermInnermostDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1365,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Innermost_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 2960,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrMutermTypedDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1377,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 2980,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrMutermUsableDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1371,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Usable_CSR_Dependency_Pairs"
+        ],
+        "parser_line": 2969,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrOrthogonalityCheck": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1350,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          },
+          {
+            "checker": "check_extended_csr_termination_proof",
+            "line": 1567,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Existing_CSR_Proof",
+          "Orthogonality_Checked_CSR_Proof"
+        ],
+        "parser_line": 3026,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrRedPairUrProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 101,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 574,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_innermost_csr_rta08_dp_proof",
+            "line": 866,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_rta08_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_Unhiding_RTA08.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8410,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Redpair_UR_Proc"
+        ],
+        "parser_line": 1541,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrRta08DependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 133,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9707,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_extended_csr_termination_proof",
+            "line": 1564,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1350,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Dependency_Pairs",
+          "Direct_CSR_Proof",
+          "Existing_CSR_Proof"
+        ],
+        "parser_line": 3039,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrRuleRemoval": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 128,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9701,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Rule_Removal"
+        ],
+        "parser_line": 1477,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 128,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9701,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Rule_Removal"
+        ],
+        "parser_line": 1496,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrRuleRemovalThenImproved": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_extended_csr_termination_proof",
+            "line": 1588,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1350,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Rule_Removal_Then_Improved",
+          "Existing_CSR_Proof"
+        ],
+        "parser_line": 3047,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrRuleRemovalsThenImproved": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_extended_csr_termination_proof",
+            "line": 1600,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_gm_extended_csr_termination_proof",
+            "line": 1350,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm_extended_csr_termination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_GM_Transformation.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Rule_Removals_Then_Improved",
+          "Existing_CSR_Proof"
+        ],
+        "parser_line": 3059,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "csrSafeDependencyPairs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 149,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9734,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Safe_Dependency_Pairs"
+        ],
+        "parser_line": 1486,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_termination_proof",
+            "line": 149,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_termination_proof_min",
+            "line": 9734,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_Safe_Dependency_Pairs"
+        ],
+        "parser_line": 1505,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "depGraphProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_recursive_dp_proof",
+            "line": 1497,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_recursive_dp_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 668,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Dep_Graph_Proc"
+        ],
+        "parser_line": 1169,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 85,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 554,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_innermost_csr_dp_termination_proof_active_sct",
+            "line": 365,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_dp_termination_proof_active_sct_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_Active_SCT.thy"
+          },
+          {
+            "checker": "check_innermost_csr_dp_termination_proof",
+            "line": 1335,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_DP_Checker.thy"
+          },
+          {
+            "checker": "check_innermost_csr_rta08_dp_proof",
+            "line": 860,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_rta08_dp_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_Unhiding_RTA08.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8389,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_csr_rta08_dp_first",
+            "line": 9454,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_rta08_dp_first_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_innermost_proof",
+            "line": 2324,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_innermost_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_csr_proof",
+            "line": 3943,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_csr_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_extended_basic_proof",
+            "line": 163,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_extended_basic_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Dep_Graph_Proc"
+        ],
+        "parser_line": 1518,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4330,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2088,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_i4_root_proof",
+            "line": 2369,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_i4_root_proof_non_graph",
+              "check_muterm_i4_root_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Dep_Graph"
+        ],
+        "parser_line": 1622,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "developmentClosed": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 161,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Development_Closed"
+        ],
+        "parser_line": 2142,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 470,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Development_Closed_Comm"
+        ],
+        "parser_line": 2616,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "dpRuleRemoval": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 383,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Rule_Removal"
+        ],
+        "parser_line": 1954,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "dpTrans": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 847,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Trans"
+        ],
+        "parser_line": 1341,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 485,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_DP_Trans"
+        ],
+        "parser_line": 2020,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "dtTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 181,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "DT_Transformation"
+        ],
+        "parser_line": 1709,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "equalityRemoval": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 942,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Drop_Equality"
+        ],
+        "parser_line": 1404,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "expandedCsrProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4284,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2046,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Expanded_CSR_Proof"
+        ],
+        "parser_line": 1600,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "expandedExtendedBasicCsrProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4291,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 721,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 1997,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Expanded_Extended_Basic_CSR_Proof"
+        ],
+        "parser_line": 1603,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "expandedLocalUsableRulesProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4295,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2053,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Expanded_Local_Usable"
+        ],
+        "parser_line": 1606,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "expandedOrdinaryDpProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4323,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2081,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Expanded_Ordinary"
+        ],
+        "parser_line": 1619,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "expandedStrongUsableRulesProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4313,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2071,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Expanded_Strong_Usable"
+        ],
+        "parser_line": 1611,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "finiteModel": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_finite_semantic",
+            "line": 1925,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_finite_semantic_exact_sound",
+              "check_csr_dp_termination_proof_finite_semantic_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Finite_Semantic_Labeling.thy"
+          }
+        ],
+        "constructors": [
+          "Finitelab"
+        ],
+        "parser_line": 70,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "finitenessAssumption": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 754,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_Finite"
+        ],
+        "parser_line": 1278,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "flatContextClosure": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 915,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Fcc"
+        ],
+        "parser_line": 1424,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "flatContextClosureProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 713,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Fcc_Proc"
+        ],
+        "parser_line": 1261,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "forwardInstantiationProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 795,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Forward_Instantiation_Proc"
+        ],
+        "parser_line": 1207,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "generalRedPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 803,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "General_Redpair_Proc"
+        ],
+        "parser_line": 1292,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "generalUsableRulesProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4255,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2005,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_i4_linear_proof",
+            "line": 2225,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_i4_linear_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_General_Usable"
+        ],
+        "parser_line": 1575,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "generalUsableRulesRedPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4255,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2005,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_i4_linear_proof",
+            "line": 2225,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_i4_linear_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_General_Usable"
+        ],
+        "parser_line": 1583,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "gm04CompleteFullTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm04_complete_transformation_proof",
+            "line": 387,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm04_complete_transformation_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "GM04_Complete_Full_Transformation_Proof"
+        ],
+        "parser_line": 3146,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "gm04CompleteNonterminationTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm04_complete_nontermination_proof",
+            "line": 272,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm04_complete_nontermination_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "GM04_Complete_Nontermination_Proof"
+        ],
+        "parser_line": 3171,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "gm04CompleteTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm04_complete_transformation_proof",
+            "line": 356,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm04_complete_transformation_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "GM04_Complete_Transformation_Proof"
+        ],
+        "parser_line": 3128,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "gm04StandaloneDpProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_gm04_standalone_dp_proof",
+            "line": 19,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_gm04_standalone_dp_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/GM04_Standalone_DP_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "GM04_Standalone_DP_Proof"
+        ],
+        "parser_line": 3214,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ignoreRelativePart": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_reltrs_nontermination_proof",
+            "line": 533,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_reltrs_nontermination_proof_with_assms",
+              "check_reltrs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "Rel_R_Not_SN"
+        ],
+        "parser_line": 2064,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "infinitenessAssumption": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 426,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Assume_Infinite"
+        ],
+        "parser_line": 1995,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "innermostLhssIncrease": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 492,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Q_Increase"
+        ],
+        "parser_line": 2034,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "innermostLhssIncreaseProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 395,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Q_Increase"
+        ],
+        "parser_line": 1970,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "innermostLhssRemovalProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 644,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Q_Reduction_Proc"
+        ],
+        "parser_line": 1185,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 388,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Q_Reduction"
+        ],
+        "parser_line": 1966,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "innermostMonoRedPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 659,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Mono_URM_Redpair_Proc"
+        ],
+        "parser_line": 1248,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "instantiationProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 787,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Instantiation_Proc"
+        ],
+        "parser_line": 1202,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 93,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 560,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8399,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_innermost_proof",
+            "line": 2330,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_innermost_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_extended_basic_proof",
+            "line": 177,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_extended_basic_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Instantiation_Proc"
+        ],
+        "parser_line": 1529,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 407,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Instantiation"
+        ],
+        "parser_line": 1974,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "localUsableRulesProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4235,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2042,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_i4_graph_component",
+            "line": 2344,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_i4_graph_components_local_member",
+              "check_muterm_i4_graph_components_nonlocal_member",
+              "check_muterm_i4_graph_component_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Local_Usable"
+        ],
+        "parser_line": 1570,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "loop": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 374,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Loop"
+        ],
+        "parser_line": 1959,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "monoRedPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 650,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Mono_Redpair_Proc"
+        ],
+        "parser_line": 1242,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "monoRedPairUrProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 687,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Mono_Redpair_UR_Proc"
+        ],
+        "parser_line": 1235,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "narrowingProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 779,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Narrowing_Proc"
+        ],
+        "parser_line": 1196,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 420,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Narrowing"
+        ],
+        "parser_line": 1978,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "no": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cert_rfc_absolute",
+            "line": 13,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cert_rfc_absolute_sound"
+            ],
+            "theory": "thys/RFC_Absolute_Ext/RFC_Absolute_Cert.thy"
+          }
+        ],
+        "constructors": [
+          "Decision"
+        ],
+        "parser_line": 430,
+        "parser_theory": "thys/Proof_Checker/CPF_Input_Parser.thy"
+      }
+    ],
+    "nonWcrAndSN": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_ncr_proof",
+            "line": 589,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_ncr_proof_with_assms_sound",
+              "check_ncr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "SN_NWCR"
+        ],
+        "parser_line": 2729,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "noncollapsingCsrProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4276,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2032,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_i4_linear_proof",
+            "line": 2236,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_i4_linear_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_CSR_Proof"
+        ],
+        "parser_line": 1597,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "nonreachableFGCR": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_nonreachable",
+            "line": 212,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_nonreachable"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nonreachability.thy"
+          }
+        ],
+        "constructors": [
+          "Nonreachable_FGCR"
+        ],
+        "parser_line": 2390,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "nonterminationAssumption": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 512,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Assume_Not_SN"
+        ],
+        "parser_line": 2049,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_reltrs_nontermination_proof",
+            "line": 558,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_reltrs_nontermination_proof_with_assms",
+              "check_reltrs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "Rel_TRS_Assume_Not_SN"
+        ],
+        "parser_line": 2077,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ordinaryDpProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 65,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_finite_semantic",
+            "line": 1925,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_finite_semantic_exact_sound",
+              "check_csr_dp_termination_proof_finite_semantic_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Finite_Semantic_Labeling.thy"
+          },
+          {
+            "checker": "check_innermost_csr_rta08_terminal",
+            "line": 778,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_rta08_terminal_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_Unhiding_RTA08.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8370,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_csr_rta08_redpair_first",
+            "line": 9414,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_rta08_redpair_first_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_innermost_proof",
+            "line": 2337,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_innermost_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_innermost_proof",
+            "line": 2356,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_innermost_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_csr_proof",
+            "line": 3949,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_csr_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_extended_basic_proof",
+            "line": 169,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_extended_basic_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Ordinary_Proof"
+        ],
+        "parser_line": 1515,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "outermostRaffelsieperZantemaTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_outermost_rz_termination_proof",
+            "line": 64,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_outermost_rz_termination_proof_sound"
+            ],
+            "theory": "thys/Outermost_RZ_Ext/Outermost_RZ_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Outermost_RZ_Transformation"
+        ],
+        "parser_line": 3194,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "parallelClosed": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 157,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Parallel_Closed"
+        ],
+        "parser_line": 2121,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 466,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Parallel_Closed_Comm"
+        ],
+        "parser_line": 2615,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "pcpClosed": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 109,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "PCP_Closed"
+        ],
+        "parser_line": 2122,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 478,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "PCP_Closed_Comm"
+        ],
+        "parser_line": 2619,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "pcpRuleLabeling": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 113,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "PCP_Rule_Lab"
+        ],
+        "parser_line": 2154,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 482,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "PCP_Rule_Lab_Comm"
+        ],
+        "parser_line": 2624,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "permutingArgumentFilter": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 954,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Permuting_AFS"
+        ],
+        "parser_line": 1446,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "persistentDecomposition": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 177,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Persistent_Decomposition"
+        ],
+        "parser_line": 2197,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "qdpToSrs": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 1025,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Zantema_To_SRS_Proc"
+        ],
+        "parser_line": 1289,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rIsEmpty": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 162,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "RisEmpty_Complexity"
+        ],
+        "parser_line": 1707,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "redPairProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_recursive_dp_proof",
+            "line": 1486,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_recursive_dp_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 624,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Redpair_Proc"
+        ],
+        "parser_line": 1176,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "redPairUrProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_innermost_csr_rta08_terminal",
+            "line": 778,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_rta08_terminal_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_Unhiding_RTA08.thy"
+          },
+          {
+            "checker": "check_csr_dp_tail_core",
+            "line": 8109,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_tail_core_non_u3_sound",
+              "check_csr_dp_tail_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_csr_dp_ordinary_min",
+            "line": 8305,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_ordinary_min_Redpair_UR_Proc",
+              "check_csr_dp_ordinary_min_Semlab_Proc",
+              "check_csr_dp_ordinary_min_Semlab_sound",
+              "check_csr_dp_ordinary_min_fallback_sound",
+              "check_csr_dp_ordinary_min_fallback_eq",
+              "check_csr_dp_ordinary_min_non_u3_sound",
+              "check_csr_dp_ordinary_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_csr_rta08_redpair_first",
+            "line": 9414,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_rta08_redpair_first_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_innermost_proof",
+            "line": 2337,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_innermost_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Usable.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_csr_proof",
+            "line": 3949,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_csr_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_expanded_extended_basic_proof",
+            "line": 169,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_expanded_extended_basic_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 676,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Redpair_UR_Proc"
+        ],
+        "parser_line": 1229,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "redundantRules": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 150,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Redundant_Rules"
+        ],
+        "parser_line": 2191,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "relativeAdpComReductionPair": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_relative_adp_termination_proof",
+            "line": 721,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_relative_adp_termination_proof_sound"
+            ],
+            "theory": "dev/Relative_ADP_Dev/Checker/Relative_ADP_Checker_Adapter.thy"
+          }
+        ],
+        "constructors": [
+          "Relative_ADP_Com_Redpair"
+        ],
+        "parser_line": 60,
+        "parser_theory": "dev/Relative_ADP_Dev/Integration/Relative_ADP_Ceta.thy"
+      }
+    ],
+    "relativeAdpDependencyGraph": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_relative_adp_termination_proof",
+            "line": 732,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_relative_adp_termination_proof_sound"
+            ],
+            "theory": "dev/Relative_ADP_Dev/Checker/Relative_ADP_Checker_Adapter.thy"
+          }
+        ],
+        "constructors": [
+          "Relative_ADP_Dependency_Graph"
+        ],
+        "parser_line": 73,
+        "parser_theory": "dev/Relative_ADP_Dev/Integration/Relative_ADP_Ceta.thy"
+      }
+    ],
+    "relativeAdpDerelatification": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_relative_adp_termination_proof",
+            "line": 747,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_relative_adp_termination_proof_sound"
+            ],
+            "theory": "dev/Relative_ADP_Dev/Checker/Relative_ADP_Checker_Adapter.thy"
+          }
+        ],
+        "constructors": [
+          "Relative_ADP_Derelatification"
+        ],
+        "parser_line": 76,
+        "parser_theory": "dev/Relative_ADP_Dev/Integration/Relative_ADP_Ceta.thy"
+      }
+    ],
+    "relativeAdpErasureReductionPair": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_relative_adp_termination_proof",
+            "line": 710,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_relative_adp_termination_proof_sound"
+            ],
+            "theory": "dev/Relative_ADP_Dev/Checker/Relative_ADP_Checker_Adapter.thy"
+          }
+        ],
+        "constructors": [
+          "Relative_ADP_Erasure_Redpair"
+        ],
+        "parser_line": 47,
+        "parser_theory": "dev/Relative_ADP_Dev/Integration/Relative_ADP_Ceta.thy"
+      }
+    ],
+    "relativeBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 879,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Relative_Bounds"
+        ],
+        "parser_line": 1351,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 175,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Matchbounds_Rel_Complexity"
+        ],
+        "parser_line": 1702,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "removeNonApplicableRules": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 947,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Remove_Nonapplicable_Rules"
+        ],
+        "parser_line": 1415,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 164,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Remove_Nonapplicable_Rules_Complexity"
+        ],
+        "parser_line": 1697,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rewritingProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 771,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rewriting_Proc"
+        ],
+        "parser_line": 1189,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 414,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Rewriting"
+        ],
+        "parser_line": 1984,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rfcAutomatonClosedBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 890,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rfc_Automaton_Closed_Bounds"
+        ],
+        "parser_line": 1362,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rfcAutomatonClosedRelativeBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 901,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rfc_Automaton_Closed_Relative_Bounds"
+        ],
+        "parser_line": 1374,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rfcBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 887,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rfc_Bounds"
+        ],
+        "parser_line": 1357,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rfcMatchboxRelativeBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 979,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          },
+          {
+            "checker": "check_rfc_absolute",
+            "line": 11,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_rfc_absolute_sound"
+            ],
+            "theory": "thys/RFC_Absolute_Ext/RFC_Absolute_Check.thy"
+          }
+        ],
+        "constructors": [
+          "Rfc_Matchbox_Relative_Bounds"
+        ],
+        "parser_line": 1381,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rfcNativeMatchboxRelativeBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 987,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rfc_Native_Matchbox_Relative_Bounds"
+        ],
+        "parser_line": 1388,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "rfcRelativeBounds": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 893,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rfc_Relative_Bounds"
+        ],
+        "parser_line": 1367,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ruleLabeling": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 116,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Rule_Labeling"
+        ],
+        "parser_line": 2174,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ruleLabelingConv": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 131,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Rule_Labeling_Conv"
+        ],
+        "parser_line": 2180,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ruleRemoval": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 839,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rule_Removal"
+        ],
+        "parser_line": 1345,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 464,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Rule_Removal"
+        ],
+        "parser_line": 2016,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_reltrs_nontermination_proof",
+            "line": 551,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_reltrs_nontermination_proof_with_assms",
+              "check_reltrs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "Rel_Rule_Removal"
+        ],
+        "parser_line": 2067,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ruleShifting": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 155,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Rule_Shift_Complexity"
+        ],
+        "parser_line": 1682,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "ruleStrengthening": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 1044,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Rule_Strengthening"
+        ],
+        "parser_line": 1395,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "semlab": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 868,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Semlab"
+        ],
+        "parser_line": 1330,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "semlabProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_finite_semantic",
+            "line": 1925,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_finite_semantic_exact_sound",
+              "check_csr_dp_termination_proof_finite_semantic_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Finite_Semantic_Labeling.thy"
+          },
+          {
+            "checker": "check_csr_dp_ordinary_min",
+            "line": 8338,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_ordinary_min_Redpair_UR_Proc",
+              "check_csr_dp_ordinary_min_Semlab_Proc",
+              "check_csr_dp_ordinary_min_Semlab_sound",
+              "check_csr_dp_ordinary_min_fallback_sound",
+              "check_csr_dp_ordinary_min_fallback_eq",
+              "check_csr_dp_ordinary_min_non_u3_sound",
+              "check_csr_dp_ordinary_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 737,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Semlab_Proc"
+        ],
+        "parser_line": 1213,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "simultaneousCriticalPairsClosed": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 165,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Sim_CPS_Closed"
+        ],
+        "parser_line": 2143,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_comm_proof",
+            "line": 474,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_comm_proof_with_assms_sound",
+              "check_comm_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Sim_CPS_Closed_Comm"
+        ],
+        "parser_line": 2617,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "sizeChangeProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 709,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Size_Change_Redpair_Proc"
+        ],
+        "parser_line": 1312,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 105,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 581,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_innermost_csr_dp_termination_proof_active_sct",
+            "line": 371,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_innermost_csr_dp_termination_proof_active_sct_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Innermost_Active_SCT.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8414,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Size_Change_Subterm_Proc"
+        ],
+        "parser_line": 1559,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "split": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 921,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Split"
+        ],
+        "parser_line": 1336,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 212,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Split_Complexity"
+        ],
+        "parser_line": 1692,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "splitProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 722,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Split_Proc"
+        ],
+        "parser_line": 1272,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "stringReversal": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 854,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "String_Reversal"
+        ],
+        "parser_line": 1400,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 469,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_String_Reversal"
+        ],
+        "parser_line": 2024,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_reltrs_nontermination_proof",
+            "line": 543,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_reltrs_nontermination_proof_with_assms",
+              "check_reltrs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "Rel_TRS_String_Reversal"
+        ],
+        "parser_line": 2072,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "stronglyClosed": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cr_proof",
+            "line": 79,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cr_proof_with_assms_sound",
+              "check_cr_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/Check_CRP.thy"
+          }
+        ],
+        "constructors": [
+          "Strongly_Closed"
+        ],
+        "parser_line": 2120,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "subProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_assm",
+            "line": 465,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_assms_cong",
+              "check_assm"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "SN_FP_assm_proof"
+        ],
+        "parser_line": 1647,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_assm",
+            "line": 125,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_assms_cong",
+              "check_assm"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Complexity_assm_proof"
+        ],
+        "parser_line": 1725,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "substitutionAndSteps": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_feasibility_proof",
+            "line": 373,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_feasibility_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Infeasibility.thy"
+          }
+        ],
+        "constructors": [
+          "Feasible_Witness"
+        ],
+        "parser_line": 2510,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "subtermProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 613,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          },
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 601,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Gen_Subterm_Criterion_Proc",
+          "Subterm_Criterion_Proc"
+        ],
+        "parser_line": 1220,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 71,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8377,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 67,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 587,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8373,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Gen_Subterm_Criterion_Proc",
+          "CSR_DP_Subterm_Criterion_Proc"
+        ],
+        "parser_line": 1549,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "switchFullStrategy": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 456,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Termination_Switch"
+        ],
+        "parser_line": 2038,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "switchFullStrategyProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 400,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Termination_Switch"
+        ],
+        "parser_line": 1991,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "switchInnermost": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 928,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Switch_Innermost"
+        ],
+        "parser_line": 1429,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "switchInnermostProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 746,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Switch_Innermost_Proc"
+        ],
+        "parser_line": 1268,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "switchToTRS": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 828,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "To_Trs_Proc"
+        ],
+        "parser_line": 1286,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "terminationAssumption": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 964,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_SN"
+        ],
+        "parser_line": 1450,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_fptrs_termination_proof",
+            "line": 995,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_fptrs_termination_proof_with_assms",
+              "check_fptrs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_FP_SN"
+        ],
+        "parser_line": 1462,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "typedInstantiationProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_muterm_typed_dp_proof",
+            "line": 4264,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [],
+            "theory": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy"
+          },
+          {
+            "checker": "check_muterm_typed_dp_proof_production",
+            "line": 2020,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound",
+              "check_muterm_typed_dp_proof_production_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          },
+          {
+            "checker": "check_muterm_i4_linear_proof",
+            "line": 2214,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_muterm_i4_linear_proof_sound"
+            ],
+            "theory": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy"
+          }
+        ],
+        "constructors": [
+          "Muterm_Typed_Pair_Augmentation"
+        ],
+        "parser_line": 1591,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "uncurry": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 909,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Uncurry"
+        ],
+        "parser_line": 1419,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 499,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Uncurry"
+        ],
+        "parser_line": 2042,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "uncurryProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 697,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Uncurry_Proc"
+        ],
+        "parser_line": 1254,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "unknownAssumption": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_unknown_proof",
+            "line": 1009,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_unknown_proof_with_assms",
+              "check_unknown_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_Unknown"
+        ],
+        "parser_line": 1635,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "unknownProof": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 754,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_Finite"
+        ],
+        "parser_line": 1281,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_termination_proof",
+            "line": 964,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_termination_proof_with_assms",
+              "check_trs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_SN"
+        ],
+        "parser_line": 1453,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_fptrs_termination_proof",
+            "line": 995,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_fptrs_termination_proof_with_assms",
+              "check_fptrs_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_FP_SN"
+        ],
+        "parser_line": 1465,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_unknown_proof",
+            "line": 1009,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_unknown_proof_with_assms",
+              "check_unknown_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_Unknown"
+        ],
+        "parser_line": 1638,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 201,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Complexity_Assumption"
+        ],
+        "parser_line": 1722,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_nontermination_proof",
+            "line": 426,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_dp_nontermination_proof_with_assms",
+              "check_dp_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "DP_Assume_Infinite"
+        ],
+        "parser_line": 1998,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_trs_nontermination_proof",
+            "line": 512,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_trs_nontermination_proof_with_assms",
+              "check_trs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "TRS_Assume_Not_SN"
+        ],
+        "parser_line": 2052,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_reltrs_nontermination_proof",
+            "line": 558,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_reltrs_nontermination_proof_with_assms",
+              "check_reltrs_nontermination_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "Rel_TRS_Assume_Not_SN"
+        ],
+        "parser_line": 2080,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_unknown_disproof",
+            "line": 605,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_unknown_disproof_with_assms"
+            ],
+            "theory": "thys/Proof_Checker/Check_Nontermination.thy"
+          }
+        ],
+        "constructors": [
+          "Assume_NT_Unknown"
+        ],
+        "parser_line": 2090,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "usableRules": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 195,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "Usable_Rules_Complexity"
+        ],
+        "parser_line": 1688,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "usableRulesProc": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_dp_termination_proof",
+            "line": 636,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "isOK_check_dp_termination_proof_Assume_Finite_False",
+              "check_dp_termination_proof_with_assms",
+              "check_dp_termination_proof"
+            ],
+            "theory": "thys/Proof_Checker_Base/Check_Termination.thy"
+          }
+        ],
+        "constructors": [
+          "Usable_Rules_Proc"
+        ],
+        "parser_line": 1181,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      },
+      {
+        "checker_branches": [
+          {
+            "checker": "check_csr_dp_termination_proof_core",
+            "line": 75,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_core_sound"
+            ],
+            "theory": "thys/CSR_Checker/Core/CSR_Checker.thy"
+          },
+          {
+            "checker": "check_improved_csr_dp_termination_proof",
+            "line": 547,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_improved_csr_dp_termination_proof_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Conservative_Checker.thy"
+          },
+          {
+            "checker": "check_csr_dp_termination_proof_min",
+            "line": 8381,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_csr_dp_termination_proof_min_sound"
+            ],
+            "theory": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy"
+          }
+        ],
+        "constructors": [
+          "CSR_DP_Usable_Rules_Proc"
+        ],
+        "parser_line": 1525,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "wdpTransformation": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_complexity_proof",
+            "line": 188,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_complexity_proof_with_assms",
+              "check_complexity_proof"
+            ],
+            "theory": "thys/Proof_Checker/Check_Complexity.thy"
+          }
+        ],
+        "constructors": [
+          "WDP_Transformation"
+        ],
+        "parser_line": 1715,
+        "parser_theory": "thys/Proof_Checker/CPF_Proof_Parser.thy"
+      }
+    ],
+    "yes": [
+      {
+        "checker_branches": [
+          {
+            "checker": "check_cert_rfc_absolute",
+            "line": 13,
+            "status": "driver correspondence; criterion premises require explicit mapping",
+            "theorems": [
+              "check_cert_rfc_absolute_sound"
+            ],
+            "theory": "thys/RFC_Absolute_Ext/RFC_Absolute_Cert.thy"
+          }
+        ],
+        "constructors": [
+          "Decision"
+        ],
+        "parser_line": 428,
+        "parser_theory": "thys/Proof_Checker/CPF_Input_Parser.thy"
+      }
+    ]
+  },
+  "revision": "17dbee4b822733cd25235a64178db2ccf590a10e",
+  "structural_schema_version": 2
+}

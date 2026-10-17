@@ -35,19 +35,25 @@ def registry():
             returned=body[returns[-1].end():]
             cs=sorted(set(re.findall(r'\b[A-Z][A-Za-z_0-9]+\b',returned))&branches.keys())
             if cs:tags[m[1]].append(dict(parser_theory=path,parser_line=text.count('\n',0,m.start())+1,constructors=cs,checker_branches=[b for c in cs for b in branches[c]]))
-    return dict(revision=REV,known_xml_tags=sorted(known),processor_candidates=dict(tags),limitations=['Lexical links require review; runtime execution never executes Isabelle theorems.','Nested DP state transformations are not inferred from tag names.'])
+    return dict(revision=REV,structural_schema_version=2,known_xml_tags=sorted(known),processor_candidates=dict(tags),limitations=['Lexical links require review; runtime execution never executes Isabelle theorems.','Nested DP state transformations are not inferred from tag names.'])
 
 def inspect(path,category,reg):
-    known=set(reg['known_xml_tags']);processors=reg['processor_candidates'];features=set();unknown=collections.Counter();observed=collections.Counter();nodes=[];stack=[];child_counts=[];proof_depth=None
+    known=set(reg['known_xml_tags']);processors=reg['processor_candidates'];features=set();unknown=collections.Counter();observed=collections.Counter();nodes=[];stack=[];child_counts=[];proof_depth=None;frames=[];version=reg.get('structural_schema_version',1)
     wrappers={'proof','trsTerminationProof','dpProof','dpTerminationProof','trsNonterminationProof','dpNonterminationProof','csrTerminationProof','csrDpTerminationProof','csrDpProof','relativeAdpTerminationProof','csrGuardedTerminationProof','csrImprovedDpProof','csrMutermTypedDpProof'}
     with (gzip.open(path,'rb') if str(path).endswith('.gz') else path.open('rb')) as f:
         for event,node in ET.iterparse(f,events=('start','end')):
             if event=='start':
                 if child_counts:child_counts[-1]+=1
-                child_counts.append(0);stack.append(node)
+                child_counts.append(0);stack.append(node);frames.append(None)
                 if len(stack)==2 and node.tag=='proof':proof_depth=2
                 if proof_depth:
                     tag=node.tag
+                    if version>=2:
+                        if tag in wrappers:
+                            for frame in frames[:-1]:
+                                if frame is not None:frame['has_child_proof']=True
+                        if len(stack)>=3 and stack[-2].tag in {'domain','type','criterion'}:
+                            features.add('representation|'+category+'|'+stack[-3].tag+'/'+stack[-2].tag+'='+tag)
                     if tag not in known and tag not in wrappers:unknown[tag]+=1
                     context_tags=[x.tag for x in stack[:-1]]
                     data_only=(tag=='usableRules' and not any('complexity' in t.lower() for t in context_tags))
@@ -60,9 +66,13 @@ def inspect(path,category,reg):
                         features.add(key);observed[tag]+=1
                         # Ordered parent-child composition, distinct from tag presence.
                         if proof_ancestors:features.add('composition|'+category+'|'+proof_ancestors[-1]+'>'+tag)
-                        nodes.append(dict(tag=tag,container=container,placement=placement,ancestor_processors=proof_ancestors))
+                        frame=dict(tag=tag,container=container,placement=placement,ancestor_processors=proof_ancestors)
+                        if version>=2:frame['has_child_proof']=False;frames[-1]=frame
+                        nodes.append(frame)
                 continue
             if proof_depth:
+                if version>=2 and frames[-1] is not None:
+                    frame=frames[-1];features.add('flow|'+category+'|'+frame['container']+'|'+frame['tag']+'|'+('recursive' if frame['has_child_proof'] else 'terminal'))
                 # Record explicit representations and boundary syntax without pretending
                 # they are the complete semantic context of a nested obligation.
                 if node.tag in {'minimal','nfs','dimension','domain','type','strictDimension'}:
@@ -75,7 +85,7 @@ def inspect(path,category,reg):
             # uses child placeholders retained until parent end, not full subtrees.
             node.clear()
             if len(stack)>1:stack[-2].remove(node)
-            stack.pop();child_counts.pop()
+            stack.pop();child_counts.pop();frames.pop()
     return dict(features=sorted(features),processor_counts=dict(observed),unknown_proof_tags=dict(unknown),nodes=nodes,semantic_context_gaps=['Exact nested P/Pw/Q/R/Rw, minimality and replacement-map transition reconstruction pending per processor.'])
 
 def main():

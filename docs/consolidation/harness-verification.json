@@ -37,6 +37,234 @@
     "acceptance_passed": true,
     "confirmed_slowdowns": []
   },
-  "harness_tests": 7,
-  "original_audit_tests": 22
+  "harness_tests": 9,
+  "original_audit_tests": 22,
+  "supplemental_categories": {
+    "elapsed_seconds": 12.484032385982573,
+    "eligible": 6,
+    "losses": [],
+    "roots": 6
+  },
+  "category_smoke": {
+    "acceptance_passed": true,
+    "checker_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+    "coverage_passed": true,
+    "hpc_checker_sha256": "5537f183ac31d2042aed76e03940622e8f014599cb37018639c8ac987dc30c3e",
+    "missing_coverage": [],
+    "performance_status": "Controlled reference repeats required for listed slowdown candidates; timings alone do not establish a regression.",
+    "results": [
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/db453f6a220ce0be98be7795/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017600161023437977,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/db453f6a220ce0be98be7795/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01834871806204319,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "hpc": {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc-o2",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/db453f6a220ce0be98be7795/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.034360636956989765,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "id": "db453f6a220ce0be98be7795",
+        "kind": "positive",
+        "passed": true,
+        "reference_mean_seconds": 0.019103441038168967,
+        "slowdown_candidate": false
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/0586bc2421321902d5418858/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01728109293617308,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/0586bc2421321902d5418858/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.018768145935609937,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "hpc": {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc-o2",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/0586bc2421321902d5418858/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0333250320982188,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "id": "0586bc2421321902d5418858",
+        "kind": "positive",
+        "passed": true,
+        "reference_mean_seconds": 0.0198302180506289,
+        "slowdown_candidate": false
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/5100de0c29b4d8fc4f5c3652/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017320603132247925,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/5100de0c29b4d8fc4f5c3652/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.02002490102313459,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "hpc": {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc-o2",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/5100de0c29b4d8fc4f5c3652/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.034224036848172545,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "id": "5100de0c29b4d8fc4f5c3652",
+        "kind": "positive",
+        "passed": true,
+        "reference_mean_seconds": 0.018155405530706048,
+        "slowdown_candidate": false
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/86454b3fcc5c2e792ce37c3f/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01764324097894132,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/86454b3fcc5c2e792ce37c3f/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017257943050935864,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "hpc": {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc-o2",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/86454b3fcc5c2e792ce37c3f/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03331316099502146,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "id": "86454b3fcc5c2e792ce37c3f",
+        "kind": "positive",
+        "passed": true,
+        "reference_mean_seconds": 0.018118890933692455,
+        "slowdown_candidate": false
+      },
+      {
+        "checks": [
+          {
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/5100de0c29b4d8fc4f5c3652-zero-polynomial-offsets/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01742563210427761,
+            "returncode": 1,
+            "semantic_rejection": true,
+            "timed_out": false
+          },
+          {
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/5100de0c29b4d8fc4f5c3652-zero-polynomial-offsets/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017285563051700592,
+            "returncode": 1,
+            "semantic_rejection": true,
+            "timed_out": false
+          }
+        ],
+        "id": "5100de0c29b4d8fc4f5c3652-zero-polynomial-offsets",
+        "kind": "negative",
+        "passed": true
+      },
+      {
+        "checks": [
+          {
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/86454b3fcc5c2e792ce37c3f-zero-matrix-monotonicity/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01733014197088778,
+            "returncode": 1,
+            "semantic_rejection": true,
+            "timed_out": false
+          },
+          {
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/extra-suite-check/86454b3fcc5c2e792ce37c3f-zero-matrix-monotonicity/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01713590300641954,
+            "returncode": 1,
+            "semantic_rejection": true,
+            "timed_out": false
+          }
+        ],
+        "id": "86454b3fcc5c2e792ce37c3f-zero-matrix-monotonicity",
+        "kind": "negative",
+        "passed": true
+      }
+    ],
+    "scope": "Supplemental category validation only; not the final full-corpus suite",
+    "slowdown_candidates": []
+  }
 }

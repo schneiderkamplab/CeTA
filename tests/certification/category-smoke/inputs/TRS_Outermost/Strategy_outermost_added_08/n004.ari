@@ -1,0 +1,6 @@
+; @origtpdbfilename ./TRS/outermost/HM/n004.trs
+; @xtcfilename "./TRS_Outermost/Strategy_outermost_added_08/n004.xml"
+(format TRS)
+(fun f 1)
+(fun a 0)
+(rule (f a) (f a))
