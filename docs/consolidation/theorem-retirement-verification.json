@@ -1,0 +1,109 @@
+{
+  "all_targets_passed": true,
+  "base_commit": "1b655c5d18dbfc801e6529f4df26ed04841687d5",
+  "binaries": {
+    "ceta": "a0f1d98394045935b8d399d3af55b7435e0a867845c3a7f7cae04e618c155b58",
+    "ceta-ordinary": "7e4be1154a49164cc9146912eed1b626975f0d8b41f15e0309727d1a6ed2c266",
+    "ceta-relative-adp": "e4fd7b66522d5d27a967a4aa264a88b86579218904cb91b36963cc669789d092"
+  },
+  "clean_build_byte_identical": true,
+  "compact_positives": 208,
+  "compact_semantic_negatives": 408,
+  "coverage_limits": [
+    "Genuine relative-ADP processor and positive outermost RZ replays remain absent.",
+    "Runtime coverage does not execute Isabelle proofs."
+  ],
+  "evidence": "theorem-retirement-evidence.json.gz",
+  "evidence_sha256": "333e6f639e07dee4179c284afe0b6b8b05411f05683404e2f386cbea9c8a361d",
+  "explicitly_retired_counters": 20,
+  "exports": {
+    "ordinary": {
+      "byte_identical": true,
+      "modules": 398
+    },
+    "relative": {
+      "byte_identical": true,
+      "modules": 9
+    },
+    "rfc": {
+      "byte_identical": true,
+      "modules": 401
+    }
+  },
+  "failed_attempt": "Three endpoint corollary proof scripts failed; explicit relation instantiation and separate premise discharge passed.",
+  "frozen_denominator": 45753,
+  "full_replay_evidence_reused": {
+    "reason": "The clean-built checker is byte-identical. No fresh Ferrum regeneration or current-frontier snapshot was performed in this theorem-only batch.",
+    "report": "final-verification.json",
+    "report_sha256": "667e56369be4d633769528cd330ef1a0074f0a83e47364a9b7e2211b912e57d6",
+    "roots": 3484
+  },
+  "hpc_reuse": "Exact exported module and adapter identity; existing instrumented binary retained.",
+  "independent_proofs_replaced": 8,
+  "isabelle_targets": [
+    "CSR_Guarded_List_Measure_Check",
+    "Proof_Checker",
+    "Code",
+    "RFC_Absolute_Ext",
+    "Relative_ADP_Ceta_Dev",
+    "Outermost_RZ_Ext"
+  ],
+  "missing_coverage": [],
+  "passed": true,
+  "performance": {
+    "hpc": {
+      "acceptance_passed": true,
+      "comparisons": [
+        {
+          "id": "d1a6a23c3bc2cddcb61c3fda",
+          "medians": {
+            "candidate": 0.03114401292987168,
+            "reference": 0.03078306606039405
+          },
+          "slowdown_ratio": 1.011725500922146
+        }
+      ],
+      "confirmed_slowdowns": [],
+      "investigated_cases": 1
+    },
+    "production": {
+      "acceptance_passed": true,
+      "comparisons": [
+        {
+          "id": "44040addb105c129255fe2d8-omitted-graph-components",
+          "medians": {
+            "candidate": 0.013622766127809882,
+            "reference": 0.013797905063256621
+          },
+          "slowdown_ratio": 0.9873068458839358
+        },
+        {
+          "id": "92ba8d991efbd71cb376b0e7-omitted-dp-pairs",
+          "medians": {
+            "candidate": 0.01364516606554389,
+            "reference": 0.012613054132089019
+          },
+          "slowdown_ratio": 1.081828867350142
+        },
+        {
+          "id": "f723e1296d0853687adac4de-omitted-dp-pairs",
+          "medians": {
+            "candidate": 0.0123592559248209,
+            "reference": 0.013451887993142009
+          },
+          "slowdown_ratio": 0.9187748166741985
+        }
+      ],
+      "confirmed_slowdowns": [],
+      "investigated_cases": 3
+    }
+  },
+  "problem_kinds_removed": 0,
+  "production_source_files": 3847,
+  "required_coverage_observed": 45733,
+  "semantic_definitions_unified": 1,
+  "source_sha256": {
+    "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy": "4ad24477923b582c353974b8b0ede236c58e60f84e52ede182d02ebeac4b2287",
+    "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy": "3d34e9a922e5c778e80dcada63cb06181c1736569848f2ba0df8c4281878931d"
+  }
+}

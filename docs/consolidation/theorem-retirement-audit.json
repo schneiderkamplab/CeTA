@@ -1,0 +1,341 @@
+{
+  "base_commit": "1b655c5d18dbfc801e6529f4df26ed04841687d5",
+  "coverage_characterization_preserves_original_formula": true,
+  "guarded_nonproof_declarations_unchanged": true,
+  "other_conservative_nonproof_declarations_unchanged": true,
+  "proof_implementations_replaced": [
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 3776,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_rel_min_endpoint_order:"
+        },
+        {
+          "line": 4056,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "by (rule SN_rel_min_endpoint_order["
+        },
+        {
+          "line": 4098,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "by (rule SN_rel_min_endpoint_order["
+        }
+      ],
+      "statement_sha256": "5975d7f20f406f0c06a7731720b1780d89efda466382bce1fb1ffdcbc369a367",
+      "theorem": "SN_rel_min_endpoint_order",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy",
+      "references": [
+        {
+          "line": 2690,
+          "path": "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy",
+          "text": "lemma finite_conservative_csdp_coverage_imp:"
+        },
+        {
+          "line": 2704,
+          "path": "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy",
+          "text": "OF wf defs finite_conservative_csdp_coverage_imp[OF cover] fin])"
+        }
+      ],
+      "statement_sha256": "e72ea497245eead814505942020a05c38886fa94387e05b1ebff0db2132f95fd",
+      "theorem": "finite_conservative_csdp_coverage_imp",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 3606,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_csr_guard_normal_pair_rank_gt:"
+        },
+        {
+          "line": 3968,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "OF SN_csr_guard_normal_pair_rank_gt"
+        },
+        {
+          "line": 4020,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "OF SN_csr_guard_normal_pair_rank_gt"
+        },
+        {
+          "line": 4099,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "OF SN_csr_guard_normal_pair_rank_gt"
+        }
+      ],
+      "statement_sha256": "6ead3c461abb3bcce015f1fcce5c4d5c20558c920a68c60a64ac278af2c69dc8",
+      "theorem": "SN_csr_guard_normal_pair_rank_gt",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 3612,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_rel_csr_guard_normal_pair_rank:"
+        }
+      ],
+      "statement_sha256": "aef9989f0e7cacb250d9a772586aa3a4d787acfc4729c6b9787257c34d0e8c03",
+      "theorem": "SN_rel_csr_guard_normal_pair_rank",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 3635,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_csr_guard_pair_rank_gt:"
+        },
+        {
+          "line": 4057,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "OF SN_csr_guard_pair_rank_gt"
+        }
+      ],
+      "statement_sha256": "b60e04b7eb778aaad055b4475bd863b79aebfa728ebfe607b2a00abb5053cd9a",
+      "theorem": "SN_csr_guard_pair_rank_gt",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 3640,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_rel_csr_guard_pair_rank:"
+        }
+      ],
+      "statement_sha256": "24503972dada0d59680704427a5d9c3c866d5f9eccbe9f04b22a1f02490173b2",
+      "theorem": "SN_rel_csr_guard_pair_rank",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 4248,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_csr_guard_rank_gt:"
+        }
+      ],
+      "statement_sha256": "83de8d113b145e4c0b7629d52855327677416d45e674dc9fc7fbee1474ad5c96",
+      "theorem": "SN_csr_guard_rank_gt",
+      "unchanged_statement": true
+    },
+    {
+      "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+      "references": [
+        {
+          "line": 4253,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "lemma SN_rel_csr_guard_rank:"
+        },
+        {
+          "line": 4273,
+          "path": "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy",
+          "text": "by (rule SN_rel_mono[OF strict weak SN_rel_csr_guard_rank])"
+        }
+      ],
+      "statement_sha256": "894f6903a6eea50114c1f92f4e34a5dbaa68b242035c171227b690d42e106c77",
+      "theorem": "SN_rel_csr_guard_rank",
+      "unchanged_statement": true
+    }
+  ],
+  "retained_contracts": [
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 161,
+          "path": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy",
+          "source_sha256": "2b6dae10cbe668c4a48a5994dcfed25b93f2197e02cfeeb0dd6d03e264f5c31a"
+        }
+      ],
+      "name": "csr_min_pair_step"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 165,
+          "path": "thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy",
+          "source_sha256": "2b6dae10cbe668c4a48a5994dcfed25b93f2197e02cfeeb0dd6d03e264f5c31a"
+        }
+      ],
+      "name": "finite_min_csr_dpp"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 160,
+          "path": "thys/CSR_Checker/Extensions/CSR_Innermost_DP_Checker.thy",
+          "source_sha256": "fc4c9962929f01c0b4d68217c4027f57731569761461e08aca3df42d30c83f6f"
+        }
+      ],
+      "name": "finite_mode_csr_dpp"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 1383,
+          "path": "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy",
+          "source_sha256": "4ad24477923b582c353974b8b0ede236c58e60f84e52ede182d02ebeac4b2287"
+        }
+      ],
+      "name": "improved_csdp_coverage"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 1755,
+          "path": "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy",
+          "source_sha256": "4ad24477923b582c353974b8b0ede236c58e60f84e52ede182d02ebeac4b2287"
+        }
+      ],
+      "name": "conservative_csdp_coverage"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 26,
+          "path": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy",
+          "source_sha256": "f94a2b690b57d55076f4958c636fd6826cace30b78d00868a0a8287970d37d86"
+        }
+      ],
+      "name": "muterm_typed_pair_step"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 346,
+          "path": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Usable_Rules.thy",
+          "source_sha256": "f94a2b690b57d55076f4958c636fd6826cace30b78d00868a0a8287970d37d86"
+        }
+      ],
+      "name": "muterm_min_typed_pair_step"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 754,
+          "path": "thys/CSR_Checker/Muterm_Ext/CSR_Muterm_Innermost_Progress.thy",
+          "source_sha256": "9e821c6600a32fd27788d4c4ae146694f1c5b0e828809927f0ebd631e946c3a6"
+        }
+      ],
+      "name": "muterm_innermost_min_typed_pair_step"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 1324,
+          "path": "thys/CSR_Checker/Muterm_Typed_Recursive_Redpair/CSR_Muterm_Typed_Recursive_Redpair.thy",
+          "source_sha256": "16818a5d712301aa3e0c9884c529735e4ef284b5ed94e57b0eadc90a7a36dcb4"
+        }
+      ],
+      "name": "muterm_i4_good_pair_step"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 424,
+          "path": "thys/CSR_Checker/Muterm_Extended_Basic/CSR_Muterm_Extended_Basic.thy",
+          "source_sha256": "3734c647da57435aa7022274fe0c8caa7f68580293bbe7b6b53cc4006c548143"
+        }
+      ],
+      "name": "muterm_eb_min_typed_pair_step"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 2621,
+          "path": "thys/CSR_Checker/Extensions/CSR_Innermost_Switch.thy",
+          "source_sha256": "aa7513eb5e57e8031cc2b705b12e6051b3ac5cd49ccdfc2792c33926a5e4d242"
+        }
+      ],
+      "name": "csr_switch_overlay_innermost_termination"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 1809,
+          "path": "thys/CSR_Checker/AAECC/AAECC_Innermost_Switch.thy",
+          "source_sha256": "3664c7a95353a7ef6bfe354670adb83da68fe11884b01940e0c04375e2ec50f7"
+        }
+      ],
+      "name": "aaecc_innermost_termination"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 21,
+          "path": "thys/RFC_Absolute_Ext/RFC_Absolute_Residual.thy",
+          "source_sha256": "b0658803b756e7243da63c46303dff9eff4a36962b4b69a9d1cffb158fdc9246"
+        }
+      ],
+      "name": "SN_from_RFC_delete_and_absolute_residual"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 10,
+          "path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+          "source_sha256": "6ea41416acab5ac8c4afe9547f332aef0d3a304046803db62a7bc400cab19a75"
+        }
+      ],
+      "name": "check_standalone_nonminimal_csr_dp"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 45,
+          "path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+          "source_sha256": "6ea41416acab5ac8c4afe9547f332aef0d3a304046803db62a7bc400cab19a75"
+        }
+      ],
+      "name": "check_standalone_minimal_csr_dp"
+    },
+    {
+      "decision": "keep distinct contract",
+      "declarations": [
+        {
+          "line": 124,
+          "path": "thys/Proof_Checker/CSR_Standalone_DP_Checker.thy",
+          "source_sha256": "6ea41416acab5ac8c4afe9547f332aef0d3a304046803db62a7bc400cab19a75"
+        }
+      ],
+      "name": "check_standalone_muterm_typed_dp"
+    }
+  ],
+  "scope": "Lexical references in tracked theory files; all integration builds check actual dependencies.",
+  "semantic_replacement": {
+    "equivalence": "finite_conservative_csdp_coverage_iff",
+    "name": "finite_conservative_csdp_coverage",
+    "parser_forms_removed": [],
+    "replacement": "conservative_csdp_coverage with restrict_mu_to_sig F mu"
+  },
+  "source_sha256": {
+    "thys/CSR_Checker/Extensions/CSR_Improved_CSDP_Proofs.thy": "4ad24477923b582c353974b8b0ede236c58e60f84e52ede182d02ebeac4b2287",
+    "thys/CSR_Checker/Guarded_List_Measure_Check/CSR_Guarded_List_Measure.thy": "3d34e9a922e5c778e80dcada63cb06181c1736569848f2ba0df8c4281878931d"
+  }
+}

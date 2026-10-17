@@ -3566,46 +3566,55 @@ lemma csr_guard_normal_pair_rank_ge_trans:
       a u11 u21 u31 u11s lens z su len ni co ta zs)"
   unfolding trans_def csr_guard_normal_pair_rank_ge_def by auto
 
+text \<open>
+  All three guarded ranks are partial natural-valued measures. Undefined
+  endpoints are excluded from both relations; no value is assigned to None.
+  Their termination arguments are instances of these two general facts.
+\<close>
+
+lemma SN_partial_nat_rank:
+  fixes rank :: "'a \<Rightarrow> nat option"
+  shows "SN {(s,t). \<exists>m n. rank s = Some m \<and>
+    rank t = Some n \<and> m > n}"
+proof -
+  have sub: "{(s,t). \<exists>m n. rank s = Some m \<and>
+      rank t = Some n \<and> m > n}
+      \<subseteq> inv_image {(m,n). m > n} (the \<circ> rank)"
+    unfolding inv_image_def by auto
+  show ?thesis by (rule SN_subset[OF SN_inv_image[OF SN_nat_gt] sub])
+qed
+
+lemma SN_rel_partial_nat_rank:
+  fixes rank :: "'a \<Rightarrow> nat option"
+  shows "SN_rel
+    {(s,t). \<exists>m n. rank s = Some m \<and> rank t = Some n \<and> m > n}
+    {(s,t). \<exists>m n. rank s = Some m \<and> rank t = Some n \<and> m \<ge> n}"
+proof -
+  let ?S = "{(s,t). \<exists>m n. rank s = Some m \<and> rank t = Some n \<and> m > n}"
+  let ?NS = "{(s,t). \<exists>m n. rank s = Some m \<and> rank t = Some n \<and> m \<ge> n}"
+  have compat: "?NS O ?S \<subseteq> ?S" by auto
+  have sn: "SN ((?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*)"
+    by (rule compatible_SN'[OF compat SN_partial_nat_rank])
+  have ns: "?NS\<^sup>* \<subseteq> (?NS \<union> ?S)\<^sup>*"
+    by (rule rtrancl_mono, auto)
+  have sub: "?NS\<^sup>* O ?S O ?NS\<^sup>*
+      \<subseteq> (?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*"
+    by (rule relcomp_mono[OF ns relcomp_mono[OF subset_refl ns]])
+  show ?thesis unfolding SN_rel_defs by (rule SN_subset[OF sn sub])
+qed
+
 lemma SN_csr_guard_normal_pair_rank_gt:
   "SN (csr_guard_normal_pair_rank_gt
       a u11 u21 u31 u11s lens z su len ni co ta zs)"
-proof -
-  have sub: "csr_guard_normal_pair_rank_gt
-      a u11 u21 u31 u11s lens z su len ni co ta zs
-      \<subseteq> inv_image {(m,n). m > n}
-        (the \<circ> csr_guard_normal_pair_rank
-          a u11 u21 u31 u11s lens z su len ni co ta zs)"
-    unfolding csr_guard_normal_pair_rank_gt_def inv_image_def by auto
-  have "SN (inv_image {(m,n). m > n}
-      (the \<circ> csr_guard_normal_pair_rank
-        a u11 u21 u31 u11s lens z su len ni co ta zs))"
-    by (rule SN_inv_image[OF SN_nat_gt])
-  then show ?thesis by (rule SN_subset[OF _ sub])
-qed
+  unfolding csr_guard_normal_pair_rank_gt_def
+  by (rule SN_partial_nat_rank)
 
 lemma SN_rel_csr_guard_normal_pair_rank:
   "SN_rel
     (csr_guard_normal_pair_rank_gt a u11 u21 u31 u11s lens z su len ni co ta zs)
     (csr_guard_normal_pair_rank_ge a u11 u21 u31 u11s lens z su len ni co ta zs)"
-proof -
-  let ?S = "csr_guard_normal_pair_rank_gt
-    a u11 u21 u31 u11s lens z su len ni co ta zs"
-  let ?NS = "csr_guard_normal_pair_rank_ge
-    a u11 u21 u31 u11s lens z su len ni co ta zs"
-  have compat: "?NS O ?S \<subseteq> ?S"
-    by (rule csr_guard_normal_pair_rank_ge_gt_comp)
-  have sn: "SN ((?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*)"
-    by (rule compatible_SN'[OF compat SN_csr_guard_normal_pair_rank_gt])
-  have sub: "?NS\<^sup>* O ?S O ?NS\<^sup>*
-      \<subseteq> (?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*"
-  proof -
-    have ns: "?NS\<^sup>* \<subseteq> (?NS \<union> ?S)\<^sup>*"
-      by (rule rtrancl_mono, auto)
-    show ?thesis
-      by (rule relcomp_mono[OF ns relcomp_mono[OF subset_refl ns]])
-  qed
-  show ?thesis unfolding SN_rel_defs by (rule SN_subset[OF sn sub])
-qed
+  unfolding csr_guard_normal_pair_rank_gt_def csr_guard_normal_pair_rank_ge_def
+  by (rule SN_rel_partial_nat_rank)
 
 lemma csr_guard_pair_rank_gt_ge_comp:
   "csr_guard_pair_rank_gt u11s lens z su len ni co ta zs O
@@ -3625,37 +3634,14 @@ lemma csr_guard_pair_rank_ge_trans:
 
 lemma SN_csr_guard_pair_rank_gt:
   "SN (csr_guard_pair_rank_gt u11s lens z su len ni co ta zs)"
-proof -
-  have sub: "csr_guard_pair_rank_gt u11s lens z su len ni co ta zs
-      \<subseteq> inv_image {(m,n). m > n}
-        (the \<circ> csr_guard_pair_rank u11s lens z su len ni co ta zs)"
-    unfolding csr_guard_pair_rank_gt_def inv_image_def by auto
-  have "SN (inv_image {(m,n). m > n}
-      (the \<circ> csr_guard_pair_rank u11s lens z su len ni co ta zs))"
-    by (rule SN_inv_image[OF SN_nat_gt])
-  then show ?thesis by (rule SN_subset[OF _ sub])
-qed
+  unfolding csr_guard_pair_rank_gt_def
+  by (rule SN_partial_nat_rank)
 
 lemma SN_rel_csr_guard_pair_rank:
   "SN_rel (csr_guard_pair_rank_gt u11s lens z su len ni co ta zs)
     (csr_guard_pair_rank_ge u11s lens z su len ni co ta zs)"
-proof -
-  let ?S = "csr_guard_pair_rank_gt u11s lens z su len ni co ta zs"
-  let ?NS = "csr_guard_pair_rank_ge u11s lens z su len ni co ta zs"
-  have compat: "?NS O ?S \<subseteq> ?S"
-    by (rule csr_guard_pair_rank_ge_gt_comp)
-  have sn: "SN ((?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*)"
-    by (rule compatible_SN'[OF compat SN_csr_guard_pair_rank_gt])
-  have sub: "?NS\<^sup>* O ?S O ?NS\<^sup>*
-      \<subseteq> (?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*"
-  proof -
-    have ns: "?NS\<^sup>* \<subseteq> (?NS \<union> ?S)\<^sup>*"
-      by (rule rtrancl_mono, auto)
-    show ?thesis
-      by (rule relcomp_mono[OF ns relcomp_mono[OF subset_refl ns]])
-  qed
-  show ?thesis unfolding SN_rel_defs by (rule SN_subset[OF sn sub])
-qed
+  unfolding csr_guard_pair_rank_gt_def csr_guard_pair_rank_ge_def
+  by (rule SN_rel_partial_nat_rank)
 
 text \<open>
   Minimal-chain deletion only needs an order on the pair-event endpoints.
@@ -3664,107 +3650,7 @@ text \<open>
   guarded recognizer proof below.
 \<close>
 
-lemma SN_rel_min_endpoint_order:
-  assumes sn: "SN S"
-    and compat_NS_S: "NS O S \<subseteq> S"
-    and compat_S_NS: "S O NS \<subseteq> S"
-    and trans_NS: "trans NS"
-    and target_SN: "\<And>s t. (s,t) \<in> B \<Longrightarrow> SN_on A {t}"
-    and pair_order: "\<And>s t. SN_on A {s} \<Longrightarrow> (s,t) \<in> B \<Longrightarrow>
-      (s,t) \<in> S \<union> NS"
-    and pair_residual: "\<And>s t. SN_on A {s} \<Longrightarrow>
-      (s,t) \<in> B \<Longrightarrow> (s,t) \<notin> S \<Longrightarrow> (s,t) \<in> C"
-    and steps_order: "\<And>s t u. SN_on A {s} \<Longrightarrow>
-      (s,t) \<in> A\<^sup>* \<Longrightarrow> (t,u) \<in> B \<Longrightarrow> (s,t) \<in> NS"
-    and fin: "SN_rel C A"
-  shows "SN_rel B A"
-proof (rule ccontr)
-  let ?PB = "A\<^sup>* O B O A\<^sup>*"
-  let ?PC = "A\<^sup>* O C O A\<^sup>*"
-  assume not_fin: "\<not> SN_rel B A"
-  then obtain f where chain: "chain ?PB f"
-    unfolding SN_rel_on_def SN_defs by auto
-  have ex_mid: "\<forall>i. \<exists>a b. (f i,a) \<in> A\<^sup>* \<and>
-      (a,b) \<in> B \<and> (b,f (Suc i)) \<in> A\<^sup>*"
-  proof
-    fix i
-    from chain[rule_format, of i] obtain a b where
-      pre: "(f i,a) \<in> A\<^sup>*" and pair: "(a,b) \<in> B"
-      and post: "(b,f (Suc i)) \<in> A\<^sup>*" by auto
-    show "\<exists>a b. (f i,a) \<in> A\<^sup>* \<and> (a,b) \<in> B \<and>
-      (b,f (Suc i)) \<in> A\<^sup>*" using pre pair post by auto
-  qed
-  from choice[OF ex_mid] obtain a where choose_a:
-      "\<forall>i. \<exists>b. (f i,a i) \<in> A\<^sup>* \<and>
-        (a i,b) \<in> B \<and> (b,f (Suc i)) \<in> A\<^sup>*" by auto
-  from choice[OF choose_a] obtain b where chosen:
-      "\<forall>i. (f i,a i) \<in> A\<^sup>* \<and>
-        (a i,b i) \<in> B \<and> (b i,f (Suc i)) \<in> A\<^sup>*" by auto
-  from chosen have pre: "\<And>i. (f i,a i) \<in> A\<^sup>*"
-    and pair: "\<And>i. (a i,b i) \<in> B"
-    and post: "\<And>i. (b i,f (Suc i)) \<in> A\<^sup>*" by auto
-  have between: "(b i,a (Suc i)) \<in> A\<^sup>*" for i
-    by (rule rtrancl_trans[OF post[of i] pre[of "Suc i"]])
-  have b_sn: "SN_on A {b i}" for i by (rule target_SN[OF pair])
-  have a_sn: "SN_on A {a (Suc i)}" for i
-  proof (rule ccontr)
-    assume not_sn: "\<not> SN_on A {a (Suc i)}"
-    from steps_notSN_on_source[OF between[of i] not_sn]
-      b_sn[of i] show False by contradiction
-  qed
-  have weak: "(b i,a (Suc i)) \<in> NS" for i
-    by (rule steps_order[OF b_sn between pair])
-  have pord: "(a (Suc i),b (Suc i)) \<in> S \<union> NS" for i
-    by (rule pair_order[OF a_sn pair])
-  let ?x = "\<lambda>i. a (Suc i)"
-  have xstep: "(?x i,?x (Suc i)) \<in> NS \<union> S" for i
-  proof (cases "(a (Suc i),b (Suc i)) \<in> S")
-    case True
-    have comp: "(a (Suc i),a (Suc (Suc i))) \<in> S O NS"
-      by (rule relcompI[OF True weak[of "Suc i"]])
-    have "(a (Suc i),a (Suc (Suc i))) \<in> S"
-      by (rule compat_S_NS[THEN subsetD, OF comp])
-    then show ?thesis by simp
-  next
-    case False
-    with pord[of i] have first: "(a (Suc i),b (Suc i)) \<in> NS" by auto
-    from transD[OF trans_NS first weak[of "Suc i"]] show ?thesis by simp
-  qed
-  have xchain: "chain (NS \<union> S) ?x" using xstep by simp
-  have sn0: "SN_on S {?x 0}" using sn unfolding SN_on_def by auto
-  from non_strict_ending[OF xchain compat_NS_S sn0]
-  obtain j where tail: "\<And>k. k \<ge> j \<Longrightarrow>
-    (?x k,?x (Suc k)) \<in> NS - S" by auto
-  have tail_pair: "(a (Suc (k+j)),b (Suc (k+j))) \<in> C" for k
-  proof -
-    have not_strict: "(a (Suc (k+j)),b (Suc (k+j))) \<notin> S"
-    proof
-      assume strict: "(a (Suc (k+j)),b (Suc (k+j))) \<in> S"
-      have comp: "(a (Suc (k+j)),a (Suc (Suc (k+j)))) \<in> S O NS"
-        by (rule relcompI[OF strict weak[of "Suc (k+j)"]])
-      have "(?x (k+j),?x (Suc (k+j))) \<in> S"
-        by (rule compat_S_NS[THEN subsetD, OF comp])
-      moreover from tail[of "k+j"] have
-        "(?x (k+j),?x (Suc (k+j))) \<notin> S" by auto
-      ultimately show False by contradiction
-    qed
-    show ?thesis by (rule pair_residual[OF a_sn pair not_strict])
-  qed
-  let ?h = "shift f (Suc j)"
-  have residual_chain: "chain ?PC ?h"
-  proof
-    fix k
-    have pre_k: "(f (Suc (k+j)),a (Suc (k+j))) \<in> A\<^sup>*" by (rule pre)
-    have post_k: "(b (Suc (k+j)),f (Suc (Suc (k+j)))) \<in> A\<^sup>*" by (rule post)
-    have member: "(f (Suc (k+j)),f (Suc (Suc (k+j)))) \<in> ?PC"
-      using pre_k tail_pair[of k] post_k by auto
-    show "(?h k,?h (Suc k)) \<in> ?PC" using member by simp
-  qed
-  from fin have "SN_on ?PC UNIV" unfolding SN_rel_on_def .
-  moreover have "\<not> SN_on ?PC UNIV"
-    by (rule not_SN_onI[OF _ residual_chain], simp)
-  ultimately show False by contradiction
-qed
+
 
 text \<open>
   A partial endpoint measure may become defined only because the connector
@@ -3880,6 +3766,39 @@ proof (rule ccontr)
     by (rule not_SN_onI[OF _ residual_chain], simp)
   ultimately show False by contradiction
 qed
+
+text \<open>
+  The endpoint criterion without lookahead is a specialization: its premises
+  already hold before inspecting either subsequent pair event. Retain its
+  theorem interface while sharing the infinite-chain argument above.
+\<close>
+
+lemma SN_rel_min_endpoint_order:
+  assumes sn: "SN S"
+    and compat_NS_S: "NS O S \<subseteq> S"
+    and compat_S_NS: "S O NS \<subseteq> S"
+    and trans_NS: "trans NS"
+    and target_SN: "\<And>s t. (s,t) \<in> B \<Longrightarrow> SN_on A {t}"
+    and pair_order: "\<And>s t. SN_on A {s} \<Longrightarrow> (s,t) \<in> B \<Longrightarrow>
+      (s,t) \<in> S \<union> NS"
+    and pair_residual: "\<And>s t. SN_on A {s} \<Longrightarrow>
+      (s,t) \<in> B \<Longrightarrow> (s,t) \<notin> S \<Longrightarrow> (s,t) \<in> C"
+    and steps_order: "\<And>s t u. SN_on A {s} \<Longrightarrow>
+      (s,t) \<in> A\<^sup>* \<Longrightarrow> (t,u) \<in> B \<Longrightarrow> (s,t) \<in> NS"
+    and fin: "SN_rel C A"
+  shows "SN_rel B A"
+  apply (rule SN_rel_min_endpoint_order_lookahead[where S=S and NS=NS
+        and A=A and B=B and C=C])
+  subgoal by (rule sn)
+  subgoal by (rule compat_NS_S)
+  subgoal by (rule compat_S_NS)
+  subgoal by (rule trans_NS)
+  subgoal by (rule target_SN)
+  subgoal using pair_order by blast
+  subgoal using pair_residual by blast
+  subgoal using steps_order by blast
+  subgoal by (rule fin)
+  done
 
 lemma SN_rel_min_endpoint_order_alternating:
   assumes sn: "SN S"
@@ -4328,37 +4247,14 @@ lemma csr_guard_rank_ge_refl_on:
 
 lemma SN_csr_guard_rank_gt:
   "SN (csr_guard_rank_gt z su len ni co ta zs A)"
-proof -
-  have sub: "csr_guard_rank_gt z su len ni co ta zs A
-      \<subseteq> inv_image {(m,n). m > n}
-        (the \<circ> csr_guard_rank z su len ni co ta zs A)"
-    unfolding csr_guard_rank_gt_def inv_image_def by auto
-  have "SN (inv_image {(m,n). m > n}
-      (the \<circ> csr_guard_rank z su len ni co ta zs A))"
-    by (rule SN_inv_image[OF SN_nat_gt])
-  then show ?thesis by (rule SN_subset[OF _ sub])
-qed
+  unfolding csr_guard_rank_gt_def
+  by (rule SN_partial_nat_rank)
 
 lemma SN_rel_csr_guard_rank:
   "SN_rel (csr_guard_rank_gt z su len ni co ta zs A)
     (csr_guard_rank_ge z su len ni co ta zs A)"
-proof -
-  let ?S = "csr_guard_rank_gt z su len ni co ta zs A"
-  let ?NS = "csr_guard_rank_ge z su len ni co ta zs A"
-  have compat: "?NS O ?S \<subseteq> ?S"
-    by (rule csr_guard_rank_ge_gt_comp)
-  have sn: "SN ((?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*)"
-    by (rule compatible_SN'[OF compat SN_csr_guard_rank_gt])
-  have sub: "?NS\<^sup>* O ?S O ?NS\<^sup>*
-      \<subseteq> (?NS \<union> ?S)\<^sup>* O ?S O (?NS \<union> ?S)\<^sup>*"
-  proof -
-    have ns: "?NS\<^sup>* \<subseteq> (?NS \<union> ?S)\<^sup>*"
-      by (rule rtrancl_mono, auto)
-    show ?thesis
-      by (rule relcomp_mono[OF ns relcomp_mono[OF subset_refl ns]])
-  qed
-  show ?thesis unfolding SN_rel_defs by (rule SN_subset[OF sn sub])
-qed
+  unfolding csr_guard_rank_gt_def csr_guard_rank_ge_def
+  by (rule SN_rel_partial_nat_rank)
 
 text \<open>
   This is the framework boundary needed by an executable guarded-list

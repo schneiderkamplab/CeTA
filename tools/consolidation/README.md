@@ -121,3 +121,10 @@ answer and input identities and the reviewed coverage transition. Byte-identical
 proofs may reuse structural analysis from the durable baseline matrix; changed
 proofs are parsed again. Unknown nodes, missing retained coverage and newly
 unreviewed structural obligations are explicit failures requiring investigation.
+
+`audit_retirement.py` records the eight preserved theorem interfaces and their
+lexical callers for the theorem-retirement batch, plus retained semantic
+contracts. It checks unchanged guarded executable declarations. The accompanying
+Isabelle/export evidence is required: this source audit alone does not prove
+equivalence or acceptance. Missing genuine replay coverage is reported separately
+from formally justified semantic specialization.

@@ -11,8 +11,11 @@ as part of this task.
    maps. Keep the distinct minimal/nonminimal and full/innermost criteria.
 2. **CSR and typed MU-TERM families.** Separate shared semantic foundations from
    executable checks, then add specialized usable-rule and unhiding criteria with
-   their explicit premises. Historical alternatives without genuine positive
-   coverage stay deferred; matching benchmark outcomes do not justify deletion.
+   their explicit premises. Historical alternatives require a proved replacement and caller accounting;
+   matching benchmark outcomes do not justify deletion. The user authorized
+   formal refactoring without genuine replay coverage. See
+   `theorem-retirement.md` for the finite conservative coverage specialization
+   and guarded endpoint/rank corollaries.
 3. **GM04 and residual bridges.** Add schema, signature and freshness results,
    then full/innermost constructors and standalone/nested adapters. Preserve the
    general CeTA-main innermost child interface. The obsolete innermost complete-

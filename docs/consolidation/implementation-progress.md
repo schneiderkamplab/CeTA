@@ -209,3 +209,22 @@ this follow-up's scope and evidence. The genuine replay gaps remain recorded;
 the refactor is verified through formal proofs and exact executable equivalence.
 The 3,484-root full replay belongs to the earlier milestone and is reused by
 binary identity, rather than described as a new campaign.
+
+## Theorem retirement and semantic specialization
+
+The user authorized continuing the retirement assessment. The verified batch in
+[theorem-retirement.md](theorem-retirement.md) replaces eight independently
+maintained proofs with shared theorems and corollaries, and defines finite
+conservative coverage through general conservative coverage with a restricted
+replacement map. The old explicit characterization is proved equivalent and
+the production refinement migrated. Distinct problem kinds remain explicit;
+the report records the contract-based keep/unify decisions.
+
+All affected Isabelle layers and all five integration/export targets pass.
+Exports and clean-built binaries are byte-identical. The 208-positive,
+408-negative compact suite passes production/HPC agreement and all 45,733
+retained obligations. Controlled repeats clear all four timing outliers.
+`theorem-retirement-verification.json` and its compressed evidence archive
+record the passing gates and the failed preliminary proof scripts separately.
+The frozen 3,484-root replay evidence is reused by exact binary identity;
+this batch makes no claim about a newly snapshotted current Ferrum frontier.
