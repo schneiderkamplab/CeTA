@@ -130,5 +130,8 @@ check_rfc_absolute ia j i tp
 check_rfc_absolute ia j i tp (Check_Termination.AAECC_Innermost v va vb vc vd) =
   Check_Termination.check_trs_termination_proof ia j False i tp
     (Check_Termination.AAECC_Innermost v va vb vc vd);
+check_rfc_absolute ia j i tp (Check_Termination.Rule_Strengthening v va) =
+  Check_Termination.check_trs_termination_proof ia j False i tp
+    (Check_Termination.Rule_Strengthening v va);
 
 }

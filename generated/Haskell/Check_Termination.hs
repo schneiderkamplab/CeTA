@@ -27,6 +27,7 @@ import qualified Str_Literal;
 import qualified Right_Ground_Termination_Impl;
 import qualified RFC_Matchbounds_Ext;
 import qualified DP_Transformation_Impl;
+import qualified Rule_Strengthening;
 import qualified String_Reversal_Impl;
 import qualified Argument_Filter_Impl;
 import qualified Generic_Reduction_Pair_Processor_Impl;
@@ -191,6 +192,10 @@ data Trs_termination_proof a b c =
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       [Labelings.Lab a b] (Critical_Pairs_Impl.Join_info (Labelings.Lab a b) c)
+      (Trs_termination_proof a b c)
+  | Rule_Strengthening
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
       (Trs_termination_proof a b c);
 
 data Dp_termination_proof a b c = P_is_Empty
@@ -484,25 +489,26 @@ sn_assms ::
 sn_assms a (DP_Trans xc xd xe p) = dp_assms a p;
 sn_assms a (Rule_Removal xf xg p) = sn_assms a p;
 sn_assms a (String_Reversal p) = sn_assms a p;
-sn_assms a (Constant_String xh p) = sn_assms a p;
-sn_assms a (Bounds xi) = [];
-sn_assms a (Relative_Bounds xj xk p) = sn_assms a p;
-sn_assms a (Rfc_Bounds xl xm) = [];
-sn_assms a (Rfc_Automaton_Closed_Bounds xn xo) = [];
-sn_assms a (Rfc_Relative_Bounds xp xq xr p) = sn_assms a p;
-sn_assms a (Rfc_Automaton_Closed_Relative_Bounds xs xt xu p) = sn_assms a p;
-sn_assms a (Rfc_Matchbox_Relative_Bounds xv xw xx p) = sn_assms a p;
-sn_assms a (Rfc_Native_Matchbox_Relative_Bounds xy xz ya p) = sn_assms a p;
-sn_assms a (AAECC_Innermost yb yc yd ye p) = sn_assms a p;
-sn_assms a (Uncurry yf yg p) = sn_assms a p;
-sn_assms a (Semlab yh yi yj p) = sn_assms a p;
+sn_assms a (Rule_Strengthening xh p) = sn_assms a p;
+sn_assms a (Constant_String xi p) = sn_assms a p;
+sn_assms a (Bounds xj) = [];
+sn_assms a (Relative_Bounds xk xl p) = sn_assms a p;
+sn_assms a (Rfc_Bounds xm xn) = [];
+sn_assms a (Rfc_Automaton_Closed_Bounds xo xp) = [];
+sn_assms a (Rfc_Relative_Bounds xq xr xs p) = sn_assms a p;
+sn_assms a (Rfc_Automaton_Closed_Relative_Bounds xt xu xv p) = sn_assms a p;
+sn_assms a (Rfc_Matchbox_Relative_Bounds xw xx xy p) = sn_assms a p;
+sn_assms a (Rfc_Native_Matchbox_Relative_Bounds xz ya yb p) = sn_assms a p;
+sn_assms a (AAECC_Innermost yc yd ye yf p) = sn_assms a p;
+sn_assms a (Uncurry yg yh p) = sn_assms a p;
+sn_assms a (Semlab yi yj yk p) = sn_assms a p;
 sn_assms a R_is_Empty = [];
-sn_assms a (Fcc yk yl p) = sn_assms a p;
-sn_assms a (Split ym p q) = sn_assms a p ++ sn_assms a q;
-sn_assms a (Switch_Innermost yn p) = sn_assms a p;
+sn_assms a (Fcc yl ym p) = sn_assms a p;
+sn_assms a (Split yn p q) = sn_assms a p ++ sn_assms a q;
+sn_assms a (Switch_Innermost yo p) = sn_assms a p;
 sn_assms a (Drop_Equality p) = sn_assms a p;
-sn_assms a (Remove_Nonapplicable_Rules yo p) = sn_assms a p;
-sn_assms a (Permuting_AFS yp p) = sn_assms a p;
+sn_assms a (Remove_Nonapplicable_Rules yp p) = sn_assms a p;
+sn_assms a (Permuting_AFS yq p) = sn_assms a p;
 sn_assms a Right_Ground_Termination = [];
 sn_assms a (Assume_SN t tps) =
   (if a then Check_Termination_Common.SN_assm
@@ -1457,6 +1463,12 @@ check_trs_termination_proof j ia assms i tp
               ((i . Term_Rewriting.showsl_lit
                       ": error below native RFC Matchbox-style relative bounds\n") .
                 x))));
+check_trs_termination_proof j ia assms i tp (Rule_Strengthening s prf) =
+  FOR_Preliminaries.debug i "Rule Strengthening"
+    (Error_Monad.bind (Rule_Strengthening.rule_strengthening_tt j s tp)
+      (\ tpa ->
+        check_trs_termination_proof j ia assms
+          (Term_Rewriting.add_index i Arith.one_nat) tpa prf));
 
 check_dp_termination_proof ::
   forall a b c.

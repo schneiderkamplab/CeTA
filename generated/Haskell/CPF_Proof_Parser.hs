@@ -4029,74 +4029,73 @@ Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
       Xmlt.xml_return
         (Check_Termination.Rfc_Native_Matchbox_Relative_Bounds a ts b c)))))))
                             (Xmlt.xml_or
-                              (Xmlt.xml_do "stringReversal"
+                              (Xmlt.xml_do "ruleStrengthening"
                                 (Xmlt.xml_take
                                   (Xmlt.xml_do "trs"
                                     (Xmlt.xml_take
                                       (CPF_Input_Parser.rules xml2name
 termIndexMap ruleMap)
                                       (\ xa -> Xmlt.xml_return (id xa))))
-                                  (\ _ ->
+                                  (\ stronger ->
                                     Xmlt.xml_take
                                       (xml2trs_termination_proof xml2name
 termIndexMap ruleMap)
                                       (\ prf ->
-Xmlt.xml_return (Check_Termination.String_Reversal prf)))))
+Xmlt.xml_return (Check_Termination.Rule_Strengthening stronger prf)))))
                               (Xmlt.xml_or
-                                (Xmlt.xml_do "equalityRemoval"
+                                (Xmlt.xml_do "stringReversal"
                                   (Xmlt.xml_take
-                                    (xml2trs_termination_proof xml2name
-                                      termIndexMap ruleMap)
-                                    (\ a ->
-                                      Xmlt.xml_return
-(Check_Termination.Drop_Equality a))))
+                                    (Xmlt.xml_do "trs"
+                                      (Xmlt.xml_take
+(CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+(\ xa -> Xmlt.xml_return (id xa))))
+                                    (\ _ ->
+                                      Xmlt.xml_take
+(xml2trs_termination_proof xml2name termIndexMap ruleMap)
+(\ prf -> Xmlt.xml_return (Check_Termination.String_Reversal prf)))))
                                 (Xmlt.xml_or
-                                  (Xmlt.xml_do "rightGroundTermination"
-                                    (Xmlt.xml_return
-                                      Check_Termination.Right_Ground_Termination))
+                                  (Xmlt.xml_do "equalityRemoval"
+                                    (Xmlt.xml_take
+                                      (xml2trs_termination_proof xml2name
+termIndexMap ruleMap)
+                                      (\ a ->
+Xmlt.xml_return (Check_Termination.Drop_Equality a))))
                                   (Xmlt.xml_or
-                                    (Xmlt.xml_do "constantToUnary"
-                                      (Xmlt.xml_take CPF_Input_Parser.plain_var
-(\ v ->
-  Xmlt.xml_take (renaming xml2name)
-    (\ ren ->
-      Xmlt.xml_take
-        (Xmlt.xml_do "trs"
-          (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-            (\ xa -> Xmlt.xml_return (id xa))))
-        (\ s ->
-          Xmlt.xml_take
-            (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-            (\ p ->
-              Xmlt.xml_return
-                (Check_Termination.Constant_String
-                  (Monadic_Rewriting_Impl.Const_string_sound_proof v ren s)
-                  p)))))))
+                                    (Xmlt.xml_do "rightGroundTermination"
+                                      (Xmlt.xml_return
+Check_Termination.Right_Ground_Termination))
                                     (Xmlt.xml_or
-                                      (Xmlt.xml_do "removeNonApplicableRules"
-(Xmlt.xml_take
-  (Xmlt.xml_do "trs"
-    (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-      (\ xa -> Xmlt.xml_return (id xa))))
-  (\ a ->
-    Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-      (\ b ->
-        Xmlt.xml_return (Check_Termination.Remove_Nonapplicable_Rules a b)))))
+                                      (Xmlt.xml_do "constantToUnary"
+(Xmlt.xml_take CPF_Input_Parser.plain_var
+  (\ v ->
+    Xmlt.xml_take (renaming xml2name)
+      (\ ren ->
+        Xmlt.xml_take
+          (Xmlt.xml_do "trs"
+            (Xmlt.xml_take
+              (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+              (\ xa -> Xmlt.xml_return (id xa))))
+          (\ s ->
+            Xmlt.xml_take
+              (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+              (\ p ->
+                Xmlt.xml_return
+                  (Check_Termination.Constant_String
+                    (Monadic_Rewriting_Impl.Const_string_sound_proof v ren s)
+                    p)))))))
                                       (Xmlt.xml_or
-(Xmlt.xml_do "uncurry"
-  (Xmlt.xml_take (uncurry_info xml2name termIndexMap ruleMap)
-    (\ i ->
-      Xmlt.xml_take
-        (Xmlt.xml_do "trs"
-          (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-            (\ xa -> Xmlt.xml_return (id xa))))
-        (\ r ->
-          Xmlt.xml_take
-            (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-            (\ p -> Xmlt.xml_return (Check_Termination.Uncurry i r p))))))
+(Xmlt.xml_do "removeNonApplicableRules"
+  (Xmlt.xml_take
+    (Xmlt.xml_do "trs"
+      (Xmlt.xml_take (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+        (\ xa -> Xmlt.xml_return (id xa))))
+    (\ a ->
+      Xmlt.xml_take (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+        (\ b ->
+          Xmlt.xml_return (Check_Termination.Remove_Nonapplicable_Rules a b)))))
 (Xmlt.xml_or
-  (Xmlt.xml_do "flatContextClosure"
-    (Xmlt.xml_take (flat_contexts xml2name termIndexMap)
+  (Xmlt.xml_do "uncurry"
+    (Xmlt.xml_take (uncurry_info xml2name termIndexMap ruleMap)
       (\ i ->
         Xmlt.xml_take
           (Xmlt.xml_do "trs"
@@ -4106,70 +4105,84 @@ Xmlt.xml_return (Check_Termination.String_Reversal prf)))))
           (\ r ->
             Xmlt.xml_take
               (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-              (\ p -> Xmlt.xml_return (Check_Termination.Fcc i r p))))))
+              (\ p -> Xmlt.xml_return (Check_Termination.Uncurry i r p))))))
   (Xmlt.xml_or
-    (Xmlt.xml_do "switchInnermost"
-      (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
-        (\ a ->
+    (Xmlt.xml_do "flatContextClosure"
+      (Xmlt.xml_take (flat_contexts xml2name termIndexMap)
+        (\ i ->
           Xmlt.xml_take
-            (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-            (\ b -> Xmlt.xml_return (Check_Termination.Switch_Innermost a b)))))
-    (Xmlt.xml_or
-      (Xmlt.xml_do "aaeccInnermost"
-        (Xmlt.xml_take
-          (Xmlt.xml_do "r1"
-            (Xmlt.xml_take
-              (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-              (\ xa -> Xmlt.xml_return (id xa))))
-          (\ r1 ->
-            Xmlt.xml_take
-              (Xmlt.xml_do "r2"
-                (Xmlt.xml_take
-                  (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
-                  (\ xa -> Xmlt.xml_return (id xa))))
-              (\ r2 ->
-                Xmlt.xml_take
-                  (Xmlt.xml_do "sigma"
-                    (Xmlt.xml_take_many_sub [] Arith.zero_nat
-                      Extended_Nat.Infinity_enat
-                      (Xmlt.xml_do "symbol"
-                        (Xmlt.xml_take xml2name Xmlt.xml_return))
-                      Xmlt.xml_return))
-                  (\ fs ->
-                    Xmlt.xml_take (wcr_proof xml2name termIndexMap)
-                      (\ w ->
-                        Xmlt.xml_take
-                          (xml2trs_termination_proof xml2name termIndexMap
-                            ruleMap)
-                          (\ p ->
-                            Xmlt.xml_return
-                              (Check_Termination.AAECC_Innermost r1 r2 fs w
-                                p))))))))
-      (Xmlt.xml_or
-        (Xmlt.xml_do "permutingArgumentFilter"
-          (Xmlt.xml_take (afs xml2name)
-            (\ a ->
+            (Xmlt.xml_do "trs"
+              (Xmlt.xml_take
+                (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                (\ xa -> Xmlt.xml_return (id xa))))
+            (\ r ->
               Xmlt.xml_take
                 (xml2trs_termination_proof xml2name termIndexMap ruleMap)
-                (\ b ->
-                  Xmlt.xml_return (Check_Termination.Permuting_AFS a b)))))
+                (\ p -> Xmlt.xml_return (Check_Termination.Fcc i r p))))))
+    (Xmlt.xml_or
+      (Xmlt.xml_do "switchInnermost"
+        (Xmlt.xml_take (wcr_proof xml2name termIndexMap)
+          (\ a ->
+            Xmlt.xml_take
+              (xml2trs_termination_proof xml2name termIndexMap ruleMap)
+              (\ b ->
+                Xmlt.xml_return (Check_Termination.Switch_Innermost a b)))))
+      (Xmlt.xml_or
+        (Xmlt.xml_do "aaeccInnermost"
+          (Xmlt.xml_take
+            (Xmlt.xml_do "r1"
+              (Xmlt.xml_take
+                (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                (\ xa -> Xmlt.xml_return (id xa))))
+            (\ r1 ->
+              Xmlt.xml_take
+                (Xmlt.xml_do "r2"
+                  (Xmlt.xml_take
+                    (CPF_Input_Parser.rules xml2name termIndexMap ruleMap)
+                    (\ xa -> Xmlt.xml_return (id xa))))
+                (\ r2 ->
+                  Xmlt.xml_take
+                    (Xmlt.xml_do "sigma"
+                      (Xmlt.xml_take_many_sub [] Arith.zero_nat
+                        Extended_Nat.Infinity_enat
+                        (Xmlt.xml_do "symbol"
+                          (Xmlt.xml_take xml2name Xmlt.xml_return))
+                        Xmlt.xml_return))
+                    (\ fs ->
+                      Xmlt.xml_take (wcr_proof xml2name termIndexMap)
+                        (\ w ->
+                          Xmlt.xml_take
+                            (xml2trs_termination_proof xml2name termIndexMap
+                              ruleMap)
+                            (\ p ->
+                              Xmlt.xml_return
+                                (Check_Termination.AAECC_Innermost r1 r2 fs w
+                                  p))))))))
         (Xmlt.xml_or
-          (Xmlt.xml_do "terminationAssumption"
-            (Xmlt.xml_take (xml2inn_trs_assm xml2name termIndexMap ruleMap)
-              (\ qtrs ->
-                Xmlt.xml_return (Check_Termination.Assume_SN qtrs []))))
-          (Xmlt.xml_do "unknownProof"
-            (Xmlt.xml_take (Xmlt.xml_text "description")
-              (\ _ ->
-                Xmlt.xml_take (xml2inn_trs_assm xml2name termIndexMap ruleMap)
+          (Xmlt.xml_do "permutingArgumentFilter"
+            (Xmlt.xml_take (afs xml2name)
+              (\ a ->
+                Xmlt.xml_take
+                  (xml2trs_termination_proof xml2name termIndexMap ruleMap)
                   (\ b ->
-                    Xmlt.xml_take_many_sub [] Arith.zero_nat
-                      Extended_Nat.Infinity_enat
-                      (xml2subproof xml2name termIndexMap ruleMap)
-                      (\ c ->
-                        Xmlt.xml_return
-                          (Check_Termination.Assume_SN b
-                            c)))))))))))))))))))))))))))))
+                    Xmlt.xml_return (Check_Termination.Permuting_AFS a b)))))
+          (Xmlt.xml_or
+            (Xmlt.xml_do "terminationAssumption"
+              (Xmlt.xml_take (xml2inn_trs_assm xml2name termIndexMap ruleMap)
+                (\ qtrs ->
+                  Xmlt.xml_return (Check_Termination.Assume_SN qtrs []))))
+            (Xmlt.xml_do "unknownProof"
+              (Xmlt.xml_take (Xmlt.xml_text "description")
+                (\ _ ->
+                  Xmlt.xml_take (xml2inn_trs_assm xml2name termIndexMap ruleMap)
+                    (\ b ->
+                      Xmlt.xml_take_many_sub [] Arith.zero_nat
+                        Extended_Nat.Infinity_enat
+                        (xml2subproof xml2name termIndexMap ruleMap)
+                        (\ c ->
+                          Xmlt.xml_return
+                            (Check_Termination.Assume_SN b
+                              c))))))))))))))))))))))))))))))
     x;
 
 xml2trs_termination_proof ::

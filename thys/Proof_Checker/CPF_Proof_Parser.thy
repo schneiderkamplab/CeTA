@@ -1392,6 +1392,11 @@ where
       c \<leftarrow> xml2trs_termination_proof;
       xml_return (Rfc_Native_Matchbox_Relative_Bounds a ts b c)
     }
+    XMLor XMLdo (STR ''ruleStrengthening'') {
+      stronger \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2trs_termination_proof;
+      xml_return (Rule_Strengthening stronger prf)
+    }
     XMLor XMLdo (STR ''stringReversal'') {
       _ \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2trs_termination_proof;

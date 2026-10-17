@@ -5,7 +5,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Termination
   imports Check_Termination_Common RFC_Checker_Ext.RFC_Matchbounds_Ext
-    AAECC_Innermost_Switch QDP_To_SRS_Zantema
+    AAECC_Innermost_Switch QDP_To_SRS_Zantema Rule_Strengthening
 begin
 
 fun collect_assms :: "('tp \<Rightarrow> ('f, 'l, 'v) assm list)
@@ -348,6 +348,7 @@ and ('f, 'l, 'v) trs_termination_proof =
 | AAECC_Innermost "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trsLL"
     "('f, 'l) lab list" "(('f, 'l) lab, 'v) join_info"
     "('f, 'l, 'v) trs_termination_proof"
+| Rule_Strengthening "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 and ('f, 'l, 'v) unknown_proof =
   Assume_Unknown unknown_info "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 and ('f, 'l, 'v) fptrs_termination_proof =
@@ -390,6 +391,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (DP_Trans _ _ _ p) = dp_assms a p"
 | "sn_assms a (Rule_Removal _ _ p) = sn_assms a p"
 | "sn_assms a (String_Reversal p) = sn_assms a p"
+| "sn_assms a (Rule_Strengthening _ p) = sn_assms a p"
 | "sn_assms a (Constant_String _ p) = sn_assms a p"
 | "sn_assms a (Bounds _) = []"
 | "sn_assms a (Relative_Bounds _ _ p) = sn_assms a p"
@@ -1038,6 +1040,10 @@ where
             (mk_tp J (False, [], S, [])) prf
           <+? (\<lambda>s. i \<circ> showsl_lit
             (STR '': error below the QDP-to-SRS transformation\<newline>'') \<circ> s))
+    })"
+| "check_trs_termination_proof i tp (Rule_Strengthening S prf) = debug i (STR ''Rule Strengthening'') (do {
+      tp' \<leftarrow> rule_strengthening_tt J S tp;
+      check_trs_termination_proof (add_index i 1) tp' prf
     })"
   by pat_completeness auto
 
@@ -2240,6 +2246,19 @@ next
      set (dpp_ops.P I dpp), {}, {}, {}, {})"
     by (rule zantema_qdp_to_srs_impl_sound[OF trans SN])
   show ?case unfolding I.dpp_sound Q R Pw Rw using fin by simp
+next
+  case (54 i tp S prof)
+  note IH = this
+  interpret tp_spec J by fact
+  from IH(2) obtain tp' where
+    tt: "rule_strengthening_tt J S tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof (add_index i 1) tp' prof)"
+    by auto
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule sound_tt_impl[OF rule_strengthening_tt_sound tt])
+    apply (rule IH(1)[OF _ rec fin])
+    using tt by simp
 qed
 
 end
