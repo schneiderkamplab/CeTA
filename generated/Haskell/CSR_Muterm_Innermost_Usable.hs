@@ -294,6 +294,13 @@ check_muterm_expanded_innermost_proof ia j mu i dpp
       (CSR_Checker_Base.CSR_DP_Ordinary_Proof
         (Check_Termination.To_Trs_Proc v)));
 check_muterm_expanded_innermost_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Zantema_To_SRS_Proc v))
+  = FOR_Preliminaries.debug i "expanded innermost ordinary DP proof"
+      (CSR_Checker_Base.check_csr_dp_termination_proof ia j False i dpp
+        (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+          (Check_Termination.Zantema_To_SRS_Proc v)));
+check_muterm_expanded_innermost_proof ia j mu i dpp
   CSR_Checker_Base.CSR_DP_P_is_Empty =
   CSR_Innermost_Active_SCT.check_innermost_csr_dp_termination_proof_active_sct
     ia j mu i dpp CSR_Checker_Base.CSR_DP_P_is_Empty;

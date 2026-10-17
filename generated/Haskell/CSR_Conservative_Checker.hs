@@ -2,6 +2,8 @@
 
 module
   CSR_Conservative_Checker(Extended_csr_termination_proof(..),
+                            extended_csr_proof_is_global,
+                            check_improved_csr_dp_termination_proof,
                             check_extended_csr_termination_proof)
   where {
 
@@ -31,15 +33,15 @@ import qualified Compare_Order_Instances;
 import qualified CSR_Improved_CSDP_Proofs;
 import qualified CSR_Innermost_Switch;
 import qualified FOR_Preliminaries;
-import qualified Error_Monad;
 import qualified Termination_Problem_Spec;
 import qualified Countable;
-import qualified Compare;
 import qualified Check_Monad;
 import qualified Dependency_Pair_Problem_Spec;
-import qualified Sum_Type;
 import qualified CSR_Minimal_CSDP_Proofs;
+import qualified Error_Monad;
+import qualified Sum_Type;
 import qualified Arith;
+import qualified Compare;
 import qualified Reduction_Pair_Implementations;
 import qualified CSR_Checker_Base;
 import qualified Labelings;
@@ -61,12 +63,37 @@ data Extended_csr_termination_proof a b c =
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       (CSR_Checker_Base.Csr_dp_termination_proof a b c)
+  | CSR_Rule_Removals_Then_Improved
+      [(Reduction_Pair_Implementations.Redtriple_impl (Labelings.Lab a b),
+         [(Term_Rewriting.Term (Labelings.Lab a b) c,
+            Term_Rewriting.Term (Labelings.Lab a b) c)])]
+      (Labelings.Lab a b)
+      [(Term_Rewriting.Term (Labelings.Lab a b) c,
+         Term_Rewriting.Term (Labelings.Lab a b) c)]
+      (CSR_Checker_Base.Csr_dp_termination_proof a b c)
   | Conservative_CSR_Dependency_Pairs (Labelings.Lab a b)
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       [(Term_Rewriting.Term (Labelings.Lab a b) c,
          Term_Rewriting.Term (Labelings.Lab a b) c)]
       (CSR_Checker_Base.Csr_dp_termination_proof a b c);
+
+csr_rule_removals_impl ::
+  forall a.
+    (Compare.Compare_order a, Eq a,
+      Term_Rewriting.Showl a) => [(Reduction_Pair_Implementations.Redtriple_impl
+                                     a,
+                                    [(Term_Rewriting.Term a [Arith.Char],
+                                       Term_Rewriting.Term a [Arith.Char])])] ->
+                                   [((a, Arith.Nat), [Arith.Nat])] ->
+                                     [(Term_Rewriting.Term a [Arith.Char],
+Term_Rewriting.Term a [Arith.Char])] ->
+                                       Sum_Type.Sum (String -> String)
+ [(Term_Rewriting.Term a [Arith.Char], Term_Rewriting.Term a [Arith.Char])];
+csr_rule_removals_impl [] mu r = Sum_Type.Inr r;
+csr_rule_removals_impl ((redp, rr) : ps) mu r =
+  Error_Monad.bind (CSR_Checker_Base.csr_rule_removal_impl redp mu rr r)
+    (csr_rule_removals_impl ps mu);
 
 unhiding_subterm_pair_check ::
   forall a b.
@@ -82,6 +109,18 @@ unhiding_subterm_pair_check u (Term_Rewriting.Fun vb (vd : vf : vg), va) =
 unhiding_subterm_pair_check u (v, Term_Rewriting.Var vb) = False;
 unhiding_subterm_pair_check u (v, Term_Rewriting.Fun vb []) = False;
 unhiding_subterm_pair_check u (v, Term_Rewriting.Fun vb (vd : vf : vg)) = False;
+
+extended_csr_proof_is_global ::
+  forall a b c. Extended_csr_termination_proof a b c -> Bool;
+extended_csr_proof_is_global (Conservative_CSR_Dependency_Pairs u p s prf) =
+  False;
+extended_csr_proof_is_global (Direct_CSR_Proof v) = True;
+extended_csr_proof_is_global (Orthogonality_Checked_CSR_Proof v) = True;
+extended_csr_proof_is_global (Improved_CSR_Dependency_Pairs v va vb) = True;
+extended_csr_proof_is_global (CSR_Rule_Removal_Then_Improved v va vb vc vd) =
+  True;
+extended_csr_proof_is_global (CSR_Rule_Removals_Then_Improved v va vb vc) =
+  True;
 
 unhiding_subterm_pairs_check ::
   forall a b.
@@ -345,6 +384,30 @@ check_extended_csr_termination_proof ia j a i mu r
                 Sum_Type.Inl
                   ((i . Term_Rewriting.showsl_lit
                           ": error below improved CSR dependency pairs after CSR rule removal\n") .
+                    x)))));
+check_extended_csr_termination_proof ia j a i mu r
+  (CSR_Rule_Removals_Then_Improved removals u p prf) =
+  FOR_Preliminaries.debug i
+    "CSR rule removals followed by improved CSR dependency pairs"
+    (Error_Monad.bind (csr_rule_removals_impl removals mu r)
+      (\ r2 ->
+        Error_Monad.bind
+          (Error_Monad.catch_error
+            (CSR_Improved_CSDP_Proofs.improved_csr_dependency_pairs_tt j u mu r2
+              p)
+            (\ x ->
+              Sum_Type.Inl
+                ((i . Term_Rewriting.showsl_lit
+                        ": invalid improved CSR-DP transformation after CSR rule removals\n") .
+                  x)))
+          (\ dpp ->
+            Error_Monad.catch_error
+              (check_improved_csr_dp_termination_proof ia j u mu False
+                (Term_Rewriting.add_index i Arith.one_nat) dpp prf)
+              (\ x ->
+                Sum_Type.Inl
+                  ((i . Term_Rewriting.showsl_lit
+                          ": error below improved CSR dependency pairs after CSR rule removals\n") .
                     x)))));
 check_extended_csr_termination_proof ia j a i mu r
   (Conservative_CSR_Dependency_Pairs u p s prf) =

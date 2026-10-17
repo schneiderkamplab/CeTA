@@ -1,5 +1,9 @@
 # CeTA consolidation assessment
 
+Historical assessment checkpoint, subsequently approved by the user. Counts and
+"not yet" statements below describe that checkpoint. Current implementation
+and verification evidence is in [implementation-progress.md](implementation-progress.md).
+
 Review checkpoint: retain the distinct semantic criteria, unify reusable plumbing only after coverage is established, and remove no theorem or executable branch yet. The isolated `consolidated` branch starts at CeTA `e52c7ce1a198b2b3c2873e8aacdab19a3552c5d1`. No checker, theorem, parser, generated module, or build target has been changed.
 
 This assessment separates source inspection from verified equivalence. The inventory includes every changed theory at every pinned development tip, with declaration, checker, soundness, parser-tag and generated-module discovery indexes. Those indexes are lexical candidates, not a completed processor-to-theorem coverage proof. Unresolved mappings explicitly block restructuring their paths.
@@ -133,9 +137,13 @@ Before each build/replay launch, measure `MemTotal - MemAvailable` and refuse la
 
 Only after the consolidated structure passes the final gates, reconstruct independent patches for: problem semantics/interfaces; CSR/CSDP and typed innermost criteria; transformation/residual bridges; relative ADP; RFC/match bounds; outermost; parser/CLI compatibility; session/build organization; regenerated exports and regression data. Keep each patch's theorem, executable, parser, genuine positive and rejection evidence reviewable together. This is a future outline, not an upstream-ready series.
 
-## Review requested
+## Historical review checkpoint (approved)
 
-Approve the retained architecture and conservative keep/unify/remove/defer decisions before semantic restructuring. This stop is required by the user-supplied plan's explicit review checkpoint. Approval would authorize proceeding to the provenance-audited regression suite and then only those consolidation batches whose coverage and verification gates pass; it would not authorize deployment or merging into parent branches.
+The user subsequently authorized implementation. The approved scope is the
+retained architecture and conservative keep/unify/remove/defer decisions, the
+provenance-audited regression suite, and consolidation batches whose coverage
+and verification gates pass. Deployment and merging into parent branches remain
+outside this task.
 
 ## Assessment verification
 

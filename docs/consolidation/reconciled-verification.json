@@ -1,0 +1,71 @@
+{
+  "compact": {
+    "explicit_retirements": 20,
+    "hpc_agreement_including_negatives": true,
+    "missing_retained_obligations": 0,
+    "negatives": 408,
+    "original_obligations": 45753,
+    "positives": 208,
+    "retained_observed": 45733,
+    "twice_production": true
+  },
+  "corpus": {
+    "checked": 3484,
+    "elapsed_seconds": 2710.046130890958,
+    "eligible": 3484,
+    "exact_root_set_preserved": true,
+    "losses": [],
+    "passed": 3484,
+    "roots": 3484
+  },
+  "evidence": [
+    "reconciled-compact-evidence.json.gz",
+    "reconciled-corpus-evidence.json.gz",
+    "reconciled-coverage-transition-v2.json.gz",
+    "reconciled-export-manifest.json",
+    "isabelle-reconciled-timings.json"
+  ],
+  "isabelle": {
+    "command": [
+      "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+      "build",
+      "-v",
+      "-j",
+      "2",
+      "-o",
+      "threads=8",
+      "-o",
+      "parallel_proofs=0",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics/Reduction_Pair",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Checker",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Integration",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+      "Proof_Checker",
+      "Code",
+      "RFC_Absolute_Ext",
+      "Relative_ADP_Ceta_Dev"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+    "elapsed_seconds": 2281.7775981060695,
+    "environment": {
+      "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys",
+      "ISABELLE_IDENTIFIER": "consolidated_reconciled_20261017",
+      "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user"
+    },
+    "max_child_rss_kib": 40057608,
+    "memory_used_at_start": 565237796864,
+    "returncode": 0
+  },
+  "passed": true,
+  "performance": "No confirmed slowdown after controlled repeats; original outliers and CPU-affinity investigation retained.",
+  "source_decision": "Pinned CSR main plus preservation of CeTA-main general innermost GM04 adapter; no theorem/problem variant retired.",
+  "source_tree": "ab4a952a905c7bbd6ac1ebb92e5340b67378303c"
+}

@@ -13858,6 +13858,1038 @@
       "validated": true,
       "well_formed_xml": true,
       "xpath": ".//depGraphProc"
+    },
+    {
+      "certificate": "negatives/9b6517743046ee8a6cb862a2-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9b6517743046ee8a6cb862a2-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01984498300589621,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9b6517743046ee8a6cb862a2-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018547138897702098,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "9bf6760df801209c63da33580b0bb1389c999df89482f5253236ab256c66753f",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "9b6517743046ee8a6cb862a2-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "83e41948b740883db030a257202dc12e493ca837737f7843d924e28b3e7a7863",
+      "removed_obligations": 0,
+      "source_id": "9b6517743046ee8a6cb862a2",
+      "source_sha256": "135cb43c86826d5eb27fba1483d1bff04c24f9fc921257a30c9fe565b9c69f61",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/bfb0d0a0c65a3e75be9dfe7c-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/bfb0d0a0c65a3e75be9dfe7c-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06568245403468609,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/bfb0d0a0c65a3e75be9dfe7c-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06567737413570285,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "3df0a339febd01c14237bd0c1aab57a041ef6912f64691758bc66a888f2d87a4",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "bfb0d0a0c65a3e75be9dfe7c-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "41b216900f742f477c303c0f08879b8fae7cdc37fcecafab560f0bb5a528cd9c",
+      "removed_obligations": 0,
+      "source_id": "bfb0d0a0c65a3e75be9dfe7c",
+      "source_sha256": "07329a62e70da356f1ffdf821d1aeb5f18b8761b3707742c91da4777560f5bf6",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/542d2558cc3a703170151b38-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/542d2558cc3a703170151b38-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017717632930725813,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/542d2558cc3a703170151b38-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01768454280681908,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "32e35bf8144d37f9f616c0d3e71f813aaf4547aca6afd1013cbddc6f0564c379",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "542d2558cc3a703170151b38-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "f79a4426e1630a1d42f8907f4ed160b23c59bcc6e4e406d5bc471d1bc9e189b5",
+      "removed_obligations": 0,
+      "source_id": "542d2558cc3a703170151b38",
+      "source_sha256": "6adda8a4699752be52e826a1853c8b8df482b47b4540d54defcd0cbebc7bd0d5",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/7f2ffe4ac8c05cbac0dcdad2-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/7f2ffe4ac8c05cbac0dcdad2-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01738102501258254,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/7f2ffe4ac8c05cbac0dcdad2-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017387863947078586,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "5ec24193393a6e3413f7dec8ed4e5071c81b9b23a4f959b70eb3185d6562fdd6",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "7f2ffe4ac8c05cbac0dcdad2-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "f50cfaed1135508463afc1792667d7b857d2f2fcd5e65d4d62dcfbe647a96c4d",
+      "removed_obligations": 0,
+      "source_id": "7f2ffe4ac8c05cbac0dcdad2",
+      "source_sha256": "2380be07e79bea02eadc5ef1983298901c10e8c853f61426955766e379a60ca4",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/4322d2951e9ccef6ff097657-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/4322d2951e9ccef6ff097657-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03342209500260651,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/4322d2951e9ccef6ff097657-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.033684773137792945,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "ee1a6857c222421f9e5c161422abfe72723e9ad00351494cf54e62539a7b69d6",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "4322d2951e9ccef6ff097657-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "cec191dfb1345df0d959951d2d7ad60b25edd5afbf09e74c9acdfbadc65cb87b",
+      "removed_obligations": 0,
+      "source_id": "4322d2951e9ccef6ff097657",
+      "source_sha256": "2f105d27fa2df0851b9775829d56ad8e44c1c33ab513ab164db9e7b0d3301173",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/9193f48ef1583a96a20ed65c-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9193f48ef1583a96a20ed65c-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06663729017600417,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9193f48ef1583a96a20ed65c-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0334699940867722,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "dbba7bc9ab0c5e7f56dda2da2144e9e41acfaad60cbd0ede13179b3e101c7bb1",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "9193f48ef1583a96a20ed65c-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "2a2011068167c68f825d35a7a855c5765112e9ae8c5bab6a494cc0bd323cb30d",
+      "removed_obligations": 0,
+      "source_id": "9193f48ef1583a96a20ed65c",
+      "source_sha256": "e7f8c4268b9a5dc3138a60e6eab16f9a10e103f98f69cc51c384afc9a7937cfd",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/73e439c9679f23830766bbcb-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/73e439c9679f23830766bbcb-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.11798269604332745,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/73e439c9679f23830766bbcb-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.11557928612455726,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "00eaa12e4e24384f042d2eac8eccca5ff067640ac3f0df7aebf870a8d3828559",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "73e439c9679f23830766bbcb-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "9a225ae6157e4f7749d1b50b0b38da6ed079ce063a1ff90afe60d981613495bb",
+      "removed_obligations": 0,
+      "source_id": "73e439c9679f23830766bbcb",
+      "source_sha256": "3605e60b663a66ea86c42da7d638054903c4757010ec748431ddfa4ad5ac65f9",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/ecb3b06df609c29de51e69e8-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/ecb3b06df609c29de51e69e8-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.116177624091506,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/ecb3b06df609c29de51e69e8-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.11618063412606716,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "38f59dd3a1f3bb189864ec43f19caf2aa2473bfccabab60baedb108c723976a1",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "ecb3b06df609c29de51e69e8-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "94f20fa62c14b504f0af586231f1928182829dc4ebd6179c24e2a9c38b8aa18c",
+      "removed_obligations": 0,
+      "source_id": "ecb3b06df609c29de51e69e8",
+      "source_sha256": "a7821203df28f44d7a13b738460e64c3b73f3f798eefb31750c7227c738eb6f3",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/21f4291b35b958aff3a26866-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/21f4291b35b958aff3a26866-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03357569291256368,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/21f4291b35b958aff3a26866-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03353986400179565,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "8564f9b44870b71029b93137909965da26d58b3a50b3ac093f1e115a355ee5c3",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "21f4291b35b958aff3a26866-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "15d2f410cd1dc3e31553743df8339a1e37753cf3594ed8077217c18a7689aa17",
+      "removed_obligations": 0,
+      "source_id": "21f4291b35b958aff3a26866",
+      "source_sha256": "066abdcd8dc3c78d60733f5bfab9a4ab4fce135ae8edc972781b7607c3ee3ce0",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/5da777740aec4bb4a1a04497-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/5da777740aec4bb4a1a04497-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06550289504230022,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/5da777740aec4bb4a1a04497-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0655564849730581,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "4e3721a7df99b74af42cc5beec062ab46396163360e3bec231978a85da79c5f1",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "5da777740aec4bb4a1a04497-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "957a48b816691bec57af80d66df2c9529fb5e84936068bbd47683db599c72d2f",
+      "removed_obligations": 0,
+      "source_id": "5da777740aec4bb4a1a04497",
+      "source_sha256": "8da41747dbc279db30a4f62dcb2c7aa031886c14b3961205b607345636565095",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/d9be0825bc9098a19d99a36e-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/d9be0825bc9098a19d99a36e-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.11647568293847144,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/d9be0825bc9098a19d99a36e-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.1156152670737356,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "e62ff1e93d2cf1d3053e52e17fd1c7d59b92c4f28cad0cc21a40129c8c7d7b98",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "d9be0825bc9098a19d99a36e-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "329c318dcbbde8d107b41de50704838c022e8df6ba6f801c196392b74b04be9f",
+      "removed_obligations": 0,
+      "source_id": "d9be0825bc9098a19d99a36e",
+      "source_sha256": "b7679df19f6771677347e20327e85a04409744ea1890c1bd6511b1551e8537fd",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/564ed4d1f66a771858b56929-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/564ed4d1f66a771858b56929-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.065740373916924,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/564ed4d1f66a771858b56929-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06585724302567542,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "a657fa984086667d674eba14dc1a6c4ac610ce70afcf8e11527dc1c82fd58d70",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "564ed4d1f66a771858b56929-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "52ee72ec283128aa3e44762ce8ba6c7ee7f905e36219f7fffb623ef3dd10d98e",
+      "removed_obligations": 0,
+      "source_id": "564ed4d1f66a771858b56929",
+      "source_sha256": "91f62464d7fe9e60565b388703d6ce7d453620ffd33a4aba14525d2e902493fa",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/462921927a7202b48e05bef5-gm04-innermost-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/462921927a7202b48e05bef5-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06585802300833166,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/462921927a7202b48e05bef5-gm04-innermost-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06566701410338283,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "439b48c75699d678e6b0c1c437305f83b797a1786cff950e245b4da4ebfc99c5",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "462921927a7202b48e05bef5-gm04-innermost-freshness-collision",
+      "kind": "gm04-innermost-freshness-collision",
+      "mutation_sha256": "f6140b7d58a5075ec5b09bd95b30580e88061ac471f75b6d220dd1a9736ec786",
+      "removed_obligations": 0,
+      "source_id": "462921927a7202b48e05bef5",
+      "source_sha256": "dbf39b5e00a3bf3a79d3cde4a42a56ed0673886edb11dcd24aab0250ec8a1f83",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteTransformation"
+    },
+    {
+      "certificate": "negatives/1c86e1b6a92580471c23436e-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/1c86e1b6a92580471c23436e-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017328073969110847,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/1c86e1b6a92580471c23436e-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018172231037169695,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "93042ecb449815d43673a18bfefe7ba01c2ce3e85470d444bb7f06ee4478d195",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "1c86e1b6a92580471c23436e-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "f4ca8d15220d9185b5a20b4893974c59a1d02b224025a905f5650e17558930d4",
+      "removed_obligations": 0,
+      "source_id": "1c86e1b6a92580471c23436e",
+      "source_sha256": "a1f9bb402ebc1e5fdcb86573d15144c09831062b96080a775ed9347284887483",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/53f727cd901d844521c04b89-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/53f727cd901d844521c04b89-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01734768389724195,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/53f727cd901d844521c04b89-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018531428882852197,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "7ad6225a16b3d83c461082938fca88319e61f6109083b559964376141a564e69",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "53f727cd901d844521c04b89-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "9bc08afbba1d0034e760306430cd2def3f46ef965102ca21ed7885e9b964087c",
+      "removed_obligations": 0,
+      "source_id": "53f727cd901d844521c04b89",
+      "source_sha256": "7f7c7dff19d2c15f49f456caac4e4050c3a9281e0c3840818dbf238a4a6d4628",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/9f202a68a12170027c3bbdb3-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9f202a68a12170027c3bbdb3-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01860819896683097,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9f202a68a12170027c3bbdb3-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017427663784474134,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "e706820e0dfbbbf1bf57f008e709d9773c42d8af900c4ee5b01ee2461710471f",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "9f202a68a12170027c3bbdb3-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "7ffa4b22b1c25beeeac7ca0598c8f42f28649a7cfbedc9de312a3b7d5e4d80b9",
+      "removed_obligations": 0,
+      "source_id": "9f202a68a12170027c3bbdb3",
+      "source_sha256": "03288fecfff02af38d090be08f24b9e78efab00f9af15b3b3792124de7a7a1eb",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/d9a94b803bcc97757da009f8-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/d9a94b803bcc97757da009f8-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017352554947137833,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/d9a94b803bcc97757da009f8-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01768602291122079,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "2cb0c854d0559ab218e43deeae128549553b6a1de6fa242d3d508f13f8de3b14",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "d9a94b803bcc97757da009f8-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "8f0f581e039ab3c6b2cd50f2588682593fd2a1dbe0b9c78fef42a3f7a5cfcb97",
+      "removed_obligations": 0,
+      "source_id": "d9a94b803bcc97757da009f8",
+      "source_sha256": "26e72ffd4c0631f284a0442b575aba3ab2ca37812d77ef3af5c442f34528e754",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/b61795004fd100af3340293f-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/b61795004fd100af3340293f-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03473505889996886,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/b61795004fd100af3340293f-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.034594399156048894,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "90fb94634399cf38e98c69682dbcc3053f7826e44ce104376169037c8cef9fab",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "b61795004fd100af3340293f-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "ed499f4a68dd50db66e7a21f67a6e1f67275663d0e09e53d9ec54c26005c7a87",
+      "removed_obligations": 0,
+      "source_id": "b61795004fd100af3340293f",
+      "source_sha256": "34f820b4da4532e971e6228ec08f9ff5afc2449e567c544ef218220278fee9e1",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/7f78188ca457ccaed11177a9-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/7f78188ca457ccaed11177a9-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0190582568757236,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/7f78188ca457ccaed11177a9-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.021026898873969913,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "abb4074b5a5b685d9a213269e307a173bb1d07495ddfdefd8a832ce07fce912b",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "7f78188ca457ccaed11177a9-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "82d0ddbdac9bf0ca739f2a5b63414a92430cadcd5dd18905ad648d6012fc0850",
+      "removed_obligations": 0,
+      "source_id": "7f78188ca457ccaed11177a9",
+      "source_sha256": "086981af52b61a11687c64ab99581cfcc637323c1372c44c37ff82b47777308d",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/f4f16bc7ac5cca786cb96394-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/f4f16bc7ac5cca786cb96394-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06653247098438442,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/f4f16bc7ac5cca786cb96394-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.06560331396758556,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "a91068b2392a8b88b0b118c86a4dcfed467622fa602d75a98748d845642887ca",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "f4f16bc7ac5cca786cb96394-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "554426712727c81f45bb9b6d4ffc78a58fac59e4603b255239d4941e024cc169",
+      "removed_obligations": 0,
+      "source_id": "f4f16bc7ac5cca786cb96394",
+      "source_sha256": "2d8f9c0b6be016e95856cacfebf68110f234b539f7ed90ef5171321bc2889f66",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/eec9be86524108e2f602e6b7-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/eec9be86524108e2f602e6b7-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018254420952871442,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/eec9be86524108e2f602e6b7-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017344034975394607,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "02db390c38c966105c627a21e1f3babd98fd533380fd89eb8f4f50d3db8745af",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "eec9be86524108e2f602e6b7-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "9fdfa2fb27563a57930f6571020c4d1b33409ab99972508a905067c84debc55d",
+      "removed_obligations": 0,
+      "source_id": "eec9be86524108e2f602e6b7",
+      "source_sha256": "956015a7dcc70ebfb91cfe76ed02b92a22bae260a997347311b0065724a21612",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/d2973a2cd2d44bbecf9792b7-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/d2973a2cd2d44bbecf9792b7-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03355273394845426,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/d2973a2cd2d44bbecf9792b7-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.033911882899701595,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "90d1e05c2d40b242bff2bbd20441f9587972e399644e2a0cf9355d95d68a54c2",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "d2973a2cd2d44bbecf9792b7-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "730ce60c103d2c1ff57c815bdb3d9f5c51a7c1672d7c2d33fdd0e32b8096d49b",
+      "removed_obligations": 0,
+      "source_id": "d2973a2cd2d44bbecf9792b7",
+      "source_sha256": "e39a8322dad71af97c6514954fb3dac010626ef45dffd8f1b1e06a24c9d9e6d3",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/9191c1e843b5ee10a6beac6a-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9191c1e843b5ee10a6beac6a-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0668975890148431,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/9191c1e843b5ee10a6beac6a-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0679844340775162,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "a35f2e115c798522afe2032988d9bbd11ef0aef1c853bb7ecb6e1d46f8634fe3",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "9191c1e843b5ee10a6beac6a-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "8618ab8ae800fac2743959934a8a3cc0a56b19362a90d7d7266cddc3bb106b79",
+      "removed_obligations": 0,
+      "source_id": "9191c1e843b5ee10a6beac6a",
+      "source_sha256": "9384a380a328fb01caa33ca5803b1abbce5241b059ad0f109bb1939525a3f8f8",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
+    },
+    {
+      "certificate": "negatives/581fb045db9a0763cfc6350a-gm04-full-freshness-collision.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/581fb045db9a0763cfc6350a-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03371520317159593,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-all/gm04-negatives-v2/581fb045db9a0763cfc6350a-gm04-full-freshness-collision/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.03355551417917013,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "dadb954f06af4167167a510130d920e5b8d27d477a7ccedf38e4b24a3cda6521",
+      "criterion": {
+        "checker": "check_gm04_complete_transformation_proof",
+        "explanation": "Distinct administrative roles active and mark are identified; freshness is a required premise before either constructor can certify.",
+        "theorem": "check_gm04_complete_transformation_proof_sound",
+        "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+        "violated_condition": "gm04_roles_fresh_list"
+      },
+      "expected_diagnostic_regex": "GM04 administrative symbols are not fresh",
+      "id": "581fb045db9a0763cfc6350a-gm04-full-freshness-collision",
+      "kind": "gm04-full-freshness-collision",
+      "mutation_sha256": "f2832245be01f94aa68511c13a2c81a83e866545c85a9e2d630131885c7fd781",
+      "removed_obligations": 0,
+      "source_id": "581fb045db9a0763cfc6350a",
+      "source_sha256": "c5b5cdd87319115be8badb12d9bf9fafbf75bb5fff8c13aa761147d89d324b6a",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//gm04CompleteFullTransformation"
     }
   ],
   "positives": [

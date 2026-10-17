@@ -1,0 +1,407 @@
+{
+  "baseline_source_revision": "17dbee4b822733cd25235a64178db2ccf590a10e",
+  "checker": "check_gm04_complete_transformation_proof",
+  "limitation": "Runtime proof acceptance and negative rejection do not execute the Isabelle soundness theorem.",
+  "modes": [
+    {
+      "Q_context": "Preserved in the actual child problem; no empty-Q check is imposed",
+      "child_obligation": "Exactly one Finite_assm with no additional obligations, nfs=True, pair variant equivalence, empty weak pairs and strict rules, NF-equivalent Q, and target weak rules Rw contained modulo variable renaming in computed S; minimality m is unrestricted.",
+      "complete_transformation_equality": "Not required by the general adapter preserved from CeTA main",
+      "constructor": "GM04_Complete_Transformation_Proof",
+      "cpf_node": "gm04CompleteTransformation",
+      "negative_ids": [
+        "9b6517743046ee8a6cb862a2-gm04-innermost-freshness-collision",
+        "bfb0d0a0c65a3e75be9dfe7c-gm04-innermost-freshness-collision",
+        "542d2558cc3a703170151b38-gm04-innermost-freshness-collision",
+        "7f2ffe4ac8c05cbac0dcdad2-gm04-innermost-freshness-collision",
+        "4322d2951e9ccef6ff097657-gm04-innermost-freshness-collision",
+        "9193f48ef1583a96a20ed65c-gm04-innermost-freshness-collision",
+        "73e439c9679f23830766bbcb-gm04-innermost-freshness-collision",
+        "ecb3b06df609c29de51e69e8-gm04-innermost-freshness-collision",
+        "21f4291b35b958aff3a26866-gm04-innermost-freshness-collision",
+        "5da777740aec4bb4a1a04497-gm04-innermost-freshness-collision",
+        "d9be0825bc9098a19d99a36e-gm04-innermost-freshness-collision",
+        "564ed4d1f66a771858b56929-gm04-innermost-freshness-collision",
+        "462921927a7202b48e05bef5-gm04-innermost-freshness-collision"
+      ],
+      "normal_form_substitutions": true,
+      "remaining_negative_gaps": [
+        "weak-rule emptiness",
+        "signature extension and replacement-map obligations",
+        "child-proof/residual correspondence",
+        "preservation of nonempty Q in the actual child problem"
+      ],
+      "selected_positive_roots": [
+        {
+          "cpf_sha256": "135cb43c86826d5eb27fba1483d1bff04c24f9fc921257a30c9fe565b9c69f61",
+          "id": "9b6517743046ee8a6cb862a2",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex14_Luc06_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 19,
+            "R_size": 20,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "07329a62e70da356f1ffdf821d1aeb5f18b8761b3707742c91da4777560f5bf6",
+          "id": "bfb0d0a0c65a3e75be9dfe7c",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex1_2_AEL03_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 66,
+            "R_size": 74,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "6adda8a4699752be52e826a1853c8b8df482b47b4540d54defcd0cbebc7bd0d5",
+          "id": "542d2558cc3a703170151b38",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex24_GM04_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 13,
+            "R_size": 13,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "2380be07e79bea02eadc5ef1983298901c10e8c853f61426955766e379a60ca4",
+          "id": "7f2ffe4ac8c05cbac0dcdad2",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex9_Luc04_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 12,
+            "R_size": 14,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "2f105d27fa2df0851b9775829d56ad8e44c1c33ab513ab164db9e7b0d3301173",
+          "id": "4322d2951e9ccef6ff097657",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/ExIntrod_Zan97_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 44,
+            "R_size": 47,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "e7f8c4268b9a5dc3138a60e6eab16f9a10e103f98f69cc51c384afc9a7937cfd",
+          "id": "9193f48ef1583a96a20ed65c",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/ExSec11_1_Luc02a_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 55,
+            "R_size": 57,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "3605e60b663a66ea86c42da7d638054903c4757010ec748431ddfa4ad5ac65f9",
+          "id": "73e439c9679f23830766bbcb",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/LISTUTILITIES_nokinds_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 148,
+            "R_size": 153,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "a7821203df28f44d7a13b738460e64c3b73f3f798eefb31750c7227c738eb6f3",
+          "id": "ecb3b06df609c29de51e69e8",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/LISTUTILITIES_nokinds_noand_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 278,
+            "R_size": 283,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "066abdcd8dc3c78d60733f5bfab9a4ab4fce135ae8edc972781b7607c3ee3ce0",
+          "id": "21f4291b35b958aff3a26866",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/LengthOfFiniteLists_nokinds_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 45,
+            "R_size": 45,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "8da41747dbc279db30a4f62dcb2c7aa031886c14b3961205b607345636565095",
+          "id": "5da777740aec4bb4a1a04497",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/MYNAT_complete_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 99,
+            "R_size": 101,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "b7679df19f6771677347e20327e85a04409744ea1890c1bd6511b1551e8537fd",
+          "id": "d9be0825bc9098a19d99a36e",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/MYNAT_complete_noand_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 194,
+            "R_size": 196,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "91f62464d7fe9e60565b388703d6ce7d453620ffd33a4aba14525d2e902493fa",
+          "id": "564ed4d1f66a771858b56929",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/OvConsOS_nokinds_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 63,
+            "R_size": 64,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "dbf39b5e00a3bf3a79d3cde4a42a56ed0673886edb11dcd24aab0250ec8a1f83",
+          "id": "462921927a7202b48e05bef5",
+          "root": "TRS_Innermost/Transformed_CSR_innermost_04/PALINDROME_nokinds_noand_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q: remdups(map fst R)",
+            "Q_size": 101,
+            "R_size": 103,
+            "Tw_size": 0,
+            "nfs": true,
+            "placement": "root"
+          }
+        }
+      ],
+      "weak_rules": "Tw must be empty"
+    },
+    {
+      "Q_context": "Must be empty",
+      "child_obligation": "Assumption-free ordinary full termination of administrative S",
+      "complete_transformation_equality": "Both variant directions checked against computed C",
+      "constructor": "GM04_Complete_Full_Transformation_Proof",
+      "cpf_node": "gm04CompleteFullTransformation",
+      "legacy_join_payload": "Parsed and retained for certificate compatibility; neither this executable branch nor its soundness proof uses joins as a confluence premise.",
+      "negative_ids": [
+        "1c86e1b6a92580471c23436e-gm04-full-freshness-collision",
+        "53f727cd901d844521c04b89-gm04-full-freshness-collision",
+        "9f202a68a12170027c3bbdb3-gm04-full-freshness-collision",
+        "d9a94b803bcc97757da009f8-gm04-full-freshness-collision",
+        "b61795004fd100af3340293f-gm04-full-freshness-collision",
+        "7f78188ca457ccaed11177a9-gm04-full-freshness-collision",
+        "f4f16bc7ac5cca786cb96394-gm04-full-freshness-collision",
+        "eec9be86524108e2f602e6b7-gm04-full-freshness-collision",
+        "d2973a2cd2d44bbecf9792b7-gm04-full-freshness-collision",
+        "9191c1e843b5ee10a6beac6a-gm04-full-freshness-collision",
+        "581fb045db9a0763cfc6350a-gm04-full-freshness-collision"
+      ],
+      "normal_form_substitutions": false,
+      "remaining_negative_gaps": [
+        "weak-rule emptiness",
+        "signature extension and replacement-map obligations",
+        "child-proof/residual correspondence",
+        "Q emptiness"
+      ],
+      "selected_positive_roots": [
+        {
+          "cpf_sha256": "a1f9bb402ebc1e5fdcb86573d15144c09831062b96080a775ed9347284887483",
+          "id": "1c86e1b6a92580471c23436e",
+          "root": "TRS_Standard/Transformed_CSR_04/Ex14_Luc06_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 20,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "7f7c7dff19d2c15f49f456caac4e4050c3a9281e0c3840818dbf238a4a6d4628",
+          "id": "53f727cd901d844521c04b89",
+          "root": "TRS_Standard/Transformed_CSR_04/Ex24_GM04_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 13,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "03288fecfff02af38d090be08f24b9e78efab00f9af15b3b3792124de7a7a1eb",
+          "id": "9f202a68a12170027c3bbdb3",
+          "root": "TRS_Standard/Transformed_CSR_04/Ex4_7_37_Bor03_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 50,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "26e72ffd4c0631f284a0442b575aba3ab2ca37812d77ef3af5c442f34528e754",
+          "id": "d9a94b803bcc97757da009f8",
+          "root": "TRS_Standard/Transformed_CSR_04/Ex9_Luc04_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 14,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "34f820b4da4532e971e6228ec08f9ff5afc2449e567c544ef218220278fee9e1",
+          "id": "b61795004fd100af3340293f",
+          "root": "TRS_Standard/Transformed_CSR_04/ExAppendixB_AEL03_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 80,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "086981af52b61a11687c64ab99581cfcc637323c1372c44c37ff82b47777308d",
+          "id": "7f78188ca457ccaed11177a9",
+          "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_Zan97_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 47,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "2d8f9c0b6be016e95856cacfebf68110f234b539f7ed90ef5171321bc2889f66",
+          "id": "f4f16bc7ac5cca786cb96394",
+          "root": "TRS_Standard/Transformed_CSR_04/LISTUTILITIES_nokinds_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 153,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "956015a7dcc70ebfb91cfe76ed02b92a22bae260a997347311b0065724a21612",
+          "id": "eec9be86524108e2f602e6b7",
+          "root": "TRS_Standard/Transformed_CSR_04/LengthOfFiniteLists_nokinds_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 45,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "e39a8322dad71af97c6514954fb3dac010626ef45dffd8f1b1e06a24c9d9e6d3",
+          "id": "d2973a2cd2d44bbecf9792b7",
+          "root": "TRS_Standard/Transformed_CSR_04/LengthOfFiniteLists_nokinds_noand_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 80,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "9384a380a328fb01caa33ca5803b1abbce5241b059ad0f109bb1939525a3f8f8",
+          "id": "9191c1e843b5ee10a6beac6a",
+          "root": "TRS_Standard/Transformed_CSR_04/MYNAT_complete_noand_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 196,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        },
+        {
+          "cpf_sha256": "c5b5cdd87319115be8badb12d9bf9fafbf75bb5fff8c13aa761147d89d324b6a",
+          "id": "581fb045db9a0763cfc6350a",
+          "root": "TRS_Standard/Transformed_CSR_04/OvConsOS_nokinds_C.ari",
+          "root_context": {
+            "Q_definition": "strategy_to_Q No_Strategy: []",
+            "Q_size": 0,
+            "R_size": 64,
+            "Tw_size": 0,
+            "nfs": false,
+            "placement": "root"
+          }
+        }
+      ],
+      "weak_rules": "Tw must be empty"
+    }
+  ],
+  "reconciled_source_tree": "ab4a952a905c7bbd6ac1ebb92e5340b67378303c",
+  "reconciliation": "Retain the CeTA-main innermost constructor without the two complete-rule variant guards added by CSR main. Its soundness argument checks the actual child problem and exact residual assumptions. Full and nontermination constructors retain complete-rule variant checks. No mode is identified with another.",
+  "retained_theorem_distinctions": [
+    {
+      "premise": "finite_dpp at the same fixed minimality m; administrative rules equivalent modulo variable renaming",
+      "theorem": "gm04_finite_residual_variants"
+    },
+    {
+      "dependency": "Uses gm04_finite_residual_variants at m=False before transporting chains",
+      "premise": "finite_dpp for every minimality m; target weak rules may be a subset modulo variable renaming",
+      "theorem": "gm04_finite_residual_rule_subset"
+    }
+  ],
+  "root_context_mapping": {
+    "definitions": [
+      "strategy_to_Q",
+      "strategy_to_nfs",
+      "desired_property"
+    ],
+    "scope": "Direct root GM04 nodes only; no nested-state reconstruction is inferred.",
+    "theory": "thys/Proof_Checker/Ceta_Problem_Spec.thy"
+  },
+  "soundness_theorem": "check_gm04_complete_transformation_proof_sound",
+  "theory": "thys/Proof_Checker/GM04_Complete_Checker.thy",
+  "verification_status": "Reconciled theory passed in Relative_ADP_Ceta_Dev; remaining production/export gates are running."
+}

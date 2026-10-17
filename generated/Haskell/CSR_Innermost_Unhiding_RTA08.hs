@@ -274,6 +274,13 @@ check_innermost_csr_rta08_terminal j mu i dpp
              ": innermost RTA08 proof is not a terminal reduction-pair proof");
 check_innermost_csr_rta08_terminal j mu i dpp
   (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Redpair_UR_Proc va vb vc
+      (Check_Termination.Zantema_To_SRS_Proc ve)))
+  = Sum_Type.Inl
+      (i . Term_Rewriting.showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
     (Check_Termination.Usable_Rules_Proc va vb))
   = Sum_Type.Inl
       (i . Term_Rewriting.showsl_lit
@@ -396,6 +403,12 @@ check_innermost_csr_rta08_terminal j mu i dpp
   Sum_Type.Inl
     (i . Term_Rewriting.showsl_lit
            ": innermost RTA08 proof is not a terminal reduction-pair proof");
+check_innermost_csr_rta08_terminal j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Zantema_To_SRS_Proc va))
+  = Sum_Type.Inl
+      (i . Term_Rewriting.showsl_lit
+             ": innermost RTA08 proof is not a terminal reduction-pair proof");
 check_innermost_csr_rta08_terminal j mu i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
   Sum_Type.Inl

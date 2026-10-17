@@ -1,0 +1,297 @@
+{
+  "acceptance_passed": true,
+  "additional_freshness_negatives": 24,
+  "additional_freshness_passed": true,
+  "checker_sha256": "8d1b29e0beb9641e7fb01fb9e9271fc95f7f1389607034f15f5c0cfcfd1f4bb2",
+  "confirmed_slowdowns": [],
+  "coverage_passed": true,
+  "export_comparison": {
+    "different": [],
+    "modules": 401
+  },
+  "full_corpus_recheck": {
+    "checked": 3484,
+    "elapsed_seconds": 957.735725835897,
+    "eligible": 0,
+    "exact_root_set_preserved": true,
+    "losses": [],
+    "passed": 3484,
+    "roots": 3484,
+    "scope": "Twice production recheck with fresh original-input audits; HPC agreement is recorded separately for byte-identical verified generated modules."
+  },
+  "full_corpus_results_sha256": "0585e919d0f1071eb4e56c0a8d44c64a62a0ae5d0b28ae4de790177714fcb2b1",
+  "hpc_checker_sha256": "5537f183ac31d2042aed76e03940622e8f014599cb37018639c8ac987dc30c3e",
+  "isabelle": {
+    "command": [
+      "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+      "build",
+      "-v",
+      "-j",
+      "2",
+      "-o",
+      "threads=8",
+      "-o",
+      "parallel_proofs=0",
+      "-d",
+      "target/consolidation-build/checker-source/thys",
+      "-d",
+      "target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics",
+      "-d",
+      "target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics/Reduction_Pair",
+      "-d",
+      "target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Checker",
+      "-d",
+      "target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Integration",
+      "-d",
+      "target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+      "Proof_Checker",
+      "Code",
+      "RFC_Absolute_Ext",
+      "Relative_ADP_Ceta_Dev"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+    "elapsed_seconds": 6618.899529843824,
+    "max_child_rss_kib": 75067044,
+    "memory_used_at_start": 515774726144,
+    "returncode": 0
+  },
+  "ordinary_cli": {
+    "checker_sha256": "1f984620b07964b376a7d6e6ca036646005a57e7f50da04163dd250ab1711e13",
+    "passed": true,
+    "results": [
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-remaining-o2/9b6517743046ee8a6cb862a2/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.019620853941887617,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-remaining-o2/9b6517743046ee8a6cb862a2/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017341757891699672,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "id": "9b6517743046ee8a6cb862a2",
+        "passed": true
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-remaining-o2/1c86e1b6a92580471c23436e/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017449246952310205,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-remaining-o2/1c86e1b6a92580471c23436e/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.01721016806550324,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "id": "1c86e1b6a92580471c23436e",
+        "passed": true
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-remaining-o2/699be1692e175a3a4369d033/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.16581631312146783,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-remaining-o2/699be1692e175a3a4369d033/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.1659048330038786,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "id": "699be1692e175a3a4369d033",
+        "passed": true
+      }
+    ],
+    "scope": "Ordinary CLI integration smoke on frozen standard, innermost GM04 and full GM04 proofs; not a replacement for full primary-checker gates."
+  },
+  "ordinary_compilation": {
+    "command": [
+      "/work/dfm/festschrift/ferrum/.tools/.ghcup/bin/ghc",
+      "-O2",
+      "-odir",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-baseline-ordinary",
+      "-hidir",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-baseline-ordinary",
+      "-package",
+      "array",
+      "-XRankNTypes",
+      "--make",
+      "Main.hs",
+      "-o",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-baseline-ordinary"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/baseline-ordinary-haskell",
+    "elapsed_seconds": 86.88412949000485,
+    "environment": {},
+    "max_child_rss_kib": 751484,
+    "memory_used_at_start": 733429383168,
+    "returncode": 0
+  },
+  "performance_status": "Controlled reference repeats required for listed slowdown candidates; timings alone do not establish a regression.",
+  "relative_cli": {
+    "checker_sha256": "76cc033a911ea097fb000cf1bf3126841335d0a787dbbee26e1f9e1657bb5504",
+    "passed": true,
+    "results": [
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-extra/5100de0c29b4d8fc4f5c3652/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.037544756196439266,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-extra/5100de0c29b4d8fc4f5c3652/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017470570048317313,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "id": "5100de0c29b4d8fc4f5c3652",
+        "passed": true,
+        "proof_sha256": "d2b9e5214a1e147bf69f732d6fbd2191250e6447b3953fe7abd6589dee35f5aa",
+        "scope": "Genuine oracle-only relative root; ordinary fallback, not ADP coverage"
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-extra/86454b3fcc5c2e792ce37c3f/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017468529986217618,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-extra/86454b3fcc5c2e792ce37c3f/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017145291902124882,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "id": "86454b3fcc5c2e792ce37c3f",
+        "passed": true,
+        "proof_sha256": "518fbb606be10f944360c46fe8443824d26ee074cb7bb01c443286581f86f7df",
+        "scope": "Genuine oracle-only relative root; ordinary fallback, not ADP coverage"
+      },
+      {
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline",
+              "/work/dfm/festschrift/CeTA-consolidated/examples/relative_adp_rt1_3.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017561970045790076,
+            "returncode": 0,
+            "timed_out": false
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline",
+              "/work/dfm/festschrift/CeTA-consolidated/examples/relative_adp_rt1_3.cpf.xml"
+            ],
+            "elapsed_seconds": 0.017110012006014585,
+            "returncode": 0,
+            "timed_out": false
+          }
+        ],
+        "id": "relative-adp-fixture",
+        "passed": true,
+        "proof_sha256": "931b53ff6b401427dd2270fe861cf4fb2162a4a4731251ba77556e89de67393b",
+        "scope": "Existing integration fixture only; excluded from genuine replay coverage"
+      }
+    ]
+  },
+  "relative_compilation": {
+    "command": [
+      "/work/dfm/festschrift/ferrum/.tools/.ghcup/bin/ghc",
+      "-O2",
+      "-odir",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-relative-baseline",
+      "-hidir",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-relative-baseline",
+      "-package",
+      "array",
+      "-XRankNTypes",
+      "--make",
+      "Main_Relative_ADP.hs",
+      "-o",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-relative-baseline"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/baseline-verified-haskell",
+    "elapsed_seconds": 249.54074727394618,
+    "environment": {},
+    "max_child_rss_kib": 2674340,
+    "memory_used_at_start": 599126859776,
+    "returncode": 0
+  },
+  "results_count": 592,
+  "scope": "Frozen 3484-root baseline with explicit calibrated search budgets; minimum cardinality proved for 45753 observed structural/executable obligations, with semantic coverage gaps retained.",
+  "slowdown_candidates": [
+    "77ed8d5676a87c383cbfcdb2",
+    "6d2715e500e24b31a4519a71",
+    "7040aadf9e4ed05075843bb3",
+    "c744cf6653b4ef6ab03e7741",
+    "a5d62095ff0de7c3d148af9c",
+    "21f4291b35b958aff3a26866",
+    "b22cd310ab27e818debfeb8d",
+    "c3150335200cc02250c109c4",
+    "de4bc1bd68e0e36d08e263db",
+    "9cc404e6045c225f3ab579ff",
+    "1336d0e0c8a524558049fc55",
+    "9191c1e843b5ee10a6beac6a"
+  ],
+  "status": "Baseline Isabelle, ordinary/RFC/relative compilation, compact suite, full corpus and timing gates passed. Relative ADP fixture is integration evidence only; genuine ADP replay coverage remains absent."
+}

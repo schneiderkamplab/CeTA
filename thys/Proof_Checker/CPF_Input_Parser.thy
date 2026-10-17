@@ -238,19 +238,15 @@ where
   "innermost = XMLdo (STR ''innermost'') {nfs \<leftarrow>? xml_bool (STR ''nfs''); xml_return (Innermost (nfs_def nfs))}"
 
 text \<open>
-CPF permits a context-sensitive strategy on a standalone DP input.  The
-generic DP checker has no replacement-map-specific problem type, so we check
-such certificates against the stronger unrestricted DP obligation.  This is
-conservative: every unrestricted chain includes all context-sensitive chains.
-Replacement-map-specific processors remain available through the CSR proof
-formats.
+The generic strategy datatype describes ordinary DP obligations only.
+Context-sensitive standalone obligations must retain their own chain semantics
+and replacement map; they use the explicit CSR input below. In particular, do
+not reinterpret a CSR minimality flag as ordinary DP minimality.
 \<close>
 
 definition strategy :: "('a,string)strategy xmlt" where
   "strategy = XMLdo (STR ''strategy'') {
-    ret \<leftarrow> innermost
-      XMLor innermostLhssStrategy
-      XMLor xml_change replacement_map (\<lambda>_. xml_return No_Strategy);
+    ret \<leftarrow> innermost XMLor innermostLhssStrategy;
     xml_return ret
   }"
 
@@ -283,9 +279,45 @@ where
   "dp_input = XMLdo (STR ''dpInput'') {
     r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
     p \<leftarrow> XMLdo (STR ''dps'') { ret \<leftarrow> rules; xml_return ret };
-    str \<leftarrow>[No_Strategy] strategy;
+    str \<leftarrow>[Inl No_Strategy] inn_fp_strategy;
     m \<leftarrow> xml_bool (STR ''minimal'');
-    xml_return (DP_input m p str r)
+    case str of Inl s \<Rightarrow> xml_return (DP_input m p s r)
+    | Inr _ \<Rightarrow> xml_error
+        (STR ''ordinary dpInput cannot discard replacement-map or outermost context; use a typed CSR-DP input'')
+  }"
+
+definition relative_dp_input :: "('a,string)input xmlt" where
+  "relative_dp_input = XMLdo (STR ''relativeDpInput'') {
+    r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
+    p \<leftarrow> XMLdo (STR ''dps'') { ret \<leftarrow> rules; xml_return ret };
+    pw \<leftarrow> XMLdo (STR ''weakDps'') { ret \<leftarrow> rules; xml_return ret };
+    rs \<leftarrow> XMLdo (STR ''strictRules'') { ret \<leftarrow> rules; xml_return ret };
+    str \<leftarrow> inn_fp_strategy;
+    m \<leftarrow> xml_bool (STR ''minimal'');
+    case str of Inl s \<Rightarrow>
+      xml_return (Relative_DP_input (strategy_to_nfs s) m p pw
+        (strategy_to_Q s (rs @ r)) rs r)
+    | Inr _ \<Rightarrow> xml_error (STR ''relative DP input requires an explicit Q strategy'')
+  }"
+
+definition csr_improved_dp_input :: "('a,string)input xmlt" where
+  "csr_improved_dp_input = XMLdo (STR ''csrImprovedDpInput'') {
+    r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
+    p \<leftarrow> XMLdo (STR ''dps'') { ret \<leftarrow> rules; xml_return ret };
+    mu \<leftarrow> XMLdo (STR ''strategy'') { ret \<leftarrow> replacement_map; xml_return ret };
+    m \<leftarrow> xml_bool (STR ''minimal'');
+    u \<leftarrow> XMLdo (STR ''unhidingSymbol'') { ret \<leftarrow> xml2name; xml_return ret };
+    xml_return (CSR_Improved_DP_input m u mu p r)
+  }"
+
+definition csr_muterm_typed_dp_input :: "('a,string)input xmlt" where
+  "csr_muterm_typed_dp_input = XMLdo (STR ''csrMutermTypedDpInput'') {
+    r \<leftarrow> XMLdo (STR ''trs'') { ret \<leftarrow> rules; xml_return ret };
+    p \<leftarrow> XMLdo (STR ''dps'') { ret \<leftarrow> rules; xml_return ret };
+    b \<leftarrow> XMLdo (STR ''unhidingRules'') { ret \<leftarrow> rules; xml_return ret };
+    mu \<leftarrow> XMLdo (STR ''strategy'') { ret \<leftarrow> replacement_map; xml_return ret };
+    m \<leftarrow> xml_bool (STR ''minimal'');
+    xml_return (CSR_Muterm_Typed_DP_input m mu p r b)
   }"
 
 definition
@@ -384,6 +416,7 @@ where
      equations_input XMLor
      ac_rewrite_system XMLor
      dp_input XMLor
+     csr_muterm_typed_dp_input XMLor csr_improved_dp_input XMLor relative_dp_input XMLor
      xml_change lts_input_parser (\<lambda> lts. xml_return (LTS_input lts)) XMLor
      xml_change lts_safety_input_parser (\<lambda> (lts,err). xml_return (LTS_safety_input lts err)) XMLor
      tree_automaton_and_trs XMLor

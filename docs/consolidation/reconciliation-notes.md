@@ -1,7 +1,7 @@
 # Reconciliation decisions to verify after the baseline
 
-These notes describe source-inspected changes, not completed proof or export
-verification. No semantic simplification is justified merely by the runtime
+The reconciled source has passed all four Isabelle integration/export targets.
+Compact/corpus gates are recorded separately; the build cleanup remains a private trial. No semantic simplification is justified merely by the runtime
 coverage observed so far.
 
 ## Preserve the general innermost GM04 adapter
@@ -53,3 +53,34 @@ path for every batch would needlessly invalidate them again.
 Never update this private root while a build is reading it. Never change an
 existing parent worktree, production binary or shared heap. The baseline
 environment and interruption receipts remain under the isolated build tree.
+
+## Prepared reconciliation
+
+The isolated merge is resolved. Compared with pinned CSR main, the entire
+`thys`, `dev` and `src` source surface differs only by removal of the three
+innermost GM04 lines computing `C` and checking both variants directions.
+The parser, standalone bridges, full GM04 and nontermination additions were
+reviewed as additions to CeTA main. The full constructor retains its guards.
+No newly added proof admissions were found in the 20 changed theories.
+
+The immutable prepared source tree is
+`ab4a952a905c7bbd6ac1ebb92e5340b67378303c`; it remains uncommitted until its
+Isabelle/export and regression gates pass. See `gm04-criterion-coverage.json`
+for 13 innermost and 11 full-transformation selected roots, paired freshness
+negatives and remaining side-condition gaps.
+
+The two GM04 contexts remain different: the general innermost adapter preserves
+its actual Q context, whereas the full constructor requires Q to be empty.
+The full constructor's legacy `joins` payload is parsed and retained for CPF
+compatibility, but is not used by its checker branch or soundness proof as a
+confluence premise. It must not be counted as a separate checked criterion.
+
+Keep `gm04_finite_residual_variants` and `gm04_finite_residual_rule_subset`
+as distinct results. The former assumes finiteness at one fixed minimality
+flag and rule equivalence. The latter assumes finiteness for every minimality
+flag and permits target weak-rule subsets; it uses the former at `False`.
+Replacing the former with the latter would strengthen its hypothesis. Also,
+`gm04_rules_variant_subset S Rw` means that every rule in **Rw** has a variant
+in **S**, despite the argument order. The accepted residual compares normal-form
+sets for Q, not literal Q-list equality. These distinctions are now explicit in
+the criterion inventory.

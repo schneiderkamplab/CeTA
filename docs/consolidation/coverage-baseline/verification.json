@@ -1,0 +1,17 @@
+{
+  "candidates": 3484,
+  "distinct_constraints": 3331,
+  "elapsed_seconds": 12.148206232814118,
+  "excluded_bound": 207,
+  "matrix_sha256": "f844c1e173e4a40bdc32648f928ffcd288432184c7834052b4e16c3e71de743d",
+  "minimum_cardinality_reverified": true,
+  "observed_obligations": 45753,
+  "secondary_cost_optimality": "Not claimed",
+  "selected_covers_every_obligation": true,
+  "selected_roots": 208,
+  "smt2_sha256": "3b24a51a18ada0c429524decf021a6983d0fac0ccad214e83cbb3b4bc98f9c79",
+  "solver_sha256": "1bfaf5bbe81fd0b7800500ee08eef426aaabe18f8b9c4c4c32adffcd72f86cd5",
+  "solver_status": "unsat",
+  "solver_stderr": "",
+  "solver_version": "Z3 version 4.15.4 - 64 bit"
+}

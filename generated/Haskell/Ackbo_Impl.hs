@@ -77,8 +77,8 @@ ackbo_impl w w0 pr_strict ac s t =
 then fst (Lexicographic_Extension.lex_ext
            (\ x y ->
              (ackbo_impl w w0 pr_strict ac x y,
-               AC_Equivalence.equal_acterm (AC_Equivalence.aocnf ac ac x)
-                 (AC_Equivalence.aocnf ac ac y)))
+               AC_Equivalence.equal_acterm (AC_Equivalence.acnf ac x)
+                 (AC_Equivalence.acnf ac y)))
            (Arith.size_list ss) ss ts)
 else (case (AC_Equivalence.actop f (Term_Rewriting.Fun f ss),
              AC_Equivalence.actop f (Term_Rewriting.Fun g ts))
@@ -87,8 +87,8 @@ else (case (AC_Equivalence.actop f (Term_Rewriting.Fun f ss),
          (case Multiset_Extension2.mulextp
                  (\ tb u ->
                    (ackbo_impl w w0 pr_strict ac tb u,
-                     AC_Equivalence.equal_acterm (AC_Equivalence.aocnf ac ac tb)
-                       (AC_Equivalence.aocnf ac ac u)))
+                     AC_Equivalence.equal_acterm (AC_Equivalence.acnf ac tb)
+                       (AC_Equivalence.acnf ac u)))
                  (AC_Aux.filter_fun sa (\ x y -> not (pr_strict y x))
                    (f, Arith.nat_of_integer (2 :: Integer)))
                  (Multiset.plus_multiset
@@ -109,8 +109,8 @@ else (case (AC_Equivalence.actop f (Term_Rewriting.Fun f ss),
                              (\ tb u ->
                                (ackbo_impl w w0 pr_strict ac tb u,
                                  AC_Equivalence.equal_acterm
-                                   (AC_Equivalence.aocnf ac ac tb)
-                                   (AC_Equivalence.aocnf ac ac u)))
+                                   (AC_Equivalence.acnf ac tb)
+                                   (AC_Equivalence.acnf ac u)))
                              (AC_Aux.filter_fun sa (\ x y -> pr_strict y x)
                                (f, Arith.nat_of_integer (2 :: Integer)))
                              (AC_Aux.filter_fun ta (\ x y -> pr_strict y x)
@@ -154,8 +154,8 @@ ackbo_nstrict pr w w0 acset =
   (\ (s, t) ->
     Check_Monad.check
       (ackbo_impl w w0 pr acset s t ||
-        AC_Equivalence.equal_acterm (AC_Equivalence.aocnf acset acset s)
-          (AC_Equivalence.aocnf acset acset t))
+        AC_Equivalence.equal_acterm (AC_Equivalence.acnf acset s)
+          (AC_Equivalence.acnf acset t))
       ((((Term_Rewriting.showsl_lit "could not orient " .
            Term_Rewriting.showsl_terma s) .
           Term_Rewriting.showsl_lit " >=ACKBO ") .

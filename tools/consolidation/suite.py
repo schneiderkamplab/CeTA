@@ -13,10 +13,13 @@ def inside(base,name):
  return p
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--manifest',type=pathlib.Path,required=True);p.add_argument('--checker',type=pathlib.Path,required=True);p.add_argument('--hpc-checker',type=pathlib.Path);p.add_argument('--export-tix',type=pathlib.Path);p.add_argument('--output',type=pathlib.Path,required=True);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--manifest',type=pathlib.Path,required=True);p.add_argument('--checker',type=pathlib.Path,required=True);p.add_argument('--hpc-checker',type=pathlib.Path);p.add_argument('--export-tix',type=pathlib.Path);p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--coverage-transition',type=pathlib.Path);a=p.parse_args()
  if bool(a.hpc_checker)!=bool(a.export_tix):raise SystemExit('HPC checker and exporter must be supplied together')
- base=a.manifest.resolve().parent;manifest=json.loads(a.manifest.read_text());output=a.output.resolve();output.mkdir(parents=True,exist_ok=False);checker=a.checker.resolve();env=dict(os.environ);results=[];observed=set();denpath=base/'coverage-denominator.json'
+ started=time.monotonic();base=a.manifest.resolve().parent;manifest=json.loads(a.manifest.read_text());output=a.output.resolve();output.mkdir(parents=True,exist_ok=False);checker=a.checker.resolve();env=dict(os.environ);results=[];observed=set();denpath=base/'coverage-denominator.json'
  if sha(denpath)!=manifest['coverage_denominator_sha256']:raise ValueError('Coverage denominator changed')
+ from coverage_transition import Transition
+ if a.coverage_transition and not a.hpc_checker:raise ValueError('Transition requires HPC checking')
+ transition=Transition(a.coverage_transition,denpath,checker,a.hpc_checker) if a.coverage_transition else None
  denominator=json.loads(denpath.read_text());modules=denominator['modules'];source_ids=denominator['structural_features']
  from coverage import inspect
  reg=json.loads((base/'processor-registry.json').read_text())
@@ -40,14 +43,17 @@ def main():
     if feature not in source_ids:raise ValueError('Unmapped structural obligation '+feature)
     observed.add(source_ids[feature])
    if a.hpc_checker:
-    prefix=run/'hpc';c=execute([str(a.hpc_checker.resolve()),str(proof)],run,env|{'HPCTIXFILE':str(run/'coverage.tix')},prefix,max(120,1.5*row['reference_hpc']['elapsed_seconds']+30));c['certified']=certified(c,prefix);r['hpc']=c
+    prefix=run/'hpc';c=execute([str(a.hpc_checker.resolve()),str(proof)],run,env|{'HPCTIXFILE':str(run/'coverage.tix')},prefix,max(120,1.5*row['reference_hpc']['elapsed_seconds']+30));c['certified']=certified(c,prefix);r['hpc']=c;r['hpc_slowdown_candidate']=c['elapsed_seconds']>1.2*row['reference_hpc']['elapsed_seconds']
     if not c['certified']:raise ValueError('HPC/production agreement failed')
     c=execute([str(a.export_tix.resolve()),str(run/'coverage.tix')],run,env,run/'coverage',60)
     if c['returncode']!=0:raise ValueError('HPC export failed')
     for line in (run/'coverage.stdout').read_text().splitlines():
      name,digest,count,ticks=line.split('\t');m=modules.get(name)
-     if m is None or m['hash']!=digest or m['count']!=int(count):raise ValueError('Instrumentation changed; explicit coverage mapping required for '+name)
-     observed.update(m['offset']+int(i) for i in ticks.split(',') if i)
+     if transition:
+      observed.update(transition.observe(name,digest,int(count),[int(i) for i in ticks.split(',') if i]))
+     else:
+      if m is None or m['hash']!=digest or m['count']!=int(count):raise ValueError('Instrumentation changed; explicit coverage mapping required for '+name)
+      observed.update(m['offset']+int(i) for i in ticks.split(',') if i)
    r['passed']=True
   except Exception as e:r['error']=type(e).__name__+': '+str(e)
   results.append(r);write(run/'result.json',r)
@@ -69,10 +75,15 @@ def main():
    for i in [1,2]:
     prefix=run/f'check-{i}';c=execute([str(checker),str(proof)],run,env,prefix,120);text=prefix.with_suffix('.stdout').read_text()+prefix.with_suffix('.stderr').read_text();c['semantic_rejection']=c['returncode']==1 and not c['timed_out'] and text.startswith('REJECTED') and bool(re.search(row['expected_diagnostic_regex'],text,re.S|re.I));r['checks'].append(c)
    if not all(x['semantic_rejection'] for x in r['checks']):raise ValueError('Intended semantic rejection not observed')
+   if a.hpc_checker:
+    prefix=run/'hpc';c=execute([str(a.hpc_checker.resolve()),str(proof)],run,env|{'HPCTIXFILE':str(run/'coverage.tix')},prefix,120);text=prefix.with_suffix('.stdout').read_text()+prefix.with_suffix('.stderr').read_text();c['semantic_rejection']=c['returncode']==1 and not c['timed_out'] and text.startswith('REJECTED') and bool(re.search(row['expected_diagnostic_regex'],text,re.S|re.I));r['hpc']=c
+    if not c['semantic_rejection']:raise ValueError('Negative HPC/production agreement failed')
+    if (run/'coverage.tix').exists():(run/'coverage.tix').unlink()
+   reference=statistics.mean(x['elapsed_seconds'] for x in row['checks']);actual=statistics.mean(x['elapsed_seconds'] for x in r['checks']);r['slowdown_candidate']=actual>reference*1.2;r['reference_mean_seconds']=reference
    r['passed']=True
   except Exception as e:r['error']=type(e).__name__+': '+str(e)
   results.append(r);write(run/'result.json',r)
- required=set(denominator['required_obligations']);missing=sorted(required-observed) if a.hpc_checker else None
- summary=dict(scope=manifest['scope'],checker_sha256=sha(checker),hpc_checker_sha256=sha(a.hpc_checker) if a.hpc_checker else None,results=results,missing_coverage=missing,acceptance_passed=all(r['passed'] for r in results),coverage_passed=not missing if missing is not None else None,slowdown_candidates=[r['id'] for r in results if r.get('slowdown_candidate')],performance_status='Controlled reference repeats required for listed slowdown candidates; timings alone do not establish a regression.')
- write(output/'summary.json',summary);print(json.dumps({k:v for k,v in summary.items() if k!='results'}));raise SystemExit(not summary['acceptance_passed'] or bool(missing))
+ required=set(denominator['required_obligations']);retired=transition.retired if transition else set();missing=sorted(required-observed-retired) if a.hpc_checker else None
+ summary=dict(coverage_transition_sha256=sha(a.coverage_transition) if transition else None,retired_coverage=sorted(retired),observed_required_coverage=len(required & observed),frozen_required_coverage=len(required),elapsed_seconds=time.monotonic()-started,production_check_seconds=sum(c['elapsed_seconds'] for r in results for c in r.get('checks',[])),reference_production_check_seconds=sum(2*r.get('reference_mean_seconds',0) for r in results),hpc_check_seconds=sum(r.get('hpc',{}).get('elapsed_seconds',0) for r in results),hpc_slowdown_candidates=[r['id'] for r in results if r.get('hpc_slowdown_candidate')],scope=manifest['scope'],checker_sha256=sha(checker),hpc_checker_sha256=sha(a.hpc_checker) if a.hpc_checker else None,results=results,missing_coverage=missing,acceptance_passed=all(r['passed'] for r in results),coverage_passed=not missing if missing is not None else None,slowdown_candidates=[r['id'] for r in results if r.get('slowdown_candidate')],performance_status='Controlled reference repeats required for listed slowdown candidates; timings alone do not establish a regression.')
+ write(output/'summary.json',summary);print(json.dumps({k:v for k,v in summary.items() if k not in ['results','missing_coverage']}|{'missing_coverage_count':len(missing) if missing is not None else None}));raise SystemExit(not summary['acceptance_passed'] or bool(missing))
 if __name__=='__main__':main()

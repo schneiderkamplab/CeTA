@@ -2,7 +2,7 @@
 """Fresh oracle-only replay, independent root audit, twice production check and HPC.
 All paths and outputs are inside the isolated worktree. No live parent executables.
 """
-import argparse,concurrent.futures,gzip,hashlib,json,math,os,pathlib,shutil,signal,subprocess,sys,time
+import argparse,concurrent.futures,gzip,hashlib,json,math,os,pathlib,shutil,signal,subprocess,sys,threading,time
 from run_logged import memory_used
 from root_audit import compare as audit_root
 from oracle_audit import audit as audit_oracle
@@ -19,10 +19,20 @@ def execute(cmd,cwd,env,prefix,timeout):
     start=time.monotonic();timed_out=False
     with prefix.with_suffix('.stdout').open('wb') as out,prefix.with_suffix('.stderr').open('wb') as err:
         proc=subprocess.Popen(cmd,cwd=cwd,env=env,stdout=out,stderr=err,start_new_session=True)
-        try:rc=proc.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            timed_out=True;os.killpg(proc.pid,signal.SIGKILL);rc=proc.wait()
-    return dict(command=cmd,returncode=rc,timed_out=timed_out,elapsed_seconds=time.monotonic()-start)
+        # A timed Popen.wait polls with exponential backoff on POSIX. Its
+        # up-to-50ms observation delay makes subsecond regression ratios noisy.
+        # Block on child completion and enforce the same process-group deadline
+        # with a cancellable watchdog instead.
+        def expire():
+            nonlocal timed_out
+            if proc.returncode is None:
+                timed_out=True
+                try:os.killpg(proc.pid,signal.SIGKILL)
+                except ProcessLookupError:pass
+        watchdog=threading.Timer(timeout,expire);watchdog.daemon=True;watchdog.start()
+        try:rc=proc.wait()
+        finally:watchdog.cancel();watchdog.join()
+    return dict(command=cmd,process_id=proc.pid,returncode=rc,timed_out=timed_out,elapsed_seconds=time.monotonic()-start,timing_method='blocking wait with cancellable process-group watchdog')
 def certified(result,prefix):return result['returncode']==0 and not result['timed_out'] and prefix.with_suffix('.stdout').read_text().strip()=='CERTIFIED'
 def main():
     p=argparse.ArgumentParser();p.add_argument('--stage',required=True);p.add_argument('--jobs',type=int,default=16);p.add_argument('--smoke',action='store_true')

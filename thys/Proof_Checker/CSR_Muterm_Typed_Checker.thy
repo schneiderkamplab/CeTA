@@ -1758,6 +1758,9 @@ proof (induct "muterm_recursive_proof_depth p" arbitrary: p i P
   next
     case (To_Trs_Proc x1)
     with less.prems show ?thesis by simp
+  next
+    case (Zantema_To_SRS_Proc x1)
+    with less.prems show ?thesis by simp
   qed
 qed
 

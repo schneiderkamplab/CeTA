@@ -1,0 +1,5773 @@
+{
+  "diagnostics": [],
+  "interpretation": "Isabelle-reported cumulated theory times; sums are not elapsed build wall time. Use the build receipt for wall time and exit status.",
+  "log_sha256": "3935339654ada820c7346025b78be32e3f29c93cf9b267fbe30928e770fcd774",
+  "reported_cumulated_seconds_by_session": {
+    "CSR_Checker_Base": 73.886,
+    "CSR_Checker_Core": 31.118,
+    "CSR_Checker_Extensions": 451.9309999999999,
+    "CSR_Guarded_List_Measure_Check": 121.82300000000001,
+    "CSR_Muterm_Ext": 167.00300000000001,
+    "CSR_Muterm_Typed_General_Redpair": 293.363,
+    "CSR_Muterm_Typed_Recursive_Redpair": 48.171,
+    "Code": 307.681,
+    "HOL-AFP": 2185.8390000000004,
+    "IsaFoR_1": 2029.083,
+    "IsaFoR_2": 1308.1789999999999,
+    "IsaFoR_3": 2858.1510000000007,
+    "Proof_Checker": 1057.6259999999997,
+    "Proof_Checker_Base": 496.581,
+    "RFC_Absolute_Ext": 371.29900000000004,
+    "Relative_ADP_Base_Dev": 0.211,
+    "Relative_ADP_Block_Dev": 0.464,
+    "Relative_ADP_Bridge_Dev": 0.202,
+    "Relative_ADP_Carrier_Dev": 0.216,
+    "Relative_ADP_Carrier_Refinement_Dev": 0.243,
+    "Relative_ADP_Carrier_Run_Dev": 0.372,
+    "Relative_ADP_Carrier_Step_Dev": 0.338,
+    "Relative_ADP_Ceta_Dev": 2694.514,
+    "Relative_ADP_Chain_Dev": 1.408,
+    "Relative_ADP_Checker_Dev": 37.298,
+    "Relative_ADP_Com_Reduction_Pair_Dev": 19.117,
+    "Relative_ADP_Concrete_Refinement_Dev": 0.511,
+    "Relative_ADP_Concrete_Transfer_Dev": 0.276,
+    "Relative_ADP_Construction_State_Dev": 0.167,
+    "Relative_ADP_Construction_Transition_Dev": 0.247,
+    "Relative_ADP_Context_Dev": 0.88,
+    "Relative_ADP_Context_State_Dev": 0.204,
+    "Relative_ADP_Context_Update_Dev": 0.216,
+    "Relative_ADP_Dependency_Graph_Dev": 13.067,
+    "Relative_ADP_Derelatification_Dev": 11.494,
+    "Relative_ADP_Direct_Criterion_Dev": 0.946,
+    "Relative_ADP_Global_Dev": 0.206,
+    "Relative_ADP_Hole_Descendant_Dev": 0.26,
+    "Relative_ADP_Hole_Transport_Dev": 0.47,
+    "Relative_ADP_Hole_Witness_Dev": 0.241,
+    "Relative_ADP_Inner_State_Dev": 45.712,
+    "Relative_ADP_Lift_Dev": 0.323,
+    "Relative_ADP_Multihole_Dev": 0.409,
+    "Relative_ADP_NT_Dev": 0.797,
+    "Relative_ADP_Origin_Dev": 0.997,
+    "Relative_ADP_Outer_State_Dev": 0.248,
+    "Relative_ADP_Path_Dev": 0.815,
+    "Relative_ADP_Prefix_Dev": 0.231,
+    "Relative_ADP_Processors_Dev": 0.408,
+    "Relative_ADP_RHS_Context_Dev": 0.359,
+    "Relative_ADP_Root_Base_Carrier_Dev": 0.173,
+    "Relative_ADP_Root_Base_State_Dev": 0.16,
+    "Relative_ADP_Root_Case_Dev": 0.196,
+    "Relative_ADP_Semantics_Dev": 47.663,
+    "Relative_ADP_Target_Decomposition_Dev": 0.246,
+    "Relative_ADP_Trace_Dev": 0.394,
+    "Relative_ADP_Witness_Parallel_Dev": 0.237
+  },
+  "session_reports": [
+    "Timing HOL-AFP (8 threads, 391.094s elapsed time, 2282.896s cpu time, 207.863s GC time, factor 5.84)",
+    "Finished HOL-AFP (0:08:42 elapsed time, 0:42:46 cpu time, factor 4.91)",
+    "Timing IsaFoR_1 (8 threads, 377.204s elapsed time, 1873.233s cpu time, 258.201s GC time, factor 4.97)",
+    "Finished IsaFoR_1 (0:08:00 elapsed time, 0:34:39 cpu time, factor 4.33)",
+    "Timing IsaFoR_2 (8 threads, 229.227s elapsed time, 1294.258s cpu time, 112.318s GC time, factor 5.65)",
+    "Finished IsaFoR_2 (0:05:23 elapsed time, 0:24:45 cpu time, factor 4.58)",
+    "Timing Proof_Checker_Base (8 threads, 451.939s elapsed time, 656.292s cpu time, 45.257s GC time, factor 1.45)",
+    "Finished Proof_Checker_Base (0:08:32 elapsed time, 0:12:56 cpu time, factor 1.52)",
+    "Timing CSR_Checker_Base (8 threads, 74.392s elapsed time, 88.265s cpu time, 8.139s GC time, factor 1.19)",
+    "Finished CSR_Checker_Base (0:01:54 elapsed time, 0:02:35 cpu time, factor 1.36)",
+    "Timing CSR_Checker_Core (8 threads, 31.251s elapsed time, 36.843s cpu time, 2.413s GC time, factor 1.18)",
+    "Finished CSR_Checker_Core (0:01:10 elapsed time, 0:01:43 cpu time, factor 1.47)",
+    "Timing CSR_Checker_Extensions (8 threads, 350.430s elapsed time, 584.543s cpu time, 38.909s GC time, factor 1.67)",
+    "Finished CSR_Checker_Extensions (0:06:41 elapsed time, 0:11:13 cpu time, factor 1.68)",
+    "Timing CSR_Muterm_Ext (8 threads, 168.317s elapsed time, 246.310s cpu time, 18.383s GC time, factor 1.46)",
+    "Finished CSR_Muterm_Ext (0:03:34 elapsed time, 0:05:22 cpu time, factor 1.51)",
+    "Timing CSR_Muterm_Typed_General_Redpair (8 threads, 293.983s elapsed time, 377.957s cpu time, 10.529s GC time, factor 1.29)",
+    "Finished CSR_Muterm_Typed_General_Redpair (0:05:35 elapsed time, 0:07:24 cpu time, factor 1.33)",
+    "Timing CSR_Muterm_Typed_Recursive_Redpair (8 threads, 48.613s elapsed time, 70.782s cpu time, 2.834s GC time, factor 1.46)",
+    "Finished CSR_Muterm_Typed_Recursive_Redpair (0:01:28 elapsed time, 0:02:13 cpu time, factor 1.51)",
+    "Timing IsaFoR_3 (8 threads, 1670.593s elapsed time, 3563.186s cpu time, 179.427s GC time, factor 2.13)",
+    "Finished IsaFoR_3 (0:30:30 elapsed time, 1:04:48 cpu time, factor 2.12)",
+    "Timing CSR_Guarded_List_Measure_Check (8 threads, 122.415s elapsed time, 140.204s cpu time, 9.138s GC time, factor 1.15)",
+    "Finished CSR_Guarded_List_Measure_Check (0:02:35 elapsed time, 0:03:17 cpu time, factor 1.27)",
+    "Timing Code (8 threads, 307.857s elapsed time, 313.080s cpu time, 11.398s GC time, factor 1.02)",
+    "Finished Code (0:05:12 elapsed time, 0:05:18 cpu time, factor 1.02)",
+    "Timing Relative_ADP_Semantics_Dev (8 threads, 47.708s elapsed time, 50.424s cpu time, 4.321s GC time, factor 1.06)",
+    "Finished Relative_ADP_Semantics_Dev (0:01:27 elapsed time, 0:01:53 cpu time, factor 1.30)",
+    "Timing Relative_ADP_Chain_Dev (8 threads, 1.465s elapsed time, 1.641s cpu time, 0.061s GC time, factor 1.12)",
+    "Finished Relative_ADP_Chain_Dev (0:00:46 elapsed time, 0:01:17 cpu time, factor 1.66)",
+    "Timing Relative_ADP_Origin_Dev (8 threads, 1.067s elapsed time, 1.296s cpu time, 0.093s GC time, factor 1.21)",
+    "Finished Relative_ADP_Origin_Dev (0:00:37 elapsed time, 0:01:03 cpu time, factor 1.69)",
+    "Timing Relative_ADP_Path_Dev (8 threads, 0.898s elapsed time, 1.127s cpu time, 0.069s GC time, factor 1.26)",
+    "Finished Relative_ADP_Path_Dev (0:00:40 elapsed time, 0:01:04 cpu time, factor 1.56)",
+    "Timing Relative_ADP_NT_Dev (8 threads, 0.867s elapsed time, 1.153s cpu time, 0.095s GC time, factor 1.33)",
+    "Finished Relative_ADP_NT_Dev (0:00:37 elapsed time, 0:01:02 cpu time, factor 1.67)",
+    "Timing Relative_ADP_Block_Dev (8 threads, 0.504s elapsed time, 0.607s cpu time, 0.044s GC time, factor 1.20)",
+    "Finished Relative_ADP_Block_Dev (0:00:33 elapsed time, 0:00:56 cpu time, factor 1.71)",
+    "Timing Relative_ADP_Global_Dev (8 threads, 0.234s elapsed time, 0.301s cpu time, 0.000s GC time, factor 1.29)",
+    "Finished Relative_ADP_Global_Dev (0:00:31 elapsed time, 0:00:52 cpu time, factor 1.64)",
+    "Timing Proof_Checker (8 threads, 494.475s elapsed time, 1294.996s cpu time, 93.716s GC time, factor 2.62)",
+    "Finished Proof_Checker (0:10:01 elapsed time, 0:25:08 cpu time, factor 2.51)",
+    "Timing Relative_ADP_Context_Dev (8 threads, 0.903s elapsed time, 1.013s cpu time, 0.049s GC time, factor 1.12)",
+    "Finished Relative_ADP_Context_Dev (0:00:36 elapsed time, 0:01:01 cpu time, factor 1.71)",
+    "Timing Relative_ADP_Trace_Dev (8 threads, 0.421s elapsed time, 0.523s cpu time, 0.041s GC time, factor 1.24)",
+    "Finished Relative_ADP_Trace_Dev (0:00:43 elapsed time, 0:01:08 cpu time, factor 1.58)",
+    "Timing Relative_ADP_Lift_Dev (8 threads, 0.347s elapsed time, 0.433s cpu time, 0.035s GC time, factor 1.25)",
+    "Finished Relative_ADP_Lift_Dev (0:00:29 elapsed time, 0:00:49 cpu time, factor 1.66)",
+    "Timing Relative_ADP_Bridge_Dev (8 threads, 0.243s elapsed time, 0.326s cpu time, 0.000s GC time, factor 1.34)",
+    "Finished Relative_ADP_Bridge_Dev (0:00:32 elapsed time, 0:00:53 cpu time, factor 1.63)",
+    "Timing Relative_ADP_Base_Dev (8 threads, 0.240s elapsed time, 0.330s cpu time, 0.000s GC time, factor 1.38)",
+    "Finished Relative_ADP_Base_Dev (0:00:27 elapsed time, 0:00:45 cpu time, factor 1.68)",
+    "Timing Relative_ADP_Prefix_Dev (8 threads, 0.279s elapsed time, 0.389s cpu time, 0.042s GC time, factor 1.39)",
+    "Finished Relative_ADP_Prefix_Dev (0:00:36 elapsed time, 0:00:58 cpu time, factor 1.62)",
+    "Timing Relative_ADP_Root_Case_Dev (8 threads, 0.225s elapsed time, 0.289s cpu time, 0.000s GC time, factor 1.28)",
+    "Finished Relative_ADP_Root_Case_Dev (0:00:32 elapsed time, 0:00:55 cpu time, factor 1.71)",
+    "Timing Relative_ADP_Multihole_Dev (8 threads, 0.436s elapsed time, 0.544s cpu time, 0.042s GC time, factor 1.25)",
+    "Finished Relative_ADP_Multihole_Dev (0:00:28 elapsed time, 0:00:46 cpu time, factor 1.64)",
+    "Timing Relative_ADP_Carrier_Dev (8 threads, 0.240s elapsed time, 0.322s cpu time, 0.000s GC time, factor 1.34)",
+    "Finished Relative_ADP_Carrier_Dev (0:00:27 elapsed time, 0:00:47 cpu time, factor 1.70)",
+    "Timing Relative_ADP_Context_State_Dev (8 threads, 0.234s elapsed time, 0.313s cpu time, 0.032s GC time, factor 1.34)",
+    "Finished Relative_ADP_Context_State_Dev (0:00:27 elapsed time, 0:00:45 cpu time, factor 1.68)",
+    "Timing Relative_ADP_Inner_State_Dev (8 threads, 45.745s elapsed time, 45.563s cpu time, 1.141s GC time, factor 1.00)",
+    "Finished Relative_ADP_Inner_State_Dev (0:01:18 elapsed time, 0:01:37 cpu time, factor 1.25)",
+    "Timing RFC_Absolute_Ext (8 threads, 371.571s elapsed time, 402.923s cpu time, 21.156s GC time, factor 1.08)",
+    "Finished RFC_Absolute_Ext (0:06:16 elapsed time, 0:06:49 cpu time, factor 1.09)",
+    "Timing Relative_ADP_Outer_State_Dev (8 threads, 0.272s elapsed time, 0.363s cpu time, 0.034s GC time, factor 1.33)",
+    "Finished Relative_ADP_Outer_State_Dev (0:00:35 elapsed time, 0:00:58 cpu time, factor 1.65)",
+    "Timing Relative_ADP_RHS_Context_Dev (8 threads, 0.382s elapsed time, 0.478s cpu time, 0.036s GC time, factor 1.25)",
+    "Finished Relative_ADP_RHS_Context_Dev (0:00:29 elapsed time, 0:00:51 cpu time, factor 1.74)",
+    "Timing Relative_ADP_Context_Update_Dev (8 threads, 0.236s elapsed time, 0.315s cpu time, 0.029s GC time, factor 1.33)",
+    "Finished Relative_ADP_Context_Update_Dev (0:00:28 elapsed time, 0:00:48 cpu time, factor 1.71)",
+    "Timing Relative_ADP_Concrete_Transfer_Dev (8 threads, 0.307s elapsed time, 0.408s cpu time, 0.030s GC time, factor 1.33)",
+    "Finished Relative_ADP_Concrete_Transfer_Dev (0:00:26 elapsed time, 0:00:45 cpu time, factor 1.70)",
+    "Timing Relative_ADP_Target_Decomposition_Dev (8 threads, 0.279s elapsed time, 0.358s cpu time, 0.027s GC time, factor 1.28)",
+    "Finished Relative_ADP_Target_Decomposition_Dev (0:00:25 elapsed time, 0:00:42 cpu time, factor 1.68)",
+    "Timing Relative_ADP_Root_Base_State_Dev (8 threads, 0.183s elapsed time, 0.262s cpu time, 0.000s GC time, factor 1.43)",
+    "Finished Relative_ADP_Root_Base_State_Dev (0:00:27 elapsed time, 0:00:46 cpu time, factor 1.69)",
+    "Timing Relative_ADP_Carrier_Refinement_Dev (8 threads, 0.272s elapsed time, 0.367s cpu time, 0.033s GC time, factor 1.35)",
+    "Finished Relative_ADP_Carrier_Refinement_Dev (0:00:35 elapsed time, 0:00:58 cpu time, factor 1.66)",
+    "Timing Relative_ADP_Hole_Transport_Dev (8 threads, 0.511s elapsed time, 0.639s cpu time, 0.036s GC time, factor 1.25)",
+    "Finished Relative_ADP_Hole_Transport_Dev (0:00:33 elapsed time, 0:01:00 cpu time, factor 1.81)",
+    "Timing Relative_ADP_Hole_Descendant_Dev (8 threads, 0.298s elapsed time, 0.393s cpu time, 0.029s GC time, factor 1.32)",
+    "Finished Relative_ADP_Hole_Descendant_Dev (0:00:28 elapsed time, 0:00:49 cpu time, factor 1.72)",
+    "Timing Relative_ADP_Hole_Witness_Dev (8 threads, 0.265s elapsed time, 0.349s cpu time, 0.031s GC time, factor 1.32)",
+    "Finished Relative_ADP_Hole_Witness_Dev (0:00:26 elapsed time, 0:00:45 cpu time, factor 1.73)",
+    "Timing Relative_ADP_Witness_Parallel_Dev (8 threads, 0.273s elapsed time, 0.360s cpu time, 0.033s GC time, factor 1.32)",
+    "Finished Relative_ADP_Witness_Parallel_Dev (0:00:27 elapsed time, 0:00:47 cpu time, factor 1.72)",
+    "Timing Relative_ADP_Concrete_Refinement_Dev (8 threads, 0.556s elapsed time, 0.681s cpu time, 0.028s GC time, factor 1.22)",
+    "Finished Relative_ADP_Concrete_Refinement_Dev (0:00:27 elapsed time, 0:00:46 cpu time, factor 1.67)",
+    "Timing Relative_ADP_Root_Base_Carrier_Dev (8 threads, 0.200s elapsed time, 0.269s cpu time, 0.000s GC time, factor 1.35)",
+    "Finished Relative_ADP_Root_Base_Carrier_Dev (0:00:27 elapsed time, 0:00:46 cpu time, factor 1.70)",
+    "Timing Relative_ADP_Construction_State_Dev (8 threads, 0.203s elapsed time, 0.259s cpu time, 0.000s GC time, factor 1.28)",
+    "Finished Relative_ADP_Construction_State_Dev (0:00:32 elapsed time, 0:00:54 cpu time, factor 1.66)",
+    "Timing Relative_ADP_Carrier_Step_Dev (8 threads, 0.375s elapsed time, 0.530s cpu time, 0.038s GC time, factor 1.41)",
+    "Finished Relative_ADP_Carrier_Step_Dev (0:00:35 elapsed time, 0:00:58 cpu time, factor 1.62)",
+    "Timing Relative_ADP_Construction_Transition_Dev (8 threads, 0.279s elapsed time, 0.375s cpu time, 0.037s GC time, factor 1.34)",
+    "Finished Relative_ADP_Construction_Transition_Dev (0:00:33 elapsed time, 0:00:54 cpu time, factor 1.62)",
+    "Timing Relative_ADP_Carrier_Run_Dev (8 threads, 0.416s elapsed time, 0.537s cpu time, 0.037s GC time, factor 1.29)",
+    "Finished Relative_ADP_Carrier_Run_Dev (0:00:33 elapsed time, 0:00:52 cpu time, factor 1.56)",
+    "Timing Relative_ADP_Direct_Criterion_Dev (8 threads, 1.019s elapsed time, 1.252s cpu time, 0.078s GC time, factor 1.23)",
+    "Finished Relative_ADP_Direct_Criterion_Dev (0:00:46 elapsed time, 0:01:13 cpu time, factor 1.59)",
+    "Timing Relative_ADP_Processors_Dev (8 threads, 0.436s elapsed time, 0.596s cpu time, 0.039s GC time, factor 1.37)",
+    "Finished Relative_ADP_Processors_Dev (0:00:29 elapsed time, 0:00:49 cpu time, factor 1.67)",
+    "Timing Relative_ADP_Dependency_Graph_Dev (8 threads, 13.665s elapsed time, 16.838s cpu time, 2.709s GC time, factor 1.23)",
+    "Finished Relative_ADP_Dependency_Graph_Dev (0:00:48 elapsed time, 0:01:15 cpu time, factor 1.57)",
+    "Timing Relative_ADP_Derelatification_Dev (8 threads, 11.600s elapsed time, 12.930s cpu time, 1.818s GC time, factor 1.11)",
+    "Finished Relative_ADP_Derelatification_Dev (0:00:45 elapsed time, 0:01:08 cpu time, factor 1.51)",
+    "Timing Relative_ADP_Com_Reduction_Pair_Dev (8 threads, 19.345s elapsed time, 20.252s cpu time, 0.757s GC time, factor 1.05)",
+    "Finished Relative_ADP_Com_Reduction_Pair_Dev (0:00:49 elapsed time, 0:01:09 cpu time, factor 1.40)",
+    "Timing Relative_ADP_Checker_Dev (8 threads, 37.520s elapsed time, 42.760s cpu time, 3.628s GC time, factor 1.14)",
+    "Finished Relative_ADP_Checker_Dev (0:01:12 elapsed time, 0:01:43 cpu time, factor 1.43)",
+    "Timing Relative_ADP_Ceta_Dev (8 threads, 1530.346s elapsed time, 3190.561s cpu time, 125.766s GC time, factor 2.08)",
+    "Finished Relative_ADP_Ceta_Dev (0:25:40 elapsed time, 0:53:37 cpu time, factor 2.09)",
+    "Finished at Sat Oct 17 12:55:50 GMT+2 2026"
+  ],
+  "theory_reports": [
+    {
+      "reported_cumulated_seconds": 0.896,
+      "session": "HOL-AFP",
+      "theory": "Containers.Extend_Partial_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.131,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Generator_Aux"
+    },
+    {
+      "reported_cumulated_seconds": 0.038,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Derive_Manager"
+    },
+    {
+      "reported_cumulated_seconds": 1.181,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Comparator"
+    },
+    {
+      "reported_cumulated_seconds": 0.252,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Equality_Generator"
+    },
+    {
+      "reported_cumulated_seconds": 0.102,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Equality_Instances"
+    },
+    {
+      "reported_cumulated_seconds": 0.034,
+      "session": "HOL-AFP",
+      "theory": "Containers.Equal"
+    },
+    {
+      "reported_cumulated_seconds": 0.046,
+      "session": "HOL-AFP",
+      "theory": "Containers.Closure_Set"
+    },
+    {
+      "reported_cumulated_seconds": 0.057,
+      "session": "HOL-AFP",
+      "theory": "Certification_Monads.Error_Syntax"
+    },
+    {
+      "reported_cumulated_seconds": 0.057,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Refine_Util_Bootstrap1"
+    },
+    {
+      "reported_cumulated_seconds": 0.16,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Mpat_Antiquot"
+    },
+    {
+      "reported_cumulated_seconds": 0.079,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Mk_Term_Antiquot"
+    },
+    {
+      "reported_cumulated_seconds": 0.335,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Refine_Util"
+    },
+    {
+      "reported_cumulated_seconds": 0.219,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Attr_Comb"
+    },
+    {
+      "reported_cumulated_seconds": 0.063,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Named_Sorted_Thms"
+    },
+    {
+      "reported_cumulated_seconds": 0.069,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Prio_List"
+    },
+    {
+      "reported_cumulated_seconds": 0.081,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Tagged_Solver"
+    },
+    {
+      "reported_cumulated_seconds": 0.262,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Anti_Unification"
+    },
+    {
+      "reported_cumulated_seconds": 0.211,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Foldi"
+    },
+    {
+      "reported_cumulated_seconds": 0.061,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Indep_Vars"
+    },
+    {
+      "reported_cumulated_seconds": 0.049,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Select_Solve"
+    },
+    {
+      "reported_cumulated_seconds": 0.048,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Mk_Record_Simp"
+    },
+    {
+      "reported_cumulated_seconds": 0.035,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Data"
+    },
+    {
+      "reported_cumulated_seconds": 0.55,
+      "session": "HOL-AFP",
+      "theory": "Fresh_Identifiers.Fresh"
+    },
+    {
+      "reported_cumulated_seconds": 0.551,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Fun_More2"
+    },
+    {
+      "reported_cumulated_seconds": 0.108,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Option_Util"
+    },
+    {
+      "reported_cumulated_seconds": 0.027,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Transitive_Closure_More"
+    },
+    {
+      "reported_cumulated_seconds": 0.107,
+      "session": "HOL-AFP",
+      "theory": "Collections.ICF_Tools"
+    },
+    {
+      "reported_cumulated_seconds": 0.094,
+      "session": "HOL-AFP",
+      "theory": "Collections.Ord_Code_Preproc"
+    },
+    {
+      "reported_cumulated_seconds": 0.073,
+      "session": "HOL-AFP",
+      "theory": "Collections.Record_Intf"
+    },
+    {
+      "reported_cumulated_seconds": 0.132,
+      "session": "HOL-AFP",
+      "theory": "Collections.Locale_Code"
+    },
+    {
+      "reported_cumulated_seconds": 0.057,
+      "session": "HOL-AFP",
+      "theory": "CAVA_Base.Statistics"
+    },
+    {
+      "reported_cumulated_seconds": 0.049,
+      "session": "HOL-AFP",
+      "theory": "Pure-ex.Guess"
+    },
+    {
+      "reported_cumulated_seconds": 2.055,
+      "session": "HOL-AFP",
+      "theory": "Containers.List_Fusion"
+    },
+    {
+      "reported_cumulated_seconds": 0.405,
+      "session": "HOL-AFP",
+      "theory": "Containers.Lexicographic_Order"
+    },
+    {
+      "reported_cumulated_seconds": 1.01,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Comparator_Generator"
+    },
+    {
+      "reported_cumulated_seconds": 0.488,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Compare"
+    },
+    {
+      "reported_cumulated_seconds": 0.321,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Compare_Generator"
+    },
+    {
+      "reported_cumulated_seconds": 0.396,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Compare_Instances"
+    },
+    {
+      "reported_cumulated_seconds": 1.143,
+      "session": "HOL-AFP",
+      "theory": "Containers.AssocList"
+    },
+    {
+      "reported_cumulated_seconds": 0.174,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Renaming2"
+    },
+    {
+      "reported_cumulated_seconds": 0.04,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Lists_are_Infinite"
+    },
+    {
+      "reported_cumulated_seconds": 0.109,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Renaming2_String"
+    },
+    {
+      "reported_cumulated_seconds": 2.151,
+      "session": "HOL-AFP",
+      "theory": "Trie.Trie"
+    },
+    {
+      "reported_cumulated_seconds": 0.207,
+      "session": "HOL-AFP",
+      "theory": "HOL-Library.Code_Bit_Shifts_for_Arithmetic"
+    },
+    {
+      "reported_cumulated_seconds": 0.059,
+      "session": "HOL-AFP",
+      "theory": "Real_Impl.Real_Impl_Auxiliary"
+    },
+    {
+      "reported_cumulated_seconds": 1.099,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.Seq"
+    },
+    {
+      "reported_cumulated_seconds": 3.216,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Term"
+    },
+    {
+      "reported_cumulated_seconds": 0.46,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Simplex_Auxiliary"
+    },
+    {
+      "reported_cumulated_seconds": 0.47,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Missing_Misc"
+    },
+    {
+      "reported_cumulated_seconds": 0.177,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Seq_More"
+    },
+    {
+      "reported_cumulated_seconds": 0.522,
+      "session": "HOL-AFP",
+      "theory": "Containers.Containers_Auxiliary"
+    },
+    {
+      "reported_cumulated_seconds": 0.993,
+      "session": "HOL-AFP",
+      "theory": "Certification_Monads.Error_Monad"
+    },
+    {
+      "reported_cumulated_seconds": 0.174,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Status"
+    },
+    {
+      "reported_cumulated_seconds": 1.311,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Rel_Chain"
+    },
+    {
+      "reported_cumulated_seconds": 2.223,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Missing_Ring"
+    },
+    {
+      "reported_cumulated_seconds": 0.601,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Unifiers"
+    },
+    {
+      "reported_cumulated_seconds": 0.297,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Term_Pair_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 0.354,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Option_Monad"
+    },
+    {
+      "reported_cumulated_seconds": 4.869,
+      "session": "HOL-AFP",
+      "theory": "Binomial-Heaps.BinomialHeap"
+    },
+    {
+      "reported_cumulated_seconds": 0.29,
+      "session": "HOL-AFP",
+      "theory": "Containers.Containers_Generator"
+    },
+    {
+      "reported_cumulated_seconds": 0.963,
+      "session": "HOL-AFP",
+      "theory": "Containers.Collection_Eq"
+    },
+    {
+      "reported_cumulated_seconds": 0.946,
+      "session": "HOL-AFP",
+      "theory": "Containers.Collection_Enum"
+    },
+    {
+      "reported_cumulated_seconds": 0.54,
+      "session": "HOL-AFP",
+      "theory": "Certification_Monads.Check_Monad"
+    },
+    {
+      "reported_cumulated_seconds": 1.721,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Subsumption"
+    },
+    {
+      "reported_cumulated_seconds": 1.901,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Arithmetic_Record_Based"
+    },
+    {
+      "reported_cumulated_seconds": 0.913,
+      "session": "HOL-AFP",
+      "theory": "Containers.DList_Set"
+    },
+    {
+      "reported_cumulated_seconds": 1.359,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.Bit_Comprehension"
+    },
+    {
+      "reported_cumulated_seconds": 0.057,
+      "session": "HOL-AFP",
+      "theory": "Native_Word.Code_Target_Word"
+    },
+    {
+      "reported_cumulated_seconds": 0.029,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Code_Set"
+    },
+    {
+      "reported_cumulated_seconds": 8.27,
+      "session": "HOL-AFP",
+      "theory": "Efficient-Mergesort.Efficient_Sort"
+    },
+    {
+      "reported_cumulated_seconds": 9.886,
+      "session": "HOL-AFP",
+      "theory": "Complete_Non_Orders.Binary_Relations"
+    },
+    {
+      "reported_cumulated_seconds": 1.677,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.More_Divides"
+    },
+    {
+      "reported_cumulated_seconds": 0.433,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Compare_Order_Instances"
+    },
+    {
+      "reported_cumulated_seconds": 3.424,
+      "session": "HOL-AFP",
+      "theory": "FinFun.FinFun"
+    },
+    {
+      "reported_cumulated_seconds": 0.271,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Bij_Nat"
+    },
+    {
+      "reported_cumulated_seconds": 2.976,
+      "session": "HOL-AFP",
+      "theory": "Containers.RBT_ext"
+    },
+    {
+      "reported_cumulated_seconds": 1.349,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.Signed_Division_Word"
+    },
+    {
+      "reported_cumulated_seconds": 1.22,
+      "session": "HOL-AFP",
+      "theory": "Deriving.RBT_Compare_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.133,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Countable_Generator"
+    },
+    {
+      "reported_cumulated_seconds": 1.257,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.SubList"
+    },
+    {
+      "reported_cumulated_seconds": 14.065,
+      "session": "HOL-AFP",
+      "theory": "Finger-Trees.FingerTree"
+    },
+    {
+      "reported_cumulated_seconds": 0.252,
+      "session": "HOL-AFP",
+      "theory": "Sorted_Terms.FinFun_RBT_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.181,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Cancel_Card_Constraint"
+    },
+    {
+      "reported_cumulated_seconds": 0.055,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Code_Abort_Gcd"
+    },
+    {
+      "reported_cumulated_seconds": 0.401,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Code_Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 14.542,
+      "session": "HOL-AFP",
+      "theory": "Binomial-Heaps.SkewBinomialHeap"
+    },
+    {
+      "reported_cumulated_seconds": 0.523,
+      "session": "HOL-AFP",
+      "theory": "Collections.DatRef"
+    },
+    {
+      "reported_cumulated_seconds": 0.495,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.Dichotomous_Lazard"
+    },
+    {
+      "reported_cumulated_seconds": 1.448,
+      "session": "HOL-AFP",
+      "theory": "Cauchy.CauchysMeanTheorem"
+    },
+    {
+      "reported_cumulated_seconds": 0.316,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Improved_Code_Equations"
+    },
+    {
+      "reported_cumulated_seconds": 6.324,
+      "session": "HOL-AFP",
+      "theory": "Complete_Non_Orders.Well_Relations"
+    },
+    {
+      "reported_cumulated_seconds": 0.894,
+      "session": "HOL-AFP",
+      "theory": "Complete_Non_Orders.Directedness"
+    },
+    {
+      "reported_cumulated_seconds": 1.866,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Conjugate"
+    },
+    {
+      "reported_cumulated_seconds": 3.036,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Missing_Unsorted"
+    },
+    {
+      "reported_cumulated_seconds": 1.323,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Neville_Aitken_Interpolation"
+    },
+    {
+      "reported_cumulated_seconds": 1.718,
+      "session": "HOL-AFP",
+      "theory": "Complete_Non_Orders.Complete_Relations"
+    },
+    {
+      "reported_cumulated_seconds": 2.171,
+      "session": "HOL-AFP",
+      "theory": "Cayley_Hamilton.Square_Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 1.264,
+      "session": "HOL-AFP",
+      "theory": "Cayley_Hamilton.Cayley_Hamilton"
+    },
+    {
+      "reported_cumulated_seconds": 0.593,
+      "session": "HOL-AFP",
+      "theory": "Sqrt_Babylonian.Sqrt_Babylonian_Auxiliary"
+    },
+    {
+      "reported_cumulated_seconds": 0.382,
+      "session": "HOL-AFP",
+      "theory": "Sqrt_Babylonian.Log_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.716,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Is_Rat_To_Rat"
+    },
+    {
+      "reported_cumulated_seconds": 3.331,
+      "session": "HOL-AFP",
+      "theory": "Sturm_Sequences.Misc_Polynomial"
+    },
+    {
+      "reported_cumulated_seconds": 0.048,
+      "session": "HOL-AFP",
+      "theory": "Sturm_Sequences.Sturm_Library"
+    },
+    {
+      "reported_cumulated_seconds": 3.517,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Missing_Polynomial"
+    },
+    {
+      "reported_cumulated_seconds": 15.862,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Misc"
+    },
+    {
+      "reported_cumulated_seconds": 0.527,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Refine_Lib"
+    },
+    {
+      "reported_cumulated_seconds": 0.064,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Phases"
+    },
+    {
+      "reported_cumulated_seconds": 0.108,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Tagging"
+    },
+    {
+      "reported_cumulated_seconds": 1.401,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Relators"
+    },
+    {
+      "reported_cumulated_seconds": 1.714,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Simplex_Algebra"
+    },
+    {
+      "reported_cumulated_seconds": 0.85,
+      "session": "HOL-AFP",
+      "theory": "Collections.Sorted_List_Operations"
+    },
+    {
+      "reported_cumulated_seconds": 1.99,
+      "session": "HOL-AFP",
+      "theory": "Sqrt_Babylonian.NthRoot_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.732,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Karatsuba_Multiplication"
+    },
+    {
+      "reported_cumulated_seconds": 0.105,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Param_Tool"
+    },
+    {
+      "reported_cumulated_seconds": 3.436,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetIterator"
+    },
+    {
+      "reported_cumulated_seconds": 18.947,
+      "session": "HOL-AFP",
+      "theory": "Containers.Set_Linorder"
+    },
+    {
+      "reported_cumulated_seconds": 1.866,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Param_HOL"
+    },
+    {
+      "reported_cumulated_seconds": 0.026,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Parametricity"
+    },
+    {
+      "reported_cumulated_seconds": 0.549,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Id_Ops"
+    },
+    {
+      "reported_cumulated_seconds": 0.229,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Fix_Rel"
+    },
+    {
+      "reported_cumulated_seconds": 0.152,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Translate"
+    },
+    {
+      "reported_cumulated_seconds": 0.05,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Gen_Algo"
+    },
+    {
+      "reported_cumulated_seconds": 0.057,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Relator_Interface"
+    },
+    {
+      "reported_cumulated_seconds": 0.189,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Tool"
+    },
+    {
+      "reported_cumulated_seconds": 3.962,
+      "session": "HOL-AFP",
+      "theory": "CAVA_Automata.Digraph_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 0.329,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Order_Polynomial"
+    },
+    {
+      "reported_cumulated_seconds": 0.618,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Fundamental_Theorem_Algebra_Factorized"
+    },
+    {
+      "reported_cumulated_seconds": 0.158,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Polynomial_Irreducibility"
+    },
+    {
+      "reported_cumulated_seconds": 0.857,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Missing_Polynomial_Factorial"
+    },
+    {
+      "reported_cumulated_seconds": 7.23,
+      "session": "HOL-AFP",
+      "theory": "Sturm_Sequences.Sturm_Theorem"
+    },
+    {
+      "reported_cumulated_seconds": 1.974,
+      "session": "HOL-AFP",
+      "theory": "Containers.Collection_Order"
+    },
+    {
+      "reported_cumulated_seconds": 17.478,
+      "session": "HOL-AFP",
+      "theory": "Deriving.RBT_Comparator_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.899,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetIteratorOperations"
+    },
+    {
+      "reported_cumulated_seconds": 0.621,
+      "session": "HOL-AFP",
+      "theory": "Collections.Proper_Iterator"
+    },
+    {
+      "reported_cumulated_seconds": 0.116,
+      "session": "HOL-AFP",
+      "theory": "Collections.It_to_It"
+    },
+    {
+      "reported_cumulated_seconds": 0.671,
+      "session": "HOL-AFP",
+      "theory": "Collections.Assoc_List"
+    },
+    {
+      "reported_cumulated_seconds": 0.218,
+      "session": "HOL-AFP",
+      "theory": "Collections.Dlist_add"
+    },
+    {
+      "reported_cumulated_seconds": 0.613,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.Coeff_Int"
+    },
+    {
+      "reported_cumulated_seconds": 0.319,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Lagrange_Interpolation"
+    },
+    {
+      "reported_cumulated_seconds": 4.007,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Polynomial_Record_Based"
+    },
+    {
+      "reported_cumulated_seconds": 1.438,
+      "session": "HOL-AFP",
+      "theory": "Containers.RBT_Mapping2"
+    },
+    {
+      "reported_cumulated_seconds": 1.661,
+      "session": "HOL-AFP",
+      "theory": "Containers.RBT_Set2"
+    },
+    {
+      "reported_cumulated_seconds": 2.625,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Autoref_Bindings_HOL"
+    },
+    {
+      "reported_cumulated_seconds": 0.043,
+      "session": "HOL-AFP",
+      "theory": "Automatic_Refinement.Automatic_Refinement"
+    },
+    {
+      "reported_cumulated_seconds": 1.388,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetIteratorGA"
+    },
+    {
+      "reported_cumulated_seconds": 0.427,
+      "session": "HOL-AFP",
+      "theory": "Collections.Idx_Iterator"
+    },
+    {
+      "reported_cumulated_seconds": 0.462,
+      "session": "HOL-AFP",
+      "theory": "Matrix.Utility"
+    },
+    {
+      "reported_cumulated_seconds": 0.474,
+      "session": "HOL-AFP",
+      "theory": "Transitive-Closure.RBT_Map_Set_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 0.509,
+      "session": "HOL-AFP",
+      "theory": "Collections.Trie_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.144,
+      "session": "HOL-AFP",
+      "theory": "Collections.Trie2"
+    },
+    {
+      "reported_cumulated_seconds": 0.927,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Chinese_Remainder_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 2.149,
+      "session": "HOL-AFP",
+      "theory": "List-Index.List_Index"
+    },
+    {
+      "reported_cumulated_seconds": 0.097,
+      "session": "HOL-AFP",
+      "theory": "LP_Duality.Minimum_Maximum"
+    },
+    {
+      "reported_cumulated_seconds": 2.565,
+      "session": "HOL-AFP",
+      "theory": "Sturm_Sequences.Sturm_Method"
+    },
+    {
+      "reported_cumulated_seconds": 0.12,
+      "session": "HOL-AFP",
+      "theory": "Partial_Function_MR.Partial_Function_MR"
+    },
+    {
+      "reported_cumulated_seconds": 4.354,
+      "session": "HOL-AFP",
+      "theory": "Collections.Intf_Comp"
+    },
+    {
+      "reported_cumulated_seconds": 0.184,
+      "session": "HOL-AFP",
+      "theory": "Collections.Gen_Comp"
+    },
+    {
+      "reported_cumulated_seconds": 1.806,
+      "session": "HOL-AFP",
+      "theory": "Open_Induction.Restricted_Predicates"
+    },
+    {
+      "reported_cumulated_seconds": 16.688,
+      "session": "HOL-AFP",
+      "theory": "Echelon_Form.Rings2"
+    },
+    {
+      "reported_cumulated_seconds": 4.827,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Abstract_Linear_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 0.685,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Linear_Poly_Maps"
+    },
+    {
+      "reported_cumulated_seconds": 1.01,
+      "session": "HOL-AFP",
+      "theory": "Simplex.QDelta"
+    },
+    {
+      "reported_cumulated_seconds": 0.034,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Divmod_Int"
+    },
+    {
+      "reported_cumulated_seconds": 0.247,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Precomputation"
+    },
+    {
+      "reported_cumulated_seconds": 0.115,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Singleton_List"
+    },
+    {
+      "reported_cumulated_seconds": 0.066,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Finite_IDL_Solver_Interface"
+    },
+    {
+      "reported_cumulated_seconds": 0.998,
+      "session": "HOL-AFP",
+      "theory": "Certification_Monads.Strict_Sum"
+    },
+    {
+      "reported_cumulated_seconds": 0.348,
+      "session": "HOL-AFP",
+      "theory": "Rank_Nullity_Theorem.Dual_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.023,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Chapter"
+    },
+    {
+      "reported_cumulated_seconds": 0.09,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Mono_Prover"
+    },
+    {
+      "reported_cumulated_seconds": 1.074,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Misc"
+    },
+    {
+      "reported_cumulated_seconds": 10.123,
+      "session": "HOL-AFP",
+      "theory": "Collections.Diff_Array"
+    },
+    {
+      "reported_cumulated_seconds": 2.731,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Multiset_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 2.767,
+      "session": "HOL-AFP",
+      "theory": "Rank_Nullity_Theorem.Mod_Type"
+    },
+    {
+      "reported_cumulated_seconds": 6.423,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Missing_List"
+    },
+    {
+      "reported_cumulated_seconds": 2.811,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Ring_Hom"
+    },
+    {
+      "reported_cumulated_seconds": 0.167,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.FOR_Preliminaries"
+    },
+    {
+      "reported_cumulated_seconds": 0.365,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Missing_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 0.653,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.More_Missing_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 9.719,
+      "session": "HOL-AFP",
+      "theory": "Sqrt_Babylonian.Sqrt_Babylonian"
+    },
+    {
+      "reported_cumulated_seconds": 0.944,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_Array_Stack"
+    },
+    {
+      "reported_cumulated_seconds": 0.67,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Explicit_Roots"
+    },
+    {
+      "reported_cumulated_seconds": 1.33,
+      "session": "HOL-AFP",
+      "theory": "Real_Impl.Prime_Product"
+    },
+    {
+      "reported_cumulated_seconds": 2.288,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Ring_Hom_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 5.063,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Sublist_Iteration"
+    },
+    {
+      "reported_cumulated_seconds": 5.484,
+      "session": "HOL-AFP",
+      "theory": "Real_Impl.Real_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.263,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Dvd_Int_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 3.001,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Gauss_Lemma"
+    },
+    {
+      "reported_cumulated_seconds": 0.21,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Gcd_Rat_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 8.123,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Unique_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 5.508,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Roots_Unity"
+    },
+    {
+      "reported_cumulated_seconds": 19.022,
+      "session": "HOL-AFP",
+      "theory": "Containers.Set_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.302,
+      "session": "HOL-AFP",
+      "theory": "Containers.Mapping_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.235,
+      "session": "HOL-AFP",
+      "theory": "Containers.Map_To_Mapping"
+    },
+    {
+      "reported_cumulated_seconds": 0.045,
+      "session": "HOL-AFP",
+      "theory": "Containers.Containers"
+    },
+    {
+      "reported_cumulated_seconds": 1.29,
+      "session": "HOL-AFP",
+      "theory": "Rank_Nullity_Theorem.Miscellaneous"
+    },
+    {
+      "reported_cumulated_seconds": 0.753,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Rref"
+    },
+    {
+      "reported_cumulated_seconds": 14.759,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Finite_IDL_Solver"
+    },
+    {
+      "reported_cumulated_seconds": 0.208,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.RefineG_Transfer"
+    },
+    {
+      "reported_cumulated_seconds": 0.149,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.RefineG_Assert"
+    },
+    {
+      "reported_cumulated_seconds": 0.775,
+      "session": "HOL-AFP",
+      "theory": "Rank_Nullity_Theorem.Fundamental_Subspaces"
+    },
+    {
+      "reported_cumulated_seconds": 4.706,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Newton_Interpolation"
+    },
+    {
+      "reported_cumulated_seconds": 14.431,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Prime_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 1.416,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.RefineG_Domain"
+    },
+    {
+      "reported_cumulated_seconds": 0.467,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.RefineG_Recursion"
+    },
+    {
+      "reported_cumulated_seconds": 0.368,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.RefineG_While"
+    },
+    {
+      "reported_cumulated_seconds": 16.502,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 1.515,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Interpolation.Polynomial_Interpolation"
+    },
+    {
+      "reported_cumulated_seconds": 7.478,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Square_Free_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 0.511,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Rational_Root_Test"
+    },
+    {
+      "reported_cumulated_seconds": 4.487,
+      "session": "HOL-AFP",
+      "theory": "Regular-Sets.Regular_Set"
+    },
+    {
+      "reported_cumulated_seconds": 2.378,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Det"
+    },
+    {
+      "reported_cumulated_seconds": 3.488,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Elementary_Operations"
+    },
+    {
+      "reported_cumulated_seconds": 3.959,
+      "session": "HOL-AFP",
+      "theory": "Rank_Nullity_Theorem.Dim_Formula"
+    },
+    {
+      "reported_cumulated_seconds": 0.132,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Rank"
+    },
+    {
+      "reported_cumulated_seconds": 1.854,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix_IArray_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.793,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Kronecker_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 2.734,
+      "session": "HOL-AFP",
+      "theory": "Regular-Sets.Regular_Exp"
+    },
+    {
+      "reported_cumulated_seconds": 0.166,
+      "session": "HOL-AFP",
+      "theory": "Regular-Sets.Relation_Interpretation"
+    },
+    {
+      "reported_cumulated_seconds": 0.809,
+      "session": "HOL-AFP",
+      "theory": "Show.Show"
+    },
+    {
+      "reported_cumulated_seconds": 1.409,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Ring_Hom_Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 0.482,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Show_Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 1.91,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix_Carrier_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.723,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Missing_Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 0.398,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Sum_Vec_Set"
+    },
+    {
+      "reported_cumulated_seconds": 0.942,
+      "session": "HOL-AFP",
+      "theory": "Certification_Monads.Parser_Monad"
+    },
+    {
+      "reported_cumulated_seconds": 0.61,
+      "session": "HOL-AFP",
+      "theory": "Show.Show_Instances"
+    },
+    {
+      "reported_cumulated_seconds": 0.642,
+      "session": "HOL-AFP",
+      "theory": "Show.Show_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 3.087,
+      "session": "HOL-AFP",
+      "theory": "Sorted_Terms.Sorted_Sets"
+    },
+    {
+      "reported_cumulated_seconds": 1.301,
+      "session": "HOL-AFP",
+      "theory": "Show.Number_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 2.987,
+      "session": "HOL-AFP",
+      "theory": "Regular-Sets.NDerivative"
+    },
+    {
+      "reported_cumulated_seconds": 5.886,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 0.474,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Leof"
+    },
+    {
+      "reported_cumulated_seconds": 0.16,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Heuristics"
+    },
+    {
+      "reported_cumulated_seconds": 0.341,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_More_Comb"
+    },
+    {
+      "reported_cumulated_seconds": 0.665,
+      "session": "HOL-AFP",
+      "theory": "Show.Shows_Literal"
+    },
+    {
+      "reported_cumulated_seconds": 1.909,
+      "session": "HOL-AFP",
+      "theory": "Regular-Sets.Equivalence_Checking"
+    },
+    {
+      "reported_cumulated_seconds": 1.2,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Pfun"
+    },
+    {
+      "reported_cumulated_seconds": 3.13,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Position"
+    },
+    {
+      "reported_cumulated_seconds": 8.93,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Gauss_Jordan_Elimination"
+    },
+    {
+      "reported_cumulated_seconds": 3.242,
+      "session": "HOL-AFP",
+      "theory": "Polynomial_Factorization.Rational_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 2.241,
+      "session": "HOL-AFP",
+      "theory": "Regular-Sets.Regexp_Method"
+    },
+    {
+      "reported_cumulated_seconds": 3.31,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Column_Operations"
+    },
+    {
+      "reported_cumulated_seconds": 2.273,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Shows_Literal_Matrix"
+    },
+    {
+      "reported_cumulated_seconds": 8.188,
+      "session": "HOL-AFP",
+      "theory": "XML.Xml"
+    },
+    {
+      "reported_cumulated_seconds": 0.717,
+      "session": "HOL-AFP",
+      "theory": "Containers.Compatibility_Containers_Regular_Sets"
+    },
+    {
+      "reported_cumulated_seconds": 11.1,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Gauss_Jordan"
+    },
+    {
+      "reported_cumulated_seconds": 4.207,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Gauss_Jordan_IArray_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.216,
+      "session": "HOL-AFP",
+      "theory": "Show.Show_Real"
+    },
+    {
+      "reported_cumulated_seconds": 0.61,
+      "session": "HOL-AFP",
+      "theory": "Transitive-Closure-II.RTrancl"
+    },
+    {
+      "reported_cumulated_seconds": 5.812,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_While"
+    },
+    {
+      "reported_cumulated_seconds": 0.458,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Transfer"
+    },
+    {
+      "reported_cumulated_seconds": 0.153,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Automation"
+    },
+    {
+      "reported_cumulated_seconds": 0.051,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Autoref_Monadic"
+    },
+    {
+      "reported_cumulated_seconds": 0.313,
+      "session": "HOL-AFP",
+      "theory": "Show.Show_Complex"
+    },
+    {
+      "reported_cumulated_seconds": 3.005,
+      "session": "HOL-AFP",
+      "theory": "XML.Xmlt"
+    },
+    {
+      "reported_cumulated_seconds": 4.743,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Linear_Maps"
+    },
+    {
+      "reported_cumulated_seconds": 7.098,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.Abstract_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 1.552,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.SN_Orders"
+    },
+    {
+      "reported_cumulated_seconds": 1.753,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Gauss_Jordan_PA"
+    },
+    {
+      "reported_cumulated_seconds": 0.963,
+      "session": "HOL-AFP",
+      "theory": "Gauss_Jordan.Determinants2"
+    },
+    {
+      "reported_cumulated_seconds": 0.848,
+      "session": "HOL-AFP",
+      "theory": "Echelon_Form.Cayley_Hamilton_Compatible"
+    },
+    {
+      "reported_cumulated_seconds": 0.901,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Abstract_Matching"
+    },
+    {
+      "reported_cumulated_seconds": 0.177,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.Abstract_Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.411,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Matrix_Record_Based"
+    },
+    {
+      "reported_cumulated_seconds": 2.751,
+      "session": "HOL-AFP",
+      "theory": "Sorted_Terms.Sorted_Terms"
+    },
+    {
+      "reported_cumulated_seconds": 1.4,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Abstract_Unification"
+    },
+    {
+      "reported_cumulated_seconds": 3.868,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.SN_Order_Carrier"
+    },
+    {
+      "reported_cumulated_seconds": 5.005,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.Relative_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 0.242,
+      "session": "HOL-AFP",
+      "theory": "Knuth_Bendix_Order.Order_Pair"
+    },
+    {
+      "reported_cumulated_seconds": 0.095,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.List_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.198,
+      "session": "HOL-AFP",
+      "theory": "Abstract-Rewriting.Relation_Closure"
+    },
+    {
+      "reported_cumulated_seconds": 1.707,
+      "session": "HOL-AFP",
+      "theory": "Matrix.Ordered_Semiring"
+    },
+    {
+      "reported_cumulated_seconds": 15.097,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Foreach"
+    },
+    {
+      "reported_cumulated_seconds": 5.563,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Subterm_and_Context"
+    },
+    {
+      "reported_cumulated_seconds": 2.908,
+      "session": "HOL-AFP",
+      "theory": "Refine_Monadic.Refine_Monadic"
+    },
+    {
+      "reported_cumulated_seconds": 1.001,
+      "session": "HOL-AFP",
+      "theory": "Collections.Gen_Iterator"
+    },
+    {
+      "reported_cumulated_seconds": 0.372,
+      "session": "HOL-AFP",
+      "theory": "Collections.Iterator"
+    },
+    {
+      "reported_cumulated_seconds": 0.347,
+      "session": "HOL-AFP",
+      "theory": "Collections.Intf_Set"
+    },
+    {
+      "reported_cumulated_seconds": 0.369,
+      "session": "HOL-AFP",
+      "theory": "Collections.Intf_Map"
+    },
+    {
+      "reported_cumulated_seconds": 0.171,
+      "session": "HOL-AFP",
+      "theory": "Collections.Array_Iterator"
+    },
+    {
+      "reported_cumulated_seconds": 10.535,
+      "session": "HOL-AFP",
+      "theory": "Knuth_Bendix_Order.Lexicographic_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 4.163,
+      "session": "HOL-AFP",
+      "theory": "Efficient_Weighted_Path_Order.Indexed_Term"
+    },
+    {
+      "reported_cumulated_seconds": 0.218,
+      "session": "HOL-AFP",
+      "theory": "Collections.ICF_Spec_Base"
+    },
+    {
+      "reported_cumulated_seconds": 22.483,
+      "session": "HOL-AFP",
+      "theory": "Real_Impl.Real_Unique_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.14,
+      "session": "HOL-AFP",
+      "theory": "Collections.Gen_Map"
+    },
+    {
+      "reported_cumulated_seconds": 1.259,
+      "session": "HOL-AFP",
+      "theory": "Collections.RBT_add"
+    },
+    {
+      "reported_cumulated_seconds": 0.851,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListSpec"
+    },
+    {
+      "reported_cumulated_seconds": 1.169,
+      "session": "HOL-AFP",
+      "theory": "Collections.AnnotatedListSpec"
+    },
+    {
+      "reported_cumulated_seconds": 0.53,
+      "session": "HOL-AFP",
+      "theory": "Collections.PrioSpec"
+    },
+    {
+      "reported_cumulated_seconds": 0.584,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListGA"
+    },
+    {
+      "reported_cumulated_seconds": 0.866,
+      "session": "HOL-AFP",
+      "theory": "Collections.Fifo"
+    },
+    {
+      "reported_cumulated_seconds": 0.737,
+      "session": "HOL-AFP",
+      "theory": "Collections.BinoPrioImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.348,
+      "session": "HOL-AFP",
+      "theory": "Collections.FTAnnotatedListImpl"
+    },
+    {
+      "reported_cumulated_seconds": 25.725,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Determinant"
+    },
+    {
+      "reported_cumulated_seconds": 2.323,
+      "session": "HOL-AFP",
+      "theory": "Collections.MapSpec"
+    },
+    {
+      "reported_cumulated_seconds": 0.802,
+      "session": "HOL-AFP",
+      "theory": "Collections.SkewPrioImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.255,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.Resultant_Prelim"
+    },
+    {
+      "reported_cumulated_seconds": 0.61,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.More_Homomorphisms"
+    },
+    {
+      "reported_cumulated_seconds": 0.523,
+      "session": "HOL-AFP",
+      "theory": "Collections.PrioUniqueSpec"
+    },
+    {
+      "reported_cumulated_seconds": 2.055,
+      "session": "HOL-AFP",
+      "theory": "Collections.PrioByAnnotatedList"
+    },
+    {
+      "reported_cumulated_seconds": 0.745,
+      "session": "HOL-AFP",
+      "theory": "Collections.FTPrioImpl"
+    },
+    {
+      "reported_cumulated_seconds": 3.496,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Char_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 2.35,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetSpec"
+    },
+    {
+      "reported_cumulated_seconds": 4.906,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Unique_Factorization_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 0.701,
+      "session": "HOL-AFP",
+      "theory": "Collections.Algos"
+    },
+    {
+      "reported_cumulated_seconds": 0.564,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetIndex"
+    },
+    {
+      "reported_cumulated_seconds": 0.385,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetIteratorCollectionsGA"
+    },
+    {
+      "reported_cumulated_seconds": 4.677,
+      "session": "HOL-AFP",
+      "theory": "Collections.PrioUniqueByAnnotatedList"
+    },
+    {
+      "reported_cumulated_seconds": 0.754,
+      "session": "HOL-AFP",
+      "theory": "Collections.FTPrioUniqueImpl"
+    },
+    {
+      "reported_cumulated_seconds": 3.097,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Jordan_Normal_Form"
+    },
+    {
+      "reported_cumulated_seconds": 2.0,
+      "session": "HOL-AFP",
+      "theory": "Algebraic_Numbers.Bivariate_Polynomials"
+    },
+    {
+      "reported_cumulated_seconds": 1.034,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_Array_Map"
+    },
+    {
+      "reported_cumulated_seconds": 3.751,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Poly_Mod"
+    },
+    {
+      "reported_cumulated_seconds": 1.688,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_List_Map"
+    },
+    {
+      "reported_cumulated_seconds": 2.988,
+      "session": "HOL-AFP",
+      "theory": "Collections.MapGA"
+    },
+    {
+      "reported_cumulated_seconds": 4.463,
+      "session": "HOL-AFP",
+      "theory": "Algebraic_Numbers.Resultant"
+    },
+    {
+      "reported_cumulated_seconds": 3.373,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetGA"
+    },
+    {
+      "reported_cumulated_seconds": 1.181,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListSetImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.169,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListMapImpl"
+    },
+    {
+      "reported_cumulated_seconds": 2.224,
+      "session": "HOL-AFP",
+      "theory": "Collections.ArrayMapImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.728,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListMapImpl_Invar"
+    },
+    {
+      "reported_cumulated_seconds": 1.205,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListSetImpl_Invar"
+    },
+    {
+      "reported_cumulated_seconds": 1.603,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListSetImpl_NotDist"
+    },
+    {
+      "reported_cumulated_seconds": 1.221,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetByMap"
+    },
+    {
+      "reported_cumulated_seconds": 3.545,
+      "session": "HOL-AFP",
+      "theory": "Collections.TrieMapImpl"
+    },
+    {
+      "reported_cumulated_seconds": 0.306,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_Cfun_Set"
+    },
+    {
+      "reported_cumulated_seconds": 0.638,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_Bit_Set"
+    },
+    {
+      "reported_cumulated_seconds": 0.718,
+      "session": "HOL-AFP",
+      "theory": "Collections.Gen_Map2Set"
+    },
+    {
+      "reported_cumulated_seconds": 2.469,
+      "session": "HOL-AFP",
+      "theory": "Collections.ListSetImpl_Sorted"
+    },
+    {
+      "reported_cumulated_seconds": 1.77,
+      "session": "HOL-AFP",
+      "theory": "Collections.RBTMapImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.162,
+      "session": "HOL-AFP",
+      "theory": "Collections.TrieSetImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.718,
+      "session": "HOL-AFP",
+      "theory": "Collections.ArraySetImpl"
+    },
+    {
+      "reported_cumulated_seconds": 17.362,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Determinant_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.782,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_List_Set"
+    },
+    {
+      "reported_cumulated_seconds": 1.357,
+      "session": "HOL-AFP",
+      "theory": "Collections.Gen_Set"
+    },
+    {
+      "reported_cumulated_seconds": 0.061,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Precedence"
+    },
+    {
+      "reported_cumulated_seconds": 0.484,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Relations"
+    },
+    {
+      "reported_cumulated_seconds": 2.025,
+      "session": "HOL-AFP",
+      "theory": "Collections.RBTSetImpl"
+    },
+    {
+      "reported_cumulated_seconds": 0.235,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Derivation_Bound"
+    },
+    {
+      "reported_cumulated_seconds": 0.278,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Show_Arctic"
+    },
+    {
+      "reported_cumulated_seconds": 35.602,
+      "session": "HOL-AFP",
+      "theory": "Polynomials.Polynomials"
+    },
+    {
+      "reported_cumulated_seconds": 0.382,
+      "session": "HOL-AFP",
+      "theory": "Polynomials.Show_Polynomials"
+    },
+    {
+      "reported_cumulated_seconds": 3.93,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Unification"
+    },
+    {
+      "reported_cumulated_seconds": 1.914,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Complexity_Carrier"
+    },
+    {
+      "reported_cumulated_seconds": 1.141,
+      "session": "HOL-AFP",
+      "theory": "Sorted_Terms.Sorted_Contexts"
+    },
+    {
+      "reported_cumulated_seconds": 0.702,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Matching"
+    },
+    {
+      "reported_cumulated_seconds": 0.192,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Unification_String"
+    },
+    {
+      "reported_cumulated_seconds": 4.293,
+      "session": "HOL-AFP",
+      "theory": "Knuth_Bendix_Order.KBO"
+    },
+    {
+      "reported_cumulated_seconds": 0.362,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.Binary_Exponentiation"
+    },
+    {
+      "reported_cumulated_seconds": 0.468,
+      "session": "HOL-AFP",
+      "theory": "Sorted_Terms.Basic_Terms"
+    },
+    {
+      "reported_cumulated_seconds": 7.583,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Multiset_Extension_Pair"
+    },
+    {
+      "reported_cumulated_seconds": 3.174,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Finite_Field"
+    },
+    {
+      "reported_cumulated_seconds": 2.74,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Poly_Mod_Finite_Field"
+    },
+    {
+      "reported_cumulated_seconds": 3.185,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Multiset_Extension2"
+    },
+    {
+      "reported_cumulated_seconds": 15.859,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_RBT_Map"
+    },
+    {
+      "reported_cumulated_seconds": 2.496,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Multiset_Extension_Pair_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.486,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.Multiset_Extension2_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.667,
+      "session": "HOL-AFP",
+      "theory": "VectorSpace.RingModuleFacts"
+    },
+    {
+      "reported_cumulated_seconds": 0.05,
+      "session": "HOL-AFP",
+      "theory": "VectorSpace.FunctionLemmas"
+    },
+    {
+      "reported_cumulated_seconds": 0.65,
+      "session": "HOL-AFP",
+      "theory": "VectorSpace.MonoidSums"
+    },
+    {
+      "reported_cumulated_seconds": 12.709,
+      "session": "HOL-AFP",
+      "theory": "Sorted_Terms.Compute_Nonempty_Infinite_Sorts"
+    },
+    {
+      "reported_cumulated_seconds": 0.643,
+      "session": "HOL-AFP",
+      "theory": "Transitive-Closure.Transitive_Closure_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.22,
+      "session": "HOL-AFP",
+      "theory": "Transitive-Closure.Transitive_Closure_List_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.397,
+      "session": "HOL-AFP",
+      "theory": "Transitive-Closure.Transitive_Closure_RBT_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.219,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Infinite_Sequences"
+    },
+    {
+      "reported_cumulated_seconds": 3.004,
+      "session": "HOL-AFP",
+      "theory": "Efficient_Weighted_Path_Order.List_Memo_Functions"
+    },
+    {
+      "reported_cumulated_seconds": 0.917,
+      "session": "HOL-AFP",
+      "theory": "Vickrey_Clarke_Groves.SetUtils"
+    },
+    {
+      "reported_cumulated_seconds": 1.494,
+      "session": "HOL-AFP",
+      "theory": "Vickrey_Clarke_Groves.Partitions"
+    },
+    {
+      "reported_cumulated_seconds": 0.283,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Least_Enum"
+    },
+    {
+      "reported_cumulated_seconds": 0.528,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Minimal_Elements"
+    },
+    {
+      "reported_cumulated_seconds": 13.59,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Term_More"
+    },
+    {
+      "reported_cumulated_seconds": 100.012,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Simplex"
+    },
+    {
+      "reported_cumulated_seconds": 7.206,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Term_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 12.436,
+      "session": "HOL-AFP",
+      "theory": "VectorSpace.LinearCombinations"
+    },
+    {
+      "reported_cumulated_seconds": 7.91,
+      "session": "HOL-AFP",
+      "theory": "Simplex.Simplex_Incremental"
+    },
+    {
+      "reported_cumulated_seconds": 22.143,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.WPO"
+    },
+    {
+      "reported_cumulated_seconds": 16.085,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Trs"
+    },
+    {
+      "reported_cumulated_seconds": 1.463,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Critical_Pairs"
+    },
+    {
+      "reported_cumulated_seconds": 0.994,
+      "session": "HOL-AFP",
+      "theory": "Weighted_Path_Order.RPO"
+    },
+    {
+      "reported_cumulated_seconds": 1.977,
+      "session": "HOL-AFP",
+      "theory": "Efficient_Weighted_Path_Order.WPO_Approx"
+    },
+    {
+      "reported_cumulated_seconds": 1.227,
+      "session": "HOL-AFP",
+      "theory": "Efficient_Weighted_Path_Order.RPO_Unbounded"
+    },
+    {
+      "reported_cumulated_seconds": 0.596,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Multistep"
+    },
+    {
+      "reported_cumulated_seconds": 71.408,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix_Comparison"
+    },
+    {
+      "reported_cumulated_seconds": 20.072,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Pattern_Completeness_Set"
+    },
+    {
+      "reported_cumulated_seconds": 3.694,
+      "session": "HOL-AFP",
+      "theory": "Efficient_Weighted_Path_Order.WPO_Mem_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.915,
+      "session": "HOL-AFP",
+      "theory": "Efficient_Weighted_Path_Order.RPO_Mem_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.391,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.FCF_Problem"
+    },
+    {
+      "reported_cumulated_seconds": 15.976,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Terms.Unification_More"
+    },
+    {
+      "reported_cumulated_seconds": 6.956,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Trs_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 3.175,
+      "session": "HOL-AFP",
+      "theory": "VectorSpace.SumSpaces"
+    },
+    {
+      "reported_cumulated_seconds": 2.277,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Almost_Full"
+    },
+    {
+      "reported_cumulated_seconds": 25.976,
+      "session": "HOL-AFP",
+      "theory": "Farkas.Farkas"
+    },
+    {
+      "reported_cumulated_seconds": 15.19,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Proof_Term_Utils"
+    },
+    {
+      "reported_cumulated_seconds": 0.583,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Minimal_Bad_Sequences"
+    },
+    {
+      "reported_cumulated_seconds": 2.24,
+      "session": "HOL-AFP",
+      "theory": "Farkas.Matrix_Farkas"
+    },
+    {
+      "reported_cumulated_seconds": 1.263,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Linear_Matching"
+    },
+    {
+      "reported_cumulated_seconds": 1.053,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.More_Arithmetic"
+    },
+    {
+      "reported_cumulated_seconds": 1.223,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.More_Bit_Ring"
+    },
+    {
+      "reported_cumulated_seconds": 0.863,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Almost_Full_Relations"
+    },
+    {
+      "reported_cumulated_seconds": 1.954,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Well_Quasi_Orders"
+    },
+    {
+      "reported_cumulated_seconds": 48.292,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.Subresultant"
+    },
+    {
+      "reported_cumulated_seconds": 11.286,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Pattern_Completeness_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 1.075,
+      "session": "HOL-AFP",
+      "theory": "Decreasing-Diagrams-II.Decreasing_Diagrams_II_Aux"
+    },
+    {
+      "reported_cumulated_seconds": 2.545,
+      "session": "HOL-AFP",
+      "theory": "Subresultants.Subresultant_Gcd"
+    },
+    {
+      "reported_cumulated_seconds": 1.532,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Square_Free_Int_To_Square_Free_GFp"
+    },
+    {
+      "reported_cumulated_seconds": 14.274,
+      "session": "HOL-AFP",
+      "theory": "VectorSpace.VectorSpace"
+    },
+    {
+      "reported_cumulated_seconds": 7.324,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.FCF_Set"
+    },
+    {
+      "reported_cumulated_seconds": 10.465,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.More_Word"
+    },
+    {
+      "reported_cumulated_seconds": 0.509,
+      "session": "HOL-AFP",
+      "theory": "Well_Quasi_Orders.Kruskal"
+    },
+    {
+      "reported_cumulated_seconds": 0.973,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.Bit_Shifts_Infix_Syntax"
+    },
+    {
+      "reported_cumulated_seconds": 0.411,
+      "session": "HOL-AFP",
+      "theory": "Word_Lib.Most_significant_bit"
+    },
+    {
+      "reported_cumulated_seconds": 26.753,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Multihole_Context"
+    },
+    {
+      "reported_cumulated_seconds": 1.969,
+      "session": "HOL-AFP",
+      "theory": "Native_Word.Uint_Common"
+    },
+    {
+      "reported_cumulated_seconds": 5.424,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Missing_VectorSpace"
+    },
+    {
+      "reported_cumulated_seconds": 2.03,
+      "session": "HOL-AFP",
+      "theory": "Native_Word.Uint"
+    },
+    {
+      "reported_cumulated_seconds": 12.436,
+      "session": "HOL-AFP",
+      "theory": "Decreasing-Diagrams-II.Decreasing_Diagrams_II"
+    },
+    {
+      "reported_cumulated_seconds": 5.755,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Parallel_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 0.678,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Orthogonality"
+    },
+    {
+      "reported_cumulated_seconds": 1.832,
+      "session": "HOL-AFP",
+      "theory": "Native_Word.Uint32"
+    },
+    {
+      "reported_cumulated_seconds": 0.322,
+      "session": "HOL-AFP",
+      "theory": "Collections.HashCode"
+    },
+    {
+      "reported_cumulated_seconds": 24.466,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Proof_Terms"
+    },
+    {
+      "reported_cumulated_seconds": 6.465,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_Uv_Set"
+    },
+    {
+      "reported_cumulated_seconds": 1.362,
+      "session": "HOL-AFP",
+      "theory": "Collections.HashMap_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 3.382,
+      "session": "HOL-AFP",
+      "theory": "Collections.ArrayHashMap_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.506,
+      "session": "HOL-AFP",
+      "theory": "Collections.ArrayHashMap"
+    },
+    {
+      "reported_cumulated_seconds": 1.639,
+      "session": "HOL-AFP",
+      "theory": "Collections.HashMap"
+    },
+    {
+      "reported_cumulated_seconds": 2.092,
+      "session": "HOL-AFP",
+      "theory": "Collections.ArrayHashSet"
+    },
+    {
+      "reported_cumulated_seconds": 0.309,
+      "session": "HOL-AFP",
+      "theory": "Collections.Intf_Hash"
+    },
+    {
+      "reported_cumulated_seconds": 1.159,
+      "session": "HOL-AFP",
+      "theory": "Collections.Gen_Hash"
+    },
+    {
+      "reported_cumulated_seconds": 0.493,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Hash_Generator"
+    },
+    {
+      "reported_cumulated_seconds": 0.099,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Hash_Instances"
+    },
+    {
+      "reported_cumulated_seconds": 0.432,
+      "session": "HOL-AFP",
+      "theory": "Deriving.Derive"
+    },
+    {
+      "reported_cumulated_seconds": 8.255,
+      "session": "HOL-AFP",
+      "theory": "First_Order_Rewriting.Rewrite_Relations_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.519,
+      "session": "HOL-AFP",
+      "theory": "Collections.HashSet"
+    },
+    {
+      "reported_cumulated_seconds": 1.383,
+      "session": "HOL-AFP",
+      "theory": "Collections.SetStdImpl"
+    },
+    {
+      "reported_cumulated_seconds": 1.034,
+      "session": "HOL-AFP",
+      "theory": "Collections.MapStdImpl"
+    },
+    {
+      "reported_cumulated_seconds": 43.206,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 20.224,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.FCF_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 1.796,
+      "session": "HOL-AFP",
+      "theory": "Collections.ICF_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.292,
+      "session": "HOL-AFP",
+      "theory": "Native_Word.Uint64"
+    },
+    {
+      "reported_cumulated_seconds": 4.389,
+      "session": "HOL-AFP",
+      "theory": "Collections.Impl_Array_Hash_Map"
+    },
+    {
+      "reported_cumulated_seconds": 0.445,
+      "session": "HOL-AFP",
+      "theory": "Collections.ICF_Refine_Monadic"
+    },
+    {
+      "reported_cumulated_seconds": 18.15,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.VS_Connect"
+    },
+    {
+      "reported_cumulated_seconds": 1.854,
+      "session": "HOL-AFP",
+      "theory": "Collections.GenCF"
+    },
+    {
+      "reported_cumulated_seconds": 3.358,
+      "session": "HOL-AFP",
+      "theory": "Collections.ICF_Autoref"
+    },
+    {
+      "reported_cumulated_seconds": 1.468,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Missing_VS_Connect"
+    },
+    {
+      "reported_cumulated_seconds": 1.063,
+      "session": "HOL-AFP",
+      "theory": "Collections.Refine_Dflt"
+    },
+    {
+      "reported_cumulated_seconds": 0.195,
+      "session": "HOL-AFP",
+      "theory": "Collections.Collections"
+    },
+    {
+      "reported_cumulated_seconds": 0.15,
+      "session": "HOL-AFP",
+      "theory": "CAVA_Base.CAVA_Code_Target"
+    },
+    {
+      "reported_cumulated_seconds": 2.257,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Gram_Schmidt"
+    },
+    {
+      "reported_cumulated_seconds": 1.31,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Dim_Span"
+    },
+    {
+      "reported_cumulated_seconds": 6.332,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Finite_Field_Record_Based"
+    },
+    {
+      "reported_cumulated_seconds": 4.974,
+      "session": "HOL-AFP",
+      "theory": "Collections.CollectionsV1"
+    },
+    {
+      "reported_cumulated_seconds": 0.509,
+      "session": "HOL-AFP",
+      "theory": "CAVA_Base.CAVA_Base"
+    },
+    {
+      "reported_cumulated_seconds": 5.453,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Schur_Decomposition"
+    },
+    {
+      "reported_cumulated_seconds": 2.029,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Poly_Mod_Finite_Field_Record_Based"
+    },
+    {
+      "reported_cumulated_seconds": 1.061,
+      "session": "HOL-AFP",
+      "theory": "CAVA_Automata.Digraph"
+    },
+    {
+      "reported_cumulated_seconds": 9.322,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix_Kernel"
+    },
+    {
+      "reported_cumulated_seconds": 41.036,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Pattern_Completeness_List"
+    },
+    {
+      "reported_cumulated_seconds": 3.928,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Jordan_Normal_Form_Uniqueness"
+    },
+    {
+      "reported_cumulated_seconds": 0.474,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Hom_Gauss_Jordan"
+    },
+    {
+      "reported_cumulated_seconds": 10.698,
+      "session": "HOL-AFP",
+      "theory": "CAVA_Automata.Digraph_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 14.518,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Hensel_Lifting"
+    },
+    {
+      "reported_cumulated_seconds": 20.079,
+      "session": "HOL-AFP",
+      "theory": "Gabow_SCC.Gabow_Skeleton"
+    },
+    {
+      "reported_cumulated_seconds": 22.336,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Berlekamp_Type_Based"
+    },
+    {
+      "reported_cumulated_seconds": 25.599,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.FCF_List"
+    },
+    {
+      "reported_cumulated_seconds": 1.775,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Pattern_Completeness_Improved_Algorithm"
+    },
+    {
+      "reported_cumulated_seconds": 7.177,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Distinct_Degree_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 0.851,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Finite_Field_Factorization"
+    },
+    {
+      "reported_cumulated_seconds": 13.244,
+      "session": "HOL-AFP",
+      "theory": "Gabow_SCC.Gabow_SCC"
+    },
+    {
+      "reported_cumulated_seconds": 12.842,
+      "session": "HOL-AFP",
+      "theory": "Gabow_SCC.Gabow_Skeleton_Code"
+    },
+    {
+      "reported_cumulated_seconds": 11.324,
+      "session": "HOL-AFP",
+      "theory": "Pattern_Completeness.Pattern_Completeness"
+    },
+    {
+      "reported_cumulated_seconds": 9.569,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Finite_Field_Factorization_Record_Based"
+    },
+    {
+      "reported_cumulated_seconds": 10.66,
+      "session": "HOL-AFP",
+      "theory": "Gabow_SCC.Gabow_SCC_Code"
+    },
+    {
+      "reported_cumulated_seconds": 2.679,
+      "session": "HOL-AFP",
+      "theory": "Berlekamp_Zassenhaus.Berlekamp_Hensel"
+    },
+    {
+      "reported_cumulated_seconds": 5.716,
+      "session": "HOL-AFP",
+      "theory": "LLL_Basis_Reduction.Missing_Lemmas"
+    },
+    {
+      "reported_cumulated_seconds": 22.78,
+      "session": "HOL-AFP",
+      "theory": "LLL_Basis_Reduction.Norms"
+    },
+    {
+      "reported_cumulated_seconds": 0.218,
+      "session": "HOL-AFP",
+      "theory": "LLL_Basis_Reduction.Int_Rat_Operations"
+    },
+    {
+      "reported_cumulated_seconds": 76.189,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Jordan_Normal_Form_Existence"
+    },
+    {
+      "reported_cumulated_seconds": 0.926,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Matrix_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.365,
+      "session": "HOL-AFP",
+      "theory": "Jordan_Normal_Form.Spectral_Radius"
+    },
+    {
+      "reported_cumulated_seconds": 98.559,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Residual_Join_Deletion"
+    },
+    {
+      "reported_cumulated_seconds": 4.507,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.HMA_Connect"
+    },
+    {
+      "reported_cumulated_seconds": 1.641,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Perron_Frobenius_Aux"
+    },
+    {
+      "reported_cumulated_seconds": 1.134,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Perron_Frobenius"
+    },
+    {
+      "reported_cumulated_seconds": 3.738,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Perron_Frobenius_Irreducible"
+    },
+    {
+      "reported_cumulated_seconds": 2.877,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Perron_Frobenius_General"
+    },
+    {
+      "reported_cumulated_seconds": 9.436,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Spectral_Radius_Largest_Jordan_Block"
+    },
+    {
+      "reported_cumulated_seconds": 1.775,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Spectral_Radius_Theory_2"
+    },
+    {
+      "reported_cumulated_seconds": 0.454,
+      "session": "HOL-AFP",
+      "theory": "Perron_Frobenius.Check_Matrix_Growth"
+    },
+    {
+      "reported_cumulated_seconds": 22.914,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Orthogonal_PT"
+    },
+    {
+      "reported_cumulated_seconds": 42.976,
+      "session": "HOL-AFP",
+      "theory": "LLL_Basis_Reduction.Gram_Schmidt_2"
+    },
+    {
+      "reported_cumulated_seconds": 2.416,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Basis_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 7.098,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Integral_Bounded_Vectors"
+    },
+    {
+      "reported_cumulated_seconds": 3.89,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Normal_Vector"
+    },
+    {
+      "reported_cumulated_seconds": 5.445,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Cone"
+    },
+    {
+      "reported_cumulated_seconds": 34.121,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Labels_and_Overlaps"
+    },
+    {
+      "reported_cumulated_seconds": 5.111,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Convex_Hull"
+    },
+    {
+      "reported_cumulated_seconds": 7.694,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Fundamental_Theorem_Linear_Inequalities"
+    },
+    {
+      "reported_cumulated_seconds": 4.128,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Farkas_Minkowsky_Weyl"
+    },
+    {
+      "reported_cumulated_seconds": 7.351,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Decomposition_Theorem"
+    },
+    {
+      "reported_cumulated_seconds": 2.897,
+      "session": "HOL-AFP",
+      "theory": "Linear_Inequalities.Mixed_Integer_Solutions"
+    },
+    {
+      "reported_cumulated_seconds": 27.737,
+      "session": "HOL-AFP",
+      "theory": "Proof_Terms_Term_Rewriting.Redex_Patterns"
+    },
+    {
+      "reported_cumulated_seconds": 0.506,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Map_Choice"
+    },
+    {
+      "reported_cumulated_seconds": 0.137,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Diff_Array_Code_Haskell"
+    },
+    {
+      "reported_cumulated_seconds": 0.399,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Finite_Renaming"
+    },
+    {
+      "reported_cumulated_seconds": 1.727,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Multi_Map"
+    },
+    {
+      "reported_cumulated_seconds": 0.671,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Pointwise_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 0.304,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.RenamingN"
+    },
+    {
+      "reported_cumulated_seconds": 0.221,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Abstract_Unification_More"
+    },
+    {
+      "reported_cumulated_seconds": 1.288,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Status_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.562,
+      "session": "IsaFoR_1",
+      "theory": "Norm_Equiv.Representative_System"
+    },
+    {
+      "reported_cumulated_seconds": 0.219,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Map_Of"
+    },
+    {
+      "reported_cumulated_seconds": 1.16,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.RTrancl2"
+    },
+    {
+      "reported_cumulated_seconds": 2.05,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.RTrancl_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.559,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.RenamingN_String"
+    },
+    {
+      "reported_cumulated_seconds": 0.856,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Matching_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.216,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Multihole_Context_Transfer"
+    },
+    {
+      "reported_cumulated_seconds": 1.987,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Lexicographic_Extension_More"
+    },
+    {
+      "reported_cumulated_seconds": 0.883,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Set_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.082,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Set_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.541,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Min_Set_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.435,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Min_Set_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.681,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Multiset_Extension_More"
+    },
+    {
+      "reported_cumulated_seconds": 3.975,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Util"
+    },
+    {
+      "reported_cumulated_seconds": 1.259,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Inductive_Set_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.16,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Multimap"
+    },
+    {
+      "reported_cumulated_seconds": 4.059,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Renaming"
+    },
+    {
+      "reported_cumulated_seconds": 1.086,
+      "session": "IsaFoR_1",
+      "theory": "AC_TRS.AC_Rewriting_Base"
+    },
+    {
+      "reported_cumulated_seconds": 0.415,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Embedding_Trs"
+    },
+    {
+      "reported_cumulated_seconds": 1.897,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Non_Inf_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.212,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Reduction_Order"
+    },
+    {
+      "reported_cumulated_seconds": 3.394,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Graph"
+    },
+    {
+      "reported_cumulated_seconds": 2.882,
+      "session": "IsaFoR_1",
+      "theory": "Sem_Lab.Labelings"
+    },
+    {
+      "reported_cumulated_seconds": 4.21,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Memories"
+    },
+    {
+      "reported_cumulated_seconds": 1.931,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Dual_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 3.363,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Name"
+    },
+    {
+      "reported_cumulated_seconds": 9.305,
+      "session": "IsaFoR_1",
+      "theory": "Ord.SPO"
+    },
+    {
+      "reported_cumulated_seconds": 4.543,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Dual_Multiset_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.16,
+      "session": "IsaFoR_1",
+      "theory": "Ord.List_Order_Implementations"
+    },
+    {
+      "reported_cumulated_seconds": 12.359,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Matrix_Base"
+    },
+    {
+      "reported_cumulated_seconds": 0.546,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Subterm_Multiset"
+    },
+    {
+      "reported_cumulated_seconds": 7.29,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.Peak_Decreasingness"
+    },
+    {
+      "reported_cumulated_seconds": 8.527,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Indexed_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 3.225,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Context_Substitution"
+    },
+    {
+      "reported_cumulated_seconds": 1.607,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Sharp_Syntax"
+    },
+    {
+      "reported_cumulated_seconds": 2.134,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Ground_Context"
+    },
+    {
+      "reported_cumulated_seconds": 0.11,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Outermost_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 1.724,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Rule_Map"
+    },
+    {
+      "reported_cumulated_seconds": 1.6,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Tcap"
+    },
+    {
+      "reported_cumulated_seconds": 1.569,
+      "session": "IsaFoR_1",
+      "theory": "Ord.F_Algebra"
+    },
+    {
+      "reported_cumulated_seconds": 0.702,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Sorted_Algebra"
+    },
+    {
+      "reported_cumulated_seconds": 0.64,
+      "session": "IsaFoR_1",
+      "theory": "Sem_Lab.Labelings_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 13.634,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Multiset2"
+    },
+    {
+      "reported_cumulated_seconds": 0.166,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Multiset_Code"
+    },
+    {
+      "reported_cumulated_seconds": 6.142,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Mgu_generic"
+    },
+    {
+      "reported_cumulated_seconds": 5.072,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Renaming_Interpretations"
+    },
+    {
+      "reported_cumulated_seconds": 6.944,
+      "session": "IsaFoR_1",
+      "theory": "AC_TRS.AC_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 0.665,
+      "session": "IsaFoR_1",
+      "theory": "Framework.AC_Termination_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 0.777,
+      "session": "IsaFoR_1",
+      "theory": "Norm_Equiv.Litsim_Trs"
+    },
+    {
+      "reported_cumulated_seconds": 0.451,
+      "session": "IsaFoR_1",
+      "theory": "Framework.AC_Termination_Problem_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 11.113,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Q_Restricted_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 0.589,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Critical_Pairs_Innermost"
+    },
+    {
+      "reported_cumulated_seconds": 0.355,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Q_Relative_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 3.27,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 10.836,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Formula"
+    },
+    {
+      "reported_cumulated_seconds": 1.225,
+      "session": "IsaFoR_1",
+      "theory": "Norm_Equiv.Encompassment"
+    },
+    {
+      "reported_cumulated_seconds": 18.812,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata"
+    },
+    {
+      "reported_cumulated_seconds": 6.658,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.CP"
+    },
+    {
+      "reported_cumulated_seconds": 26.775,
+      "session": "IsaFoR_1",
+      "theory": "AC_TRS.AC_Equivalence"
+    },
+    {
+      "reported_cumulated_seconds": 4.487,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Det"
+    },
+    {
+      "reported_cumulated_seconds": 4.623,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_NF"
+    },
+    {
+      "reported_cumulated_seconds": 9.563,
+      "session": "IsaFoR_1",
+      "theory": "Norm_Equiv.Normalization_Equivalence"
+    },
+    {
+      "reported_cumulated_seconds": 16.5,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Ground_Context_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 3.975,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Q_Restricted_Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.831,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Trs_Impl_More"
+    },
+    {
+      "reported_cumulated_seconds": 0.418,
+      "session": "IsaFoR_1",
+      "theory": "Norm_Equiv.Litsim_Trs_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.254,
+      "session": "IsaFoR_1",
+      "theory": "Norm_Equiv.All_of_Normalization_Equivalence"
+    },
+    {
+      "reported_cumulated_seconds": 13.293,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.Abstract_Completion"
+    },
+    {
+      "reported_cumulated_seconds": 1.672,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Tcap_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.378,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.Prime_Critical_Pairs"
+    },
+    {
+      "reported_cumulated_seconds": 0.665,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Forbidden_Patterns"
+    },
+    {
+      "reported_cumulated_seconds": 0.667,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Multihole_Context_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.416,
+      "session": "IsaFoR_1",
+      "theory": "AC_TRS.AC_Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.039,
+      "session": "IsaFoR_1",
+      "theory": "AC_TRS.All_of_AC_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 3.039,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Term_Order"
+    },
+    {
+      "reported_cumulated_seconds": 0.476,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Show_Literal_Polynomial"
+    },
+    {
+      "reported_cumulated_seconds": 0.429,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Reduction_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.29,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Linear_Poly_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 1.955,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Non_Inf_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.963,
+      "session": "IsaFoR_1",
+      "theory": "Ord.SCNP"
+    },
+    {
+      "reported_cumulated_seconds": 2.938,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_NF_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.38,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.Completion_Fairness"
+    },
+    {
+      "reported_cumulated_seconds": 14.391,
+      "session": "IsaFoR_1",
+      "theory": "LTS.LTS"
+    },
+    {
+      "reported_cumulated_seconds": 3.071,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Context_Sensitive"
+    },
+    {
+      "reported_cumulated_seconds": 3.315,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Jordan_Normal_Form_Complexity_Approximation"
+    },
+    {
+      "reported_cumulated_seconds": 3.514,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Monotone_Algebra"
+    },
+    {
+      "reported_cumulated_seconds": 2.825,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Context_Sensitive_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 21.673,
+      "session": "IsaFoR_1",
+      "theory": "TRS.QDP_Framework"
+    },
+    {
+      "reported_cumulated_seconds": 1.279,
+      "session": "IsaFoR_1",
+      "theory": "TRS.More_Abstract_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 9.102,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Linear_Polynomial"
+    },
+    {
+      "reported_cumulated_seconds": 1.332,
+      "session": "IsaFoR_1",
+      "theory": "Framework.Termination_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 3.544,
+      "session": "IsaFoR_1",
+      "theory": "Framework.Dependency_Pair_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 0.653,
+      "session": "IsaFoR_1",
+      "theory": "Framework.QDP_Framework_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.192,
+      "session": "IsaFoR_1",
+      "theory": "TRS.DP_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 6.87,
+      "session": "IsaFoR_1",
+      "theory": "Framework.Termination_Problem_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 27.397,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Wit"
+    },
+    {
+      "reported_cumulated_seconds": 19.208,
+      "session": "IsaFoR_1",
+      "theory": "Framework.Dependency_Pair_Problem_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 16.823,
+      "session": "IsaFoR_1",
+      "theory": "Sem_Lab.Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 27.93,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Gabow_SCC_RBT"
+    },
+    {
+      "reported_cumulated_seconds": 19.356,
+      "session": "IsaFoR_1",
+      "theory": "TRS.Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 3.804,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Reduction_Pair"
+    },
+    {
+      "reported_cumulated_seconds": 4.898,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Quasi_Order"
+    },
+    {
+      "reported_cumulated_seconds": 8.455,
+      "session": "IsaFoR_1",
+      "theory": "Framework.Relative_DP_Framework"
+    },
+    {
+      "reported_cumulated_seconds": 50.915,
+      "session": "IsaFoR_1",
+      "theory": "TA.Exact_Tree_Automata_Completion"
+    },
+    {
+      "reported_cumulated_seconds": 4.647,
+      "session": "IsaFoR_1",
+      "theory": "Framework.AC_Dependency_Pair_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 11.448,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Linear_Poly_Interpretation"
+    },
+    {
+      "reported_cumulated_seconds": 49.817,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Term_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 12.327,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Lexicographic_Orders"
+    },
+    {
+      "reported_cumulated_seconds": 15.807,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ordered_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 7.95,
+      "session": "IsaFoR_1",
+      "theory": "Framework.AC_Dependency_Pair_Problem_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.015,
+      "session": "IsaFoR_1",
+      "theory": "Framework.All_of_Framework"
+    },
+    {
+      "reported_cumulated_seconds": 2.809,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ordered_Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 24.706,
+      "session": "IsaFoR_1",
+      "theory": "Sem_Lab.Semantic_Labeling_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 7.498,
+      "session": "IsaFoR_1",
+      "theory": "Ord.RPO_More"
+    },
+    {
+      "reported_cumulated_seconds": 11.738,
+      "session": "IsaFoR_1",
+      "theory": "Ord.GWPO_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.314,
+      "session": "IsaFoR_1",
+      "theory": "Ord.RPO_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 7.75,
+      "session": "IsaFoR_1",
+      "theory": "Ord.SCNP_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 3.368,
+      "session": "IsaFoR_1",
+      "theory": "Ord.LPO_More"
+    },
+    {
+      "reported_cumulated_seconds": 11.889,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Poly_Order"
+    },
+    {
+      "reported_cumulated_seconds": 19.835,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Argument_Filter"
+    },
+    {
+      "reported_cumulated_seconds": 26.188,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ordered_Algebra"
+    },
+    {
+      "reported_cumulated_seconds": 0.919,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Non_Inf_Orders"
+    },
+    {
+      "reported_cumulated_seconds": 8.96,
+      "session": "IsaFoR_1",
+      "theory": "Ord.WPO_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.795,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Term_Order_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 3.618,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ordered_Algebra_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 9.239,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Poly_Order_Neg"
+    },
+    {
+      "reported_cumulated_seconds": 29.208,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Matrix_Core_Order"
+    },
+    {
+      "reported_cumulated_seconds": 10.981,
+      "session": "IsaFoR_1",
+      "theory": "Sem_Lab.Semantic_Labeling_Carrier"
+    },
+    {
+      "reported_cumulated_seconds": 0.041,
+      "session": "IsaFoR_1",
+      "theory": "Sem_Lab.All_of_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 3.386,
+      "session": "IsaFoR_1",
+      "theory": "TRS.All_of_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 80.468,
+      "session": "IsaFoR_1",
+      "theory": "Ord.CoWPO"
+    },
+    {
+      "reported_cumulated_seconds": 6.836,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Matrix_Core_Order_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 19.691,
+      "session": "IsaFoR_1",
+      "theory": "Ord.SPO_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 9.906,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Containment"
+    },
+    {
+      "reported_cumulated_seconds": 2.123,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.Cut_Points"
+    },
+    {
+      "reported_cumulated_seconds": 4.958,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Cooperation_Program"
+    },
+    {
+      "reported_cumulated_seconds": 2.134,
+      "session": "IsaFoR_1",
+      "theory": "Auxx.All_of_Auxiliaries"
+    },
+    {
+      "reported_cumulated_seconds": 5.046,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Simple_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 1.396,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Invariants_To_Assertions"
+    },
+    {
+      "reported_cumulated_seconds": 10.32,
+      "session": "IsaFoR_1",
+      "theory": "Ord.CoWPO_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 19.905,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Integer_Arithmetic"
+    },
+    {
+      "reported_cumulated_seconds": 0.702,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Show_LTS"
+    },
+    {
+      "reported_cumulated_seconds": 16.135,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Cut_Transition_Split"
+    },
+    {
+      "reported_cumulated_seconds": 16.073,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Fresh_Variable_Addition"
+    },
+    {
+      "reported_cumulated_seconds": 23.179,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Autoref_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 19.191,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Location_Addition"
+    },
+    {
+      "reported_cumulated_seconds": 35.763,
+      "session": "IsaFoR_1",
+      "theory": "Ord.AC_Aux"
+    },
+    {
+      "reported_cumulated_seconds": 1.508,
+      "session": "IsaFoR_1",
+      "theory": "Ord.AC_Weight"
+    },
+    {
+      "reported_cumulated_seconds": 3.078,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Call_Graph_Scc_Decomp"
+    },
+    {
+      "reported_cumulated_seconds": 7.104,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Initial_Cooperation_Program"
+    },
+    {
+      "reported_cumulated_seconds": 9.443,
+      "session": "IsaFoR_1",
+      "theory": "Ord.KBO_More"
+    },
+    {
+      "reported_cumulated_seconds": 25.658,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Max_Polynomial_Aux"
+    },
+    {
+      "reported_cumulated_seconds": 44.836,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Linear_Poly_Order"
+    },
+    {
+      "reported_cumulated_seconds": 29.431,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Invariant_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 22.813,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ackbo"
+    },
+    {
+      "reported_cumulated_seconds": 19.927,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.Ground_Completion"
+    },
+    {
+      "reported_cumulated_seconds": 19.807,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Matrix_Poly"
+    },
+    {
+      "reported_cumulated_seconds": 6.597,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ackbo_wf"
+    },
+    {
+      "reported_cumulated_seconds": 0.044,
+      "session": "IsaFoR_1",
+      "theory": "Abstract_Completion.All_of_Abstract_Completion"
+    },
+    {
+      "reported_cumulated_seconds": 5.011,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Invariant_Proof_Checkers"
+    },
+    {
+      "reported_cumulated_seconds": 1.341,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ackbo_more"
+    },
+    {
+      "reported_cumulated_seconds": 6.547,
+      "session": "IsaFoR_1",
+      "theory": "LTS.LTS_Safety_Prover"
+    },
+    {
+      "reported_cumulated_seconds": 60.607,
+      "session": "IsaFoR_1",
+      "theory": "LTS.Transition_Removal"
+    },
+    {
+      "reported_cumulated_seconds": 30.827,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Ackbo_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 56.7,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Max_Monus"
+    },
+    {
+      "reported_cumulated_seconds": 37.589,
+      "session": "IsaFoR_1",
+      "theory": "Ord.KBO_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 55.934,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Max_Polynomial"
+    },
+    {
+      "reported_cumulated_seconds": 26.431,
+      "session": "IsaFoR_1",
+      "theory": "LTS.LTS_Termination_Prover"
+    },
+    {
+      "reported_cumulated_seconds": 26.342,
+      "session": "IsaFoR_1",
+      "theory": "LTS.LTS_Nontermination_Prover"
+    },
+    {
+      "reported_cumulated_seconds": 80.921,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Wit_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 5.244,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Det_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.879,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Det_Container"
+    },
+    {
+      "reported_cumulated_seconds": 14.686,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 17.791,
+      "session": "IsaFoR_1",
+      "theory": "TA.Tree_Automata_Containment_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 107.066,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Branch_and_Bound"
+    },
+    {
+      "reported_cumulated_seconds": 12.963,
+      "session": "IsaFoR_1",
+      "theory": "TA.Exact_Tree_Automata_Completion_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.984,
+      "session": "IsaFoR_1",
+      "theory": "TA.All_of_Tree_Automata"
+    },
+    {
+      "reported_cumulated_seconds": 15.663,
+      "session": "IsaFoR_1",
+      "theory": "Ord.IA_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 15.288,
+      "session": "IsaFoR_1",
+      "theory": "LTS.IA_Instance"
+    },
+    {
+      "reported_cumulated_seconds": 21.037,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Max_Polynomial_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 21.438,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Max_Monus_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 23.984,
+      "session": "IsaFoR_1",
+      "theory": "LTS.LTS_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 7.048,
+      "session": "IsaFoR_1",
+      "theory": "LTS.All_of_LTS"
+    },
+    {
+      "reported_cumulated_seconds": 53.872,
+      "session": "IsaFoR_1",
+      "theory": "Ord.Reduction_Pair_Implementations"
+    },
+    {
+      "reported_cumulated_seconds": 14.915,
+      "session": "IsaFoR_1",
+      "theory": "Ord.All_of_Orderings"
+    },
+    {
+      "reported_cumulated_seconds": 0.1,
+      "session": "IsaFoR_2",
+      "theory": "CR.Mgu_List"
+    },
+    {
+      "reported_cumulated_seconds": 0.198,
+      "session": "IsaFoR_2",
+      "theory": "CR.Redundant_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 0.078,
+      "session": "IsaFoR_2",
+      "theory": "SN.Defaults"
+    },
+    {
+      "reported_cumulated_seconds": 1.413,
+      "session": "IsaFoR_2",
+      "theory": "SN.Complex_Constant_Removal"
+    },
+    {
+      "reported_cumulated_seconds": 3.277,
+      "session": "IsaFoR_2",
+      "theory": "CR.Equational_Reasoning"
+    },
+    {
+      "reported_cumulated_seconds": 2.437,
+      "session": "IsaFoR_2",
+      "theory": "Right_Forward_Closures.Innermost_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 3.673,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nonloop"
+    },
+    {
+      "reported_cumulated_seconds": 3.482,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.String_Reversal"
+    },
+    {
+      "reported_cumulated_seconds": 0.663,
+      "session": "IsaFoR_2",
+      "theory": "SN.Q_Reduction"
+    },
+    {
+      "reported_cumulated_seconds": 2.588,
+      "session": "IsaFoR_2",
+      "theory": "SN.Subterm_Criterion"
+    },
+    {
+      "reported_cumulated_seconds": 1.76,
+      "session": "IsaFoR_2",
+      "theory": "CR.Usable_Rules_NJ"
+    },
+    {
+      "reported_cumulated_seconds": 2.112,
+      "session": "IsaFoR_2",
+      "theory": "Right_Forward_Closures.Gramlich_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 0.72,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 1.654,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nonloop_SRS"
+    },
+    {
+      "reported_cumulated_seconds": 2.657,
+      "session": "IsaFoR_2",
+      "theory": "SN.Monadic_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 0.337,
+      "session": "IsaFoR_2",
+      "theory": "SN.Split_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.677,
+      "session": "IsaFoR_2",
+      "theory": "Nonreach.Gtcap"
+    },
+    {
+      "reported_cumulated_seconds": 1.849,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 1.237,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Q_Reduction_Nonterm"
+    },
+    {
+      "reported_cumulated_seconds": 0.339,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Termination_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 3.249,
+      "session": "IsaFoR_2",
+      "theory": "SN.DP_Transformation_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 5.757,
+      "session": "IsaFoR_2",
+      "theory": "CR.Check_Joins"
+    },
+    {
+      "reported_cumulated_seconds": 1.823,
+      "session": "IsaFoR_2",
+      "theory": "CR.Critical_Pairs_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.625,
+      "session": "IsaFoR_2",
+      "theory": "CR.Orthogonality_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.136,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Q_Reduction_Nonterm_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.149,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Innermost_Switch_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 11.953,
+      "session": "IsaFoR_2",
+      "theory": "SN.Flat_Context_Closure"
+    },
+    {
+      "reported_cumulated_seconds": 12.475,
+      "session": "IsaFoR_2",
+      "theory": "SN.Size_Change_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 0.778,
+      "session": "IsaFoR_2",
+      "theory": "SN.String_Reversal_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 8.341,
+      "session": "IsaFoR_2",
+      "theory": "SN.Uncurry"
+    },
+    {
+      "reported_cumulated_seconds": 1.387,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Termination_Switch_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.154,
+      "session": "IsaFoR_2",
+      "theory": "Right_Forward_Closures.Linear_Unification"
+    },
+    {
+      "reported_cumulated_seconds": 9.655,
+      "session": "IsaFoR_2",
+      "theory": "SN.Monadic_Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.952,
+      "session": "IsaFoR_2",
+      "theory": "SN.Subterm_Criterion_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.953,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nontermination_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.836,
+      "session": "IsaFoR_2",
+      "theory": "CR.Usable_Rules_NJ_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.011,
+      "session": "IsaFoR_2",
+      "theory": "CR.Usable_Rules_NJ_Unif"
+    },
+    {
+      "reported_cumulated_seconds": 3.286,
+      "session": "IsaFoR_2",
+      "theory": "Right_Forward_Closures.Linear_Narrowing"
+    },
+    {
+      "reported_cumulated_seconds": 1.573,
+      "session": "IsaFoR_2",
+      "theory": "CR.Usable_Rules_NJ_Unif_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.255,
+      "session": "IsaFoR_2",
+      "theory": "SN.Icap"
+    },
+    {
+      "reported_cumulated_seconds": 15.354,
+      "session": "IsaFoR_2",
+      "theory": "SN.Q_Reduction_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.333,
+      "session": "IsaFoR_2",
+      "theory": "SN.Tcap_Dpp_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 10.284,
+      "session": "IsaFoR_2",
+      "theory": "SN.Complex_Constant_Removal_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 3.501,
+      "session": "IsaFoR_2",
+      "theory": "Right_Forward_Closures.Right_Forward_Closure"
+    },
+    {
+      "reported_cumulated_seconds": 11.721,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Extras"
+    },
+    {
+      "reported_cumulated_seconds": 0.176,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Prelude"
+    },
+    {
+      "reported_cumulated_seconds": 10.821,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Innermost_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 1.55,
+      "session": "IsaFoR_2",
+      "theory": "SN.AC_Subterm_Criterion"
+    },
+    {
+      "reported_cumulated_seconds": 15.021,
+      "session": "IsaFoR_2",
+      "theory": "SN.Flat_Context_Closure_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.357,
+      "session": "IsaFoR_2",
+      "theory": "SN.Generic_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 4.626,
+      "session": "IsaFoR_2",
+      "theory": "SN.RFC_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 6.156,
+      "session": "IsaFoR_2",
+      "theory": "CR.Completion"
+    },
+    {
+      "reported_cumulated_seconds": 0.836,
+      "session": "IsaFoR_2",
+      "theory": "SN.Generic_Reduction_Pair_Processor"
+    },
+    {
+      "reported_cumulated_seconds": 3.193,
+      "session": "IsaFoR_2",
+      "theory": "CR.Equational_Reasoning_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 8.144,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Basics"
+    },
+    {
+      "reported_cumulated_seconds": 0.515,
+      "session": "IsaFoR_2",
+      "theory": "CR.Redundant_Rules_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 9.314,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Conditional_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 5.199,
+      "session": "IsaFoR_2",
+      "theory": "SN.Complexity_Framework"
+    },
+    {
+      "reported_cumulated_seconds": 7.591,
+      "session": "IsaFoR_2",
+      "theory": "SN.Multi_Algebra"
+    },
+    {
+      "reported_cumulated_seconds": 7.845,
+      "session": "IsaFoR_2",
+      "theory": "SN.Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 0.677,
+      "session": "IsaFoR_2",
+      "theory": "SN.Multi_Algebra_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.695,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Quasi_Decreasingness"
+    },
+    {
+      "reported_cumulated_seconds": 1.927,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Inline_Conditions"
+    },
+    {
+      "reported_cumulated_seconds": 3.477,
+      "session": "IsaFoR_2",
+      "theory": "SN.DT_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.649,
+      "session": "IsaFoR_2",
+      "theory": "SN.WDP_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.627,
+      "session": "IsaFoR_2",
+      "theory": "SN.AC_Reduction_Pair_Processor"
+    },
+    {
+      "reported_cumulated_seconds": 8.472,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Conditional_Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.468,
+      "session": "IsaFoR_2",
+      "theory": "SN.Argument_Filter_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.833,
+      "session": "IsaFoR_2",
+      "theory": "SN.Complexity_Framework_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 23.521,
+      "session": "IsaFoR_2",
+      "theory": "SN.AC_Dependency_Pairs"
+    },
+    {
+      "reported_cumulated_seconds": 9.168,
+      "session": "IsaFoR_2",
+      "theory": "SN.Innermost_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 0.163,
+      "session": "IsaFoR_2",
+      "theory": "SN.Dependency_Graph"
+    },
+    {
+      "reported_cumulated_seconds": 2.745,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Conditional_Nonreach_TRS"
+    },
+    {
+      "reported_cumulated_seconds": 5.32,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Inline_Conditions_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 12.097,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Left_Inline_Conditions"
+    },
+    {
+      "reported_cumulated_seconds": 0.995,
+      "session": "IsaFoR_2",
+      "theory": "SN.Instantiation"
+    },
+    {
+      "reported_cumulated_seconds": 2.553,
+      "session": "IsaFoR_2",
+      "theory": "SN.Size_Change_Termination_Processors"
+    },
+    {
+      "reported_cumulated_seconds": 4.45,
+      "session": "IsaFoR_2",
+      "theory": "SN.Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 5.693,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Left_Inline_Conditions_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 14.321,
+      "session": "IsaFoR_2",
+      "theory": "SN.DT_Transformation_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 5.773,
+      "session": "IsaFoR_2",
+      "theory": "SN.Usable_Replacement_Map"
+    },
+    {
+      "reported_cumulated_seconds": 1.471,
+      "session": "IsaFoR_2",
+      "theory": "SN.Narrowing"
+    },
+    {
+      "reported_cumulated_seconds": 17.306,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Unraveling"
+    },
+    {
+      "reported_cumulated_seconds": 0.302,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Outermost_Forbidden_Patterns"
+    },
+    {
+      "reported_cumulated_seconds": 8.23,
+      "session": "IsaFoR_2",
+      "theory": "SN.AC_Dependency_Pairs_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.303,
+      "session": "IsaFoR_2",
+      "theory": "SN.Icap_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.476,
+      "session": "IsaFoR_2",
+      "theory": "SN.Complexity_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.564,
+      "session": "IsaFoR_2",
+      "theory": "SN.Usable_Rules_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 2.913,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Unraveling_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 5.545,
+      "session": "IsaFoR_2",
+      "theory": "SN.AC_Subterm_Criterion_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 8.888,
+      "session": "IsaFoR_2",
+      "theory": "SN.Matchbounds"
+    },
+    {
+      "reported_cumulated_seconds": 1.869,
+      "session": "IsaFoR_2",
+      "theory": "SN.Raise_Compatibility"
+    },
+    {
+      "reported_cumulated_seconds": 5.145,
+      "session": "IsaFoR_2",
+      "theory": "SN.WDP_Transformation_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.848,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Innermost_Loops_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 1.466,
+      "session": "IsaFoR_2",
+      "theory": "SN.Raise_Consistency"
+    },
+    {
+      "reported_cumulated_seconds": 7.158,
+      "session": "IsaFoR_2",
+      "theory": "Nonreach.Gtcap_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 10.382,
+      "session": "IsaFoR_2",
+      "theory": "SN.Usable_Rules_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.31,
+      "session": "IsaFoR_2",
+      "theory": "CR.Commutation"
+    },
+    {
+      "reported_cumulated_seconds": 0.029,
+      "session": "IsaFoR_2",
+      "theory": "Nonreach.All_of_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 5.27,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Loops_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 45.725,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nonloop_SRS_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.95,
+      "session": "IsaFoR_2",
+      "theory": "SN.AC_Reduction_Pair_Processor_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 12.589,
+      "session": "IsaFoR_2",
+      "theory": "SN.Uncurry_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 6.313,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Ifrit"
+    },
+    {
+      "reported_cumulated_seconds": 6.539,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Outermost_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 12.236,
+      "session": "IsaFoR_2",
+      "theory": "SN.Raise_Compatibility_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 7.67,
+      "session": "IsaFoR_2",
+      "theory": "SN.Right_Ground_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 1.466,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Outermost_Loops_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.675,
+      "session": "IsaFoR_2",
+      "theory": "SN.Right_Ground_Termination_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 22.386,
+      "session": "IsaFoR_2",
+      "theory": "SN.Innermost_Usable_Rules_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 18.081,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nonloop_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 10.649,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Ifrit_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.55,
+      "session": "IsaFoR_2",
+      "theory": "SN.Generic_Usable_Rules_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 12.246,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Forbidden_Pattern_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 7.185,
+      "session": "IsaFoR_2",
+      "theory": "SN.Dependency_Graph_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 9.615,
+      "session": "IsaFoR_2",
+      "theory": "SN.Usable_Replacement_Map_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 7.749,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Forbidden_Pattern_Loops_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 3.728,
+      "session": "IsaFoR_2",
+      "theory": "SN.Instantiation_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 13.234,
+      "session": "IsaFoR_2",
+      "theory": "SN.Rewriting_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 21.974,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Common"
+    },
+    {
+      "reported_cumulated_seconds": 0.184,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Bounded_Duplicating"
+    },
+    {
+      "reported_cumulated_seconds": 1.356,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_General"
+    },
+    {
+      "reported_cumulated_seconds": 3.671,
+      "session": "IsaFoR_2",
+      "theory": "SN.Reduction_Pair_Proc_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.868,
+      "session": "IsaFoR_2",
+      "theory": "SN.Generic_Reduction_Pair_Processor_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 33.516,
+      "session": "IsaFoR_2",
+      "theory": "CR.Development_Closed"
+    },
+    {
+      "reported_cumulated_seconds": 0.799,
+      "session": "IsaFoR_2",
+      "theory": "CR.Development_Closed_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.318,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Modularity"
+    },
+    {
+      "reported_cumulated_seconds": 1.72,
+      "session": "IsaFoR_2",
+      "theory": "CR.Non_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 1.391,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Left_Linear"
+    },
+    {
+      "reported_cumulated_seconds": 11.593,
+      "session": "IsaFoR_2",
+      "theory": "SN.Usable_Rules_Complexity_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 41.563,
+      "session": "IsaFoR_2",
+      "theory": "CR.Decreasing_Diagrams2"
+    },
+    {
+      "reported_cumulated_seconds": 0.547,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Conditional_Critical_Pairs"
+    },
+    {
+      "reported_cumulated_seconds": 14.662,
+      "session": "IsaFoR_2",
+      "theory": "SN.Narrowing_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.836,
+      "session": "IsaFoR_2",
+      "theory": "CR.Strongly_Closed"
+    },
+    {
+      "reported_cumulated_seconds": 11.698,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Persistence"
+    },
+    {
+      "reported_cumulated_seconds": 11.274,
+      "session": "IsaFoR_2",
+      "theory": "CR.Parallel_Closed"
+    },
+    {
+      "reported_cumulated_seconds": 7.821,
+      "session": "IsaFoR_2",
+      "theory": "CR.Rule_Labeling_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 7.066,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Persistence_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 13.463,
+      "session": "IsaFoR_2",
+      "theory": "CR.Parallel_Critical_Pairs"
+    },
+    {
+      "reported_cumulated_seconds": 1.758,
+      "session": "IsaFoR_2",
+      "theory": "CR.Strongly_Closed_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.435,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Non_Confluence2"
+    },
+    {
+      "reported_cumulated_seconds": 44.203,
+      "session": "IsaFoR_2",
+      "theory": "CR.Okui_Criterion"
+    },
+    {
+      "reported_cumulated_seconds": 1.04,
+      "session": "IsaFoR_2",
+      "theory": "CR.Okui_subsumes_DC"
+    },
+    {
+      "reported_cumulated_seconds": 9.777,
+      "session": "IsaFoR_2",
+      "theory": "CR.Parallel_Critical_Pairs_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 16.887,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.AL94"
+    },
+    {
+      "reported_cumulated_seconds": 14.165,
+      "session": "IsaFoR_2",
+      "theory": "CR.Critical_Pair_Closing_Systems"
+    },
+    {
+      "reported_cumulated_seconds": 0.729,
+      "session": "IsaFoR_2",
+      "theory": "CR.Critical_Pair_Closure_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 0.407,
+      "session": "IsaFoR_2",
+      "theory": "CR.Parallel_Closed_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.604,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Not_WN_Tree_Automaton_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 13.218,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 2.298,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.Nontermination_Processors"
+    },
+    {
+      "reported_cumulated_seconds": 0.045,
+      "session": "IsaFoR_2",
+      "theory": "Not_SN.All_of_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 0.298,
+      "session": "IsaFoR_2",
+      "theory": "SN.Countable_Term"
+    },
+    {
+      "reported_cumulated_seconds": 7.7,
+      "session": "IsaFoR_2",
+      "theory": "CR.Non_Confluence_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 2.359,
+      "session": "IsaFoR_2",
+      "theory": "CTRS.All_of_Conditional_Rewriting"
+    },
+    {
+      "reported_cumulated_seconds": 1.578,
+      "session": "IsaFoR_2",
+      "theory": "CR.Non_Commutation_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 7.345,
+      "session": "IsaFoR_2",
+      "theory": "SN.Generalized_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 3.994,
+      "session": "IsaFoR_2",
+      "theory": "SN.Bounded_Increase"
+    },
+    {
+      "reported_cumulated_seconds": 3.439,
+      "session": "IsaFoR_2",
+      "theory": "SN.Generalized_Usable_Rules_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 26.081,
+      "session": "IsaFoR_2",
+      "theory": "CR.Okui_Criterion_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 39.864,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Currying"
+    },
+    {
+      "reported_cumulated_seconds": 2.058,
+      "session": "IsaFoR_2",
+      "theory": "CR.LS_Currying2"
+    },
+    {
+      "reported_cumulated_seconds": 5.354,
+      "session": "IsaFoR_2",
+      "theory": "CR.Okui_Commutation_Automation"
+    },
+    {
+      "reported_cumulated_seconds": 27.96,
+      "session": "IsaFoR_2",
+      "theory": "SN.Matchbounds_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 73.185,
+      "session": "IsaFoR_2",
+      "theory": "SN.Size_Change_Termination_Processors_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 49.435,
+      "session": "IsaFoR_2",
+      "theory": "CR.Ordered_Completion"
+    },
+    {
+      "reported_cumulated_seconds": 4.813,
+      "session": "IsaFoR_2",
+      "theory": "CR.Ordered_Completion_More"
+    },
+    {
+      "reported_cumulated_seconds": 37.552,
+      "session": "IsaFoR_2",
+      "theory": "SN.Bounded_Increase_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.945,
+      "session": "IsaFoR_2",
+      "theory": "SN.Termination_Processors"
+    },
+    {
+      "reported_cumulated_seconds": 2.694,
+      "session": "IsaFoR_2",
+      "theory": "SN.All_of_Termination_and_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 52.571,
+      "session": "IsaFoR_2",
+      "theory": "CR.Ordered_Completion_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 4.247,
+      "session": "IsaFoR_2",
+      "theory": "CR.All_of_Confluence_and_Completion"
+    },
+    {
+      "reported_cumulated_seconds": 0.359,
+      "session": "Proof_Checker_Base",
+      "theory": "Proof_Checker_Base.Rule_Strengthening"
+    },
+    {
+      "reported_cumulated_seconds": 0.501,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.Rule_Strengthening"
+    },
+    {
+      "reported_cumulated_seconds": 0.154,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Version"
+    },
+    {
+      "reported_cumulated_seconds": 5.093,
+      "session": "Proof_Checker_Base",
+      "theory": "Proof_Checker_Base.AAECC_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 5.656,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.AAECC_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 6.189,
+      "session": "Proof_Checker_Base",
+      "theory": "Proof_Checker_Base.QDP_To_SRS_Zantema"
+    },
+    {
+      "reported_cumulated_seconds": 7.001,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.QDP_To_SRS_Zantema"
+    },
+    {
+      "reported_cumulated_seconds": 11.228,
+      "session": "IsaFoR_3",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 13.513,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 11.709,
+      "session": "IsaFoR_3",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 34.061,
+      "session": "Proof_Checker_Base",
+      "theory": "Proof_Checker_Base.Check_Termination_Common"
+    },
+    {
+      "reported_cumulated_seconds": 41.958,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.Check_Termination_Common"
+    },
+    {
+      "reported_cumulated_seconds": 15.578,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 59.447,
+      "session": "Proof_Checker_Base",
+      "theory": "RFC_Checker_Ext.RFC_Matchbounds_Ext"
+    },
+    {
+      "reported_cumulated_seconds": 62.271,
+      "session": "IsaFoR_3",
+      "theory": "RFC_Checker_Ext.RFC_Matchbounds_Ext"
+    },
+    {
+      "reported_cumulated_seconds": 49.999,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 167.271,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 391.432,
+      "session": "Proof_Checker_Base",
+      "theory": "Proof_Checker_Base.Check_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 422.53,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.Check_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 4.945,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 8.125,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 16.843,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 26.983,
+      "session": "IsaFoR_3",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 40.547,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 37.86,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 80.496,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Base.CSR_Checker_Base"
+    },
+    {
+      "reported_cumulated_seconds": 73.886,
+      "session": "CSR_Checker_Base",
+      "theory": "CSR_Checker_Base.CSR_Checker_Base"
+    },
+    {
+      "reported_cumulated_seconds": 29.808,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Core.CSR_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 61.065,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 15.974,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 6.335,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 22.732,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 31.118,
+      "session": "CSR_Checker_Core",
+      "theory": "CSR_Checker_Core.CSR_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 55.081,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 15.322,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 16.85,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 155.642,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 2.799,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 6.307,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Mixed_Subterm_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 11.526,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 4.425,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Frozen_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 5.697,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Hybrid_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 10.397,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 23.91,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 6.268,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 14.113,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Active_SCT"
+    },
+    {
+      "reported_cumulated_seconds": 56.013,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Finite_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 56.88,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 93.925,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Measure"
+    },
+    {
+      "reported_cumulated_seconds": 153.635,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 2.638,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 32.075,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Conservative_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.789,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Mixed_Subterm_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 12.492,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Generic_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 4.479,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 4.302,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Frozen_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 11.941,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 5.252,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Hybrid_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 24.474,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 20.683,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 2.958,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 11.849,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Active_SCT"
+    },
+    {
+      "reported_cumulated_seconds": 48.54,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Finite_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 139.678,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08"
+    },
+    {
+      "reported_cumulated_seconds": 99.735,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable"
+    },
+    {
+      "reported_cumulated_seconds": 1.543,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable_Exec"
+    },
+    {
+      "reported_cumulated_seconds": 3.264,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress"
+    },
+    {
+      "reported_cumulated_seconds": 34.44,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Conservative_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 184.02,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Extended_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 133.054,
+      "session": "CSR_Checker_Extensions",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08"
+    },
+    {
+      "reported_cumulated_seconds": 10.952,
+      "session": "CSR_Muterm_Ext",
+      "theory": "CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 111.484,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Typed_General_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 56.091,
+      "session": "CSR_Muterm_Ext",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 47.938,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Typed_Recursive_Redpair.CSR_Muterm_Typed_Recursive_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 43.309,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 13.882,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 95.514,
+      "session": "CSR_Muterm_Ext",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable"
+    },
+    {
+      "reported_cumulated_seconds": 1.418,
+      "session": "CSR_Muterm_Ext",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable_Exec"
+    },
+    {
+      "reported_cumulated_seconds": 3.028,
+      "session": "CSR_Muterm_Ext",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress"
+    },
+    {
+      "reported_cumulated_seconds": 107.834,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 39.217,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.577,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 39.237,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 4.281,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 6.679,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 32.155,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 7.244,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 175.044,
+      "session": "CSR_Muterm_Typed_General_Redpair",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Extended_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 151.029,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 118.319,
+      "session": "CSR_Muterm_Typed_General_Redpair",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Typed_General_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 59.673,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.706,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 3.784,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 4.388,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 1.061,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.526,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.All_of_Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 48.171,
+      "session": "CSR_Muterm_Typed_Recursive_Redpair",
+      "theory": "CSR_Muterm_Typed_Recursive_Redpair.CSR_Muterm_Typed_Recursive_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 88.861,
+      "session": "CSR_Guarded_List_Measure_Check",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Measure"
+    },
+    {
+      "reported_cumulated_seconds": 10.886,
+      "session": "CSR_Guarded_List_Measure_Check",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Generic_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 22.076,
+      "session": "CSR_Guarded_List_Measure_Check",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 0.125,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Version"
+    },
+    {
+      "reported_cumulated_seconds": 7.992,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 8.375,
+      "session": "Proof_Checker",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 9.894,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 3.656,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 14.4,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 9.722,
+      "session": "Proof_Checker",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 15.774,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 35.062,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 43.828,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 27.212,
+      "session": "Proof_Checker",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 31.06,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 52.299,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 5.158,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 114.833,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 127.835,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 17.666,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 6.051,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 42.077,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.834,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 54.352,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 53.314,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 20.395,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 44.716,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 19.687,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 4.446,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 7.328,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 307.681,
+      "session": "Code",
+      "theory": "Code.Code_Haskell"
+    },
+    {
+      "reported_cumulated_seconds": 38.176,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 7.983,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 47.663,
+      "session": "Relative_ADP_Semantics_Dev",
+      "theory": "Relative_ADP_Semantics_Dev.Relative_ADP_Semantics"
+    },
+    {
+      "reported_cumulated_seconds": 1.408,
+      "session": "Relative_ADP_Chain_Dev",
+      "theory": "Relative_ADP_Chain_Dev.Relative_ADP_Chain_Criterion"
+    },
+    {
+      "reported_cumulated_seconds": 0.997,
+      "session": "Relative_ADP_Origin_Dev",
+      "theory": "Relative_ADP_Origin_Dev.Relative_ADP_Origin"
+    },
+    {
+      "reported_cumulated_seconds": 163.601,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 0.815,
+      "session": "Relative_ADP_Path_Dev",
+      "theory": "Relative_ADP_Path_Dev.Relative_ADP_Path"
+    },
+    {
+      "reported_cumulated_seconds": 0.797,
+      "session": "Relative_ADP_NT_Dev",
+      "theory": "Relative_ADP_NT_Dev.Relative_ADP_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 57.86,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.655,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 3.622,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 3.903,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.907,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.414,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.All_of_Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 0.414,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Code_CSR_Production"
+    },
+    {
+      "reported_cumulated_seconds": 0.464,
+      "session": "Relative_ADP_Block_Dev",
+      "theory": "Relative_ADP_Block_Dev.Relative_ADP_Block"
+    },
+    {
+      "reported_cumulated_seconds": 0.206,
+      "session": "Relative_ADP_Global_Dev",
+      "theory": "Relative_ADP_Global_Dev.Relative_ADP_Global"
+    },
+    {
+      "reported_cumulated_seconds": 0.88,
+      "session": "Relative_ADP_Context_Dev",
+      "theory": "Relative_ADP_Context_Dev.Relative_ADP_Context"
+    },
+    {
+      "reported_cumulated_seconds": 0.394,
+      "session": "Relative_ADP_Trace_Dev",
+      "theory": "Relative_ADP_Trace_Dev.Relative_ADP_Trace"
+    },
+    {
+      "reported_cumulated_seconds": 1.398,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Residual"
+    },
+    {
+      "reported_cumulated_seconds": 19.506,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Check"
+    },
+    {
+      "reported_cumulated_seconds": 0.323,
+      "session": "Relative_ADP_Lift_Dev",
+      "theory": "Relative_ADP_Lift_Dev.Relative_ADP_Lift"
+    },
+    {
+      "reported_cumulated_seconds": 48.886,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Cert"
+    },
+    {
+      "reported_cumulated_seconds": 0.202,
+      "session": "Relative_ADP_Bridge_Dev",
+      "theory": "Relative_ADP_Bridge_Dev.Relative_ADP_Bridge"
+    },
+    {
+      "reported_cumulated_seconds": 0.211,
+      "session": "Relative_ADP_Base_Dev",
+      "theory": "Relative_ADP_Base_Dev.Relative_ADP_Base"
+    },
+    {
+      "reported_cumulated_seconds": 0.231,
+      "session": "Relative_ADP_Prefix_Dev",
+      "theory": "Relative_ADP_Prefix_Dev.Relative_ADP_Prefix"
+    },
+    {
+      "reported_cumulated_seconds": 0.196,
+      "session": "Relative_ADP_Root_Case_Dev",
+      "theory": "Relative_ADP_Root_Case_Dev.Relative_ADP_Root_Case"
+    },
+    {
+      "reported_cumulated_seconds": 0.409,
+      "session": "Relative_ADP_Multihole_Dev",
+      "theory": "Relative_ADP_Multihole_Dev.Relative_ADP_Multihole"
+    },
+    {
+      "reported_cumulated_seconds": 0.216,
+      "session": "Relative_ADP_Carrier_Dev",
+      "theory": "Relative_ADP_Carrier_Dev.Relative_ADP_Carrier"
+    },
+    {
+      "reported_cumulated_seconds": 0.204,
+      "session": "Relative_ADP_Context_State_Dev",
+      "theory": "Relative_ADP_Context_State_Dev.Relative_ADP_Context_State"
+    },
+    {
+      "reported_cumulated_seconds": 45.712,
+      "session": "Relative_ADP_Inner_State_Dev",
+      "theory": "Relative_ADP_Inner_State_Dev.Relative_ADP_Inner_State"
+    },
+    {
+      "reported_cumulated_seconds": 0.248,
+      "session": "Relative_ADP_Outer_State_Dev",
+      "theory": "Relative_ADP_Outer_State_Dev.Relative_ADP_Outer_State"
+    },
+    {
+      "reported_cumulated_seconds": 301.509,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Code"
+    },
+    {
+      "reported_cumulated_seconds": 0.359,
+      "session": "Relative_ADP_RHS_Context_Dev",
+      "theory": "Relative_ADP_RHS_Context_Dev.Relative_ADP_RHS_Context"
+    },
+    {
+      "reported_cumulated_seconds": 0.216,
+      "session": "Relative_ADP_Context_Update_Dev",
+      "theory": "Relative_ADP_Context_Update_Dev.Relative_ADP_Context_Update"
+    },
+    {
+      "reported_cumulated_seconds": 0.276,
+      "session": "Relative_ADP_Concrete_Transfer_Dev",
+      "theory": "Relative_ADP_Concrete_Transfer_Dev.Relative_ADP_Concrete_Transfer"
+    },
+    {
+      "reported_cumulated_seconds": 0.246,
+      "session": "Relative_ADP_Target_Decomposition_Dev",
+      "theory": "Relative_ADP_Target_Decomposition_Dev.Relative_ADP_Target_Decomposition"
+    },
+    {
+      "reported_cumulated_seconds": 0.16,
+      "session": "Relative_ADP_Root_Base_State_Dev",
+      "theory": "Relative_ADP_Root_Base_State_Dev.Relative_ADP_Root_Base_State"
+    },
+    {
+      "reported_cumulated_seconds": 0.243,
+      "session": "Relative_ADP_Carrier_Refinement_Dev",
+      "theory": "Relative_ADP_Carrier_Refinement_Dev.Relative_ADP_Carrier_Refinement"
+    },
+    {
+      "reported_cumulated_seconds": 0.47,
+      "session": "Relative_ADP_Hole_Transport_Dev",
+      "theory": "Relative_ADP_Hole_Transport_Dev.Relative_ADP_Hole_Transport"
+    },
+    {
+      "reported_cumulated_seconds": 0.26,
+      "session": "Relative_ADP_Hole_Descendant_Dev",
+      "theory": "Relative_ADP_Hole_Descendant_Dev.Relative_ADP_Hole_Descendant"
+    },
+    {
+      "reported_cumulated_seconds": 0.241,
+      "session": "Relative_ADP_Hole_Witness_Dev",
+      "theory": "Relative_ADP_Hole_Witness_Dev.Relative_ADP_Hole_Witness"
+    },
+    {
+      "reported_cumulated_seconds": 0.237,
+      "session": "Relative_ADP_Witness_Parallel_Dev",
+      "theory": "Relative_ADP_Witness_Parallel_Dev.Relative_ADP_Witness_Parallel"
+    },
+    {
+      "reported_cumulated_seconds": 0.511,
+      "session": "Relative_ADP_Concrete_Refinement_Dev",
+      "theory": "Relative_ADP_Concrete_Refinement_Dev.Relative_ADP_Concrete_Refinement"
+    },
+    {
+      "reported_cumulated_seconds": 0.173,
+      "session": "Relative_ADP_Root_Base_Carrier_Dev",
+      "theory": "Relative_ADP_Root_Base_Carrier_Dev.Relative_ADP_Root_Base_Carrier"
+    },
+    {
+      "reported_cumulated_seconds": 0.167,
+      "session": "Relative_ADP_Construction_State_Dev",
+      "theory": "Relative_ADP_Construction_State_Dev.Relative_ADP_Construction_State"
+    },
+    {
+      "reported_cumulated_seconds": 0.338,
+      "session": "Relative_ADP_Carrier_Step_Dev",
+      "theory": "Relative_ADP_Carrier_Step_Dev.Relative_ADP_Carrier_Step"
+    },
+    {
+      "reported_cumulated_seconds": 0.247,
+      "session": "Relative_ADP_Construction_Transition_Dev",
+      "theory": "Relative_ADP_Construction_Transition_Dev.Relative_ADP_Construction_Transition"
+    },
+    {
+      "reported_cumulated_seconds": 0.372,
+      "session": "Relative_ADP_Carrier_Run_Dev",
+      "theory": "Relative_ADP_Carrier_Run_Dev.Relative_ADP_Carrier_Run"
+    },
+    {
+      "reported_cumulated_seconds": 0.946,
+      "session": "Relative_ADP_Direct_Criterion_Dev",
+      "theory": "Relative_ADP_Direct_Criterion_Dev.Relative_ADP_Direct_Criterion"
+    },
+    {
+      "reported_cumulated_seconds": 0.408,
+      "session": "Relative_ADP_Processors_Dev",
+      "theory": "Relative_ADP_Processors_Dev.Relative_ADP_Processors"
+    },
+    {
+      "reported_cumulated_seconds": 0.46,
+      "session": "Relative_ADP_Dependency_Graph_Dev",
+      "theory": "Relative_ADP_Dependency_Graph_Dev.Finite_Branching_Dichotomy"
+    },
+    {
+      "reported_cumulated_seconds": 8.012,
+      "session": "Relative_ADP_Dependency_Graph_Dev",
+      "theory": "Relative_ADP_Dependency_Graph_Dev.Relative_ADP_Dependency_Graph"
+    },
+    {
+      "reported_cumulated_seconds": 4.595,
+      "session": "Relative_ADP_Dependency_Graph_Dev",
+      "theory": "Relative_ADP_Dependency_Graph_Dev.Relative_ADP_Dependency_Graph_Impl"
+    },
+    {
+      "reported_cumulated_seconds": 11.494,
+      "session": "Relative_ADP_Derelatification_Dev",
+      "theory": "Relative_ADP_Derelatification_Dev.Relative_ADP_Derelatification"
+    },
+    {
+      "reported_cumulated_seconds": 19.117,
+      "session": "Relative_ADP_Com_Reduction_Pair_Dev",
+      "theory": "Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Reduction_Pair"
+    },
+    {
+      "reported_cumulated_seconds": 36.101,
+      "session": "Relative_ADP_Checker_Dev",
+      "theory": "Relative_ADP_Checker_Dev.Relative_ADP_Checker_Adapter"
+    },
+    {
+      "reported_cumulated_seconds": 1.197,
+      "session": "Relative_ADP_Checker_Dev",
+      "theory": "Relative_ADP_Checker_Dev.Relative_ADP_Checker_Tests"
+    },
+    {
+      "reported_cumulated_seconds": 9.283,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 9.773,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 12.117,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 5.233,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 18.044,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 11.541,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 15.852,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 41.588,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 21.738,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 49.139,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 34.417,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 76.927,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Base.CSR_Checker_Base"
+    },
+    {
+      "reported_cumulated_seconds": 29.062,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Core.CSR_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 55.741,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 5.976,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 16.079,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 134.669,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 19.283,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 53.716,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 18.949,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 160.814,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 3.274,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 7.492,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Mixed_Subterm_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 13.673,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 5.43,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Frozen_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 6.668,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Hybrid_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 11.711,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 28.321,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 4.635,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 16.45,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Active_SCT"
+    },
+    {
+      "reported_cumulated_seconds": 67.609,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Finite_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 68.908,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 113.35,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Measure"
+    },
+    {
+      "reported_cumulated_seconds": 39.086,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Conservative_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 15.346,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Generic_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.344,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 28.92,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 156.574,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08"
+    },
+    {
+      "reported_cumulated_seconds": 109.773,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable"
+    },
+    {
+      "reported_cumulated_seconds": 1.73,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable_Exec"
+    },
+    {
+      "reported_cumulated_seconds": 3.458,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress"
+    },
+    {
+      "reported_cumulated_seconds": 190.634,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Extended_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 110.624,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Typed_General_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 43.987,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Typed_Recursive_Redpair.CSR_Muterm_Typed_Recursive_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 38.444,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 12.608,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 104.973,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 34.514,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.312,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 35.011,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 3.803,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 5.865,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 28.034,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 6.015,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 122.465,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 50.944,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.753,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 4.037,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 4.516,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 1.105,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 26.9,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 359.277,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Code_Haskell"
+    }
+  ]
+}

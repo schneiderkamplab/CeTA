@@ -12,12 +12,15 @@ def main():
     p.add_argument('--manifest', type=pathlib.Path, required=True)
     p.add_argument('--assets', type=pathlib.Path, required=True)
     p.add_argument('--checker', type=pathlib.Path, required=True)
+    p.add_argument('--hpc-checker', type=pathlib.Path)
+    p.add_argument('--export-tix', type=pathlib.Path)
+    p.add_argument('--checker-revision')
     p.add_argument('--output', type=pathlib.Path, required=True)
     p.add_argument('--jobs', type=int, default=4)
     p.add_argument('--rust-toolchain', default='1.95.0')
     a = p.parse_args()
-    if a.jobs < 1:
-        p.error('jobs must be positive')
+    if a.jobs < 1 or bool(a.hpc_checker) != bool(a.export_tix):
+        p.error('Positive jobs and paired HPC checker/exporter required')
     base = a.manifest.resolve().parent
     manifest = json.loads(a.manifest.read_text())
     assets = a.assets.resolve()
@@ -62,12 +65,13 @@ def main():
     env.update(profile)
     write(output / 'metadata.json', dict(scope=manifest['scope'], source_revision=asset_manifest['ferrum_revision'],
           ferrum_sha256=sha(ferrum), checker_sha256=sha(checker), oracle_sha256=audited['sha256'],
-          profile=profile, rust_toolchain=a.rust_toolchain, manifest_sha256=sha(a.manifest)))
+          profile=profile, rust_toolchain=a.rust_toolchain, manifest_sha256=sha(a.manifest),
+          checker_revision=a.checker_revision, hpc_sha256=sha(a.hpc_checker) if a.hpc_checker else None, runner_sha256=sha(pathlib.Path(__file__))))
 
     def one(row):
         run = output / row['id']
         run.mkdir()
-        result = dict(id=row['id'], root=row['root'], expected_answer=row['answer'], passed=False)
+        result = dict(id=row['id'], root=row['root'], expected_answer=row['answer'], input_sha256=row['input_sha256'], category=row['category'], passed=False)
         try:
             source = inside(frozen_inputs,row['root']) if frozen_inputs else inside(base, row['input'])
             if sha(source) != row['input_sha256']:
@@ -94,9 +98,26 @@ def main():
                 c = execute([str(checker), str(proof)], run, env, prefix, timeout)
                 c['certified'] = certified(c, prefix)
                 result['checks'].append(c)
-            result['passed'] = all(c['certified'] for c in result['checks'])
-            if not result['passed']:
+            if not all(c['certified'] for c in result['checks']):
                 raise ValueError('Twice-certification gate failed')
+            if a.hpc_checker:
+                prefix = run / 'hpc'
+                timeout = max(1440, 1.5 * row.get('reference_hpc', {}).get('elapsed_seconds', 0) + 30)
+                c = execute([str(a.hpc_checker.resolve()), str(proof)], run,
+                            env | {'HPCTIXFILE': str(run / 'coverage.tix')}, prefix, timeout)
+                c['certified'] = certified(c, prefix)
+                result['hpc'] = c
+                if not c['certified']:
+                    raise ValueError('Production/HPC agreement failed')
+                c = execute([str(a.export_tix.resolve()), str(run / 'coverage.tix')], run, env, run / 'coverage-export', 60)
+                if c['returncode'] != 0:
+                    raise ValueError('HPC export failed')
+                with (run / 'coverage-export.stdout').open('rb') as src, (run / 'coverage.tsv.gz').open('wb') as dst, gzip.GzipFile(filename='', mode='wb', fileobj=dst, mtime=0) as z:
+                    shutil.copyfileobj(src, z)
+                (run / 'coverage-export.stdout').unlink()
+                (run / 'coverage.tix').unlink()
+                result['coverage_sha256'] = sha(run / 'coverage.tsv.gz')
+            result['passed'] = True
         except Exception as e:
             result['error'] = type(e).__name__ + ': ' + str(e)
         write(run / 'result.json', result)

@@ -588,6 +588,12 @@ check_muterm_expanded_csr_proof ia j mu i dpp
   CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu False i dpp
     (CSR_Checker_Base.CSR_DP_Ordinary_Proof (Check_Termination.To_Trs_Proc va));
 check_muterm_expanded_csr_proof ia j mu i dpp
+  (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+    (Check_Termination.Zantema_To_SRS_Proc va))
+  = CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu False i
+      dpp (CSR_Checker_Base.CSR_DP_Ordinary_Proof
+            (Check_Termination.Zantema_To_SRS_Proc va));
+check_muterm_expanded_csr_proof ia j mu i dpp
   (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc) =
   CSR_Minimal_CSDP_Proofs.check_csr_dp_termination_proof_min ia j mu False i dpp
     (CSR_Checker_Base.CSR_DP_Subterm_Criterion_Proc v va vb vc);

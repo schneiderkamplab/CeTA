@@ -1,0 +1,26 @@
+{
+  "afp_file_manifest_uncompressed_sha256": "54041d1f9cd5cf6b5ecafaf338990fa99dbcfb9e98a7ea3543358ec449b55651",
+  "afp_files": 15849,
+  "afp_release": "2025-2",
+  "files": {
+    "ISABELLE_IDENTIFIER": {
+      "bytes": 14,
+      "sha256": "e927aad857b516496fed437fa18b20a854f5562f0cb1cc77b5d8ea8ff6fbba00"
+    },
+    "afp-files.json.gz": {
+      "bytes": 839389,
+      "sha256": "0d721e2f2bd32804d9b25b961fdcd5313784c0903c235d2e5a7435ee7d0fd451"
+    },
+    "afp-source.tar.gz": {
+      "bytes": 102581365,
+      "sha256": "890c37a2007b18aa0329a05cf63131e842b49e9cfba512bd1b9e04a7c434459a"
+    },
+    "isabelle-settings": {
+      "bytes": 4943,
+      "sha256": "aaa6cc6b78a3a17d0b7707166a20161c1a2c8c51a6534bb4f97fd340749a872f"
+    }
+  },
+  "ghc_version": "9.6.7",
+  "isabelle_version": "Isabelle2025-2",
+  "scope": "Exact private AFP source snapshot and frozen toolchain metadata. Isabelle and GHC installations remain external prerequisites; shared heaps are never required."
+}

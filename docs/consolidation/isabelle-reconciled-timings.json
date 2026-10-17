@@ -1,0 +1,887 @@
+{
+  "diagnostics": [],
+  "interpretation": "Isabelle-reported cumulated theory times; sums are not elapsed build wall time. Use the build receipt for wall time and exit status.",
+  "log_sha256": "a95c42c713760b4daefce08e526452a1098eb943f3dada730c48d0ba3013ecc5",
+  "reported_cumulated_seconds_by_session": {
+    "Code": 264.039,
+    "IsaFoR_3": 2533.022,
+    "Proof_Checker": 917.0949999999999,
+    "RFC_Absolute_Ext": 320.137,
+    "Relative_ADP_Ceta_Dev": 2493.0389999999998
+  },
+  "session_reports": [
+    "Timing Relative_ADP_Ceta_Dev (8 threads, 1402.657s elapsed time, 2996.426s cpu time, 163.182s GC time, factor 2.14)",
+    "Finished Relative_ADP_Ceta_Dev (0:23:32 elapsed time, 0:50:19 cpu time, factor 2.14)",
+    "Timing IsaFoR_3 (8 threads, 1456.991s elapsed time, 3178.915s cpu time, 184.220s GC time, factor 2.18)",
+    "Finished IsaFoR_3 (0:26:42 elapsed time, 0:57:52 cpu time, factor 2.17)",
+    "Timing Code (8 threads, 264.184s elapsed time, 269.481s cpu time, 9.489s GC time, factor 1.02)",
+    "Finished Code (0:04:28 elapsed time, 0:04:34 cpu time, factor 1.02)",
+    "Timing Proof_Checker (8 threads, 411.324s elapsed time, 1121.299s cpu time, 90.662s GC time, factor 2.73)",
+    "Finished Proof_Checker (0:08:21 elapsed time, 0:21:41 cpu time, factor 2.59)",
+    "Timing RFC_Absolute_Ext (8 threads, 320.485s elapsed time, 346.062s cpu time, 16.261s GC time, factor 1.08)",
+    "Finished RFC_Absolute_Ext (0:05:25 elapsed time, 0:05:51 cpu time, factor 1.08)",
+    "Finished at Sat Oct 17 13:34:07 GMT+2 2026"
+  ],
+  "theory_reports": [
+    {
+      "reported_cumulated_seconds": 0.291,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.Rule_Strengthening"
+    },
+    {
+      "reported_cumulated_seconds": 0.136,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Version"
+    },
+    {
+      "reported_cumulated_seconds": 4.699,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.AAECC_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 5.972,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.QDP_To_SRS_Zantema"
+    },
+    {
+      "reported_cumulated_seconds": 9.1,
+      "session": "IsaFoR_3",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 11.806,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 11.451,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 11.04,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 12.039,
+      "session": "IsaFoR_3",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 13.753,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 5.577,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 19.266,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 13.326,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 34.912,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.Check_Termination_Common"
+    },
+    {
+      "reported_cumulated_seconds": 20.868,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 13.965,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 22.347,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 47.411,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 61.762,
+      "session": "IsaFoR_3",
+      "theory": "RFC_Checker_Ext.RFC_Matchbounds_Ext"
+    },
+    {
+      "reported_cumulated_seconds": 54.186,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 33.902,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 49.503,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 80.585,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Base.CSR_Checker_Base"
+    },
+    {
+      "reported_cumulated_seconds": 34.859,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Core.CSR_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 61.047,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 15.294,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 6.112,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 144.261,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 19.471,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 148.149,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 54.237,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 16.242,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 146.753,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 2.4,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 5.581,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Mixed_Subterm_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 4.07,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Frozen_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 11.168,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 5.256,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Hybrid_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 10.554,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 24.862,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 2.672,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 10.262,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Active_SCT"
+    },
+    {
+      "reported_cumulated_seconds": 50.651,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Finite_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 88.7,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Measure"
+    },
+    {
+      "reported_cumulated_seconds": 55.274,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 31.123,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Conservative_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 12.652,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Generic_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.198,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 349.323,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker_Base.Check_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 23.985,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 3.718,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 6.027,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 17.877,
+      "session": "IsaFoR_3",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 12.508,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 30.897,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 28.17,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 135.647,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08"
+    },
+    {
+      "reported_cumulated_seconds": 60.77,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Base.CSR_Checker_Base"
+    },
+    {
+      "reported_cumulated_seconds": 94.958,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable"
+    },
+    {
+      "reported_cumulated_seconds": 1.41,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable_Exec"
+    },
+    {
+      "reported_cumulated_seconds": 3.289,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress"
+    },
+    {
+      "reported_cumulated_seconds": 27.927,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Core.CSR_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 55.368,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 14.497,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 5.406,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 17.008,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 168.139,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Extended_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 47.216,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 15.467,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 104.151,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Typed_General_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 137.261,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 2.433,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 5.622,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Mixed_Subterm_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 10.202,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 4.18,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Frozen_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 5.515,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Hybrid_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 9.27,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 19.001,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 6.661,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 42.647,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "CSR_Muterm_Typed_Recursive_Redpair.CSR_Muterm_Typed_Recursive_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 13.919,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Active_SCT"
+    },
+    {
+      "reported_cumulated_seconds": 55.223,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Finite_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 36.394,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 11.762,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 60.551,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 94.552,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Measure"
+    },
+    {
+      "reported_cumulated_seconds": 31.226,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Conservative_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 4.246,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 12.381,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Generic_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 24.532,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 99.381,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 33.178,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 132.981,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08"
+    },
+    {
+      "reported_cumulated_seconds": 2.321,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 90.437,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable"
+    },
+    {
+      "reported_cumulated_seconds": 1.309,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable_Exec"
+    },
+    {
+      "reported_cumulated_seconds": 2.85,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress"
+    },
+    {
+      "reported_cumulated_seconds": 34.335,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 3.773,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 5.873,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 25.862,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 6.119,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 167.401,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Extended_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 104.129,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Typed_General_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 130.956,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 42.659,
+      "session": "IsaFoR_3",
+      "theory": "CSR_Muterm_Typed_Recursive_Redpair.CSR_Muterm_Typed_Recursive_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 47.845,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.609,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 3.39,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 3.579,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.863,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 43.425,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 22.077,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 12.219,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 105.548,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 32.502,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.153,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 33.714,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 3.75,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 5.777,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 25.522,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.737,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 122.189,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 298.085,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Code_Haskell"
+    },
+    {
+      "reported_cumulated_seconds": 0.109,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Version"
+    },
+    {
+      "reported_cumulated_seconds": 7.589,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 8.26,
+      "session": "Proof_Checker",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 9.679,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 4.832,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 15.957,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 48.997,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.577,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 10.832,
+      "session": "Proof_Checker",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 3.235,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 14.052,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 3.368,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.829,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.426,
+      "session": "IsaFoR_3",
+      "theory": "Proof_Checker.All_of_Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 35.609,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 19.568,
+      "session": "Proof_Checker",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 41.219,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 29.036,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 53.185,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 5.16,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 115.157,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 121.41,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 4.009,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 16.027,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 45.863,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 35.841,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 2.192,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 38.464,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 15.06,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 11.572,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 34.605,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 3.628,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 5.767,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 25.252,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.903,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 125.232,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 47.552,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.545,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 3.002,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 3.25,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.78,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.418,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.All_of_Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 0.479,
+      "session": "Proof_Checker",
+      "theory": "Proof_Checker.Code_CSR_Production"
+    },
+    {
+      "reported_cumulated_seconds": 264.039,
+      "session": "Code",
+      "theory": "Code.Code_Haskell"
+    },
+    {
+      "reported_cumulated_seconds": 1.01,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Residual"
+    },
+    {
+      "reported_cumulated_seconds": 14.035,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Check"
+    },
+    {
+      "reported_cumulated_seconds": 39.272,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Cert"
+    },
+    {
+      "reported_cumulated_seconds": 265.82,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Code"
+    }
+  ]
+}

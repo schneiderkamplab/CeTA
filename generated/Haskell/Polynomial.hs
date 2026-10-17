@@ -1,9 +1,10 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  Polynomial(Poly, coeffs, equal_poly, zero_poly, smult, pCons, uminus_poly,
-              poly, order, degree, pderiv, content, map_poly, coeff, pseudo_mod,
-              primitive_part, div_field_poly_impl, modulo_poly, normalize_poly)
+  Polynomial(Poly, equal_poly, zero_poly, smult, pCons, uminus_poly, poly,
+              is_zero, order, degree, pderiv, content, map_poly, coeff,
+              pseudo_mod, primitive_part, div_field_poly_impl, modulo_poly,
+              normalize_poly)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -351,12 +352,12 @@ instance (Eq a, Arith.Idom_divide a) => Arith.Idom_divide (Poly a) where {
 poly :: forall a. (Arith.Comm_semiring_0 a) => Poly a -> a -> a;
 poly p a = Groups_List.horner_sum id a (coeffs p);
 
+is_zero :: forall a. (Arith.Zero a) => Poly a -> Bool;
+is_zero p = null (coeffs p);
+
 order :: forall a. (Eq a, Arith.Idom_divide a) => a -> Poly a -> Arith.Nat;
 order a p =
-  (if (case coeffs p of {
-        [] -> True;
-        _ : _ -> False;
-      })
+  (if is_zero p
     then (error :: forall a. String -> (() -> a) -> a)
            "order of polynomial 0 undefined" (\ _ -> order a p)
     else (if not (poly p a == Arith.zero) then Arith.zero_nat

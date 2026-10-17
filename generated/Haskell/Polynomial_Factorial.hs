@@ -28,11 +28,7 @@ gcd_poly_code_aux ::
     (Factorial_Ring.Factorial_ring_gcd a,
       Eq a) => Polynomial.Poly a -> Polynomial.Poly a -> Polynomial.Poly a;
 gcd_poly_code_aux p q =
-  (if (case Polynomial.coeffs q of {
-        [] -> True;
-        _ : _ -> False;
-      })
-    then Polynomial.normalize_poly p
+  (if Polynomial.is_zero q then Polynomial.normalize_poly p
     else gcd_poly_code_aux q
            (Polynomial.primitive_part (Polynomial.pseudo_mod p q)));
 
@@ -41,16 +37,8 @@ gcd_poly_code ::
     (Factorial_Ring.Factorial_ring_gcd a,
       Eq a) => Polynomial.Poly a -> Polynomial.Poly a -> Polynomial.Poly a;
 gcd_poly_code p q =
-  (if (case Polynomial.coeffs p of {
-        [] -> True;
-        _ : _ -> False;
-      })
-    then Polynomial.normalize_poly q
-    else (if (case Polynomial.coeffs q of {
-               [] -> True;
-               _ : _ -> False;
-             })
-           then Polynomial.normalize_poly p
+  (if Polynomial.is_zero p then Polynomial.normalize_poly q
+    else (if Polynomial.is_zero q then Polynomial.normalize_poly p
            else let {
                   c1 = Polynomial.content p;
                   c2 = Polynomial.content q;

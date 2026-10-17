@@ -12,8 +12,14 @@ main = do
     [directory] -> do
       names <- listDirectory directory
       mapM_ (output directory . dropExtension) (sort (filter ((== ".mix") . takeExtension) names))
-    _ -> fail "usage: export-mix DIRECTORY"
+    ["--modules", directory] -> do
+      names <- listDirectory directory
+      mapM_ (moduleInfo directory . dropExtension) (sort (filter ((== ".mix") . takeExtension) names))
+    _ -> fail "usage: export-mix [--modules] DIRECTORY"
   where
+    moduleInfo directory name = do
+      Mix source _ hash _ entries <- readMix [directory] (Left name)
+      putStrLn (intercalate "\t" [name,show hash,show (length entries),source])
     output directory name = do
       Mix source _ hash _ entries <- readMix [directory] (Left name)
       mapM_ (\(i,(pos,label)) -> putStrLn (intercalate "\t" [name,show hash,show i,source,show (fromHpcPos pos),show label])) (zip [0::Int ..] entries)
