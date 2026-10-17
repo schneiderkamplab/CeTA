@@ -381,6 +381,7 @@ session Proof_Checker in Proof_Checker = CSR_Guarded_List_Measure_Check +
     GM04_Full_Transformation
     GM04_Complete_Checker
     All_of_Proof_Checker
+    Code_Haskell_Configuration
     Code_CSR_Production
 
 session CSR_Muterm_Haskell_Export in "../target/csr-muterm-haskell-export-session" = Proof_Checker +
@@ -462,11 +463,9 @@ session Okui_IWC in "Session_Dirs/Okui_IWC" = IsaFoR_1 +
 
 (* code generation of CeTA *)
 
-session "Code" (ceta) in Code = IsaFoR_3 +
-  description \<open>IsaFoR directory Code\<close>
+session "Code" (ceta) in Code = Proof_Checker +
+  description \<open>Verified Haskell export of the production checker\<close>
   options [document = false]
-  sessions
-     Proof_Checker
   theories
      Code_Haskell
 

@@ -35,3 +35,9 @@ For all 3,484 frozen roots, use `--manifest
 tests/certification/replay-assets/full-replay.json`. The runner verifies and
 extracts `all-inputs.tar.gz` privately and preserves the calibrated per-root
 native search budgets. Use `--jobs 32` for parallel regeneration.
+
+Add `--hpc-checker /absolute/path/to/instrumented-ceta --export-tix
+/absolute/path/to/export-tix` to require instrumentation/production acceptance
+agreement on every freshly regenerated proof and retain its coverage. Record
+the checked source with `--checker-revision`. Coverage-denominator preservation
+is still a separate gate; acceptance agreement alone does not establish it.

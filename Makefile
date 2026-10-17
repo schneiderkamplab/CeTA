@@ -1,6 +1,9 @@
 EX_FILES:=$(shell ls examples/*.proof.xml)
 EX_FILES2:=$(shell ls examples/*.cpf.xml)
 HASKELL=Haskell
+GHC?=ghc
+CETA_BUILD_DIR?=target/haskell
+CETA_BIN_DIR?=.
 STATIC=
 override GHC_ARGS:= -O2 -package array -XRankNTypes  $(GHC_ARGS) $(if $(STATIC), -static -optl-static -optl-pthread, )
 SRC=src
@@ -26,7 +29,7 @@ test: ceta
 	@echo
 	@for i in $(EX_FILES); do \
 	   echo $$i; \
-	   ./ceta $$i > /dev/null 2> /dev/null ;  if [ $$? != 0 ]; then $(ERROR); else $(OK); fi; \
+	   "$(CETA_BIN_DIR)/ceta" $$i > /dev/null 2> /dev/null ;  if [ $$? != 0 ]; then $(ERROR); else $(OK); fi; \
 	done 
 	@echo
 	@echo "Testing examples (separate input, property, answer, and proof)"
@@ -36,36 +39,34 @@ test: ceta
 	   property=$${cpf%.cpf.xml}.property; \
 	   answer=$${cpf%.cpf.xml}.answer; \
 	   echo "$${cpf%.cpf.xml}.input.xml|.property|.answer|.cpf.xml" ; \
-	   ./ceta --inputf $$input --propertyf $$property --answerf $$answer $$cpf > /dev/null 2> /dev/null ;  if [ $$? != 0 ]; then $(ERROR); else $(OK); fi; \
+	   "$(CETA_BIN_DIR)/ceta" --inputf $$input --propertyf $$property --answerf $$answer $$cpf > /dev/null 2> /dev/null ;  if [ $$? != 0 ]; then $(ERROR); else $(OK); fi; \
 	done 
 	@echo "   "
 
-ceta:
-	@$(MAKE) haskell
+ceta: haskell
+
+ceta-ordinary:
+	@mkdir -p "$(CETA_BUILD_DIR)/ordinary" "$(CETA_BIN_DIR)"
+	$(GHC) $(GHC_ARGS) -i$(GENERATED)/$(HASKELL) -odir "$(CETA_BUILD_DIR)/ordinary" -hidir "$(CETA_BUILD_DIR)/ordinary" --make $(SRC)/$(HASKELL)/Main.hs -o "$(CETA_BIN_DIR)/ceta-ordinary"
 
 ceta-relative-adp:
-	@echo "Compiling integrated relative-ADP checker"
-	@cd $(GENERATED)/$(HASKELL) && ghc $(GHC_ARGS) --make Main_Relative_ADP.hs -o ceta-relative-adp > /dev/null 2>&1
-	@$(OK)
-	@mv $(GENERATED)/$(HASKELL)/ceta-relative-adp ceta
-	@$(OK)
+	@mkdir -p "$(CETA_BUILD_DIR)/relative-adp" "$(CETA_BIN_DIR)"
+	$(GHC) $(GHC_ARGS) -i$(GENERATED)/$(HASKELL) -odir "$(CETA_BUILD_DIR)/relative-adp" -hidir "$(CETA_BUILD_DIR)/relative-adp" --make $(SRC)/$(HASKELL)/Main_Relative_ADP.hs -o "$(CETA_BIN_DIR)/ceta-relative-adp"
 
 test-relative-adp: ceta-relative-adp
-	@./ceta examples/relative_adp_rt1_3.cpf.xml > /dev/null
-	@$(OK)
+	"$(CETA_BIN_DIR)/ceta-relative-adp" examples/relative_adp_rt1_3.cpf.xml
 
 haskell:
-	@echo "Compiling Haskell sources"
-	@cd $(GENERATED)/$(HASKELL) && ghc $(GHC_ARGS) --make Main -o ceta > /dev/null 2>&1
-	@$(OK)
-	@echo "Generating 'ceta'"
-	@mv $(GENERATED)/$(HASKELL)/ceta .
-	@$(OK)
+	@mkdir -p "$(CETA_BUILD_DIR)/rfc" "$(CETA_BIN_DIR)"
+	$(GHC) $(GHC_ARGS) -i$(GENERATED)/$(HASKELL) -odir "$(CETA_BUILD_DIR)/rfc" -hidir "$(CETA_BUILD_DIR)/rfc" --make $(SRC)/$(HASKELL)/Main_RFC.hs -o "$(CETA_BIN_DIR)/ceta"
 
 clean:
 	@echo "Cleaning directory"
 	@rm -f $(GENERATED)/$(HASKELL)/*.hi $(GENERATED)/$(HASKELL)/*.o
-	@rm -f ceta
+	@for flavor in rfc ordinary relative-adp; do \
+	  rm -f "$(CETA_BUILD_DIR)/$$flavor/"*.hi "$(CETA_BUILD_DIR)/$$flavor/"*.o; \
+	done
+	@rm -f "$(CETA_BIN_DIR)/ceta" "$(CETA_BIN_DIR)/ceta-ordinary" "$(CETA_BIN_DIR)/ceta-relative-adp"
 	@$(OK)
 
 isabelle-proof-base:
@@ -86,5 +87,5 @@ isabelle-proof-checker:
 isabelle-rfc-absolute:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/RFC_Absolute_Ext RFC_Absolute_Ext
 
-.PHONY: all clean haskell ceta-relative-adp test-relative-adp test isabelle-proof-base isabelle-csr-base \
+.PHONY: all clean haskell ceta ceta-ordinary ceta-relative-adp test-relative-adp test isabelle-proof-base isabelle-csr-base \
 	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker isabelle-rfc-absolute

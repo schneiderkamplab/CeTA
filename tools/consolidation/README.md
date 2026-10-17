@@ -76,6 +76,47 @@ enough to admit a proof. Full baseline/final replay and criterion-level mapping
 remain mandatory before claiming consolidation complete.
 
 The frozen full-corpus compact suite is now `tests/certification/compact`: 208
-positives and 384 semantic negatives. Run it with the same `suite.py` interface.
+positives and 408 semantic negatives. Run it with the same `suite.py` interface.
 Its denominator covers all observed eligible baseline obligations; uncovered
 semantic paths remain gaps, not evidence supporting removal.
+
+`recheck_corpus.py` checks every frozen certificate twice against a new binary
+and compares exact root/input/answer identities. Matching proof and input hashes
+allow reuse of the frozen correspondence audit; `--reaudit-inputs` repeats it.
+Optional HPC checking writes new coverage without replacing old evidence. This
+is a corpus gate, not a substitute for fresh Ferrum regeneration.
+
+`coverage_delta.py` maps unchanged spans or literal-preserving token sequences
+with identical HPC labels (monotone alignment or expressions unique in both
+module versions)
+across exports. Every required counter it cannot map is reported with its source
+expression. It never automatically retires obligations or approves a changed
+criterion. An identity comparison maps all 44,810 observed executable baseline
+counters; the remaining 943 baseline obligations are structural observations.
+
+Coverage migrations require an explicit `--coverage-transition` file. It pins
+the old denominator and new checker/HPC binaries, accounts for every original
+executable obligation, and reports retired counters separately from observed
+coverage. Changed enclosing expressions require recorded source review. Empty
+modules are included in `export-mix --modules DIRECTORY`; they are not ignored.
+Negative proofs also require the intended semantic rejection from HPC when
+instrumentation is enabled.
+
+`performance.py --instrumented` investigates positive HPC timings. Production
+repeats include semantic negatives. The process runner blocks on completion and
+uses a cancellable process-group watchdog; older timed-wait polling measurements
+are retained but can include up to 50 ms of observation delay. Investigations
+must compare both binaries with the same current measurement method.
+
+`build_verified.py` is the clean-build recipe for the export-cleanup layout:
+pass a committed `--revision`, external `--isabelle`/`--ghc` installations and a
+new `--output` directory. It extracts the committed source and exact AFP archive,
+uses private Isabelle settings/heaps, builds all four production targets, exports
+ordinary/RFC/relative code and compiles three separate CLIs plus HPC utilities.
+It does not deploy binaries or use another campaign's writable heaps.
+
+`compare_replay.py` compares a fresh packaged full replay with exact frozen root,
+answer and input identities and the reviewed coverage transition. Byte-identical
+proofs may reuse structural analysis from the durable baseline matrix; changed
+proofs are parsed again. Unknown nodes, missing retained coverage and newly
+unreviewed structural obligations are explicit failures requiring investigation.

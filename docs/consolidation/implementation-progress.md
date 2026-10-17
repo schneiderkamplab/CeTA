@@ -4,7 +4,7 @@ The user approved proceeding beyond the assessment checkpoint. Work remains
 isolated on `consolidated`. The full baseline replay, compact regression suite and isolated Isabelle/export/compile
 baseline pass. The pinned mains are reconciled in the working tree and all four
 Isabelle targets pass. The reconciled focused, compact and full-corpus gates pass. The pinned-main
-reconciliation is ready for its passing merge commit. The assessment document describes its earlier checkpoint;
+reconciliation is committed as `a485775`. The assessment document describes its earlier checkpoint;
 this document records subsequent implementation evidence.
 
 ## Passing committed infrastructure
@@ -135,3 +135,28 @@ identities, with twice production checking and HPC agreement, in 2,710.0 seconds
 There are no losses. `reconciled-corpus-evidence.json.gz` retains every result;
 `reconciled-verification.json` summarizes the completed reconciliation gates.
 The export cleanup and fresh final replay are the subsequent batch/milestone.
+
+## Verified export/build cleanup
+
+The cleanup source tree is `d2ce39d43bf411e290ad4cd0d462dbcad5686650`.
+All four Isabelle integration/export targets passed, and ordinary, RFC and
+relative generated modules are byte-identical to the reconciled exports.
+The relative comparison accounts explicitly for its eight existing helper
+modules; an initially incomplete expected-file list is preserved with its
+correction. No checker/theorem criterion changes in this batch.
+
+Shared Haskell configuration now has one source with compatibility imports.
+`Code` inherits `Proof_Checker`, while legacy aggregate sessions remain
+available. Relative export uses Isabelle's export store instead of writing into
+the source tree. Hand-written CLI adapters live in `src/Haskell`, with separate
+ordinary/RFC/relative binaries and object directories. Relative compilation no
+longer overwrites the primary `ceta`. The 358 generated-directory AppleDouble
+sidecars are removed; future sidecars are ignored.
+
+The new Makefile built all three CLIs in 271.4 seconds; HPC compiled separately
+in 99.9 seconds. The compact suite again passed 208 positives, 408 semantic
+negatives, production/HPC agreement and all retained coverage. Forty-one
+interleaved CPU-affinity-controlled repeats resolved the short-run timing
+candidates without a slowdown above 20%. `cleanup-verification.json` and
+`cleanup-evidence.json.gz` record the gates. The fresh 3,484-root final replay is
+running from durable assets against this frozen source tree.

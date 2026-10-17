@@ -4,3 +4,6 @@
 /ceta
 /target/
 __pycache__/
+
+# macOS resource forks are not generated checker source.
+._*

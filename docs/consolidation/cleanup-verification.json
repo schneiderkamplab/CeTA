@@ -1,0 +1,88 @@
+{
+  "binaries": {
+    "ceta": "a0f1d98394045935b8d399d3af55b7435e0a867845c3a7f7cae04e618c155b58",
+    "ceta-hpc": "65f1ff3f1b9095f143f657d5aba2c773a86e4694c30063e1dc55e1a02e902064",
+    "ceta-ordinary": "7e4be1154a49164cc9146912eed1b626975f0d8b41f15e0309727d1a6ed2c266",
+    "ceta-relative-adp": "e4fd7b66522d5d27a967a4aa264a88b86579218904cb91b36963cc669789d092"
+  },
+  "changes": [
+    "Shared Haskell export configuration with compatibility theory names",
+    "Code inherits Proof_Checker; legacy IsaFoR aggregate sessions remain available",
+    "Relative ADP uses standard Isabelle export storage instead of source-tree writes",
+    "Hand-written adapters moved into src/Haskell; separate ordinary/RFC/relative binaries and object directories",
+    "358 AppleDouble sidecars removed from generated/Haskell; future sidecars ignored"
+  ],
+  "confirmed_slowdowns": [],
+  "evidence": [
+    "cleanup-evidence.json.gz",
+    "cleanup-coverage-transition.json.gz",
+    "isabelle-cleanup-timings.json"
+  ],
+  "exports": {
+    "ordinary": {
+      "added": [],
+      "changed": [],
+      "identical": true,
+      "removed": []
+    },
+    "relative": {
+      "added": [],
+      "changed": [],
+      "identical": true,
+      "removed": []
+    },
+    "rfc": {
+      "added": [],
+      "changed": [],
+      "identical": true,
+      "removed": []
+    }
+  },
+  "final_fresh_replay_status": "Running separately against this exact immutable source tree; no final acceptance claimed yet.",
+  "focused_and_compact_passed": true,
+  "isabelle": {
+    "command": [
+      "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+      "build",
+      "-v",
+      "-j",
+      "2",
+      "-o",
+      "threads=8",
+      "-o",
+      "parallel_proofs=0",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Semantics/Reduction_Pair",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Checker",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/dev/Relative_ADP_Dev/Integration",
+      "-d",
+      "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+      "Proof_Checker",
+      "Code",
+      "RFC_Absolute_Ext",
+      "Relative_ADP_Ceta_Dev"
+    ],
+    "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+    "elapsed_seconds": 1373.9966061390005,
+    "environment": {
+      "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys",
+      "ISABELLE_IDENTIFIER": "consolidated_cleanup_20261017",
+      "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user"
+    },
+    "max_child_rss_kib": 29633484,
+    "memory_used_at_start": 307425587200,
+    "returncode": 0
+  },
+  "negatives": 408,
+  "positives": 208,
+  "reconciliation_commit": "a485775",
+  "required_coverage_preserved": true,
+  "retired_counters_explicit": 20,
+  "source_tree": "d2ce39d43bf411e290ad4cd0d462dbcad5686650"
+}
