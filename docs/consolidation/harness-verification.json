@@ -266,5 +266,23 @@
     ],
     "scope": "Supplemental category validation only; not the final full-corpus suite",
     "slowdown_candidates": []
+  },
+  "packaged_category_regeneration": {
+    "certified_roots": [
+      "TRS_Outermost/Strategy_outermost_added_08/n004.ari",
+      "TRS_Outermost/Strategy_outermost_added_08/n005.ari",
+      "TRS_Relative/Relative_05/rt1-3.ari",
+      "TRS_Relative/Relative_05/rt2-2.ari"
+    ],
+    "expected_roots": [
+      "TRS_Outermost/Strategy_outermost_added_08/n004.ari",
+      "TRS_Outermost/Strategy_outermost_added_08/n005.ari",
+      "TRS_Relative/Relative_05/rt1-3.ari",
+      "TRS_Relative/Relative_05/rt2-2.ari"
+    ],
+    "failures": [],
+    "passed": 4,
+    "roots": 4,
+    "scope": "Supplemental category validation only; not the final full-corpus suite"
   }
 }

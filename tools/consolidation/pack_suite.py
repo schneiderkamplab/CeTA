@@ -18,7 +18,9 @@ def main():
   positives.append(dict(id=rid,root=row['root'],category=row['category'],answer=row['answer'],input=str(inp.relative_to(dest)),input_sha256=sha(inp),certificate=str(proof.relative_to(dest)),compressed_sha256=sha(proof),cpf_sha256=r['cpf_sha256'],reference_checks=r['checks'],reference_hpc=r['hpc'],replay=r['replay'],correspondence=r['correspondence']))
  source_negatives=stage/'negatives/manifest.json'
  if source_negatives.exists():
-  for row in json.loads(source_negatives.read_text())['mutations']:
+  negative_manifest=json.loads(source_negatives.read_text())
+  write(dest/'negative-coverage-gaps.json',{k:v for k,v in negative_manifest.items() if k!='mutations'})
+  for row in negative_manifest['mutations']:
    if not row['validated']:raise ValueError('Unvalidated negative cannot be packaged')
    path=dest/'negatives'/(row['id']+'.cpf.xml.gz');path.parent.mkdir(exist_ok=True)
    with (stage/'negatives'/row['id']/'proof.cpf.xml').open('rb') as src,path.open('wb') as out,gzip.GzipFile(filename='',mode='wb',fileobj=out,mtime=0) as z:shutil.copyfileobj(src,z)

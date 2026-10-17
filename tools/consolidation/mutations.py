@@ -15,10 +15,11 @@ CASES=[
  ('zero-polynomial-offsets','.//ruleRemoval/interpretation',r'problem when orienting TRS.*could not ensure'),
  ('zero-matrix-monotonicity','.//ruleRemoval/interpretation',r'problem with monotonicity.*problem in ensuring monotonicity of strict relation')]
 def main():
- p=argparse.ArgumentParser();p.add_argument('--stage',required=True);a=p.parse_args();stage=CORPUS/a.stage;selected=json.loads((stage/'selection.json').read_text())['selected_ids'];out=stage/'negatives';out.mkdir(exist_ok=False);results=[]
+ p=argparse.ArgumentParser();p.add_argument('--stage',required=True);a=p.parse_args();stage=CORPUS/a.stage;selected=json.loads((stage/'selection.json').read_text())['selected_ids'];out=stage/'negatives';out.mkdir(exist_ok=False);results=[];skipped=[]
  for rid in selected:
   proof=stage/rid/'proof.cpf.xml';positive=json.loads((stage/rid/'result.json').read_text())
-  if positive['expected_answer']!='yes' or proof.stat().st_size>10_000_000:continue
+  if positive['expected_answer']!='yes' or proof.stat().st_size>10_000_000:
+   skipped.append(dict(source_id=rid,reason='Nontermination mutation semantics not implemented' if positive['expected_answer']!='yes' else 'Streaming mutation implementation needed for this large proof',bytes=proof.stat().st_size));continue
   for kind,xpath,diagnostic in CASES:
    tree=ET.parse(proof);node=tree.getroot().find(xpath)
    if node is None or not len(node):continue
@@ -48,6 +49,6 @@ def main():
     prefix=run/f'check-{i}';c=execute([str(SNAP/'artifacts/production_checker'),str(dest)],run,os.environ,prefix,120)
     text=prefix.with_suffix('.stdout').read_text()+prefix.with_suffix('.stderr').read_text();c['semantic_rejection']=c['returncode']==1 and not c['timed_out'] and text.startswith('REJECTED') and bool(re.search(diagnostic,text,re.S|re.I));record['checks'].append(c)
    record['validated']=all(c['semantic_rejection'] for c in record['checks']);write(run/'result.json',record);results.append(record)
- write(out/'manifest.json',dict(mutations=results,gaps=['map/Q preservation','mode-specific usable rules','minimality','freshness','order obligations','automaton closure and coverage beyond final-state validity'],scope='Only listed mutations whose intended semantic diagnostics are confirmed count as negative coverage.'))
+ write(out/'manifest.json',dict(mutations=results,skipped_sources=skipped,selected_sources_without_mutations=sorted(set(selected)-{r['source_id'] for r in results}),gaps=['map/Q preservation','mode-specific usable rules','minimality','freshness','order obligations beyond the listed polynomial/matrix cases','automaton closure and coverage beyond final-state validity'],scope='Only listed mutations whose intended semantic diagnostics are confirmed count as negative coverage.'))
  print(json.dumps(dict(generated=len(results),validated=sum(r['validated'] for r in results))));raise SystemExit(any(not r['validated'] for r in results))
 if __name__=='__main__':main()
