@@ -1,0 +1,67 @@
+{
+  "ferrum_revision": "b8b572ffba7dbb68f1ec58ef4ff918189f760a83",
+  "oracle_uncompressed_sha256": "b72d202f253aa8bcae86748c58dabb8a667ff45c874e1b8485d95af94edd79fd",
+  "files": {
+    "ferrum-source.tar.gz": {
+      "sha256": "af816db959b1481fa53f6a1755e90e1ead87f6f62a249804947205b4851a2a21",
+      "bytes": 2241822
+    },
+    "oracle-audit.json": {
+      "sha256": "e6c4349256661a950fa888a5ed6788cf9be5948cbeea1af16b34f2b48e5ef80f",
+      "bytes": 3115
+    },
+    "oracle.jsonl.gz": {
+      "sha256": "fd1c46d76aab94a74e5be00a3428d9f027c42a04a18e526a5ba976202faccbda",
+      "bytes": 51360777
+    },
+    "lp-tools.tar.gz": {
+      "sha256": "dcffd0f8b9560776541ff32dbe32fbec9532d3278a6f8d6262d6bb7fd46d15b4",
+      "bytes": 25166101
+    }
+  },
+  "lp_tools": "Frozen private search dependencies, including package metadata and licenses.",
+  "tools": {
+    "rustc": {
+      "command": [
+        "rustc",
+        "+1.95.0",
+        "--version"
+      ],
+      "version": "rustc 1.95.0 (59807616e 2026-04-14)",
+      "returncode": 0
+    },
+    "cargo": {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "--version"
+      ],
+      "version": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+      "returncode": 0
+    },
+    "python": {
+      "command": [
+        "python3",
+        "--version"
+      ],
+      "version": "Python 3.12.13",
+      "returncode": 0
+    },
+    "cvc5": {
+      "command": [
+        "cvc5",
+        "--version"
+      ],
+      "version": "cvc5 1.3.5.dev+main@dab79a3 [git dab79a3 on branch main]\ncompiled with GCC version 11.4.0 on Jul 13 2026 11:09:00\n\nCopyright (c) 2009-2026 by the authors and their institutional\naffiliations listed at https://cvc5.github.io/people.html\n\ncvc5 is open-source and is covered by the BSD license (modified).\n\nTHIS SOFTWARE IS PROVIDED AS-IS, WITHOUT ANY WARRANTIES.\nUSE AT YOUR OWN RISK.\n\nThis version of cvc5 is linked against the following non-(L)GPL'ed\nthird party libraries.\n\n  CaDiCaL - Simplified Satisfiability Solver\n  See https://github.com/arminbiere/cadical for copyright information.\n\n  Editline Library\n  See https://thrysoee.dk/editline\n  for copyright information.\n\n  SymFPU - The Symbolic Floating Point Unit\n  See https://github.com/martin-cs/symfpu/tree/main for copyright information.\n\nThis version of cvc5 is linked against the following third party\nlibraries covered by the LGPLv3 license.\nSee licenses/lgpl-3.0.txt for more information.\n\n  GMP - Gnu Multi Precision Arithmetic Library\n  See http://gmplib.org for copyright information.\n\n  LibPoly polynomial library\n  See https://github.com/SRI-CSL/libpoly for copyright and\n  licensing information.\n\ncvc5 is statically linked against these libraries. To recompile\nthis version of cvc5 with different versions of these libraries\nfollow the instructions on https://github.com/cvc5/cvc5/blob/main/INSTALL.md\n\nSee the file COPYING (distributed with the source code, and with\nall binaries) for the full cvc5 copyright, licensing, and (lack of)\nwarranty information.",
+      "returncode": 0
+    },
+    "z3": {
+      "command": [
+        "z3",
+        "--version"
+      ],
+      "version": "Z3 version 4.15.4 - 64 bit",
+      "returncode": 0
+    }
+  }
+}

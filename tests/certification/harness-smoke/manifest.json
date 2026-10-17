@@ -2,9 +2,45 @@
   "coverage_denominator_sha256": "99e3b6764c212bc359116b90daa7e922dcead2c6c2afa877be78a89f5c5a55d0",
   "gaps": [
     "Criterion-level mapping and exact nested contexts remain incomplete.",
-    "Negative map/Q, usable-rule, minimality, freshness, order and automaton coverage remains incomplete."
+    "Negative map/Q, mode-specific usable-rule, minimality, freshness, order and automaton closure coverage remains incomplete."
   ],
   "negatives": [
+    {
+      "certificate": "negatives/7ac05cea70e33e7531d32c4f-omitted-rfc-automaton-transitions.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/7ac05cea70e33e7531d32c4f-omitted-rfc-automaton-transitions/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.020331525010988116,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/7ac05cea70e33e7531d32c4f-omitted-rfc-automaton-transitions/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017438272014260292,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "aac3f8c247d4482e289270f987170e9e13032ea9acefe4e68806d149a58e3a59",
+      "expected_diagnostic_regex": "RFC Matchbox-relative tail states must occur as automaton right-hand-side states",
+      "id": "7ac05cea70e33e7531d32c4f-omitted-rfc-automaton-transitions",
+      "kind": "omitted-rfc-automaton-transitions",
+      "mutation_sha256": "22cd79fee4d95806e533829b0e67efc3f95efa76a5e4c14f8b889511da5b7d51",
+      "removed_obligations": 40,
+      "source_id": "7ac05cea70e33e7531d32c4f",
+      "source_sha256": "87ab4b28dcce5fd91e13eabf8e52eb5660a359408d6fd468923b3cdcdd66f8a2",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//rfcMatchboxRelativeBounds/bounds/treeAutomaton/transitions"
+    },
     {
       "certificate": "negatives/e4dba81b046d8ef4755cc700-omitted-csr-pairs.cpf.xml.gz",
       "checks": [
@@ -13,7 +49,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-csr-pairs/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.017849661177024245,
+          "elapsed_seconds": 0.017179102869704366,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -23,7 +59,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-csr-pairs/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.01838556700386107,
+          "elapsed_seconds": 0.017674400936812162,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -49,7 +85,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-graph-components/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.01870176591910422,
+          "elapsed_seconds": 0.017485891934484243,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -59,7 +95,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-graph-components/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.017730691004544497,
+          "elapsed_seconds": 0.018272416898980737,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -85,7 +121,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-dp-pairs/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.020139077911153436,
+          "elapsed_seconds": 0.01704555400647223,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -95,7 +131,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-dp-pairs/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.018140438944101334,
+          "elapsed_seconds": 0.017126454040408134,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -121,7 +157,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-graph-components/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.01790825999341905,
+          "elapsed_seconds": 0.01713105314411223,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -131,7 +167,7 @@
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
             "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-graph-components/proof.cpf.xml"
           ],
-          "elapsed_seconds": 0.01810569898225367,
+          "elapsed_seconds": 0.018736084923148155,
           "returncode": 1,
           "semantic_rejection": true,
           "timed_out": false
@@ -148,6 +184,78 @@
       "validated": true,
       "well_formed_xml": true,
       "xpath": ".//depGraphProc"
+    },
+    {
+      "certificate": "negatives/b93bf267e553f2aa3dcd470c-omitted-usable-rules.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-usable-rules/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01743524195626378,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-usable-rules/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017459011869505048,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "163fb115fd40500fa9b2a8945844ccbd3d5c9dc4b4b39979da56491e0a2d75dd",
+      "expected_diagnostic_regex": "is not closed under usable rules",
+      "id": "b93bf267e553f2aa3dcd470c-omitted-usable-rules",
+      "kind": "omitted-usable-rules",
+      "mutation_sha256": "a15f04749a283aea7e701bf5f6472f6ed6251482b4fd68351aef69ab7ff05345",
+      "removed_obligations": 2,
+      "source_id": "b93bf267e553f2aa3dcd470c",
+      "source_sha256": "e1f04d4a68270ea348a4267c0f0cab57654cdec90f54fddb74250862c138908a",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//usableRulesProc/usableRules/rules"
+    },
+    {
+      "certificate": "negatives/72dd540f208cb399ca464f49-omitted-automaton-transitions.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/72dd540f208cb399ca464f49-omitted-automaton-transitions/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017724280944094062,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/72dd540f208cb399ca464f49-omitted-automaton-transitions/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01762567088007927,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "8ca7cb1164239df0673f793241726221d15f701cd19aa98dcf95d75f8f01e6b2",
+      "expected_diagnostic_regex": "did not find mentioned final state in TA",
+      "id": "72dd540f208cb399ca464f49-omitted-automaton-transitions",
+      "kind": "omitted-automaton-transitions",
+      "mutation_sha256": "9def006553b485707daba84ea0bd97dfbfbd99ef264ecaad9ad09e42be1a35e1",
+      "removed_obligations": 16,
+      "source_id": "72dd540f208cb399ca464f49",
+      "source_sha256": "df2b7221aaeb20611738bb952b86ae6c614e81a78eead3d1d159aae919b8e9cb",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//trsTerminationProof/bounds/treeAutomaton/transitions"
     }
   ],
   "positives": [
@@ -832,7 +940,7 @@
   "scope": "Harness validation only: eight roots, not the final full-corpus compact suite",
   "selection": {
     "distinct_cover_constraints": 112,
-    "elapsed_seconds": 0.010014160769060254,
+    "elapsed_seconds": 0.010373858036473393,
     "lower_bound": 8,
     "minimum_cardinality_proved": true,
     "observed_obligations": 12503,
@@ -861,7 +969,7 @@
       {
         "bound": 8,
         "optimize_cost": true,
-        "seconds": 0.007333516143262386,
+        "seconds": 0.007717770989984274,
         "status": "sat"
       }
     ],

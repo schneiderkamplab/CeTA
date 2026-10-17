@@ -1,0 +1,42 @@
+{
+  "scope": "Harness verification only; full corpus and semantic consolidation remain pending",
+  "positive_roots": 8,
+  "negative_mutations": 7,
+  "production_twice": true,
+  "hpc_coverage": true,
+  "missing_coverage": [],
+  "checker_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+  "hpc_checker_sha256": "198b0c9da06a849f65135e3cd5858ba16c5e55594d656835fddd489ddcd14801",
+  "packaged_regeneration": {
+    "certified_roots": [
+      "SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari",
+      "SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari",
+      "TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari",
+      "TRS_Contextsensitive/Gutierrez_26/secret4.ari",
+      "TRS_Innermost/AG01_innermost/#4.17.ari",
+      "TRS_Innermost/Mixed_innermost/run_again1.ari",
+      "TRS_Standard/AG01/#3.33.ari",
+      "TRS_Standard/AProVE_10/double.ari"
+    ],
+    "expected_roots": [
+      "SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari",
+      "SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari",
+      "TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari",
+      "TRS_Contextsensitive/Gutierrez_26/secret4.ari",
+      "TRS_Innermost/AG01_innermost/#4.17.ari",
+      "TRS_Innermost/Mixed_innermost/run_again1.ari",
+      "TRS_Standard/AG01/#3.33.ari",
+      "TRS_Standard/AProVE_10/double.ari"
+    ],
+    "failures": [],
+    "passed": 8,
+    "roots": 8,
+    "scope": "Harness validation only: eight roots, not the final full-corpus compact suite"
+  },
+  "controlled_performance": {
+    "acceptance_passed": true,
+    "confirmed_slowdowns": []
+  },
+  "harness_tests": 7,
+  "original_audit_tests": 22
+}

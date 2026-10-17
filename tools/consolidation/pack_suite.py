@@ -20,6 +20,6 @@ def main():
    with (stage/'negatives'/row['id']/'proof.cpf.xml').open('rb') as src,path.open('wb') as out,gzip.GzipFile(filename='',mode='wb',fileobj=out,mtime=0) as z:shutil.copyfileobj(src,z)
    negatives.append(row|dict(certificate=str(path.relative_to(dest)),compressed_sha256=sha(path)))
  shutil.copy2(stage/'coverage-denominator.json',dest/'coverage-denominator.json');shutil.copy2(stage/'processor-registry.json',dest/'processor-registry.json')
- write(dest/'manifest.json',dict(schema_version=1,scope=a.scope,positives=positives,negatives=negatives,selection=selection,provenance=metadata,coverage_denominator_sha256=sha(dest/'coverage-denominator.json'),gaps=['Criterion-level mapping and exact nested contexts remain incomplete.','Negative map/Q, usable-rule, minimality, freshness, order and automaton coverage remains incomplete.']))
+ write(dest/'manifest.json',dict(schema_version=1,scope=a.scope,positives=positives,negatives=negatives,selection=selection,provenance=metadata,coverage_denominator_sha256=sha(dest/'coverage-denominator.json'),gaps=['Criterion-level mapping and exact nested contexts remain incomplete.','Negative map/Q, mode-specific usable-rule, minimality, freshness, order and automaton closure coverage remains incomplete.']))
  print(json.dumps(dict(destination=str(dest),positives=len(positives),negatives=len(negatives),scope=a.scope)))
 if __name__=='__main__':main()

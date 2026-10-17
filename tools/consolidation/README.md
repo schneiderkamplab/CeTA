@@ -5,7 +5,7 @@ or modify a parent worktree. Private builds, full corpora and logs belong under
 `target/`, which is deliberately excluded from Git.
 
 The committed `tests/certification/harness-smoke` data validates the harness:
-eight genuinely regenerated proofs and four semantic mutations. It is **not**
+eight genuinely regenerated proofs and seven semantic mutations. It is **not**
 the minimized full-corpus suite or evidence of complete processor coverage.
 
 ```
@@ -38,6 +38,11 @@ denominator. `setcover.py` minimizes observed obligations without an arbitrary
 root cap and reports whether its cardinality bound proves minimality. Secondary
 runtime and storage optimization is bounded and does not imply a proof of
 optimality.
+
+`performance.py` investigates reported slowdowns with a warmup and alternating
+reference/candidate repeats. It verifies binary and certificate identities and
+requires successful certification on every repeat. A median slowdown above 20%
+remains a failing performance gate, with all measurements retained.
 
 The `vendor` root-correspondence auditors are copied unchanged from the frozen
 Ferrum producing revision `b8b572ffba7dbb68f1ec58ef4ff918189f760a83` (its

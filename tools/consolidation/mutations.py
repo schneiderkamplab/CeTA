@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Semantic rejection probes derived from real selected positive certificates.
-Only transformation-pair completeness and graph-child completeness are handled
-here; all other required side conditions remain explicit coverage gaps.
+Transformation pairs, graph children, usable closure and automaton-state
+obligations are handled here; other side conditions remain explicit gaps.
 """
 import argparse,hashlib,json,os,pathlib,re,xml.etree.ElementTree as ET
 from replay import ROOT,CORPUS,SNAP,execute,sha,write
 CASES=[
  ('omitted-dp-pairs','.//dpTrans/dps/rules',r'the DP .*does not appear in the DP problem'),
  ('omitted-csr-pairs','.//csrImprovedDependencyPairs/dps/rules',r'missing replacement-map dependency pair'),
- ('omitted-graph-components','.//depGraphProc',r'(?:Dependency Pair|CSR dependency pair).*is missing in decomposition')]
+ ('omitted-graph-components','.//depGraphProc',r'(?:Dependency Pair|CSR dependency pair).*is missing in decomposition'),
+ ('omitted-usable-rules','.//usableRulesProc/usableRules/rules',r'is not closed under usable rules'),
+ ('omitted-automaton-transitions','.//trsTerminationProof/bounds/treeAutomaton/transitions',r'did not find mentioned final state in TA'),
+ ('omitted-rfc-automaton-transitions','.//rfcMatchboxRelativeBounds/bounds/treeAutomaton/transitions',r'RFC Matchbox-relative tail states must occur as automaton right-hand-side states')]
 def main():
  p=argparse.ArgumentParser();p.add_argument('--stage',required=True);a=p.parse_args();stage=CORPUS/a.stage;selected=json.loads((stage/'selection.json').read_text())['selected_ids'];out=stage/'negatives';out.mkdir(exist_ok=False);results=[]
  for rid in selected:
@@ -26,6 +29,6 @@ def main():
     prefix=run/f'check-{i}';c=execute([str(SNAP/'artifacts/production_checker'),str(dest)],run,os.environ,prefix,120)
     text=prefix.with_suffix('.stdout').read_text()+prefix.with_suffix('.stderr').read_text();c['semantic_rejection']=c['returncode']==1 and not c['timed_out'] and text.startswith('REJECTED') and bool(re.search(diagnostic,text,re.S|re.I));record['checks'].append(c)
    record['validated']=all(c['semantic_rejection'] for c in record['checks']);write(run/'result.json',record);results.append(record)
- write(out/'manifest.json',dict(mutations=results,gaps=['map/Q preservation','usable rules','minimality','freshness','order obligations','automaton conditions'],scope='Only listed mutations whose intended semantic diagnostics are confirmed count as negative coverage.'))
+ write(out/'manifest.json',dict(mutations=results,gaps=['map/Q preservation','mode-specific usable rules','minimality','freshness','order obligations','automaton closure and coverage beyond final-state validity'],scope='Only listed mutations whose intended semantic diagnostics are confirmed count as negative coverage.'))
  print(json.dumps(dict(generated=len(results),validated=sum(r['validated'] for r in results))));raise SystemExit(any(not r['validated'] for r in results))
 if __name__=='__main__':main()

@@ -59,7 +59,13 @@ def main():
    with gzip.open(cert,'rb') as src,proof.open('wb') as dst:shutil.copyfileobj(src,dst)
    if sha(proof)!=row['mutation_sha256']:raise ValueError('Negative proof hash mismatch')
    import xml.etree.ElementTree as ET
-   ET.parse(proof);r['checks']=[]
+   tree=ET.parse(proof)
+   sources=[p for p in manifest['positives'] if p['id']==row['source_id']]
+   if len(sources)!=1 or sources[0]['cpf_sha256']!=row['source_sha256']:raise ValueError('Negative source identity mismatch')
+   source_proof=output/sources[0]['id']/'proof.cpf.xml'
+   if sha(source_proof)!=row['source_sha256']:raise ValueError('Negative source proof hash mismatch')
+   if ET.tostring(tree.getroot().find('input'))!=ET.tostring(ET.parse(source_proof).getroot().find('input')):raise ValueError('Negative changes original input')
+   r['checks']=[]
    for i in [1,2]:
     prefix=run/f'check-{i}';c=execute([str(checker),str(proof)],run,env,prefix,120);text=prefix.with_suffix('.stdout').read_text()+prefix.with_suffix('.stderr').read_text();c['semantic_rejection']=c['returncode']==1 and not c['timed_out'] and text.startswith('REJECTED') and bool(re.search(row['expected_diagnostic_regex'],text,re.S|re.I));r['checks'].append(c)
    if not all(x['semantic_rejection'] for x in r['checks']):raise ValueError('Intended semantic rejection not observed')
