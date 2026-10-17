@@ -1,0 +1,26 @@
+{
+  "scope": "Initial calibration of failed native-action budgets; original failures retained. Source, oracle and proof criteria unchanged.",
+  "roots": [
+    {
+      "root": "SRS_Standard/Zantema_04/z036.ari",
+      "replay_seconds": 6.227409105980769,
+      "eligible": true,
+      "slowest_action_ms": 347,
+      "oracle_time_scale_percent": 1600
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/88143.ari",
+      "replay_seconds": 9.583976814989,
+      "eligible": true,
+      "slowest_action_ms": 4389,
+      "oracle_time_scale_percent": 1600
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/159731.ari",
+      "replay_seconds": 17.445775475120172,
+      "eligible": true,
+      "slowest_action_ms": 12192,
+      "oracle_time_scale_percent": 1600
+    }
+  ]
+}

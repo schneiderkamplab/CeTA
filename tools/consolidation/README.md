@@ -43,6 +43,13 @@ checks strict/weak rule partitions and outermost strategy without changing the
 vendored original auditors. `map_coverage.py` links changed declarations to HPC
 function positions and lists unobserved or unmapped declarations explicitly.
 
+`reconcile_replays.py` can account for failed roots using separately verified
+replays with calibrated search budgets. It requires exactly the failed root
+identities, unchanged inputs/outcomes and pinned binaries/oracle, and preserves
+all original failures. Only the native-action time scale may differ. Stage
+joining requires `--allow-time-budget-differences` for that case and records the
+effective scale per root. Packaged regeneration preserves those settings.
+
 `coverage.py` distinguishes structural CPF observations from theorem coverage.
 Its lexical parser/checker links require review; exact nested semantic states
 remain explicit gaps. Unknown nodes must not be silently removed from the

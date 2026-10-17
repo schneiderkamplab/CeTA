@@ -33,8 +33,10 @@ def main():
     p.add_argument('--input-directory',type=pathlib.Path,default=CORPUS/'frozen-inputs')
     p.add_argument('--checker-timeout',type=float,default=600)
     p.add_argument('--hpc-timeout',type=float,default=1200)
+    p.add_argument('--oracle-time-scale-percent',type=int)
     a=p.parse_args()
     if a.jobs<1 or a.checker_timeout<=0 or a.hpc_timeout<=0:p.error('Jobs and timeouts must be positive')
+    if a.oracle_time_scale_percent is not None and a.oracle_time_scale_percent<=0:p.error('Oracle time scale must be positive')
     if pathlib.Path(a.stage).name!=a.stage or a.stage in {'.','..'}:p.error('Stage must be a single directory name')
     rows=json.loads(a.input_manifest.read_text())['roots']
     if len({r['root'] for r in rows})!=len(rows) or len({r['id'] for r in rows})!=len(rows):raise ValueError('Duplicate root identities')
@@ -50,9 +52,11 @@ def main():
     audit=audit_oracle(oracle);write(stage/'oracle-audit.json',audit)
     if audit['forbidden'] or audit['unresolved_aliases'] or audit['sha256']!=sha(oracle):raise RuntimeError('Frozen oracle audit failed')
     profile=json.loads((SNAP/'manifests/srs-native-20261013/unified-final-v593/environment.json').read_text())
+    if a.oracle_time_scale_percent is not None:profile['FERRUM_ORACLE_TIME_SCALE_PERCENT']=str(a.oracle_time_scale_percent)
     profile['FERRUM_LP_PYTHONPATH']=str(BUILD/'lp-tools');profile['CETA_CSR_BIN']=str(checker);profile['PYTHONDONTWRITEBYTECODE']='1'
     env={k:v for k,v in os.environ.items() if not k.startswith(('FERRUM_','CETA_','HPCTIX'))};env.update(profile)
     meta=dict(ferrum_sha256=sha(ferrum),checker_sha256=sha(checker),hpc_sha256=sha(hpc),oracle_sha256=sha(oracle),source_revision=json.loads((ROOT/'docs/consolidation/snapshot.json').read_text())['latest_producing_source_revision'],profile=profile,roots=[dict(root=r['root'],answer=r['answer'],input_sha256=r.get('input_sha256')) for r in rows],hpc_source_revision=a.checker_source_revision,runner_sha256=sha(pathlib.Path(__file__)),root_ceiling_policy='max(2880 seconds, 1.2 * retained measured runtime + 60 seconds)',checker_ceiling_seconds=a.checker_timeout,hpc_ceiling_seconds=a.hpc_timeout,input_manifest_sha256=sha(a.input_manifest))
+    for entry,row in zip(meta['roots'],rows):entry['oracle_time_scale_percent']=int(row.get('oracle_time_scale_percent',profile['FERRUM_ORACLE_TIME_SCALE_PERCENT']))
     write(stage/'metadata.json',meta)
     def one(row):
         run=stage/row['id'];run.mkdir();result=dict(id=row['id'],root=row['root'],expected_answer=row['answer'],category=row['category'],eligible=False)
@@ -65,6 +69,9 @@ def main():
             proof=run/'proof.cpf.xml';events=run/'processor-events.jsonl';ceiling=max(2880,math.ceil(row['prior_replay_seconds']*1.2+60))
             cmd=[str(ferrum),'prove',str(inp),'--cpf',str(proof),'--cpf-mode','auto','--strategy',f'timeout({ceiling}s,fail)','--utility-guidance-manifest',str(oracle),'--no-top-level-llm','--processor-events',str(events)]
             localenv=env|{'FERRUM_PROGRESS_LOG':str(run/'progress.jsonl')}
+            scale=int(row.get('oracle_time_scale_percent',profile['FERRUM_ORACLE_TIME_SCALE_PERCENT']))
+            if scale<=0:raise ValueError('Invalid per-root search budget')
+            localenv['FERRUM_ORACLE_TIME_SCALE_PERCENT']=str(scale);result['oracle_time_scale_percent']=scale
             result['replay']=execute(cmd,run,localenv,run/'ferrum',ceiling+30)
             if result['replay']['returncode']!=0 or not proof.exists():raise ValueError('Fresh replay produced no successful certificate')
             result['input_sha256']=sha(inp);result['cpf_sha256']=sha(proof)

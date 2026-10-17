@@ -73,7 +73,9 @@ def main():
             command = [str(ferrum), 'prove', str(inp), '--cpf', str(proof), '--cpf-mode', 'auto',
                        '--strategy', f'timeout({ceiling}s,fail)', '--utility-guidance-manifest', str(oracle),
                        '--no-top-level-llm', '--processor-events', str(run / 'processor-events.jsonl')]
-            result['replay'] = execute(command, run, env, run / 'ferrum', ceiling + 30)
+            localenv=env|{'FERRUM_ORACLE_TIME_SCALE_PERCENT':str(row.get('oracle_time_scale_percent',profile['FERRUM_ORACLE_TIME_SCALE_PERCENT']))}
+            result['oracle_time_scale_percent']=int(localenv['FERRUM_ORACLE_TIME_SCALE_PERCENT'])
+            result['replay'] = execute(command, run, localenv, run / 'ferrum', ceiling + 30)
             if result['replay']['returncode'] != 0 or result['replay']['timed_out'] or not proof.is_file():
                 raise ValueError('Fresh replay failed')
             result['cpf_sha256'] = sha(proof)

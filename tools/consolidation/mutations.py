@@ -24,6 +24,9 @@ def main():
    tree=ET.parse(proof);node=tree.getroot().find(xpath)
    if node is None or not len(node):continue
    if kind=='omitted-graph-components' and not all(c.tag=='component' for c in node):continue
+   if kind in {'zero-polynomial-offsets','zero-matrix-monotonicity'}:
+    removed_rules=tree.getroot().find('.//ruleRemoval/trs/rules')
+    if removed_rules is None or not len(removed_rules):continue
    if kind=='zero-polynomial-offsets':
     if node.find('type/polynomial/domain/naturals') is None:continue
     integers=node.findall('interpret//integer')

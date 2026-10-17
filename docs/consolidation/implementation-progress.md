@@ -44,6 +44,14 @@ are freshly replayed in `baseline-remaining-o2`. `baseline-extra` contains the s
 supplemental roots. Their union must match the exact 3,484-root inventory before
 the final coverage denominator is frozen. Interrupted work is not a pass.
 
+Three later fresh replays returned `Unknown` after internal match-bounds action
+budgets expired. Separate replays with the same rebuilt source and oracle at a
+larger time scale regenerated all three proofs, passed original-input audits,
+production twice and optimized HPC. `search-budget-calibration.json` records
+these results. Their original failures remain retained. The final baseline
+must reconcile every failed identity and freeze effective per-root time budgets;
+simply excluding the failed attempts from the root set is forbidden.
+
 ## Gates still pending
 
 The isolated Isabelle build covers ordinary integration/export, absolute RFC

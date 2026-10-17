@@ -8,6 +8,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--stage', required=True)
     p.add_argument('--sources', nargs='+', required=True)
+    p.add_argument('--allow-time-budget-differences', action='store_true')
     a = p.parse_args()
     for name in [a.stage] + a.sources:
         if pathlib.Path(name).name != name or name in {'.', '..'}:
@@ -27,16 +28,21 @@ def main():
         if first is None:
             first = metadata
         else:
-            for key in ['ferrum_sha256', 'checker_sha256', 'hpc_sha256', 'oracle_sha256', 'source_revision', 'hpc_source_revision', 'profile']:
+            for key in ['ferrum_sha256', 'checker_sha256', 'hpc_sha256', 'oracle_sha256', 'source_revision', 'hpc_source_revision']:
                 if first[key] != metadata[key]:
                     raise ValueError('Incompatible evidence: ' + key)
+            left,right=first['profile'].copy(),metadata['profile'].copy()
+            if a.allow_time_budget_differences:
+                left.pop('FERRUM_ORACLE_TIME_SCALE_PERCENT',None);right.pop('FERRUM_ORACLE_TIME_SCALE_PERCENT',None)
+            if left!=right:raise ValueError('Incompatible replay profiles')
         for row in rows:
             if row['root'] in seen:
                 raise ValueError('Overlapping root sets: ' + row['root'])
             seen.add(row['root'])
+            row['oracle_time_scale_percent']=int(row.get('oracle_time_scale_percent',metadata['profile']['FERRUM_ORACLE_TIME_SCALE_PERCENT']))
             directories.append((row['id'], src / row['id']))
         records.extend(rows)
-        roots.extend(metadata['roots'])
+        roots.extend(r|dict(oracle_time_scale_percent=int(r.get('oracle_time_scale_percent',metadata['profile']['FERRUM_ORACLE_TIME_SCALE_PERCENT']))) for r in metadata['roots'])
         receipts.append(dict(stage=name, metadata_sha256=sha(src / 'metadata.json'), summary_sha256=sha(src / 'summary.json')))
     dest = CORPUS / a.stage
     dest.mkdir(exist_ok=False)
