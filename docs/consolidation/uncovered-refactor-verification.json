@@ -1,0 +1,59 @@
+{
+  "all_targets_passed": true,
+  "base_commit": "85b6876f502ad1be79c27596c15ab55139380362",
+  "binaries": {
+    "ceta": "a0f1d98394045935b8d399d3af55b7435e0a867845c3a7f7cae04e618c155b58",
+    "ceta-ordinary": "7e4be1154a49164cc9146912eed1b626975f0d8b41f15e0309727d1a6ed2c266",
+    "ceta-relative-adp": "e4fd7b66522d5d27a967a4aa264a88b86579218904cb91b36963cc669789d092"
+  },
+  "clean_build_byte_identical": true,
+  "compact_positives": 208,
+  "compact_semantic_negatives": 408,
+  "confirmed_slowdowns": [],
+  "coverage_limits": [
+    "No genuine relative-ADP processor replay was added.",
+    "No positive outermost RZ transformation replay was added.",
+    "Formal guard lemmas are separate from runtime and genuine replay coverage."
+  ],
+  "evidence": "uncovered-refactor-evidence.json.gz",
+  "evidence_sha256": "23f05b4d85279a34cfb906645268d88d817fc54da73d68347741b62b4d2eea90",
+  "explicitly_retired_counters": 20,
+  "exports": {
+    "ordinary": {
+      "byte_identical": true,
+      "modules": 398
+    },
+    "relative": {
+      "byte_identical": true,
+      "modules": 9
+    },
+    "rfc": {
+      "byte_identical": true,
+      "modules": 401
+    }
+  },
+  "extracted_renaming_lemmas": 5,
+  "failed_attempts": "Initial copied-source-path build interrupted to preserve compatible dependency reuse; missing compare_order premise corrected; index-test proof automation replaced by explicit bound reasoning; workspace mount interruption retained. None of these attempts is counted as a passing gate.",
+  "formal_guard_rejection_lemmas": 10,
+  "frozen_denominator": 45753,
+  "full_replay_evidence_reused": {
+    "reason": "The clean-built checker is byte-identical to the checker used by the retained fresh full replay. No new full Ferrum replay was run for this proof/layout-only refactor.",
+    "report": "final-verification.json",
+    "report_sha256": "667e56369be4d633769528cd330ef1a0074f0a83e47364a9b7e2211b912e57d6",
+    "roots": 3484
+  },
+  "hpc_reuse": "The previously verified instrumented checker is reused after all generated RFC modules and the hand-written adapter are verified byte-identical. The new production binary is also byte-identical.",
+  "isabelle_targets": [
+    "Proof_Checker",
+    "Code",
+    "RFC_Absolute_Ext",
+    "Relative_ADP_Ceta_Dev",
+    "Outermost_RZ_Ext"
+  ],
+  "legacy_and_aggregate_build_entry_points_passed": true,
+  "missing_coverage": [],
+  "passed": true,
+  "relocated_files": 50,
+  "required_coverage_observed": 45733,
+  "source_tree": "3ba09e4ce707c5f590f2ee942a09fbc96f5f3ae1"
+}

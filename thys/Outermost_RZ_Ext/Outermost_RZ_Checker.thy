@@ -85,29 +85,26 @@ where
         (tp_ops.mk I False [] generated []) child
     })"
 
-lemma check_outermost_rz_termination_proof_sound:
-  assumes I: "tp_spec I" and J: "dpp_spec J"
-    and ok: "isOK (check_outermost_rz_termination_proof I J i R p)"
+text \<open>The transformation criterion is independent of the recursive certificate
+checker. Its premises expose the source, signature, cover and residual obligations.\<close>
+
+lemma rz_generated_rules_sound:
+  fixes R :: "('f::compare_order, string) rules"
+  assumes wf: "wf_trs (set R)"
+    and quasi_check: "rz_quasi_left_linear_check R"
+    and fresh: "(c,0) \<notin> set (remdups (funas_trs_list R))"
+    and marker: "(block,0) \<notin> set (remdups ((c,0) # remdups (funas_trs_list R)))"
+    and flat: "rz_flat_map_check (remdups ((c,0) # remdups (funas_trs_list R))) flats"
+    and patterns: "rz_pattern_check (remdups ((c,0) # remdups (funas_trs_list R))) patterns"
+    and cover: "rz_cover_check (remdups ((c,0) # remdups (funas_trs_list R)))
+      block ''__rz_cover'' (rz_linear_lhss R @ patterns)"
+    and generated_SN: "SN (rstep (set
+      (rz_generated_rules top_sym up_sym down block c flats R patterns)))"
   shows "SN (ostep (fst ` set R) (set R))"
-proof (cases p)
-  case (Outermost_RZ_Transformation top_sym up_sym down block c flats patterns child)
+proof -
   let ?F0 = "remdups (funas_trs_list R)"
   let ?F1 = "remdups ((c,0) # ?F0)"
   let ?generated = "rz_generated_rules top_sym up_sym down block c flats R patterns"
-  from ok Outermost_RZ_Transformation have wf: "wf_trs (set R)"
-    and quasi_check: "rz_quasi_left_linear_check R"
-    and fresh: "(c,0) \<notin> set ?F0"
-    and marker: "(block,0) \<notin> set ?F1"
-    and flat: "rz_flat_map_check ?F1 flats"
-    and patterns: "rz_pattern_check ?F1 patterns"
-    and cover: "rz_cover_check ?F1 block ''__rz_cover''
-      (rz_linear_lhss R @ patterns)"
-    and child_ok: "isOK (check_trs_termination_proof I J False (add_index i 1)
-      (tp_ops.mk I False [] ?generated []) child)"
-    by (auto simp: Let_def)
-  from check_trs_termination_proof[OF I J child_ok]
-  have generated_SN: "SN (rstep (set ?generated))"
-    unfolding tp_spec.mk_sound[OF I] SN_qrel_def by auto
   have quasi: "quasi_left_linear_lhss (fst ` set R)"
     by (rule rz_quasi_left_linear_check_sound[OF quasi_check])
   have source_sig: "funas_trs (set R) \<subseteq> set ?F0" by simp
@@ -135,6 +132,34 @@ proof (cases p)
     by unfold_locales auto
   show ?thesis
     by (rule C.SN_sig_ostep_imp_SN_ostep[OF wf source_sig quasi source_SN])
+qed
+
+lemma check_outermost_rz_termination_proof_sound:
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and ok: "isOK (check_outermost_rz_termination_proof I J i R p)"
+  shows "SN (ostep (fst ` set R) (set R))"
+proof (cases p)
+  case (Outermost_RZ_Transformation top_sym up_sym down block c flats patterns child)
+  let ?F0 = "remdups (funas_trs_list R)"
+  let ?F1 = "remdups ((c,0) # ?F0)"
+  let ?generated = "rz_generated_rules top_sym up_sym down block c flats R patterns"
+  from ok Outermost_RZ_Transformation have wf: "wf_trs (set R)"
+    and quasi_check: "rz_quasi_left_linear_check R"
+    and fresh: "(c,0) \<notin> set ?F0"
+    and marker: "(block,0) \<notin> set ?F1"
+    and flat: "rz_flat_map_check ?F1 flats"
+    and patterns: "rz_pattern_check ?F1 patterns"
+    and cover: "rz_cover_check ?F1 block ''__rz_cover''
+      (rz_linear_lhss R @ patterns)"
+    and child_ok: "isOK (check_trs_termination_proof I J False (add_index i 1)
+      (tp_ops.mk I False [] ?generated []) child)"
+    by (auto simp: Let_def)
+  from check_trs_termination_proof[OF I J child_ok]
+  have generated_SN: "SN (rstep (set ?generated))"
+    unfolding tp_spec.mk_sound[OF I] SN_qrel_def by auto
+  show ?thesis
+    by (rule rz_generated_rules_sound[OF wf quasi_check fresh marker flat
+      patterns cover generated_SN])
 qed
 
 lemmas check_outermost_rz_termination_proof_global_sound =

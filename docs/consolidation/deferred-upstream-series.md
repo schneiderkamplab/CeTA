@@ -22,16 +22,18 @@ as part of this task.
    lemmas distinct. Preserve Q by the actual normal-form obligation.
 4. **Relative ADPs.** Retain annotations, graph child counts, variable-reposition
    conditions and separate erasure/Com reduction-pair obligations. Build and
-   export the integration target independently. Moving these theories out of
-   `dev` awaits eligible ADP replay coverage; the retained hand-written fixture
-   does not qualify as a genuine witness-free replay.
+   export the integration target independently. The user subsequently authorized moving these theories into `thys/Relative_ADP`
+   with formal and executable-equivalence verification. The retained hand-written
+   fixture still does not qualify as a genuine witness-free replay.
 5. **RFC, match bounds and rule strengthening.** Keep initial-language coverage,
    automaton closure, right-linearity and residual signature assumptions visible.
    Absolute and relative residual contracts stay distinct. Include their RFC
    export and genuine SRS evidence in reviewable increments.
 6. **Outermost.** Keep the committed RZ transformation and its cover/freshness
-   conditions. Positive RZ coverage is still missing; four outermost
-   nontermination replays do not justify restructuring its termination path.
+   conditions. Positive RZ coverage is still missing. The user subsequently authorized
+   extracting the transformation criterion from recursive checking, verified
+   formally and by exact generated-code comparison. Four outermost nontermination
+   replays remain insufficient evidence of the positive transformation path.
    Uncommitted CDP and alternate unhiding work is excluded.
 7. **Compatibility integration.** Preserve CPF parser alternatives, explicit
    unsupported-node behavior, split-input CLI flags and assumption policy.

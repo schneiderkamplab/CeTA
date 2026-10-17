@@ -193,3 +193,19 @@ those paths is deferred as required by the plan; build/integration verification
 does not fill their missing positive coverage. The feature-by-feature upstream
 outline is `deferred-upstream-series.md`; reconstructing that patch series remains
 outside this consolidation.
+
+## Authorized refactoring of uncovered paths
+
+After the earlier acceptance milestone, the user explicitly requested refactoring
+paths without genuine positive replay coverage. Relative ADP sources now reside
+in `thys/Relative_ADP`, with compatible session names and old build-directory
+entry points. General injective-renaming proofs are extracted from the ADP
+adapter, and the RZ adapter uses an explicit transformation soundness theorem.
+Ten new formal rejection lemmas pass. All production integration/export targets,
+clean binary identity, focused checks and the complete compact suite pass.
+
+See `uncovered-path-refactor.md` and `uncovered-refactor-verification.json` for
+this follow-up's scope and evidence. The genuine replay gaps remain recorded;
+the refactor is verified through formal proofs and exact executable equivalence.
+The 3,484-root full replay belongs to the earlier milestone and is reused by
+binary identity, rather than described as a new campaign.

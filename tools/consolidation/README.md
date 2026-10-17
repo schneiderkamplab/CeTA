@@ -111,7 +111,8 @@ must compare both binaries with the same current measurement method.
 `build_verified.py` is the clean-build recipe for the export-cleanup layout:
 pass a committed `--revision`, external `--isabelle`/`--ghc` installations and a
 new `--output` directory. It extracts the committed source and exact AFP archive,
-uses private Isabelle settings/heaps, builds all four production targets, exports
+uses private Isabelle settings/heaps, builds all four production targets plus
+the outermost RZ rejection-test session, exports
 ordinary/RFC/relative code and compiles three separate CLIs plus HPC utilities.
 It does not deploy binaries or use another campaign's writable heaps.
 

@@ -7,8 +7,8 @@ heaps are used. A cold build deliberately does not require another campaign.
 import argparse,gzip,json,os,pathlib,shutil,subprocess,tarfile
 from replay import execute,sha,write
 ROOT=pathlib.Path(__file__).resolve().parents[2]
-DIRS=['thys','dev/Relative_ADP_Dev/Semantics','dev/Relative_ADP_Dev/Semantics/Reduction_Pair','dev/Relative_ADP_Dev/Checker','dev/Relative_ADP_Dev/Integration','thys/RFC_Absolute_Ext']
-TARGETS=['Proof_Checker','Code','RFC_Absolute_Ext','Relative_ADP_Ceta_Dev']
+DIRS=['thys','thys/Relative_ADP','thys/RFC_Absolute_Ext']
+TARGETS=['Outermost_RZ_Ext','Proof_Checker','Code','RFC_Absolute_Ext','Relative_ADP_Ceta_Dev']
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--revision',required=True);p.add_argument('--isabelle',type=pathlib.Path,required=True);p.add_argument('--ghc',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--jobs',type=int,default=2);p.add_argument('--threads',type=int,default=8);a=p.parse_args()

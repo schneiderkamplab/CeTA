@@ -1,0 +1,75 @@
+{
+  "scope": "Supplemental formal guard checks. These do not add runtime or genuine replay coverage to the frozen denominator.",
+  "guards": [
+    {
+      "theory": "Outermost_RZ_Checker_Tests",
+      "lemma": "rz_rejects_quasi_left_linearity",
+      "condition": "Source left-hand sides satisfy the quasi-left-linear check",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Outermost_RZ_Checker_Tests",
+      "lemma": "rz_rejects_grounding_freshness",
+      "condition": "Grounding constant is absent from the source signature",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Outermost_RZ_Checker_Tests",
+      "lemma": "rz_rejects_marker_freshness",
+      "condition": "Automaton marker is absent from the extended signature",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Outermost_RZ_Checker_Tests",
+      "lemma": "rz_rejects_flat_map",
+      "condition": "Flat map covers exactly the positive-arity signature",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Outermost_RZ_Checker_Tests",
+      "lemma": "rz_rejects_patterns",
+      "condition": "Patterns are function-rooted, linear and over the extended signature",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Outermost_RZ_Checker_Tests",
+      "lemma": "rz_rejects_cover",
+      "condition": "Automaton cover check succeeds",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Relative_ADP_Checker_Tests",
+      "lemma": "test_relative_adp_erasure_p_index_rejected",
+      "condition": "Selected main indices are within range for erasure reduction-pair checking",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Relative_ADP_Checker_Tests",
+      "lemma": "test_relative_adp_erasure_b_index_rejected",
+      "condition": "Selected base indices are within range for erasure reduction-pair checking",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Relative_ADP_Checker_Tests",
+      "lemma": "test_relative_adp_com_p_index_rejected",
+      "condition": "Selected main indices are within range for com reduction-pair checking",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    },
+    {
+      "theory": "Relative_ADP_Checker_Tests",
+      "lemma": "test_relative_adp_com_b_index_rejected",
+      "condition": "Selected base indices are within range for com reduction-pair checking",
+      "evidence_kind": "Isabelle universal rejection lemma",
+      "genuine_replay": false
+    }
+  ]
+}

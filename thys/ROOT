@@ -367,6 +367,7 @@ session Outermost_RZ_Ext in Outermost_RZ_Ext = Proof_Checker_Base +
     Outermost_RZ_Transformation
     Outermost_Signature_Extension
     Outermost_RZ_Checker
+    Outermost_RZ_Checker_Tests
 
 session Proof_Checker in Proof_Checker = CSR_Guarded_List_Measure_Check +
   options [document = false]
