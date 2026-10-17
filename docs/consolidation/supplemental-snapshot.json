@@ -1,6 +1,9 @@
 {
-  "afp_revision": "e4f38728f3dcd610c3a17f062239eef53022c7c0",
+  "afp_files_count": 15849,
+  "afp_files_manifest_sha256": "54041d1f9cd5cf6b5ecafaf338990fa99dbcfb9e98a7ea3543358ec449b55651",
+  "afp_identity_correction": "The earlier git query traversed to the enclosing Ferrum repository; it was not an AFP revision. AFP is a downloaded directory, now privately copied and content-pinned in target/consolidation-build/afp-files.json.",
   "build_status": "No Isabelle or GHC build launched; private heaps not seeded.",
+  "enclosing_ferrum_repository_revision": "e4f38728f3dcd610c3a17f062239eef53022c7c0",
   "excluded_uncommitted": [
     "CeTA-CSR/thys/ROOT",
     "CeTA-CSR/thys/Outermost_CDP_Ext/",

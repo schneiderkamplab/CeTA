@@ -123,7 +123,7 @@ The compact suite, minimizer, HPC runner, full replays and consolidated feature 
 
 ## Build isolation and acceptance
 
-Reserve `target/consolidation-build/` for private Isabelle user home/heaps, exports, GHC output and binaries. Use unique identifiers per milestone, separate production/HPC output directories and no writes to existing heaps. Seed compatible dependencies by private copy or copy-on-write, never hard links that a build can mutate. The snapshot identifies Isabelle2025-2, GHC 9.6.7 and the available AFP revision; build compatibility still requires checking session options and dependency identities.
+Reserve `target/consolidation-build/` for private Isabelle user home/heaps, exports, GHC output and binaries. Use unique identifiers per milestone, separate production/HPC output directories and no writes to existing heaps. Seed compatible dependencies by private copy or copy-on-write, never hard links that a build can mutate. The snapshot identifies Isabelle2025-2, GHC 9.6.7 and the available AFP sources; the earlier Git identity was subsequently found to belong to the enclosing Ferrum repository. The private AFP copy is now pinned by file contents. Build compatibility requires checking session options and dependency identities.
 
 Do not invoke the existing Makefile in a parent worktree: its `ceta-relative-adp` target replaces `ceta`. The consolidated build must preserve separate ordinary, relative-ADP and RFC executables until a verified combined entry point exists. Relative production export and `RFC_Absolute_Ext` are explicit gates in addition to `Proof_Checker`/`Code`.
 

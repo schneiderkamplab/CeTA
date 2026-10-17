@@ -1,0 +1,3 @@
+# Frozen input bytes, including original CRLF, are part of provenance hashes.
+**/inputs/** -text whitespace=cr-at-eol
+*.gz -text

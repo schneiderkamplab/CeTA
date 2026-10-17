@@ -1,0 +1,870 @@
+{
+  "coverage_denominator_sha256": "99e3b6764c212bc359116b90daa7e922dcead2c6c2afa877be78a89f5c5a55d0",
+  "gaps": [
+    "Criterion-level mapping and exact nested contexts remain incomplete.",
+    "Negative map/Q, usable-rule, minimality, freshness, order and automaton coverage remains incomplete."
+  ],
+  "negatives": [
+    {
+      "certificate": "negatives/e4dba81b046d8ef4755cc700-omitted-csr-pairs.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-csr-pairs/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017849661177024245,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-csr-pairs/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01838556700386107,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "af651a60bcff963da2dfcfbce16aa71b98f971b2f4dd884ef00129c68e31237a",
+      "expected_diagnostic_regex": "missing replacement-map dependency pair",
+      "id": "e4dba81b046d8ef4755cc700-omitted-csr-pairs",
+      "kind": "omitted-csr-pairs",
+      "mutation_sha256": "f9b5353aba9c77ceff1bf65d055adc618b12ddb2faacdcf6fc4d60aa0208e809",
+      "removed_obligations": 5,
+      "source_id": "e4dba81b046d8ef4755cc700",
+      "source_sha256": "4d61b182f0c77780b166705e4cf4b718115a524f8489451388d20749a63e6530",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//csrImprovedDependencyPairs/dps/rules"
+    },
+    {
+      "certificate": "negatives/e4dba81b046d8ef4755cc700-omitted-graph-components.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-graph-components/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01870176591910422,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/e4dba81b046d8ef4755cc700-omitted-graph-components/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017730691004544497,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "5527809408711c3a2e1498ac5566bc39d57c6ce811ff1f28c0c7625ebe56ca49",
+      "expected_diagnostic_regex": "(?:Dependency Pair|CSR dependency pair).*is missing in decomposition",
+      "id": "e4dba81b046d8ef4755cc700-omitted-graph-components",
+      "kind": "omitted-graph-components",
+      "mutation_sha256": "753a5705d99b15b9777621a2f86d5cf3f0df33b343ae0643f5c7fd92048cc923",
+      "removed_obligations": 4,
+      "source_id": "e4dba81b046d8ef4755cc700",
+      "source_sha256": "4d61b182f0c77780b166705e4cf4b718115a524f8489451388d20749a63e6530",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//depGraphProc"
+    },
+    {
+      "certificate": "negatives/b93bf267e553f2aa3dcd470c-omitted-dp-pairs.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-dp-pairs/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.020139077911153436,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-dp-pairs/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018140438944101334,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "2e96b820f62ab9dcc97670523ffb0a35077ef9d23908a8af9aac6149fe3f253c",
+      "expected_diagnostic_regex": "the DP .*does not appear in the DP problem",
+      "id": "b93bf267e553f2aa3dcd470c-omitted-dp-pairs",
+      "kind": "omitted-dp-pairs",
+      "mutation_sha256": "e464f96493cfd7165120996d280bfeb06363b9a6ed2fd54d95737fa915e14e1a",
+      "removed_obligations": 4,
+      "source_id": "b93bf267e553f2aa3dcd470c",
+      "source_sha256": "e1f04d4a68270ea348a4267c0f0cab57654cdec90f54fddb74250862c138908a",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//dpTrans/dps/rules"
+    },
+    {
+      "certificate": "negatives/b93bf267e553f2aa3dcd470c-omitted-graph-components.cpf.xml.gz",
+      "checks": [
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-graph-components/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01790825999341905,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        },
+        {
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/negatives/b93bf267e553f2aa3dcd470c-omitted-graph-components/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01810569898225367,
+          "returncode": 1,
+          "semantic_rejection": true,
+          "timed_out": false
+        }
+      ],
+      "compressed_sha256": "59eadeac6bd7c036e1e29b7545d78d48b0c00c5bd55c47619343e3dd3bc4f1d9",
+      "expected_diagnostic_regex": "(?:Dependency Pair|CSR dependency pair).*is missing in decomposition",
+      "id": "b93bf267e553f2aa3dcd470c-omitted-graph-components",
+      "kind": "omitted-graph-components",
+      "mutation_sha256": "2e61223f987a01c4783e5b9a49b3c84ab00ccfc0b4a42d29828c670ebec2377a",
+      "removed_obligations": 4,
+      "source_id": "b93bf267e553f2aa3dcd470c",
+      "source_sha256": "e1f04d4a68270ea348a4267c0f0cab57654cdec90f54fddb74250862c138908a",
+      "validated": true,
+      "well_formed_xml": true,
+      "xpath": ".//depGraphProc"
+    }
+  ],
+  "positives": [
+    {
+      "answer": "no",
+      "category": "SRS_Standard",
+      "certificate": "positives/3fe0883ce21d7b45dab7b742.cpf.xml.gz",
+      "compressed_sha256": "ea2279959877f4bd0f58e170a829891f6a1ed59e9896e37f545173f5cda0ebfb",
+      "correspondence": {
+        "answer": "no",
+        "nonvariable_lhs_and_no_extra_variables": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 17,
+        "rules": 28,
+        "strategy": "full",
+        "strategy_equal": true,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": []
+      },
+      "cpf_sha256": "cd8afb0189978cceee0cee4cdf76655f4ff8981af90d1438bec3c4807c795e74",
+      "id": "3fe0883ce21d7b45dab7b742",
+      "input": "inputs/SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari",
+      "input_sha256": "de28db2b808c4081c15810e0c505ddd5d6a6f0a95f0f008fc9b32a495b982501",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/3fe0883ce21d7b45dab7b742/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.020135445054620504,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/3fe0883ce21d7b45dab7b742/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018799854908138514,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/3fe0883ce21d7b45dab7b742/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.11566366511397064,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/3fe0883ce21d7b45dab7b742/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/3fe0883ce21d7b45dab7b742/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.6244392660446465,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari"
+    },
+    {
+      "answer": "yes",
+      "category": "SRS_Standard",
+      "certificate": "positives/7ac05cea70e33e7531d32c4f.cpf.xml.gz",
+      "compressed_sha256": "e8c01fe7505c0a56457522454451ea292cd572d1a7b85ed223bb0611abfd880a",
+      "correspondence": {
+        "answer": "yes",
+        "nonvariable_lhs_and_no_extra_variables": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 2,
+        "rules": 1,
+        "strategy": "full",
+        "strategy_equal": true,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": []
+      },
+      "cpf_sha256": "87ab4b28dcce5fd91e13eabf8e52eb5660a359408d6fd468923b3cdcdd66f8a2",
+      "id": "7ac05cea70e33e7531d32c4f",
+      "input": "inputs/SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari",
+      "input_sha256": "53bb6cdf9df8555f43e2dc6aa6b31f3552f86ee737786c8a47c79e81875743c4",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/7ac05cea70e33e7531d32c4f/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01796250115148723,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/7ac05cea70e33e7531d32c4f/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01734608504921198,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/7ac05cea70e33e7531d32c4f/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.033561998046934605,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/7ac05cea70e33e7531d32c4f/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/7ac05cea70e33e7531d32c4f/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.422985069919378,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari"
+    },
+    {
+      "answer": "yes",
+      "category": "TRS_Contextsensitive",
+      "certificate": "positives/e4dba81b046d8ef4755cc700.cpf.xml.gz",
+      "compressed_sha256": "c095e283ecf688b88b6f3f88840f5837802c6cc731a2cfd096c01cd365a24532",
+      "correspondence": {
+        "answer": "yes",
+        "property": "termination",
+        "replacement_map_equal_on_rule_signature": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 5,
+        "rules": 3,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": [],
+        "unused_cpf_map_entries": {
+          "'__CSR_U0'": [
+            1,
+            []
+          ]
+        }
+      },
+      "cpf_sha256": "4d61b182f0c77780b166705e4cf4b718115a524f8489451388d20749a63e6530",
+      "id": "e4dba81b046d8ef4755cc700",
+      "input": "inputs/TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari",
+      "input_sha256": "d646d89bb082172b4d08fc07d37dfdfecdcadd03c67de5e63ef870a62e98d13f",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/e4dba81b046d8ef4755cc700/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017880571074783802,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/e4dba81b046d8ef4755cc700/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01870089489966631,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/e4dba81b046d8ef4755cc700/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.035900930874049664,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/e4dba81b046d8ef4755cc700/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/e4dba81b046d8ef4755cc700/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.6785899449605495,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari"
+    },
+    {
+      "answer": "no",
+      "category": "TRS_Contextsensitive",
+      "certificate": "positives/a0971530bc568dbf910f59cd.cpf.xml.gz",
+      "compressed_sha256": "ab809fd6c34da6af93959048691ded840c61472c5a6813d6f27d8e55a2c14938",
+      "correspondence": {
+        "answer": "no",
+        "property": "termination",
+        "replacement_map_equal_on_rule_signature": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 6,
+        "rules": 4,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": [
+          "first"
+        ],
+        "unused_cpf_map_entries": {
+          "'__CSR_U0'": [
+            1,
+            []
+          ]
+        }
+      },
+      "cpf_sha256": "4d1a2db57b0956d543b923e2a68a798665db1ef2ac5ae97ff13d0803217253fb",
+      "id": "a0971530bc568dbf910f59cd",
+      "input": "inputs/TRS_Contextsensitive/Gutierrez_26/secret4.ari",
+      "input_sha256": "9c207d6ac80774e092ca44a6b4cd564a047971461377babc5c0000207afd6a23",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/a0971530bc568dbf910f59cd/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017852260963991284,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/a0971530bc568dbf910f59cd/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017110456945374608,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/a0971530bc568dbf910f59cd/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.0358780010137707,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/TRS_Contextsensitive/Gutierrez_26/secret4.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/a0971530bc568dbf910f59cd/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/a0971530bc568dbf910f59cd/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.475693518994376,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "TRS_Contextsensitive/Gutierrez_26/secret4.ari"
+    },
+    {
+      "answer": "yes",
+      "category": "TRS_Innermost",
+      "certificate": "positives/b93bf267e553f2aa3dcd470c.cpf.xml.gz",
+      "compressed_sha256": "92cce0efb44bc8c9fd8c9f4d5f95653031249e260cf77b6db1920a0a553e5296",
+      "correspondence": {
+        "answer": "yes",
+        "nonvariable_lhs_and_no_extra_variables": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 4,
+        "rules": 3,
+        "strategy": "innermost",
+        "strategy_equal": true,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": []
+      },
+      "cpf_sha256": "e1f04d4a68270ea348a4267c0f0cab57654cdec90f54fddb74250862c138908a",
+      "id": "b93bf267e553f2aa3dcd470c",
+      "input": "inputs/TRS_Innermost/AG01_innermost/#4.17.ari",
+      "input_sha256": "cae7ecfa3f3e6192689665709197a6c4b601442872027dcd2ef9f2475d95ce85",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/b93bf267e553f2aa3dcd470c/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0174823640845716,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/b93bf267e553f2aa3dcd470c/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.0182907881680876,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/b93bf267e553f2aa3dcd470c/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.03451415104791522,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/TRS_Innermost/AG01_innermost/#4.17.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/b93bf267e553f2aa3dcd470c/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/b93bf267e553f2aa3dcd470c/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.675199118908495,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "TRS_Innermost/AG01_innermost/#4.17.ari"
+    },
+    {
+      "answer": "no",
+      "category": "TRS_Innermost",
+      "certificate": "positives/abc21bc38fe0705ec0b73b64.cpf.xml.gz",
+      "compressed_sha256": "868fc43903e53bb9a8d1fafcd08d8089d137a64492e33a15830bf89b175ba7ec",
+      "correspondence": {
+        "answer": "no",
+        "nonvariable_lhs_and_no_extra_variables": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 5,
+        "rules": 5,
+        "strategy": "innermost",
+        "strategy_equal": true,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": []
+      },
+      "cpf_sha256": "ee5c7b46974d28f06e4e5900a25c17a3be65a82fc47a0a87ac6715875455b705",
+      "id": "abc21bc38fe0705ec0b73b64",
+      "input": "inputs/TRS_Innermost/Mixed_innermost/run_again1.ari",
+      "input_sha256": "6454d784c87f87ca1a4219b66ac8132e92fbabbfcd4f29584e6777305cc451af",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/abc21bc38fe0705ec0b73b64/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01900638290680945,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/abc21bc38fe0705ec0b73b64/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01887104380875826,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/abc21bc38fe0705ec0b73b64/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.03351321816444397,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/TRS_Innermost/Mixed_innermost/run_again1.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/abc21bc38fe0705ec0b73b64/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/abc21bc38fe0705ec0b73b64/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.624177668010816,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "TRS_Innermost/Mixed_innermost/run_again1.ari"
+    },
+    {
+      "answer": "yes",
+      "category": "TRS_Standard",
+      "certificate": "positives/72dd540f208cb399ca464f49.cpf.xml.gz",
+      "compressed_sha256": "f6952bea802b92f02b40c36183ab0d158c2f45c34f34c6c8e41192d40d430adc",
+      "correspondence": {
+        "answer": "yes",
+        "nonvariable_lhs_and_no_extra_variables": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 4,
+        "rules": 4,
+        "strategy": "full",
+        "strategy_equal": true,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": []
+      },
+      "cpf_sha256": "df2b7221aaeb20611738bb952b86ae6c614e81a78eead3d1d159aae919b8e9cb",
+      "id": "72dd540f208cb399ca464f49",
+      "input": "inputs/TRS_Standard/AG01/#3.33.ari",
+      "input_sha256": "5587143bf2018f3ddbd648dad86fb167714ad33a670f5a828371e682255b07da",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/72dd540f208cb399ca464f49/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.01882058405317366,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/72dd540f208cb399ca464f49/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018646285869181156,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/72dd540f208cb399ca464f49/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.03476557903923094,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/TRS_Standard/AG01/#3.33.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/72dd540f208cb399ca464f49/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/72dd540f208cb399ca464f49/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.525660668965429,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "TRS_Standard/AG01/#3.33.ari"
+    },
+    {
+      "answer": "no",
+      "category": "TRS_Standard",
+      "certificate": "positives/9c488384d74ad7724880f987.cpf.xml.gz",
+      "compressed_sha256": "68d1eeaa8e19d875ecc650bb5f002299a1983bd2f32e5c530c24ff4fa414abd3",
+      "correspondence": {
+        "answer": "no",
+        "nonvariable_lhs_and_no_extra_variables": true,
+        "rule_multiset_equal": true,
+        "rule_symbols": 5,
+        "rules": 3,
+        "strategy": "full",
+        "strategy_equal": true,
+        "symbol_spelling_aliases": {},
+        "unused_benchmark_declarations": []
+      },
+      "cpf_sha256": "723830e7e41b6554195933e70cd25b6aa535847a59045e26d0a50ccb3fe04fa0",
+      "id": "9c488384d74ad7724880f987",
+      "input": "inputs/TRS_Standard/AProVE_10/double.ari",
+      "input_sha256": "bbac4ecb5109bbcb58d99920cd78c674c023176099aa873fd406e5fb0d12f548",
+      "reference_checks": [
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/9c488384d74ad7724880f987/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.018538596108555794,
+          "returncode": 0,
+          "timed_out": false
+        },
+        {
+          "certified": true,
+          "command": [
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+            "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/9c488384d74ad7724880f987/proof.cpf.xml"
+          ],
+          "elapsed_seconds": 0.017757282126694918,
+          "returncode": 0,
+          "timed_out": false
+        }
+      ],
+      "reference_hpc": {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin/ceta-hpc",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/9c488384d74ad7724880f987/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 0.034791479120031,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "replay": {
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/cargo-producing/release/ferrum",
+          "prove",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/inputs/TRS_Standard/AProVE_10/double.ari",
+          "--cpf",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/9c488384d74ad7724880f987/proof.cpf.xml",
+          "--cpf-mode",
+          "auto",
+          "--strategy",
+          "timeout(2880s,fail)",
+          "--utility-guidance-manifest",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/current_oracle",
+          "--no-top-level-llm",
+          "--processor-events",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-corpus/baseline-smoke/9c488384d74ad7724880f987/processor-events.jsonl"
+        ],
+        "elapsed_seconds": 4.625528458040208,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "root": "TRS_Standard/AProVE_10/double.ari"
+    }
+  ],
+  "provenance": {
+    "checker_ceiling_seconds": 600,
+    "checker_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+    "ferrum_sha256": "6706ea63ace498f3ba4880ba804d3f7560b0497bd44fae9b9e7854b915f6410a",
+    "hpc_sha256": "198b0c9da06a849f65135e3cd5858ba16c5e55594d656835fddd489ddcd14801",
+    "hpc_source_revision": "17dbee4b822733cd25235a64178db2ccf590a10e",
+    "oracle_sha256": "b72d202f253aa8bcae86748c58dabb8a667ff45c874e1b8485d95af94edd79fd",
+    "profile": {
+      "CETA_CSR_BIN": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+      "FERRUM_DIRECT_FILTER_PATH_ORDER": "1",
+      "FERRUM_DP_LLM_NO_FALLBACK": "1",
+      "FERRUM_LP_PYTHONPATH": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/lp-tools",
+      "FERRUM_ORACLE_ATOM_MAX_SECONDS": "1800",
+      "FERRUM_ORACLE_TIME_SCALE_PERCENT": "400",
+      "FERRUM_SEMANTIC_LABELING_CONTINUATION_ATTEMPTS": "512",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "RAYON_NUM_THREADS": "2"
+    },
+    "root_ceiling_policy": "max(2880 seconds, 1.2 * retained measured runtime + 60 seconds)",
+    "roots": [
+      {
+        "answer": "no",
+        "input_sha256": "9c207d6ac80774e092ca44a6b4cd564a047971461377babc5c0000207afd6a23",
+        "root": "TRS_Contextsensitive/Gutierrez_26/secret4.ari"
+      },
+      {
+        "answer": "no",
+        "input_sha256": "6454d784c87f87ca1a4219b66ac8132e92fbabbfcd4f29584e6777305cc451af",
+        "root": "TRS_Innermost/Mixed_innermost/run_again1.ari"
+      },
+      {
+        "answer": "no",
+        "input_sha256": "de28db2b808c4081c15810e0c505ddd5d6a6f0a95f0f008fc9b32a495b982501",
+        "root": "SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari"
+      },
+      {
+        "answer": "yes",
+        "input_sha256": "53bb6cdf9df8555f43e2dc6aa6b31f3552f86ee737786c8a47c79e81875743c4",
+        "root": "SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari"
+      },
+      {
+        "answer": "yes",
+        "input_sha256": "5587143bf2018f3ddbd648dad86fb167714ad33a670f5a828371e682255b07da",
+        "root": "TRS_Standard/AG01/#3.33.ari"
+      },
+      {
+        "answer": "yes",
+        "input_sha256": "d646d89bb082172b4d08fc07d37dfdfecdcadd03c67de5e63ef870a62e98d13f",
+        "root": "TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari"
+      },
+      {
+        "answer": "no",
+        "input_sha256": "bbac4ecb5109bbcb58d99920cd78c674c023176099aa873fd406e5fb0d12f548",
+        "root": "TRS_Standard/AProVE_10/double.ari"
+      },
+      {
+        "answer": "yes",
+        "input_sha256": "cae7ecfa3f3e6192689665709197a6c4b601442872027dcd2ef9f2475d95ce85",
+        "root": "TRS_Innermost/AG01_innermost/#4.17.ari"
+      }
+    ],
+    "runner_sha256": "e0ae465d2f0e537566d3519ce332b7d75d07ebf507880d8104fdd62884209ca5",
+    "source_revision": "b8b572ffba7dbb68f1ec58ef4ff918189f760a83"
+  },
+  "schema_version": 1,
+  "scope": "Harness validation only: eight roots, not the final full-corpus compact suite",
+  "selection": {
+    "distinct_cover_constraints": 112,
+    "elapsed_seconds": 0.010014160769060254,
+    "lower_bound": 8,
+    "minimum_cardinality_proved": true,
+    "observed_obligations": 12503,
+    "secondary_cost_optimality": "best validated candidate; no separate secondary optimality certificate",
+    "selected_ids": [
+      "3fe0883ce21d7b45dab7b742",
+      "7ac05cea70e33e7531d32c4f",
+      "e4dba81b046d8ef4755cc700",
+      "a0971530bc568dbf910f59cd",
+      "b93bf267e553f2aa3dcd470c",
+      "abc21bc38fe0705ec0b73b64",
+      "72dd540f208cb399ca464f49",
+      "9c488384d74ad7724880f987"
+    ],
+    "selected_roots": [
+      "SRS_Standard/CirponsMitchellSmith_25/no_subst_babbbbaba_abbbba.ari",
+      "SRS_Standard/Wenzel_16/abaababaaab-aababaaababaab.srs.ari",
+      "TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.ari",
+      "TRS_Contextsensitive/Gutierrez_26/secret4.ari",
+      "TRS_Innermost/AG01_innermost/#4.17.ari",
+      "TRS_Innermost/Mixed_innermost/run_again1.ari",
+      "TRS_Standard/AG01/#3.33.ari",
+      "TRS_Standard/AProVE_10/double.ari"
+    ],
+    "solver_trials": [
+      {
+        "bound": 8,
+        "optimize_cost": true,
+        "seconds": 0.007333516143262386,
+        "status": "sat"
+      }
+    ],
+    "upper_bound": 8
+  }
+}

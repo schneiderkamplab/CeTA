@@ -1,0 +1,11 @@
+; @origtpdbfilename ./TRS/CSR/Ex4_7_56_Bor03.trs
+; @xtcfilename "./TRS_Contextsensitive/CSR_04/Ex4_7_56_Bor03.xml"
+(format CSTRS)
+(fun from 1 :replacement-map (1))
+(fun cons 2 :replacement-map (1))
+(fun s 1 :replacement-map (1))
+(fun after 2 :replacement-map (1 2))
+(fun |0| 0 :replacement-map ())
+(rule (from X) (cons X (from (s X))))
+(rule (after |0| XS) XS)
+(rule (after (s N) (cons X XS)) (after N XS))

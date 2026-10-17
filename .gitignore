@@ -2,3 +2,5 @@
 /generated/Haskell/*.o
 /export/
 /ceta
+/target/
+__pycache__/
