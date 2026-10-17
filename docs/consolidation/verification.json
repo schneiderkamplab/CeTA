@@ -1,0 +1,13 @@
+{
+  "deterministic_regeneration": "inventory and family outputs identical across repeated generation",
+  "elapsed_seconds": 1.5702059059403837,
+  "parent_checks": {
+    "CeTA": "original branch refs and tracked diff unchanged",
+    "CeTA-CSR": "original branch refs and tracked diff unchanged"
+  },
+  "private_artifacts_checked": 53,
+  "python_syntax": "all four scripts parsed",
+  "scope": "assessment integrity only; no Isabelle build, certificate check, HPC measurement or replay claimed",
+  "status": "passed",
+  "theory_variants_checked": 184
+}

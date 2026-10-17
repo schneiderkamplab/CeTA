@@ -1,0 +1,408 @@
+{
+  "artifacts": {
+    "ceta_main_checker": {
+      "bytes": 12383760,
+      "frozen": "target/consolidation-snapshot/artifacts/ceta_main_checker",
+      "sha256": "92f1a1453b29f45af2bcb28fcdce58967b73c61e5ffa256e9012aac3bcf558d5",
+      "source": "/work/dfm/festschrift/CeTA/ceta"
+    },
+    "complete_replay_binary": {
+      "bytes": 21295720,
+      "frozen": "target/consolidation-snapshot/artifacts/complete_replay_binary",
+      "sha256": "4b5bc681ceb60873ad1319ba4593841bf065701572387309e54fb7ffc6e2f355",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/ferrum-weak-zero-v587"
+    },
+    "complete_replay_oracle": {
+      "bytes": 505563581,
+      "frozen": "target/consolidation-snapshot/artifacts/complete_replay_oracle",
+      "sha256": "207329cbeea5aa692d1b22d89ae466d1a2fb4823ee14194964e5f1ddce0147ed",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-weak-zero-chains-v591/oracle.jsonl"
+    },
+    "current_oracle": {
+      "bytes": 505683787,
+      "frozen": "target/consolidation-snapshot/artifacts/current_oracle",
+      "sha256": "b72d202f253aa8bcae86748c58dabb8a667ff45c874e1b8485d95af94edd79fd",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/oracle.jsonl"
+    },
+    "ferrum_head_binary": {
+      "bytes": 21346968,
+      "frozen": "target/consolidation-snapshot/artifacts/ferrum_head_binary",
+      "sha256": "e258a26f5204e25acba63e207ad1a04df9ab2ccc15c28a6f6e31dd359631bec7",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/release/ferrum"
+    },
+    "ferrum_producing_binary": {
+      "bytes": 21346968,
+      "frozen": "target/consolidation-snapshot/artifacts/ferrum_producing_binary",
+      "sha256": "e258a26f5204e25acba63e207ad1a04df9ab2ccc15c28a6f6e31dd359631bec7",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/ferrum-fresh-budget-v21"
+    },
+    "production_checker": {
+      "bytes": 12543216,
+      "frozen": "target/consolidation-snapshot/artifacts/production_checker",
+      "sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+      "source": "/work/dfm/festschrift/CeTA-CSR/ceta"
+    }
+  },
+  "baseline": "8e6e5f9545eb0d566b03efd403c771bf3f2400c5",
+  "complete_replay_source_revision": "afb4acbd86412fbac3d27d5cd005ea5b3391d622",
+  "created_utc": "2026-10-17T08:34:07Z",
+  "development_repositories": [
+    {
+      "common_dir": "/work/dfm/festschrift/CeTA/.git",
+      "refs": {
+        "refs/heads/codex/aaecc-20260831": "40ff1810d06b510ed4802cb52ea70c2b2e15dbf4",
+        "refs/heads/main": "e52c7ce1a198b2b3c2873e8aacdab19a3552c5d1"
+      },
+      "repository": "CeTA"
+    },
+    {
+      "common_dir": "/work/dfm/festschrift/CeTA-CSR/.git",
+      "refs": {
+        "refs/heads/codex/aaecc-ceta-main-20260831": "67e9e345fdea2ece1efbe9a1faaad7f7fd2fb16a",
+        "refs/heads/codex/csr-20260808": "c03b830bdcbe79b0d9444b8ec0815952089ffe2e",
+        "refs/heads/codex/csr-frontier-20260822": "ebb1fd46a95e07a3eb4e393e428b6f9120dcd6a6",
+        "refs/heads/codex/csr-integration-20260812": "296b3c66e2fadde2fd66fd49bc1161af8327c1c9",
+        "refs/heads/codex/csr-main-integration-20260820": "207da18be92d64829647ce73bd8c55ac21237859",
+        "refs/heads/codex/csr-muterm-production-20260812": "c6cad05e236a22ae9a44f762b61d3564fdb1f5cd",
+        "refs/heads/codex/gm04-full-20260907": "bae914f4886efe2c56b988aac65e1d8eb5d34c56",
+        "refs/heads/codex/gm04-main-integration-20260908": "2960d8aef928db57e52dd0bca50079aba7aeeec1",
+        "refs/heads/codex/gm04-standard-20260902": "5c01f2623f2e018ea5ab3e89509f51c9729477ca",
+        "refs/heads/codex/gm04-standard-v2-20260902": "e52c7ce1a198b2b3c2873e8aacdab19a3552c5d1",
+        "refs/heads/codex/max-monus-20260902": "def46239bdb9f024126d714eff0485fc4de30ff7",
+        "refs/heads/codex/relative-adp-20260811": "f636c2c75134b8592d11c014a65b67889a4a5b80",
+        "refs/heads/codex/rfc-innermost-cleanup": "efa7cda9230ba14cb2c4b1aca4d51947954b03fe",
+        "refs/heads/codex/standard-gm04-c-20260902": "def46239bdb9f024126d714eff0485fc4de30ff7",
+        "refs/heads/ferrum-cpf4-integration": "2db489b746e17fa4baef87ffd6b6d18cea109ddc",
+        "refs/heads/ferrum-csr": "1e76e05e03663196060995afab2b020072f13652",
+        "refs/heads/main": "17dbee4b822733cd25235a64178db2ccf590a10e"
+      },
+      "repository": "CeTA-CSR"
+    },
+    {
+      "common_dir": "/work/dfm/festschrift/CeTA-duplicate-from-festschrigt-20260721093831/.git",
+      "refs": {
+        "refs/heads/main": "cdd502b5422e7a18feb10b28aff6252605154c62"
+      },
+      "repository": "CeTA-duplicate-from-festschrigt-20260721093831"
+    },
+    {
+      "common_dir": "/work/dfm/festschrift/CeTA-relative-adp/.git",
+      "refs": {
+        "refs/heads/ferrum-relative-adp": "1c090a7b4a70a5d6c56003c09f1a08f8c2ea8677",
+        "refs/heads/main": "1c090a7b4a70a5d6c56003c09f1a08f8c2ea8677"
+      },
+      "repository": "CeTA-relative-adp"
+    },
+    {
+      "common_dir": "/work/dfm/festschrift/CeTA-rfc/.git",
+      "refs": {
+        "refs/heads/ferrum-rfc-bounds": "ed48d134f90b9a1cffb8c00900dadc471035751d",
+        "refs/heads/ferrum-rfc-native": "f619d7c5d823ff715c1e5ddec7f65606032bd59e",
+        "refs/heads/main": "cdd502b5422e7a18feb10b28aff6252605154c62"
+      },
+      "repository": "CeTA-rfc"
+    }
+  ],
+  "elapsed_seconds": 38.1990168094635,
+  "latest_producing_source_revision": "b8b572ffba7dbb68f1ec58ef4ff918189f760a83",
+  "ledger": {
+    "bytes": 289384,
+    "frozen": "target/consolidation-snapshot/evidence/state-of-the-art.md",
+    "sha256": "15c4abd8d57a1cd56da62edbc8e17dcf2a71819e355df51ccf458f297dff04bb",
+    "source": "/work/dfm/festschrift/ferrum-aaecc/docs/state-of-the-art.md"
+  },
+  "manifests": [
+    {
+      "bytes": 290,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/COMPLETE.json",
+      "sha256": "33adcaa156f7edce6ee085dc2a8934c8ba9183a1e3d592c945e8915bd057a7c7",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/COMPLETE.json"
+    },
+    {
+      "bytes": 361,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/environment.json",
+      "sha256": "1e9f96bff69d5049b6ea45572837f725a5ce0190f34ea512d9a427a6794ca297",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/environment.json"
+    },
+    {
+      "bytes": 579,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/metadata.json",
+      "sha256": "7286a2b98072500fc327776289cdfc9e1afec97f0aa42e57f09c2a3466c9beb7",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/metadata.json"
+    },
+    {
+      "bytes": 1106,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/protected/command.json",
+      "sha256": "95cf113e1df6517734103fc8528fad8da85031d58488035c3dbc259e18849c56",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/protected/command.json"
+    },
+    {
+      "bytes": 56,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/protected/comparison.json",
+      "sha256": "4f762d32b5bc29d6b147acd08c305f73717dfb5bb663fd349a970d02aa240b2c",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/protected/comparison.json"
+    },
+    {
+      "bytes": 1918097,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/protected/details.json",
+      "sha256": "799a42ddcfd72c5d36181775a01dcfb16dc3fd6976762dfd4858f899a6041605",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/protected/details.json"
+    },
+    {
+      "bytes": 773519,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/protected/rechecks.jsonl",
+      "sha256": "50850b2fd456e5977b74b629491cdfb2e796a10613381a50a728da418c3d9edd",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/protected/rechecks.jsonl"
+    },
+    {
+      "bytes": 1918162,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/protected/reference.json",
+      "sha256": "5844980305f5267d1d0c9db5cb7350f702dfe75f48a7587a495017d812d5347f",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/protected/reference.json"
+    },
+    {
+      "bytes": 1013,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/command.json",
+      "sha256": "9d2f9413b3de1bf824f0ba2f122a4a6d4a8e2186515041c01992fcec2973845b",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/command.json"
+    },
+    {
+      "bytes": 56,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/comparison.json",
+      "sha256": "b3c89ee183b5e8f64d8436cd4d241001d6eed3ac3d09c9bb65fd5ace218b756d",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/comparison.json"
+    },
+    {
+      "bytes": 1873908,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/details.json",
+      "sha256": "8b0ccdabee9923b9091f8bc45259353b57288a6e31ab24c1cbe24054506180c4",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/details.json"
+    },
+    {
+      "bytes": 1597340,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/recheck-resume-details.json",
+      "sha256": "b168463b0242efb75945c7719e59377bc1b25c0c92e9a22762c0c431ac49b7f3",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/recheck-resume-details.json"
+    },
+    {
+      "bytes": 63,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/recheck-resume-processes.json",
+      "sha256": "a5db697e12dfb7181c035362f051f1f9cfe7b71c1370478b0924e9cd34cb5daa",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/recheck-resume-processes.json"
+    },
+    {
+      "bytes": 729975,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/rechecks-complete.jsonl",
+      "sha256": "40a1dfbb157752b1515130399374100e80e52405ee7cba9bc4e406021658aa27",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/rechecks-complete.jsonl"
+    },
+    {
+      "bytes": 617310,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/rechecks-resumed.jsonl",
+      "sha256": "e34fe014e5fd02721502c8c6d63697951d012b831e9536e085843ab87740608a",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/rechecks-resumed.jsonl"
+    },
+    {
+      "bytes": 112665,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/rechecks.jsonl",
+      "sha256": "7a8d68cbfeb45ff62bf4b14ad538ce6baca57cef3305a4a71069c1a135d32928",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/rechecks.jsonl"
+    },
+    {
+      "bytes": 1874108,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/reference.json",
+      "sha256": "c46c46f2f87ee0befbf093b496716093a9985b59d4f11bf35aed79db46c02314",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/reference.json"
+    },
+    {
+      "bytes": 1435095,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/unified-final-v593/srs/root-correspondence.json",
+      "sha256": "420d55fb8a17562bf63ea3f2d3d18ea4a367722fa0639430b1391f85e1b5254d",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/unified-final-v593/srs/root-correspondence.json"
+    },
+    {
+      "bytes": 309,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/0000.checks.json",
+      "sha256": "74d37acba582de2bf7cba143a275397ca1310ff0dd10642bb1c390b47f1c3f8c",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/0000.checks.json"
+    },
+    {
+      "bytes": 3234,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/0000.jsonl",
+      "sha256": "dd7405b6beb4bc22f89f0cba90870ef2072d04ffab37c4704bca823f4b2602ac",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/0000.jsonl"
+    },
+    {
+      "bytes": 309,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/0001.checks.json",
+      "sha256": "8485577616685b60cc880ffe6f76c475b81588a2c410be405a7852f11349d235",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/0001.checks.json"
+    },
+    {
+      "bytes": 2101,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/0001.jsonl",
+      "sha256": "c55632ce6d47bd8707010bd51c0aa9e796ff7b7637c3f9a41b0225dfbd484551",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/0001.jsonl"
+    },
+    {
+      "bytes": 783,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/merge.json",
+      "sha256": "4f5e56b5762e6402aae9de7cfd102e0b318b8e3dd95d823c8f1379112d957579",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/merge.json"
+    },
+    {
+      "bytes": 2232,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/reference.json",
+      "sha256": "ed03f7db84d8478331bb8fce72150dc38181f3c5255f8b24bcb68f30a595dc58",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/reference.json"
+    },
+    {
+      "bytes": 149,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/integrated-rfc-residual-v634/witness-free-audit.json",
+      "sha256": "04331f2517e8caddc04603433c8f66371b58f140e18f7bc4e3d35a03c8fea60b",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/integrated-rfc-residual-v634/witness-free-audit.json"
+    },
+    {
+      "bytes": 3441,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/replay-strip-v625/details.json",
+      "sha256": "226629ca8af6938bc2ef362143bcaebdd33b90320c4d8b2250ae2d8ed953d150",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/replay-strip-v625/details.json"
+    },
+    {
+      "bytes": 2836,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/replay-strip-v625/input-audit.json",
+      "sha256": "27581336f179c8ea1c567e10956b9c1036690820386a2ade65f05c40da7b8746",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/replay-strip-v625/input-audit.json"
+    },
+    {
+      "bytes": 1354,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/replay-strip-v625/rechecks.jsonl",
+      "sha256": "bb05c24dbf3a0628e6f95b2c877b0d1a824f99f2d1eab4805ca2482f5ca7de8b",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/replay-strip-v625/rechecks.jsonl"
+    },
+    {
+      "bytes": 12492,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/replay-fresh-v631/details.json",
+      "sha256": "8bd4014b98e1db1c82858231f65974413467cde9af4b14101291dc531753082a",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/replay-fresh-v631/details.json"
+    },
+    {
+      "bytes": 9653,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/replay-fresh-v631/input-audit.json",
+      "sha256": "bc79959d9e8aa4a70179e41c178cc4be7a83de21d7508cf453c8f529d171499c",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/replay-fresh-v631/input-audit.json"
+    },
+    {
+      "bytes": 4856,
+      "frozen": "target/consolidation-snapshot/manifests/srs-native-20261013/replay-fresh-v631/rechecks.jsonl",
+      "sha256": "3d3f21c0c31f28b9504a05d6bbff158c5c58f47fc089059ba144f1b68c9a47f6",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/srs-native-20261013/replay-fresh-v631/rechecks.jsonl"
+    },
+    {
+      "bytes": 890,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/projection-replay-v9/details.json",
+      "sha256": "3a5dee54c19edc05a7fa946528ca7d2aedb279b57f2287d1502f3ee0209255ea",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/projection-replay-v9/details.json"
+    },
+    {
+      "bytes": 1061,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/projection-replay-v9/input-audit.json",
+      "sha256": "90465de9b74a3d63acd07949d4e1803702cfdc1342f457f3ce060905ca70436e",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/projection-replay-v9/input-audit.json"
+    },
+    {
+      "bytes": 408,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/projection-replay-v9/rechecks.jsonl",
+      "sha256": "58d599b6a5f0b6cb19e0d18274b5b82726fcabf0b33812d37b2942f78ffc25b9",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/projection-replay-v9/rechecks.jsonl"
+    },
+    {
+      "bytes": 893,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/pattern-replay-v14/details.json",
+      "sha256": "17892ee0795eca7f04b2c1b59bb68bccdac285ee6bb6198455b577c215b8c191",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/pattern-replay-v14/details.json"
+    },
+    {
+      "bytes": 1064,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/pattern-replay-v14/input-audit.json",
+      "sha256": "c140cb4a13e98730a1e0e43c2a12fa481ded397e5d15003f33661ff93461d271",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/pattern-replay-v14/input-audit.json"
+    },
+    {
+      "bytes": 411,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/pattern-replay-v14/rechecks.jsonl",
+      "sha256": "41f79326102e68d1b46ada0f7e5078685def9476b3d1a77e7554e2863625a21e",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/pattern-replay-v14/rechecks.jsonl"
+    },
+    {
+      "bytes": 2142,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/srs-replay-v31/details.json",
+      "sha256": "a4e0c2a538302e72b67df23b275515e158e60746e9a8bdf7ef749ba4de231fc4",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/srs-replay-v31/details.json"
+    },
+    {
+      "bytes": 1814,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/srs-replay-v31/input-audit.json",
+      "sha256": "d595ec02f8494f4ea5375b6379740f8ba56aa1d8ac7628fbc25eb440293b9e36",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/srs-replay-v31/input-audit.json"
+    },
+    {
+      "bytes": 746,
+      "frozen": "target/consolidation-snapshot/manifests/competitor-recovery-20261017/srs-replay-v31/rechecks.jsonl",
+      "sha256": "3513c176e239f9530a7c09ef554eefb23c1226caaaafd4111684ddd5ba5aee31",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/competitor-recovery-20261017/srs-replay-v31/rechecks.jsonl"
+    }
+  ],
+  "memory_used_bytes": 363104649216,
+  "repositories": {
+    "CeTA": {
+      "head": "e52c7ce1a198b2b3c2873e8aacdab19a3552c5d1",
+      "refs": {
+        "refs/heads/codex/aaecc-20260831": "40ff1810d06b510ed4802cb52ea70c2b2e15dbf4",
+        "refs/heads/main": "e52c7ce1a198b2b3c2873e8aacdab19a3552c5d1"
+      },
+      "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tracked_status": ""
+    },
+    "CeTA-CSR": {
+      "head": "17dbee4b822733cd25235a64178db2ccf590a10e",
+      "refs": {
+        "refs/heads/codex/aaecc-ceta-main-20260831": "67e9e345fdea2ece1efbe9a1faaad7f7fd2fb16a",
+        "refs/heads/codex/csr-20260808": "c03b830bdcbe79b0d9444b8ec0815952089ffe2e",
+        "refs/heads/codex/csr-frontier-20260822": "ebb1fd46a95e07a3eb4e393e428b6f9120dcd6a6",
+        "refs/heads/codex/csr-integration-20260812": "296b3c66e2fadde2fd66fd49bc1161af8327c1c9",
+        "refs/heads/codex/csr-main-integration-20260820": "207da18be92d64829647ce73bd8c55ac21237859",
+        "refs/heads/codex/csr-muterm-production-20260812": "c6cad05e236a22ae9a44f762b61d3564fdb1f5cd",
+        "refs/heads/codex/gm04-full-20260907": "bae914f4886efe2c56b988aac65e1d8eb5d34c56",
+        "refs/heads/codex/gm04-main-integration-20260908": "2960d8aef928db57e52dd0bca50079aba7aeeec1",
+        "refs/heads/codex/gm04-standard-20260902": "5c01f2623f2e018ea5ab3e89509f51c9729477ca",
+        "refs/heads/codex/gm04-standard-v2-20260902": "e52c7ce1a198b2b3c2873e8aacdab19a3552c5d1",
+        "refs/heads/codex/max-monus-20260902": "def46239bdb9f024126d714eff0485fc4de30ff7",
+        "refs/heads/codex/relative-adp-20260811": "f636c2c75134b8592d11c014a65b67889a4a5b80",
+        "refs/heads/codex/rfc-innermost-cleanup": "efa7cda9230ba14cb2c4b1aca4d51947954b03fe",
+        "refs/heads/codex/standard-gm04-c-20260902": "def46239bdb9f024126d714eff0485fc4de30ff7",
+        "refs/heads/ferrum-cpf4-integration": "2db489b746e17fa4baef87ffd6b6d18cea109ddc",
+        "refs/heads/ferrum-csr": "1e76e05e03663196060995afab2b020072f13652",
+        "refs/heads/main": "17dbee4b822733cd25235a64178db2ccf590a10e"
+      },
+      "tracked_diff_sha256": "36ac49238ce6f551782187388d04a7b58bdf31fc71e853a1979a6e53398174ce",
+      "tracked_status": "M thys/ROOT"
+    },
+    "ferrum-aaecc": {
+      "head": "08672d51ee427d53c1e9ecc07797aeb2dc677b22",
+      "refs": {
+        "refs/heads/codex/aaecc-20260831": "08672d51ee427d53c1e9ecc07797aeb2dc677b22",
+        "refs/heads/codex/csr-20260808": "db2d2cfdf22510578ce45ecb2b9f28a37201c088",
+        "refs/heads/codex/csr-main-20260822": "cc9d0a50deb284e59cb1e131656b0e60c61857ae",
+        "refs/heads/codex/csr-unhiding-20260808": "47c9d4e4ee26ea6b635b9338510ae170d91d3993",
+        "refs/heads/codex/innermost-baseline-20260828": "51e42e797c9f38dcb6c8d907c131d746edd02f35",
+        "refs/heads/codex/relative-performance-20260811": "033c01c773cd4e89129149f912eae3126a7b5d7f",
+        "refs/heads/codex/trs-innermost-20260811": "8176ea286c4745dc83bcb41f7d2bffa35a8f8934",
+        "refs/heads/main": "e4f38728f3dcd610c3a17f062239eef53022c7c0"
+      },
+      "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tracked_status": ""
+    }
+  },
+  "source_binary_linkage": "Ledger claims only; reproducible rebuild not performed. HEAD binary is not assumed to match producing binary."
+}

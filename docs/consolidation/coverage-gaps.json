@@ -1,0 +1,18 @@
+{
+  "checker_candidates": 1088,
+  "eligible_positive_proofs": 0,
+  "gaps": [
+    "Every lexical checker candidate requires a context-sensitive processor/theorem/CPF map.",
+    "No candidate is admitted before provenance, input correspondence and twice checking.",
+    "HPC instrumentation and production agreement are not measured.",
+    "Relative and outermost strict witness-free replay provenance remains to be established.",
+    "No semantic equivalence or deletion is established by this lexical inventory."
+  ],
+  "instrumented_checker_branches": null,
+  "minimum_cardinality_proved": false,
+  "pinned_tips": 21,
+  "stage": "assessment only",
+  "unique_theory_paths": 115,
+  "unique_theory_variants": 184,
+  "verified_negative_tests": 0
+}

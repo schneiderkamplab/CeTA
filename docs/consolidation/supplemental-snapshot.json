@@ -1,0 +1,44 @@
+{
+  "afp_revision": "e4f38728f3dcd610c3a17f062239eef53022c7c0",
+  "build_status": "No Isabelle or GHC build launched; private heaps not seeded.",
+  "excluded_uncommitted": [
+    "CeTA-CSR/thys/ROOT",
+    "CeTA-CSR/thys/Outermost_CDP_Ext/",
+    "CeTA-CSR/thys/CSR_Checker/Extensions/CSR_Innermost_Unhiding_Proofs.thy"
+  ],
+  "ghc_version": "9.6.7",
+  "source_archives": [
+    {
+      "bytes": 2242685,
+      "frozen": "target/consolidation-snapshot/source/ferrum-head.tar.gz",
+      "revision": "08672d51ee427d53c1e9ecc07797aeb2dc677b22",
+      "sha256": "8a6044fd9e3b9af3cbfcbc6393d8c9fddd3f635714194e1237af0e2b058e5ccd"
+    },
+    {
+      "bytes": 2241822,
+      "frozen": "target/consolidation-snapshot/source/ferrum-producing.tar.gz",
+      "revision": "b8b572ffba7dbb68f1ec58ef4ff918189f760a83",
+      "sha256": "af816db959b1481fa53f6a1755e90e1ead87f6f62a249804947205b4851a2a21"
+    },
+    {
+      "bytes": 2229851,
+      "frozen": "target/consolidation-snapshot/source/ferrum-complete-replay.tar.gz",
+      "revision": "afb4acbd86412fbac3d27d5cd005ea5b3391d622",
+      "sha256": "a3475bcfbf5f6a13fa8f83765e743332714e7719d9f11152e4e1603cc442637d"
+    }
+  ],
+  "toolchain": [
+    {
+      "bytes": 14,
+      "frozen": "target/consolidation-snapshot/toolchain/ISABELLE_IDENTIFIER",
+      "sha256": "e927aad857b516496fed437fa18b20a854f5562f0cb1cc77b5d8ea8ff6fbba00",
+      "source": "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/etc/ISABELLE_IDENTIFIER"
+    },
+    {
+      "bytes": 4943,
+      "frozen": "target/consolidation-snapshot/toolchain/isabelle-settings",
+      "sha256": "aaa6cc6b78a3a17d0b7707166a20161c1a2c8c51a6534bb4f97fd340749a872f",
+      "source": "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/etc/settings"
+    }
+  ]
+}
