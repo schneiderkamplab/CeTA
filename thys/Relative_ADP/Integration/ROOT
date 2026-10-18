@@ -1,8 +1,7 @@
-session Relative_ADP_Integration_Base in "Base" = Relative_ADP_Checker_Dev +
+session Relative_ADP_Integration_Base in "Base" = RFC_Absolute_Ext +
   options [document = false]
   sessions
-    Proof_Checker
-    RFC_Absolute_Ext
+    Relative_ADP_Checker_Dev
   theories
     Relative_ADP_Integration_Base
 

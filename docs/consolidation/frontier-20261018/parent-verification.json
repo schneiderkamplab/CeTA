@@ -1,0 +1,120 @@
+{
+  "source_base": "8259236",
+  "change": "Integration parent RFC_Absolute_Ext; same theory imports",
+  "modules": [
+    {
+      "module": "Array.hs",
+      "identical": true,
+      "sha256": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419"
+    },
+    {
+      "module": "IArray.hs",
+      "identical": true,
+      "sha256": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49"
+    },
+    {
+      "module": "Data_Bits.hs",
+      "identical": true,
+      "sha256": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9"
+    },
+    {
+      "module": "Uint.hs",
+      "identical": true,
+      "sha256": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618"
+    },
+    {
+      "module": "Str_Literal.hs",
+      "identical": true,
+      "sha256": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b"
+    },
+    {
+      "module": "Ceta_Relative.hs",
+      "identical": true,
+      "sha256": "8ae305b90dda6e355c8d9ba8c2b3ee94e2d4c616eb72e0ccf640956000defda9"
+    },
+    {
+      "module": "Bit_Shifts.hs",
+      "identical": true,
+      "sha256": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38"
+    },
+    {
+      "module": "Uint32.hs",
+      "identical": true,
+      "sha256": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406"
+    },
+    {
+      "module": "Uint64.hs",
+      "identical": true,
+      "sha256": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+    }
+  ],
+  "identical": true,
+  "validation": {
+    "frontier-parent-20261018-build": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+        "build",
+        "-v",
+        "-j",
+        "2",
+        "-o",
+        "threads=8",
+        "-o",
+        "parallel_proofs=0",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/Relative_ADP",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+        "Proof_Checker",
+        "Code",
+        "RFC_Absolute_Ext",
+        "Relative_ADP_Ceta_Dev",
+        "Outermost_RZ_Ext"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 956.7892762441188,
+      "memory_used_at_start": 324060540928,
+      "max_child_rss_kib": 14834652
+    },
+    "frontier-parent-20261018-export": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+        "export",
+        "-n",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/Relative_ADP",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+        "-O",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-parent-20261018-haskell",
+        "-p",
+        "3",
+        "-x",
+        "Relative_ADP_Ceta_Dev.Relative_ADP_Code_Haskell:code/export1/**",
+        "Relative_ADP_Ceta_Dev"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 1.300960810156539,
+      "memory_used_at_start": 322428841984,
+      "max_child_rss_kib": 307028
+    }
+  },
+  "source_sha256": "4f991d8be5d50243c0edf862919db98e25e9ece8307575879a184a1cf34a3e7b",
+  "scope": "Session-parent change only; exported modules match the previously verified committed checker byte for byte."
+}
