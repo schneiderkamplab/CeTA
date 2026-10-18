@@ -78,7 +78,12 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
       } XMLor XMLdo (STR ''relativeAdpDerelatification'') {
         ordinary_proof \<leftarrow> xml2dp_termination_proof
           relative_adp_drp1_symbol_parser Mapping.empty Mapping.empty;
-        xml_return (Relative_ADP_Derelatification ordinary_proof)
+        xml_return (Relative_ADP_Derelatification [] ordinary_proof)
+      } XMLor XMLdo (STR ''relativeAdpFilteredDerelatification'') {
+        filters \<leftarrow> CPF_Proof_Parser.afs relative_adp_drp1_symbol_parser;
+        ordinary_proof \<leftarrow> xml2dp_termination_proof
+          relative_adp_drp1_symbol_parser Mapping.empty Mapping.empty;
+        xml_return (Relative_ADP_Derelatification filters ordinary_proof)
       }) id x"
 
 definition integrated_proof_parser where

@@ -1,6 +1,7 @@
 theory Relative_ADP_Checker_Adapter
   imports
     Dependency_Pair_Injective_Renaming
+    Relative_ADP_DP_Argument_Filter
     Relative_ADP_Root_Graph
     Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Order_Check
     Proof_Checker_Base.Check_Termination
@@ -472,6 +473,7 @@ datatype 'f relative_adp_termination_proof =
       bool
       "'f relative_adp_termination_proof list"
   | Relative_ADP_Derelatification
+      "(('f adp_symbol, nat list) lab) afs_list"
       "('f adp_symbol, nat list, string) dp_termination_proof"
 
 definition relative_adps_at_indices ::
@@ -600,20 +602,19 @@ fun check_relative_adp_termination_proof ::
       (zip candidates proofs)
   })"
 | "check_relative_adp_termination_proof P B
-      (Relative_ADP_Derelatification proof) = (let
+      (Relative_ADP_Derelatification filters proof) = (let
     transformed = relative_adp_move_base_to_main_list P B;
     P' = fst transformed;
-    B' = snd transformed;
-    dpp = relative_adp_drp1_dpp_list P' B'
+    B' = snd transformed
   in do {
     check (relative_adp_base_flat_list B')
       (showsl_lit (STR ''DRP1 requires an annotation-free base''));
     check_all (\<lambda>pair. is_Fun (fst pair)) (P' @ B')
       <+? (\<lambda>pair. showsl_lit
         (STR ''DRP1 requires function-rooted left-hand sides''));
-    check_dp_termination_proof tp_rbt_impl dpp_rbt_impl False
-      (showsl_lit (STR ''relative ADP DRP1''))
-      (mk_dpp dpp_rbt_impl dpp) proof
+    check_filtered_plain_dpp tp_rbt_impl dpp_rbt_impl filters
+      (map (map_funs_rule UnLab) (relative_adp_dp_pairs_list P'))
+      (map (map_funs_rule UnLab) (relative_adp_flat_rules_list (P' @ B'))) proof
   })"
 
 theorem check_relative_adp_termination_proof_sound:
@@ -753,10 +754,10 @@ next
     qed
   qed
 next
-  fix cert P B
+  fix filters cert P B
   assume checked:
     "isOK (check_relative_adp_termination_proof P B
-      (Relative_ADP_Derelatification cert))"
+      (Relative_ADP_Derelatification filters cert))"
   let ?transformed = "relative_adp_move_base_to_main_list P B"
   let ?P' = "fst ?transformed"
   let ?B' = "snd ?transformed"
@@ -765,12 +766,12 @@ next
       "relative_adp_base_flat_list ?B'"
     and lhs_list: "\<And>pair. pair \<in> set (?P' @ ?B') \<Longrightarrow>
       is_Fun (fst pair)"
-    and nested: "isOK (check_dp_termination_proof
-      tp_rbt_impl dpp_rbt_impl False
-      (showsl_lit (STR ''relative ADP DRP1''))
-      (mk_dpp dpp_rbt_impl ?dpp) cert)"
+    and nested: "isOK (check_filtered_plain_dpp
+      tp_rbt_impl dpp_rbt_impl filters
+      (map (map_funs_rule UnLab) (relative_adp_dp_pairs_list ?P'))
+      (map (map_funs_rule UnLab) (relative_adp_flat_rules_list (?P' @ ?B'))) cert)"
     by (auto simp: Let_def isOK_check_allm)
-  from check_dp_termination_proof[OF tp_rbt_impl dpp_rbt_impl nested]
+  from check_filtered_plain_dpp_sound[OF tp_rbt_impl dpp_rbt_impl nested]
   have finite_labeled: "finite_dpp
       (False, False,
         map_funs_trs
@@ -780,9 +781,7 @@ next
         map_funs_trs
           (UnLab :: _ \<Rightarrow> (_, nat list) lab)
           (set (relative_adp_flat_rules_list (?P' @ ?B'))))"
-    unfolding dpp_spec.mk_sound[OF dpp_rbt_impl]
-      relative_adp_drp1_dpp_list_def map_funs_trs.simps
-    by (simp add: dpp_spec.mk_sound[OF dpp_rbt_impl])
+    by (simp add: map_funs_trs.simps)
   have finite_plain: "finite_dpp
       (False, False, set (relative_adp_dp_pairs_list ?P'),
         {}, {}, {}, set (relative_adp_flat_rules_list (?P' @ ?B')))"

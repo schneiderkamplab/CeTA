@@ -10377,7 +10377,7 @@ data Relative_adp_termination_proof a = Relative_ADP_Empty
   | Relative_ADP_Com_Redpair (Redtriple_impl (Adp_com_symbol a)) [Nat] [Nat]
       (Relative_adp_termination_proof a)
   | Relative_ADP_Dependency_Graph Bool [Relative_adp_termination_proof a]
-  | Relative_ADP_Derelatification
+  | Relative_ADP_Derelatification [((Lab (Adp_symbol a) [Nat], Nat), Af_entry)]
       (Dp_termination_proof (Adp_symbol a) [Nat] [Char]);
 
 data Lpoly_order_semiring_ext a b =
@@ -74208,14 +74208,27 @@ xml2relative_adp_termination_proof x =
                     xml2relative_adp_termination_proof
                     (\ proofs ->
                       xml_return (Relative_ADP_Dependency_Graph True proofs))))
-                (xml_do "relativeAdpDerelatification"
-                  (xml_take
-                    (xml2dp_termination_proof relative_adp_drp1_symbol_parser
-                      (mapping_empty (of_phantom mapping_impl_list))
-                      (mapping_empty (of_phantom mapping_impl_list)))
-                    (\ ordinary_proof ->
-                      xml_return
-                        (Relative_ADP_Derelatification ordinary_proof)))))))))
+                (xml_or
+                  (xml_do "relativeAdpDerelatification"
+                    (xml_take
+                      (xml2dp_termination_proof relative_adp_drp1_symbol_parser
+                        (mapping_empty (of_phantom mapping_impl_list))
+                        (mapping_empty (of_phantom mapping_impl_list)))
+                      (\ ordinary_proof ->
+                        xml_return
+                          (Relative_ADP_Derelatification [] ordinary_proof))))
+                  (xml_do "relativeAdpFilteredDerelatification"
+                    (xml_take (afsa relative_adp_drp1_symbol_parser)
+                      (\ filters ->
+                        xml_take
+                          (xml2dp_termination_proof
+                            relative_adp_drp1_symbol_parser
+                            (mapping_empty (of_phantom mapping_impl_list))
+                            (mapping_empty (of_phantom mapping_impl_list)))
+                          (\ ordinary_proof ->
+                            xml_return
+                              (Relative_ADP_Derelatification filters
+                                ordinary_proof)))))))))))
       (\ xa -> xml_return (id xa)))
     x;
 
@@ -74730,6 +74743,12 @@ relative_adp_root_graph_candidates ::
 relative_adp_root_graph_candidates p b =
   relative_adp_estimated_graph_candidates relative_adp_root_successors p b;
 
+relative_adp_flat_rules_list ::
+  forall a b.
+    [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)];
+relative_adp_flat_rules_list a = map erase_annotations_adp a;
+
 erase_annotations_adp_list ::
   forall a b.
     [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
@@ -74757,12 +74776,6 @@ relative_adp_base_flat_list ::
 relative_adp_base_flat_list b =
   all (\ pair -> null (annotated_rhs_subterms_list pair)) b;
 
-relative_adp_flat_rules_list ::
-  forall a b.
-    [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)];
-relative_adp_flat_rules_list a = map erase_annotations_adp a;
-
 relative_adp_dp_pairs_list ::
   forall a b.
     [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
@@ -74774,21 +74787,30 @@ relative_adp_dp_pairs_list p =
         (annotated_rhs_subterms_list pair))
     p;
 
-relative_adp_drp1_dpp_list ::
-  forall a b c d e f g.
-    [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-        (Bool,
-          (Bool,
-            ([(Term (Lab (Adp_symbol a) c) b, Term (Lab (Adp_symbol a) c) b)],
-              ([d], ([e], ([f], [(Term (Lab (Adp_symbol a) g) b,
-                                   Term (Lab (Adp_symbol a) g) b)]))))));
-relative_adp_drp1_dpp_list p b =
-  (False,
-    (False,
-      (map (map_funs_rule UnLab) (relative_adp_dp_pairs_list p),
-        ([], ([], ([], map (map_funs_rule UnLab)
-                         (relative_adp_flat_rules_list (p ++ b))))))));
+check_filtered_plain_dpp ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      [((Lab b [Nat], Nat), Af_entry)] ->
+                        [(Term (Lab b [Nat]) [Char],
+                           Term (Lab b [Nat]) [Char])] ->
+                          [(Term (Lab b [Nat]) [Char],
+                             Term (Lab b [Nat]) [Char])] ->
+                            Dp_termination_proof b [Nat] [Char] ->
+                              Sum (String -> String) ();
+check_filtered_plain_dpp i j filters p r certificate =
+  (case afs_of filters of {
+    Nothing -> Inl (showsl_lit "invalid DP argument filter");
+    Just filtering ->
+      check_dp_termination_proof i j False
+        (showsl_lit "filtered non-minimal DP problem")
+        (mk_dpp j
+          (False,
+            (False,
+              (af_rules filtering p, ([], ([], ([], af_rules filtering r)))))))
+        certificate;
+  });
 
 relative_adps_at_indices ::
   forall a b.
@@ -74909,12 +74931,12 @@ check_relative_adp_termination_proof p b
                             (snd child) proof)
                    (zip candidates proofs))
                  (\ x -> Inl (snd x))));
-check_relative_adp_termination_proof p b (Relative_ADP_Derelatification proof) =
+check_relative_adp_termination_proof p b
+  (Relative_ADP_Derelatification filters proof) =
   let {
     transformed = relative_adp_move_base_to_main_list p b;
     pa = fst transformed;
     ba = snd transformed;
-    dpp = relative_adp_drp1_dpp_list pa ba;
   } in bindb (check (relative_adp_base_flat_list ba)
                (showsl_lit "DRP1 requires an annotation-free base"))
          (\ _ ->
@@ -74928,8 +74950,10 @@ check_relative_adp_termination_proof p b (Relative_ADP_Derelatification proof) =
                      Inl (showsl_lit
                            "DRP1 requires function-rooted left-hand sides")))
              (\ _ ->
-               check_dp_termination_proof tp_rbt_impl dpp_rbt_impl False
-                 (showsl_lit "relative ADP DRP1") (mk_dpp dpp_rbt_impl dpp)
+               check_filtered_plain_dpp tp_rbt_impl dpp_rbt_impl filters
+                 (map (map_funs_rule UnLab) (relative_adp_dp_pairs_list pa))
+                 (map (map_funs_rule UnLab)
+                   (relative_adp_flat_rules_list (pa ++ ba)))
                  proof));
 
 adp_defined_symbols_list :: forall a b. (Eq a) => [(Term a b, Term a b)] -> [a];
