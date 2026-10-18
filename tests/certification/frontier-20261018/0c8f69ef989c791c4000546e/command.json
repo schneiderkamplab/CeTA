@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/ferrum-nested-label-v213",
+    "prove",
+    "../TPDB-ARI/TRS_Relative/INVY_15/#3.18_rand.ari",
+    "--cpf",
+    "/tmp/ferrum-termcomp-3b5kuvsw/proof.cpf.xml",
+    "--cpf-mode",
+    "auto",
+    "--strategy",
+    "timeout(300s,fail)",
+    "--utility-guidance-manifest",
+    "target/srs-native-20261013/integrated-private-srs-v660/oracle.jsonl",
+    "--no-top-level-llm",
+    "--processor-events",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/final-TRS_Relative-v225/run/TRS_Relative/INVY_15/sharp_3.18_rand/processor-events.jsonl"
+  ],
+  "disable_llm": true,
+  "extra_args": [
+    "--strategy",
+    "timeout(300s,fail)",
+    "--utility-guidance-manifest",
+    "target/srs-native-20261013/integrated-private-srs-v660/oracle.jsonl",
+    "--no-top-level-llm"
+  ],
+  "problem": "../TPDB-ARI/TRS_Relative/INVY_15/#3.18_rand.ari",
+  "timeout_seconds": 305
+}

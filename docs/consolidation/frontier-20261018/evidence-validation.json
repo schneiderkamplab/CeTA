@@ -1,0 +1,6 @@
+{
+  "files": 31404,
+  "archive_sha256": "5584769b7a1716f011cda27d9b14cc5299c0ed25e161c8201e64db88e0410445",
+  "passed": true,
+  "scope": "Hash verification of archived logs, results, scripts and source identities; certificates selected for durable regression live in tests/certification/frontier-20261018."
+}

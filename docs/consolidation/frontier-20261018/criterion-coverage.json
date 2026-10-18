@@ -1,0 +1,63 @@
+{
+  "scope": "Structural observations from 18 real supplemental certificates; not execution of Isabelle proofs.",
+  "observations": [
+    {
+      "processor": "relativeAdpRootDependencyGraph",
+      "placement": "root",
+      "count": 18
+    },
+    {
+      "processor": "relativeAdpFilteredDerelatification",
+      "placement": "nested",
+      "count": 194
+    }
+  ],
+  "criteria": [
+    {
+      "node": "relativeAdpRootDependencyGraph",
+      "classification": "More precise executable estimator for the same graph processor",
+      "checker": "check_relative_adp_termination_proof (Relative_ADP_Dependency_Graph True proofs)",
+      "soundness": "relative_adp_root_graph_processor",
+      "general_theorem": "relative_adp_graph_estimator.relative_adp_estimated_graph_processor",
+      "assumptions": [
+        "Successor bounds",
+        "Semantic dependency-edge coverage",
+        "Function-rooted left-hand sides",
+        "Exact child count",
+        "Every generated child proved"
+      ],
+      "note": "Root-sensitive refers to term roots, not proof-tree placement."
+    },
+    {
+      "node": "relativeAdpFilteredDerelatification",
+      "classification": "Chain simulation into an ordinary nonminimal DP problem",
+      "checker": "check_filtered_plain_dpp",
+      "soundness": "finite_plain_dpp_argument_filter; check_filtered_plain_dpp_sound",
+      "assumptions": [
+        "Well-formed argument filter",
+        "Nonminimal full DP semantics",
+        "Empty Q and weak pair/rule sets in transformed problem",
+        "Existing derelatification guards",
+        "Ordinary DP child checked with existing engine"
+      ]
+    }
+  ],
+  "gaps": [
+    "Root-sensitive graphs are observed as first ADP processors, not nested.",
+    "Filtered derelatification is observed nested, not as the first ADP processor.",
+    "Observed filters are noncollapsing; collapsing-filter positive evidence remains absent.",
+    "Complete original generation provenance is not established by these rechecks.",
+    "The identity-filter compatibility route for old unfiltered derelatification has no observed entry in the selected supplemental corpus; compatibility is supported by the verified shared semantics, not a new genuine replay."
+  ],
+  "runtime_report_sha256": "c586167004d81facea4e098a36cb9dd737943cfdf067bda65530927d8a865646",
+  "positive_branch_coverage": {
+    "total": 14,
+    "observed": 6,
+    "unobserved": "Explicit per-branch entries in runtime-coverage.json; these are not retired."
+  },
+  "rejection_tests": {
+    "graph_child_count": 18,
+    "invalid_filter_position": 18,
+    "production_hpc_agreement": true
+  }
+}

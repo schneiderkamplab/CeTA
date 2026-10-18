@@ -1,0 +1,1306 @@
+{
+  "branches": [
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74858,
+        27,
+        74858,
+        50
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 132920
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74858,
+        27,
+        74858,
+        50
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 132921
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74866,
+        31,
+        74866,
+        54
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 132944
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74866,
+        31,
+        74866,
+        54
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 132945
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": true,
+      "position": [
+        74884,
+        27,
+        74884,
+        50
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 132996
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74884,
+        27,
+        74884,
+        50
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 132997
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": true,
+      "position": [
+        74892,
+        31,
+        74892,
+        54
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133020
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74892,
+        31,
+        74892,
+        54
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133021
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": true,
+      "position": [
+        74909,
+        11,
+        74909,
+        20
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133069
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": true,
+      "position": [
+        74909,
+        11,
+        74909,
+        20
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133070
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": true,
+      "position": [
+        74915,
+        32,
+        74915,
+        51
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133084
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74915,
+        32,
+        74915,
+        51
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133085
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox True",
+      "module": "Ceta_Relative",
+      "observed": true,
+      "position": [
+        74946,
+        36,
+        74946,
+        55
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133158
+    },
+    {
+      "function": "check_relative_adp_termination_proof",
+      "hash": "2455927069",
+      "label": "BinBox CondBinBox False",
+      "module": "Ceta_Relative",
+      "observed": false,
+      "position": [
+        74946,
+        36,
+        74946,
+        55
+      ],
+      "source": "./Ceta_Relative.hs",
+      "tick": 133159
+    }
+  ],
+  "function_entries": {
+    "check_filtered_plain_dpp": [
+      {
+        "hash": "2455927069",
+        "label": "TopLevelBox [\"check_filtered_plain_dpp\"]",
+        "module": "Ceta_Relative",
+        "position": [
+          74802,
+          1,
+          74813,
+          4
+        ],
+        "source": "./Ceta_Relative.hs",
+        "tick": 132911
+      }
+    ],
+    "check_relative_adp_termination_proof": [
+      {
+        "hash": "2455927069",
+        "label": "TopLevelBox [\"check_relative_adp_termination_proof\"]",
+        "module": "Ceta_Relative",
+        "position": [
+          74851,
+          1,
+          74957,
+          24
+        ],
+        "source": "./Ceta_Relative.hs",
+        "tick": 133202
+      }
+    ],
+    "relative_adp_estimated_graph_candidates": [
+      {
+        "hash": "2455927069",
+        "label": "TopLevelBox [\"relative_adp_estimated_graph_candidates\"]",
+        "module": "Ceta_Relative",
+        "position": [
+          74529,
+          1,
+          74532,
+          71
+        ],
+        "source": "./Ceta_Relative.hs",
+        "tick": 105197
+      }
+    ],
+    "relative_adp_estimated_sccs": [
+      {
+        "hash": "2455927069",
+        "label": "TopLevelBox [\"relative_adp_estimated_sccs\"]",
+        "module": "Ceta_Relative",
+        "position": [
+          74342,
+          1,
+          74344,
+          73
+        ],
+        "source": "./Ceta_Relative.hs",
+        "tick": 105149
+      }
+    ],
+    "relative_adp_root_graph_candidates": [
+      {
+        "hash": "2455927069",
+        "label": "TopLevelBox [\"relative_adp_root_graph_candidates\"]",
+        "module": "Ceta_Relative",
+        "position": [
+          74743,
+          1,
+          74744,
+          74
+        ],
+        "source": "./Ceta_Relative.hs",
+        "tick": 105202
+      }
+    ],
+    "relative_adp_root_successors": [
+      {
+        "hash": "2455927069",
+        "label": "TopLevelBox [\"relative_adp_root_successors\"]",
+        "module": "Ceta_Relative",
+        "position": [
+          74727,
+          1,
+          74735,
+          54
+        ],
+        "source": "./Ceta_Relative.hs",
+        "tick": 42408
+      }
+    ]
+  },
+  "mix_sha256": "acd4ac32f89a2018a944b4e5eb4f7a20ad1b571a67378b0fb042c0e9d40b1ffc",
+  "reports": {
+    "frontier-filter-20261018-new-positives": [
+      {
+        "coverage_sha256": "829fbdc212117f89150fb252265554be90c25b041d5eddb56a5edf721b8015ee",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "1a51f6bad0da7fbed88d45d4",
+        "root": "TRS_Relative/INVY_15/#3.10_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 21,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "7624d9fc7f5451ac956b7040271fbde0d2849c35cc9becd5330fb00031f20aca",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "0c8f69ef989c791c4000546e",
+        "root": "TRS_Relative/INVY_15/#3.18_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 8,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "b1db334e0a50800225bd5756aeb6b8b5203f93a40b32dd9aa2dd869f6e2b1cfd",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "cc87b52bfdc5b7ecb299677c",
+        "root": "TRS_Relative/INVY_15/#3.19_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 8,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "b801918db30824b4bc7c428b4bad035fbbcdc6a736e616934178de99cbee5db5",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "cd590f7ad796dc27ad560aec",
+        "root": "TRS_Relative/INVY_15/#3.1_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 5,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "d995aa564256a1c85d920d883aeb65813e84f01448b2b919c2d3e8224b5e7f8d",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "462522ecdfedc16c2e1e96e9",
+        "root": "TRS_Relative/INVY_15/#3.23_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 2,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "cecadf0dce8160516f745f11e52d389a78ca360e9f8f7c61c31f20ae718b950f",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "cd831752a35c1b59efdfa34e",
+        "root": "TRS_Relative/INVY_15/#3.36_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 7,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "0a361bc4d23c258e0846c7ac1949e49e9cf1d11c2ff5964aa03d70f54043083c",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "ba46794eb47f49c3904cb58d",
+        "root": "TRS_Relative/INVY_15/#3.41_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 4,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "99bd3ee10713f3d60e6dcb75f85dc367950de060809a018311ba25c7fdbaf1dd",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "599ef1030316f5f83d4e9277",
+        "root": "TRS_Relative/INVY_15/#3.42_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 10,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "78fbc013ba7994b20a9e7484f3dd1cd1e05e1e94b04bc41bea1bd67ea9f47bb5",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "56cbd98028c5a1a8f1c46007",
+        "root": "TRS_Relative/INVY_15/#3.48_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 8,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "71427e05789e513581c46bdc2156ac7202cb66ea58dbedddf4e5791d5bce6724",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "43ac64ca920ea29e8393d7d5",
+        "root": "TRS_Relative/INVY_15/#3.4_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 8,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "916ab94600d22144251ddadfe602fe205be94b63040dbdcadb078b2defbf7eb3",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "4a53366868a2a78c2b2fa1f3",
+        "root": "TRS_Relative/INVY_15/#3.53_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 20,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "ae8dddd2b90288340172bdf6d32dcf2e3716e47c1485eddf5e5115d3575dd84a",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "115a216b4a3878e40993cd9e",
+        "root": "TRS_Relative/INVY_15/#3.55_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 17,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "b50cefd2ce24597cca528270bda1a0a134cf7455b53fb51f243a7248765bdb1e",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "a81ddf69c5c5c19d9fd069e7",
+        "root": "TRS_Relative/INVY_15/#3.57_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 15,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "c6562e67ef4a00d0958d85c7eee40c941f72f67a9ed66da1c30e9ba2dc97d320",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "2fc89ca1c77b88d0b5d74513",
+        "root": "TRS_Relative/INVY_15/#3.5_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 11,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "8ff750397176956f0f1f5c1856a284f8806136b66d7a8b2bbcf7402d8ad2d3ac",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "832028be056c95bd78e3d0bb",
+        "root": "TRS_Relative/INVY_15/#3.5b_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 13,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "55baf2bbdeaccacdea9796c729934b016a739663d7a4d00f3f3ab13e19ddea3d",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "57ede3b5057c898a11ac124c",
+        "root": "TRS_Relative/INVY_15/#3.6a_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 11,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "b1e832ba5908c8df2e11c972c329fcc25a7f6c19a8e97b301b58f05c8e7f7109",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "7514e957ccfd6a591146feb8",
+        "root": "TRS_Relative/INVY_15/#3.6b_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 13,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "3f0fc21c4918bd45c9173464e9c8d0a16bd4ca2aee4fe67ab642bed26cf0fd06",
+        "functions": {
+          "check_filtered_plain_dpp": true,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": true,
+          "relative_adp_root_successors": true
+        },
+        "id": "c0cb274680d8a29a9ea290d1",
+        "root": "TRS_Relative/INVY_15/#3.8b_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {
+          "relativeAdpFilteredDerelatification": 13,
+          "relativeAdpRootDependencyGraph": 1
+        }
+      },
+      {
+        "coverage_sha256": "03db3689ed630d090e53f56b4047b4ac0335c42749cf85f21c4258a8e39ff8aa",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "6e6ea9f6e2102a8185147376",
+        "root": "SRS_Relative/Waldmann_19/random-137.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      }
+    ],
+    "frontier-filter-20261018-supplemental": [
+      {
+        "coverage_sha256": "f7999f65265b4cfb7954afd3f4b89ad25163e039b71af670e354472da5fd43c6",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "f37724820c31e7252b72",
+        "root": "TRS_Relative/AProVE_24/combination.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "bc5a859736bf5ba1e3c76489636621107ed602e68eafdf0401fa7bfbbf02f958",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "b75760fcaf738894083f",
+        "root": "TRS_Relative/AProVE_24/combination_2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "26792c6707738a6747f31bb381b000088ba790972c2ac678a3d50be543c159fc",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "e2b42850efb132ffa95e",
+        "root": "TRS_Relative/AProVE_24/divMinusExchange.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "3f05b9f7e7d180a6db1df3eb8de1139117e774a876ef93ffb57f64d49b698576",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "3a85b3e118fede51b614",
+        "root": "TRS_Relative/AProVE_24/gcdSet_a.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "7dd95d9d32e5e48c14eb9d05a8de43b2865ae635abe14f303e84dc29eef5dd11",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "80ddf60ee27f236e61c7",
+        "root": "TRS_Relative/AProVE_24/gcdSet_a2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "c507f7de26286e5e73ea7483cb587c40a0a9d54795a10406f10fd6ed3006c533",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "003fb489e6be97b67714",
+        "root": "TRS_Relative/AProVE_24/gcdSet_b.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "7ad38a5326bfaea67db693f89364942b7de86777073c0d7a5a6ff06cf6fd1457",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "a4faef53cce039b99ee4",
+        "root": "TRS_Relative/AProVE_24/gcdSet_b2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "eed10b1ddd426197eb88dbde79d02ae52866299c61ed7c89091548a28117e98f",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "65be21a223105646b4f1",
+        "root": "TRS_Relative/AProVE_24/gcdSet_c.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "a3a504c7649fb29acdd9f24deb5cedc75f417fe723ed7cf33d831ca333d302f3",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "cde62169b4c1820a88f5",
+        "root": "TRS_Relative/AProVE_24/gcdSet_c2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "8b79c9dbef4de5b5077c2f193ee9571802185e22aaa0c2f85e4189e17e7bfb5b",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "f0aa5da20a15748a629d",
+        "root": "TRS_Relative/AProVE_24/lasso.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "519ce83431e581b369b413d2af25caa3e7dbee3a46482a74be01457bb5069118",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "31bfad8ce25e4c2ff4fb",
+        "root": "TRS_Relative/AProVE_24/log.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "d1236a6c82fc8cd41b69acaa6cb0dde7ae3c177383e86711eeabfc61547b425e",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "82e32188b8e6ea504811",
+        "root": "TRS_Relative/AProVE_24/mset.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "3a9f7e19a0ccf7014272772b81493a3c2485be70a21ed1476282ef8c595c5873",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "c1b8b96ba219bfc0b61a",
+        "root": "TRS_Relative/AProVE_24/mset_a.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "0dd1a4f233a68c8724989afb5bb3237f09e3cffa973daa654220d5b687f728aa",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "9368cf29e357b498cd74",
+        "root": "TRS_Relative/AProVE_24/mset_a2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "7911dc4673d23ecc9996799cf37a0f770b4b5ba1299b60873d9a3d2ff9c6054c",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "958fd0edfec75a098c3e",
+        "root": "TRS_Relative/AProVE_24/mset_b.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "ff9c026218d1a012d4a1fcfbb3332d2f8f5eece9f7dc5814bf8da2cf90d8abb9",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "f794be63b9eb1e76a578",
+        "root": "TRS_Relative/AProVE_24/mset_b2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "91857032fa129efecc468d8014ce5cc74d2182edc03e92197a31f4fed4fab729",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "9eb4016aec9ef427447a",
+        "root": "TRS_Relative/AProVE_24/mset_c.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "2f95d5e0cf95790ed9e8ad9b4184e60014be514e26cc5f768f48dc0ab2fb8605",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "d21eff4fce0bab3a9127",
+        "root": "TRS_Relative/AProVE_24/mset_c2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "68bf4a109d428da7801f29ad11172b6252249756fa28f76fa590410cd8b0c22f",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "16415a991f7c8fb37392",
+        "root": "TRS_Relative/AProVE_24/purge.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "b9e91a0e3a9363e488f319103fade45908b3158fd15d65ec2ab762c330fe0951",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "2c4ab04803a0849a3d8c",
+        "root": "TRS_Relative/AProVE_24/purge_2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "f136dc1124082a89e3fba5288ee421c8bd2ad9a728aee1931ea9d887732c4784",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "8da0b032f87ac4225a24",
+        "root": "TRS_Relative/AProVE_24/subsets.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "2a9034dbf3a5d9c181fe16cfdff718c0fc93b2a194e01ee84cb0df1ac4e4274c",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "1c69a29be459ff20c150",
+        "root": "TRS_Relative/AProVE_24/subsets_2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "067797880a585cf55baa6dcc358bb6b09a5c7bbbca4d9df0327410070c760e58",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "73ee023f2e243b12ad57",
+        "root": "TRS_Relative/INVY_15/#3.38_rand.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "c7ca33ab52b07062deda1edc50cbad2bde6af0d5613368efd22b9a013c197b23",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "d0c2b5408756f374327f",
+        "root": "TRS_Relative/INVY_15/ex2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "5cd673f601c8cdea2c0ab611a376e54a880b8fc9bfbe157b759a12fbf1676f06",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "350576fd71d564feec24",
+        "root": "TRS_Relative/Kassing_26/bst_multiset.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "9b68dd692c897a2cd09d1a40823b4e9277b25ff19091c9f6a08bee688298519b",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": true,
+          "relative_adp_estimated_graph_candidates": true,
+          "relative_adp_estimated_sccs": true,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "b34a4796a9ea73f08d90",
+        "root": "TRS_Relative/Kassing_26/gcd_commutative.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "1a298002e45a154375b9b221877e0f1d81c3b746785a6717f012e82a8083d797",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "3d9200b0dee1023bea75",
+        "root": "TRS_Outermost/Mixed_outermost/ex1.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "cff3c117a152ca66e9a077be5ae4ff815ed89a8d27c2c216d22b4c89f663ceda",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "3d1488d1756b776304b3",
+        "root": "TRS_Outermost/Mixed_outermost/ex2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "33f789381868aa13f7e0bb27e259e56cf3f30d79f7a062946d5dc3f892c94b89",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "a163d39b1e47be90ed3a",
+        "root": "TRS_Outermost/Mixed_outermost/ex3.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "3041bdef0b9d94a0221348eef555d9a435e4a1d034c7ce6b1bd3d49bc194fcc6",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "d28d588622d0c5dea2eb",
+        "root": "TRS_Outermost/Mixed_outermost/ex4.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "9d7b0a274f9e2d857501c6895883deed6da1af9dfcc62fe45f2beb4c8f5c55fe",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "6ad14d2a2216f5231fbc",
+        "root": "TRS_Outermost/Mixed_outermost/ex5.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "0e40c8bbeba4b7cd90516a79bbca0685decd6fd7a0c1fe3131cd130885b6e251",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "8baa6b3e886f544e88ea",
+        "root": "TRS_Outermost/Strategy_outermost_added_08/Ex4_4_Luc96b_FR.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "8fc1e886112918a78851e623932a037d201b74524169c7855aa74ecb56ba6e1a",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "654c7e5b6b1e52534536",
+        "root": "TRS_Outermost/Strategy_outermost_added_08/LengthOfFiniteLists_nosorts_GM.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "b3562e06362fd7b57503a1250ecc0a525321075a2c5b03ec2bcbd246887bad74",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "da3992e59d39cc31afca",
+        "root": "TRS_Outermost/Zantema_08/bintree.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "f6e77fa886975d742cf21e348cc440a80483f9559150fbc3917ac6fd8ddb8bc4",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "0d594081c4ad8935a6ac",
+        "root": "TRS_Outermost/Zantema_08/cariboo_add2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "b429f2e2b54005ad94e1ed9190f9d8041bbebba5382c326e71384c10a37b50a4",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "ac3d4d14da73a74b2101",
+        "root": "TRS_Outermost/Zantema_08/cariboo_add2a.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "ac408925ed3699dc7b1fb1bb69f2b68ea1d35323c40cca3088c97971cfa0a697",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "e3ed332d3334dc561a42",
+        "root": "TRS_Outermost/Zantema_08/ex0.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "18b8945b6e1e992f58c560a97ebfc9f3906dddce0bc79d18f7fe6f07898163e7",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "0f24e6c88e8081aa20a8",
+        "root": "TRS_Outermost/Zantema_08/ex5.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "6c5809b27473b9acd2955eb703a0c32bcc96fc11bff525458fd8ebd7d330c2b0",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "ca15cf8bcc5d3cb2b1c8",
+        "root": "TRS_Outermost/Zantema_08/ex8.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "af1ca92cc7df89bad1f687fd29ddaf4c3f68e75cacf510240ba2b475cc09c3c7",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "1216ec41462162b566d0",
+        "root": "TRS_Outermost/Zantema_08/ex9.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "4c5ee2250f11484f4be2c080dcbdce458e4eca522fddb2ac1e37b2b970df171a",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "3df305509ad734807605",
+        "root": "TRS_Outermost/Zantema_08/f_2_1.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "f916e907faedf77302ec636cbe3e050a24acba2812183ecaf5a161eaa22bed2c",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "2fa502781f6ed9ec5b82",
+        "root": "TRS_Outermost/Zantema_08/f_2_2.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "84bc272f8b8bbd6bf53a1afccf2868340bf38743858fba495207e140c7d6a3f3",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "1e7fd6fde661ec865eeb",
+        "root": "TRS_Outermost/Zantema_08/fg.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "faa54e0d54767c3eda80a6bbd1cc7fcce106ffec5ddd0e0f7c44bac4d305afc7",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "fa09dbc250e83adb4083",
+        "root": "TRS_Outermost/Zantema_08/g_2_const.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "d2dc16afd98e216a8430c41fbf4ffa068639b65b5a196023cad2db15f4153ec3",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "c2e2f54b9002a696ffdd",
+        "root": "TRS_Outermost/Zantema_08/g_2_f_var.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "5017347dc55b42f7c38e369406864f8f70ded15e8b0551849285ff313c1aa1f8",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "f2ae6d820ebb649ed4f8",
+        "root": "SRS_Relative/ICFP_2010_relative/4017.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "5b6eb4315fa4ecff294d3e29c78c9f0ba2e932ae70f075a1d9497a69c11762ac",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "aac309448e2a86897494",
+        "root": "SRS_Relative/ICFP_2010_relative/91242.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      },
+      {
+        "coverage_sha256": "6116d25286cef7d944b5b3194740a9bcc6204a83635075b5c447f4e168e7dde5",
+        "functions": {
+          "check_filtered_plain_dpp": false,
+          "check_relative_adp_termination_proof": false,
+          "relative_adp_estimated_graph_candidates": false,
+          "relative_adp_estimated_sccs": false,
+          "relative_adp_root_graph_candidates": false,
+          "relative_adp_root_successors": false
+        },
+        "id": "03861bc76a37d09a8682",
+        "root": "SRS_Relative/ICFP_2010_relative/97901.ari",
+        "unknown_proof_nodes_in_frozen_registry": {}
+      }
+    ]
+  },
+  "scope": "Supplemental genuine certificate bytes, incomplete generation provenance. Positive runtime coverage is separate from theorem verification. Unobserved branches remain explicit gaps."
+}
