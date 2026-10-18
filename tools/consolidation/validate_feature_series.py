@@ -22,7 +22,6 @@ def targets(title,source):
     if title=='Shared production export configuration':return ['Proof_Checker','Code']
     if title.startswith(('RFC deletion','Recursive split','Full termination to outermost')):return ['RFC_Absolute_Ext']
     if title.startswith('Shared outermost'):return ['Outermost_RZ_Ext','Proof_Checker']
-    if title=='Complete CSR tail-core soundness case':return ['CSR_Checker_Extensions']
     if title=='Specialize finite conservative coverage':return ['CSR_Checker_Extensions']
     if title.startswith(('Share guarded','Share non-strict')):return ['CSR_Guarded_List_Measure_Check']
     if title.startswith('Factor usable-rule'):return ['CSR_Muterm_Ext']
