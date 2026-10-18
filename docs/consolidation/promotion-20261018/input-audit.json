@@ -1,0 +1,51 @@
+{
+  "strategy": "relative-full",
+  "strategy_equal": true,
+  "strict_and_weak_multisets_equal": true,
+  "omitted_empty_weak_rules": false,
+  "answer": "yes",
+  "partitions": {
+    "strict": {
+      "rule_multiset_equal": true,
+      "strategy_equal": true,
+      "strategy": "full",
+      "answer": "yes",
+      "rules": 2,
+      "rule_symbols": 2,
+      "nonvariable_lhs_and_no_extra_variables": true,
+      "symbol_spelling_aliases": {},
+      "unused_benchmark_declarations": [
+        "0",
+        "error",
+        "false",
+        "gcd",
+        "if_gcd",
+        "minus",
+        "pred",
+        "true"
+      ]
+    },
+    "weak": {
+      "rule_multiset_equal": true,
+      "strategy_equal": true,
+      "strategy": "full",
+      "answer": "yes",
+      "rules": 13,
+      "rule_symbols": 10,
+      "nonvariable_lhs_and_no_extra_variables": true,
+      "symbol_spelling_aliases": {},
+      "unused_benchmark_declarations": []
+    },
+    "combined": {
+      "rule_multiset_equal": true,
+      "strategy_equal": true,
+      "strategy": "full",
+      "answer": "yes",
+      "rules": 15,
+      "rule_symbols": 10,
+      "nonvariable_lhs_and_no_extra_variables": true,
+      "symbol_spelling_aliases": {},
+      "unused_benchmark_declarations": []
+    }
+  }
+}

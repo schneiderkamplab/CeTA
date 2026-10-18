@@ -1,6 +1,6 @@
 theory Relative_ADP_Ceta
   imports
-    Relative_ADP_Integration_Base.Relative_ADP_Integration_Base
+    Relative_ADP_Promotion
 begin
 
 partial_function (sum_bot) relative_adp_com_symbol_parser ::
@@ -86,14 +86,42 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
         xml_return (Relative_ADP_Derelatification filters ordinary_proof)
       }) id x"
 
+partial_function (sum_bot) xml2relative_adp_root :: "lsymbol relative_adp_root_proof xmlt" where
+  [code]: "xml2relative_adp_root x = (
+    xml_change xml2relative_adp_termination_proof (xml_return \<circ> Relative_ADP_Root)
+    XMLor xml_singleton (STR ''trsTerminationProof'')
+      (xml_change xml2relative_adp_termination_proof (xml_return \<circ> Relative_ADP_Root)
+       XMLor XMLdo (STR ''split'') {
+         selected \<leftarrow> xml_singleton (STR ''trs'')
+           (rules symbol_parser Mapping.empty Mapping.empty) id;
+         child \<leftarrow> xml2relative_adp_root;
+         empty \<leftarrow> xml_singleton (STR ''trsTerminationProof'')
+           (XMLdo (STR ''rIsEmpty'') { xml_return () }) id;
+         xml_return (Relative_ADP_Promote selected child)
+       }) id
+  ) x"
+
+fun is_relative_adp_root_xml :: "xml \<Rightarrow> bool" where
+  "is_relative_adp_root_xml (XML name attrs [child]) =
+    (name = String.explode (STR ''relativeAdpTerminationProof'') \<or>
+      (name = String.explode (STR ''trsTerminationProof'') \<and>
+        is_relative_adp_root_xml child))"
+| "is_relative_adp_root_xml (XML name attrs (xml_selected # xml_first # xml_rest)) =
+    (name = String.explode (STR ''relativeAdpTerminationProof'') \<or>
+      (name = String.explode (STR ''split'') \<and>
+        is_relative_adp_root_xml xml_first))"
+| "is_relative_adp_root_xml (XML name attrs []) =
+    (name = String.explode (STR ''relativeAdpTerminationProof''))"
+| "is_relative_adp_root_xml (XML_text _) = False"
+
 definition integrated_proof_parser where
   "integrated_proof_parser termIndexMap ruleMap x =
     (let ordinary = xml_change (proof_parser termIndexMap ruleMap)
         (\<lambda>p. xml_return (Inl p)) in
      case fst x of XML name attrs (XML child child_attrs children # rest) \<Rightarrow>
-       if child = String.explode (STR ''relativeAdpTerminationProof'') then
+       if is_relative_adp_root_xml (XML child child_attrs children) then
          xml_change (xml_singleton (STR ''proof'')
-           xml2relative_adp_termination_proof id)
+           xml2relative_adp_root id)
            (\<lambda>p. xml_return (Inr p)) x
        else ordinary x
      | _ \<Rightarrow> ordinary x)"
@@ -102,7 +130,7 @@ definition integrated_certification_problem_parser ::
   "((lsymbol,string) input option \<times>
     (lsymbol,string) property option \<times>
     (lsymbol,string) answer option \<times>
-    ((string,label_type,string) proof + lsymbol relative_adp_termination_proof)) xmlt" where
+    ((string,label_type,string) proof + lsymbol relative_adp_root_proof)) xmlt" where
   "integrated_certification_problem_parser =
     XMLdo (STR ''certificationProblem'') {
       version \<leftarrow> xml_text (STR ''cpfVersion'');
@@ -132,18 +160,18 @@ definition parse_combined_integrated_cert_problem where
 definition check_relative_adp_cert_problem ::
   "(lsymbol,string) input \<Rightarrow> (lsymbol,string) property \<Rightarrow>
    (lsymbol,string) answer \<Rightarrow>
-   lsymbol relative_adp_termination_proof \<Rightarrow> showsl check" where
+   lsymbol relative_adp_root_proof \<Rightarrow> showsl check" where
   "check_relative_adp_cert_problem inp_value property_value answer_value certificate =
     (case (inp_value, property_value, answer_value) of
       (Inn_TRS_input No_Strategy R B, Termination, Decision True) \<Rightarrow>
-        check_relative_adp_from_trs R B certificate
+        check_relative_adp_root R B certificate
     | _ \<Rightarrow> Inl (showsl_lit
         (STR ''relative ADP proofs require a standard relative TRS YES problem'')))"
 
 definition certify_relative_adp_cert_problem ::
   "(lsymbol,string) input \<Rightarrow> (lsymbol,string) property \<Rightarrow>
    (lsymbol,string) answer \<Rightarrow>
-   lsymbol relative_adp_termination_proof \<Rightarrow> cert_result" where
+   lsymbol relative_adp_root_proof \<Rightarrow> cert_result" where
   "certify_relative_adp_cert_problem inp_value property_value answer_value certificate =
     (case check_relative_adp_cert_problem inp_value property_value answer_value certificate of
       Inl err \<Rightarrow> Error (err (STR ''''))
@@ -162,12 +190,12 @@ proof -
         auto simp: check_relative_adp_cert_problem_def
         split: strategy.splits property.splits answer.splits bool.splits)
   from checked have checked_adp:
-      "isOK (check_relative_adp_from_trs R B certificate)"
+      "isOK (check_relative_adp_root R B certificate)"
     unfolding inp_def prop_def ans_def check_relative_adp_cert_problem_def
     by simp
   from checked_adp have termination_result:
       "SN_rel (Trs.rstep (set R)) (Trs.rstep (set B))"
-    by (rule check_relative_adp_from_trs_sound)
+    by (rule check_relative_adp_root_sound)
   show ?thesis
     unfolding inp_def prop_def ans_def desired_property_def
     using termination_result by simp

@@ -2,9 +2,8 @@
 
 module
   Ceta_Relative(Nat, nat_of_integer, Char, Sum(..), Lab, Sum_bot, Proof, Input,
-                 Answer, Cert_result(..), Property,
-                 Relative_adp_termination_proof, explode,
-                 certify_proof_integrated)
+                 Answer, Cert_result(..), Property, Relative_adp_root_proof,
+                 explode, certify_proof_integrated)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -10301,6 +10300,20 @@ data Partial_object_ext a b = Partial_object_ext (Set a) b;
 
 newtype Cut_transition_split_info a = Cut_Transition_Split_Info [[a]];
 
+data Relative_adp_termination_proof a = Relative_ADP_Empty
+  | Relative_ADP_Erasure_Redpair (Redtriple_impl a) [Nat] [Nat]
+      (Relative_adp_termination_proof a)
+  | Relative_ADP_Com_Redpair (Redtriple_impl (Adp_com_symbol a)) [Nat] [Nat]
+      (Relative_adp_termination_proof a)
+  | Relative_ADP_Dependency_Graph Bool [Relative_adp_termination_proof a]
+  | Relative_ADP_Derelatification [((Lab (Adp_symbol a) [Nat], Nat), Af_entry)]
+      (Dp_termination_proof (Adp_symbol a) [Nat] [Char]);
+
+data Relative_adp_root_proof a =
+  Relative_ADP_Root (Relative_adp_termination_proof a)
+  | Relative_ADP_Promote [(Term a [Char], Term a [Char])]
+      (Relative_adp_root_proof a);
+
 data Dpp_ops_ext a b c d =
   Dpp_ops_ext
     (a -> (Bool,
@@ -10370,15 +10383,6 @@ data Ac_dpp_ops_ext a b c d =
 data Redord_closure_ext a b c =
   Redord_closure_ext ([b] -> Term a b -> Term a b -> Bool)
     (Sum (String -> String) ()) c;
-
-data Relative_adp_termination_proof a = Relative_ADP_Empty
-  | Relative_ADP_Erasure_Redpair (Redtriple_impl a) [Nat] [Nat]
-      (Relative_adp_termination_proof a)
-  | Relative_ADP_Com_Redpair (Redtriple_impl (Adp_com_symbol a)) [Nat] [Nat]
-      (Relative_adp_termination_proof a)
-  | Relative_ADP_Dependency_Graph Bool [Relative_adp_termination_proof a]
-  | Relative_ADP_Derelatification [((Lab (Adp_symbol a) [Nat], Nat), Af_entry)]
-      (Dp_termination_proof (Adp_symbol a) [Nat] [Char]);
 
 data Lpoly_order_semiring_ext a b =
   Lpoly_order_semiring_ext Bool a (a -> Bool) (a -> Bool) (a -> Nat)
@@ -73219,6 +73223,161 @@ c_rules_impl c = let {
 aC_trs_impl :: forall a. [a] -> [a] -> [(Term a [Char], Term a [Char])];
 aC_trs_impl a c = a_trs_impl a ++ c_rules_impl c;
 
+relative_adp_drp1_symbol_parser ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String) (Lab (Adp_symbol (Lab [Char] [Nat])) [Nat]);
+relative_adp_drp1_symbol_parser x =
+  xml_or (xml_change (xml_text "name") (((xml_return . UnLab) . Plain) . UnLab))
+    (xml_or
+      (xml_change
+        (xml_do "sharp" (xml_take symbol_parser (\ xa -> xml_return (id xa))))
+        ((xml_return . UnLab) . Sharpb))
+      (xml_do "labeledSymbol"
+        (xml_take relative_adp_drp1_symbol_parser
+          (\ a ->
+            xml_take
+              (xml_or
+                (xml_do "numberLabel"
+                  (xml_take_many_sub [] zero_nat Infinity_enat
+                    (xml_nat "number") (\ aa -> xml_return (Inl aa))))
+                (xml_do "symbolLabel"
+                  (xml_take_many_sub [] zero_nat Infinity_enat
+                    relative_adp_drp1_symbol_parser
+                    (\ aa -> xml_return (Inr aa)))))
+              (\ b -> xml_return (case b of {
+                                   Inl ba -> Lab a ba;
+                                   Inr ba -> FunLab a ba;
+                                 }))))))
+    x;
+
+relative_adp_com_symbol_parser ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String) (Adp_com_symbol (Lab [Char] [Nat]));
+relative_adp_com_symbol_parser x =
+  xml_or
+    (xml_change (xml_text "name") (((xml_return . ADP_Symbol) . Plain) . UnLab))
+    (xml_or
+      (xml_change
+        (xml_do "sharp" (xml_take symbol_parser (\ xa -> xml_return (id xa))))
+        ((xml_return . ADP_Symbol) . Sharpb))
+      (xml_or (xml_do "adpCom0" (xml_return Com0))
+        (xml_do "adpCom2" (xml_return Com2))))
+    x;
+
+xml2relative_adp_termination_proof ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String)
+      (Relative_adp_termination_proof (Lab [Char] [Nat]));
+xml2relative_adp_termination_proof x =
+  xml_do "relativeAdpTerminationProof"
+    (xml_take
+      (xml_or (xml_do "relativeAdpEmpty" (xml_return Relative_ADP_Empty))
+        (xml_or
+          (xml_do "relativeAdpErasureReductionPair"
+            (xml_take (redtriple symbol_parser Sharp False)
+              (\ redp ->
+                xml_take
+                  (xml_do "mainIndices"
+                    (xml_take_many_sub [] zero_nat Infinity_enat
+                      (xml_nat "index") xml_return))
+                  (\ main_indices ->
+                    xml_take
+                      (xml_do "baseIndices"
+                        (xml_take_many_sub [] zero_nat Infinity_enat
+                          (xml_nat "index") xml_return))
+                      (\ base_indices ->
+                        xml_take xml2relative_adp_termination_proof
+                          (\ continuation ->
+                            xml_return
+                              (Relative_ADP_Erasure_Redpair redp main_indices
+                                base_indices continuation)))))))
+          (xml_or
+            (xml_do "relativeAdpComReductionPair"
+              (xml_take (redtriple relative_adp_com_symbol_parser id False)
+                (\ redp ->
+                  xml_take
+                    (xml_do "mainIndices"
+                      (xml_take_many_sub [] zero_nat Infinity_enat
+                        (xml_nat "index") xml_return))
+                    (\ main_indices ->
+                      xml_take
+                        (xml_do "baseIndices"
+                          (xml_take_many_sub [] zero_nat Infinity_enat
+                            (xml_nat "index") xml_return))
+                        (\ base_indices ->
+                          xml_take xml2relative_adp_termination_proof
+                            (\ continuation ->
+                              xml_return
+                                (Relative_ADP_Com_Redpair redp main_indices
+                                  base_indices continuation)))))))
+            (xml_or
+              (xml_do "relativeAdpDependencyGraph"
+                (xml_take_many_sub [] zero_nat Infinity_enat
+                  xml2relative_adp_termination_proof
+                  (\ proofs ->
+                    xml_return (Relative_ADP_Dependency_Graph False proofs))))
+              (xml_or
+                (xml_do "relativeAdpRootDependencyGraph"
+                  (xml_take_many_sub [] zero_nat Infinity_enat
+                    xml2relative_adp_termination_proof
+                    (\ proofs ->
+                      xml_return (Relative_ADP_Dependency_Graph True proofs))))
+                (xml_or
+                  (xml_do "relativeAdpDerelatification"
+                    (xml_take
+                      (xml2dp_termination_proof relative_adp_drp1_symbol_parser
+                        (mapping_empty (of_phantom mapping_impl_list))
+                        (mapping_empty (of_phantom mapping_impl_list)))
+                      (\ ordinary_proof ->
+                        xml_return
+                          (Relative_ADP_Derelatification [] ordinary_proof))))
+                  (xml_do "relativeAdpFilteredDerelatification"
+                    (xml_take (afsa relative_adp_drp1_symbol_parser)
+                      (\ filters ->
+                        xml_take
+                          (xml2dp_termination_proof
+                            relative_adp_drp1_symbol_parser
+                            (mapping_empty (of_phantom mapping_impl_list))
+                            (mapping_empty (of_phantom mapping_impl_list)))
+                          (\ ordinary_proof ->
+                            xml_return
+                              (Relative_ADP_Derelatification filters
+                                ordinary_proof)))))))))))
+      (\ xa -> xml_return (id xa)))
+    x;
+
+xml2relative_adp_root ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String) (Relative_adp_root_proof (Lab [Char] [Nat]));
+xml2relative_adp_root x =
+  xml_or
+    (xml_change xml2relative_adp_termination_proof
+      (xml_return . Relative_ADP_Root))
+    (xml_do "trsTerminationProof"
+      (xml_take
+        (xml_or
+          (xml_change xml2relative_adp_termination_proof
+            (xml_return . Relative_ADP_Root))
+          (xml_do "split"
+            (xml_take
+              (xml_do "trs"
+                (xml_take
+                  (rules symbol_parser
+                    (mapping_empty (of_phantom mapping_impl_list))
+                    (mapping_empty (of_phantom mapping_impl_list)))
+                  (\ xa -> xml_return (id xa))))
+              (\ selected ->
+                xml_take xml2relative_adp_root
+                  (\ child ->
+                    xml_take
+                      (xml_do "trsTerminationProof"
+                        (xml_take (xml_do "rIsEmpty" (xml_return ()))
+                          (\ xa -> xml_return (id xa))))
+                      (\ _ ->
+                        xml_return (Relative_ADP_Promote selected child)))))))
+        (\ xa -> xml_return (id xa))))
+    x;
+
 delete_P_Pw_impl ::
   forall a b.
     (Eq a,
@@ -74109,128 +74268,16 @@ check_cert_rfc_absolute i j k l inp prop ans (Unknown_Proof v) =
 check_cert_rfc_absolute i j k l inp prop ans (Unknown_Disproof v) =
   check_cert i j k l False inp prop ans (Unknown_Disproof v);
 
-relative_adp_drp1_symbol_parser ::
-  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-    Sum_bot (Xml_error String) (Lab (Adp_symbol (Lab [Char] [Nat])) [Nat]);
-relative_adp_drp1_symbol_parser x =
-  xml_or (xml_change (xml_text "name") (((xml_return . UnLab) . Plain) . UnLab))
-    (xml_or
-      (xml_change
-        (xml_do "sharp" (xml_take symbol_parser (\ xa -> xml_return (id xa))))
-        ((xml_return . UnLab) . Sharpb))
-      (xml_do "labeledSymbol"
-        (xml_take relative_adp_drp1_symbol_parser
-          (\ a ->
-            xml_take
-              (xml_or
-                (xml_do "numberLabel"
-                  (xml_take_many_sub [] zero_nat Infinity_enat
-                    (xml_nat "number") (\ aa -> xml_return (Inl aa))))
-                (xml_do "symbolLabel"
-                  (xml_take_many_sub [] zero_nat Infinity_enat
-                    relative_adp_drp1_symbol_parser
-                    (\ aa -> xml_return (Inr aa)))))
-              (\ b -> xml_return (case b of {
-                                   Inl ba -> Lab a ba;
-                                   Inr ba -> FunLab a ba;
-                                 }))))))
-    x;
-
-relative_adp_com_symbol_parser ::
-  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-    Sum_bot (Xml_error String) (Adp_com_symbol (Lab [Char] [Nat]));
-relative_adp_com_symbol_parser x =
-  xml_or
-    (xml_change (xml_text "name") (((xml_return . ADP_Symbol) . Plain) . UnLab))
-    (xml_or
-      (xml_change
-        (xml_do "sharp" (xml_take symbol_parser (\ xa -> xml_return (id xa))))
-        ((xml_return . ADP_Symbol) . Sharpb))
-      (xml_or (xml_do "adpCom0" (xml_return Com0))
-        (xml_do "adpCom2" (xml_return Com2))))
-    x;
-
-xml2relative_adp_termination_proof ::
-  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-    Sum_bot (Xml_error String)
-      (Relative_adp_termination_proof (Lab [Char] [Nat]));
-xml2relative_adp_termination_proof x =
-  xml_do "relativeAdpTerminationProof"
-    (xml_take
-      (xml_or (xml_do "relativeAdpEmpty" (xml_return Relative_ADP_Empty))
-        (xml_or
-          (xml_do "relativeAdpErasureReductionPair"
-            (xml_take (redtriple symbol_parser Sharp False)
-              (\ redp ->
-                xml_take
-                  (xml_do "mainIndices"
-                    (xml_take_many_sub [] zero_nat Infinity_enat
-                      (xml_nat "index") xml_return))
-                  (\ main_indices ->
-                    xml_take
-                      (xml_do "baseIndices"
-                        (xml_take_many_sub [] zero_nat Infinity_enat
-                          (xml_nat "index") xml_return))
-                      (\ base_indices ->
-                        xml_take xml2relative_adp_termination_proof
-                          (\ continuation ->
-                            xml_return
-                              (Relative_ADP_Erasure_Redpair redp main_indices
-                                base_indices continuation)))))))
-          (xml_or
-            (xml_do "relativeAdpComReductionPair"
-              (xml_take (redtriple relative_adp_com_symbol_parser id False)
-                (\ redp ->
-                  xml_take
-                    (xml_do "mainIndices"
-                      (xml_take_many_sub [] zero_nat Infinity_enat
-                        (xml_nat "index") xml_return))
-                    (\ main_indices ->
-                      xml_take
-                        (xml_do "baseIndices"
-                          (xml_take_many_sub [] zero_nat Infinity_enat
-                            (xml_nat "index") xml_return))
-                        (\ base_indices ->
-                          xml_take xml2relative_adp_termination_proof
-                            (\ continuation ->
-                              xml_return
-                                (Relative_ADP_Com_Redpair redp main_indices
-                                  base_indices continuation)))))))
-            (xml_or
-              (xml_do "relativeAdpDependencyGraph"
-                (xml_take_many_sub [] zero_nat Infinity_enat
-                  xml2relative_adp_termination_proof
-                  (\ proofs ->
-                    xml_return (Relative_ADP_Dependency_Graph False proofs))))
-              (xml_or
-                (xml_do "relativeAdpRootDependencyGraph"
-                  (xml_take_many_sub [] zero_nat Infinity_enat
-                    xml2relative_adp_termination_proof
-                    (\ proofs ->
-                      xml_return (Relative_ADP_Dependency_Graph True proofs))))
-                (xml_or
-                  (xml_do "relativeAdpDerelatification"
-                    (xml_take
-                      (xml2dp_termination_proof relative_adp_drp1_symbol_parser
-                        (mapping_empty (of_phantom mapping_impl_list))
-                        (mapping_empty (of_phantom mapping_impl_list)))
-                      (\ ordinary_proof ->
-                        xml_return
-                          (Relative_ADP_Derelatification [] ordinary_proof))))
-                  (xml_do "relativeAdpFilteredDerelatification"
-                    (xml_take (afsa relative_adp_drp1_symbol_parser)
-                      (\ filters ->
-                        xml_take
-                          (xml2dp_termination_proof
-                            relative_adp_drp1_symbol_parser
-                            (mapping_empty (of_phantom mapping_impl_list))
-                            (mapping_empty (of_phantom mapping_impl_list)))
-                          (\ ordinary_proof ->
-                            xml_return
-                              (Relative_ADP_Derelatification filters
-                                ordinary_proof)))))))))))
-      (\ xa -> xml_return (id xa)))
-    x;
+is_relative_adp_root_xml :: Xml -> Bool;
+is_relative_adp_root_xml (XML name attrs [child]) =
+  name == explode "relativeAdpTerminationProof" ||
+    name == explode "trsTerminationProof" && is_relative_adp_root_xml child;
+is_relative_adp_root_xml (XML name attrs (xml_selected : xml_first : xml_rest))
+  = name == explode "relativeAdpTerminationProof" ||
+      name == explode "split" && is_relative_adp_root_xml xml_first;
+is_relative_adp_root_xml (XML name attrs []) =
+  name == explode "relativeAdpTerminationProof";
+is_relative_adp_root_xml (XML_text uu) = False;
 
 integrated_proof_parser ::
   Mapping [Char] (Term (Lab [Char] [Nat]) [Char]) ->
@@ -74239,7 +74286,7 @@ integrated_proof_parser ::
       (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
         Sum_bot (Xml_error String)
           (Sum (Proof [Char] [Nat] [Char])
-            (Relative_adp_termination_proof (Lab [Char] [Nat])));
+            (Relative_adp_root_proof (Lab [Char] [Nat])));
 integrated_proof_parser termIndexMap ruleMap x =
   let {
     ordinary =
@@ -74247,11 +74294,11 @@ integrated_proof_parser termIndexMap ruleMap x =
         (\ p -> xml_return (Inl p));
   } in (case fst x of {
          XML _ _ [] -> ordinary x;
-         XML _ _ (XML child _ _ : _) ->
-           (if child == explode "relativeAdpTerminationProof"
+         XML _ _ (XML child child_attrs children : _) ->
+           (if is_relative_adp_root_xml (XML child child_attrs children)
              then xml_change
                     (xml_do "proof"
-                      (xml_take xml2relative_adp_termination_proof
+                      (xml_take xml2relative_adp_root
                         (\ xa -> xml_return (id xa))))
                     (\ p -> xml_return (Inr p)) x
              else ordinary x);
@@ -74266,7 +74313,7 @@ integrated_certification_problem_parser ::
         (Maybe (Property (Lab [Char] [Nat]) [Char]),
           (Maybe (Answer (Lab [Char] [Nat]) [Char]),
             Sum (Proof [Char] [Nat] [Char])
-              (Relative_adp_termination_proof (Lab [Char] [Nat])))));
+              (Relative_adp_root_proof (Lab [Char] [Nat])))));
 integrated_certification_problem_parser =
   xml_do "certificationProblem"
     (xml_take (xml_text "cpfVersion")
@@ -74293,7 +74340,7 @@ parse_integrated_cert_problem ::
         (Maybe (Property (Lab [Char] [Nat]) [Char]),
           (Maybe (Answer (Lab [Char] [Nat]) [Char]),
             Sum (Proof [Char] [Nat] [Char])
-              (Relative_adp_termination_proof (Lab [Char] [Nat])))));
+              (Relative_adp_root_proof (Lab [Char] [Nat])))));
 parse_integrated_cert_problem =
   parse_from_string integrated_certification_problem_parser;
 
@@ -74307,7 +74354,7 @@ parse_combined_integrated_cert_problem ::
               (Property (Lab [Char] [Nat]) [Char],
                 (Answer (Lab [Char] [Nat]) [Char],
                   Sum (Proof [Char] [Nat] [Char])
-                    (Relative_adp_termination_proof (Lab [Char] [Nat])))));
+                    (Relative_adp_root_proof (Lab [Char] [Nat])))));
 parse_combined_integrated_cert_problem inp1 prop1 answ1 prfs =
   binda (parse_integrated_cert_problem prfs)
     (\ (inp2, (prop2, (answ2, proof))) ->
@@ -75042,12 +75089,25 @@ check_relative_adp_from_trs r b certificate =
           } in check_relative_adp_termination_proof (fst problem) (snd problem)
                  certificate));
 
+check_relative_adp_root ::
+  forall a.
+    (Ceq a, Ccompare a, Compare_order a, Countable a, Eq a, Set_impl a,
+      Showl a) => [(Term a [Char], Term a [Char])] ->
+                    [(Term a [Char], Term a [Char])] ->
+                      Relative_adp_root_proof a -> Sum (String -> String) ();
+check_relative_adp_root r b (Relative_ADP_Root p) =
+  check_relative_adp_from_trs r b p;
+check_relative_adp_root r b (Relative_ADP_Promote s p) =
+  bindb (check (superset s r && superset (r ++ b) s)
+          (showsl_lit "invalid relative promotion split"))
+    (\ _ ->
+      check_relative_adp_root s (filter (\ ra -> not (membera s ra)) b) p);
+
 check_relative_adp_cert_problem ::
   Input (Lab [Char] [Nat]) [Char] ->
     Property (Lab [Char] [Nat]) [Char] ->
       Answer (Lab [Char] [Nat]) [Char] ->
-        Relative_adp_termination_proof (Lab [Char] [Nat]) ->
-          Sum (String -> String) ();
+        Relative_adp_root_proof (Lab [Char] [Nat]) -> Sum (String -> String) ();
 check_relative_adp_cert_problem inp_value property_value answer_value
   certificate =
   (case (inp_value, (property_value, answer_value)) of {
@@ -75064,7 +75124,7 @@ check_relative_adp_cert_problem inp_value property_value answer_value
       Inl (showsl_lit
             "relative ADP proofs require a standard relative TRS YES problem");
     (Inn_TRS_input No_Strategy r ba, (Termination, Decision True)) ->
-      check_relative_adp_from_trs r ba certificate;
+      check_relative_adp_root r ba certificate;
     (Inn_TRS_input No_Strategy _ _, (Termination, Decision False)) ->
       Inl (showsl_lit
             "relative ADP proofs require a standard relative TRS YES problem");
@@ -75155,7 +75215,7 @@ certify_relative_adp_cert_problem ::
   Input (Lab [Char] [Nat]) [Char] ->
     Property (Lab [Char] [Nat]) [Char] ->
       Answer (Lab [Char] [Nat]) [Char] ->
-        Relative_adp_termination_proof (Lab [Char] [Nat]) -> Cert_result;
+        Relative_adp_root_proof (Lab [Char] [Nat]) -> Cert_result;
 certify_relative_adp_cert_problem inp_value property_value answer_value
   certificate =
   (case check_relative_adp_cert_problem inp_value property_value answer_value
@@ -75296,7 +75356,7 @@ certify_integrated_cert_problem ::
       Property (Lab [Char] [Nat]) [Char] ->
         Answer (Lab [Char] [Nat]) [Char] ->
           Sum (Proof [Char] [Nat] [Char])
-            (Relative_adp_termination_proof (Lab [Char] [Nat])) ->
+            (Relative_adp_root_proof (Lab [Char] [Nat])) ->
             Cert_result;
 certify_integrated_cert_problem assumptions inp prop ans certificate =
   (case certificate of {

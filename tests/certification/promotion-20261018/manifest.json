@@ -1,0 +1,15 @@
+{
+  "scope": "Supplemental real campaign certificate; no independent witness-free oracle-only regeneration claim.",
+  "roots": [
+    {
+      "id": "6508c230ec19e0c1291f0ff6",
+      "root": "TRS_Relative/AProVE_24/conf_1.ari",
+      "category": "TRS_Relative",
+      "answer": "yes",
+      "proof_sha256": "b9434cd82531a17756bf7917817ba7ab57769d783adfc4934bf621c88c7ded59",
+      "input_sha256": "842bc899a7dc2cbf39f98d21c8bde3f66af19b56712e5f48ff2c547ba9a84520",
+      "source": "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-export-v269/run/TRS_Relative/AProVE_24/conf_1/proof.cpf.xml",
+      "input": "/work/dfm/festschrift/TPDB-ARI/TRS_Relative/AProVE_24/conf_1.ari"
+    }
+  ]
+}

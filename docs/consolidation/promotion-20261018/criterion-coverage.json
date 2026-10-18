@@ -1,0 +1,39 @@
+{
+  "criterion": "Relative rule promotion before an ADP proof",
+  "semantics": "Prove SN_rel(S, B minus S) with R subset S subset R union B, then conclude SN_rel(R,B).",
+  "executable_checker": "check_relative_adp_root",
+  "soundness_theorem": "check_relative_adp_root_sound",
+  "theory": "thys/Relative_ADP/Integration/Relative_ADP_Promotion.thy",
+  "shared_dependencies": [
+    "check_relative_adp_from_trs",
+    "check_relative_adp_from_trs_sound",
+    "SN_rel_mono'"
+  ],
+  "parser": [
+    "xml2relative_adp_root",
+    "is_relative_adp_root_xml",
+    "integrated_proof_parser"
+  ],
+  "positive_fixture": "6508c230ec19e0c1291f0ff6",
+  "positive_scope": "One real relative-full campaign root with a promotion split and ADP child; original input independently matched. Certified twice with production/HPC agreement.",
+  "negative_obligations": [
+    {
+      "mutation": "missing-strict",
+      "condition": "R subset S",
+      "expected_diagnostic": "invalid relative promotion split"
+    },
+    {
+      "mutation": "foreign-rule",
+      "condition": "S subset R union B",
+      "expected_diagnostic": "invalid relative promotion split"
+    }
+  ],
+  "gaps": [
+    "Multiple nested promotion steps lack genuine positive coverage.",
+    "Empty partitions and identity promotion lack genuine positive coverage.",
+    "No promotion support is claimed for other rewriting strategies.",
+    "Generation provenance does not establish a fresh strict witness-free oracle-only replay."
+  ],
+  "proof_coverage_note": "Runtime counters measure executable paths; Isabelle validates the soundness proof independently.",
+  "status": "Formal, focused, compact and 688-certificate campaign checks passed; full corpus recheck pending."
+}

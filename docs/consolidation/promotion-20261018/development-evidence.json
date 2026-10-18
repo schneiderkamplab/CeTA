@@ -1,0 +1,80 @@
+{
+  "command": [
+    "python",
+    "scripts/termcomp_trs_compare.py",
+    "--tpdb",
+    "../TPDB-ARI",
+    "--category",
+    "TRS_Relative",
+    "--from-details",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-promote-v264/reference.json",
+    "--ferrum",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-export-v269/ferrum",
+    "--ceta",
+    "/work/dfm/festschrift/CeTA-raw-superiority/target/raw-integrated-haskell/ceta-raw-root-filter-v186",
+    "--jobs",
+    "2",
+    "--timeout",
+    "305",
+    "--output",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-export-v269/summary.md",
+    "--details-output",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-export-v269/details.json",
+    "--run-dir",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-export-v269/run",
+    "--extra-arg=--strategy",
+    "--extra-arg=timeout(300s,relative-promote-duplicating;relative-adp(mono-poly(max-constant=4,max-coefficient=3);graph;mono-poly(max-constant=4,max-coefficient=3);graph;mono-poly(max-constant=4,max-coefficient=3);graph;mono-poly(max-constant=4,max-coefficient=3);graph;mono-poly(max-constant=4,max-coefficient=3);graph;mono-poly(max-constant=4,max-coefficient=3);graph;(path-order(max-symbols=64) | matrix(dimension=3,max-constant=4,max-coefficient=3) | size-change)))",
+    "--extra-arg=--no-top-level-llm"
+  ],
+  "records": [
+    {
+      "artifact_dir": "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/relative-export-v269/run/TRS_Relative/AProVE_24/conf_1",
+      "category": "TRS_Relative",
+      "cert_failure_kind": "unsupported",
+      "cert_stderr": "Fatal: parse error on <relativeAdpTerminationProof> at [trsTerminationProof, split, trsTerminationProof, proof, certificationProblem]:\nexpecting [unknownProof, terminationAssumption, permutingArgumentFilter, aaeccInnermost, switchInnermost, flatContextClosure, uncurry, removeNonApplicableRules, constantToUnary, rightGroundTermination, equalityRemoval, stringReversal, ruleStrengthening, rfcNativeMatchboxRelativeBounds, rfcMatchboxRelativeBounds, rfcAutomatonClosedRelativeBounds, rfcRelativeBounds, rfcAutomatonClosedBounds, rfcBounds, relativeBounds, bounds, ruleRemoval, dpTrans, split, semlab, rIsEmpty]\n",
+      "cert_stdout": "UNSUPPORTED\n",
+      "certified": false,
+      "csr_dp_cert_failed": false,
+      "csr_dp_failure_kind": "",
+      "csr_dp_full_certified": false,
+      "csr_dp_transform_certified": false,
+      "csr_dp_transform_failed": false,
+      "elapsed_seconds": 38.989,
+      "ferrum_stderr": "",
+      "ferrum_stdout": "status: Terminating\nstep: relative-split\ncpf: /tmp/ferrum-termcomp-6tjg_umi/proof.cpf.xml\n",
+      "has_csr_dp": false,
+      "last_progress_event": "{\"kind\":\"dp-matrix\",\"event\":\"solver-result\",\"name\":\"matrix-interpretation\",\"elapsed_ms\":0,\"details\":\"solver=boolector output=sat (   (define-fun m_c_6c6523_0 () (_ BitVec 3) #b000)   (define-fun m_c_6c6523_1 () (_ BitVec 3) #b000)   (define-fun m_c_6c6523_2 () (_ BitVec 3) #b000)   (d\"}",
+      "path": "../TPDB-ARI/TRS_Relative/AProVE_24/conf_1.ari",
+      "processor_finishes": 121,
+      "processor_starts": 0,
+      "processor_time_ms": 3490,
+      "progress_events": 449,
+      "status": "yes"
+    }
+  ],
+  "checks": {
+    "checker_sha256": "1439fc6074f7e9ec11fd86c13b544bf032b5c51c2c8862297144db2067dd5a11",
+    "results": [
+      {
+        "name": "positive-1",
+        "certified": true,
+        "returncode": 0
+      },
+      {
+        "name": "positive-2",
+        "certified": true,
+        "returncode": 0
+      },
+      {
+        "name": "missing-strict",
+        "certified": false,
+        "returncode": 1
+      },
+      {
+        "name": "foreign-rule",
+        "certified": false,
+        "returncode": 1
+      }
+    ]
+  }
+}
