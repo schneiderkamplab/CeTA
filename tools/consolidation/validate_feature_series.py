@@ -80,7 +80,11 @@ def main():
         if (source/'thys/RFC_Absolute_Ext/ROOT').exists():dirs.append('thys/RFC_Absolute_Ext')
         selected=targets(row['title'],source)
         if selected:
-            cmd=[str(a.isabelle.resolve()),'build','-b','-v','-j','2','-o','threads=8','-o','parallel_proofs=0']+sum((['-d',str(source/d)] for d in dirs),[])+selected
+            # Save reusable parent heaps, but do not force an otherwise current
+            # export/test leaf to rebuild solely to produce an unused heap.
+            leaves={'Code','Relative_ADP_Checker_Dev','Relative_ADP_Ceta_Dev','Outermost_RZ_Ext'}
+            heap_flags=[] if leaves.intersection(selected) else ['-b']
+            cmd=[str(a.isabelle.resolve()),'build',*heap_flags,'-v','-j','2','-o','threads=8','-o','parallel_proofs=0']+sum((['-d',str(source/d)] for d in dirs),[])+selected
             result=execute(cmd,source,env,run/'build',43200)
         else:result=dict(returncode=0,timed_out=False,scope='No production-source change; formal build not applicable')
         result.update(commit=commit,title=row['title'],targets=selected,source_hashes_sha256=sha(run/'source-hashes.json'))
