@@ -29,6 +29,7 @@ def targets(title,source):
     if title.startswith('Generalize compound'):return ['Relative_ADP_Checker_Dev']
     if title.startswith(('Production ADP','Single-parse','Reuse the verified','Root-sensitive','Argument-filtered')):
         return ['Relative_ADP_Checker_Dev','Relative_ADP_Ceta_Dev']
+    if title.startswith('Relative rule promotion'):return ['Relative_ADP_Ceta_Dev']
     if title=='Freeze regression tools corpora and verification evidence':return []
     return ['Proof_Checker','Code','RFC_Absolute_Ext','Relative_ADP_Checker_Dev','Relative_ADP_Ceta_Dev','Outermost_RZ_Ext']
 

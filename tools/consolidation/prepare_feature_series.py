@@ -36,6 +36,7 @@ def main():
     p.add_argument('--parent-feature',default='8259236')
     p.add_argument('--root-feature',required=True)
     p.add_argument('--filter-feature',required=True)
+    p.add_argument('--promotion-feature')
     p.add_argument('--output',type=pathlib.Path,required=True)
     a=p.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
     base=git('rev-parse','e52c7ce').decode().strip();target=git('rev-parse',a.target).decode().strip()
@@ -80,6 +81,8 @@ def main():
         {adp+'Integration/ROOT':content(a.parent_feature,adp+'Integration/ROOT')} if parent_changed else {})
     add('Root-sensitive ADP graphs through one shared estimator engine',a.root_feature,[x for x in changed(a.parent_feature,a.root_feature) if x.startswith('thys/')])
     add('Argument-filtered nonminimal ADP derelatification',a.filter_feature,[x for x in changed(a.root_feature,a.filter_feature) if x.startswith('thys/')])
+    if a.promotion_feature:
+        add('Relative rule promotion through the shared ADP root checker',a.promotion_feature,[x for x in changed(a.filter_feature,a.promotion_feature) if x.startswith('thys/')])
     add('Regenerate verified Haskell exports',target,sorted(set(paths(base,'generated/')) | set(paths(target,'generated/'))))
     with tempfile.TemporaryDirectory(prefix='feature-series-',dir=ROOT/'target') as tmp:
         env=dict(os.environ,GIT_INDEX_FILE=tmp+'/index',GIT_AUTHOR_NAME='CeTA consolidation',GIT_AUTHOR_EMAIL='consolidation@example.invalid',GIT_COMMITTER_NAME='CeTA consolidation',GIT_COMMITTER_EMAIL='consolidation@example.invalid',GIT_AUTHOR_DATE='2026-10-18T12:00:00+00:00',GIT_COMMITTER_DATE='2026-10-18T12:00:00+00:00')
