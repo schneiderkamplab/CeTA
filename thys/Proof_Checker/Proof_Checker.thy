@@ -153,6 +153,17 @@ lemma cert_assms_False[simp]: "cert_assms False p = []" by (cases p) simp_all
 
 datatype cert_result = Certified | Unsupported String.literal | Error String.literal
 
+lemma ordinary_nontermination_implies_ac_nontermination:
+  assumes nontermination: "\<not> SN (rstep R)"
+  shows "\<not> SN (relation_ac_tp (R, A, C))"
+proof
+  assume sn_ac: "SN (relation_ac_tp (R, A, C))"
+  have inclusion: "rstep R \<subseteq> relation_ac_tp (R, A, C)"
+    by (auto simp: aoc_rewriting.relaoc_def)
+  from SN_subset[OF sn_ac inclusion] nontermination
+  show False by contradiction
+qed
+
 context fixes
   I :: "('tp, ('f::{showl, compare_order,countable}, label_type) lab, string) tp_ops" and
   J :: "('dpp, ('f, label_type) lab, string) dpp_ops" and
@@ -177,6 +188,10 @@ where "check_cert a input property answer proof \<equiv>
     | _ \<Rightarrow> error mismatch)
   | TRS_Nontermination_Proof prf \<Rightarrow>
      (case triple of 
+       (AC_input R A C, Termination, Decision False) \<Rightarrow>
+              check_trs_nontermination_proof I J a (showsl_lit (STR ''1''))
+                (tp_ops.mk I False [] R []) prf
+       |
        (Inn_TRS_input Q R S, Termination, Decision False) \<Rightarrow>       
               check (S = []) mismatch \<then>
               check_trs_nontermination_proof I J a (showsl_lit (STR ''1'')) (tp_ops.mk I (strategy_to_nfs Q) (strategy_to_Q Q R) R []) prf
@@ -502,7 +517,21 @@ proof-
     show ?thesis by simp
   next
     case [simp]: (TRS_Nontermination_Proof pr)
-    obtain strat Q R S where input: "input = Inn_TRS_input Q R S \<or> input = FP_TRS_input strat R" using check by (cases input, auto)
+    show ?thesis
+    proof (cases "\<exists>R A C. input = AC_input R A C")
+      case True
+      then obtain R A C where [simp]: "input = AC_input R A C" by blast
+      have [simp]: "property = Termination" using check by (cases property, auto)
+      have [simp]: "answer = Decision False" using check by (cases answer, auto split: bool.splits)
+      from check have checked:
+        "isOK (check_trs_nontermination_proof I J a idx (mk False [] R []) pr)" by simp
+      from check_trs_nontermination_proof_with_assms[OF I J _ checked] a
+      have nontermination: "\<not> SN (rstep (set R))" by auto
+      from ordinary_nontermination_implies_ac_nontermination[OF nontermination, of "set A" "set C"]
+      show ?thesis by simp
+    next
+      case False
+    obtain strat Q R S where input: "input = Inn_TRS_input Q R S \<or> input = FP_TRS_input strat R" using check False by (cases input, auto)
     from input show ?thesis
     proof
       assume [simp]: "input = Inn_TRS_input Q R S" 
@@ -572,6 +601,7 @@ proof-
         from nSN Forbidden_Patterns show ?thesis
           by (auto simp add: fp_strategy_to_fp_impl_def SN_fpstep_def)
       qed
+    qed
     qed
   next
     case [simp]: (FP_Nontermination_Proof pr)
