@@ -1,6 +1,7 @@
 theory Relative_ADP_Checker_Adapter
   imports
     Dependency_Pair_Injective_Renaming
+    Relative_ADP_Root_Graph
     Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Order_Check
     Proof_Checker_Base.Check_Termination
     Framework.Termination_Problem_Impl
@@ -468,6 +469,7 @@ datatype 'f relative_adp_termination_proof =
       "nat list"
       "'f relative_adp_termination_proof"
   | Relative_ADP_Dependency_Graph
+      bool
       "'f relative_adp_termination_proof list"
   | Relative_ADP_Derelatification
       "('f adp_symbol, nat list, string) dp_termination_proof"
@@ -582,8 +584,9 @@ fun check_relative_adp_termination_proof ::
     check_relative_adp_termination_proof (fst residual) (snd residual) proof
   }"
 | "check_relative_adp_termination_proof P B
-      (Relative_ADP_Dependency_Graph proofs) = (let
-    candidates = relative_adp_estimated_graph_candidates P B
+      (Relative_ADP_Dependency_Graph root_guard proofs) = (let
+    candidates = (if root_guard then relative_adp_root_graph_candidates P B
+      else Relative_ADP_Dependency_Graph_Impl.relative_adp_estimated_graph_candidates P B)
   in do {
     check_all (\<lambda>pair. is_Fun (fst pair)) (P @ B)
       <+? (\<lambda>pair. showsl_lit
@@ -668,8 +671,9 @@ next
   show ?case
     by (rule check_relative_adp_com_redpair_sound[OF step residual_SN])
 next
-  case (Relative_ADP_Dependency_Graph proofs)
-  let ?candidates = "relative_adp_estimated_graph_candidates P B"
+  case (Relative_ADP_Dependency_Graph root_guard proofs)
+  let ?candidates = "if root_guard then relative_adp_root_graph_candidates P B
+    else Relative_ADP_Dependency_Graph_Impl.relative_adp_estimated_graph_candidates P B"
   from Relative_ADP_Dependency_Graph.prems have lhs_fun:
       "\<And>pair. pair \<in> set P \<union> set B \<Longrightarrow> is_Fun (fst pair)"
     by (auto simp: isOK_check_allm)
@@ -715,7 +719,39 @@ next
       by (cases "relative_adp_graph_child P B Q") simp
   qed
   show ?case
-    by (rule relative_adp_estimated_graph_processor[OF lhs_fun children])
+  proof (cases root_guard)
+    case True
+    have guarded_children:
+      "\<And>Q. Q \<in> set (root_guard.relative_adp_estimated_graph_candidates P B) \<Longrightarrow>
+        adp_problem_SN (set P \<inter> set Q,
+          (set Q \<union> erase_annotations_adp ` ((set P \<union> set B) - set Q)) -
+            (set P \<inter> set Q))"
+    proof -
+      fix Q
+      assume "Q \<in> set (root_guard.relative_adp_estimated_graph_candidates P B)"
+      hence "Q \<in> set (if root_guard then relative_adp_root_graph_candidates P B
+        else Relative_ADP_Dependency_Graph_Impl.relative_adp_estimated_graph_candidates P B)"
+        using True by (simp add: relative_adp_root_graph_candidates_def)
+      from children[OF this] show "adp_problem_SN (set P \<inter> set Q,
+          (set Q \<union> erase_annotations_adp ` ((set P \<union> set B) - set Q)) -
+            (set P \<inter> set Q))" .
+    qed
+    show ?thesis
+      by (rule relative_adp_root_graph_processor[OF lhs_fun guarded_children])
+  next
+    case False
+    show ?thesis
+    proof (rule Relative_ADP_Dependency_Graph_Impl.relative_adp_estimated_graph_processor[OF lhs_fun])
+      fix Q
+      assume "Q \<in> set (Relative_ADP_Dependency_Graph_Impl.relative_adp_estimated_graph_candidates P B)"
+      hence "Q \<in> set (if root_guard then relative_adp_root_graph_candidates P B
+        else Relative_ADP_Dependency_Graph_Impl.relative_adp_estimated_graph_candidates P B)"
+        using False by simp
+      from children[OF this] show "adp_problem_SN (set P \<inter> set Q,
+          (set Q \<union> erase_annotations_adp ` ((set P \<union> set B) - set Q)) -
+            (set P \<inter> set Q))" .
+    qed
+  qed
 next
   fix cert P B
   assume checked:

@@ -43,17 +43,29 @@ lemma test_relative_adp_empty_selection_rejected:
       check_relative_adp_erasure_redpair_def)
 
 lemma test_relative_adp_empty_graph_accepted:
-  assumes "relative_adp_estimated_graph_candidates P B = []"
+  assumes "(if guarded then relative_adp_root_graph_candidates P B
+    else relative_adp_estimated_graph_candidates P B) = []"
     and "\<And>pair. pair \<in> set P \<union> set B \<Longrightarrow> is_Fun (fst pair)"
   shows "isOK (check_relative_adp_termination_proof P B
-    (Relative_ADP_Dependency_Graph []))"
+    (Relative_ADP_Dependency_Graph guarded []))"
   using assms by (auto simp: isOK_check_allm)
+
+lemma test_relative_adp_root_empty_candidates:
+  "relative_adp_root_graph_candidates ([] :: (string,string) adp list) [] = []"
+  by code_simp
+
+lemma test_relative_adp_root_empty_checked:
+  "isOK (check_relative_adp_termination_proof [] []
+    (Relative_ADP_Dependency_Graph True [] :: string relative_adp_termination_proof))"
+  by (rule test_relative_adp_empty_graph_accepted)
+     (auto simp: test_relative_adp_root_empty_candidates)
 
 lemma test_relative_adp_graph_missing_children_rejected:
   assumes "length proofs \<noteq>
-    length (relative_adp_estimated_graph_candidates P B)"
+    length (if guarded then relative_adp_root_graph_candidates P B
+      else relative_adp_estimated_graph_candidates P B)"
   shows "\<not> isOK (check_relative_adp_termination_proof P B
-    (Relative_ADP_Dependency_Graph proofs))"
+    (Relative_ADP_Dependency_Graph guarded proofs))"
   using assms by simp
 
 lemma test_relative_adp_erasure_p_index_rejected:

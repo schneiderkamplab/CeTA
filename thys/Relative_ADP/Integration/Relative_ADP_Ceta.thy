@@ -71,7 +71,10 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
           main_indices base_indices continuation)
       } XMLor XMLdo (STR ''relativeAdpDependencyGraph'') {
         proofs \<leftarrow>* xml2relative_adp_termination_proof;
-        xml_return (Relative_ADP_Dependency_Graph proofs)
+        xml_return (Relative_ADP_Dependency_Graph False proofs)
+      } XMLor XMLdo (STR ''relativeAdpRootDependencyGraph'') {
+        proofs \<leftarrow>* xml2relative_adp_termination_proof;
+        xml_return (Relative_ADP_Dependency_Graph True proofs)
       } XMLor XMLdo (STR ''relativeAdpDerelatification'') {
         ordinary_proof \<leftarrow> xml2dp_termination_proof
           relative_adp_drp1_symbol_parser Mapping.empty Mapping.empty;

@@ -188,6 +188,7 @@ session Relative_ADP_Dependency_Graph_Dev in "Dependency_Graph" = Relative_ADP_P
   theories
     Finite_Branching_Dichotomy
     Relative_ADP_Dependency_Graph
+    Relative_ADP_Generic_Graph_Impl
     Relative_ADP_Dependency_Graph_Impl
 
 session Relative_ADP_Derelatification_Dev in "Derelatification" = Relative_ADP_Dependency_Graph_Dev +

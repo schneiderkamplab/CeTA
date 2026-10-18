@@ -1,0 +1,277 @@
+{
+  "source_base": "a52e09b7ab48a9da537301d63240076971a51fbf",
+  "source_sha256": {
+    "generated/Haskell/Ceta_Relative.hs": "ca0722fb39d3702dde344570f5de0f47ebe3db11b2bc265f0f21ce0895c4e4a2",
+    "thys/Relative_ADP/Checker/Relative_ADP_Checker_Adapter.thy": "8a8bf909a3f64579d9a8d22187e02eafa03a6a7bd063812912d0d7fe8951d46e",
+    "thys/Relative_ADP/Checker/Relative_ADP_Checker_Tests.thy": "3d9365cd039a94b22d9b40cf0fe175aa715838300d96172c43baf6fd342737aa",
+    "thys/Relative_ADP/Integration/Relative_ADP_Ceta.thy": "4bb518441cbfa24e13a389e59025066feeb6fda6d86f40ebbb0c07d709b7d212",
+    "thys/Relative_ADP/Semantics/Dependency_Graph/Relative_ADP_Dependency_Graph_Impl.thy": "b8656668158a3a0f84a61fd6685a2010307b24093cb03f6b2a02c092d3ae1144",
+    "thys/Relative_ADP/Semantics/ROOT": "c94f4a50aa80e3320bb898a38fc6b0bbd013b23ebdfd27ddade2ece6045122ac",
+    "tools/consolidation/build_verified.py": "4ab8e2fa764722f608f3eeb5eb4d29f476a1149dbc778aff4714eaac8b53a28f",
+    "thys/Relative_ADP/Checker/Relative_ADP_Root_Graph.thy": "1a20aad03ddc7e45926bdef30b92ab0ac7bcc2957ee790b9276ddc3e25fe701a",
+    "thys/Relative_ADP/Semantics/Dependency_Graph/Relative_ADP_Generic_Graph_Impl.thy": "5a5e787470cee25235896309f4073f0be0cf9fb5949ce742a2d70f77abc0b35d"
+  },
+  "receipts": {
+    "frontier-shared-v3-20261018-tests.receipt.json": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+        "build",
+        "-v",
+        "-j",
+        "2",
+        "-o",
+        "threads=8",
+        "-o",
+        "parallel_proofs=0",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/Relative_ADP",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+        "Relative_ADP_Checker_Dev"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 25.2609530990012,
+      "memory_used_at_start": 326391267328,
+      "max_child_rss_kib": 3702224
+    },
+    "frontier-shared-v3-20261018-build-v3.receipt.json": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+        "build",
+        "-v",
+        "-j",
+        "2",
+        "-o",
+        "threads=8",
+        "-o",
+        "parallel_proofs=0",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/Relative_ADP",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+        "Proof_Checker",
+        "Code",
+        "RFC_Absolute_Ext",
+        "Relative_ADP_Checker_Dev",
+        "Relative_ADP_Ceta_Dev",
+        "Outermost_RZ_Ext"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 81.95041008712724,
+      "memory_used_at_start": 279538831360,
+      "max_child_rss_kib": 5748652
+    },
+    "frontier-shared-v3-20261018-compact.receipt.json": {
+      "command": [
+        "python3",
+        "tools/consolidation/suite.py",
+        "--manifest",
+        "tests/certification/compact/manifest.json",
+        "--checker",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-shared-v3-20261018/ceta-relative",
+        "--output",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-compact"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {},
+      "returncode": 0,
+      "elapsed_seconds": 77.56422991398722,
+      "memory_used_at_start": 278748229632,
+      "max_child_rss_kib": 353420
+    },
+    "frontier-shared-v3-20261018-performance.receipt.json": {
+      "command": [
+        "python3",
+        "tools/consolidation/performance.py",
+        "--manifest",
+        "tests/certification/compact/manifest.json",
+        "--suite-result",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-compact/summary.json",
+        "--reference",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-snapshot/artifacts/production_checker",
+        "--candidate",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-shared-v3-20261018/ceta-relative",
+        "--output",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-performance",
+        "--repeats",
+        "9"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {},
+      "returncode": 0,
+      "elapsed_seconds": 0.10425970400683582,
+      "memory_used_at_start": 282066305024,
+      "max_child_rss_kib": 24676
+    },
+    "frontier-shared-v3-20261018-supplemental.receipt.json": {
+      "command": [
+        "python3",
+        "tools/consolidation/frontier_suite.py",
+        "--manifest",
+        "tests/certification/frontier-20261017/manifest.json",
+        "--checker",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-shared-v3-20261018/ceta-relative",
+        "--hpc-checker",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-shared-v3-20261018/ceta-relative-hpc",
+        "--output",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-supplemental"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {},
+      "returncode": 0,
+      "elapsed_seconds": 194.7824050609488,
+      "memory_used_at_start": 339009503232,
+      "max_child_rss_kib": 242964
+    },
+    "frontier-shared-v3-20261018-relative.receipt.json": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/.ghcup/bin/ghc",
+        "-O2",
+        "-package",
+        "array",
+        "-XRankNTypes",
+        "-odir",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-frontier-shared-v3-20261018-relative",
+        "-hidir",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-frontier-shared-v3-20261018-relative",
+        "--make",
+        "Main.hs",
+        "-o",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-shared-v3-20261018/ceta-relative"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-haskell",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 203.03391377720982,
+      "memory_used_at_start": 278852947968,
+      "max_child_rss_kib": 2716420
+    },
+    "frontier-shared-v3-20261018-relative-hpc.receipt.json": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/.ghcup/bin/ghc",
+        "-O2",
+        "-package",
+        "array",
+        "-XRankNTypes",
+        "-odir",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-frontier-shared-v3-20261018-relative-hpc",
+        "-hidir",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/ghc-frontier-shared-v3-20261018-relative-hpc",
+        "-fhpc",
+        "-hpcdir",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/hpc-mix-frontier-shared-v3-20261018",
+        "--make",
+        "Main.hs",
+        "-o",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-shared-v3-20261018/ceta-relative-hpc"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-haskell",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 497.0036630530376,
+      "memory_used_at_start": 278352605184,
+      "max_child_rss_kib": 3637376
+    },
+    "frontier-shared-v3-20261018-export.receipt.json": {
+      "command": [
+        "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+        "export",
+        "-n",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/Relative_ADP",
+        "-d",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/checker-source/thys/RFC_Absolute_Ext",
+        "-O",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-shared-v3-20261018-haskell",
+        "-p",
+        "3",
+        "-x",
+        "Relative_ADP_Ceta_Dev.Relative_ADP_Code_Haskell:code/export1/**",
+        "Relative_ADP_Ceta_Dev"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "environment": {
+        "USER_HOME": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/isabelle-user",
+        "ISABELLE_IDENTIFIER": "consolidated_frontier_20261017",
+        "AFP": "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 1.2539378958754241,
+      "memory_used_at_start": 278957678592,
+      "max_child_rss_kib": 303544
+    }
+  },
+  "summaries": {
+    "compact": {
+      "sha256": "82c7ebfd8e26795184e7d71e29c06517f093c37a5a56108f72bc468fa3d781bb",
+      "acceptance_passed": true,
+      "checker_sha256": "d31c2248dc4861560582015767242d5c105f35ba5717ba81ac509fae2e5e914a",
+      "coverage_passed": null,
+      "coverage_transition_sha256": null,
+      "elapsed_seconds": 77.47173451818526,
+      "frozen_required_coverage": 45753,
+      "hpc_check_seconds": 0,
+      "hpc_checker_sha256": null,
+      "hpc_slowdown_candidates": [],
+      "missing_coverage": null,
+      "observed_required_coverage": 943,
+      "performance_status": "Controlled reference repeats required for listed slowdown candidates; timings alone do not establish a regression.",
+      "production_check_seconds": 65.72936507756822,
+      "reference_production_check_seconds": 104.59987160889432,
+      "retired_coverage": [],
+      "scope": "Frozen 3484-root baseline with explicit calibrated search budgets; minimum cardinality proved for 45753 observed structural/executable obligations, with semantic coverage gaps retained.",
+      "slowdown_candidates": []
+    },
+    "performance": {
+      "sha256": "e035c0a53c5067f13eb91a5b22cae0e96564be0697ef5aa2aa28d3e741832153",
+      "acceptance_passed": true,
+      "candidate_sha256": "d31c2248dc4861560582015767242d5c105f35ba5717ba81ac509fae2e5e914a",
+      "confirmed_slowdowns": [],
+      "method": "One warmup and alternating-order sequential repeats; median comparison.",
+      "mode": "production",
+      "reference_sha256": "19a4a6f14eb1d07891d149f8c8b464228c0044fa7b3f874b77eadb974cba8f73",
+      "source_suite_sha256": "82c7ebfd8e26795184e7d71e29c06517f093c37a5a56108f72bc468fa3d781bb"
+    },
+    "supplemental": {
+      "sha256": "0e6537919df3cce1bc38ee5bbd9c1074fed7505418e9866ce12df1e125fec10d",
+      "checker_sha256": "d31c2248dc4861560582015767242d5c105f35ba5717ba81ac509fae2e5e914a",
+      "hpc_checker_sha256": "200ba6a211f57723efa9d871eaeeceedac3067b19e8f16f2639bf3b951be1c62",
+      "manifest_sha256": "6071a0b0ca699d8200b0a95b436d39d0dbc5b81c35d1915db9e2cd3db1f42afa",
+      "passed": true,
+      "scope": "Supplemental frontier proof rechecks. Incomplete source/build provenance; excluded from the genuine oracle-only positive suite."
+    },
+    "derived_graph_negatives": {
+      "count": 26,
+      "passed": true,
+      "sha256": "a8973cf3fb2443ee573bde14516a4fc3d4c5a69f1aa42dfc9e4a98f1c583a866"
+    }
+  },
+  "scope": "Shared root-sensitive graph feature. Genuine nonempty new-mode proofs require the following filter feature; derived mutations are not genuine positives.",
+  "executable_structure": "One generic successor-parameterized graph algorithm; baseline and root-compatible estimators instantiate one soundness locale."
+}

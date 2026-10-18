@@ -10376,7 +10376,7 @@ data Relative_adp_termination_proof a = Relative_ADP_Empty
       (Relative_adp_termination_proof a)
   | Relative_ADP_Com_Redpair (Redtriple_impl (Adp_com_symbol a)) [Nat] [Nat]
       (Relative_adp_termination_proof a)
-  | Relative_ADP_Dependency_Graph [Relative_adp_termination_proof a]
+  | Relative_ADP_Dependency_Graph Bool [Relative_adp_termination_proof a]
   | Relative_ADP_Derelatification
       (Dp_termination_proof (Adp_symbol a) [Nat] [Char]);
 
@@ -74201,15 +74201,21 @@ xml2relative_adp_termination_proof x =
                 (xml_take_many_sub [] zero_nat Infinity_enat
                   xml2relative_adp_termination_proof
                   (\ proofs ->
-                    xml_return (Relative_ADP_Dependency_Graph proofs))))
-              (xml_do "relativeAdpDerelatification"
-                (xml_take
-                  (xml2dp_termination_proof relative_adp_drp1_symbol_parser
-                    (mapping_empty (of_phantom mapping_impl_list))
-                    (mapping_empty (of_phantom mapping_impl_list)))
-                  (\ ordinary_proof ->
-                    xml_return
-                      (Relative_ADP_Derelatification ordinary_proof))))))))
+                    xml_return (Relative_ADP_Dependency_Graph False proofs))))
+              (xml_or
+                (xml_do "relativeAdpRootDependencyGraph"
+                  (xml_take_many_sub [] zero_nat Infinity_enat
+                    xml2relative_adp_termination_proof
+                    (\ proofs ->
+                      xml_return (Relative_ADP_Dependency_Graph True proofs))))
+                (xml_do "relativeAdpDerelatification"
+                  (xml_take
+                    (xml2dp_termination_proof relative_adp_drp1_symbol_parser
+                      (mapping_empty (of_phantom mapping_impl_list))
+                      (mapping_empty (of_phantom mapping_impl_list)))
+                    (\ ordinary_proof ->
+                      xml_return
+                        (Relative_ADP_Derelatification ordinary_proof)))))))))
       (\ xa -> xml_return (id xa)))
     x;
 
@@ -74299,66 +74305,30 @@ parse_combined_integrated_cert_problem inp1 prop1 answ1 prfs =
               binda (parse_merge "answer" parse_answer answ1 answ2)
                 (\ answ -> returna (inp, (prop, (answ, proof)))))));
 
-annotated_rhs_subterms_list ::
-  forall a b.
-    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> [Term (Adp_symbol a) b];
-annotated_rhs_subterms_list pair =
-  map_filter
-    (\ x ->
-      (if (case root (subt_at (snd pair) x) of {
-            Nothing -> False;
-            Just (f, _) -> is_sharp_symbol f;
-          })
-        then Just (subt_at (snd pair) x) else Nothing))
-    (poss_list (snd pair));
-
-relative_adp_estimated_dependency_edge_list ::
-  forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                 (Term (Adp_symbol a) b, Term (Adp_symbol a) b) ->
-                   (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> Bool;
-relative_adp_estimated_dependency_edge_list problem source target =
-  any (\ u ->
-        matchb (tcapI (map erase_adp problem) (erase_adp_term u))
-          (erase_adp_term (fst target)))
-    (annotated_rhs_subterms_list source);
-
-relative_adp_estimated_successors ::
-  forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
-relative_adp_estimated_successors problem source =
-  filter
-    (\ target ->
-      relative_adp_estimated_dependency_edge_list problem (nth problem source)
-        (nth problem target))
-    (upt zero_nat (size_list problem));
-
 relative_adp_estimated_edges ::
   forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> [(Nat, Nat)];
-relative_adp_estimated_edges problem =
+    ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat]) ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> [(Nat, Nat)];
+relative_adp_estimated_edges estimated_successors problem =
   concatMap
-    (\ source ->
-      map (\ a -> (source, a))
-        (relative_adp_estimated_successors problem source))
+    (\ source -> map (\ a -> (source, a)) (estimated_successors problem source))
     (upt zero_nat (size_list problem));
 
 relative_adp_reflexive_estimated_edges ::
   forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> [(Nat, Nat)];
-relative_adp_reflexive_estimated_edges problem =
+    ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat]) ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> [(Nat, Nat)];
+relative_adp_reflexive_estimated_edges estimated_successors problem =
   map (\ i -> (i, i)) (upt zero_nat (size_list problem)) ++
-    relative_adp_estimated_edges problem;
+    relative_adp_estimated_edges estimated_successors problem;
 
 relative_adp_estimated_sccs ::
   forall a b.
-    (Eq a, Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> [[Nat]];
-relative_adp_estimated_sccs problem =
-  scc_decomp (relative_adp_reflexive_estimated_edges problem);
+    ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat]) ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> [[Nat]];
+relative_adp_estimated_sccs estimated_successors problem =
+  scc_decomp
+    (relative_adp_reflexive_estimated_edges estimated_successors problem);
 
 relative_adp_problem_list ::
   forall a b.
@@ -74371,17 +74341,19 @@ relative_adp_problem_list p b = remdups (p ++ b);
 relative_adp_estimated_main_scc_candidates ::
   forall a b.
     (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      Eq b) => ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 Nat -> [Nat]) ->
                  [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                   [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
-relative_adp_estimated_main_scc_candidates p b =
+                   [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                     [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
+relative_adp_estimated_main_scc_candidates estimated_successors p b =
   let {
     problem = relative_adp_problem_list p b;
   } in concatMap
          (\ component ->
            (if any (membera p) (map (nth problem) component)
              then [map (nth problem) component] else []))
-         (relative_adp_estimated_sccs problem);
+         (relative_adp_estimated_sccs estimated_successors problem);
 
 relative_adp_index_predecessors :: [(Nat, Nat)] -> Nat -> [Nat];
 relative_adp_index_predecessors edges target =
@@ -74390,11 +74362,12 @@ relative_adp_index_predecessors edges target =
 
 relative_adp_estimated_coreachable ::
   forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
-relative_adp_estimated_coreachable problem target =
+    ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat]) ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
+relative_adp_estimated_coreachable estimated_successors problem target =
   mk_rtrancl_list equal_nat
-    (relative_adp_index_predecessors (relative_adp_estimated_edges problem))
+    (relative_adp_index_predecessors
+      (relative_adp_estimated_edges estimated_successors problem))
     [target];
 
 erase_annotations_adp ::
@@ -74421,43 +74394,54 @@ relative_adp_index_successors edges source =
 
 relative_adp_estimated_reachable ::
   forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
-relative_adp_estimated_reachable problem source =
+    ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat]) ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
+relative_adp_estimated_reachable estimated_successors problem source =
   mk_rtrancl_list equal_nat
-    (relative_adp_index_successors (relative_adp_estimated_edges problem))
+    (relative_adp_index_successors
+      (relative_adp_estimated_edges estimated_successors problem))
     [source];
 
 relative_adp_estimated_corridor ::
   forall a b.
-    (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                 Nat -> Nat -> [Nat];
-relative_adp_estimated_corridor problem source target =
+    ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat]) ->
+      [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> Nat -> [Nat];
+relative_adp_estimated_corridor estimated_successors problem source target =
   filter
     (\ middle ->
-      membera (relative_adp_estimated_reachable problem source) middle &&
-        membera (relative_adp_estimated_coreachable problem target) middle)
+      membera
+        (relative_adp_estimated_reachable estimated_successors problem source)
+        middle &&
+        membera
+          (relative_adp_estimated_coreachable estimated_successors problem
+            target)
+          middle)
     (upt zero_nat (size_list problem));
 
 relative_adp_estimated_lasso_candidate ::
   forall a b.
     (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      Eq b) => ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 Nat -> [Nat]) ->
                  [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                   [Nat] ->
-                     Nat ->
-                       Nat -> [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)];
-relative_adp_estimated_lasso_candidate p b component source target =
+                   [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                     [Nat] ->
+                       Nat ->
+                         Nat ->
+                           [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)];
+relative_adp_estimated_lasso_candidate estimated_successors p b component source
+  target =
   let {
     problem = relative_adp_problem_list p b;
     lasso_problem = relative_adp_lasso_problem_list p b;
   } in remdups
          (map (nth lasso_problem) component ++
            map (nth problem)
-             (relative_adp_estimated_coreachable problem source) ++
+             (relative_adp_estimated_coreachable estimated_successors problem
+               source) ++
              map (nth problem)
-               (relative_adp_estimated_corridor problem source target));
+               (relative_adp_estimated_corridor estimated_successors problem
+                 source target));
 
 relative_adp_branching_pair_list ::
   forall a b. (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> Bool;
@@ -74474,10 +74458,14 @@ relative_adp_branching_pair_list pair =
 relative_adp_estimated_lasso_candidates_for_component ::
   forall a b.
     (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      Eq b) => ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 Nat -> [Nat]) ->
                  [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                   [Nat] -> [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
-relative_adp_estimated_lasso_candidates_for_component p b component =
+                   [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                     [Nat] ->
+                       [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
+relative_adp_estimated_lasso_candidates_for_component estimated_successors p b
+  component =
   let {
     problem = relative_adp_problem_list p b;
     lasso_problem = relative_adp_lasso_problem_list p b;
@@ -74491,10 +74479,12 @@ relative_adp_estimated_lasso_candidates_for_component p b component =
                     (\ target ->
                       (if membera p (nth problem target) &&
                             membera
-                              (relative_adp_estimated_reachable problem source)
+                              (relative_adp_estimated_reachable
+                                estimated_successors problem source)
                               target
-                        then [relative_adp_estimated_lasso_candidate p b
-                                component source target]
+                        then [relative_adp_estimated_lasso_candidate
+                                estimated_successors p b component source
+                                target]
                         else []))
                     (upt zero_nat (size_list problem))
              else []))
@@ -74503,23 +74493,43 @@ relative_adp_estimated_lasso_candidates_for_component p b component =
 relative_adp_estimated_lasso_candidates ::
   forall a b.
     (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      Eq b) => ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 Nat -> [Nat]) ->
                  [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                   [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
-relative_adp_estimated_lasso_candidates p b =
-  concatMap (relative_adp_estimated_lasso_candidates_for_component p b)
-    (relative_adp_estimated_sccs (relative_adp_lasso_problem_list p b));
+                   [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                     [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
+relative_adp_estimated_lasso_candidates estimated_successors p b =
+  concatMap
+    (relative_adp_estimated_lasso_candidates_for_component estimated_successors
+      p b)
+    (relative_adp_estimated_sccs estimated_successors
+      (relative_adp_lasso_problem_list p b));
 
 relative_adp_estimated_graph_candidates ::
   forall a b.
     (Eq a,
-      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+      Eq b) => ([(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 Nat -> [Nat]) ->
                  [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
-                   [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
-relative_adp_estimated_graph_candidates p b =
+                   [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                     [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
+relative_adp_estimated_graph_candidates estimated_successors p b =
   remdups
-    (relative_adp_estimated_main_scc_candidates p b ++
-      relative_adp_estimated_lasso_candidates p b);
+    (relative_adp_estimated_main_scc_candidates estimated_successors p b ++
+      relative_adp_estimated_lasso_candidates estimated_successors p b);
+
+annotated_rhs_subterms_list ::
+  forall a b.
+    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> [Term (Adp_symbol a) b];
+annotated_rhs_subterms_list pair =
+  map_filter
+    (\ x ->
+      (if (case root (subt_at (snd pair) x) of {
+            Nothing -> False;
+            Just (f, _) -> is_sharp_symbol f;
+          })
+        then Just (subt_at (snd pair) x) else Nothing))
+    (poss_list (snd pair));
 
 relative_adp_move_base_to_main_list ::
   forall a b.
@@ -74533,6 +74543,29 @@ relative_adp_move_base_to_main_list p b =
     moved = filter (\ pair -> not (null (annotated_rhs_subterms_list pair))) b;
   } in (remdups (p ++ moved),
          filter (\ pair -> null (annotated_rhs_subterms_list pair)) b);
+
+relative_adp_estimated_dependency_edge_list ::
+  forall a b.
+    (Eq a,
+      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 (Term (Adp_symbol a) b, Term (Adp_symbol a) b) ->
+                   (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> Bool;
+relative_adp_estimated_dependency_edge_list problem source target =
+  any (\ u ->
+        matchb (tcapI (map erase_adp problem) (erase_adp_term u))
+          (erase_adp_term (fst target)))
+    (annotated_rhs_subterms_list source);
+
+relative_adp_estimated_successors ::
+  forall a b.
+    (Eq a,
+      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
+relative_adp_estimated_successors problem source =
+  filter
+    (\ target ->
+      relative_adp_estimated_dependency_edge_list problem (nth problem source)
+        (nth problem target))
+    (upt zero_nat (size_list problem));
 
 check_relative_adp_erasure_redpair ::
   forall a.
@@ -74673,6 +74706,29 @@ check_relative_adp_com_redpair redp p b selected =
                      (\ _ ->
                        bindb (rel_impl_s rp strict)
                          (\ _ -> rel_impl_ns rp weak)))));
+
+relative_adp_root_successors ::
+  forall a b.
+    (Eq a,
+      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] -> Nat -> [Nat];
+relative_adp_root_successors problem source =
+  filter
+    (\ target ->
+      not (not (is_Var (fst (nth problem target)))) ||
+        any (\ u ->
+              root (erase_adp_term u) ==
+                root (erase_adp_term (fst (nth problem target))))
+          (annotated_rhs_subterms_list (nth problem source)))
+    (relative_adp_estimated_successors problem source);
+
+relative_adp_root_graph_candidates ::
+  forall a b.
+    (Eq a,
+      Eq b) => [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                 [(Term (Adp_symbol a) b, Term (Adp_symbol a) b)] ->
+                   [[(Term (Adp_symbol a) b, Term (Adp_symbol a) b)]];
+relative_adp_root_graph_candidates p b =
+  relative_adp_estimated_graph_candidates relative_adp_root_successors p b;
 
 erase_annotations_adp_list ::
   forall a b.
@@ -74824,31 +74880,35 @@ check_relative_adp_termination_proof p b
                      residual = relative_adp_erasure_residual p b selected;
                    } in check_relative_adp_termination_proof (fst residual)
                           (snd residual) proof)));
-check_relative_adp_termination_proof p b (Relative_ADP_Dependency_Graph proofs)
-  = let {
-      candidates = relative_adp_estimated_graph_candidates p b;
-    } in bindb (catch_errora
-                 (catch_errora
-                   (forallM
-                     (\ x -> (if not (is_Var (fst x)) then Inr () else Inl x))
-                     (p ++ b))
-                   (\ x -> Inl (snd x)))
-                 (\ _ ->
-                   Inl (showsl_lit
-                         "relative ADP graph requires function-rooted left-hand sides")))
-           (\ _ ->
-             bindb (check (equal_nat (size_list proofs) (size_list candidates))
-                     (showsl_lit "relative ADP graph child count mismatch"))
+check_relative_adp_termination_proof p b
+  (Relative_ADP_Dependency_Graph root_guard proofs) =
+  let {
+    candidates =
+      (if root_guard then relative_adp_root_graph_candidates p b
+        else relative_adp_estimated_graph_candidates
+               relative_adp_estimated_successors p b);
+  } in bindb (catch_errora
+               (catch_errora
+                 (forallM
+                   (\ x -> (if not (is_Var (fst x)) then Inr () else Inl x))
+                   (p ++ b))
+                 (\ x -> Inl (snd x)))
                (\ _ ->
-                 catch_errora
-                   (forallM
-                     (\ (q, proof) ->
-                       let {
-                         child = relative_adp_graph_child p b q;
-                       } in check_relative_adp_termination_proof (fst child)
-                              (snd child) proof)
-                     (zip candidates proofs))
-                   (\ x -> Inl (snd x))));
+                 Inl (showsl_lit
+                       "relative ADP graph requires function-rooted left-hand sides")))
+         (\ _ ->
+           bindb (check (equal_nat (size_list proofs) (size_list candidates))
+                   (showsl_lit "relative ADP graph child count mismatch"))
+             (\ _ ->
+               catch_errora
+                 (forallM
+                   (\ (q, proof) ->
+                     let {
+                       child = relative_adp_graph_child p b q;
+                     } in check_relative_adp_termination_proof (fst child)
+                            (snd child) proof)
+                   (zip candidates proofs))
+                 (\ x -> Inl (snd x))));
 check_relative_adp_termination_proof p b (Relative_ADP_Derelatification proof) =
   let {
     transformed = relative_adp_move_base_to_main_list p b;
