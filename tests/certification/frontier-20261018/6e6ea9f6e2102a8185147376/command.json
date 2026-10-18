@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/ferrum-nonminimal-v183",
+    "prove",
+    "../TPDB-ARI/SRS_Relative/Waldmann_19/random-137.ari",
+    "--cpf",
+    "/tmp/ferrum-termcomp-mn7i3r5o/proof.cpf.xml",
+    "--cpf-mode",
+    "auto",
+    "--strategy",
+    "timeout(300s,fail)",
+    "--utility-guidance-manifest",
+    "target/srs-native-20261013/integrated-private-adp-v656/oracle.jsonl",
+    "--no-top-level-llm",
+    "--processor-events",
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/replay-private-srs-v206/run/SRS_Relative/Waldmann_19/random-137/processor-events.jsonl"
+  ],
+  "disable_llm": true,
+  "extra_args": [
+    "--strategy",
+    "timeout(300s,fail)",
+    "--utility-guidance-manifest",
+    "target/srs-native-20261013/integrated-private-adp-v656/oracle.jsonl",
+    "--no-top-level-llm"
+  ],
+  "problem": "../TPDB-ARI/SRS_Relative/Waldmann_19/random-137.ari",
+  "timeout_seconds": 305
+}

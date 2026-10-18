@@ -44,6 +44,11 @@ def compare(source, proof, answer, category):
         else:
             raise ValueError('Unsupported relative rule annotation')
     inp = root.find('./input/trsInput')
+    omitted_empty_weak = inp is not None and not weak and [n.tag for n in inp] == ['trs']
+    if omitted_empty_weak:
+        # Ordinary termination is precisely relative termination with no weak
+        # rules. Normalize only after the original input proves this boundary.
+        ET.SubElement(ET.SubElement(inp, 'relativeRules'), 'rules')
     if inp is None or [n.tag for n in inp] != ['trs', 'relativeRules']:
         raise ValueError('Relative root must contain exactly strict and weak rules')
     if [n.tag for n in inp[0]] != ['rules'] or [n.tag for n in inp[1]] != ['rules']:
@@ -60,4 +65,5 @@ def compare(source, proof, answer, category):
         text = '\n'.join(sexp(c) for c in declarations + commands)
         result[label] = trs.compare(text, partition, answer, 'TRS_Standard')
     return dict(strategy='relative-full', strategy_equal=True, strict_and_weak_multisets_equal=True,
+                omitted_empty_weak_rules=omitted_empty_weak,
                 answer=answer, partitions=result)

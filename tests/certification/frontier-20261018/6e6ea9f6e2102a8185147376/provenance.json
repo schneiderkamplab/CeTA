@@ -1,0 +1,39 @@
+{
+  "id": "6e6ea9f6e2102a8185147376",
+  "proof_sha256": "eb08aa872fc7e5c2ceae545e4d8c733c0356c2f6e6748796f514112a4f583b80",
+  "input_sha256": "c5fcc714cd7fdcd157527c9f39055067390c219c9d54acdce843235af83a8412",
+  "root": "SRS_Relative/Waldmann_19/random-137.ari",
+  "category": "SRS_Relative",
+  "answer": "yes",
+  "source": "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/replay-private-srs-v206/run/SRS_Relative/Waldmann_19/random-137/proof.cpf.xml",
+  "input": "/work/dfm/festschrift/TPDB-ARI/SRS_Relative/Waldmann_19/random-137.ari",
+  "reports": [
+    "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/replay-private-srs-v206/details.json"
+  ],
+  "source_record": {
+    "artifact_dir": "/work/dfm/festschrift/ferrum-aaecc/target/outermost-relative-20261017/replay-private-srs-v206/run/SRS_Relative/Waldmann_19/random-137",
+    "category": "SRS_Relative",
+    "cert_failure_kind": "",
+    "cert_stderr": "",
+    "cert_stdout": "CERTIFIED\n",
+    "certified": true,
+    "csr_dp_cert_failed": false,
+    "csr_dp_failure_kind": "",
+    "csr_dp_full_certified": false,
+    "csr_dp_transform_certified": false,
+    "csr_dp_transform_failed": false,
+    "elapsed_seconds": 5.129,
+    "ferrum_stderr": "",
+    "ferrum_stdout": "status: Terminating\nstep: polynomial-rule-removal\ncpf: /tmp/ferrum-termcomp-mn7i3r5o/proof.cpf.xml\n",
+    "has_csr_dp": false,
+    "last_progress_event": "{\"kind\":\"srs-weights\",\"event\":\"solver-exit\",\"name\":\"z3\",\"elapsed_ms\":41,\"details\":\"sat\"}",
+    "path": "../TPDB-ARI/SRS_Relative/Waldmann_19/random-137.ari",
+    "processor_finishes": 0,
+    "processor_starts": 0,
+    "processor_time_ms": 0,
+    "progress_events": 10,
+    "status": "yes"
+  },
+  "new_nodes": {},
+  "compressed_sha256": "a8a4043dfb0db510e6be3e1d693b2088325d73e3ed1e392e3208c41a2bc7edf3"
+}

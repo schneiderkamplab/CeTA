@@ -1,0 +1,100 @@
+{
+  "case": "SRS_Relative/Waldmann_19/random-137.ari",
+  "proof_sha256": "eb08aa872fc7e5c2ceae545e4d8c733c0356c2f6e6748796f514112a4f583b80",
+  "input_sha256": "c5fcc714cd7fdcd157527c9f39055067390c219c9d54acdce843235af83a8412",
+  "unit_test": "python3 tools/consolidation/test_root_audit.py",
+  "checks": {
+    "certified_ids": [
+      "6e6ea9f6e2102a8185147376"
+    ],
+    "expected_ids": [
+      "6e6ea9f6e2102a8185147376"
+    ],
+    "failures": [],
+    "passed": true,
+    "results": [
+      {
+        "answer": "yes",
+        "audit": {
+          "answer": "yes",
+          "omitted_empty_weak_rules": true,
+          "partitions": {
+            "combined": {
+              "answer": "yes",
+              "nonvariable_lhs_and_no_extra_variables": true,
+              "rule_multiset_equal": true,
+              "rule_symbols": 3,
+              "rules": 5,
+              "strategy": "full",
+              "strategy_equal": true,
+              "symbol_spelling_aliases": {},
+              "unused_benchmark_declarations": []
+            },
+            "strict": {
+              "answer": "yes",
+              "nonvariable_lhs_and_no_extra_variables": true,
+              "rule_multiset_equal": true,
+              "rule_symbols": 3,
+              "rules": 5,
+              "strategy": "full",
+              "strategy_equal": true,
+              "symbol_spelling_aliases": {},
+              "unused_benchmark_declarations": []
+            },
+            "weak": {
+              "answer": "yes",
+              "nonvariable_lhs_and_no_extra_variables": true,
+              "rule_multiset_equal": true,
+              "rule_symbols": 0,
+              "rules": 0,
+              "strategy": "full",
+              "strategy_equal": true,
+              "symbol_spelling_aliases": {},
+              "unused_benchmark_declarations": [
+                "a",
+                "b",
+                "c"
+              ]
+            }
+          },
+          "strategy": "relative-full",
+          "strategy_equal": true,
+          "strict_and_weak_multisets_equal": true
+        },
+        "checks": [
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-v3/ceta-relative",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-20261018/previous-empty-weak/6e6ea9f6e2102a8185147376/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.012826548190787435,
+            "process_id": 507527,
+            "returncode": 0,
+            "timed_out": false,
+            "timing_method": "blocking wait with cancellable process-group watchdog"
+          },
+          {
+            "certified": true,
+            "command": [
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-v3/ceta-relative",
+              "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/frontier-20261018/previous-empty-weak/6e6ea9f6e2102a8185147376/proof.cpf.xml"
+            ],
+            "elapsed_seconds": 0.014384194975718856,
+            "process_id": 507530,
+            "returncode": 0,
+            "timed_out": false,
+            "timing_method": "blocking wait with cancellable process-group watchdog"
+          }
+        ],
+        "id": "6e6ea9f6e2102a8185147376",
+        "input_sha256": "c5fcc714cd7fdcd157527c9f39055067390c219c9d54acdce843235af83a8412",
+        "passed": true,
+        "proof_sha256": "eb08aa872fc7e5c2ceae545e4d8c733c0356c2f6e6748796f514112a4f583b80",
+        "root": "SRS_Relative/Waldmann_19/random-137.ari"
+      }
+    ]
+  },
+  "scope": "Audit normalization only when the original weak partition is empty. Certificate and checker semantics unchanged.",
+  "original_failure_retained": "target/consolidation-build/frontier-20261018/previous-campaign/6e6ea9f6e2102a8185147376/result.json"
+}
