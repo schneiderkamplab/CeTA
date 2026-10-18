@@ -1,0 +1,34 @@
+{
+  "snapshot_head": "7e9ac72a0c59653298161a7585b421a436a5ce8e",
+  "current_head": "321f08db5a548f0cd7478250a37b866e6f917262",
+  "changed_snapshot_files": [
+    "src/Haskell/Main_Raw_Campaign.hs"
+  ],
+  "new_changed_or_untracked_files": [],
+  "scope": "Read-only drift check; no new development changes imported.",
+  "all_new_commit_paths_already_snapshotted": true,
+  "semantic_source_drift": false,
+  "only_difference": "Trailing blank line removed from experimental campaign CLI; consolidated CLI already uses its shared parser.",
+  "current_commit_paths": [
+    "Makefile",
+    "src/Haskell/Main_Raw_Campaign.hs",
+    "thys/RFC_Absolute_Ext/RFC_Absolute_Check.thy",
+    "thys/Raw_Campaign_Ext/ROOT",
+    "thys/Raw_Campaign_Ext/Raw_Campaign_Cert.thy",
+    "thys/Raw_Campaign_Ext/Raw_Campaign_Code.thy",
+    "thys/Raw_Campaign_Ext/Raw_Campaign_Console_Code.thy",
+    "thys/Raw_Campaign_Ext/Raw_Graph_Code_Smoke.thy",
+    "thys/Raw_Campaign_Ext/Raw_Ordinary_Cert.thy",
+    "thys/Raw_Campaign_Ext/Raw_Promotion_Code.thy",
+    "thys/Relative_ADP/Checker/Relative_ADP_Checker_Adapter.thy",
+    "thys/Relative_ADP/Checker/Relative_ADP_Checker_Tests.thy",
+    "thys/Relative_ADP/Checker/Relative_ADP_DP_Argument_Filter.thy",
+    "thys/Relative_ADP/Checker/Relative_ADP_Generic_Graph_Impl.thy",
+    "thys/Relative_ADP/Checker/Relative_ADP_Root_Graph.thy",
+    "thys/Relative_ADP/Integration/Relative_ADP_Ceta.thy",
+    "thys/Relative_ADP/Integration/Relative_ADP_Promotion.thy",
+    "thys/Relative_ADP/Semantics/Reduction_Pair/ROOT",
+    "thys/Relative_ADP/Semantics/Reduction_Pair/Relative_ADP_Com_Order_Check.thy",
+    "thys/Relative_ADP/Semantics/Reduction_Pair/Relative_ADP_Com_Reduction_Pair.thy"
+  ]
+}

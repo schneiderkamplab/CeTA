@@ -1,0 +1,6 @@
+{
+  "files": 20241,
+  "archive_sha256": "5f291b7bde60b840ebcb3ecc1087325b2823f9fcc03c5591e76aca85f91c6afc",
+  "passed": true,
+  "scope": "Hash verification of archived logs, results, scripts and source identities; certificates selected for durable regression live in tests/certification/promotion-20261018."
+}

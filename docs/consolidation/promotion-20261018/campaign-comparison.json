@@ -1,0 +1,28 @@
+{
+  "expected_exact_identities": 4177,
+  "accepted_current_exact_identities": 4177,
+  "missing": [],
+  "passed": true,
+  "identity_fields": [
+    "root",
+    "proof_sha256",
+    "input_sha256",
+    "answer"
+  ],
+  "categories": {
+    "TRS_Innermost": 311,
+    "TRS_Standard": 1356,
+    "SRS_Relative": 363,
+    "SRS_Standard": 1720,
+    "TRS_Outermost": 206,
+    "TRS_Contextsensitive": 110,
+    "TRS_Relative": 111
+  },
+  "receipt_sha256": {
+    "campaign": "01b8c27c41f4ed928b1b0be8e8ec398719fe1591d6eff3e50eaf5aa80220e9aa",
+    "full": "64ce648795ce8a1a93ec97da89eb84c57b945597501679db8b4bd83812a6d706",
+    "supplemental": "1b38fefa8daaa7685ab3dcaca069905aa5c73505c0a545693ad8704c50aeb90c",
+    "new-positives": "f761e6abfab7ba7916effbe33ace60a729d4f690748176ed882bed4d50b1b913"
+  },
+  "scope": "Exact frozen available current-frontier identities. Latest SRS225 lacked details; selected SRS206 is the last available inventory. Certificate recheck, not fresh Ferrum generation."
+}

@@ -35,5 +35,5 @@
     "Generation provenance does not establish a fresh strict witness-free oracle-only replay."
   ],
   "proof_coverage_note": "Runtime counters measure executable paths; Isabelle validates the soundness proof independently.",
-  "status": "Formal, focused, compact and 688-certificate campaign checks passed; full corpus recheck pending."
+  "status": "Formal production targets, export, production/HPC compilation, focused and full frozen-certificate checks passed."
 }
