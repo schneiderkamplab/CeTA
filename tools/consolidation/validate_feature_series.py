@@ -14,8 +14,9 @@ def git(*args):return subprocess.check_output(['git',*args],cwd=ROOT)
 
 
 def targets(title,source):
-    if title in ['AAECC full-to-innermost criterion','Zantema QDP-to-SRS criterion','General rule strengthening']:
+    if title in ['AAECC full-to-innermost criterion','General rule strengthening']:
         return ['Proof_Checker_Base']
+    if title=='Zantema QDP-to-SRS criterion':return ['Proof_Checker']
     if title.startswith(('Full and complete GM04','Standalone CSR','CPF adapters')):
         return ['Proof_Checker']
     if title=='Shared production export configuration':return ['Proof_Checker','Code']
@@ -80,7 +81,7 @@ def main():
         if (source/'thys/RFC_Absolute_Ext/ROOT').exists():dirs.append('thys/RFC_Absolute_Ext')
         selected=targets(row['title'],source)
         if selected:
-            cmd=[str(a.isabelle.resolve()),'build','-v','-j','2','-o','threads=8','-o','parallel_proofs=0']+sum((['-d',str(source/d)] for d in dirs),[])+selected
+            cmd=[str(a.isabelle.resolve()),'build','-b','-v','-j','2','-o','threads=8','-o','parallel_proofs=0']+sum((['-d',str(source/d)] for d in dirs),[])+selected
             result=execute(cmd,source,env,run/'build',43200)
         else:result=dict(returncode=0,timed_out=False,scope='No production-source change; formal build not applicable')
         result.update(commit=commit,title=row['title'],targets=selected,source_hashes_sha256=sha(run/'source-hashes.json'))

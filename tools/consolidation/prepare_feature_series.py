@@ -45,6 +45,7 @@ def main():
     stages=[]
     def add(title,rev,names,overrides=None):
         if names:stages.append((title,rev,names,overrides or {}))
+    add('Complete CSR tail-core soundness case','85b6876',['thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy'])
     ct='thys/Proof_Checker_Base/Check_Termination.thy';rootbase=content(base,'thys/ROOT').decode();root85=content('85b6876','thys/ROOT').decode()
     marker='session Proof_Checker_Base ';end='session CSR_Checker_Base '
     section=root85[root85.index(marker):root85.index(end)]
@@ -52,11 +53,10 @@ def main():
     for title,keep,theory in [('AAECC full-to-innermost criterion',set(),'thys/CSR_Checker/AAECC/AAECC_Innermost_Switch.thy'),('Zantema QDP-to-SRS criterion',{'qdp'},'thys/Proof_Checker_Base/QDP_To_SRS_Zantema.thy'),('General rule strengthening',{'qdp','rule'},'thys/Proof_Checker_Base/Rule_Strengthening.thy')]:
         rootsection=section if 'qdp' in keep else section.replace('    QDP_To_SRS_Zantema\n','')
         stage_root=rootbase[:rootbase.index(marker)]+rootsection+rootbase[rootbase.index(end):]
-        add(title,'85b6876',[theory,ct,'thys/ROOT'],{ct:ordinary_stage(full,keep),'thys/ROOT':stage_root.encode()})
-    add('Complete CSR tail-core soundness case','85b6876',['thys/CSR_Checker/Extensions/CSR_Minimal_CSDP_Proofs.thy'])
+        add(title,'85b6876',[theory,ct,'thys/ROOT']+(['thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy'] if keep=={'qdp'} else []),{ct:ordinary_stage(full,keep),'thys/ROOT':stage_root.encode()})
     pc='thys/Proof_Checker/'
     add('Full and complete GM04 transformation semantics','85b6876',[pc+n+'.thy' for n in ['GM04_Sanitizing_Phase','GM04_Full_Transformation','GM04_Complete_Transformation','GM04_Complete_Checker']])
-    add('Standalone CSR and GM04 residual interfaces','85b6876',[pc+n+'.thy' for n in ['GM04_Standalone_DP_Checker','CSR_Standalone_DP_Checker','CSR_Muterm_Typed_Checker','Ceta_Problem_Spec','Proof_Checker']])
+    add('Standalone CSR and GM04 residual interfaces','85b6876',[pc+n+'.thy' for n in ['GM04_Standalone_DP_Checker','CSR_Standalone_DP_Checker','Ceta_Problem_Spec','Proof_Checker']])
     add('CPF adapters for transformation and residual certificates','85b6876',[pc+'CPF_Input_Parser.thy',pc+'CPF_Proof_Parser.thy'])
     add('Shared production export configuration','85b6876',[pc+'Code_Haskell_Configuration.thy',pc+'Code_CSR_Production.thy','thys/Code/Code_Haskell.thy','thys/ROOT','dev/Relative_ADP_Dev/Integration/Relative_ADP_Code_Haskell.thy'])
     add('RFC deletion with absolute residual checking','85b6876',paths('85b6876','thys/RFC_Absolute_Ext/'))
