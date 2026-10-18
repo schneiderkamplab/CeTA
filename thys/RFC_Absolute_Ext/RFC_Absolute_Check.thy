@@ -2,6 +2,9 @@ theory RFC_Absolute_Check
   imports RFC_Absolute_Residual "Proof_Checker_Base.Check_Termination"
 begin
 
+lemma rfc_isOK_unit: "isOK (x :: 'a + unit) \<longleftrightarrow> x = Inr ()"
+  by (cases x) auto
+
 context fixes
   I :: "('tp, ('f::{showl,compare_order,countable},label_type) lab,string) tp_ops"
   and J :: "('dpp, ('f,label_type) lab,string) dpp_ops"
@@ -12,6 +15,11 @@ fun check_rfc_absolute where
     tp' \<leftarrow> rfc_matchbox_absolute_bounds_tt I info initial D tp;
     check_rfc_absolute (add_index i 1) tp' child
   }"
+| "check_rfc_absolute i tp (Split selected first second) = do {
+    let (tp1,tp2) = split_tt I tp selected;
+    check_rfc_absolute (add_index i 1) tp1 first;
+    check_rfc_absolute (add_index i 2) tp2 second
+  }"
 | "check_rfc_absolute i tp prf = check_trs_termination_proof I J False i tp prf"
 
 lemma check_rfc_absolute_sound:
@@ -19,10 +27,12 @@ lemma check_rfc_absolute_sound:
     and ok: "isOK (check_rfc_absolute i tp prf)"
   shows "SN_qrel (tp_ops.qreltrs I tp)"
   using ok
-  by (induction i tp "prf" rule: check_rfc_absolute.induct)
-    (auto simp del: check_trs_termination_proof.simps isOK_bind
+  apply (induction i tp "prf" rule: check_rfc_absolute.induct)
+  apply (auto simp add: rfc_isOK_unit simp del: check_trs_termination_proof.simps isOK_bind
       intro: rfc_matchbox_absolute_bounds_tt_sound[OF I _ infinite_lab]
-      check_trs_termination_proof[OF I J] split: sum_bind_splits)
+      tp_spec.split_tt[OF I]
+      check_trs_termination_proof[OF I J] split: sum_bind_splits prod.splits sum.splits)
+  done
 
 end
 end

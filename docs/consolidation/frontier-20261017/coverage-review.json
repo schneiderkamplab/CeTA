@@ -1,0 +1,47 @@
+{
+  "automatic_mapping_count": 44788,
+  "delta_sha256": "039f27669bc588ee924999ae5483b33c419884215e53fe95bf56a87df7064f40",
+  "retired_count": 20,
+  "review": [
+    {
+      "label": "TopLevelBox [\"check_cert_rfc_absolute\"]",
+      "module": "RFC_Absolute_Cert",
+      "new_module_source_sha256": "d101263dc40aa53b7a357daf58b1575cd0c6981eab6c6b993b56f1be734669e1",
+      "new_position": [
+        87,
+        1,
+        798,
+        40
+      ],
+      "old_entry_source_sha256": "25abf6c49db82dc38037727f0e6e873cdb685c375db0296ba3e59151bd542547",
+      "old_obligation": 107383,
+      "old_position": [
+        87,
+        1,
+        454,
+        40
+      ],
+      "reason": "This is a function-entry counter, not a claim that every equation or soundness premise executed. The same function remains the entry point with its old contract; added Split/outermost equations are separately tested by derived fixtures. All other retained counters map through unchanged expressions. No branch counter is retired or replaced by an entry counter."
+    },
+    {
+      "label": "TopLevelBox [\"check_rfc_absolute\"]",
+      "module": "RFC_Absolute_Check",
+      "new_module_source_sha256": "d8f63fe23d55eeb953c88076a245531525d17af0c1374b4cbd2224092c8a1a97",
+      "new_position": [
+        56,
+        1,
+        145,
+        47
+      ],
+      "old_entry_source_sha256": "2f37a7177190902ca84d0314addfb6df01968cc70b73efaafde6b03ec5daa11f",
+      "old_obligation": 107679,
+      "old_position": [
+        54,
+        1,
+        135,
+        47
+      ],
+      "reason": "This is a function-entry counter, not a claim that every equation or soundness premise executed. The same function remains the entry point with its old contract; added Split/outermost equations are separately tested by derived fixtures. All other retained counters map through unchanged expressions. No branch counter is retired or replaced by an entry counter."
+    }
+  ]
+}

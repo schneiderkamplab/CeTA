@@ -1,0 +1,24 @@
+; Euclidean gcd by repeated subtraction. 
+; Since gcd is commutative, its two arguments may be swapped arbitrarily often (relative rule).
+
+(format TRS)
+
+(fun true 0) (fun false 0) (fun le 2) (fun |0| 0) (fun s 1)
+(fun minus 2) (fun gcd 2) (fun if_gcd 3)
+
+(rule (le |0| y) true)
+(rule (le (s x) |0|) false)
+(rule (le (s x) (s y)) (le x y))
+
+(rule (minus x |0|) x)
+(rule (minus (s x) (s y)) (minus x y))
+
+(rule (gcd |0| y) y)
+(rule (gcd (s x) |0|) (s x))
+(rule (gcd (s x) (s y)) (if_gcd (le y x) (s x) (s y)))
+
+(rule (if_gcd true (s x) (s y)) (gcd (minus x y) (s y)))
+(rule (if_gcd false (s x) (s y)) (gcd (minus y x) (s x)))
+
+; Relative:
+(rule (gcd x y) (gcd y x) :cost 0)

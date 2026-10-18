@@ -1,0 +1,23 @@
+; Building a binary search tree by inserting the elements of a multiset.
+; As the input is a multiset, adjacent elements may be swapped arbitrarily often (relative rule).
+
+(format TRS)
+
+(fun true 0) (fun false 0) (fun le 2) (fun |0| 0) (fun s 1)
+(fun nil 0) (fun cons 2) (fun leaf 0) (fun node 3)
+(fun ins 2) (fun insif 5) (fun build 2)
+
+(rule (le |0| y) true)
+(rule (le (s x) |0|) false)
+(rule (le (s x) (s y)) (le x y))
+
+(rule (ins x leaf) (node leaf x leaf))
+(rule (ins x (node l y r)) (insif (le x y) x l y r))
+(rule (insif true x l y r) (node (ins x l) y r))
+(rule (insif false x l y r) (node l y (ins x r)))
+
+(rule (build nil t) t)
+(rule (build (cons x xs) t) (build xs (ins x t)))
+
+; Relative:
+(rule (build (cons x (cons y xs)) t) (build (cons y (cons x xs)) t) :cost 0)

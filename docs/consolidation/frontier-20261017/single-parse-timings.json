@@ -1,0 +1,25 @@
+{
+  "diagnostics": [],
+  "interpretation": "Isabelle-reported cumulated theory times; sums are not elapsed build wall time. Use the build receipt for wall time and exit status.",
+  "log_sha256": "12ec154bb68f5b45f5c34b1599188cb97bec66c66d904a37940e17291f9c61b4",
+  "reported_cumulated_seconds_by_session": {
+    "Relative_ADP_Ceta_Dev": 319.827
+  },
+  "session_reports": [
+    "Timing Relative_ADP_Ceta_Dev (8 threads, 320.089s elapsed time, 325.709s cpu time, 11.334s GC time, factor 1.02)",
+    "Finished Relative_ADP_Ceta_Dev (0:05:25 elapsed time, 0:05:32 cpu time, factor 1.02)",
+    "Finished at Sun Oct 18 08:27:06 GMT+2 2026"
+  ],
+  "theory_reports": [
+    {
+      "reported_cumulated_seconds": 7.016,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 312.811,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Code_Haskell"
+    }
+  ]
+}

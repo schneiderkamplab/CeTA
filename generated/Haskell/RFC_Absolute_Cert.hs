@@ -91,6 +91,12 @@ check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.Inn_TRS_input q r s)
     (Termination_Problem_Spec.mk i (Ceta_Problem_Spec.strategy_to_nfs q)
       (Ceta_Problem_Spec.strategy_to_Q q r) r s)
     p;
+check_cert_rfc_absolute i j k l
+  (Ceta_Problem_Spec.FP_TRS_input Ceta_Problem_Spec.Outermost r)
+  Ceta_Problem_Spec.Termination (Ceta_Problem_Spec.Decision True)
+  (Proof_Checker.TRS_Termination_Proof p) =
+  RFC_Absolute_Check.check_rfc_absolute i j (Term_Rewriting.showsl_lit "1")
+    (Termination_Problem_Spec.mk i False [] r []) p;
 check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.DP_input v va vb vc) prop ans
   p = Proof_Checker.check_cert i j k l False
         (Ceta_Problem_Spec.DP_input v va vb vc) prop ans p;
@@ -106,9 +112,347 @@ check_cert_rfc_absolute i j k l
   (Ceta_Problem_Spec.CSR_Muterm_Typed_DP_input v va vb vc vd) prop ans p =
   Proof_Checker.check_cert i j k l False
     (Ceta_Problem_Spec.CSR_Muterm_Typed_DP_input v va vb vc vd) prop ans p;
-check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans p
-  = Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
-      prop ans p;
+check_cert_rfc_absolute i j k l
+  (Ceta_Problem_Spec.FP_TRS_input (Ceta_Problem_Spec.Context_Sensitive vb) va)
+  prop ans p =
+  Proof_Checker.check_cert i j k l False
+    (Ceta_Problem_Spec.FP_TRS_input (Ceta_Problem_Spec.Context_Sensitive vb) va)
+    prop ans p;
+check_cert_rfc_absolute i j k l
+  (Ceta_Problem_Spec.FP_TRS_input (Ceta_Problem_Spec.Forbidden_Patterns vb) va)
+  prop ans p =
+  Proof_Checker.check_cert i j k l False
+    (Ceta_Problem_Spec.FP_TRS_input (Ceta_Problem_Spec.Forbidden_Patterns vb)
+      va)
+    prop ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Confluence ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Confluence ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Commutation ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Commutation ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Completion ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Completion ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Safety ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va) Ceta_Problem_Spec.Safety
+    ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Entailment ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Entailment ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  (Ceta_Problem_Spec.Complexity vb) ans p =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    (Ceta_Problem_Spec.Complexity vb) ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Closed_Under_Rewriting ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Closed_Under_Rewriting ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Infeasibility ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Infeasibility ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va)
+  Ceta_Problem_Spec.Unknown_Property ans p =
+  (Proof_Checker.check_cert ::
+    Termination_Problem_Spec.Tp_ops_ext a (Labelings.Lab b [Arith.Nat])
+      [Arith.Char] () ->
+      Dependency_Pair_Problem_Spec.Dpp_ops_ext c (Labelings.Lab b [Arith.Nat])
+        [Arith.Char] () ->
+        AC_Termination_Problem_Spec.Ac_tp_ops_ext d
+          (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+          AC_Dependency_Pair_Problem_Spec.Ac_dpp_ops_ext e
+            (Labelings.Lab b [Arith.Nat]) [Arith.Char] () ->
+            Bool ->
+              Ceta_Problem_Spec.Input (Labelings.Lab b [Arith.Nat])
+                [Arith.Char] ->
+                Ceta_Problem_Spec.Property (Labelings.Lab b [Arith.Nat]) f ->
+                  Ceta_Problem_Spec.Answer (Labelings.Lab b [Arith.Nat])
+                    [Arith.Char] ->
+                    Proof_Checker.Proof b [Arith.Nat] [Arith.Char] ->
+                      Sum_Type.Sum (String -> String) ())
+    i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    Ceta_Problem_Spec.Unknown_Property ans p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop
+  (Ceta_Problem_Spec.Decision False) p =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop (Ceta_Problem_Spec.Decision False) p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop
+  (Ceta_Problem_Spec.Upperbound_Poly vb) p =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop (Ceta_Problem_Spec.Upperbound_Poly vb) p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop
+  (Ceta_Problem_Spec.Completed_System vb) p =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop (Ceta_Problem_Spec.Completed_System vb) p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop
+  (Ceta_Problem_Spec.Order_Completed_System vb vc) p =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop (Ceta_Problem_Spec.Order_Completed_System vb vc) p;
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Complexity_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Complexity_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.DP_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.DP_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Relative_DP_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Relative_DP_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.DP_Nontermination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.DP_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.TRS_Nontermination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.TRS_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.FP_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.FP_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Outermost_RZ_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Outermost_RZ_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.CSR_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.CSR_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.CSR_Improved_DP_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.CSR_Improved_DP_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.CSR_Muterm_Typed_DP_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.CSR_Muterm_Typed_DP_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.GM04_Complete_TRS_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.GM04_Complete_TRS_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.GM04_Standalone_DP_Proof_Node vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.GM04_Standalone_DP_Proof_Node vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.GM04_Standalone_TRS_Proof_Node vb vc) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.GM04_Standalone_TRS_Proof_Node vb vc);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.GM04_Complete_TRS_Nontermination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.GM04_Complete_TRS_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.FP_Nontermination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.FP_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Relative_TRS_Nontermination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Relative_TRS_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.TRS_Confluence_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.TRS_Confluence_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.TRS_Non_Confluence_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.TRS_Non_Confluence_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.TRS_Non_Commutation_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.TRS_Non_Commutation_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.TRS_Commutation_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.TRS_Commutation_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Completion_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Completion_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Ordered_Completion_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Ordered_Completion_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Equational_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Equational_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Equational_Disproof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Equational_Disproof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Quasi_Reductive_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Quasi_Reductive_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Conditional_CR_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Conditional_CR_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Conditional_Non_CR_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Conditional_Non_CR_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Tree_Automata_Closed_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Tree_Automata_Closed_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.AC_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.AC_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.LTS_Termination_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.LTS_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.LTS_Safety_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.LTS_Safety_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Infeasibility_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Infeasibility_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Feasibility_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Feasibility_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Unknown_Proof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Unknown_Proof vb);
+check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.FP_TRS_input v va) prop ans
+  (Proof_Checker.Unknown_Disproof vb) =
+  Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.FP_TRS_input v va)
+    prop ans (Proof_Checker.Unknown_Disproof vb);
 check_cert_rfc_absolute i j k l (Ceta_Problem_Spec.AC_input v va vb) prop ans p
   = Proof_Checker.check_cert i j k l False (Ceta_Problem_Spec.AC_input v va vb)
       prop ans p;

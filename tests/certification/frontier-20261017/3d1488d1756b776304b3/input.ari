@@ -1,0 +1,9 @@
+; @origtpdbfilename ./TRS/cariboo/ex2.trs
+; @xtcfilename "./TRS_Outermost/Mixed_outermost/ex2.xml"
+(format TRS)
+(fun cons 2)
+(fun big 0)
+(fun inf 1)
+(fun s 1)
+(rule (cons x (cons y z)) big)
+(rule (inf x) (cons x (inf (s x))))

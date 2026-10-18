@@ -1,6 +1,25 @@
 theory Relative_ADP_Checker_Tests
-  imports Relative_ADP_Checker_Adapter
+  imports Relative_ADP_Checker_Adapter Berlekamp_Zassenhaus.Code_Abort_Gcd
 begin
+
+definition test_relative_com_order :: "int \<Rightarrow> string adp_com_symbol redtriple_impl" where
+  "test_relative_com_order c = Int_carrier
+    [((ADP_Symbol (Plain ''projection''), 2), (0, [1,0])),
+     ((Com2, 2), (0, [c,1])), ((Com0, 0), (0, []))]"
+
+lemma test_relative_com_accepts_weak_ordinary_monotonicity:
+  "isOK (rel_impl_adp_com_redpair (get_rel_impl (test_relative_com_order 1)))"
+  unfolding test_relative_com_order_def get_rel_impl.simps
+    rel_impl_adp_com_redpair_def rel_impl_redpair_def create_poly_rel_impl_def Let_def
+  apply (simp only: rel_impl.simps)
+  by eval
+
+lemma test_relative_com_rejects_missing_compound_argument:
+  "\<not> isOK (rel_impl_adp_com_redpair (get_rel_impl (test_relative_com_order 0)))"
+  unfolding test_relative_com_order_def get_rel_impl.simps
+    rel_impl_adp_com_redpair_def rel_impl_redpair_def create_poly_rel_impl_def Let_def
+  apply (simp only: rel_impl.simps)
+  by eval
 
 definition test_relative_adp :: "(string, string) adp" where
   "test_relative_adp =

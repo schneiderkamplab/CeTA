@@ -1,0 +1,8 @@
+; @origtpdbfilename ./TRS/Rubio/nestrec.trs
+; @xtcfilename "./TRS_Standard/Rubio_04/nestrec.xml"
+(format TRS)
+(fun f 1)
+(fun g 1)
+(fun h 1)
+(rule (f (g X)) (g (f (f X))))
+(rule (f (h X)) (h (g X)))

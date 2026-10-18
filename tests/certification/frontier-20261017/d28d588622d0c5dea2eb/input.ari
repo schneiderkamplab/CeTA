@@ -1,0 +1,10 @@
+; @origtpdbfilename ./TRS/cariboo/ex4.trs
+; @xtcfilename "./TRS_Outermost/Mixed_outermost/ex4.xml"
+(format TRS)
+(fun f 1)
+(fun h 1)
+(fun i 1)
+(fun a 0)
+(rule (f (h x)) (f (i x)))
+(rule (f (i x)) a)
+(rule (i x) (h x))

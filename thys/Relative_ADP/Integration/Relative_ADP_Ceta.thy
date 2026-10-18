@@ -1,7 +1,6 @@
 theory Relative_ADP_Ceta
   imports
-    Relative_ADP_Checker_Dev.Relative_ADP_Checker_Adapter
-    Proof_Checker.Ceta_Verifier
+    Relative_ADP_Integration_Base.Relative_ADP_Integration_Base
 begin
 
 partial_function (sum_bot) relative_adp_com_symbol_parser ::
@@ -45,7 +44,7 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
       (XMLdo (STR ''relativeAdpEmpty'') {
         xml_return Relative_ADP_Empty
       } XMLor XMLdo (STR ''relativeAdpErasureReductionPair'') {
-        redp \<leftarrow> redtriple symbol_parser Sharp False;
+        redp \<leftarrow> redtriple symbol_parser lab.Sharp False;
         main_indices \<leftarrow> XMLdo (STR ''mainIndices'') {
           indices \<leftarrow>* xml_nat (STR ''index'');
           xml_return indices
@@ -79,34 +78,43 @@ partial_function (sum_bot) xml2relative_adp_termination_proof ::
         xml_return (Relative_ADP_Derelatification ordinary_proof)
       }) id x"
 
-definition relative_adp_certification_problem_parser ::
+definition integrated_proof_parser where
+  "integrated_proof_parser termIndexMap ruleMap x =
+    (let ordinary = xml_change (proof_parser termIndexMap ruleMap)
+        (\<lambda>p. xml_return (Inl p)) in
+     case fst x of XML name attrs (XML child child_attrs children # rest) \<Rightarrow>
+       if child = String.explode (STR ''relativeAdpTerminationProof'') then
+         xml_change (xml_singleton (STR ''proof'')
+           xml2relative_adp_termination_proof id)
+           (\<lambda>p. xml_return (Inr p)) x
+       else ordinary x
+     | _ \<Rightarrow> ordinary x)"
+
+definition integrated_certification_problem_parser ::
   "((lsymbol,string) input option \<times>
     (lsymbol,string) property option \<times>
     (lsymbol,string) answer option \<times>
-    lsymbol relative_adp_termination_proof) xmlt" where
-  "relative_adp_certification_problem_parser =
+    ((string,label_type,string) proof + lsymbol relative_adp_termination_proof)) xmlt" where
+  "integrated_certification_problem_parser =
     XMLdo (STR ''certificationProblem'') {
       version \<leftarrow> xml_text (STR ''cpfVersion'');
       (term_index_map, rule_map) \<leftarrow> lookupTables symbol_parser;
       inp \<leftarrow>? input_parser term_index_map rule_map;
       prop \<leftarrow>? property_parser;
       ans \<leftarrow>? answer_parser term_index_map rule_map;
-      proof \<leftarrow> XMLdo (STR ''proof'') {
-        p \<leftarrow> xml2relative_adp_termination_proof;
-        xml_return p
-      };
+      proof \<leftarrow> integrated_proof_parser term_index_map rule_map;
       meta_info \<leftarrow>? xml_any;
       xml_return (inp, prop, ans, proof)
     }"
 
-definition parse_relative_adp_cert_problem where
-  "parse_relative_adp_cert_problem =
-    parse_from_string relative_adp_certification_problem_parser"
+definition parse_integrated_cert_problem where
+  "parse_integrated_cert_problem =
+    parse_from_string integrated_certification_problem_parser"
 
-definition parse_combined_relative_adp_cert_problem where
-  "parse_combined_relative_adp_cert_problem inp1 prop1 answ1 prfs = do {
+definition parse_combined_integrated_cert_problem where
+  "parse_combined_integrated_cert_problem inp1 prop1 answ1 prfs = do {
     (inp2, prop2, answ2, proof) \<leftarrow>
-      parse_relative_adp_cert_problem prfs;
+      parse_integrated_cert_problem prfs;
     inp \<leftarrow> parse_merge (STR ''input'') parse_input inp1 inp2;
     prop \<leftarrow> parse_merge (STR ''property'') parse_property prop1 prop2;
     answ \<leftarrow> parse_merge (STR ''answer'') parse_answer answ1 answ2;
@@ -166,14 +174,34 @@ lemma certify_relative_adp_cert_problem_sound:
   by (cases "check_relative_adp_cert_problem inp_value property_value answer_value certificate";
       auto intro: check_relative_adp_cert_problem_sound)
 
+text \<open>Parse the certificate once and dispatch on its parsed proof type.
+The structural choice inspects only the proof node's first child tag; each
+selected parser still validates the complete proof. No fallback retains the
+original certificate string throughout checking.\<close>
+
+definition certify_integrated_cert_problem where
+  "certify_integrated_cert_problem assumptions inp prop ans certificate =
+    (case certificate of
+       Inl ordinary \<Rightarrow> certify_cert_problem_rfc_absolute
+         tp_impl dpp_impl ac_tp_impl ac_dpp_impl assumptions inp prop ans ordinary
+     | Inr adp \<Rightarrow> certify_relative_adp_cert_problem inp prop ans adp)"
+
+lemma certify_integrated_cert_problem_sound:
+  assumes "certify_integrated_cert_problem False inp prop ans certificate = Certified"
+  shows "desired_property inp prop ans"
+  using assms unfolding certify_integrated_cert_problem_def
+  by (cases certificate; auto intro:
+      certify_cert_problem_rfc_absolute_sound[OF tp_rbt_impl dpp_rbt_impl
+        ac_tp_list_impl ac_dpp_rbt_impl]
+      certify_relative_adp_cert_problem_sound)
+
 definition certify_proof_integrated ::
   "bool \<Rightarrow> string option \<Rightarrow> string option \<Rightarrow>
    string option \<Rightarrow> string \<Rightarrow> cert_result" where
   "certify_proof_integrated assumptions inp_o prop_o answ_o proof_string =
-    bind2' (parse_combined_relative_adp_cert_problem
-      inp_o prop_o answ_o proof_string)
-      (\<lambda>_. certify_proof assumptions inp_o prop_o answ_o proof_string)
+    bind2' (parse_combined_integrated_cert_problem
+      inp_o prop_o answ_o proof_string) Unsupported
       (\<lambda>(inp, prop, answ, proof).
-        certify_relative_adp_cert_problem inp prop answ proof)"
+        certify_integrated_cert_problem assumptions inp prop answ proof)"
 
 end

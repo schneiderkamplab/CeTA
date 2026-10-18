@@ -1,7 +1,13 @@
-session Relative_ADP_Ceta_Dev in "." = Relative_ADP_Checker_Dev +
+session Relative_ADP_Integration_Base in "Base" = Relative_ADP_Checker_Dev +
   options [document = false]
   sessions
     Proof_Checker
+    RFC_Absolute_Ext
+  theories
+    Relative_ADP_Integration_Base
+
+session Relative_ADP_Ceta_Dev in "." = Relative_ADP_Integration_Base +
+  options [document = false]
   theories
     Relative_ADP_Ceta
     Relative_ADP_Code_Haskell

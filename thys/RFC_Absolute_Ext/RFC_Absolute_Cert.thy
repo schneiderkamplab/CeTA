@@ -2,6 +2,18 @@ theory RFC_Absolute_Cert
   imports RFC_Absolute_Check "Proof_Checker.Ceta"
 begin
 
+lemma full_termination_implies_outermost:
+  assumes "desired_property (Inn_TRS_input No_Strategy R []) Termination (Decision True)"
+  shows "desired_property (FP_TRS_input Outermost R) Termination (Decision True)"
+proof -
+  have sn: "SN (Trs.rstep (set R))"
+    using assms by (simp add: desired_property_def SN_qrel_def)
+  have subset: "ostep (lhss (set R)) (set R) \<subseteq> Trs.rstep (set R)"
+    unfolding ostep_defs using rstep_r_p_s_imp_rstep by blast
+  from SN_subset[OF sn subset] show ?thesis
+    by (simp add: desired_property_def)
+qed
+
 context fixes
   I :: "('tp, ('f::{showl,compare_order,countable},label_type) lab,string) tp_ops"
   and J :: "('dpp, ('f,label_type) lab,string) dpp_ops"
@@ -14,6 +26,10 @@ fun check_cert_rfc_absolute where
       (TRS_Termination_Proof p) =
     check_rfc_absolute I J (showsl_lit (STR ''1''))
       (tp_ops.mk I (strategy_to_nfs Q) (strategy_to_Q Q R) R S) p"
+| "check_cert_rfc_absolute (FP_TRS_input Outermost R) Termination (Decision True)
+      (TRS_Termination_Proof p) =
+    check_rfc_absolute I J (showsl_lit (STR ''1''))
+      (tp_ops.mk I False [] R []) p"
 | "check_cert_rfc_absolute inp prop ans p = check_cert I J K L False inp prop ans p"
 
 lemma check_cert_rfc_absolute_sound:
@@ -24,6 +40,9 @@ lemma check_cert_rfc_absolute_sound:
   apply (induction "inp" "prop" "ans" "p" rule: check_cert_rfc_absolute.induct)
   apply (simp_all only: check_cert_rfc_absolute.simps)
   apply (drule check_rfc_absolute_sound[OF I J])
+  apply (simp add: desired_property_def tp_spec.mk_sound[OF I])
+  apply (drule check_rfc_absolute_sound[OF I J])
+  apply (rule full_termination_implies_outermost)
   apply (simp add: desired_property_def tp_spec.mk_sound[OF I])
   apply ((erule check_cert_with_assms_sound[OF I J K L]; simp)+)
   done

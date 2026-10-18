@@ -19,7 +19,9 @@ import qualified Data_Bits;
 import qualified Bit_Shifts;
 import qualified Str_Literal;
 import qualified RFC_Absolute_Residual;
+import qualified Split_Impl;
 import qualified Error_Monad;
+import qualified HOL;
 import qualified Dependency_Pair_Problem_Spec;
 import qualified Monadic_Rewriting_Impl;
 import qualified Reduction_Pair_Implementations;
@@ -58,6 +60,17 @@ check_rfc_absolute ia j i tp
     (\ tpa ->
       check_rfc_absolute ia j (Term_Rewriting.add_index i Arith.one_nat) tpa
         child);
+check_rfc_absolute ia j i tp (Check_Termination.Split selected first second) =
+  (case Split_Impl.split_tt ia tp selected of {
+    (tp1, tp2) ->
+      Error_Monad.bind
+        (check_rfc_absolute ia j (Term_Rewriting.add_index i Arith.one_nat) tp1
+          first)
+        (\ _ ->
+          check_rfc_absolute ia j
+            (Term_Rewriting.add_index i (Arith.nat_of_integer (2 :: Integer)))
+            tp2 second);
+  });
 check_rfc_absolute ia j i tp (Check_Termination.DP_Trans v va vb vc) =
   Check_Termination.check_trs_termination_proof ia j False i tp
     (Check_Termination.DP_Trans v va vb vc);
@@ -102,9 +115,6 @@ check_rfc_absolute ia j i tp Check_Termination.R_is_Empty =
 check_rfc_absolute ia j i tp (Check_Termination.Fcc v va vb) =
   Check_Termination.check_trs_termination_proof ia j False i tp
     (Check_Termination.Fcc v va vb);
-check_rfc_absolute ia j i tp (Check_Termination.Split v va vb) =
-  Check_Termination.check_trs_termination_proof ia j False i tp
-    (Check_Termination.Split v va vb);
 check_rfc_absolute ia j i tp (Check_Termination.Switch_Innermost v va) =
   Check_Termination.check_trs_termination_proof ia j False i tp
     (Check_Termination.Switch_Innermost v va);

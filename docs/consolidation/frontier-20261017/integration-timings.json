@@ -1,0 +1,348 @@
+{
+  "diagnostics": [],
+  "interpretation": "Isabelle-reported cumulated theory times; sums are not elapsed build wall time. Use the build receipt for wall time and exit status.",
+  "log_sha256": "e76753f31779f72496c385f180bf8c06211e1d2da5c7ebd9548f0a40889468a5",
+  "reported_cumulated_seconds_by_session": {
+    "Relative_ADP_Ceta_Dev": 313.447,
+    "Relative_ADP_Integration_Base": 2138.599
+  },
+  "session_reports": [
+    "Timing Relative_ADP_Integration_Base (8 threads, 1139.214s elapsed time, 2624.766s cpu time, 119.747s GC time, factor 2.30)",
+    "Finished Relative_ADP_Integration_Base (0:21:12 elapsed time, 0:48:09 cpu time, factor 2.27)",
+    "Timing Relative_ADP_Ceta_Dev (8 threads, 313.695s elapsed time, 320.197s cpu time, 12.444s GC time, factor 1.02)",
+    "Finished Relative_ADP_Ceta_Dev (0:05:18 elapsed time, 0:05:26 cpu time, factor 1.02)",
+    "Finished at Sat Oct 17 23:15:59 GMT+2 2026"
+  ],
+  "theory_reports": [
+    {
+      "reported_cumulated_seconds": 5.576,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Residual"
+    },
+    {
+      "reported_cumulated_seconds": 7.997,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 9.603,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Container_Setup"
+    },
+    {
+      "reported_cumulated_seconds": 7.888,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Completion_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 5.187,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Quasi_Reductive"
+    },
+    {
+      "reported_cumulated_seconds": 16.775,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_AC_Termination"
+    },
+    {
+      "reported_cumulated_seconds": 10.901,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Outermost_RZ_Ext.Outermost_Signature_Extension"
+    },
+    {
+      "reported_cumulated_seconds": 12.72,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Equational_Proof"
+    },
+    {
+      "reported_cumulated_seconds": 18.081,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Check"
+    },
+    {
+      "reported_cumulated_seconds": 35.195,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 17.541,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Outermost_RZ_Ext.Outermost_RZ_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 41.043,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Complexity"
+    },
+    {
+      "reported_cumulated_seconds": 29.38,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Nonreachability"
+    },
+    {
+      "reported_cumulated_seconds": 67.601,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Base.CSR_Checker_Base"
+    },
+    {
+      "reported_cumulated_seconds": 28.286,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Core.CSR_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 52.231,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Infeasibility"
+    },
+    {
+      "reported_cumulated_seconds": 13.523,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Improved_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 5.024,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Level_Confluence"
+    },
+    {
+      "reported_cumulated_seconds": 121.667,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Nontermination"
+    },
+    {
+      "reported_cumulated_seconds": 16.817,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Processors"
+    },
+    {
+      "reported_cumulated_seconds": 49.931,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_AL94"
+    },
+    {
+      "reported_cumulated_seconds": 15.386,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Check_Conditional_CRP"
+    },
+    {
+      "reported_cumulated_seconds": 140.032,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Minimal_CSDP_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 2.289,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 5.601,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Mixed_Subterm_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 10.013,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Switch"
+    },
+    {
+      "reported_cumulated_seconds": 4.139,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Frozen_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 5.353,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Hybrid_Recursive_Subterm"
+    },
+    {
+      "reported_cumulated_seconds": 8.863,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Ext.CSR_Innermost_Unhiding_Proofs"
+    },
+    {
+      "reported_cumulated_seconds": 21.811,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.631,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 12.575,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Active_SCT"
+    },
+    {
+      "reported_cumulated_seconds": 52.82,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Finite_Semantic_Labeling"
+    },
+    {
+      "reported_cumulated_seconds": 54.441,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Usable_Rules"
+    },
+    {
+      "reported_cumulated_seconds": 88.625,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Measure"
+    },
+    {
+      "reported_cumulated_seconds": 31.623,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Conservative_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 11.174,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Generic_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 4.64,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CSR_Check_Loops"
+    },
+    {
+      "reported_cumulated_seconds": 21.672,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Guarded_List_Measure_Check.CSR_Guarded_List_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 129.674,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Checker_Extensions.CSR_Innermost_Unhiding_RTA08"
+    },
+    {
+      "reported_cumulated_seconds": 90.389,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable"
+    },
+    {
+      "reported_cumulated_seconds": 1.291,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Usable_Exec"
+    },
+    {
+      "reported_cumulated_seconds": 2.809,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Ext.CSR_Muterm_Innermost_Progress"
+    },
+    {
+      "reported_cumulated_seconds": 164.899,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Extended_Basic"
+    },
+    {
+      "reported_cumulated_seconds": 103.291,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Typed_General_Redpair.CSR_Muterm_Typed_General_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 40.79,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "CSR_Muterm_Typed_Recursive_Redpair.CSR_Muterm_Typed_Recursive_Redpair"
+    },
+    {
+      "reported_cumulated_seconds": 36.29,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Ceta_Problem_Spec"
+    },
+    {
+      "reported_cumulated_seconds": 11.613,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CPF_Input_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 94.95,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CSR_Muterm_Typed_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 30.797,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CSR_GM_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 1.186,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CSR_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 32.812,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.GM04_Complete_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 3.591,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.GM04_Sanitizing_Phase"
+    },
+    {
+      "reported_cumulated_seconds": 5.469,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.GM04_Full_Transformation"
+    },
+    {
+      "reported_cumulated_seconds": 24.784,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.GM04_Complete_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 5.809,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.GM04_Standalone_DP_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 120.746,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Proof_Checker"
+    },
+    {
+      "reported_cumulated_seconds": 46.786,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CPF_Proof_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 0.563,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.CPF_Parser"
+    },
+    {
+      "reported_cumulated_seconds": 3.082,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Ceta_Verifier"
+    },
+    {
+      "reported_cumulated_seconds": 3.168,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Pre_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 0.758,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Proof_Checker.Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 95.611,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Cert"
+    },
+    {
+      "reported_cumulated_seconds": 17.786,
+      "session": "Relative_ADP_Integration_Base",
+      "theory": "Relative_ADP_Integration_Base.Relative_ADP_Integration_Base"
+    },
+    {
+      "reported_cumulated_seconds": 6.617,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Ceta"
+    },
+    {
+      "reported_cumulated_seconds": 306.83,
+      "session": "Relative_ADP_Ceta_Dev",
+      "theory": "Relative_ADP_Ceta_Dev.Relative_ADP_Code_Haskell"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "CeTA-raw-superiority": {
+    "head": "7e9ac72a0c59653298161a7585b421a436a5ce8e",
+    "files": {
+      "thys/RFC_Absolute_Ext/RFC_Absolute_Check.thy": "f8872491e4e2cbfa1a084e8b3ee63b20a02aa10ca9e1c55c9fead638c258a982",
+      "thys/Relative_ADP/Checker/Relative_ADP_Checker_Adapter.thy": "ed8001cb1327164fadfc76652babb820957aff388d6760f74473f613f4beefed",
+      "thys/Relative_ADP/Checker/Relative_ADP_Checker_Tests.thy": "c43e799b7abbe64c9e429367f92cbc23784fc278e556625b80df8bfd80d70eed",
+      "thys/Relative_ADP/Semantics/Reduction_Pair/ROOT": "fff62e2e7dafc74b6f625df15f9ebefe9552942d39a9229f02f9b46182babdef",
+      "thys/Relative_ADP/Semantics/Reduction_Pair/Relative_ADP_Com_Reduction_Pair.thy": "18365ec1298f9987edf0a7a792d1b05c35b90f3ec10520fad6431f4101f979f2",
+      "thys/Raw_Campaign_Ext/ROOT": "4090e1d39a0eaf9f4f31cf7f3bee458f3af5c501ea5bc9a81fc775217dc491a3",
+      "thys/Raw_Campaign_Ext/Raw_Campaign_Cert.thy": "86dfb9d8cf178d9fd47dbedeee2ff0001375a2a8f6a07aa750ad17fa91771f97",
+      "thys/Raw_Campaign_Ext/Raw_Campaign_Code.thy": "f1b6c3f9ccc1cdffaa34685d5d070eaad97a7a03bb8c2f9f36e7afd837aa0071",
+      "thys/Raw_Campaign_Ext/Raw_Campaign_Console_Code.thy": "bd7fb875a11648f552c651f0d9511f7cab472cec17f4ce6be58eb15b32a2f7ad",
+      "thys/Raw_Campaign_Ext/Raw_Ordinary_Cert.thy": "e0c793aaecca7f2e55176a4f5864869f9752cb0f8f7bfa5e387199b20c030756",
+      "thys/Relative_ADP/Semantics/Reduction_Pair/Relative_ADP_Checker_Adapter_Test.thy": "ca10768c37ccfd6f34ca7dfe6cdd25eb6ca945a4f327c3c1d0048af1a17d0652",
+      "thys/Relative_ADP/Semantics/Reduction_Pair/Relative_ADP_Com_Order_Check.thy": "12b021c660ddeac5bd4b77b2b81c175404c1a647ad11a552705831608f577832"
+    }
+  },
+  "CeTA-OUTERMOST-VERIFY": {
+    "head": "1c090a7b4a70a5d6c56003c09f1a08f8c2ea8677",
+    "files": {
+      "thys/Proof_Checker/Proof_Checker.thy": "90dabe75bbe2bc239d948d4b154c7f4680ff58ba2cfd4262eeca37eb9d232563"
+    }
+  },
+  "_snapshot": {
+    "archive_sha256": "8126dd26f369b1e06a8f68375660b98e62311a7bded03bb9896cc41f7f7d5928",
+    "consolidated_base": "98766732c06385bab4705d5a34f2be1a154464a3",
+    "scope": "Explicitly authorized uncommitted-source snapshot; never an implicit verification claim"
+  }
+}

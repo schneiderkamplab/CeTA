@@ -1,9 +1,10 @@
 {-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
 
 module
-  Ceta_Relative(Nat, nat_of_integer, Char, Sum(..), Lab, Sum_bot, Input, Answer,
-                 Cert_result(..), Property, Relative_adp_termination_proof,
-                 explode, certify_proof_integrated)
+  Ceta_Relative(Nat, nat_of_integer, Char, Sum(..), Lab, Sum_bot, Proof, Input,
+                 Answer, Cert_result(..), Property,
+                 Relative_adp_termination_proof, explode,
+                 certify_proof_integrated)
   where {
 
 import Prelude ((==), (/=), (<), (<=), (>=), (>), (+), (-), (*), (/), (**),
@@ -66343,1082 +66344,529 @@ sl_variant xml2name =
                         })))))))
       (\ x -> xml_return (id x)));
 
-impl_ofe ::
-  forall b a.
-    (Compare_order b) => Ac_dpp b a ->
-                           ([(Term b a, Term b a)],
-                             ([(Term b a, Term b a)],
-                               ([(Term b a, Term b a)],
-                                 ([(Term b a, Term b a)],
-                                   ([(Term b a, Term b a)],
-                                     Rbt (b, Nat)
-                                       [((), (Term b a, Term b a))])))));
-impl_ofe (AC_DPP x) = x;
+cut_points_to_transitions ::
+  forall a b c d e.
+    [(Sharp a, Transition_rule b c d (Sharp e))] ->
+      [(e, (a, Formula (Term b (Trans_var c, d))))] ->
+        [(Sharp a, Transition_rule b c d (Sharp e))];
+cut_points_to_transitions ts [] = ts;
+cut_points_to_transitions ts ((l, (tr, phi)) : cps) =
+  cut_points_to_transitions ((Flat tr, Transition (Flat l) (Sharpa l) phi) : ts)
+    cps;
 
-rw_implb ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-rw_implb (p, (pw, (r, (rw, (e, uu))))) = rw;
+cutPoints_parser ::
+  forall a b c d e.
+    (String ->
+      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+        Sum_bot (Xml_error String) a) ->
+      (String ->
+        (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+          Sum_bot (Xml_error String) b) ->
+        ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+          Sum_bot (Xml_error String) (Formula (Term c (Trans_var d, e)))) ->
+          (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+            Sum_bot (Xml_error String)
+              [(Sharp b, Transition_rule c d e (Sharp a))];
+cutPoints_parser location_id_parser trans_id_parser tatom_parser =
+  xml_do "cutPoints"
+    (xml_take_many_sub [] zero_nat Infinity_enat
+      (xml_do "cutPoint"
+        (xml_take (location_id_parser "locationId")
+          (\ l ->
+            xml_take (trans_id_parser "skipId")
+              (\ tr ->
+                xml_take
+                  (xml_do "skipFormula"
+                    (xml_take (formula_parser tatom_parser) xml_return))
+                  (\ phi -> xml_return (l, (tr, phi)))))))
+      (\ tuples -> xml_return (cut_points_to_transitions [] tuples)));
 
-rwb :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-rwb xa = rw_implb (impl_ofe xa);
+invariant_parser ::
+  forall a b c d.
+    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+      Sum_bot (Xml_error String) a) ->
+      ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+        Sum_bot (Xml_error String) (Formula (Term b (c, d)))) ->
+        (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+          Sum_bot (Xml_error String) (a, Formula (Term b (c, d)));
+invariant_parser location_parser atom_parser =
+  xml_do "invariant"
+    (xml_take (xml_do "location" (xml_take location_parser xml_return))
+      (\ l ->
+        xml_take
+          (xml_do "formula" (xml_take (formula_parser atom_parser) xml_return))
+          (\ phi -> xml_return (l, phi))));
 
-r_implb ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-r_implb (p, (pw, (r, (rw, (e, uu))))) = r;
-
-rb :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-rb xa = r_implb (impl_ofe xa);
-
-e_impl ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-e_impl (p, (pw, (r, (rw, (e, uu))))) = e;
-
-e :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-e xa = e_impl (impl_ofe xa);
-
-eq_rules_non_collapsing :: forall a b. (Compare_order a) => Ac_dpp a b -> Bool;
-eq_rules_non_collapsing d = let {
-                              t = all (\ (_, r) -> not (is_Var r));
-                            } in t (rb d) && t (rwb d) && t (e d);
-
-eq_rules_no_left_var :: forall a b. (Compare_order a) => Ac_dpp a b -> Bool;
-eq_rules_no_left_var d = let {
-                           t = all (\ (l, _) -> not (is_Var l));
-                         } in t (rb d) && t (rwb d) && t (e d);
-
-mk_implb ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => [(Term a b, Term a b)] ->
-                 [(Term a b, Term a b)] ->
-                   [(Term a b, Term a b)] ->
-                     [(Term a b, Term a b)] ->
-                       [(Term a b, Term a b)] ->
-                         ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 ([(Term a b, Term a b)],
-                                   Rbt (a, Nat)
-                                     [((), (Term a b, Term a b))])))));
-mk_implb p pw r rw e =
-  (p, (pw, (r, (rw, (e, insert_rules () (r ++ rw ++ e) empty)))));
-
-delete_pairs_rules_impl ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => ([(Term a b, Term a b)],
-                 ([(Term a b, Term a b)],
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([(Term a b, Term a b)],
-                         Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-                 [(Term a b, Term a b)] ->
-                   [(Term a b, Term a b)] ->
-                     ([(Term a b, Term a b)],
-                       ([(Term a b, Term a b)],
-                         ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             ([(Term a b, Term a b)],
-                               Rbt (a, Nat) [((), (Term a b, Term a b))])))));
-delete_pairs_rules_impl (p, (pw, (r, (rw, (e, m))))) pd rd =
-  (if null rd then (list_diff p pd, (list_diff pw pd, (r, (rw, (e, m)))))
-    else mk_implb (list_diff p pd) (list_diff pw pd) (list_diff r rd)
-           (list_diff rw rd) e);
-
-delete_pairs_rules ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Ac_dpp a b ->
-                 [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Ac_dpp a b;
-delete_pairs_rules xc xd xe =
-  AC_DPP (delete_pairs_rules_impl (impl_ofe xc) xd xe);
-
-reverse_rules_mapa ::
-  forall a b.
-    (Compare_order a, Eq a) => Ac_dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
-reverse_rules_mapa d fn =
-  concatMap (\ (l, r) -> (if root r == Just fn then [(r, l)] else []))
-    (rb d ++ rwb d ++ e d);
-
-intersect_pairs_impla ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => ([(Term a b, Term a b)],
-                 ([(Term a b, Term a b)],
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([(Term a b, Term a b)],
-                         Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-                 [(Term a b, Term a b)] ->
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([(Term a b, Term a b)],
-                         ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             Rbt (a, Nat) [((), (Term a b, Term a b))])))));
-intersect_pairs_impla (p, (pw, (r, (rw, (e, m))))) pd =
-  (inter_list_set p pd, (inter_list_set pw pd, (r, (rw, (e, m)))));
-
-intersect_pairsa ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Ac_dpp a b -> [(Term a b, Term a b)] -> Ac_dpp a b;
-intersect_pairsa xb xc = AC_DPP (intersect_pairs_impla (impl_ofe xb) xc);
-
-rules_map_implb ::
-  forall a b.
-    (Compare_order a) => ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 ([(Term a b, Term a b)],
-                                   Rbt (a, Nat)
-                                     [((), (Term a b, Term a b))]))))) ->
-                           (a, Nat) -> [(Term a b, Term a b)];
-rules_map_implb (p, (pw, (r, (rw, (e, m))))) fn = (case lookup m fn of {
-            Nothing -> [];
-            Just a -> map snd a;
-          });
-
-rules_mapb ::
-  forall a b.
-    (Compare_order a) => Ac_dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
-rules_mapb xa = rules_map_implb (impl_ofe xa);
-
-ac_dpp_impl ::
-  forall a b.
-    (Compare_order a, Eq a, Compare b,
-      Eq b) => ([(Term a b, Term a b)],
-                 ([(Term a b, Term a b)],
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([(Term a b, Term a b)],
-                         Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-                 (Set (Term a b, Term a b),
-                   (Set (Term a b, Term a b),
-                     (Set (Term a b, Term a b),
-                       (Set (Term a b, Term a b), Set (Term a b, Term a b)))));
-ac_dpp_impl (p, (pw, (r, (rw, (e, uu))))) =
-  (set p, (set pw, (set r, (set rw, set e))));
-
-ac_dpp ::
-  forall a b.
-    (Compare_order a, Eq a, Compare b,
-      Eq b) => Ac_dpp a b ->
-                 (Set (Term a b, Term a b),
-                   (Set (Term a b, Term a b),
-                     (Set (Term a b, Term a b),
-                       (Set (Term a b, Term a b), Set (Term a b, Term a b)))));
-ac_dpp xa = ac_dpp_impl (impl_ofe xa);
-
-rules_implc ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-rules_implc (p, (pw, (r, (rw, (e, uu))))) = r ++ rw;
-
-rulesd :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-rulesd xa = rules_implc (impl_ofe xa);
-
-pairs_impla ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-pairs_impla (p, (pw, (r, (rw, (e, uu))))) = p ++ pw;
-
-pairsa :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-pairsa xa = pairs_impla (impl_ofe xa);
-
-mkb ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => [(Term a b, Term a b)] ->
-                 [(Term a b, Term a b)] ->
-                   [(Term a b, Term a b)] ->
-                     [(Term a b, Term a b)] ->
-                       [(Term a b, Term a b)] -> Ac_dpp a b;
-mkb xc xd xe xf xg = AC_DPP (mk_implb xc xd xe xf xg);
-
-pw_impla ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-pw_impla (p, (pw, (r, (rw, (e, uu))))) = pw;
-
-pwa :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-pwa xa = pw_impla (impl_ofe xa);
-
-p_impla ::
-  forall a b.
-    ([(Term a b, Term a b)],
-      ([(Term a b, Term a b)],
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
-      [(Term a b, Term a b)];
-p_impla (p, (pw, (r, (rw, (e, uu))))) = p;
-
-pa :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
-pa xa = p_impla (impl_ofe xa);
-
-ac_dpp_rbt_impl ::
-  forall a b.
-    (Compare_order a, Eq a, Compare b,
-      Eq b) => Ac_dpp_ops_ext (Ac_dpp a b) a b ();
-ac_dpp_rbt_impl =
-  Ac_dpp_ops_ext ac_dpp pa pwa pairsa rb rwb rulesd e mkb rules_mapb
-    reverse_rules_mapa delete_pairs_rules eq_rules_no_left_var
-    eq_rules_non_collapsing intersect_pairsa ();
-
-c_rules_impl :: forall a. [a] -> [(Term a [Char], Term a [Char])];
-c_rules_impl c = let {
-                   x = Var [char_0x78];
-                   y = Var [char_0x79];
-                 } in map (\ f -> (Fun f [x, y], Fun f [y, x])) c;
-
-a_trs_impl :: forall a. [a] -> [(Term a [Char], Term a [Char])];
-a_trs_impl a =
-  let {
-    x = Var [char_0x78];
-    y = Var [char_0x79];
-    z = Var [char_0x7A];
-  } in map (\ f -> (Fun f [Fun f [x, y], z], Fun f [x, Fun f [y, z]])) a ++
-         map (\ f -> (Fun f [x, Fun f [y, z]], Fun f [Fun f [x, y], z])) a;
-
-aC_trs_impl :: forall a. [a] -> [a] -> [(Term a [Char], Term a [Char])];
-aC_trs_impl a c = a_trs_impl a ++ c_rules_impl c;
-
-ac_tp_list_impl ::
-  forall a.
-    (Ceq a, Ccompare a, Compare a, Eq a,
-      Set_impl a) => Ac_tp_ops_ext
-                       ([(Term a [Char], Term a [Char])], ([a], [a])) a [Char]
-                       ();
-ac_tp_list_impl =
-  Ac_tp_ops_ext (\ (r, (a, c)) -> (set r, (set a, set c))) (\ (r, (_, _)) -> r)
-    (\ (_, (a, _)) -> a) (\ (_, (_, c)) -> c) (\ r a c -> (r, (a, c)))
-    (\ (r, (a, c)) dr -> (list_diff r dr, (a, c)))
-    (\ (_, (a, b)) -> aC_trs_impl a b) ();
-
-rules_non_collapsing_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-rules_non_collapsing_impl (uu, (uv, (uw, (ux, (uy, (uz, (nc, va))))))) = nc;
-
-impl_ofd ::
-  forall b a.
-    (Compare_order b) => Dpp b a ->
-                           (Bool,
-                             (Bool,
-                               ([(Term b a, Term b a)],
-                                 ([(Term b a, Term b a)],
-                                   ([Term b a],
-                                     (Bool,
-                                       (Bool,
- ([(Term b a, Term b a)],
-   ([(Term b a, Term b a)],
-     (Rbt (b, Nat) [(Bool, (Term b a, Term b a))],
-       (Rbt (b, Nat) [(Bool, (Term b a, Term b a))],
-         (Bool, Term b a -> Bool))))))))))));
-impl_ofd (DPP x) = x;
-
-rules_non_collapsing :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-rules_non_collapsing d = rules_non_collapsing_impl (impl_ofd d);
-
-nFQ_subset_NF_rules_impla ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-nFQ_subset_NF_rules_impla (uu, (uv, (uw, (ux, (uy, (b, uz)))))) = b;
-
-nFQ_subset_NF_rulesa :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-nFQ_subset_NF_rulesa d = nFQ_subset_NF_rules_impla (impl_ofd d);
-
-rules_no_left_var_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-rules_no_left_var_impl (uu, (uv, (uw, (ux, (uy, (uz, (va, ([], ([], vb)))))))))
-  = True;
-rules_no_left_var_impl (v, (vb, (ve, (vg, (vi, (vk, (vm, (vq : vr, vp)))))))) =
-  False;
-rules_no_left_var_impl
-  (v, (vb, (ve, (vg, (vi, (vk, (vm, (vo, (vs : vt, vr))))))))) = False;
-
-rules_no_left_var :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-rules_no_left_var d = rules_no_left_var_impl (impl_ofd d);
-
-reverse_rules_map_impl ::
+rw_impl ::
   forall a b.
     (Compare_order a) => (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
+                           ([Term a b],
+                             (Bool,
                                ([(Term a b, Term a b)],
-                                 ([Term a b],
-                                   (Bool,
-                                     (Bool,
-                                       ([(Term a b, Term a b)],
- ([(Term a b, Term a b)],
-   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-       (Bool, Term a b -> Bool)))))))))))) ->
-                           (a, Nat) -> [(Term a b, Term a b)];
-reverse_rules_map_impl
-  (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (vd, (m, ve))))))))))) fn =
-  (case lookup m fn of {
-    Nothing -> [];
-    Just a -> map snd a;
-  });
+                                 ([(Term a b, Term a b)],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     Term a b -> Bool)))))) ->
+                           [(Term a b, Term a b)];
+rw_impl (uu, (uv, (uw, (ux, (vRw, (m, uy)))))) = vRw ++ rules_with not m;
 
-reverse_rules_map ::
-  forall a b.
-    (Compare_order a) => Dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
-reverse_rules_map d = reverse_rules_map_impl (impl_ofd d);
+rw :: forall a b.
+        (Compare_order a, Compare_order b) => Tp a b -> [(Term a b, Term a b)];
+rw tp = rw_impl (impl_ofc tp);
 
 is_NF_trs_subset ::
   forall a b. (Term a b -> Bool) -> [(Term a b, Term a b)] -> Bool;
 is_NF_trs_subset is_Q_nf r = is_NF_subset is_Q_nf (map fst r);
 
-wwf_qtrs_impl ::
-  forall a b. (Eq b) => (Term a b -> Bool) -> [(Term a b, Term a b)] -> Bool;
-wwf_qtrs_impl nf r =
-  all (\ ra -> wf_rule ra || not (applicable_rule_impl nf ra)) r;
-
-intersect_rules_impl ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 [(Term a b, Term a b)] ->
-                   (Bool,
-                     (Bool,
-                       ([(Term a b, Term a b)],
-                         ([(Term a b, Term a b)],
-                           ([Term a b],
-                             (Bool,
-                               (Bool,
-                                 ([(Term a b, Term a b)],
-                                   ([(Term a b, Term a b)],
-                                     (Rbt (a, Nat)
-[(Bool, (Term a b, Term a b))],
-                                       (Rbt (a, Nat)
-  [(Bool, (Term a b, Term a b))],
- (Bool, Term a b -> Bool))))))))))));
-intersect_rules_impl d ri =
-  (case d of {
-    (nfs, (mi, (p, (pw, (q, (nfq, (nc, (vR,
- (vRw, (m, (rm, (wwf, isnf))))))))))))
-      -> (case partition (is_Var . fst) ri of {
-           (vri, ria) ->
-             let {
-               vr = inter_list_set vR vri;
-               vrw = inter_list_set vRw vri;
-               ma = intersect_rules ria m;
-               rma = intersect_rules (reverse_rules ri) rm;
-               rs = vr ++ vrw ++ map snd (values ma);
-             } in (nfs, (mi, (p, (pw, (q,
-(nfq || is_NF_trs_subset isnf rs,
-  (nc || all (\ r -> not (is_Var (snd r))) rs,
-    (vr, (vrw, (ma, (rma, (wwf || wwf_qtrs_impl isnf rs, isnf))))))))))));
-         });
-  });
-
-intersect_rulesa ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b -> [(Term a b, Term a b)] -> Dpp a b;
-intersect_rulesa d rs = DPP (intersect_rules_impl (impl_ofd d) rs);
-
-intersect_pairs_impl ::
-  forall a b.
-    (Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 [(Term a b, Term a b)] ->
-                   (Bool,
-                     (Bool,
-                       ([(Term a b, Term a b)],
-                         ([(Term a b, Term a b)],
-                           ([Term a b],
-                             (Bool,
-                               (Bool,
-                                 ([(Term a b, Term a b)],
-                                   ([(Term a b, Term a b)],
-                                     (Rbt (a, Nat)
-[(Bool, (Term a b, Term a b))],
-                                       (Rbt (a, Nat)
-  [(Bool, (Term a b, Term a b))],
- (Bool, Term a b -> Bool))))))))))));
-intersect_pairs_impl (nfs, (mi, (p, (pw, rest)))) ps =
-  (nfs, (mi, (inter_list_set p ps, (inter_list_set pw ps, rest))));
-
-intersect_pairs ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b -> [(Term a b, Term a b)] -> Dpp a b;
-intersect_pairs d ps = DPP (intersect_pairs_impl (impl_ofd d) ps);
-
-replace_pair_impl ::
-  forall a b.
-    (Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 (Term a b, Term a b) ->
-                   [(Term a b, Term a b)] ->
-                     (Bool,
-                       (Bool,
-                         ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             ([Term a b],
-                               (Bool,
-                                 (Bool,
-                                   ([(Term a b, Term a b)],
-                                     ([(Term a b, Term a b)],
-                                       (Rbt (a, Nat)
-  [(Bool, (Term a b, Term a b))],
- (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-   (Bool, Term a b -> Bool))))))))))));
-replace_pair_impl (nfs, (mi, (p, (pw, rest)))) pair ps =
-  (nfs, (mi, (replace_impl pair ps p, (replace_impl pair ps pw, rest))));
-
-replace_pair ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b ->
-                 (Term a b, Term a b) -> [(Term a b, Term a b)] -> Dpp a b;
-replace_pair d pair ps = DPP (replace_pair_impl (impl_ofd d) pair ps);
-
-rules_implb ::
-  forall a b.
-    (Compare_order a) => (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 ([Term a b],
-                                   (Bool,
-                                     (Bool,
-                                       ([(Term a b, Term a b)],
- ([(Term a b, Term a b)],
-   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-       (Bool, Term a b -> Bool)))))))))))) ->
-                           [(Term a b, Term a b)];
-rules_implb (uu, (uv, (uw, (ux, (uy, (uz, (va, (vr, (vrw, (m, vb)))))))))) =
-  vr ++ vrw ++ map snd (values m);
-
-split_rules_impla ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 [(Term a b, Term a b)] ->
-                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
-split_rules_impla d rs = partition (membera rs) (rules_implb d);
-
-split_rulesa ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b ->
-                 [(Term a b, Term a b)] ->
-                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
-split_rulesa d = split_rules_impla (impl_ofd d);
-
-pairs_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      [(Term a b, Term a b)];
-pairs_impl (uu, (uv, (p, (pw, uw)))) = p ++ pw;
-
-split_pairs_impl ::
-  forall a b.
-    (Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 [(Term a b, Term a b)] ->
-                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
-split_pairs_impl d ps = partition (membera ps) (pairs_impl d);
-
-split_pairs ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b ->
-                 [(Term a b, Term a b)] ->
-                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
-split_pairs d = split_pairs_impl (impl_ofd d);
-
-delete_R_Rw_impla ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 [(Term a b, Term a b)] ->
-                   [(Term a b, Term a b)] ->
-                     (Bool,
-                       (Bool,
-                         ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             ([Term a b],
-                               (Bool,
-                                 (Bool,
-                                   ([(Term a b, Term a b)],
-                                     ([(Term a b, Term a b)],
-                                       (Rbt (a, Nat)
-  [(Bool, (Term a b, Term a b))],
- (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-   (Bool, Term a b -> Bool))))))))))));
-delete_R_Rw_impla d r rw =
-  (case d of {
-    (nfs, (mi, (p, (pw, (q, (nfq, (nc, (vR,
- (vRw, (m, (rm, (wwf, isnf))))))))))))
-      -> (case partition (is_Var . fst) r of {
-           (vr, ra) ->
-             (case partition (is_Var . fst) rw of {
-               (vrw, rwa) ->
-                 let {
-                   vra = list_diff vR vr;
-                   vrwa = list_diff vRw vrw;
-                   ma = delete_rules True ra (delete_rules False rwa m);
-                   rma = delete_rules True (reverse_rules r)
-                           (delete_rules False (reverse_rules rw) rm);
-                   rs = vra ++ vrwa ++ map snd (values ma);
-                 } in (nfs, (mi, (p, (pw, (q,
-    (nfq || is_NF_trs_subset isnf rs,
-      (nc || all (\ rb -> not (is_Var (snd rb))) rs,
-        (vra, (vrwa, (ma, (rma, (wwf || wwf_qtrs_impl isnf rs, isnf))))))))))));
-             });
-         });
-  });
-
-delete_R_Rwa ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b ->
-                 [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Dpp a b;
-delete_R_Rwa d r rw = DPP (delete_R_Rw_impla (impl_ofd d) r rw);
-
-delete_P_Pw_impl ::
-  forall a b.
-    (Eq a,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 [(Term a b, Term a b)] ->
-                   [(Term a b, Term a b)] ->
-                     (Bool,
-                       (Bool,
-                         ([(Term a b, Term a b)],
-                           ([(Term a b, Term a b)],
-                             ([Term a b],
-                               (Bool,
-                                 (Bool,
-                                   ([(Term a b, Term a b)],
-                                     ([(Term a b, Term a b)],
-                                       (Rbt (a, Nat)
-  [(Bool, (Term a b, Term a b))],
- (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-   (Bool, Term a b -> Bool))))))))))));
-delete_P_Pw_impl (nfs, (mi, (p, (pw, rest)))) pd pwd =
-  (nfs, (mi, (list_diff p pd, (list_diff pw pwd, rest))));
-
-delete_P_Pw ::
-  forall a b.
-    (Compare_order a, Eq a,
-      Eq b) => Dpp a b ->
-                 [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Dpp a b;
-delete_P_Pw d p pw = DPP (delete_P_Pw_impl (impl_ofd d) p pw);
-
-rules_map_impla ::
-  forall a b.
-    (Compare_order a) => (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 ([Term a b],
-                                   (Bool,
-                                     (Bool,
-                                       ([(Term a b, Term a b)],
- ([(Term a b, Term a b)],
-   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-       (Bool, Term a b -> Bool)))))))))))) ->
-                           (a, Nat) -> [(Term a b, Term a b)];
-rules_map_impla (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (m, vd)))))))))) fn
-  = (case lookup m fn of {
-      Nothing -> [];
-      Just a -> map snd a;
-    });
-
-rules_mapa ::
-  forall a b.
-    (Compare_order a) => Dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
-rules_mapa d = rules_map_impla (impl_ofd d);
-
-wwf_rules_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-wwf_rules_impl
-  (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (vd, (ve, (wwf, vf)))))))))))) =
-  wwf;
-
-wwf_rules :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-wwf_rules d = wwf_rules_impl (impl_ofd d);
-
-q_empty_impla ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-q_empty_impla (uu, (uv, (uw, (ux, (q, uy))))) = null q;
-
-q_emptya :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-q_emptya d = q_empty_impla (impl_ofd d);
-
-is_QNF_impla ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Term a b -> Bool;
-is_QNF_impla
-  (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (vd, (ve, (vf, isnf)))))))))))) =
-  isnf;
-
-is_QNFa :: forall a b. (Compare_order a) => Dpp a b -> Term a b -> Bool;
-is_QNFa d = is_QNF_impla (impl_ofd d);
-
-rulesc :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
-rulesc d = rules_implb (impl_ofd d);
-
-pairs :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
-pairs d = pairs_impl (impl_ofd d);
-
-dpp_impl ::
-  forall a b.
-    (Compare_order a, Eq a, Compare b,
-      Eq b) => (Bool,
-                 (Bool,
-                   ([(Term a b, Term a b)],
-                     ([(Term a b, Term a b)],
-                       ([Term a b],
-                         (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     (Bool, Term a b -> Bool)))))))))))) ->
-                 (Bool,
-                   (Bool,
-                     (Set (Term a b, Term a b),
-                       (Set (Term a b, Term a b),
-                         (Set (Term a b),
-                           (Set (Term a b, Term a b),
-                             Set (Term a b, Term a b)))))));
-dpp_impl (nfs, (mi, (p, (pw, (q, (uu, (uv, (vr, (vrw, (m, uw)))))))))) =
-  (nfs, (mi, (set p,
-               (set pw,
-                 (set q,
-                   (set (vr ++ rules_with id m),
-                     set (vrw ++ rules_with not m)))))));
-
-dpp ::
-  forall a b.
-    (Compare_order a, Eq a, Compare b,
-      Eq b) => Dpp a b ->
-                 (Bool,
-                   (Bool,
-                     (Set (Term a b, Term a b),
-                       (Set (Term a b, Term a b),
-                         (Set (Term a b),
-                           (Set (Term a b, Term a b),
-                             Set (Term a b, Term a b)))))));
-dpp d = dpp_impl (impl_ofd d);
-
-nfs_impla ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-nfs_impla (nfs, uu) = nfs;
-
-nfsa :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-nfsa d = nfs_impla (impl_ofd d);
-
-mk_impla ::
+mk_impl ::
   forall a b.
     (Compare_order a, Eq a, Ccompare b, Eq b,
       Mapping_impl b) => Bool ->
-                           Bool ->
+                           [Term a b] ->
                              [(Term a b, Term a b)] ->
                                [(Term a b, Term a b)] ->
-                                 [Term a b] ->
-                                   [(Term a b, Term a b)] ->
-                                     [(Term a b, Term a b)] ->
-                                       (Bool,
- (Bool,
-   ([(Term a b, Term a b)],
-     ([(Term a b, Term a b)],
-       ([Term a b],
-         (Bool,
-           (Bool,
-             ([(Term a b, Term a b)],
-               ([(Term a b, Term a b)],
-                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                     (Bool, Term a b -> Bool))))))))))));
-mk_impla nfs mi p pw q r rw =
+                                 (Bool,
+                                   ([Term a b],
+                                     (Bool,
+                                       ([(Term a b, Term a b)],
+ ([(Term a b, Term a b)],
+   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))], Term a b -> Bool))))));
+mk_impl nfs q r rw =
   (case partition (is_Var . fst) r of {
     (vr, ra) ->
       (case partition (is_Var . fst) rw of {
         (vrw, rwa) ->
           let {
-            rs = r ++ rw;
             isnf = is_NF_terms q;
-          } in (nfs, (mi, (p, (pw, (q, (is_NF_trs_subset isnf rs,
- (all (\ rb -> not (is_Var (snd rb))) rs,
-   (vr, (vrw, (insert_rules True ra (insert_rules False rwa empty),
-                (insert_rules True (reverse_rules r)
-                   (insert_rules False (reverse_rules rw) empty),
-                  (wwf_qtrs_impl isnf rs, isnf))))))))))));
+          } in (nfs, (q, (is_NF_trs_subset isnf (r ++ rw),
+                           (vr, (vrw, (insert_rules True ra
+ (insert_rules False rwa empty),
+isnf))))));
       });
   });
 
-mka ::
-  forall a b.
-    (Compare_order a, Eq a, Ccompare b, Eq b,
-      Mapping_impl b) => Bool ->
-                           Bool ->
-                             [(Term a b, Term a b)] ->
-                               [(Term a b, Term a b)] ->
-                                 [Term a b] ->
-                                   [(Term a b, Term a b)] ->
-                                     [(Term a b, Term a b)] -> Dpp a b;
-mka nfs mi p pw q r rw = DPP (mk_impla nfs mi p pw q r rw);
+mk :: forall a b.
+        (Compare_order a, Eq a, Ccompare b, Compare_order b, Eq b,
+          Mapping_impl b) => Bool ->
+                               [Term a b] ->
+                                 [(Term a b, Term a b)] ->
+                                   [(Term a b, Term a b)] -> Tp a b;
+mk nfs q r rw = TP (mk_impl nfs q r rw);
 
-rw_impla ::
+indexToTerm ::
+  forall a.
+    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                   Sum_bot (Xml_error String) a) ->
+                   Mapping [Char] (Term a [Char]) ->
+                     (Xml, ([([Char], [Char])],
+                             (Bool, ([String], [String])))) ->
+                       Sum_bot (Xml_error String) ([Char], Term a [Char]);
+indexToTerm xml2name termMap =
+  xml_do "indexToTerm"
+    (xml_take (xml_text "index")
+      (\ idx ->
+        xml_take (term xml2name termMap)
+          (\ t ->
+            (case lookupb termMap idx of {
+              Nothing -> xml_return (idx, t);
+              Just _ -> xml_error "term index table contains duplicate index";
+            }))));
+
+ta_bounds_lhs ::
+  forall a.
+    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+      Sum_bot (Xml_error String) a) ->
+      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+        Sum_bot (Xml_error String) (Sum ((a, Nat), [[Char]]) [Char]);
+ta_bounds_lhs xml2name =
+  xml_do "lhs"
+    (xml_or (xml_take state (\ a -> xml_return (Inr a)))
+      (xml_take xml2name
+        (\ f ->
+          xml_take (xml_nat "height")
+            (\ h ->
+              xml_take_many_sub [] zero_nat Infinity_enat state
+                (\ qs -> xml_return (Inl ((f, h), qs)))))));
+
+bounds_bound ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String) Nat;
+bounds_bound = xml_nat "bound";
+
+bounds_type ::
+  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+    Sum_bot (Xml_error String) Boundstype;
+bounds_type =
+  xml_do "type"
+    (xml_take (xml_or (xml_leaf "roof" Roof) (xml_leaf "match" Match))
+      (\ x -> xml_return (id x)));
+
+bounds_info ::
+  forall a.
+    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+      Sum_bot (Xml_error String) a) ->
+      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+        Sum_bot (Xml_error String) (Bounds_info a [Char]);
+bounds_info xml2name =
+  xml_do "bounds"
+    (xml_take bounds_type
+      (\ a ->
+        xml_take bounds_bound
+          (\ b ->
+            xml_take final_states
+              (\ c ->
+                xml_take (tree_automaton (ta_bounds_lhs xml2name))
+                  (\ d ->
+                    xml_take_default Id_Relation closed_criterion
+                      (\ e -> xml_return (Bounds_Info a b c d e)))))));
+
+multiset_af ::
+  forall a.
+    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                   Sum_bot (Xml_error String) a) ->
+                   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                     Sum_bot (Xml_error String) [((a, Nat), [Nat])];
+multiset_af xml2name =
+  xml_do "multisetArgumentFilter"
+    (xml_take_many_sub [] zero_nat Infinity_enat
+      (xml_do "multisetArgumentFilterEntry"
+        (xml_take xml2name
+          (\ f ->
+            xml_take (xml_nat "arity")
+              (\ a ->
+                xml_take
+                  (xml_do "status"
+                    (xml_take_many_sub [] zero_nat Infinity_enat position
+                      xml_return))
+                  (\ p -> xml_return ((f, a), p))))))
+      xml_return);
+
+word_pattern ::
+  forall a b.
+    (Compare_order a, Showl a, Compare_order b,
+      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                    Sum_bot (Xml_error String) (Lab a b)) ->
+                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                      Sum_bot (Xml_error String)
+                        ([Lab a b], ((Nat, (Nat, [Lab a b])), [Lab a b]));
+word_pattern xml2name =
+  xml_do "wordPattern"
+    (xml_take (string xml2name)
+      (\ l ->
+        xml_take (string xml2name)
+          (\ m ->
+            xml_take (xml_nat "factor")
+              (\ f ->
+                xml_take (xml_nat "constant")
+                  (\ c ->
+                    xml_take (string xml2name)
+                      (\ r -> xml_return (l, ((f, (c, m)), r))))))));
+
+derivation_pattern ::
+  forall a b.
+    (Compare_order a, Showl a, Compare_order b,
+      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                    Sum_bot (Xml_error String) (Lab a b)) ->
+                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                      Sum_bot (Xml_error String)
+                        (([Lab a b], ((Nat, (Nat, [Lab a b])), [Lab a b])),
+                          ([Lab a b], ((Nat, (Nat, [Lab a b])), [Lab a b])));
+derivation_pattern xml2name =
+  xml_do "derivationPattern"
+    (xml_take (word_pattern xml2name)
+      (\ a -> xml_take (word_pattern xml2name) (\ b -> xml_return (a, b))));
+
+derivation_pattern_proof ::
+  forall a b.
+    (Compare_order a, Showl a, Compare_order b,
+      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                    Sum_bot (Xml_error String) (Lab a b)) ->
+                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                      Sum_bot (Xml_error String) (Dp_proof_step (Lab a b));
+derivation_pattern_proof xml2name =
+  let {
+    oc = oc_srs xml2name;
+    dp = derivation_pattern xml2name;
+    s = string xml2name;
+  } in xml_do "derivationPatternProof"
+         (xml_take
+           (xml_or
+             (xml_do "OC1"
+               (xml_take oc
+                 (\ a ->
+                   xml_take (xml_bool "isPair") (\ b -> xml_return (OC1 a b)))))
+             (xml_or
+               (xml_do "OC2"
+                 (xml_take oc
+                   (\ a ->
+                     xml_take oc
+                       (\ b ->
+                         xml_take oc
+                           (\ c ->
+                             xml_take s
+                               (\ d ->
+                                 xml_take s
+                                   (\ e ->
+                                     xml_take s
+                                       (\ f ->
+ xml_return (OC2 a b c d e f)))))))))
+               (xml_or
+                 (xml_do "OC2prime"
+                   (xml_take oc
+                     (\ a ->
+                       xml_take oc
+                         (\ b ->
+                           xml_take oc
+                             (\ c ->
+                               xml_take s
+                                 (\ d ->
+                                   xml_take s
+                                     (\ e ->
+                                       xml_take s
+ (\ f -> xml_return (OC2p a b c d e f)))))))))
+                 (xml_or
+                   (xml_do "OC3"
+                     (xml_take oc
+                       (\ a ->
+                         xml_take oc
+                           (\ b ->
+                             xml_take oc
+                               (\ c ->
+                                 xml_take s
+                                   (\ d ->
+                                     xml_take s
+                                       (\ e -> xml_return (OC3 a b c d e))))))))
+                   (xml_or
+                     (xml_do "OC3prime"
+                       (xml_take oc
+                         (\ a ->
+                           xml_take oc
+                             (\ b ->
+                               xml_take oc
+                                 (\ c ->
+                                   xml_take s
+                                     (\ d ->
+                                       xml_take s
+ (\ e -> xml_return (OC3p a b c d e))))))))
+                     (xml_or
+                       (xml_do "OCintoDP1"
+                         (xml_take dp
+                           (\ a ->
+                             xml_take oc (\ b -> xml_return (OCDP1 a b)))))
+                       (xml_or
+                         (xml_do "OCintoDP2"
+                           (xml_take dp
+                             (\ a ->
+                               xml_take oc (\ b -> xml_return (OCDP2 a b)))))
+                         (xml_or
+                           (xml_do "equivalent"
+                             (xml_take dp
+                               (\ a ->
+                                 xml_take dp (\ b -> xml_return (WPEQ a b)))))
+                           (xml_or
+                             (xml_do "lift"
+                               (xml_take dp
+                                 (\ a ->
+                                   xml_take dp (\ b -> xml_return (Lift a b)))))
+                             (xml_or
+                               (xml_do "DP_OC_1_1"
+                                 (xml_take dp
+                                   (\ a ->
+                                     xml_take dp
+                                       (\ b ->
+ xml_take oc
+   (\ c ->
+     xml_take s (\ d -> xml_take s (\ e -> xml_return (DPOC1_1 a b c d e))))))))
+                               (xml_or
+                                 (xml_do "DP_OC_1_2"
+                                   (xml_take dp
+                                     (\ a ->
+                                       xml_take dp
+ (\ b ->
+   xml_take oc
+     (\ c ->
+       xml_take s
+         (\ d ->
+           xml_take s
+             (\ e -> xml_take s (\ f -> xml_return (DPOC1_2 a b c d e f)))))))))
+                                 (xml_or
+                                   (xml_do "DP_OC_2"
+                                     (xml_take dp
+                                       (\ a ->
+ xml_take dp
+   (\ b ->
+     xml_take oc
+       (\ c ->
+         xml_take s
+           (\ d -> xml_take s (\ e -> xml_return (DPOC2 a b c d e))))))))
+                                   (xml_or
+                                     (xml_do "DP_OC_3_1"
+                                       (xml_take dp
+ (\ a ->
+   xml_take dp
+     (\ b ->
+       xml_take oc
+         (\ c ->
+           xml_take s
+             (\ d -> xml_take s (\ e -> xml_return (DPOC3_1 a b c d e))))))))
+                                     (xml_or
+                                       (xml_do "DP_OC_3_2"
+ (xml_take dp
+   (\ a ->
+     xml_take dp
+       (\ b ->
+         xml_take oc
+           (\ c ->
+             xml_take s
+               (\ d ->
+                 xml_take s
+                   (\ e ->
+                     xml_take s (\ f -> xml_return (DPOC3_2 a b c d e f)))))))))
+                                       (xml_or
+ (xml_do "DP_DP_1_1"
+   (xml_take dp
+     (\ a ->
+       xml_take dp
+         (\ b ->
+           xml_take dp
+             (\ c ->
+               xml_take s
+                 (\ d ->
+                   xml_take s (\ e -> xml_return (DPDP1_1 a b c d e))))))))
+ (xml_or
+   (xml_do "DP_DP_1_2"
+     (xml_take dp
+       (\ a ->
+         xml_take dp
+           (\ b ->
+             xml_take dp
+               (\ c ->
+                 xml_take s
+                   (\ d ->
+                     xml_take s (\ e -> xml_return (DPDP1_2 a b c d e))))))))
+   (xml_or
+     (xml_do "DP_DP_2_1"
+       (xml_take dp
+         (\ a ->
+           xml_take dp
+             (\ b ->
+               xml_take dp
+                 (\ c ->
+                   xml_take s
+                     (\ d ->
+                       xml_take s (\ e -> xml_return (DPDP2_1 a b c d e))))))))
+     (xml_do "DP_DP_2_2"
+       (xml_take dp
+         (\ a ->
+           xml_take dp
+             (\ b ->
+               xml_take dp
+                 (\ c ->
+                   xml_take s
+                     (\ d ->
+                       xml_take s
+                         (\ e ->
+                           xml_return
+                             (DPDP2_2 a b c d e)))))))))))))))))))))))))
+           (\ x -> xml_return (id x)));
+
+nonloop_srs_reason ::
+  forall a b.
+    (Compare_order a, Showl a, Compare_order b,
+      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                    Sum_bot (Xml_error String) (Lab a b)) ->
+                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                      Sum_bot (Xml_error String)
+                        ([Dp_proof_step (Lab a b)] ->
+                          Non_loop_srs_proof (Lab a b));
+nonloop_srs_reason xml2name =
+  xml_or
+    (xml_do "selfEmbeddingOC"
+      (xml_take (string xml2name)
+        (\ a ->
+          xml_take (string xml2name)
+            (\ b ->
+              xml_take (string xml2name)
+                (\ c -> xml_return (SE_OC (b, a ++ b ++ c) a c))))))
+    (xml_do "selfEmbeddingDP"
+      (xml_take (derivation_pattern xml2name)
+        (\ a ->
+          xml_take (string xml2name)
+            (\ b ->
+              xml_take (string xml2name) (\ c -> xml_return (SE_DP a b c))))));
+
+nonloop_srs ::
+  forall a b.
+    (Compare_order a, Showl a, Compare_order b,
+      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                    Sum_bot (Xml_error String) (Lab a b)) ->
+                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                      Sum_bot (Xml_error String) (Non_loop_srs_proof (Lab a b));
+nonloop_srs xml2name =
+  xml_do "nonterminatingSRS"
+    (xml_take
+      (xml_do "derivationPatterns"
+        (xml_take_many_sub [] zero_nat Infinity_enat
+          (derivation_pattern_proof xml2name) (\ a -> xml_return (id a))))
+      (\ a ->
+        xml_take (nonloop_srs_reason xml2name) (\ b -> xml_return (b a))));
+
+invariants_parser ::
+  forall a b c d.
+    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+      Sum_bot (Xml_error String) a) ->
+      ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+        Sum_bot (Xml_error String) (Formula (Term b (c, d)))) ->
+        (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+          Sum_bot (Xml_error String) [(a, Formula (Term b (c, d)))];
+invariants_parser location_parser atom_parser =
+  xml_do "invariants"
+    (xml_take_many_sub [] zero_nat Infinity_enat
+      (invariant_parser location_parser atom_parser) xml_return);
+
+nfs_impl ::
   forall a b.
     (Compare_order a) => (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
+                           ([Term a b],
+                             (Bool,
                                ([(Term a b, Term a b)],
-                                 ([Term a b],
-                                   (Bool,
-                                     (Bool,
-                                       ([(Term a b, Term a b)],
- ([(Term a b, Term a b)],
-   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-       (Bool, Term a b -> Bool)))))))))))) ->
-                           [(Term a b, Term a b)];
-rw_impla (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vrw, (m, vc)))))))))) =
-  vrw ++ rules_with not m;
+                                 ([(Term a b, Term a b)],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     Term a b -> Bool)))))) ->
+                           Bool;
+nfs_impl (nfs, uu) = nfs;
 
-rwa :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
-rwa d = rw_impla (impl_ofd d);
+nfs :: forall a b. (Compare_order a, Compare_order b) => Tp a b -> Bool;
+nfs tp = nfs_impl (impl_ofc tp);
 
-pw_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      [(Term a b, Term a b)];
-pw_impl (uu, (uv, (uw, (pw, ux)))) = pw;
+termIndexTable ::
+  forall a.
+    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                   Sum_bot (Xml_error String) a) ->
+                   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                     Sum_bot (Xml_error String)
+                       (Mapping [Char] (Term a [Char]));
+termIndexTable xml2name =
+  xml_do "termIndexTable"
+    (xml_foldl (indexToTerm xml2name)
+      (\ termMap (idx, t) -> updateb idx t termMap)
+      (mapping_empty (of_phantom mapping_impl_list)));
 
-pw :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
-pw d = pw_impl (impl_ofd d);
-
-r_impla ::
-  forall a b.
-    (Compare_order a) => (Bool,
-                           (Bool,
-                             ([(Term a b, Term a b)],
-                               ([(Term a b, Term a b)],
-                                 ([Term a b],
-                                   (Bool,
-                                     (Bool,
-                                       ([(Term a b, Term a b)],
- ([(Term a b, Term a b)],
-   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-       (Bool, Term a b -> Bool)))))))))))) ->
-                           [(Term a b, Term a b)];
-r_impla (uu, (uv, (uw, (ux, (uy, (uz, (va, (vr, (vb, (m, vc)))))))))) =
-  vr ++ rules_with id m;
-
-ra :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
-ra d = r_impla (impl_ofd d);
-
-q_impla ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      [Term a b];
-q_impla (uu, (uv, (uw, (ux, (q, uy))))) = q;
-
-qa :: forall a b. (Compare_order a) => Dpp a b -> [Term a b];
-qa d = q_impla (impl_ofd d);
-
-p_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      [(Term a b, Term a b)];
-p_impl (uu, (uv, (p, uw))) = p;
-
-p :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
-p d = p_impl (impl_ofd d);
-
-m_impl ::
-  forall a b.
-    (Bool,
-      (Bool,
-        ([(Term a b, Term a b)],
-          ([(Term a b, Term a b)],
-            ([Term a b],
-              (Bool,
-                (Bool,
-                  ([(Term a b, Term a b)],
-                    ([(Term a b, Term a b)],
-                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                          (Bool, Term a b -> Bool)))))))))))) ->
-      Bool;
-m_impl (uu, (mi, uv)) = mi;
-
-m :: forall a b. (Compare_order a) => Dpp a b -> Bool;
-m d = m_impl (impl_ofd d);
-
-dpp_rbt_impl ::
-  forall a b.
-    (Compare_order a, Eq a, Ccompare b, Compare b, Eq b,
-      Mapping_impl b) => Dpp_ops_ext (Dpp a b) a b ();
-dpp_rbt_impl =
-  Dpp_ops_ext dpp p pw pairs qa ra rwa rulesc q_emptya rules_no_left_var
-    rules_non_collapsing is_QNFa nFQ_subset_NF_rulesa rules_mapa
-    reverse_rules_map intersect_pairs replace_pair intersect_rulesa delete_P_Pw
-    delete_R_Rwa split_pairs split_rulesa mka m nfsa wwf_rules ();
+lookupTables ::
+  forall a.
+    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                   Sum_bot (Xml_error String) a) ->
+                   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+                     Sum_bot (Xml_error String)
+                       (Mapping [Char] (Term a [Char]),
+                         Mapping [Char] (Term a [Char], Term a [Char]));
+lookupTables xml2name =
+  xml_do "lookupTables"
+    (xml_take_default (mapping_empty (of_phantom mapping_impl_list))
+      (termIndexTable xml2name)
+      (\ termIndexMap ->
+        xml_take_default (mapping_empty (of_phantom mapping_impl_list))
+          (ruleTable xml2name termIndexMap)
+          (\ ruleMap -> xml_return (termIndexMap, ruleMap))));
 
 rfc_initial_terms ::
   forall a.
@@ -67612,54 +67060,6 @@ uncurry_info xml2name termIndexMap ruleMap =
                     (xml_take (rules xml2name termIndexMap ruleMap)
                       (\ x -> xml_return (id x))))
                   (\ e -> xml_return (a, (sml, (u, e))))))));
-
-ta_bounds_lhs ::
-  forall a.
-    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-      Sum_bot (Xml_error String) a) ->
-      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-        Sum_bot (Xml_error String) (Sum ((a, Nat), [[Char]]) [Char]);
-ta_bounds_lhs xml2name =
-  xml_do "lhs"
-    (xml_or (xml_take state (\ a -> xml_return (Inr a)))
-      (xml_take xml2name
-        (\ f ->
-          xml_take (xml_nat "height")
-            (\ h ->
-              xml_take_many_sub [] zero_nat Infinity_enat state
-                (\ qs -> xml_return (Inl ((f, h), qs)))))));
-
-bounds_bound ::
-  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-    Sum_bot (Xml_error String) Nat;
-bounds_bound = xml_nat "bound";
-
-bounds_type ::
-  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-    Sum_bot (Xml_error String) Boundstype;
-bounds_type =
-  xml_do "type"
-    (xml_take (xml_or (xml_leaf "roof" Roof) (xml_leaf "match" Match))
-      (\ x -> xml_return (id x)));
-
-bounds_info ::
-  forall a.
-    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-      Sum_bot (Xml_error String) a) ->
-      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-        Sum_bot (Xml_error String) (Bounds_info a [Char]);
-bounds_info xml2name =
-  xml_do "bounds"
-    (xml_take bounds_type
-      (\ a ->
-        xml_take bounds_bound
-          (\ b ->
-            xml_take final_states
-              (\ c ->
-                xml_take (tree_automaton (ta_bounds_lhs xml2name))
-                  (\ d ->
-                    xml_take_default Id_Relation closed_criterion
-                      (\ e -> xml_return (Bounds_Info a b c d e)))))));
 
 xml2cond_constraint ::
   forall a.
@@ -67873,27 +67273,6 @@ projected_rseq xml2name termIndexMap ruleMap pi =
   xml_do "projectedRewriteSequence"
     (xml_take (rule xml2name termIndexMap ruleMap)
       (\ r -> xml_take (rseq xml2name termIndexMap ruleMap pi r) xml_return));
-
-multiset_af ::
-  forall a.
-    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                   Sum_bot (Xml_error String) a) ->
-                   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                     Sum_bot (Xml_error String) [((a, Nat), [Nat])];
-multiset_af xml2name =
-  xml_do "multisetArgumentFilter"
-    (xml_take_many_sub [] zero_nat Infinity_enat
-      (xml_do "multisetArgumentFilterEntry"
-        (xml_take xml2name
-          (\ f ->
-            xml_take (xml_nat "arity")
-              (\ a ->
-                xml_take
-                  (xml_do "status"
-                    (xml_take_many_sub [] zero_nat Infinity_enat position
-                      xml_return))
-                  (\ p -> xml_return ((f, a), p))))))
-      xml_return);
 
 xml2dp_termination_proof ::
   forall a b.
@@ -70001,276 +69380,6 @@ xml_return (DP_Assume_Infinite b []))))))))))))))))
 xml2inn_nt_trs_assm :: forall a. a;
 xml2inn_nt_trs_assm = error "undefined";
 
-word_pattern ::
-  forall a b.
-    (Compare_order a, Showl a, Compare_order b,
-      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                    Sum_bot (Xml_error String) (Lab a b)) ->
-                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                      Sum_bot (Xml_error String)
-                        ([Lab a b], ((Nat, (Nat, [Lab a b])), [Lab a b]));
-word_pattern xml2name =
-  xml_do "wordPattern"
-    (xml_take (string xml2name)
-      (\ l ->
-        xml_take (string xml2name)
-          (\ m ->
-            xml_take (xml_nat "factor")
-              (\ f ->
-                xml_take (xml_nat "constant")
-                  (\ c ->
-                    xml_take (string xml2name)
-                      (\ r -> xml_return (l, ((f, (c, m)), r))))))));
-
-derivation_pattern ::
-  forall a b.
-    (Compare_order a, Showl a, Compare_order b,
-      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                    Sum_bot (Xml_error String) (Lab a b)) ->
-                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                      Sum_bot (Xml_error String)
-                        (([Lab a b], ((Nat, (Nat, [Lab a b])), [Lab a b])),
-                          ([Lab a b], ((Nat, (Nat, [Lab a b])), [Lab a b])));
-derivation_pattern xml2name =
-  xml_do "derivationPattern"
-    (xml_take (word_pattern xml2name)
-      (\ a -> xml_take (word_pattern xml2name) (\ b -> xml_return (a, b))));
-
-derivation_pattern_proof ::
-  forall a b.
-    (Compare_order a, Showl a, Compare_order b,
-      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                    Sum_bot (Xml_error String) (Lab a b)) ->
-                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                      Sum_bot (Xml_error String) (Dp_proof_step (Lab a b));
-derivation_pattern_proof xml2name =
-  let {
-    oc = oc_srs xml2name;
-    dp = derivation_pattern xml2name;
-    s = string xml2name;
-  } in xml_do "derivationPatternProof"
-         (xml_take
-           (xml_or
-             (xml_do "OC1"
-               (xml_take oc
-                 (\ a ->
-                   xml_take (xml_bool "isPair") (\ b -> xml_return (OC1 a b)))))
-             (xml_or
-               (xml_do "OC2"
-                 (xml_take oc
-                   (\ a ->
-                     xml_take oc
-                       (\ b ->
-                         xml_take oc
-                           (\ c ->
-                             xml_take s
-                               (\ d ->
-                                 xml_take s
-                                   (\ e ->
-                                     xml_take s
-                                       (\ f ->
- xml_return (OC2 a b c d e f)))))))))
-               (xml_or
-                 (xml_do "OC2prime"
-                   (xml_take oc
-                     (\ a ->
-                       xml_take oc
-                         (\ b ->
-                           xml_take oc
-                             (\ c ->
-                               xml_take s
-                                 (\ d ->
-                                   xml_take s
-                                     (\ e ->
-                                       xml_take s
- (\ f -> xml_return (OC2p a b c d e f)))))))))
-                 (xml_or
-                   (xml_do "OC3"
-                     (xml_take oc
-                       (\ a ->
-                         xml_take oc
-                           (\ b ->
-                             xml_take oc
-                               (\ c ->
-                                 xml_take s
-                                   (\ d ->
-                                     xml_take s
-                                       (\ e -> xml_return (OC3 a b c d e))))))))
-                   (xml_or
-                     (xml_do "OC3prime"
-                       (xml_take oc
-                         (\ a ->
-                           xml_take oc
-                             (\ b ->
-                               xml_take oc
-                                 (\ c ->
-                                   xml_take s
-                                     (\ d ->
-                                       xml_take s
- (\ e -> xml_return (OC3p a b c d e))))))))
-                     (xml_or
-                       (xml_do "OCintoDP1"
-                         (xml_take dp
-                           (\ a ->
-                             xml_take oc (\ b -> xml_return (OCDP1 a b)))))
-                       (xml_or
-                         (xml_do "OCintoDP2"
-                           (xml_take dp
-                             (\ a ->
-                               xml_take oc (\ b -> xml_return (OCDP2 a b)))))
-                         (xml_or
-                           (xml_do "equivalent"
-                             (xml_take dp
-                               (\ a ->
-                                 xml_take dp (\ b -> xml_return (WPEQ a b)))))
-                           (xml_or
-                             (xml_do "lift"
-                               (xml_take dp
-                                 (\ a ->
-                                   xml_take dp (\ b -> xml_return (Lift a b)))))
-                             (xml_or
-                               (xml_do "DP_OC_1_1"
-                                 (xml_take dp
-                                   (\ a ->
-                                     xml_take dp
-                                       (\ b ->
- xml_take oc
-   (\ c ->
-     xml_take s (\ d -> xml_take s (\ e -> xml_return (DPOC1_1 a b c d e))))))))
-                               (xml_or
-                                 (xml_do "DP_OC_1_2"
-                                   (xml_take dp
-                                     (\ a ->
-                                       xml_take dp
- (\ b ->
-   xml_take oc
-     (\ c ->
-       xml_take s
-         (\ d ->
-           xml_take s
-             (\ e -> xml_take s (\ f -> xml_return (DPOC1_2 a b c d e f)))))))))
-                                 (xml_or
-                                   (xml_do "DP_OC_2"
-                                     (xml_take dp
-                                       (\ a ->
- xml_take dp
-   (\ b ->
-     xml_take oc
-       (\ c ->
-         xml_take s
-           (\ d -> xml_take s (\ e -> xml_return (DPOC2 a b c d e))))))))
-                                   (xml_or
-                                     (xml_do "DP_OC_3_1"
-                                       (xml_take dp
- (\ a ->
-   xml_take dp
-     (\ b ->
-       xml_take oc
-         (\ c ->
-           xml_take s
-             (\ d -> xml_take s (\ e -> xml_return (DPOC3_1 a b c d e))))))))
-                                     (xml_or
-                                       (xml_do "DP_OC_3_2"
- (xml_take dp
-   (\ a ->
-     xml_take dp
-       (\ b ->
-         xml_take oc
-           (\ c ->
-             xml_take s
-               (\ d ->
-                 xml_take s
-                   (\ e ->
-                     xml_take s (\ f -> xml_return (DPOC3_2 a b c d e f)))))))))
-                                       (xml_or
- (xml_do "DP_DP_1_1"
-   (xml_take dp
-     (\ a ->
-       xml_take dp
-         (\ b ->
-           xml_take dp
-             (\ c ->
-               xml_take s
-                 (\ d ->
-                   xml_take s (\ e -> xml_return (DPDP1_1 a b c d e))))))))
- (xml_or
-   (xml_do "DP_DP_1_2"
-     (xml_take dp
-       (\ a ->
-         xml_take dp
-           (\ b ->
-             xml_take dp
-               (\ c ->
-                 xml_take s
-                   (\ d ->
-                     xml_take s (\ e -> xml_return (DPDP1_2 a b c d e))))))))
-   (xml_or
-     (xml_do "DP_DP_2_1"
-       (xml_take dp
-         (\ a ->
-           xml_take dp
-             (\ b ->
-               xml_take dp
-                 (\ c ->
-                   xml_take s
-                     (\ d ->
-                       xml_take s (\ e -> xml_return (DPDP2_1 a b c d e))))))))
-     (xml_do "DP_DP_2_2"
-       (xml_take dp
-         (\ a ->
-           xml_take dp
-             (\ b ->
-               xml_take dp
-                 (\ c ->
-                   xml_take s
-                     (\ d ->
-                       xml_take s
-                         (\ e ->
-                           xml_return
-                             (DPDP2_2 a b c d e)))))))))))))))))))))))))
-           (\ x -> xml_return (id x)));
-
-nonloop_srs_reason ::
-  forall a b.
-    (Compare_order a, Showl a, Compare_order b,
-      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                    Sum_bot (Xml_error String) (Lab a b)) ->
-                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                      Sum_bot (Xml_error String)
-                        ([Dp_proof_step (Lab a b)] ->
-                          Non_loop_srs_proof (Lab a b));
-nonloop_srs_reason xml2name =
-  xml_or
-    (xml_do "selfEmbeddingOC"
-      (xml_take (string xml2name)
-        (\ a ->
-          xml_take (string xml2name)
-            (\ b ->
-              xml_take (string xml2name)
-                (\ c -> xml_return (SE_OC (b, a ++ b ++ c) a c))))))
-    (xml_do "selfEmbeddingDP"
-      (xml_take (derivation_pattern xml2name)
-        (\ a ->
-          xml_take (string xml2name)
-            (\ b ->
-              xml_take (string xml2name) (\ c -> xml_return (SE_DP a b c))))));
-
-nonloop_srs ::
-  forall a b.
-    (Compare_order a, Showl a, Compare_order b,
-      Showl b) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                    Sum_bot (Xml_error String) (Lab a b)) ->
-                    (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                      Sum_bot (Xml_error String) (Non_loop_srs_proof (Lab a b));
-nonloop_srs xml2name =
-  xml_do "nonterminatingSRS"
-    (xml_take
-      (xml_do "derivationPatterns"
-        (xml_take_many_sub [] zero_nat Infinity_enat
-          (derivation_pattern_proof xml2name) (\ a -> xml_return (id a))))
-      (\ a ->
-        xml_take (nonloop_srs_reason xml2name) (\ b -> xml_return (b a))));
-
 xml2trs_nontermination_proof_body ::
   forall a b.
     (Compare_order a, Eq a, Showl a, Compare_order b, Eq b,
@@ -72274,35 +71383,6 @@ sharp_location_parser location_id_parser =
     (xml_change (location_id_parser "locationDuplicate") (xml_return . Sharpa))
     (xml_change (location_id_parser "locationId") (xml_return . Flat));
 
-invariant_parser ::
-  forall a b c d.
-    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-      Sum_bot (Xml_error String) a) ->
-      ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-        Sum_bot (Xml_error String) (Formula (Term b (c, d)))) ->
-        (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-          Sum_bot (Xml_error String) (a, Formula (Term b (c, d)));
-invariant_parser location_parser atom_parser =
-  xml_do "invariant"
-    (xml_take (xml_do "location" (xml_take location_parser xml_return))
-      (\ l ->
-        xml_take
-          (xml_do "formula" (xml_take (formula_parser atom_parser) xml_return))
-          (\ phi -> xml_return (l, phi))));
-
-invariants_parser ::
-  forall a b c d.
-    ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-      Sum_bot (Xml_error String) a) ->
-      ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-        Sum_bot (Xml_error String) (Formula (Term b (c, d)))) ->
-        (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-          Sum_bot (Xml_error String) [(a, Formula (Term b (c, d)))];
-invariants_parser location_parser atom_parser =
-  xml_do "invariants"
-    (xml_take_many_sub [] zero_nat Infinity_enat
-      (invariant_parser location_parser atom_parser) xml_return);
-
 cooperation_proof_parser ::
   forall a b c d e f.
     (Ccompare a, Eq a, Ccompare e, Eq e, Mapping_impl e,
@@ -72477,43 +71557,6 @@ cooperation_proof_parser location_id_parser exp_parser atom_parser tatom_parser
                           (\ prof -> xml_return (scc, prof)))))
                   (\ sccs -> xml_return (Scc_Decomp sccs)))))))))
     xs;
-
-cut_points_to_transitions ::
-  forall a b c d e.
-    [(Sharp a, Transition_rule b c d (Sharp e))] ->
-      [(e, (a, Formula (Term b (Trans_var c, d))))] ->
-        [(Sharp a, Transition_rule b c d (Sharp e))];
-cut_points_to_transitions ts [] = ts;
-cut_points_to_transitions ts ((l, (tr, phi)) : cps) =
-  cut_points_to_transitions ((Flat tr, Transition (Flat l) (Sharpa l) phi) : ts)
-    cps;
-
-cutPoints_parser ::
-  forall a b c d e.
-    (String ->
-      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-        Sum_bot (Xml_error String) a) ->
-      (String ->
-        (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-          Sum_bot (Xml_error String) b) ->
-        ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-          Sum_bot (Xml_error String) (Formula (Term c (Trans_var d, e)))) ->
-          (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-            Sum_bot (Xml_error String)
-              [(Sharp b, Transition_rule c d e (Sharp a))];
-cutPoints_parser location_id_parser trans_id_parser tatom_parser =
-  xml_do "cutPoints"
-    (xml_take_many_sub [] zero_nat Infinity_enat
-      (xml_do "cutPoint"
-        (xml_take (location_id_parser "locationId")
-          (\ l ->
-            xml_take (trans_id_parser "skipId")
-              (\ tr ->
-                xml_take
-                  (xml_do "skipFormula"
-                    (xml_take (formula_parser tatom_parser) xml_return))
-                  (\ phi -> xml_return (l, (tr, phi)))))))
-      (\ tuples -> xml_return (cut_points_to_transitions [] tuples)));
 
 termination_proof_parser ::
   forall a b c d e f.
@@ -73282,123 +72325,103 @@ proof_parser termIndexMap ruleMap =
                       (proof_content symbol_parser termIndexMap ruleMap)))))))))
       xml_return);
 
-indexToTerm ::
-  forall a.
-    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                   Sum_bot (Xml_error String) a) ->
-                   Mapping [Char] (Term a [Char]) ->
-                     (Xml, ([([Char], [Char])],
-                             (Bool, ([String], [String])))) ->
-                       Sum_bot (Xml_error String) ([Char], Term a [Char]);
-indexToTerm xml2name termMap =
-  xml_do "indexToTerm"
-    (xml_take (xml_text "index")
-      (\ idx ->
-        xml_take (term xml2name termMap)
-          (\ t ->
-            (case lookupb termMap idx of {
-              Nothing -> xml_return (idx, t);
-              Just _ -> xml_error "term index table contains duplicate index";
-            }))));
+impl_ofd ::
+  forall b a.
+    (Compare_order b) => Dpp b a ->
+                           (Bool,
+                             (Bool,
+                               ([(Term b a, Term b a)],
+                                 ([(Term b a, Term b a)],
+                                   ([Term b a],
+                                     (Bool,
+                                       (Bool,
+ ([(Term b a, Term b a)],
+   ([(Term b a, Term b a)],
+     (Rbt (b, Nat) [(Bool, (Term b a, Term b a))],
+       (Rbt (b, Nat) [(Bool, (Term b a, Term b a))],
+         (Bool, Term b a -> Bool))))))))))));
+impl_ofd (DPP x) = x;
 
-termIndexTable ::
-  forall a.
-    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                   Sum_bot (Xml_error String) a) ->
-                   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                     Sum_bot (Xml_error String)
-                       (Mapping [Char] (Term a [Char]));
-termIndexTable xml2name =
-  xml_do "termIndexTable"
-    (xml_foldl (indexToTerm xml2name)
-      (\ termMap (idx, t) -> updateb idx t termMap)
-      (mapping_empty (of_phantom mapping_impl_list)));
-
-lookupTables ::
-  forall a.
-    (Showl a) => ((Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                   Sum_bot (Xml_error String) a) ->
-                   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-                     Sum_bot (Xml_error String)
-                       (Mapping [Char] (Term a [Char]),
-                         Mapping [Char] (Term a [Char], Term a [Char]));
-lookupTables xml2name =
-  xml_do "lookupTables"
-    (xml_take_default (mapping_empty (of_phantom mapping_impl_list))
-      (termIndexTable xml2name)
-      (\ termIndexMap ->
-        xml_take_default (mapping_empty (of_phantom mapping_impl_list))
-          (ruleTable xml2name termIndexMap)
-          (\ ruleMap -> xml_return (termIndexMap, ruleMap))));
-
-certification_problem_parser ::
-  (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
-    Sum_bot (Xml_error String)
-      (Maybe (Input (Lab [Char] [Nat]) [Char]),
-        (Maybe (Property (Lab [Char] [Nat]) [Char]),
-          (Maybe (Answer (Lab [Char] [Nat]) [Char]),
-            Proof [Char] [Nat] [Char])));
-certification_problem_parser =
-  xml_do "certificationProblem"
-    (xml_take (xml_text "cpfVersion")
-      (\ _ ->
-        xml_take (lookupTables symbol_parser)
-          (\ (termIndexMap, ruleMap) ->
-            xml_take_optional (input_parser termIndexMap ruleMap)
-              (\ inp ->
-                xml_take_optional property_parser
-                  (\ prop ->
-                    xml_take_optional (answer_parser termIndexMap ruleMap)
-                      (\ ans ->
-                        xml_take (proof_parser termIndexMap ruleMap)
-                          (\ proof ->
-                            xml_take_optional (\ x -> right (fst x))
-                              (\ _ ->
-                                xml_return (inp, (prop, (ans, proof)))))))))));
-
-parse_cert_problem ::
-  [Char] ->
-    Sum_bot String
-      (Maybe (Input (Lab [Char] [Nat]) [Char]),
-        (Maybe (Property (Lab [Char] [Nat]) [Char]),
-          (Maybe (Answer (Lab [Char] [Nat]) [Char]),
-            Proof [Char] [Nat] [Char])));
-parse_cert_problem = parse_from_string certification_problem_parser;
-
-parse_combined_cert_problem ::
-  Maybe [Char] ->
-    Maybe [Char] ->
-      Maybe [Char] ->
-        [Char] ->
-          Sum_bot String
-            (Input (Lab [Char] [Nat]) [Char],
-              (Property (Lab [Char] [Nat]) [Char],
-                (Answer (Lab [Char] [Nat]) [Char], Proof [Char] [Nat] [Char])));
-parse_combined_cert_problem inp1 prop1 answ1 prfs =
-  binda (parse_cert_problem prfs)
-    (\ (inp2, (prop2, (answ2, prf))) ->
-      binda (parse_merge "input" parse_input inp1 inp2)
-        (\ inp ->
-          binda (parse_merge "property" parse_property prop1 prop2)
-            (\ prop ->
-              binda (parse_merge "answer" parse_answer answ1 answ2)
-                (\ answ -> returna (inp, (prop, (answ, prf)))))));
-
-nFQ_subset_NF_rules_impl ::
+m_impl ::
   forall a b.
     (Bool,
-      ([Term a b],
-        (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
           ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                Term a b -> Bool)))))) ->
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
       Bool;
-nFQ_subset_NF_rules_impl (uu, (uv, (b, uw))) = b;
+m_impl (uu, (mi, uv)) = mi;
 
-nFQ_subset_NF_rules ::
-  forall a b. (Compare_order a, Compare_order b) => Tp a b -> Bool;
-nFQ_subset_NF_rules tp = nFQ_subset_NF_rules_impl (impl_ofc tp);
+m :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+m d = m_impl (impl_ofd d);
+
+p_impl ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      [(Term a b, Term a b)];
+p_impl (uu, (uv, (p, uw))) = p;
+
+p :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
+p d = p_impl (impl_ofd d);
+
+q_impla ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      [Term a b];
+q_impla (uu, (uv, (uw, (ux, (q, uy))))) = q;
+
+qa :: forall a b. (Compare_order a) => Dpp a b -> [Term a b];
+qa d = q_impla (impl_ofd d);
+
+r_impla ::
+  forall a b.
+    (Compare_order a) => (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([Term a b],
+                                   (Bool,
+                                     (Bool,
+                                       ([(Term a b, Term a b)],
+ ([(Term a b, Term a b)],
+   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+       (Bool, Term a b -> Bool)))))))))))) ->
+                           [(Term a b, Term a b)];
+r_impla (uu, (uv, (uw, (ux, (uy, (uz, (va, (vr, (vb, (m, vc)))))))))) =
+  vr ++ rules_with id m;
+
+ra :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
+ra d = r_impla (impl_ofd d);
 
 rules_impla ::
   forall a b.
@@ -73413,30 +72436,488 @@ rules_impla ::
 rules_impla (uu, (uv, (uw, (vR, (vRw, (m, ux)))))) =
   vR ++ vRw ++ map snd (values m);
 
-split_rules_impl ::
+rulesb ::
   forall a b.
-    (Compare_order a,
-      Compare_order b) => (Bool,
-                            ([Term a b],
-                              (Bool,
-                                ([(Term a b, Term a b)],
-                                  ([(Term a b, Term a b)],
-                                    (Rbt (a, Nat)
-                                       [(Bool, (Term a b, Term a b))],
-                                      Term a b -> Bool)))))) ->
-                            [(Term a b, Term a b)] ->
-                              ([(Term a b, Term a b)], [(Term a b, Term a b)]);
-split_rules_impl tp rs = let {
-                           m = ceta_set_of rs;
-                         } in partition m (rules_impla tp);
+    (Compare_order a, Compare_order b) => Tp a b -> [(Term a b, Term a b)];
+rulesb tp = rules_impla (impl_ofc tp);
 
-split_rules ::
+pw_impl ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      [(Term a b, Term a b)];
+pw_impl (uu, (uv, (uw, (pw, ux)))) = pw;
+
+pw :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
+pw d = pw_impl (impl_ofd d);
+
+rw_impla ::
+  forall a b.
+    (Compare_order a) => (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([Term a b],
+                                   (Bool,
+                                     (Bool,
+                                       ([(Term a b, Term a b)],
+ ([(Term a b, Term a b)],
+   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+       (Bool, Term a b -> Bool)))))))))))) ->
+                           [(Term a b, Term a b)];
+rw_impla (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vrw, (m, vc)))))))))) =
+  vrw ++ rules_with not m;
+
+rwa :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
+rwa d = rw_impla (impl_ofd d);
+
+wwf_qtrs_impl ::
+  forall a b. (Eq b) => (Term a b -> Bool) -> [(Term a b, Term a b)] -> Bool;
+wwf_qtrs_impl nf r =
+  all (\ ra -> wf_rule ra || not (applicable_rule_impl nf ra)) r;
+
+mk_impla ::
+  forall a b.
+    (Compare_order a, Eq a, Ccompare b, Eq b,
+      Mapping_impl b) => Bool ->
+                           Bool ->
+                             [(Term a b, Term a b)] ->
+                               [(Term a b, Term a b)] ->
+                                 [Term a b] ->
+                                   [(Term a b, Term a b)] ->
+                                     [(Term a b, Term a b)] ->
+                                       (Bool,
+ (Bool,
+   ([(Term a b, Term a b)],
+     ([(Term a b, Term a b)],
+       ([Term a b],
+         (Bool,
+           (Bool,
+             ([(Term a b, Term a b)],
+               ([(Term a b, Term a b)],
+                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                     (Bool, Term a b -> Bool))))))))))));
+mk_impla nfs mi p pw q r rw =
+  (case partition (is_Var . fst) r of {
+    (vr, ra) ->
+      (case partition (is_Var . fst) rw of {
+        (vrw, rwa) ->
+          let {
+            rs = r ++ rw;
+            isnf = is_NF_terms q;
+          } in (nfs, (mi, (p, (pw, (q, (is_NF_trs_subset isnf rs,
+ (all (\ rb -> not (is_Var (snd rb))) rs,
+   (vr, (vrw, (insert_rules True ra (insert_rules False rwa empty),
+                (insert_rules True (reverse_rules r)
+                   (insert_rules False (reverse_rules rw) empty),
+                  (wwf_qtrs_impl isnf rs, isnf))))))))))));
+      });
+  });
+
+mka ::
+  forall a b.
+    (Compare_order a, Eq a, Ccompare b, Eq b,
+      Mapping_impl b) => Bool ->
+                           Bool ->
+                             [(Term a b, Term a b)] ->
+                               [(Term a b, Term a b)] ->
+                                 [Term a b] ->
+                                   [(Term a b, Term a b)] ->
+                                     [(Term a b, Term a b)] -> Dpp a b;
+mka nfs mi p pw q r rw = DPP (mk_impla nfs mi p pw q r rw);
+
+is_QNF_impl ::
+  forall a b.
+    (Bool,
+      ([Term a b],
+        (Bool,
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                Term a b -> Bool)))))) ->
+      Term a b -> Bool;
+is_QNF_impl (uu, (uv, (uw, (ux, (uy, (uz, isnf)))))) = isnf;
+
+is_QNF ::
+  forall a b. (Compare_order a, Compare_order b) => Tp a b -> Term a b -> Bool;
+is_QNF tp = is_QNF_impl (impl_ofc tp);
+
+nfs_impla ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Bool;
+nfs_impla (nfs, uu) = nfs;
+
+nfsa :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+nfsa d = nfs_impla (impl_ofd d);
+
+dpp_impl ::
+  forall a b.
+    (Compare_order a, Eq a, Compare b,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 (Bool,
+                   (Bool,
+                     (Set (Term a b, Term a b),
+                       (Set (Term a b, Term a b),
+                         (Set (Term a b),
+                           (Set (Term a b, Term a b),
+                             Set (Term a b, Term a b)))))));
+dpp_impl (nfs, (mi, (p, (pw, (q, (uu, (uv, (vr, (vrw, (m, uw)))))))))) =
+  (nfs, (mi, (set p,
+               (set pw,
+                 (set q,
+                   (set (vr ++ rules_with id m),
+                     set (vrw ++ rules_with not m)))))));
+
+dpp ::
+  forall a b.
+    (Compare_order a, Eq a, Compare b,
+      Eq b) => Dpp a b ->
+                 (Bool,
+                   (Bool,
+                     (Set (Term a b, Term a b),
+                       (Set (Term a b, Term a b),
+                         (Set (Term a b),
+                           (Set (Term a b, Term a b),
+                             Set (Term a b, Term a b)))))));
+dpp d = dpp_impl (impl_ofd d);
+
+erase_adp_symbol :: forall a. Adp_symbol a -> a;
+erase_adp_symbol (Plain f) = f;
+erase_adp_symbol (Sharpb f) = f;
+
+erase_adp_term :: forall a b. Term (Adp_symbol a) b -> Term a b;
+erase_adp_term (Var x) = Var x;
+erase_adp_term (Fun f ts) = Fun (erase_adp_symbol f) (map erase_adp_term ts);
+
+erase_adp ::
+  forall a b.
+    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> (Term a b, Term a b);
+erase_adp p = (erase_adp_term (fst p), erase_adp_term (snd p));
+
+q_empty_impl ::
+  forall a b.
+    (Bool,
+      ([Term a b],
+        (Bool,
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                Term a b -> Bool)))))) ->
+      Bool;
+q_empty_impl (uu, (q, uv)) = null q;
+
+q_empty :: forall a b. (Compare_order a, Compare_order b) => Tp a b -> Bool;
+q_empty tp = q_empty_impl (impl_ofc tp);
+
+qreltrs_impl ::
+  forall a b.
+    (Compare_order a, Eq a, Compare b,
+      Eq b) => (Bool,
+                 ([Term a b],
+                   (Bool,
+                     ([(Term a b, Term a b)],
+                       ([(Term a b, Term a b)],
+                         (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                           Term a b -> Bool)))))) ->
+                 (Bool,
+                   (Set (Term a b),
+                     (Set (Term a b, Term a b), Set (Term a b, Term a b))));
+qreltrs_impl (nfs, (q, (uu, (vR, (vRw, (m, isnf)))))) =
+  (nfs, (set q, (set (vR ++ rules_with id m), set (vRw ++ rules_with not m))));
+
+qreltrs ::
+  forall a b.
+    (Compare_order a, Eq a, Compare_order b,
+      Eq b) => Tp a b ->
+                 (Bool,
+                   (Set (Term a b),
+                     (Set (Term a b, Term a b), Set (Term a b, Term a b))));
+qreltrs tp = qreltrs_impl (impl_ofc tp);
+
+impl_ofe ::
+  forall b a.
+    (Compare_order b) => Ac_dpp b a ->
+                           ([(Term b a, Term b a)],
+                             ([(Term b a, Term b a)],
+                               ([(Term b a, Term b a)],
+                                 ([(Term b a, Term b a)],
+                                   ([(Term b a, Term b a)],
+                                     Rbt (b, Nat)
+                                       [((), (Term b a, Term b a))])))));
+impl_ofe (AC_DPP x) = x;
+
+e_impl ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+e_impl (p, (pw, (r, (rw, (e, uu))))) = e;
+
+e :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+e xa = e_impl (impl_ofe xa);
+
+p_impla ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+p_impla (p, (pw, (r, (rw, (e, uu))))) = p;
+
+pa :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+pa xa = p_impla (impl_ofe xa);
+
+r_implb ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+r_implb (p, (pw, (r, (rw, (e, uu))))) = r;
+
+rb :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+rb xa = r_implb (impl_ofe xa);
+
+pw_impla ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+pw_impla (p, (pw, (r, (rw, (e, uu))))) = pw;
+
+pwa :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+pwa xa = pw_impla (impl_ofe xa);
+
+rw_implb ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+rw_implb (p, (pw, (r, (rw, (e, uu))))) = rw;
+
+rwb :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+rwb xa = rw_implb (impl_ofe xa);
+
+mk_implb ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => [(Term a b, Term a b)] ->
+                 [(Term a b, Term a b)] ->
+                   [(Term a b, Term a b)] ->
+                     [(Term a b, Term a b)] ->
+                       [(Term a b, Term a b)] ->
+                         ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([(Term a b, Term a b)],
+                                   Rbt (a, Nat)
+                                     [((), (Term a b, Term a b))])))));
+mk_implb p pw r rw e =
+  (p, (pw, (r, (rw, (e, insert_rules () (r ++ rw ++ e) empty)))));
+
+mkb ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => [(Term a b, Term a b)] ->
+                 [(Term a b, Term a b)] ->
+                   [(Term a b, Term a b)] ->
+                     [(Term a b, Term a b)] ->
+                       [(Term a b, Term a b)] -> Ac_dpp a b;
+mkb xc xd xe xf xg = AC_DPP (mk_implb xc xd xe xf xg);
+
+pairs_impl ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      [(Term a b, Term a b)];
+pairs_impl (uu, (uv, (p, (pw, uw)))) = p ++ pw;
+
+pairs :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
+pairs d = pairs_impl (impl_ofd d);
+
+rules_implb ::
+  forall a b.
+    (Compare_order a) => (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([Term a b],
+                                   (Bool,
+                                     (Bool,
+                                       ([(Term a b, Term a b)],
+ ([(Term a b, Term a b)],
+   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+       (Bool, Term a b -> Bool)))))))))))) ->
+                           [(Term a b, Term a b)];
+rules_implb (uu, (uv, (uw, (ux, (uy, (uz, (va, (vr, (vrw, (m, vb)))))))))) =
+  vr ++ vrw ++ map snd (values m);
+
+rulesc :: forall a b. (Compare_order a) => Dpp a b -> [(Term a b, Term a b)];
+rulesc d = rules_implb (impl_ofd d);
+
+certify_cert_problem ::
+  forall a b c d e f.
+    (Compare_order b, Countable b, Default b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+                        Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+                          Bool ->
+                            Input (Lab b [Nat]) [Char] ->
+                              Property (Lab b [Nat]) f ->
+                                Answer (Lab b [Nat]) [Char] ->
+                                  Proof b [Nat] [Char] -> Cert_result;
+certify_cert_problem i j k l a input property answer proof =
+  (case check_cert i j k l a input property answer proof of {
+    Inl err -> Error (err "");
+    Inr _ -> Certified;
+  });
+
+rules_map_impl ::
+  forall a b.
+    (Compare_order a) => (Bool,
+                           ([Term a b],
+                             (Bool,
+                               ([(Term a b, Term a b)],
+                                 ([(Term a b, Term a b)],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     Term a b -> Bool)))))) ->
+                           (a, Nat) -> [(Term a b, Term a b)];
+rules_map_impl (uu, (uv, (uw, (ux, (uy, (m, uz)))))) fn =
+  (case lookup m fn of {
+    Nothing -> [];
+    Just a -> map snd a;
+  });
+
+rules_map ::
   forall a b.
     (Compare_order a,
-      Compare_order b) => Tp a b ->
-                            [(Term a b, Term a b)] ->
-                              ([(Term a b, Term a b)], [(Term a b, Term a b)]);
-split_rules tp = split_rules_impl (impl_ofc tp);
+      Compare_order b) => Tp a b -> (a, Nat) -> [(Term a b, Term a b)];
+rules_map tp = rules_map_impl (impl_ofc tp);
+
+is_QNF_impla ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Term a b -> Bool;
+is_QNF_impla
+  (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (vd, (ve, (vf, isnf)))))))))))) =
+  isnf;
+
+is_QNFa :: forall a b. (Compare_order a) => Dpp a b -> Term a b -> Bool;
+is_QNFa d = is_QNF_impla (impl_ofd d);
+
+q_empty_impla ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Bool;
+q_empty_impla (uu, (uv, (uw, (ux, (q, uy))))) = null q;
+
+q_emptya :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+q_emptya d = q_empty_impla (impl_ofd d);
+
+annotate_term_at ::
+  forall a b. Set [Nat] -> [Nat] -> Term a b -> Term (Adp_symbol a) b;
+annotate_term_at a p (Var x) = Var x;
+annotate_term_at a p (Fun f ts) =
+  Fun (if member p a then Sharpb f else Plain f)
+    (annotate_terms_at a p zero_nat ts);
+
+annotate_terms_at ::
+  forall a b.
+    Set [Nat] -> [Nat] -> Nat -> [Term a b] -> [Term (Adp_symbol a) b];
+annotate_terms_at a p i [] = [];
+annotate_terms_at a p i (t : ts) =
+  annotate_term_at a (p ++ [i]) t : annotate_terms_at a p (suc i) ts;
+
+annotate_termb :: forall a b. Set [Nat] -> Term a b -> Term (Adp_symbol a) b;
+annotate_termb a t = annotate_term_at a [] t;
 
 delete_R_Rw_impl ::
   forall a b.
@@ -73479,54 +72960,32 @@ delete_R_Rw ::
                  [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Tp a b;
 delete_R_Rw tp r rw = TP (delete_R_Rw_impl (impl_ofc tp) r rw);
 
-rules_map_impl ::
-  forall a b.
-    (Compare_order a) => (Bool,
-                           ([Term a b],
-                             (Bool,
-                               ([(Term a b, Term a b)],
-                                 ([(Term a b, Term a b)],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     Term a b -> Bool)))))) ->
-                           (a, Nat) -> [(Term a b, Term a b)];
-rules_map_impl (uu, (uv, (uw, (ux, (uy, (m, uz)))))) fn =
-  (case lookup m fn of {
-    Nothing -> [];
-    Just a -> map snd a;
-  });
-
-rules_map ::
+split_rules_impl ::
   forall a b.
     (Compare_order a,
-      Compare_order b) => Tp a b -> (a, Nat) -> [(Term a b, Term a b)];
-rules_map tp = rules_map_impl (impl_ofc tp);
+      Compare_order b) => (Bool,
+                            ([Term a b],
+                              (Bool,
+                                ([(Term a b, Term a b)],
+                                  ([(Term a b, Term a b)],
+                                    (Rbt (a, Nat)
+                                       [(Bool, (Term a b, Term a b))],
+                                      Term a b -> Bool)))))) ->
+                            [(Term a b, Term a b)] ->
+                              ([(Term a b, Term a b)], [(Term a b, Term a b)]);
+split_rules_impl tp rs = let {
+                           m = ceta_set_of rs;
+                         } in partition m (rules_impla tp);
 
-qreltrs_impl ::
+split_rules ::
   forall a b.
-    (Compare_order a, Eq a, Compare b,
-      Eq b) => (Bool,
-                 ([Term a b],
-                   (Bool,
-                     ([(Term a b, Term a b)],
-                       ([(Term a b, Term a b)],
-                         (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                           Term a b -> Bool)))))) ->
-                 (Bool,
-                   (Set (Term a b),
-                     (Set (Term a b, Term a b), Set (Term a b, Term a b))));
-qreltrs_impl (nfs, (q, (uu, (vR, (vRw, (m, isnf)))))) =
-  (nfs, (set q, (set (vR ++ rules_with id m), set (vRw ++ rules_with not m))));
+    (Compare_order a,
+      Compare_order b) => Tp a b ->
+                            [(Term a b, Term a b)] ->
+                              ([(Term a b, Term a b)], [(Term a b, Term a b)]);
+split_rules tp = split_rules_impl (impl_ofc tp);
 
-qreltrs ::
-  forall a b.
-    (Compare_order a, Eq a, Compare_order b,
-      Eq b) => Tp a b ->
-                 (Bool,
-                   (Set (Term a b),
-                     (Set (Term a b, Term a b), Set (Term a b, Term a b))));
-qreltrs tp = qreltrs_impl (impl_ofc tp);
-
-q_empty_impl ::
+nFQ_subset_NF_rules_impl ::
   forall a b.
     (Bool,
       ([Term a b],
@@ -73536,97 +72995,11 @@ q_empty_impl ::
               (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
                 Term a b -> Bool)))))) ->
       Bool;
-q_empty_impl (uu, (q, uv)) = null q;
+nFQ_subset_NF_rules_impl (uu, (uv, (b, uw))) = b;
 
-q_empty :: forall a b. (Compare_order a, Compare_order b) => Tp a b -> Bool;
-q_empty tp = q_empty_impl (impl_ofc tp);
-
-is_QNF_impl ::
-  forall a b.
-    (Bool,
-      ([Term a b],
-        (Bool,
-          ([(Term a b, Term a b)],
-            ([(Term a b, Term a b)],
-              (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                Term a b -> Bool)))))) ->
-      Term a b -> Bool;
-is_QNF_impl (uu, (uv, (uw, (ux, (uy, (uz, isnf)))))) = isnf;
-
-is_QNF ::
-  forall a b. (Compare_order a, Compare_order b) => Tp a b -> Term a b -> Bool;
-is_QNF tp = is_QNF_impl (impl_ofc tp);
-
-rulesb ::
-  forall a b.
-    (Compare_order a, Compare_order b) => Tp a b -> [(Term a b, Term a b)];
-rulesb tp = rules_impla (impl_ofc tp);
-
-nfs_impl ::
-  forall a b.
-    (Compare_order a) => (Bool,
-                           ([Term a b],
-                             (Bool,
-                               ([(Term a b, Term a b)],
-                                 ([(Term a b, Term a b)],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     Term a b -> Bool)))))) ->
-                           Bool;
-nfs_impl (nfs, uu) = nfs;
-
-nfs :: forall a b. (Compare_order a, Compare_order b) => Tp a b -> Bool;
-nfs tp = nfs_impl (impl_ofc tp);
-
-mk_impl ::
-  forall a b.
-    (Compare_order a, Eq a, Ccompare b, Eq b,
-      Mapping_impl b) => Bool ->
-                           [Term a b] ->
-                             [(Term a b, Term a b)] ->
-                               [(Term a b, Term a b)] ->
-                                 (Bool,
-                                   ([Term a b],
-                                     (Bool,
-                                       ([(Term a b, Term a b)],
- ([(Term a b, Term a b)],
-   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))], Term a b -> Bool))))));
-mk_impl nfs q r rw =
-  (case partition (is_Var . fst) r of {
-    (vr, ra) ->
-      (case partition (is_Var . fst) rw of {
-        (vrw, rwa) ->
-          let {
-            isnf = is_NF_terms q;
-          } in (nfs, (q, (is_NF_trs_subset isnf (r ++ rw),
-                           (vr, (vrw, (insert_rules True ra
- (insert_rules False rwa empty),
-isnf))))));
-      });
-  });
-
-mk :: forall a b.
-        (Compare_order a, Eq a, Ccompare b, Compare_order b, Eq b,
-          Mapping_impl b) => Bool ->
-                               [Term a b] ->
-                                 [(Term a b, Term a b)] ->
-                                   [(Term a b, Term a b)] -> Tp a b;
-mk nfs q r rw = TP (mk_impl nfs q r rw);
-
-rw_impl ::
-  forall a b.
-    (Compare_order a) => (Bool,
-                           ([Term a b],
-                             (Bool,
-                               ([(Term a b, Term a b)],
-                                 ([(Term a b, Term a b)],
-                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
-                                     Term a b -> Bool)))))) ->
-                           [(Term a b, Term a b)];
-rw_impl (uu, (uv, (uw, (ux, (vRw, (m, uy)))))) = vRw ++ rules_with not m;
-
-rw :: forall a b.
-        (Compare_order a, Compare_order b) => Tp a b -> [(Term a b, Term a b)];
-rw tp = rw_impl (impl_ofc tp);
+nFQ_subset_NF_rules ::
+  forall a b. (Compare_order a, Compare_order b) => Tp a b -> Bool;
+nFQ_subset_NF_rules tp = nFQ_subset_NF_rules_impl (impl_ofc tp);
 
 tp_rbt_impl ::
   forall a b.
@@ -73636,69 +73009,1105 @@ tp_rbt_impl =
   Tp_ops_ext qreltrs q r rw rulesb q_empty is_QNF nFQ_subset_NF_rules rules_map
     delete_R_Rw split_rules mk nfs ();
 
-certify_cert_problem ::
+pairs_impla ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+pairs_impla (p, (pw, (r, (rw, (e, uu))))) = p ++ pw;
+
+pairsa :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+pairsa xa = pairs_impla (impl_ofe xa);
+
+rules_implc ::
+  forall a b.
+    ([(Term a b, Term a b)],
+      ([(Term a b, Term a b)],
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([(Term a b, Term a b)],
+              Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+      [(Term a b, Term a b)];
+rules_implc (p, (pw, (r, (rw, (e, uu))))) = r ++ rw;
+
+rulesd :: forall a b. (Compare_order a) => Ac_dpp a b -> [(Term a b, Term a b)];
+rulesd xa = rules_implc (impl_ofe xa);
+
+rfc_matchbox_absolute_bounds_tt ::
+  forall a b c.
+    (Compare_order b, Eq b, Showl b, Ccompare c, Compare_order c, Eq c,
+      Mapping_impl c,
+      Showl c) => Tp_ops_ext a b [Char] () ->
+                    Bounds_info b c ->
+                      [Term b [Char]] ->
+                        [(Term b [Char], Term b [Char])] ->
+                          a -> Sum (String -> String) a;
+rfc_matchbox_absolute_bounds_tt i info initial_terms d tp =
+  bindb (rfc_matchbox_relative_bounds_tt i info initial_terms d tp)
+    (\ tpa -> Inr (mkc i (nfsb i tpa) (qb i tpa) (rc i tpa) []));
+
+check_rfc_absolute ::
+  forall a b c.
+    (Compare_order b, Countable b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      (String -> String) ->
+                        a -> Trs_termination_proof b [Nat] [Char] ->
+                               Sum (String -> String) ();
+check_rfc_absolute ia j i tp (Rfc_Matchbox_Relative_Bounds info initial d child)
+  = bindb (rfc_matchbox_absolute_bounds_tt ia info initial d tp)
+      (\ tpa -> check_rfc_absolute ia j (add_index i one_nat) tpa child);
+check_rfc_absolute ia j i tp (Split selected first second) =
+  (case split_tt ia tp selected of {
+    (tp1, tp2) ->
+      bindb (check_rfc_absolute ia j (add_index i one_nat) tp1 first)
+        (\ _ ->
+          check_rfc_absolute ia j (add_index i (nat_of_integer (2 :: Integer)))
+            tp2 second);
+  });
+check_rfc_absolute ia j i tp (DP_Trans v va vb vc) =
+  check_trs_termination_proof ia j False i tp (DP_Trans v va vb vc);
+check_rfc_absolute ia j i tp (Rule_Removal v va vb) =
+  check_trs_termination_proof ia j False i tp (Rule_Removal v va vb);
+check_rfc_absolute ia j i tp (String_Reversal v) =
+  check_trs_termination_proof ia j False i tp (String_Reversal v);
+check_rfc_absolute ia j i tp (Constant_String v va) =
+  check_trs_termination_proof ia j False i tp (Constant_String v va);
+check_rfc_absolute ia j i tp (Bounds v) =
+  check_trs_termination_proof ia j False i tp (Bounds v);
+check_rfc_absolute ia j i tp (Relative_Bounds v va vb) =
+  check_trs_termination_proof ia j False i tp (Relative_Bounds v va vb);
+check_rfc_absolute ia j i tp (Rfc_Bounds v va) =
+  check_trs_termination_proof ia j False i tp (Rfc_Bounds v va);
+check_rfc_absolute ia j i tp (Rfc_Automaton_Closed_Bounds v va) =
+  check_trs_termination_proof ia j False i tp
+    (Rfc_Automaton_Closed_Bounds v va);
+check_rfc_absolute ia j i tp (Rfc_Relative_Bounds v va vb vc) =
+  check_trs_termination_proof ia j False i tp (Rfc_Relative_Bounds v va vb vc);
+check_rfc_absolute ia j i tp (Rfc_Automaton_Closed_Relative_Bounds v va vb vc) =
+  check_trs_termination_proof ia j False i tp
+    (Rfc_Automaton_Closed_Relative_Bounds v va vb vc);
+check_rfc_absolute ia j i tp (Uncurry v va vb) =
+  check_trs_termination_proof ia j False i tp (Uncurry v va vb);
+check_rfc_absolute ia j i tp (Semlab v va vb vc) =
+  check_trs_termination_proof ia j False i tp (Semlab v va vb vc);
+check_rfc_absolute ia j i tp R_is_Empty =
+  check_trs_termination_proof ia j False i tp R_is_Empty;
+check_rfc_absolute ia j i tp (Fcc v va vb) =
+  check_trs_termination_proof ia j False i tp (Fcc v va vb);
+check_rfc_absolute ia j i tp (Switch_Innermost v va) =
+  check_trs_termination_proof ia j False i tp (Switch_Innermost v va);
+check_rfc_absolute ia j i tp (Drop_Equality v) =
+  check_trs_termination_proof ia j False i tp (Drop_Equality v);
+check_rfc_absolute ia j i tp (Remove_Nonapplicable_Rules v va) =
+  check_trs_termination_proof ia j False i tp (Remove_Nonapplicable_Rules v va);
+check_rfc_absolute ia j i tp (Permuting_AFS v va) =
+  check_trs_termination_proof ia j False i tp (Permuting_AFS v va);
+check_rfc_absolute ia j i tp Right_Ground_Termination =
+  check_trs_termination_proof ia j False i tp Right_Ground_Termination;
+check_rfc_absolute ia j i tp (Assume_SN v va) =
+  check_trs_termination_proof ia j False i tp (Assume_SN v va);
+check_rfc_absolute ia j i tp (Rfc_Native_Matchbox_Relative_Bounds v va vb vc) =
+  check_trs_termination_proof ia j False i tp
+    (Rfc_Native_Matchbox_Relative_Bounds v va vb vc);
+check_rfc_absolute ia j i tp (AAECC_Innermost v va vb vc vd) =
+  check_trs_termination_proof ia j False i tp (AAECC_Innermost v va vb vc vd);
+check_rfc_absolute ia j i tp (Rule_Strengthening v va) =
+  check_trs_termination_proof ia j False i tp (Rule_Strengthening v va);
+
+plain_adp_term :: forall a b. Term a b -> Term (Adp_symbol a) b;
+plain_adp_term (Var x) = Var x;
+plain_adp_term (Fun f ts) = Fun (Plain f) (map plain_adp_term ts);
+
+ac_dpp_impl ::
+  forall a b.
+    (Compare_order a, Eq a, Compare b,
+      Eq b) => ([(Term a b, Term a b)],
+                 ([(Term a b, Term a b)],
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([(Term a b, Term a b)],
+                         Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+                 (Set (Term a b, Term a b),
+                   (Set (Term a b, Term a b),
+                     (Set (Term a b, Term a b),
+                       (Set (Term a b, Term a b), Set (Term a b, Term a b)))));
+ac_dpp_impl (p, (pw, (r, (rw, (e, uu))))) =
+  (set p, (set pw, (set r, (set rw, set e))));
+
+ac_dpp ::
+  forall a b.
+    (Compare_order a, Eq a, Compare b,
+      Eq b) => Ac_dpp a b ->
+                 (Set (Term a b, Term a b),
+                   (Set (Term a b, Term a b),
+                     (Set (Term a b, Term a b),
+                       (Set (Term a b, Term a b), Set (Term a b, Term a b)))));
+ac_dpp xa = ac_dpp_impl (impl_ofe xa);
+
+a_trs_impl :: forall a. [a] -> [(Term a [Char], Term a [Char])];
+a_trs_impl a =
+  let {
+    x = Var [char_0x78];
+    y = Var [char_0x79];
+    z = Var [char_0x7A];
+  } in map (\ f -> (Fun f [Fun f [x, y], z], Fun f [x, Fun f [y, z]])) a ++
+         map (\ f -> (Fun f [x, Fun f [y, z]], Fun f [Fun f [x, y], z])) a;
+
+wwf_rules_impl ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Bool;
+wwf_rules_impl
+  (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (vd, (ve, (wwf, vf)))))))))))) =
+  wwf;
+
+wwf_rules :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+wwf_rules d = wwf_rules_impl (impl_ofd d);
+
+rules_map_impla ::
+  forall a b.
+    (Compare_order a) => (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([Term a b],
+                                   (Bool,
+                                     (Bool,
+                                       ([(Term a b, Term a b)],
+ ([(Term a b, Term a b)],
+   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+       (Bool, Term a b -> Bool)))))))))))) ->
+                           (a, Nat) -> [(Term a b, Term a b)];
+rules_map_impla (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (m, vd)))))))))) fn
+  = (case lookup m fn of {
+      Nothing -> [];
+      Just a -> map snd a;
+    });
+
+rules_mapa ::
+  forall a b.
+    (Compare_order a) => Dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
+rules_mapa d = rules_map_impla (impl_ofd d);
+
+is_sharp_symbol :: forall a. Adp_symbol a -> Bool;
+is_sharp_symbol (Plain uu) = False;
+is_sharp_symbol (Sharpb uv) = True;
+
+c_rules_impl :: forall a. [a] -> [(Term a [Char], Term a [Char])];
+c_rules_impl c = let {
+                   x = Var [char_0x78];
+                   y = Var [char_0x79];
+                 } in map (\ f -> (Fun f [x, y], Fun f [y, x])) c;
+
+aC_trs_impl :: forall a. [a] -> [a] -> [(Term a [Char], Term a [Char])];
+aC_trs_impl a c = a_trs_impl a ++ c_rules_impl c;
+
+delete_P_Pw_impl ::
+  forall a b.
+    (Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 [(Term a b, Term a b)] ->
+                   [(Term a b, Term a b)] ->
+                     (Bool,
+                       (Bool,
+                         ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             ([Term a b],
+                               (Bool,
+                                 (Bool,
+                                   ([(Term a b, Term a b)],
+                                     ([(Term a b, Term a b)],
+                                       (Rbt (a, Nat)
+  [(Bool, (Term a b, Term a b))],
+ (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+   (Bool, Term a b -> Bool))))))))))));
+delete_P_Pw_impl (nfs, (mi, (p, (pw, rest)))) pd pwd =
+  (nfs, (mi, (list_diff p pd, (list_diff pw pwd, rest))));
+
+delete_P_Pw ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b ->
+                 [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Dpp a b;
+delete_P_Pw d p pw = DPP (delete_P_Pw_impl (impl_ofd d) p pw);
+
+delete_R_Rw_impla ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 [(Term a b, Term a b)] ->
+                   [(Term a b, Term a b)] ->
+                     (Bool,
+                       (Bool,
+                         ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             ([Term a b],
+                               (Bool,
+                                 (Bool,
+                                   ([(Term a b, Term a b)],
+                                     ([(Term a b, Term a b)],
+                                       (Rbt (a, Nat)
+  [(Bool, (Term a b, Term a b))],
+ (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+   (Bool, Term a b -> Bool))))))))))));
+delete_R_Rw_impla d r rw =
+  (case d of {
+    (nfs, (mi, (p, (pw, (q, (nfq, (nc, (vR,
+ (vRw, (m, (rm, (wwf, isnf))))))))))))
+      -> (case partition (is_Var . fst) r of {
+           (vr, ra) ->
+             (case partition (is_Var . fst) rw of {
+               (vrw, rwa) ->
+                 let {
+                   vra = list_diff vR vr;
+                   vrwa = list_diff vRw vrw;
+                   ma = delete_rules True ra (delete_rules False rwa m);
+                   rma = delete_rules True (reverse_rules r)
+                           (delete_rules False (reverse_rules rw) rm);
+                   rs = vra ++ vrwa ++ map snd (values ma);
+                 } in (nfs, (mi, (p, (pw, (q,
+    (nfq || is_NF_trs_subset isnf rs,
+      (nc || all (\ rb -> not (is_Var (snd rb))) rs,
+        (vra, (vrwa, (ma, (rma, (wwf || wwf_qtrs_impl isnf rs, isnf))))))))))));
+             });
+         });
+  });
+
+delete_R_Rwa ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b ->
+                 [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Dpp a b;
+delete_R_Rwa d r rw = DPP (delete_R_Rw_impla (impl_ofd d) r rw);
+
+split_pairs_impl ::
+  forall a b.
+    (Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 [(Term a b, Term a b)] ->
+                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
+split_pairs_impl d ps = partition (membera ps) (pairs_impl d);
+
+split_pairs ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b ->
+                 [(Term a b, Term a b)] ->
+                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
+split_pairs d = split_pairs_impl (impl_ofd d);
+
+split_rules_impla ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 [(Term a b, Term a b)] ->
+                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
+split_rules_impla d rs = partition (membera rs) (rules_implb d);
+
+split_rulesa ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b ->
+                 [(Term a b, Term a b)] ->
+                   ([(Term a b, Term a b)], [(Term a b, Term a b)]);
+split_rulesa d = split_rules_impla (impl_ofd d);
+
+rules_map_implb ::
+  forall a b.
+    (Compare_order a) => ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([(Term a b, Term a b)],
+                                   Rbt (a, Nat)
+                                     [((), (Term a b, Term a b))]))))) ->
+                           (a, Nat) -> [(Term a b, Term a b)];
+rules_map_implb (p, (pw, (r, (rw, (e, m))))) fn = (case lookup m fn of {
+            Nothing -> [];
+            Just a -> map snd a;
+          });
+
+rules_mapb ::
+  forall a b.
+    (Compare_order a) => Ac_dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
+rules_mapb xa = rules_map_implb (impl_ofe xa);
+
+rules_non_collapsing_impl ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Bool;
+rules_non_collapsing_impl (uu, (uv, (uw, (ux, (uy, (uz, (nc, va))))))) = nc;
+
+rules_non_collapsing :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+rules_non_collapsing d = rules_non_collapsing_impl (impl_ofd d);
+
+nFQ_subset_NF_rules_impla ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Bool;
+nFQ_subset_NF_rules_impla (uu, (uv, (uw, (ux, (uy, (b, uz)))))) = b;
+
+nFQ_subset_NF_rulesa :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+nFQ_subset_NF_rulesa d = nFQ_subset_NF_rules_impla (impl_ofd d);
+
+rules_no_left_var_impl ::
+  forall a b.
+    (Bool,
+      (Bool,
+        ([(Term a b, Term a b)],
+          ([(Term a b, Term a b)],
+            ([Term a b],
+              (Bool,
+                (Bool,
+                  ([(Term a b, Term a b)],
+                    ([(Term a b, Term a b)],
+                      (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                        (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                          (Bool, Term a b -> Bool)))))))))))) ->
+      Bool;
+rules_no_left_var_impl (uu, (uv, (uw, (ux, (uy, (uz, (va, ([], ([], vb)))))))))
+  = True;
+rules_no_left_var_impl (v, (vb, (ve, (vg, (vi, (vk, (vm, (vq : vr, vp)))))))) =
+  False;
+rules_no_left_var_impl
+  (v, (vb, (ve, (vg, (vi, (vk, (vm, (vo, (vs : vt, vr))))))))) = False;
+
+rules_no_left_var :: forall a b. (Compare_order a) => Dpp a b -> Bool;
+rules_no_left_var d = rules_no_left_var_impl (impl_ofd d);
+
+reverse_rules_map_impl ::
+  forall a b.
+    (Compare_order a) => (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 ([Term a b],
+                                   (Bool,
+                                     (Bool,
+                                       ([(Term a b, Term a b)],
+ ([(Term a b, Term a b)],
+   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+     (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+       (Bool, Term a b -> Bool)))))))))))) ->
+                           (a, Nat) -> [(Term a b, Term a b)];
+reverse_rules_map_impl
+  (uu, (uv, (uw, (ux, (uy, (uz, (va, (vb, (vc, (vd, (m, ve))))))))))) fn =
+  (case lookup m fn of {
+    Nothing -> [];
+    Just a -> map snd a;
+  });
+
+reverse_rules_map ::
+  forall a b.
+    (Compare_order a) => Dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
+reverse_rules_map d = reverse_rules_map_impl (impl_ofd d);
+
+intersect_rules_impl ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 [(Term a b, Term a b)] ->
+                   (Bool,
+                     (Bool,
+                       ([(Term a b, Term a b)],
+                         ([(Term a b, Term a b)],
+                           ([Term a b],
+                             (Bool,
+                               (Bool,
+                                 ([(Term a b, Term a b)],
+                                   ([(Term a b, Term a b)],
+                                     (Rbt (a, Nat)
+[(Bool, (Term a b, Term a b))],
+                                       (Rbt (a, Nat)
+  [(Bool, (Term a b, Term a b))],
+ (Bool, Term a b -> Bool))))))))))));
+intersect_rules_impl d ri =
+  (case d of {
+    (nfs, (mi, (p, (pw, (q, (nfq, (nc, (vR,
+ (vRw, (m, (rm, (wwf, isnf))))))))))))
+      -> (case partition (is_Var . fst) ri of {
+           (vri, ria) ->
+             let {
+               vr = inter_list_set vR vri;
+               vrw = inter_list_set vRw vri;
+               ma = intersect_rules ria m;
+               rma = intersect_rules (reverse_rules ri) rm;
+               rs = vr ++ vrw ++ map snd (values ma);
+             } in (nfs, (mi, (p, (pw, (q,
+(nfq || is_NF_trs_subset isnf rs,
+  (nc || all (\ r -> not (is_Var (snd r))) rs,
+    (vr, (vrw, (ma, (rma, (wwf || wwf_qtrs_impl isnf rs, isnf))))))))))));
+         });
+  });
+
+intersect_rulesa ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b -> [(Term a b, Term a b)] -> Dpp a b;
+intersect_rulesa d rs = DPP (intersect_rules_impl (impl_ofd d) rs);
+
+intersect_pairs_impl ::
+  forall a b.
+    (Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 [(Term a b, Term a b)] ->
+                   (Bool,
+                     (Bool,
+                       ([(Term a b, Term a b)],
+                         ([(Term a b, Term a b)],
+                           ([Term a b],
+                             (Bool,
+                               (Bool,
+                                 ([(Term a b, Term a b)],
+                                   ([(Term a b, Term a b)],
+                                     (Rbt (a, Nat)
+[(Bool, (Term a b, Term a b))],
+                                       (Rbt (a, Nat)
+  [(Bool, (Term a b, Term a b))],
+ (Bool, Term a b -> Bool))))))))))));
+intersect_pairs_impl (nfs, (mi, (p, (pw, rest)))) ps =
+  (nfs, (mi, (inter_list_set p ps, (inter_list_set pw ps, rest))));
+
+intersect_pairs ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b -> [(Term a b, Term a b)] -> Dpp a b;
+intersect_pairs d ps = DPP (intersect_pairs_impl (impl_ofd d) ps);
+
+replace_pair_impl ::
+  forall a b.
+    (Eq a,
+      Eq b) => (Bool,
+                 (Bool,
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([Term a b],
+                         (Bool,
+                           (Bool,
+                             ([(Term a b, Term a b)],
+                               ([(Term a b, Term a b)],
+                                 (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                   (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+                                     (Bool, Term a b -> Bool)))))))))))) ->
+                 (Term a b, Term a b) ->
+                   [(Term a b, Term a b)] ->
+                     (Bool,
+                       (Bool,
+                         ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             ([Term a b],
+                               (Bool,
+                                 (Bool,
+                                   ([(Term a b, Term a b)],
+                                     ([(Term a b, Term a b)],
+                                       (Rbt (a, Nat)
+  [(Bool, (Term a b, Term a b))],
+ (Rbt (a, Nat) [(Bool, (Term a b, Term a b))],
+   (Bool, Term a b -> Bool))))))))))));
+replace_pair_impl (nfs, (mi, (p, (pw, rest)))) pair ps =
+  (nfs, (mi, (replace_impl pair ps p, (replace_impl pair ps pw, rest))));
+
+replace_pair ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Dpp a b ->
+                 (Term a b, Term a b) -> [(Term a b, Term a b)] -> Dpp a b;
+replace_pair d pair ps = DPP (replace_pair_impl (impl_ofd d) pair ps);
+
+dpp_rbt_impl ::
+  forall a b.
+    (Compare_order a, Eq a, Ccompare b, Compare b, Eq b,
+      Mapping_impl b) => Dpp_ops_ext (Dpp a b) a b ();
+dpp_rbt_impl =
+  Dpp_ops_ext dpp p pw pairs qa ra rwa rulesc q_emptya rules_no_left_var
+    rules_non_collapsing is_QNFa nFQ_subset_NF_rulesa rules_mapa
+    reverse_rules_map intersect_pairs replace_pair intersect_rulesa delete_P_Pw
+    delete_R_Rwa split_pairs split_rulesa mka m nfsa wwf_rules ();
+
+check_cert_rfc_absolute ::
   forall a b c d e f.
     (Compare_order b, Countable b, Default b, Eq b,
       Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
                     Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
                       Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
                         Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
-                          Bool ->
-                            Input (Lab b [Nat]) [Char] ->
-                              Property (Lab b [Nat]) f ->
-                                Answer (Lab b [Nat]) [Char] ->
-                                  Proof b [Nat] [Char] -> Cert_result;
-certify_cert_problem i j k l a input property answer proof =
-  (case check_cert i j k l a input property answer proof of {
-    Inl err -> Error (err "");
-    Inr _ -> Certified;
-  });
-
-certify_proof ::
-  Bool -> Maybe [Char] -> Maybe [Char] -> Maybe [Char] -> [Char] -> Cert_result;
-certify_proof a inp_o prop_o answ_o prfs =
-  bind2a (parse_combined_cert_problem inp_o prop_o answ_o prfs) Unsupported
-    (\ (inp, (prop, (b, c))) ->
-      certify_cert_problem tp_rbt_impl dpp_rbt_impl ac_tp_list_impl
-        ac_dpp_rbt_impl a inp prop b c);
-
-erase_adp_symbol :: forall a. Adp_symbol a -> a;
-erase_adp_symbol (Plain f) = f;
-erase_adp_symbol (Sharpb f) = f;
-
-erase_adp_term :: forall a b. Term (Adp_symbol a) b -> Term a b;
-erase_adp_term (Var x) = Var x;
-erase_adp_term (Fun f ts) = Fun (erase_adp_symbol f) (map erase_adp_term ts);
-
-erase_adp ::
-  forall a b.
-    (Term (Adp_symbol a) b, Term (Adp_symbol a) b) -> (Term a b, Term a b);
-erase_adp p = (erase_adp_term (fst p), erase_adp_term (snd p));
-
-annotate_term_at ::
-  forall a b. Set [Nat] -> [Nat] -> Term a b -> Term (Adp_symbol a) b;
-annotate_term_at a p (Var x) = Var x;
-annotate_term_at a p (Fun f ts) =
-  Fun (if member p a then Sharpb f else Plain f)
-    (annotate_terms_at a p zero_nat ts);
-
-annotate_terms_at ::
-  forall a b.
-    Set [Nat] -> [Nat] -> Nat -> [Term a b] -> [Term (Adp_symbol a) b];
-annotate_terms_at a p i [] = [];
-annotate_terms_at a p i (t : ts) =
-  annotate_term_at a (p ++ [i]) t : annotate_terms_at a p (suc i) ts;
-
-annotate_termb :: forall a b. Set [Nat] -> Term a b -> Term (Adp_symbol a) b;
-annotate_termb a t = annotate_term_at a [] t;
-
-plain_adp_term :: forall a b. Term a b -> Term (Adp_symbol a) b;
-plain_adp_term (Var x) = Var x;
-plain_adp_term (Fun f ts) = Fun (Plain f) (map plain_adp_term ts);
-
-is_sharp_symbol :: forall a. Adp_symbol a -> Bool;
-is_sharp_symbol (Plain uu) = False;
-is_sharp_symbol (Sharpb uv) = True;
+                          Input (Lab b [Nat]) [Char] ->
+                            Property (Lab b [Nat]) f ->
+                              Answer (Lab b [Nat]) [Char] ->
+                                Proof b [Nat] [Char] ->
+                                  Sum (String -> String) ();
+check_cert_rfc_absolute i j k l (Inn_TRS_input q r s) Termination
+  (Decision True) (TRS_Termination_Proof p) =
+  check_rfc_absolute i j (showsl_lit "1")
+    (mkc i (strategy_to_nfs q) (strategy_to_Q q r) r s) p;
+check_cert_rfc_absolute i j k l (FP_TRS_input Outermost r) Termination
+  (Decision True) (TRS_Termination_Proof p) =
+  check_rfc_absolute i j (showsl_lit "1") (mkc i False [] r []) p;
+check_cert_rfc_absolute i j k l (DP_input v va vb vc) prop ans p =
+  check_cert i j k l False (DP_input v va vb vc) prop ans p;
+check_cert_rfc_absolute i j k l (Relative_DP_input v va vb vc vd ve vf) prop ans
+  p = check_cert i j k l False (Relative_DP_input v va vb vc vd ve vf) prop ans
+        p;
+check_cert_rfc_absolute i j k l (CSR_Improved_DP_input v va vb vc vd) prop ans p
+  = check_cert i j k l False (CSR_Improved_DP_input v va vb vc vd) prop ans p;
+check_cert_rfc_absolute i j k l (CSR_Muterm_Typed_DP_input v va vb vc vd) prop
+  ans p =
+  check_cert i j k l False (CSR_Muterm_Typed_DP_input v va vb vc vd) prop ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input (Context_Sensitive vb) va) prop
+  ans p =
+  check_cert i j k l False (FP_TRS_input (Context_Sensitive vb) va) prop ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input (Forbidden_Patterns vb) va) prop
+  ans p =
+  check_cert i j k l False (FP_TRS_input (Forbidden_Patterns vb) va) prop ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Confluence ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Confluence ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Commutation ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Commutation ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Completion ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Completion ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Safety ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Safety ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Entailment ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Entailment ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) (Complexity vb) ans p =
+  check_cert i j k l False (FP_TRS_input v va) (Complexity vb) ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Closed_Under_Rewriting ans p
+  = (check_cert ::
+      Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+        Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+          Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+            Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+              Bool ->
+                Input (Lab b [Nat]) [Char] ->
+                  Property (Lab b [Nat]) f ->
+                    Answer (Lab b [Nat]) [Char] ->
+                      Proof b [Nat] [Char] -> Sum (String -> String) ())
+      i j k l False (FP_TRS_input v va) Closed_Under_Rewriting ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Infeasibility ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Infeasibility ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) Unknown_Property ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False (FP_TRS_input v va) Unknown_Property ans p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop (Decision False) p =
+  check_cert i j k l False (FP_TRS_input v va) prop (Decision False) p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop (Upperbound_Poly vb) p
+  = check_cert i j k l False (FP_TRS_input v va) prop (Upperbound_Poly vb) p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop (Completed_System vb) p
+  = check_cert i j k l False (FP_TRS_input v va) prop (Completed_System vb) p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop
+  (Order_Completed_System vb vc) p =
+  check_cert i j k l False (FP_TRS_input v va) prop
+    (Order_Completed_System vb vc) p;
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Complexity_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans (Complexity_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (DP_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (DP_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Relative_DP_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Relative_DP_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (DP_Nontermination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (DP_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (TRS_Nontermination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (TRS_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (FP_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (FP_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Outermost_RZ_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Outermost_RZ_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (CSR_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (CSR_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (CSR_Improved_DP_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (CSR_Improved_DP_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (CSR_Muterm_Typed_DP_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (CSR_Muterm_Typed_DP_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (GM04_Complete_TRS_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (GM04_Complete_TRS_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (GM04_Standalone_DP_Proof_Node vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (GM04_Standalone_DP_Proof_Node vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (GM04_Standalone_TRS_Proof_Node vb vc) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (GM04_Standalone_TRS_Proof_Node vb vc);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (GM04_Complete_TRS_Nontermination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (GM04_Complete_TRS_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (FP_Nontermination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (FP_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Relative_TRS_Nontermination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Relative_TRS_Nontermination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (TRS_Confluence_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (TRS_Confluence_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (TRS_Non_Confluence_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (TRS_Non_Confluence_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (TRS_Non_Commutation_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (TRS_Non_Commutation_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (TRS_Commutation_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (TRS_Commutation_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Completion_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans (Completion_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Ordered_Completion_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Ordered_Completion_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Equational_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans (Equational_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Equational_Disproof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Equational_Disproof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Quasi_Reductive_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Quasi_Reductive_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Conditional_CR_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Conditional_CR_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Conditional_Non_CR_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Conditional_Non_CR_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Tree_Automata_Closed_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Tree_Automata_Closed_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (AC_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (AC_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (LTS_Termination_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (LTS_Termination_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (LTS_Safety_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans (LTS_Safety_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Infeasibility_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans
+    (Infeasibility_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Feasibility_Proof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans (Feasibility_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans (Unknown_Proof vb)
+  = check_cert i j k l False (FP_TRS_input v va) prop ans (Unknown_Proof vb);
+check_cert_rfc_absolute i j k l (FP_TRS_input v va) prop ans
+  (Unknown_Disproof vb) =
+  check_cert i j k l False (FP_TRS_input v va) prop ans (Unknown_Disproof vb);
+check_cert_rfc_absolute i j k l (AC_input v va vb) prop ans p =
+  check_cert i j k l False (AC_input v va vb) prop ans p;
+check_cert_rfc_absolute i j k l (LTS_input v) prop ans p =
+  check_cert i j k l False (LTS_input v) prop ans p;
+check_cert_rfc_absolute i j k l (LTS_safety_input v va) prop ans p =
+  check_cert i j k l False (LTS_safety_input v va) prop ans p;
+check_cert_rfc_absolute i j k l (CTRS_input v) prop ans p =
+  check_cert i j k l False (CTRS_input v) prop ans p;
+check_cert_rfc_absolute i j k l (EQ_input v) prop ans p =
+  check_cert i j k l False (EQ_input v) prop ans p;
+check_cert_rfc_absolute i j k l (EQ_RO_input v va) prop ans p =
+  check_cert i j k l False (EQ_RO_input v va) prop ans p;
+check_cert_rfc_absolute i j k l (EQ_reasoning_input v va) prop ans p =
+  check_cert i j k l False (EQ_reasoning_input v va) prop ans p;
+check_cert_rfc_absolute i j k l (TA_input v va) prop ans p =
+  check_cert i j k l False (TA_input v va) prop ans p;
+check_cert_rfc_absolute i j k l (Infeasibility_input v va) prop ans p =
+  check_cert i j k l False (Infeasibility_input v va) prop ans p;
+check_cert_rfc_absolute i j k l (Single_TRS_input v va) prop ans p =
+  check_cert i j k l False (Single_TRS_input v va) prop ans p;
+check_cert_rfc_absolute i j k l (Two_TRS_input v va vb) prop ans p =
+  check_cert i j k l False (Two_TRS_input v va vb) prop ans p;
+check_cert_rfc_absolute i j k l (Unknown_input v) prop ans p =
+  check_cert i j k l False (Unknown_input v) prop ans p;
+check_cert_rfc_absolute i j k l inp Confluence ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Confluence ans p;
+check_cert_rfc_absolute i j k l inp Commutation ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Commutation ans p;
+check_cert_rfc_absolute i j k l inp Completion ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Completion ans p;
+check_cert_rfc_absolute i j k l inp Safety ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Safety ans p;
+check_cert_rfc_absolute i j k l inp Entailment ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Entailment ans p;
+check_cert_rfc_absolute i j k l inp (Complexity v) ans p =
+  check_cert i j k l False inp (Complexity v) ans p;
+check_cert_rfc_absolute i j k l inp Closed_Under_Rewriting ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Closed_Under_Rewriting ans p;
+check_cert_rfc_absolute i j k l inp Infeasibility ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Infeasibility ans p;
+check_cert_rfc_absolute i j k l inp Unknown_Property ans p =
+  (check_cert ::
+    Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+      Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+        Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+          Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+            Bool ->
+              Input (Lab b [Nat]) [Char] ->
+                Property (Lab b [Nat]) f ->
+                  Answer (Lab b [Nat]) [Char] ->
+                    Proof b [Nat] [Char] -> Sum (String -> String) ())
+    i j k l False inp Unknown_Property ans p;
+check_cert_rfc_absolute i j k l inp prop (Decision False) p =
+  check_cert i j k l False inp prop (Decision False) p;
+check_cert_rfc_absolute i j k l inp prop (Upperbound_Poly v) p =
+  check_cert i j k l False inp prop (Upperbound_Poly v) p;
+check_cert_rfc_absolute i j k l inp prop (Completed_System v) p =
+  check_cert i j k l False inp prop (Completed_System v) p;
+check_cert_rfc_absolute i j k l inp prop (Order_Completed_System v va) p =
+  check_cert i j k l False inp prop (Order_Completed_System v va) p;
+check_cert_rfc_absolute i j k l inp prop ans (Complexity_Proof v) =
+  check_cert i j k l False inp prop ans (Complexity_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (DP_Termination_Proof v) =
+  check_cert i j k l False inp prop ans (DP_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Relative_DP_Termination_Proof v) =
+  check_cert i j k l False inp prop ans (Relative_DP_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (DP_Nontermination_Proof v) =
+  check_cert i j k l False inp prop ans (DP_Nontermination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (TRS_Nontermination_Proof v) =
+  check_cert i j k l False inp prop ans (TRS_Nontermination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (FP_Termination_Proof v) =
+  check_cert i j k l False inp prop ans (FP_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Outermost_RZ_Termination_Proof v)
+  = check_cert i j k l False inp prop ans (Outermost_RZ_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (CSR_Termination_Proof v) =
+  check_cert i j k l False inp prop ans (CSR_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (CSR_Improved_DP_Proof v) =
+  check_cert i j k l False inp prop ans (CSR_Improved_DP_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (CSR_Muterm_Typed_DP_Proof v) =
+  check_cert i j k l False inp prop ans (CSR_Muterm_Typed_DP_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (GM04_Complete_TRS_Proof v) =
+  check_cert i j k l False inp prop ans (GM04_Complete_TRS_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (GM04_Standalone_DP_Proof_Node v) =
+  check_cert i j k l False inp prop ans (GM04_Standalone_DP_Proof_Node v);
+check_cert_rfc_absolute i j k l inp prop ans
+  (GM04_Standalone_TRS_Proof_Node v va) =
+  check_cert i j k l False inp prop ans (GM04_Standalone_TRS_Proof_Node v va);
+check_cert_rfc_absolute i j k l inp prop ans
+  (GM04_Complete_TRS_Nontermination_Proof v) =
+  check_cert i j k l False inp prop ans
+    (GM04_Complete_TRS_Nontermination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (FP_Nontermination_Proof v) =
+  check_cert i j k l False inp prop ans (FP_Nontermination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans
+  (Relative_TRS_Nontermination_Proof v) =
+  check_cert i j k l False inp prop ans (Relative_TRS_Nontermination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (TRS_Confluence_Proof v) =
+  check_cert i j k l False inp prop ans (TRS_Confluence_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (TRS_Non_Confluence_Proof v) =
+  check_cert i j k l False inp prop ans (TRS_Non_Confluence_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (TRS_Non_Commutation_Proof v) =
+  check_cert i j k l False inp prop ans (TRS_Non_Commutation_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (TRS_Commutation_Proof v) =
+  check_cert i j k l False inp prop ans (TRS_Commutation_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Completion_Proof v) =
+  check_cert i j k l False inp prop ans (Completion_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Ordered_Completion_Proof v) =
+  check_cert i j k l False inp prop ans (Ordered_Completion_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Equational_Proof v) =
+  check_cert i j k l False inp prop ans (Equational_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Equational_Disproof v) =
+  check_cert i j k l False inp prop ans (Equational_Disproof v);
+check_cert_rfc_absolute i j k l inp prop ans (Quasi_Reductive_Proof v) =
+  check_cert i j k l False inp prop ans (Quasi_Reductive_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Conditional_CR_Proof v) =
+  check_cert i j k l False inp prop ans (Conditional_CR_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Conditional_Non_CR_Proof v) =
+  check_cert i j k l False inp prop ans (Conditional_Non_CR_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Tree_Automata_Closed_Proof v) =
+  check_cert i j k l False inp prop ans (Tree_Automata_Closed_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (AC_Termination_Proof v) =
+  check_cert i j k l False inp prop ans (AC_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (LTS_Termination_Proof v) =
+  check_cert i j k l False inp prop ans (LTS_Termination_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (LTS_Safety_Proof v) =
+  check_cert i j k l False inp prop ans (LTS_Safety_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Infeasibility_Proof v) =
+  check_cert i j k l False inp prop ans (Infeasibility_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Feasibility_Proof v) =
+  check_cert i j k l False inp prop ans (Feasibility_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Unknown_Proof v) =
+  check_cert i j k l False inp prop ans (Unknown_Proof v);
+check_cert_rfc_absolute i j k l inp prop ans (Unknown_Disproof v) =
+  check_cert i j k l False inp prop ans (Unknown_Disproof v);
 
 relative_adp_drp1_symbol_parser ::
   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
@@ -73804,14 +74213,42 @@ xml2relative_adp_termination_proof x =
       (\ xa -> xml_return (id xa)))
     x;
 
-relative_adp_certification_problem_parser ::
+integrated_proof_parser ::
+  Mapping [Char] (Term (Lab [Char] [Nat]) [Char]) ->
+    Mapping [Char]
+      (Term (Lab [Char] [Nat]) [Char], Term (Lab [Char] [Nat]) [Char]) ->
+      (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
+        Sum_bot (Xml_error String)
+          (Sum (Proof [Char] [Nat] [Char])
+            (Relative_adp_termination_proof (Lab [Char] [Nat])));
+integrated_proof_parser termIndexMap ruleMap x =
+  let {
+    ordinary =
+      xml_change (proof_parser termIndexMap ruleMap)
+        (\ p -> xml_return (Inl p));
+  } in (case fst x of {
+         XML _ _ [] -> ordinary x;
+         XML _ _ (XML child _ _ : _) ->
+           (if child == explode "relativeAdpTerminationProof"
+             then xml_change
+                    (xml_do "proof"
+                      (xml_take xml2relative_adp_termination_proof
+                        (\ xa -> xml_return (id xa))))
+                    (\ p -> xml_return (Inr p)) x
+             else ordinary x);
+         XML _ _ (XML_text _ : _) -> ordinary x;
+         XML_text _ -> ordinary x;
+       });
+
+integrated_certification_problem_parser ::
   (Xml, ([([Char], [Char])], (Bool, ([String], [String])))) ->
     Sum_bot (Xml_error String)
       (Maybe (Input (Lab [Char] [Nat]) [Char]),
         (Maybe (Property (Lab [Char] [Nat]) [Char]),
           (Maybe (Answer (Lab [Char] [Nat]) [Char]),
-            Relative_adp_termination_proof (Lab [Char] [Nat]))));
-relative_adp_certification_problem_parser =
+            Sum (Proof [Char] [Nat] [Char])
+              (Relative_adp_termination_proof (Lab [Char] [Nat])))));
+integrated_certification_problem_parser =
   xml_do "certificationProblem"
     (xml_take (xml_text "cpfVersion")
       (\ _ ->
@@ -73824,25 +74261,24 @@ relative_adp_certification_problem_parser =
                     xml_take_optional (answer_parser term_index_map rule_map)
                       (\ ans ->
                         xml_take
-                          (xml_do "proof"
-                            (xml_take xml2relative_adp_termination_proof
-                              xml_return))
+                          (integrated_proof_parser term_index_map rule_map)
                           (\ proof ->
                             xml_take_optional (\ x -> right (fst x))
                               (\ _ ->
                                 xml_return (inp, (prop, (ans, proof)))))))))));
 
-parse_relative_adp_cert_problem ::
+parse_integrated_cert_problem ::
   [Char] ->
     Sum_bot String
       (Maybe (Input (Lab [Char] [Nat]) [Char]),
         (Maybe (Property (Lab [Char] [Nat]) [Char]),
           (Maybe (Answer (Lab [Char] [Nat]) [Char]),
-            Relative_adp_termination_proof (Lab [Char] [Nat]))));
-parse_relative_adp_cert_problem =
-  parse_from_string relative_adp_certification_problem_parser;
+            Sum (Proof [Char] [Nat] [Char])
+              (Relative_adp_termination_proof (Lab [Char] [Nat])))));
+parse_integrated_cert_problem =
+  parse_from_string integrated_certification_problem_parser;
 
-parse_combined_relative_adp_cert_problem ::
+parse_combined_integrated_cert_problem ::
   Maybe [Char] ->
     Maybe [Char] ->
       Maybe [Char] ->
@@ -73851,9 +74287,10 @@ parse_combined_relative_adp_cert_problem ::
             (Input (Lab [Char] [Nat]) [Char],
               (Property (Lab [Char] [Nat]) [Char],
                 (Answer (Lab [Char] [Nat]) [Char],
-                  Relative_adp_termination_proof (Lab [Char] [Nat]))));
-parse_combined_relative_adp_cert_problem inp1 prop1 answ1 prfs =
-  binda (parse_relative_adp_cert_problem prfs)
+                  Sum (Proof [Char] [Nat] [Char])
+                    (Relative_adp_termination_proof (Lab [Char] [Nat])))));
+parse_combined_integrated_cert_problem inp1 prop1 answ1 prfs =
+  binda (parse_integrated_cert_problem prfs)
     (\ (inp2, (prop2, (answ2, proof))) ->
       binda (parse_merge "input" parse_input inp1 inp2)
         (\ inp ->
@@ -74184,6 +74621,17 @@ relative_adp_com_law_rules =
   } in [(c x y, c y x), (c y x, c x y), (c x (c y z), c (c x y) z),
          (c (c x y) z, c x (c y z)), (c x y, x), (c x y, y), (x, Fun Com0 [])];
 
+rel_impl_adp_com_redpair ::
+  forall a b. Rel_impl_ext (Adp_com_symbol a) b () -> Sum (String -> String) ();
+rel_impl_adp_com_redpair rp =
+  bindb (rel_impl_redpair rp)
+    (\ _ ->
+      check (member zero_nat
+               (mono_af rp (Com2, nat_of_integer (2 :: Integer))) &&
+              member one_nat (mono_af rp (Com2, nat_of_integer (2 :: Integer))))
+        (showsl_lit
+          "relative ADP order is not strict in both compound arguments"));
+
 check_relative_adp_com_redpair ::
   forall a.
     (Ccompare a, Compare_order a, Eq a,
@@ -74221,7 +74669,7 @@ check_relative_adp_com_redpair redp p b selected =
                          Inl (showsl_lit
                                "relative ADP Com requires function-rooted left-hand sides")))
                  (\ _ ->
-                   bindb (rel_impl_mono_redpair rp strict weak)
+                   bindb (rel_impl_adp_com_redpair rp)
                      (\ _ ->
                        bindb (rel_impl_s rp strict)
                          (\ _ -> rel_impl_ns rp weak)))));
@@ -74633,12 +75081,154 @@ certify_relative_adp_cert_problem inp_value property_value answer_value
     Inr _ -> Certified;
   });
 
+equal_cert_result :: Cert_result -> Cert_result -> Bool;
+equal_cert_result (Unsupported x2) (Error x3) = False;
+equal_cert_result (Error x3) (Unsupported x2) = False;
+equal_cert_result Certified (Error x3) = False;
+equal_cert_result (Error x3) Certified = False;
+equal_cert_result Certified (Unsupported x2) = False;
+equal_cert_result (Unsupported x2) Certified = False;
+equal_cert_result (Error x3) (Error y3) = x3 == y3;
+equal_cert_result (Unsupported x2) (Unsupported y2) = x2 == y2;
+equal_cert_result Certified Certified = True;
+
+certify_cert_problem_rfc_absolute ::
+  forall a b c d e f.
+    (Compare_order b, Countable b, Default b, Eq b,
+      Showl b) => Tp_ops_ext a (Lab b [Nat]) [Char] () ->
+                    Dpp_ops_ext c (Lab b [Nat]) [Char] () ->
+                      Ac_tp_ops_ext d (Lab b [Nat]) [Char] () ->
+                        Ac_dpp_ops_ext e (Lab b [Nat]) [Char] () ->
+                          Bool ->
+                            Input (Lab b [Nat]) [Char] ->
+                              Property (Lab b [Nat]) f ->
+                                Answer (Lab b [Nat]) [Char] ->
+                                  Proof b [Nat] [Char] -> Cert_result;
+certify_cert_problem_rfc_absolute i j k l a inp prop ans p =
+  let {
+    old = certify_cert_problem i j k l a inp prop ans p;
+  } in (if equal_cert_result old Certified || a then old
+         else (case check_cert_rfc_absolute i j k l inp prop ans p of {
+                Inl _ -> old;
+                Inr _ -> Certified;
+              }));
+
+eq_rules_non_collapsing :: forall a b. (Compare_order a) => Ac_dpp a b -> Bool;
+eq_rules_non_collapsing d = let {
+                              t = all (\ (_, r) -> not (is_Var r));
+                            } in t (rb d) && t (rwb d) && t (e d);
+
+eq_rules_no_left_var :: forall a b. (Compare_order a) => Ac_dpp a b -> Bool;
+eq_rules_no_left_var d = let {
+                           t = all (\ (l, _) -> not (is_Var l));
+                         } in t (rb d) && t (rwb d) && t (e d);
+
+delete_pairs_rules_impl ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => ([(Term a b, Term a b)],
+                 ([(Term a b, Term a b)],
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([(Term a b, Term a b)],
+                         Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+                 [(Term a b, Term a b)] ->
+                   [(Term a b, Term a b)] ->
+                     ([(Term a b, Term a b)],
+                       ([(Term a b, Term a b)],
+                         ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             ([(Term a b, Term a b)],
+                               Rbt (a, Nat) [((), (Term a b, Term a b))])))));
+delete_pairs_rules_impl (p, (pw, (r, (rw, (e, m))))) pd rd =
+  (if null rd then (list_diff p pd, (list_diff pw pd, (r, (rw, (e, m)))))
+    else mk_implb (list_diff p pd) (list_diff pw pd) (list_diff r rd)
+           (list_diff rw rd) e);
+
+delete_pairs_rules ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Ac_dpp a b ->
+                 [(Term a b, Term a b)] -> [(Term a b, Term a b)] -> Ac_dpp a b;
+delete_pairs_rules xc xd xe =
+  AC_DPP (delete_pairs_rules_impl (impl_ofe xc) xd xe);
+
+reverse_rules_mapa ::
+  forall a b.
+    (Compare_order a, Eq a) => Ac_dpp a b -> (a, Nat) -> [(Term a b, Term a b)];
+reverse_rules_mapa d fn =
+  concatMap (\ (l, r) -> (if root r == Just fn then [(r, l)] else []))
+    (rb d ++ rwb d ++ e d);
+
+intersect_pairs_impla ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => ([(Term a b, Term a b)],
+                 ([(Term a b, Term a b)],
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([(Term a b, Term a b)],
+                         Rbt (a, Nat) [((), (Term a b, Term a b))]))))) ->
+                 [(Term a b, Term a b)] ->
+                   ([(Term a b, Term a b)],
+                     ([(Term a b, Term a b)],
+                       ([(Term a b, Term a b)],
+                         ([(Term a b, Term a b)],
+                           ([(Term a b, Term a b)],
+                             Rbt (a, Nat) [((), (Term a b, Term a b))])))));
+intersect_pairs_impla (p, (pw, (r, (rw, (e, m))))) pd =
+  (inter_list_set p pd, (inter_list_set pw pd, (r, (rw, (e, m)))));
+
+intersect_pairsa ::
+  forall a b.
+    (Compare_order a, Eq a,
+      Eq b) => Ac_dpp a b -> [(Term a b, Term a b)] -> Ac_dpp a b;
+intersect_pairsa xb xc = AC_DPP (intersect_pairs_impla (impl_ofe xb) xc);
+
+ac_dpp_rbt_impl ::
+  forall a b.
+    (Compare_order a, Eq a, Compare b,
+      Eq b) => Ac_dpp_ops_ext (Ac_dpp a b) a b ();
+ac_dpp_rbt_impl =
+  Ac_dpp_ops_ext ac_dpp pa pwa pairsa rb rwb rulesd e mkb rules_mapb
+    reverse_rules_mapa delete_pairs_rules eq_rules_no_left_var
+    eq_rules_non_collapsing intersect_pairsa ();
+
+ac_tp_list_impl ::
+  forall a.
+    (Ceq a, Ccompare a, Compare a, Eq a,
+      Set_impl a) => Ac_tp_ops_ext
+                       ([(Term a [Char], Term a [Char])], ([a], [a])) a [Char]
+                       ();
+ac_tp_list_impl =
+  Ac_tp_ops_ext (\ (r, (a, c)) -> (set r, (set a, set c))) (\ (r, (_, _)) -> r)
+    (\ (_, (a, _)) -> a) (\ (_, (_, c)) -> c) (\ r a c -> (r, (a, c)))
+    (\ (r, (a, c)) dr -> (list_diff r dr, (a, c)))
+    (\ (_, (a, b)) -> aC_trs_impl a b) ();
+
+certify_integrated_cert_problem ::
+  Bool ->
+    Input (Lab [Char] [Nat]) [Char] ->
+      Property (Lab [Char] [Nat]) [Char] ->
+        Answer (Lab [Char] [Nat]) [Char] ->
+          Sum (Proof [Char] [Nat] [Char])
+            (Relative_adp_termination_proof (Lab [Char] [Nat])) ->
+            Cert_result;
+certify_integrated_cert_problem assumptions inp prop ans certificate =
+  (case certificate of {
+    Inl a ->
+      certify_cert_problem_rfc_absolute tp_rbt_impl dpp_rbt_impl ac_tp_list_impl
+        ac_dpp_rbt_impl assumptions inp prop ans a;
+    Inr a -> certify_relative_adp_cert_problem inp prop ans a;
+  });
+
 certify_proof_integrated ::
   Bool -> Maybe [Char] -> Maybe [Char] -> Maybe [Char] -> [Char] -> Cert_result;
 certify_proof_integrated assumptions inp_o prop_o answ_o proof_string =
   bind2a
-    (parse_combined_relative_adp_cert_problem inp_o prop_o answ_o proof_string)
-    (\ _ -> certify_proof assumptions inp_o prop_o answ_o proof_string)
-    (\ (inp, (prop, (a, b))) -> certify_relative_adp_cert_problem inp prop a b);
+    (parse_combined_integrated_cert_problem inp_o prop_o answ_o proof_string)
+    Unsupported
+    (\ (inp, (prop, (a, b))) ->
+      certify_integrated_cert_problem assumptions inp prop a b);
 
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare a fresh packaged replay against exact frozen roots and coverage.
+"""Compare a packaged replay or explicit certificate recheck against frozen roots.
 
 Structural analysis may be reused only for byte-identical proofs in the durable
 baseline matrix. Changed proofs are parsed; unknown nodes remain failures.
@@ -13,10 +13,12 @@ from coverage_transition import Transition
 def main():
  p=argparse.ArgumentParser()
  for name in ['manifest','replay','compact','baseline-evidence','transition','checker','hpc-checker','output']:p.add_argument('--'+name,type=pathlib.Path,required=True)
- p.add_argument('--jobs',type=int,default=8);a=p.parse_args()
+ p.add_argument('--jobs',type=int,default=8);p.add_argument('--certificate-recheck',action='store_true',help='Require recheck metadata and report no fresh Ferrum generation');a=p.parse_args()
  if a.jobs<1:p.error('Positive job count required')
  out=a.output.resolve();out.mkdir(parents=True,exist_ok=False)
  manifest=json.loads(a.manifest.read_text());meta=json.loads((a.replay/'metadata.json').read_text());summary=json.loads((a.replay/'summary.json').read_text())
+ is_recheck=meta.get('scope')=='Frozen packaged corpus recheck; no fresh Ferrum generation' and 'source_metadata_sha256' in meta
+ if a.certificate_recheck!=is_recheck:raise ValueError('Select --certificate-recheck exactly for frozen certificate recheck metadata')
  if meta['manifest_sha256']!=sha(a.manifest) or meta['checker_sha256']!=sha(a.checker) or meta['hpc_sha256']!=sha(a.hpc_checker):raise ValueError('Replay identity mismatch')
  for name in ['source_revision','oracle_sha256']:
   if meta[name]!=manifest['provenance'][name]:raise ValueError('Replay provenance changed: '+name)
@@ -64,7 +66,7 @@ def main():
  with concurrent.futures.ThreadPoolExecutor(max_workers=a.jobs) as pool:
   for r in pool.map(one,rows):observed.update(r.pop('observed'));results.append(r)
  required=set(den['required_obligations']);missing=sorted(required-observed-transition.retired);unknown=[r['id'] for r in results if r['unknown_proof_nodes']];new=[r for r in results if r['new_structural_obligations']]
- report=dict(ferrum_baseline_binary_sha256=manifest['provenance'].get('ferrum_sha256'),ferrum_rebuilt_binary_sha256=meta['ferrum_sha256'],ferrum_build_identity_note='Both builds use the frozen source revision and archive. Binary identities are recorded separately; the source embeds absolute CARGO_MANIFEST_DIR paths.',exact_root_set_preserved=True,roots=len(rows),losses=[],missing_coverage=missing,retired_coverage=sorted(transition.retired),observed_required_coverage=len(required&observed),frozen_required_coverage=len(required),unknown_node_roots=unknown,new_structural_obligations=new,results=results,manifest_sha256=sha(a.manifest),replay_metadata_sha256=sha(a.replay/'metadata.json'),replay_summary_sha256=sha(a.replay/'summary.json'),transition_sha256=sha(a.transition),baseline_matrix_sha256=sha(evidence/'matrix.json.gz'),scope='Fresh Ferrum replay, original input audits, twice production and HPC acceptance, exact root identities and retained baseline coverage. Runtime observations do not execute Isabelle proofs.',passed=not missing and not unknown and not new)
+ report=dict(ferrum_baseline_binary_sha256=manifest['provenance'].get('ferrum_sha256'),ferrum_rebuilt_binary_sha256=meta['ferrum_sha256'],ferrum_build_identity_note=('Ferrum identities belong to the originating frozen replay; this invocation only rechecks certificates.' if is_recheck else 'Both builds use the frozen source revision and archive. Binary identities are recorded separately; the source embeds absolute CARGO_MANIFEST_DIR paths.'),exact_root_set_preserved=True,roots=len(rows),losses=[],missing_coverage=missing,retired_coverage=sorted(transition.retired),observed_required_coverage=len(required&observed),frozen_required_coverage=len(required),unknown_node_roots=unknown,new_structural_obligations=new,results=results,manifest_sha256=sha(a.manifest),replay_metadata_sha256=sha(a.replay/'metadata.json'),replay_summary_sha256=sha(a.replay/'summary.json'),transition_sha256=sha(a.transition),baseline_matrix_sha256=sha(evidence/'matrix.json.gz'),verification_kind='certificate-recheck' if is_recheck else 'fresh-replay',scope=('Frozen certificate recheck; original-input audits reused by exact proof/input hashes, twice production and HPC acceptance, exact roots and retained coverage. No fresh Ferrum generation. Runtime observations do not execute Isabelle proofs.' if is_recheck else 'Fresh Ferrum replay, original input audits, twice production and HPC acceptance, exact root identities and retained baseline coverage. Runtime observations do not execute Isabelle proofs.'),passed=not missing and not unknown and not new)
  write(out/'summary.json',report);print(json.dumps({k:report[k] for k in ['roots','exact_root_set_preserved','observed_required_coverage','frozen_required_coverage','passed']}|dict(missing=len(missing),unknown=len(unknown),new_structural_roots=len(new))))
  raise SystemExit(not report['passed'])
 

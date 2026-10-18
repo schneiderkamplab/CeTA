@@ -27,7 +27,7 @@ as part of this task.
    actual child's residual assumptions; full and nontermination guards remain.
    Keep fixed-minimality rule-equivalence and all-minimality weak-rule-subset
    lemmas distinct. Preserve Q by the actual normal-form obligation.
-4. **Relative ADPs — deferred by the latest user instruction.** Retain annotations, graph child counts, variable-reposition
+4. **Relative ADPs — reopened for integration.** Retain annotations, graph child counts, variable-reposition
    conditions and separate erasure/Com reduction-pair obligations. Build and
    export the integration target independently. The user subsequently authorized moving these theories into `thys/Relative_ADP`
    with formal and executable-equivalence verification. The retained hand-written
@@ -36,8 +36,8 @@ as part of this task.
    automaton closure, right-linearity and residual signature assumptions visible.
    Absolute and relative residual contracts stay distinct. Include their RFC
    export and genuine SRS evidence in reviewable increments.
-6. **Outermost-RZ — deferred by the latest user instruction.** Keep the committed RZ transformation and its cover/freshness
-   conditions. Positive RZ coverage is still missing. The user subsequently authorized
+6. **Outermost-RZ — reopened for integration.** Keep the committed RZ transformation and its cover/freshness
+   conditions. The frozen 2026-10-17 snapshot adds 19 real supplemental positive RZ proofs and marker-freshness rejection tests; their generation provenance is insufficient for the genuine replay denominator. The user subsequently authorized
    extracting the transformation criterion from recursive checking, verified
    formally and by exact generated-code comparison. Four outermost nontermination
    replays remain insufficient evidence of the positive transformation path.
@@ -62,3 +62,28 @@ is not theorem coverage. Freeze the denominator for each milestone and explain
 any retired obligation. The user has authorized starting draft extraction now. Promote the complete
 feature series to upstream-ready only after its prerequisites are reconstructed,
 its own integration builds pass, and the final replay gate is satisfied.
+
+
+## Frontier snapshot integration, 2026-10-17
+
+The user lifted the relative-ADP and outermost-RZ deferral. The next upstream
+increments should separate these verified source changes:
+
+1. Generalize the ADP compound-order criterion to strict monotonicity at both
+   compound arguments; retain the fully monotone finite theorem as a corollary.
+   Add its executable order guard and migrate the existing adapter.
+2. Add recursive RFC `Split` checking using the existing problem operation and
+   soundness theorem; avoid a parallel root/residual engine.
+3. Derive outermost termination from full termination and route the certificate
+   through the existing RFC/ordinary engine.
+4. Parse certificates once and dispatch their parsed proof to the existing
+   ordinary/RFC or ADP checker. Prove the shared dispatch soundness lemma, qualify
+   the parser constructor, and factor shared imports into a parent session.
+   Regenerate exports from these theories.
+5. Include the frozen supplemental corpus, separately labeled derived fixtures,
+   semantic rejection mutations, coverage transition and verification receipts.
+
+See [the snapshot assessment](frontier-20261017/assessment.md). No new RZ
+implementation was imported; the incomplete CDP criterion remains excluded.
+The five earlier draft proof patches remain prerequisite-dependent drafts.
+This outline does not claim a reconstructed, independently built CeTA 3.9 series.

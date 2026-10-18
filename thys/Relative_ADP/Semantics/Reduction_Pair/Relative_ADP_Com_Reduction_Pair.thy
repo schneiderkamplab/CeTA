@@ -68,6 +68,14 @@ definition adp_com_monotone ::
       (Fun Com2 [s1,t], Fun Com2 [s2,t]) \<in> S \<and>
       (Fun Com2 [t,s1], Fun Com2 [t,s2]) \<in> S)"
 
+text \<open>Only compound contexts need strict monotonicity. Ordinary
+symbols retain the weak context closure of a reduction triple.\<close>
+
+locale adp_com_redtriple_order = redtriple_order S NS NST
+  for S :: "(('f adp_com_symbol, 'v) term \<times> ('f adp_com_symbol, 'v) term) set"
+    and NS NST +
+  assumes com_mono: "adp_com_monotone S"
+
 definition adp_com_invariant ::
   "(('f adp_com_symbol, 'v) term \<times>
      ('f adp_com_symbol, 'v) term) set \<Rightarrow> bool" where
@@ -1078,7 +1086,7 @@ proof -
 qed
 
 lemma relative_adp_component_step_lift:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and applied: "relative_adp_applied_at P True s t pair redex"
@@ -1101,17 +1109,9 @@ lemma relative_adp_component_step_lift:
   shows "(relative_adp_term_annotation_summary s,
       relative_adp_term_annotation_summary t) \<in> S"
 proof -
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   have com_mono: "adp_com_monotone S"
-    unfolding adp_com_monotone_def
-  proof (intro allI impI conjI)
-    fix s1 s2 u
-    assume rel: "(s1,s2) \<in> S"
-    show "(Fun Com2 [s1,u], Fun Com2 [s2,u]) \<in> S"
-      using ctxt_closed_one[OF ctxt_S rel, of Com2 "[]" "[u]"] by simp
-    show "(Fun Com2 [u,s1], Fun Com2 [u,s2]) \<in> S"
-      using ctxt_closed_one[OF ctxt_S rel, of Com2 "[u]" "[]"] by simp
-  qed
+    by (rule adp_com_redtriple_order.com_mono[OF order])
   let ?targets =
     "relative_adp_nonfresh_target_positions True pair redex t"
   let ?pred = "map
@@ -1249,7 +1249,7 @@ proof -
 qed
 
 lemma relative_adp_component_step_lift_fixed:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and applied:
@@ -1311,7 +1311,7 @@ next
 qed
 
 lemma relative_adp_component_step_lift_fixed_weak_marked:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and applied:
@@ -1332,7 +1332,7 @@ lemma relative_adp_component_step_lift_fixed_weak_marked:
   shows "(relative_adp_term_annotation_summary s,
       relative_adp_term_annotation_summary t) \<in> NS"
 proof -
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   let ?origin =
     "relative_adp_fixed_nonredex_origin pair True redex phi sigma"
   let ?targets =
@@ -1463,7 +1463,7 @@ proof -
 qed
 
 lemma relative_adp_component_step_lift_fixed_weak_unmarked:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and applied:
@@ -1480,7 +1480,7 @@ lemma relative_adp_component_step_lift_fixed_weak_unmarked:
   shows "(relative_adp_term_annotation_summary s,
       relative_adp_term_annotation_summary t) \<in> NS"
 proof -
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   let ?origin =
     "relative_adp_fixed_nonredex_origin pair False redex phi sigma"
   let ?targets =
@@ -1802,7 +1802,7 @@ proof -
 qed
 
 lemma relative_adp_fixed_root_strict_from_constraint:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and applied:
       "relative_adp_applied_with P True s t pair redex phi sigma A"
@@ -1814,7 +1814,7 @@ lemma relative_adp_fixed_root_strict_from_constraint:
       adp_combine_terms (relative_adp_components_at t
         (relative_adp_fresh_target_positions_list pair redex))) \<in> S"
 proof -
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   let ?tau = "map_funs_subst
     (ADP_Symbol \<circ> adp_symbol.Plain) sigma"
   let ?finite = "map (\<lambda>u.
@@ -1846,7 +1846,7 @@ proof -
 qed
 
 lemma relative_adp_fixed_root_weak_from_constraint:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and applied:
       "relative_adp_applied_with P True s t pair redex phi sigma A"
@@ -1858,7 +1858,7 @@ lemma relative_adp_fixed_root_weak_from_constraint:
       adp_combine_terms (relative_adp_components_at t
         (relative_adp_fresh_target_positions_list pair redex))) \<in> NS"
 proof -
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   let ?tau = "map_funs_subst
     (ADP_Symbol \<circ> adp_symbol.Plain) sigma"
   let ?finite = "map (\<lambda>u.
@@ -2040,7 +2040,7 @@ definition relative_adp_com_flat_rule ::
     map_funs_rule ADP_Symbol (erase_annotations_adp pair)"
 
 lemma relative_adp_fixed_nonfresh_weak_from_constraint:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and applied:
       "relative_adp_applied_with P at_sharp s t pair redex phi sigma A"
     and lhs_fun: "is_Fun (fst pair)"
@@ -2054,7 +2054,7 @@ lemma relative_adp_fixed_nonfresh_weak_from_constraint:
         s redex q')),
     map_funs_term ADP_Symbol (mark_adp_root (t |_ q'))) \<in> NS"
 proof -
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   let ?origin =
     "relative_adp_fixed_nonredex_origin pair at_sharp redex phi sigma"
   let ?q = "relative_adp_nonfresh_predecessor ?origin s redex q'"
@@ -2110,7 +2110,7 @@ proof -
 qed
 
 lemma relative_adp_fixed_transport_list_weak:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and applied:
       "relative_adp_applied_with P at_sharp s t pair redex phi sigma A"
     and lhs_fun: "is_Fun (fst pair)"
@@ -2165,7 +2165,7 @@ proof -
 qed
 
 lemma relative_adp_com_all_step_weak:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and lhs_fun: "\<And>pair. pair \<in> problem \<Longrightarrow> is_Fun (fst pair)"
@@ -2199,7 +2199,7 @@ proof -
     (relative_adp_nonfresh_target_positions at_sharp pair redex t)
     (relative_adp_nonfresh_target_positions at_sharp pair redex t)"
   proof (rule transport_lemma)
-    show "mono_redtriple_order S NS NST" by (rule order)
+    show "adp_com_redtriple_order S NS NST" by (rule order)
     show "relative_adp_applied_with problem at_sharp s t pair redex phi sigma A"
       by (rule applied)
     show "is_Fun (fst pair)" by (rule lhs_fun[OF pair])
@@ -2252,7 +2252,7 @@ proof -
 qed
 
 lemma relative_adp_com_selected_step_strict:
-  assumes order: "mono_redtriple_order S NS NST"
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and lhs_fun: "\<And>pair. pair \<in> problem \<Longrightarrow> is_Fun (fst pair)"
@@ -2443,7 +2443,7 @@ proof
 qed
 
 theorem relative_adp_com_reduction_pair:
-  assumes redpair: "mono_redtriple_order S NS NST"
+  assumes redpair: "adp_com_redtriple_order S NS NST"
     and all_weak: "\<And>s t. (s,t) \<in> adp_step (P \<union> B) \<Longrightarrow>
       (relative_adp_term_annotation_summary s,
        relative_adp_term_annotation_summary t) \<in> NS"
@@ -2455,7 +2455,7 @@ theorem relative_adp_com_reduction_pair:
       (P - A, (B - A) \<union> erase_annotations_adp ` A)"
   shows "adp_problem_SN (P,B)"
 proof (rule ccontr)
-  interpret mono_redtriple_order S NS NST by (rule redpair)
+  interpret adp_com_redtriple_order S NS NST by (rule redpair)
   let ?R = "adp_step_case_rel P True"
   let ?W = "adp_step (P \<union> B)"
   let ?D = "adp_step_case_rel A True"
@@ -2514,8 +2514,8 @@ proof (rule ccontr)
     unfolding adp_problem_SN_def SN_rel_ideriv by simp
   ultimately show False by blast
 qed
-theorem relative_adp_com_reduction_pair_finite:
-  assumes order: "mono_redtriple_order S NS NST"
+theorem relative_adp_com_reduction_pair_finite_general:
+  assumes order: "adp_com_redtriple_order S NS NST"
     and invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     and lhs_fun: "\<And>pair. pair \<in> P \<union> B \<Longrightarrow> is_Fun (fst pair)"
@@ -2550,6 +2550,49 @@ next
   show "adp_problem_SN (P - A, (B - A) \<union> erase_annotations_adp ` A)"
     by (rule residual)
 qed
+
+
+
+lemma mono_redtriple_order_imp_adp_com:
+  assumes order: "mono_redtriple_order S NS NST"
+  shows "adp_com_redtriple_order S NS NST"
+proof -
+  interpret mono_redtriple_order S NS NST by (rule order)
+  have com: "adp_com_monotone S"
+    unfolding adp_com_monotone_def
+  proof (intro allI impI conjI)
+    fix s1 s2 u
+    assume rel: "(s1,s2) \<in> S"
+    show "(Fun Com2 [s1,u], Fun Com2 [s2,u]) \<in> S"
+      using ctxt_closed_one[OF ctxt_S rel, of Com2 "[]" "[u]"] by simp
+    show "(Fun Com2 [u,s1], Fun Com2 [u,s2]) \<in> S"
+      using ctxt_closed_one[OF ctxt_S rel, of Com2 "[u]" "[]"] by simp
+  qed
+  show ?thesis
+    unfolding adp_com_redtriple_order_def adp_com_redtriple_order_axioms_def
+    using mono_redtriple_order.axioms(1)[OF order] com by blast
+qed
+
+theorem relative_adp_com_reduction_pair_finite:
+  assumes order: "mono_redtriple_order S NS NST"
+    and invariant: "adp_com_invariant NS"
+    and discard: "adp_com_discarding NS"
+    and lhs_fun: "\<And>pair. pair \<in> P \<union> B \<Longrightarrow> is_Fun (fst pair)"
+    and flat_weak: "\<And>pair. pair \<in> P \<union> B \<Longrightarrow>
+      relative_adp_com_flat_rule pair \<in> NS"
+    and com_weak: "\<And>pair. pair \<in> P \<union> B \<Longrightarrow>
+      (relative_adp_com_lhs pair,
+       relative_adp_annotation_summary pair) \<in> NS"
+    and selected_strict: "\<And>pair. pair \<in> A \<Longrightarrow>
+      (relative_adp_com_lhs pair,
+       relative_adp_annotation_summary pair) \<in> S"
+    and selected: "A \<subseteq> P \<union> B"
+    and residual: "adp_problem_SN
+      (P - A, (B - A) \<union> erase_annotations_adp ` A)"
+  shows "adp_problem_SN (P,B)"
+  by (rule relative_adp_com_reduction_pair_finite_general[
+      OF mono_redtriple_order_imp_adp_com[OF order] invariant discard lhs_fun
+      flat_weak com_weak selected_strict selected residual])
 
 
 end

@@ -11,7 +11,7 @@ DIRS=['thys','thys/Relative_ADP','thys/RFC_Absolute_Ext']
 TARGETS=['Outermost_RZ_Ext','Proof_Checker','Code','RFC_Absolute_Ext','Relative_ADP_Ceta_Dev']
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--revision',required=True);p.add_argument('--isabelle',type=pathlib.Path,required=True);p.add_argument('--ghc',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--jobs',type=int,default=2);p.add_argument('--threads',type=int,default=8);a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--revision',required=True);p.add_argument('--isabelle',type=pathlib.Path,required=True);p.add_argument('--ghc',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--jobs',type=int,default=2);p.add_argument('--threads',type=int,default=8);p.add_argument('--relative-hpc',action='store_true',help='Also instrument the integrated relative-ADP checker');a=p.parse_args()
  if a.jobs<1 or a.threads<1:p.error('Positive jobs and threads required')
  revision=subprocess.check_output(['git','rev-parse','--verify',a.revision+'^{commit}'],cwd=ROOT,text=True).strip()
  out=a.output.resolve();out.mkdir(parents=True,exist_ok=False);source=out/'source';logs=out/'logs';logs.mkdir();env={k:v for k,v in os.environ.items() if not k.startswith(('ISABELLE_','ML_','HPCTIX')) and k not in ['AFP','USER_HOME']}
@@ -53,10 +53,11 @@ def main():
   binary=out/('ceta-'+name)
   run('ghc-'+name,[str(ghc),'-O2','-package','array','-XRankNTypes','-odir',str(out/('ghc-'+name)),'-hidir',str(out/('ghc-'+name)),'--make','Main.hs','-o',str(binary)],destination,3600)
   binaries[name]=dict(path=str(binary),sha256=sha(binary))
-  if name=='rfc':
-   hpc=out/'ceta-hpc'
-   run('ghc-hpc',[str(ghc),'-O2','-package','array','-XRankNTypes','-odir',str(out/'ghc-hpc'),'-hidir',str(out/'ghc-hpc'),'-fhpc','-hpcdir',str(out/'hpc-mix'),'--make','Main.hs','-o',str(hpc)],destination,3600)
-   binaries['hpc']=dict(path=str(hpc),sha256=sha(hpc))
+  if name=='rfc' or (name=='relative' and a.relative_hpc):
+   flavor='hpc' if name=='rfc' else 'relative-hpc'
+   hpc=out/('ceta-'+flavor)
+   run('ghc-'+flavor,[str(ghc),'-O2','-package','array','-XRankNTypes','-odir',str(out/('ghc-'+flavor)),'-hidir',str(out/('ghc-'+flavor)),'-fhpc','-hpcdir',str(out/('hpc-mix' if name=='rfc' else 'hpc-mix-relative')),'--make','Main.hs','-o',str(hpc)],destination,3600)
+   binaries[flavor]=dict(path=str(hpc),sha256=sha(hpc))
  for tool in ['ExportMix','ExportTix']:
   run('ghc-'+tool,[str(ghc),'-O2','-package','hpc','-odir',str(out/('ghc-'+tool)),'-hidir',str(out/('ghc-'+tool)),str(source/'tools/consolidation'/(tool+'.hs')),'-o',str(out/tool)],source,600)
  write(out/'summary.json',dict(revision=revision,archive_sha256=sha(archive),isabelle_version='Isabelle2025-2',ghc_version='9.6.7',binaries=binaries,exports=export_hashes,passed=True))

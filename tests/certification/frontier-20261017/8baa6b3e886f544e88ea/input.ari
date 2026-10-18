@@ -1,0 +1,14 @@
+; @origtpdbfilename ./TRS/outermost/TRCSR/Ex4_4_Luc96b_FR.trs
+; @xtcfilename "./TRS_Outermost/Strategy_outermost_added_08/Ex4_4_Luc96b_FR.xml"
+(format TRS)
+(fun f 2)
+(fun g 1)
+(fun n__f 2)
+(fun n__g 1)
+(fun activate 1)
+(rule (f (g X) Y) (f X (n__f (n__g X) (activate Y))))
+(rule (f X1 X2) (n__f X1 X2))
+(rule (g X) (n__g X))
+(rule (activate (n__f X1 X2)) (f (activate X1) X2))
+(rule (activate (n__g X)) (g (activate X)))
+(rule (activate X) X)

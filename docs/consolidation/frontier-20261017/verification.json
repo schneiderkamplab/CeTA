@@ -1,0 +1,228 @@
+{
+  "all_targets_passed": true,
+  "base_commit": "98766732c06385bab4705d5a34f2be1a154464a3",
+  "binaries": {
+    "ceta": "8ec5847ba93125c4fdd3da09a798a010bf7762456db52eb6588d75e3e6fcb97b",
+    "ceta-hpc": "c9efe9bd396561d57b4e62784c5fec97b3ec0c8c10196e9cf26df372f7153c12",
+    "ceta-ordinary": "7e4be1154a49164cc9146912eed1b626975f0d8b41f15e0309727d1a6ed2c266",
+    "ceta-relative-adp": "9574d407a573679a30292f705991a41e43cd422a87203b658284538d13947745",
+    "ceta-relative-hpc": "733db11f548515e8003e5596e091d32fbf370ef34b13ed77e16085ca042e3cc8"
+  },
+  "build_receipts": {
+    "frontier-compact-integrated": {
+      "elapsed_seconds": 169.59673311701044,
+      "max_child_rss_kib": 24569956,
+      "returncode": 0
+    },
+    "frontier-compact-integrated-v3": {
+      "elapsed_seconds": 82.61677293293178,
+      "max_child_rss_kib": 353412,
+      "returncode": 0
+    },
+    "frontier-compact-v2": {
+      "elapsed_seconds": 269.56546342908405,
+      "max_child_rss_kib": 1016940,
+      "returncode": 0
+    },
+    "frontier-corpus-comparison-v2": {
+      "elapsed_seconds": 14.363434605067596,
+      "max_child_rss_kib": 451296,
+      "returncode": 0
+    },
+    "frontier-corpus-default-v2": {
+      "elapsed_seconds": 1412.6309009720571,
+      "max_child_rss_kib": 29740164,
+      "returncode": 0
+    },
+    "frontier-corpus-integrated-v3": {
+      "elapsed_seconds": 663.7792730100919,
+      "max_child_rss_kib": 29620316,
+      "returncode": 0
+    },
+    "frontier-derived": {
+      "elapsed_seconds": 11.68848218396306,
+      "max_child_rss_kib": 113772,
+      "returncode": 0
+    },
+    "frontier-derived-integrated-v3": {
+      "elapsed_seconds": 9.99077508598566,
+      "max_child_rss_kib": 123160,
+      "returncode": 0
+    },
+    "frontier-export-relative": {
+      "elapsed_seconds": 1.3864591720048338,
+      "max_child_rss_kib": 316168,
+      "returncode": 0
+    },
+    "frontier-export-rfc": {
+      "elapsed_seconds": 2.1388506931252778,
+      "max_child_rss_kib": 347632,
+      "returncode": 0
+    },
+    "frontier-focused": {
+      "elapsed_seconds": 386.2071297450457,
+      "max_child_rss_kib": 8557212,
+      "returncode": 0
+    },
+    "frontier-hpc": {
+      "elapsed_seconds": 112.62720443005674,
+      "max_child_rss_kib": 735212,
+      "returncode": 0
+    },
+    "frontier-integration-v4": {
+      "elapsed_seconds": 1624.4305250560865,
+      "max_child_rss_kib": 32464724,
+      "returncode": 0
+    },
+    "frontier-make": {
+      "elapsed_seconds": 322.15645313006826,
+      "max_child_rss_kib": 2715532,
+      "returncode": 0
+    },
+    "frontier-relative-hpc": {
+      "elapsed_seconds": 611.2175699800719,
+      "max_child_rss_kib": 3624908,
+      "returncode": 0
+    },
+    "frontier-single-parse-build-v3": {
+      "elapsed_seconds": 354.0893942019902,
+      "max_child_rss_kib": 7135660,
+      "returncode": 0
+    },
+    "frontier-single-parse-export": {
+      "elapsed_seconds": 1.3353935789782554,
+      "max_child_rss_kib": 317096,
+      "returncode": 0
+    },
+    "frontier-single-parse-relative": {
+      "elapsed_seconds": 211.06875853892416,
+      "max_child_rss_kib": 2716004,
+      "returncode": 0
+    },
+    "frontier-single-parse-relative-hpc": {
+      "elapsed_seconds": 505.6743201329373,
+      "max_child_rss_kib": 3631768,
+      "returncode": 0
+    },
+    "frontier-supplemental": {
+      "elapsed_seconds": 233.87425284506753,
+      "max_child_rss_kib": 863444,
+      "returncode": 0
+    },
+    "frontier-supplemental-v3": {
+      "elapsed_seconds": 194.12039953609928,
+      "max_child_rss_kib": 242916,
+      "returncode": 0
+    }
+  },
+  "compact": {
+    "default_and_integrated_acceptance": true,
+    "frozen_required": 45753,
+    "hpc_agreement_entry_point": "default; integrated HPC checked on supplemental and derived fixtures",
+    "new_retirements": 0,
+    "observed_required": 45733,
+    "positives": 208,
+    "previous_retirements": 20,
+    "production_hpc_agreement": true,
+    "semantic_negatives": 408
+  },
+  "corpus": {
+    "additional_integrated_check": true,
+    "exact_root_set_preserved": true,
+    "hpc_agreement": true,
+    "missing_coverage": [],
+    "roots": 3484,
+    "twice_default_production": true,
+    "unknown_node_roots": [],
+    "verification_kind": "certificate-recheck"
+  },
+  "coverage_limits": [
+    "Supplemental generation source/build provenance is incomplete; proofs are excluded from genuine oracle-only suite.",
+    "Full-to-outermost and absolute-RFC Split paths have derived fixtures but no genuine replay coverage.",
+    "Runtime observations do not execute Isabelle proofs.",
+    "Incomplete outermost CDP criterion and broader forbidden-pattern bridge were not imported."
+  ],
+  "evidence": "verification-evidence.tar.gz",
+  "evidence_manifest": "evidence-manifest.json.gz",
+  "evidence_manifest_sha256": "c4612cc7f28f9053d929599b3f55436a663bad3d6e4539ed79ff8ddc22567333",
+  "evidence_sha256": "1bc1e2e765d69cbeb5ae460e6943038af08db68ff151c3f5092a601e3325e578",
+  "frontier": {
+    "derived_fixtures": 2,
+    "genuine_replay_additions": 0,
+    "production_hpc_agreement": true,
+    "real_supplemental_proofs": 48,
+    "semantic_mutations": 74
+  },
+  "interruption": {
+    "failed_attempts_preserved": 32,
+    "initial_completed_roots": 298,
+    "retry_policy": "Failed and interrupted attempts retained separately. Default/HPC checks keep original per-root deadlines. Fixed integrated checker has a separate exact-root campaign with a declared 2x default-baseline-plus-30s deadline (minimum 60s). No timeout is counted as a pass.",
+    "sequential_timeout_investigation": [
+      {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-sharing/ceta",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/final-full-replay/e024eddb80edda4f7311b16f/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 107.69846993288957,
+        "process_id": 23206,
+        "returncode": 0,
+        "sha256": "a0f1d98394045935b8d399d3af55b7435e0a867845c3a7f7cae04e618c155b58",
+        "timed_out": false,
+        "timing_method": "blocking wait with cancellable process-group watchdog"
+      },
+      {
+        "certified": true,
+        "command": [
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier/ceta",
+          "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/final-full-replay/e024eddb80edda4f7311b16f/proof.cpf.xml"
+        ],
+        "elapsed_seconds": 108.87203978514299,
+        "process_id": 25352,
+        "returncode": 0,
+        "sha256": "8ec5847ba93125c4fdd3da09a798a010bf7762456db52eb6588d75e3e6fcb97b",
+        "timed_out": false,
+        "timing_method": "blocking wait with cancellable process-group watchdog"
+      }
+    ],
+    "workspace_mount_outage": true
+  },
+  "passed": true,
+  "performance": {
+    "default_hpc_slowdowns_after_repeats": 0,
+    "default_production_slowdowns": 0,
+    "final_compact_slowdown_candidates": [],
+    "initial_dispatch_integrated_vs_default_confirmed": 146,
+    "interpretation": "The corrected compact suite has no slowdown candidates against the frozen default baseline. The large previous/fixed integrated comparison is recorded separately; no empty candidate set is presented as controlled repeats.",
+    "same_entry_cases": 0,
+    "same_entry_initial_outliers": [],
+    "same_entry_noncomparable": [],
+    "same_entry_repeat_outliers": [],
+    "streaming_fixed": {
+      "command": [
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-frontier-v3/ceta-relative",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/final-full-replay/e024eddb80edda4f7311b16f/proof.cpf.xml"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "elapsed_seconds": 102.14564861706458,
+      "environment": {},
+      "max_child_rss_kib": 17768572,
+      "memory_used_at_start": 244351848448,
+      "returncode": 0
+    },
+    "streaming_previous": {
+      "command": [
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/bin-sharing/ceta-relative-adp",
+        "/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/final-full-replay/e024eddb80edda4f7311b16f/proof.cpf.xml"
+      ],
+      "cwd": "/work/dfm/festschrift/CeTA-consolidated",
+      "elapsed_seconds": 397.5614476869814,
+      "environment": {},
+      "max_child_rss_kib": 214373440,
+      "memory_used_at_start": 591100387328,
+      "returncode": 0
+    }
+  },
+  "production_source_files_verified": 3849,
+  "scope": "Frozen 2026-10-17 frontier integration; certificate recheck, not fresh Ferrum regeneration or exhaustive moving-frontier certification."
+}

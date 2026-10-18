@@ -1,7 +1,7 @@
 theory Relative_ADP_Checker_Adapter
   imports
     Dependency_Pair_Injective_Renaming
-    Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Reduction_Pair
+    Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Order_Check
     Proof_Checker_Base.Check_Termination
     Framework.Termination_Problem_Impl
     Framework.Dependency_Pair_Problem_Impl
@@ -327,7 +327,7 @@ definition check_relative_adp_com_redpair ::
       check_all (\<lambda>pair. is_Fun (fst pair)) (P @ B)
         <+? (\<lambda>pair. showsl_lit
           (STR ''relative ADP Com requires function-rooted left-hand sides''));
-      rel_impl_mono_redpair rp strict weak;
+      rel_impl_adp_com_redpair rp;
       rel_impl_s rp strict;
       rel_impl_ns rp weak
     })"
@@ -411,18 +411,17 @@ proof -
   have selected: "set selected \<subseteq> set P \<union> set B"
     and lhs_fun: "\<And>pair. pair \<in> set P \<union> set B \<Longrightarrow>
       is_Fun (fst pair)"
-    and valid: "isOK (rel_impl_mono_redpair ?rp ?strict ?weak)"
+    and valid: "isOK (rel_impl_adp_com_redpair ?rp)"
     and strict: "isOK (rel_impl_s ?rp ?strict)"
     and weak: "isOK (rel_impl_ns ?rp ?weak)"
     by (auto simp: isOK_check_allm)
-  from rel_impl_mono_redpair[OF get_rel_impl valid strict weak,
-      of undefined undefined]
-  obtain S NS NST where order: "mono_redtriple_order S NS NST"
+  from rel_impl_adp_com_redpair_sound[OF get_rel_impl valid strict weak]
+  obtain S NS NST where order: "adp_com_redtriple_order S NS NST"
     and strict_set: "set ?strict \<subseteq> S"
     and weak_set: "set ?weak \<subseteq> NS" by auto
   have law_set: "set relative_adp_com_law_rules \<subseteq> NS"
     using weak_set by auto
-  interpret mono_redtriple_order S NS NST by (rule order)
+  interpret adp_com_redtriple_order S NS NST by (rule order)
   have invariant: "adp_com_invariant NS"
     and discard: "adp_com_discarding NS"
     by (rule relative_adp_com_laws_sound[OF law_set subst_NS])+
@@ -451,7 +450,7 @@ proof -
     using residual relative_adp_erasure_residual_sets[OF selected]
     by (cases "relative_adp_erasure_residual P B selected") simp
   show ?thesis
-    by (rule relative_adp_com_reduction_pair_finite[
+    by (rule relative_adp_com_reduction_pair_finite_general[
         OF order invariant discard lhs_fun flat_weak com_weak
           selected_strict selected residual'])
 qed

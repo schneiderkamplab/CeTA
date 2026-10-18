@@ -1,0 +1,66 @@
+{
+  "diagnostics": [],
+  "interpretation": "Isabelle-reported cumulated theory times; sums are not elapsed build wall time. Use the build receipt for wall time and exit status.",
+  "log_sha256": "ec04f4343d5c79deb1297ec7976f2a27c116e9c1cb03feaa08501b7d116ec413",
+  "reported_cumulated_seconds_by_session": {
+    "RFC_Absolute_Ext": 325.262,
+    "Relative_ADP_Checker_Dev": 47.254000000000005,
+    "Relative_ADP_Com_Reduction_Pair_Dev": 16.982999999999997
+  },
+  "session_reports": [
+    "Timing Relative_ADP_Com_Reduction_Pair_Dev (8 threads, 17.246s elapsed time, 18.884s cpu time, 0.716s GC time, factor 1.09)",
+    "Finished Relative_ADP_Com_Reduction_Pair_Dev (0:00:42 elapsed time, 0:01:02 cpu time, factor 1.46)",
+    "Timing Relative_ADP_Checker_Dev (8 threads, 47.513s elapsed time, 52.237s cpu time, 3.513s GC time, factor 1.10)",
+    "Finished Relative_ADP_Checker_Dev (0:01:14 elapsed time, 0:01:39 cpu time, factor 1.33)",
+    "Timing RFC_Absolute_Ext (8 threads, 325.558s elapsed time, 353.830s cpu time, 20.922s GC time, factor 1.09)",
+    "Finished RFC_Absolute_Ext (0:06:05 elapsed time, 0:07:05 cpu time, factor 1.17)",
+    "Finished at Sat Oct 17 22:24:29 GMT+2 2026"
+  ],
+  "theory_reports": [
+    {
+      "reported_cumulated_seconds": 1.026,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Residual"
+    },
+    {
+      "reported_cumulated_seconds": 14.849,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Check"
+    },
+    {
+      "reported_cumulated_seconds": 16.333,
+      "session": "Relative_ADP_Com_Reduction_Pair_Dev",
+      "theory": "Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Reduction_Pair"
+    },
+    {
+      "reported_cumulated_seconds": 0.65,
+      "session": "Relative_ADP_Com_Reduction_Pair_Dev",
+      "theory": "Relative_ADP_Com_Reduction_Pair_Dev.Relative_ADP_Com_Order_Check"
+    },
+    {
+      "reported_cumulated_seconds": 0.392,
+      "session": "Relative_ADP_Checker_Dev",
+      "theory": "Relative_ADP_Checker_Dev.Dependency_Pair_Injective_Renaming"
+    },
+    {
+      "reported_cumulated_seconds": 39.265,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Cert"
+    },
+    {
+      "reported_cumulated_seconds": 30.361,
+      "session": "Relative_ADP_Checker_Dev",
+      "theory": "Relative_ADP_Checker_Dev.Relative_ADP_Checker_Adapter"
+    },
+    {
+      "reported_cumulated_seconds": 16.501,
+      "session": "Relative_ADP_Checker_Dev",
+      "theory": "Relative_ADP_Checker_Dev.Relative_ADP_Checker_Tests"
+    },
+    {
+      "reported_cumulated_seconds": 270.122,
+      "session": "RFC_Absolute_Ext",
+      "theory": "RFC_Absolute_Ext.RFC_Absolute_Code"
+    }
+  ]
+}

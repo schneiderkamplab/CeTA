@@ -1,0 +1,1133 @@
+{
+  "reports": {
+    "frontier-derived": {
+      "function_entries": {
+        "check_cert_rfc_absolute": [
+          {
+            "hash": "4190396302",
+            "label": "TopLevelBox [\"check_cert_rfc_absolute\"]",
+            "module": "RFC_Absolute_Cert",
+            "position": [
+              87,
+              1,
+              798,
+              40
+            ],
+            "source": "./RFC_Absolute_Cert.hs",
+            "tick": 1396
+          }
+        ],
+        "check_outermost_rz_termination_proof": [
+          {
+            "hash": "4283931195",
+            "label": "TopLevelBox [\"check_outermost_rz_termination_proof\"]",
+            "module": "Outermost_RZ_Checker",
+            "position": [
+              123,
+              1,
+              175,
+              71
+            ],
+            "source": "./Outermost_RZ_Checker.hs",
+            "tick": 210
+          }
+        ],
+        "check_rfc_absolute": [
+          {
+            "hash": "858298869",
+            "label": "TopLevelBox [\"check_rfc_absolute\"]",
+            "module": "RFC_Absolute_Check",
+            "position": [
+              56,
+              1,
+              145,
+              47
+            ],
+            "source": "./RFC_Absolute_Check.hs",
+            "tick": 257
+          }
+        ]
+      },
+      "mix_sha256": "328d9f1d8ac95dfbdf9f9e123407e63d6f99979eb4ea8cc2c9d9c6480eb3ca83",
+      "observations": [
+        {
+          "coverage_sha256": "97d875998822a6b6422a00a29404755dde3e9632839426700ca1fd2e6b9fdba5",
+          "functions": {
+            "check_cert_rfc_absolute": true,
+            "check_outermost_rz_termination_proof": false,
+            "check_rfc_absolute": true
+          },
+          "id": "derived-full-to-outermost",
+          "root": "derived/full-to-outermost-nestrec",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "bdc52ec0ef1ca0f5b239c3031f7f1c3f258f468234c5da7f98a4dfc4f1bbc372",
+          "functions": {
+            "check_cert_rfc_absolute": true,
+            "check_outermost_rz_termination_proof": false,
+            "check_rfc_absolute": true
+          },
+          "id": "derived-absolute-rfc-split",
+          "root": "derived/absolute-rfc-split",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        }
+      ]
+    },
+    "frontier-derived-integrated-v3": {
+      "function_entries": {
+        "certify_integrated_cert_problem": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"certify_integrated_cert_problem\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              75217,
+              1,
+              75223,
+              4
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 133289
+          }
+        ],
+        "certify_proof_integrated": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"certify_proof_integrated\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              75227,
+              1,
+              75232,
+              63
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 142411
+          }
+        ],
+        "check_cert_rfc_absolute": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_cert_rfc_absolute\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              73644,
+              1,
+              74110,
+              60
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 132819
+          }
+        ],
+        "check_outermost_rz_termination_proof": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_outermost_rz_termination_proof\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              52184,
+              1,
+              52220,
+              47
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 117717
+          }
+        ],
+        "check_relative_adp_com_redpair": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_relative_adp_com_redpair\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              74646,
+              1,
+              74675,
+              57
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 112759
+          }
+        ],
+        "check_rfc_absolute": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_rfc_absolute\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              73061,
+              1,
+              73120,
+              71
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 118804
+          }
+        ],
+        "integrated_proof_parser": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"integrated_proof_parser\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              74224,
+              1,
+              74241,
+              9
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 142316
+          }
+        ],
+        "rel_impl_adp_com_redpair": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"rel_impl_adp_com_redpair\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              74626,
+              1,
+              74633,
+              73
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 27200
+          }
+        ]
+      },
+      "mix_sha256": "62186c1e46a0101d8bdc8c955dfe6995988a4b9ab93a02e715eb4bcdce24e324",
+      "observations": [
+        {
+          "coverage_sha256": "14f001b5131512f1b558cefe928d943ac4e4b2fc17dcb825608b04dcf3372524",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": true,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": true,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "derived-full-to-outermost",
+          "root": "derived/full-to-outermost-nestrec",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "8ac9bfd46341001c5ef54abab4f7443ffd7468a61e243f05dfacdbc7e127a635",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": true,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": true,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "derived-absolute-rfc-split",
+          "root": "derived/absolute-rfc-split",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        }
+      ]
+    },
+    "frontier-supplemental-v3": {
+      "function_entries": {
+        "certify_integrated_cert_problem": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"certify_integrated_cert_problem\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              75217,
+              1,
+              75223,
+              4
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 133289
+          }
+        ],
+        "certify_proof_integrated": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"certify_proof_integrated\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              75227,
+              1,
+              75232,
+              63
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 142411
+          }
+        ],
+        "check_cert_rfc_absolute": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_cert_rfc_absolute\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              73644,
+              1,
+              74110,
+              60
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 132819
+          }
+        ],
+        "check_outermost_rz_termination_proof": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_outermost_rz_termination_proof\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              52184,
+              1,
+              52220,
+              47
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 117717
+          }
+        ],
+        "check_relative_adp_com_redpair": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_relative_adp_com_redpair\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              74646,
+              1,
+              74675,
+              57
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 112759
+          }
+        ],
+        "check_rfc_absolute": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"check_rfc_absolute\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              73061,
+              1,
+              73120,
+              71
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 118804
+          }
+        ],
+        "integrated_proof_parser": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"integrated_proof_parser\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              74224,
+              1,
+              74241,
+              9
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 142316
+          }
+        ],
+        "rel_impl_adp_com_redpair": [
+          {
+            "hash": "113896652",
+            "label": "TopLevelBox [\"rel_impl_adp_com_redpair\"]",
+            "module": "Ceta_Relative",
+            "position": [
+              74626,
+              1,
+              74633,
+              73
+            ],
+            "source": "./Ceta_Relative.hs",
+            "tick": 27200
+          }
+        ]
+      },
+      "mix_sha256": "62186c1e46a0101d8bdc8c955dfe6995988a4b9ab93a02e715eb4bcdce24e324",
+      "observations": [
+        {
+          "coverage_sha256": "b0d6b1a0aed7d7cad2e919369b8e913864d6dcea513c9062a797c3e22e1c3667",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "f37724820c31e7252b72",
+          "root": "TRS_Relative/AProVE_24/combination.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "1f645b2890b901261d3dc0a105a858b1d43966f61917abd95841e4e2eaaa34f6",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "b75760fcaf738894083f",
+          "root": "TRS_Relative/AProVE_24/combination_2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "53590722d2e22d7c6267a5ca6e507159236389f587cc8f4e4e78c5ff6c28c9b8",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "e2b42850efb132ffa95e",
+          "root": "TRS_Relative/AProVE_24/divMinusExchange.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "02340d1e1cd9fd0c973c9f6454398341dc3dba410a8cd9241aca7891496b4d54",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "3a85b3e118fede51b614",
+          "root": "TRS_Relative/AProVE_24/gcdSet_a.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "d7b9742a64ccb211ab22ca23b375775b5649822627134bb110802ca4ffa01ad7",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "80ddf60ee27f236e61c7",
+          "root": "TRS_Relative/AProVE_24/gcdSet_a2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "7685156b2e810ce1b94c7bfa743c1ececfe2a48adaac36a2d04a26736e36c0fa",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "003fb489e6be97b67714",
+          "root": "TRS_Relative/AProVE_24/gcdSet_b.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "3041aaa7e635d205b89536bb11a0e8d4caa33935e7d4d2e28fddc2b5e53ce45f",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "a4faef53cce039b99ee4",
+          "root": "TRS_Relative/AProVE_24/gcdSet_b2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "1e570beff20288353ebd22129db747d412ba1f07df4e94fb7f5acdbd5dde8bcc",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "65be21a223105646b4f1",
+          "root": "TRS_Relative/AProVE_24/gcdSet_c.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "2b5a9cf92865783ecba5a9eaa8a76c4cd7c1fb752a9441c93d97e37f45ca4ed7",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "cde62169b4c1820a88f5",
+          "root": "TRS_Relative/AProVE_24/gcdSet_c2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "84414709c3d0f7c909e5b4d83edc7b288c95be1f1dea1d5aad4ff1127630f4c3",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "f0aa5da20a15748a629d",
+          "root": "TRS_Relative/AProVE_24/lasso.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "2e505c0841b8a3f436e89b954e210bd30f33dc13321d15fbce3aedec94d2232a",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "31bfad8ce25e4c2ff4fb",
+          "root": "TRS_Relative/AProVE_24/log.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "d3b00897b94ff2c921bac08aec28e89300e59ce08b7b7a55b5ec4bc7a6ae0cc0",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "82e32188b8e6ea504811",
+          "root": "TRS_Relative/AProVE_24/mset.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "6f01b87d8515866a1ea010caa08b6bc1fe98499698791fec18a014313293d386",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "c1b8b96ba219bfc0b61a",
+          "root": "TRS_Relative/AProVE_24/mset_a.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "3fec3d5324ceb0b23b67e56f7090167a32e580637bbbe5526f4b52d399f223e8",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "9368cf29e357b498cd74",
+          "root": "TRS_Relative/AProVE_24/mset_a2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "ce2191c9b3fc473a9c86fb0196a2103b8a3ca836731ab1c55316fd1b4fa5acc2",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "958fd0edfec75a098c3e",
+          "root": "TRS_Relative/AProVE_24/mset_b.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "17307630f4da021a8b8f5e8ae700e12f9bfa179807e1dfa5ffb84440c88d2c60",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "f794be63b9eb1e76a578",
+          "root": "TRS_Relative/AProVE_24/mset_b2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "0c9f17db59bddcfe62670f5435d7c1abca82e02fa9ba68f514191345dc56efd9",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "9eb4016aec9ef427447a",
+          "root": "TRS_Relative/AProVE_24/mset_c.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "50ed1f0849cbcfb8c7e445a4cacd47b0d6f19a7ec205b68f811e9073e254c7c2",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "d21eff4fce0bab3a9127",
+          "root": "TRS_Relative/AProVE_24/mset_c2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "86f122b642ff3ba1d3ff576c5a2c8abf1fad515b906104f6ddf99329c0f8ea0a",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "16415a991f7c8fb37392",
+          "root": "TRS_Relative/AProVE_24/purge.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "41238b4b8a2e84590741f46d23cb05238ec4703b34f1f4602f2abb59dc0ad6ac",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "2c4ab04803a0849a3d8c",
+          "root": "TRS_Relative/AProVE_24/purge_2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "65555d23039bf340611a99a5c9613512dad3c3fc8f9787c7e6797e7b254d6b6c",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "8da0b032f87ac4225a24",
+          "root": "TRS_Relative/AProVE_24/subsets.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "a0dc02997b93b1715f20b18d5f16a1c36448f14a279ac7009a0718de6e01a1f1",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "1c69a29be459ff20c150",
+          "root": "TRS_Relative/AProVE_24/subsets_2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "d9d3981c806b8bb867f3dacdd77e9a392a75bf73b1f9b4a48f109381ab0c0476",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "73ee023f2e243b12ad57",
+          "root": "TRS_Relative/INVY_15/#3.38_rand.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "a7fd45f5e6b6ddbd2b87da2073ef96b98b1048448fdd83d9b8f357c091403921",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "d0c2b5408756f374327f",
+          "root": "TRS_Relative/INVY_15/ex2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "3b57b84d76571bfa046ff114f7c38d3c20fa166e2e98bc447429c8863d290309",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "350576fd71d564feec24",
+          "root": "TRS_Relative/Kassing_26/bst_multiset.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "08d52cbccf6464f15f3d42715108d65db24e457c1488f31608bfcf529bdd06f3",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": true,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": true
+          },
+          "id": "b34a4796a9ea73f08d90",
+          "root": "TRS_Relative/Kassing_26/gcd_commutative.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "c4c4fe3e75db943501d6eda8e206918555aa277d7a6c71fb59ed25d7ef02bfe7",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "3d9200b0dee1023bea75",
+          "root": "TRS_Outermost/Mixed_outermost/ex1.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "9024ffd7e1473258818ef9a9b13e5aaa99cdefb1f64623074e3c5d307cc3a098",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "3d1488d1756b776304b3",
+          "root": "TRS_Outermost/Mixed_outermost/ex2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "8f6b1762664cf26abd80a36818cb042325b4d125fd4a0e68509e3eb0ba6daf49",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "a163d39b1e47be90ed3a",
+          "root": "TRS_Outermost/Mixed_outermost/ex3.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "f9f8a128186451a93a7aa0a29cfa24eb5ad84d385bceb2c32c9c8484ec6ff423",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "d28d588622d0c5dea2eb",
+          "root": "TRS_Outermost/Mixed_outermost/ex4.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "1666dd5ecff362c29734971ee98d4ba14de0a12ec56e22cc4bac99cc4667d67c",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "6ad14d2a2216f5231fbc",
+          "root": "TRS_Outermost/Mixed_outermost/ex5.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "6cf4ecba9266342870db65362e26fe6f0c3f58e8412223a310cce0856fae63c8",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "8baa6b3e886f544e88ea",
+          "root": "TRS_Outermost/Strategy_outermost_added_08/Ex4_4_Luc96b_FR.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "6b11afb93ef2a12cca1307f6eb1d3b980417cc43477158eeae67e50532ef4248",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "654c7e5b6b1e52534536",
+          "root": "TRS_Outermost/Strategy_outermost_added_08/LengthOfFiniteLists_nosorts_GM.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "97125a1d2c66ba78b01aed962563bb8c5e763fa70026b78a7720734b04d69f7e",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "da3992e59d39cc31afca",
+          "root": "TRS_Outermost/Zantema_08/bintree.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "b068d95e988be228636a44abd21c0197b4a0d08c858986476648a758351cc8d8",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "0d594081c4ad8935a6ac",
+          "root": "TRS_Outermost/Zantema_08/cariboo_add2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "76af374474387f53ceab1193eb162136dc293580f7378a855670269984e193cb",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "ac3d4d14da73a74b2101",
+          "root": "TRS_Outermost/Zantema_08/cariboo_add2a.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "904c1ec871027742bb22df2bb1fcb8a8304107cfe2cb6c4b88657c46fd961959",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "e3ed332d3334dc561a42",
+          "root": "TRS_Outermost/Zantema_08/ex0.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "f9c2737277af55766ce452239a11831913642c124af233fd82ab02802e79e466",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "0f24e6c88e8081aa20a8",
+          "root": "TRS_Outermost/Zantema_08/ex5.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "e29e954b8a9066d12199d68c62b9869667d560db8202909b84bee1d26deedb3a",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "ca15cf8bcc5d3cb2b1c8",
+          "root": "TRS_Outermost/Zantema_08/ex8.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "f9623c505814e4950f8a8bf52b85cad550c2abfeb25e61f85546db962e6081f7",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "1216ec41462162b566d0",
+          "root": "TRS_Outermost/Zantema_08/ex9.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "f311743998492f7a181b9523d37315ad2eb063ddfc05455f6058beac5b834c2e",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "3df305509ad734807605",
+          "root": "TRS_Outermost/Zantema_08/f_2_1.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "54ccecb7dcb037c8b6754531298f2e89c2c221f9a340a6b97a4887e6219df0b4",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "2fa502781f6ed9ec5b82",
+          "root": "TRS_Outermost/Zantema_08/f_2_2.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "410b16184d049f1328aaf9d77545195ebd8c605133f367669a775c0c19ca0905",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "1e7fd6fde661ec865eeb",
+          "root": "TRS_Outermost/Zantema_08/fg.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "436b8a87ad69bf9ffc072f91a64b6d3f5fdd13b41ee63b15448fc941c389dde0",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "fa09dbc250e83adb4083",
+          "root": "TRS_Outermost/Zantema_08/g_2_const.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "a7bd5fb624bde0e86ddf24e9478da5a5382236e0d36e4c7b1e0a241896004435",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": true,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "c2e2f54b9002a696ffdd",
+          "root": "TRS_Outermost/Zantema_08/g_2_f_var.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "310a295494b56e9f255cab8de67849173499959d834ed759c9eaf33acc42472b",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "f2ae6d820ebb649ed4f8",
+          "root": "SRS_Relative/ICFP_2010_relative/4017.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "eafba621a2cdc757185f7a8527e0a411561fb78407ed8bc28583b0977936b790",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "aac309448e2a86897494",
+          "root": "SRS_Relative/ICFP_2010_relative/91242.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        },
+        {
+          "coverage_sha256": "b7d6e802c27db4d92cfec3bb273d13a9ffaf7acbc06e6599eb2a29f94765ae97",
+          "functions": {
+            "certify_integrated_cert_problem": true,
+            "certify_proof_integrated": true,
+            "check_cert_rfc_absolute": false,
+            "check_outermost_rz_termination_proof": false,
+            "check_relative_adp_com_redpair": false,
+            "check_rfc_absolute": false,
+            "integrated_proof_parser": true,
+            "rel_impl_adp_com_redpair": false
+          },
+          "id": "03861bc76a37d09a8682",
+          "root": "SRS_Relative/ICFP_2010_relative/97901.ari",
+          "unknown_proof_nodes_in_frozen_registry": {}
+        }
+      ]
+    }
+  },
+  "scope": "Supplemental and explicitly derived positive execution evidence. Runtime entry counters do not execute soundness theorems or prove all side-condition coverage. Unmapped structural nodes remain explicit gaps; the genuine compact denominator is unchanged."
+}

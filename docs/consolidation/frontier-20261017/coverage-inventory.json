@@ -1,0 +1,205 @@
+{
+  "scope": "Changed branches; theorem dependencies are not runtime coverage. Explicit supplemental evidence and remaining genuine provenance gaps.",
+  "branches": [
+    {
+      "processor": "Relative ADP Com reduction pair",
+      "mode": "compound-only strict monotonicity; root and recursive ADP residual",
+      "checker": "check_relative_adp_com_redpair / rel_impl_adp_com_redpair",
+      "theorems": [
+        "rel_impl_adp_com_redpair_sound",
+        "relative_adp_com_reduction_pair_finite_general",
+        "check_relative_adp_com_redpair_sound"
+      ],
+      "supplemental_positives": [
+        "f37724820c31e7252b72",
+        "b75760fcaf738894083f",
+        "e2b42850efb132ffa95e",
+        "3a85b3e118fede51b614",
+        "80ddf60ee27f236e61c7",
+        "003fb489e6be97b67714",
+        "a4faef53cce039b99ee4",
+        "65be21a223105646b4f1",
+        "cde62169b4c1820a88f5",
+        "f0aa5da20a15748a629d",
+        "31bfad8ce25e4c2ff4fb",
+        "82e32188b8e6ea504811",
+        "c1b8b96ba219bfc0b61a",
+        "9368cf29e357b498cd74",
+        "958fd0edfec75a098c3e",
+        "f794be63b9eb1e76a578",
+        "9eb4016aec9ef427447a",
+        "d21eff4fce0bab3a9127",
+        "16415a991f7c8fb37392",
+        "2c4ab04803a0849a3d8c",
+        "8da0b032f87ac4225a24",
+        "1c69a29be459ff20c150",
+        "73ee023f2e243b12ad57",
+        "d0c2b5408756f374327f",
+        "350576fd71d564feec24",
+        "b34a4796a9ea73f08d90"
+      ],
+      "negative_tests": [
+        "test_relative_com_rejects_missing_compound_argument",
+        "frontier_suite.py: missing compound argument 1 and 2 mutations"
+      ],
+      "gap": "No newly pinned-source witness-free oracle-only regeneration; supplemental proofs excluded from genuine denominator.",
+      "representation_gap": "The 26 supplemental ADP certificates use polynomial interpretations over naturals with integer coefficients. Other order representations have no new supplemental runtime evidence; the generic guard is verified by its Isabelle theorem."
+    },
+    {
+      "processor": "RFC matchbox relative bounds",
+      "mode": "recursive Split children",
+      "checker": "check_rfc_absolute: Split",
+      "theorems": [
+        "check_rfc_absolute_sound",
+        "tp_spec.split_tt"
+      ],
+      "supplemental_positives": [
+        "f2ae6d820ebb649ed4f8",
+        "aac309448e2a86897494",
+        "03861bc76a37d09a8682"
+      ],
+      "negative_tests": [
+        "frontier_suite.py: nonempty selected component replaced by rIsEmpty"
+      ],
+      "gap": "All three real supplemental proofs use the ordinary RFC engine. The derived fixture executes the new absolute-RFC Split branch, but genuine replay coverage of that branch remains missing.",
+      "derived_positive_fixtures": [
+        "derived-absolute-rfc-split"
+      ]
+    },
+    {
+      "processor": "Full termination implies outermost termination",
+      "mode": "outermost root with ordinary full-termination certificate",
+      "checker": "check_cert_rfc_absolute: FP_TRS_input Outermost",
+      "theorems": [
+        "full_termination_implies_outermost",
+        "check_cert_rfc_absolute_sound"
+      ],
+      "supplemental_positives": [],
+      "negative_tests": [],
+      "gap": "19 supplemental outermost proofs use the existing RZ transformation, not this bridge. No genuine replay coverage of the bridge.",
+      "derived_positive_fixtures": [
+        "derived-full-to-outermost"
+      ]
+    },
+    {
+      "processor": "Integrated ordinary/RFC/ADP dispatch",
+      "mode": "single document parse; parsed proof sum dispatch; combined and separate-input CLI",
+      "checker": "certify_proof_integrated",
+      "theorems": [
+        "certify_integrated_cert_problem_sound",
+        "certify_cert_problem_rfc_absolute_sound",
+        "certify_relative_adp_cert_problem_sound"
+      ],
+      "supplemental_positives": [
+        "f37724820c31e7252b72",
+        "b75760fcaf738894083f",
+        "e2b42850efb132ffa95e",
+        "3a85b3e118fede51b614",
+        "80ddf60ee27f236e61c7",
+        "003fb489e6be97b67714",
+        "a4faef53cce039b99ee4",
+        "65be21a223105646b4f1",
+        "cde62169b4c1820a88f5",
+        "f0aa5da20a15748a629d",
+        "31bfad8ce25e4c2ff4fb",
+        "82e32188b8e6ea504811",
+        "c1b8b96ba219bfc0b61a",
+        "9368cf29e357b498cd74",
+        "958fd0edfec75a098c3e",
+        "f794be63b9eb1e76a578",
+        "9eb4016aec9ef427447a",
+        "d21eff4fce0bab3a9127",
+        "16415a991f7c8fb37392",
+        "2c4ab04803a0849a3d8c",
+        "8da0b032f87ac4225a24",
+        "1c69a29be459ff20c150",
+        "73ee023f2e243b12ad57",
+        "d0c2b5408756f374327f",
+        "350576fd71d564feec24",
+        "b34a4796a9ea73f08d90",
+        "3d9200b0dee1023bea75",
+        "3d1488d1756b776304b3",
+        "a163d39b1e47be90ed3a",
+        "d28d588622d0c5dea2eb",
+        "6ad14d2a2216f5231fbc",
+        "8baa6b3e886f544e88ea",
+        "654c7e5b6b1e52534536",
+        "da3992e59d39cc31afca",
+        "0d594081c4ad8935a6ac",
+        "ac3d4d14da73a74b2101",
+        "e3ed332d3334dc561a42",
+        "0f24e6c88e8081aa20a8",
+        "ca15cf8bcc5d3cb2b1c8",
+        "1216ec41462162b566d0",
+        "3df305509ad734807605",
+        "2fa502781f6ed9ec5b82",
+        "1e7fd6fde661ec865eeb",
+        "fa09dbc250e83adb4083",
+        "c2e2f54b9002a696ffdd",
+        "f2ae6d820ebb649ed4f8",
+        "aac309448e2a86897494",
+        "03861bc76a37d09a8682"
+      ],
+      "negative_tests": [
+        "frontier_suite.py"
+      ],
+      "gap": "All 48 supplemental proofs execute the integrated dispatch; source/build provenance remains insufficient for genuine replay coverage."
+    },
+    {
+      "processor": "Existing outermost RZ transformation",
+      "mode": "outermost root plus transformed full-termination child",
+      "checker": "check_outermost_rz_termination_proof",
+      "supplemental_positives": [
+        "3d9200b0dee1023bea75",
+        "3d1488d1756b776304b3",
+        "a163d39b1e47be90ed3a",
+        "d28d588622d0c5dea2eb",
+        "6ad14d2a2216f5231fbc",
+        "8baa6b3e886f544e88ea",
+        "654c7e5b6b1e52534536",
+        "da3992e59d39cc31afca",
+        "0d594081c4ad8935a6ac",
+        "ac3d4d14da73a74b2101",
+        "e3ed332d3334dc561a42",
+        "0f24e6c88e8081aa20a8",
+        "ca15cf8bcc5d3cb2b1c8",
+        "1216ec41462162b566d0",
+        "3df305509ad734807605",
+        "2fa502781f6ed9ec5b82",
+        "1e7fd6fde661ec865eeb",
+        "fa09dbc250e83adb4083",
+        "c2e2f54b9002a696ffdd"
+      ],
+      "gap": "Supplemental real proofs; source/build provenance insufficient for genuine replay denominator; no RZ source change imported.",
+      "theorems": [
+        "check_outermost_rz_termination_proof_sound"
+      ],
+      "negative_tests": [
+        "frontier_suite.py: RZ marker collides with ground constant"
+      ]
+    }
+  ],
+  "runtime_evidence": "runtime-coverage.json",
+  "unknown_proof_nodes": {},
+  "runtime_function_hits": {
+    "frontier-derived": {
+      "check_cert_rfc_absolute": 2,
+      "check_rfc_absolute": 2
+    },
+    "frontier-derived-integrated-v3": {
+      "certify_integrated_cert_problem": 2,
+      "certify_proof_integrated": 2,
+      "check_cert_rfc_absolute": 2,
+      "check_rfc_absolute": 2,
+      "integrated_proof_parser": 2
+    },
+    "frontier-supplemental-v3": {
+      "certify_integrated_cert_problem": 48,
+      "certify_proof_integrated": 48,
+      "check_relative_adp_com_redpair": 26,
+      "integrated_proof_parser": 48,
+      "rel_impl_adp_com_redpair": 26,
+      "check_outermost_rz_termination_proof": 19
+    }
+  }
+}

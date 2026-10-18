@@ -252,3 +252,37 @@ series preparation; it does not reconstruct all prerequisites from CeTA 3.9 or
 claim an independent build of that draft series. Relative ADP and outermost-RZ
 development remain explicitly deferred. The frozen 3,484-root replay evidence is
 reused through exact binary identity; no current-frontier snapshot was taken.
+
+
+## Frontier snapshot integration
+
+The user reopened relative ADP and outermost-RZ. The isolated snapshot in
+[frontier-20261017/assessment.md](frontier-20261017/assessment.md) generalizes the
+ADP compound-order criterion, shares its executable guard, adds RFC recursion
+through `Split`, and adds the full-termination-to-outermost bridge. The existing
+integrated entry point parses each document once and dispatches its parsed proof
+to the shared ordinary/RFC or ADP checker. Full-corpus checks exposed input
+retention in whole-document fallback dispatch, including the previous integrated
+checker; the single-parse integration removes that fallback.
+No duplicate campaign checker or test adapter was imported.
+
+All affected Isabelle layers and five integration/export targets pass. Generated
+Haskell comes from those verified exports. Both compact entry points pass all
+208 positives and 408 negatives; the default HPC run preserves all 45,733
+retained obligations without additional retirements. The 48 frozen supplemental
+frontier proofs pass twice production checking, HPC agreement, input audits,
+separate-input invocation and 74 semantic mutations. The two derived bridge
+fixtures are recorded separately and never counted as genuine Ferrum replays.
+
+The full-corpus recheck and final evidence are recorded in the snapshot report.
+The workspace outage interrupted the first corpus run; completed results are
+reused only after identity/hash checks, and incomplete or failed attempts are
+preserved separately. This work does not certify an unsnapshotted moving frontier.
+
+The final [verification report](frontier-20261017/verification.json) passes all
+3,484 frozen roots with twice default certification, HPC agreement and an
+additional check by the corrected integrated entry point. Exact roots and all
+45,733 retained obligations are preserved. On the 2.64 GB regression certificate,
+the integrated checker improves from 397.6 seconds / 204 GiB peak RSS to
+102.1 seconds / 17.0 GiB. All supplemental and derived tests pass. The frozen
+recheck is explicitly distinguished from fresh Ferrum regeneration.

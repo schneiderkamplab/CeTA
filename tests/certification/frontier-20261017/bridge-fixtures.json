@@ -1,0 +1,25 @@
+{
+  "scope": "Derived context fixtures, not Ferrum replays: outermost strategy and nested absolute RFC Split. Excluded from real frontier counts and genuine replay denominator.",
+  "roots": [
+    {
+      "id": "derived-full-to-outermost",
+      "root": "derived/full-to-outermost-nestrec",
+      "category": "TRS_Outermost",
+      "source_kind": "Derived fixture, not a Ferrum replay",
+      "source_cpf_sha256": "05188494000dca58af7081208ff3c9c25458da9d1056098e460ed155c2500d83",
+      "derivation": "Change the input strategy of a genuine full-termination proof to outermost; retain the proof of full termination verbatim.",
+      "proof_sha256": "fe6bb3dc42a90b0d379323549281401d1af82a9a8e1fa0ba328f2739f38da465",
+      "input_sha256": "3beaad5c3115eae12f389a2ea33b8e7cc09af5fa54b7263a84ce43e8eadbbfc8"
+    },
+    {
+      "id": "derived-absolute-rfc-split",
+      "root": "derived/absolute-rfc-split",
+      "category": "SRS_Standard",
+      "source_kind": "Derived fixture, not a Ferrum replay",
+      "source_cpf_sha256": "d7eb7125a608311fc0bbdf019433fe660c2b4e39b8f6b38351697e321497d020",
+      "derivation": "Wrap a genuine absolute-RFC proof in Split selecting all original rules, retaining the original proof as first child and an empty-rules second child.",
+      "proof_sha256": "228cd76d157dd4228970ff1a9ecf0296532e8ea5a5b06f1a51cc1cec18d33b4e",
+      "input_sha256": "0151c1c42759be66c98aebf416aea5292ecf305fbeeebb415e8520d705e1aa49"
+    }
+  ]
+}
