@@ -76,9 +76,26 @@ terminationCertificate = (token "empty " >> return C.HOEmpty)
   <++ (token "descent-schema " >> C.HODescentSchema <$> items nat <*> items nat <*> items nat <*> items nat <*> nat <*> nat)
   <++ (token "polynomial " >> C.HOPolynomial <$> items polynomial <*> nat <*> terminationCertificate)
 
+modularCertificate :: ReadP C.Ho_modular_certificate
+modularCertificate = (token "base " >> C.HOMBase <$> terminationCertificate)
+  <++ (token "functional-access-schema " >> C.HOMFunctional <$> items nat <*> items nat <*> items nat <*> items nat <*> nat)
+  <++ (token "lambda-access-schema " >> C.HOMLambda <$> items nat <*> items nat <*> items nat <*> items nat <*> nat)
+  <++ (token "semantic-schema " >> C.HOMSemantic <$> items polynomial <*> items polynomial <*> nat <*> items nat <*> items nat <*> items nat <*> items nat <*> nat)
+  <++ (token "component-schema " >> C.HOMComponent <$> items (items polynomial) <*> items (items polynomial) <*> nat <*> items nat <*> items nat <*> items nat <*> items nat <*> nat)
+  <++ (token "polynomial " >> C.HOMPolynomial <$> items polynomial <*> nat <*> modularCertificate)
+
+modularTermination :: ReadP Bool
+modularTermination = do
+  token "ho-modular-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  certificate <- modularCertificate
+  eof
+  return (C.ho_check_modular signature rules certificate)
+
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ modularTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
 
 functionalAccessTermination :: ReadP Bool
 functionalAccessTermination = do

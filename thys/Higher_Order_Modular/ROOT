@@ -1,0 +1,5 @@
+session Higher_Order_Modular = Higher_Order_Functional_Access +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Modular_Checker
+    Higher_Order_Modular_Code
