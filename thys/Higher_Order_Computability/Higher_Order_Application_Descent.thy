@@ -61,6 +61,38 @@ corollary computable_application_descent:
   "source.computable A t \<Longrightarrow> Wellfounded.accp application_descent t"
   by (rule source_SN_application_descent, rule source.computable_SN)
 
+lemma application_subterm_accessible:
+  assumes acc: "Wellfounded.accp application_descent t"
+    and path: "ho_direct_application_subterm\<^sup>*\<^sup>* u t"
+  shows "Wellfounded.accp application_descent u"
+proof -
+  have "application_descent\<^sup>*\<^sup>* u t"
+    using path by (induction rule: rtranclp_induct)
+      (auto simp: application_descent_def intro: rtranclp.rtrancl_into_rtrancl)
+  then show ?thesis by (rule accp_downwards[OF acc])
+qed
+
+lemma application_descent_SN:
+  "Wellfounded.accp application_descent t \<Longrightarrow>
+    Wellfounded.accp (\<lambda>u t. ho_step S V R B t u) t"
+proof -
+  have subset: "(\<lambda>u t. ho_step S V R B t u)\<le>application_descent"
+    by (auto simp: application_descent_def)
+  assume "Wellfounded.accp application_descent t"
+  then show ?thesis using accp_subset[OF subset] by auto
+qed
+
+theorem base_application_subterm_computable:
+  assumes root: "source.computable A t"
+    and path: "ho_direct_application_subterm\<^sup>*\<^sup>* u t"
+    and ty: "ho_typeof S V B u=Some (HBase b)"
+  shows "source.computable (HBase b) u"
+proof -
+  have acc: "Wellfounded.accp application_descent u"
+    by (rule application_subterm_accessible[OF computable_application_descent[OF root] path])
+  show ?thesis using application_descent_SN[OF acc] ty by simp
+qed
+
 end
 
 end
