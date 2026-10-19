@@ -93,9 +93,18 @@ modularTermination = do
   eof
   return (C.ho_check_modular signature rules certificate)
 
+metaTermination :: ReadP Bool
+metaTermination = do
+  token "ho-meta-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  certificate <- modularCertificate
+  eof
+  return (C.ho_check_meta signature rules certificate)
+
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ modularTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ metaTermination <++ modularTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
 
 functionalAccessTermination :: ReadP Bool
 functionalAccessTermination = do

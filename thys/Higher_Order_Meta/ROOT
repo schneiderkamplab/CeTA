@@ -1,0 +1,9 @@
+session Higher_Order_Meta = Higher_Order_Modular +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Meta_Instantiation
+    Higher_Order_Meta_Interpretation
+    Higher_Order_Meta_Order
+    Higher_Order_Meta_Polynomial
+    Higher_Order_Meta_Checker
+    Higher_Order_Meta_Code
