@@ -4,5 +4,6 @@ session Higher_Order_Computability = Higher_Order_Values +
     Higher_Order_Computability
     Higher_Order_Source_Computability
     Higher_Order_Source_Substitution
+    Higher_Order_Source_Beta
     Higher_Order_Saturated_Neutral
     Higher_Order_Application_Descent
