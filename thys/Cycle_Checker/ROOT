@@ -1,0 +1,5 @@
+session Cycle_Checker = Proof_Checker +
+  options [document = false, timeout = 120]
+  theories
+    Cycle_Transport
+    Cycle_Morphism

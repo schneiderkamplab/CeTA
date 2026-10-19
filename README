@@ -4,6 +4,31 @@ Contents
  2) Compilation
  3) Dependencies
 
+Verified cycle-rewriting extension (2026-10-19)
+==============================================
+The additive Cycle_Checker session in thys/Cycle_Checker proves soundness of
+ordinary self-embedding, cyclic power transport, and finite transport systems
+with persistent strict progress. It defines cycle rewriting explicitly as
+ordinary string rewriting modulo rotation, requiring a genuine rewrite in
+every cycle step. A reversal bridge is proved as well.
+
+tools/build_cycle_checker.py builds this session on a private clone of a
+verified consolidated Proof_Checker heap and exports/compiles ceta-cycle.
+It does not change existing production checkers or rebuild HOL/AFP. The source,
+generated code, binary hashes and build logs are retained in the output tree.
+The accepted front end is src/Haskell/Main_Cycle.hs. Its CycleTransport,
+CycleEmbedding and CycleMorphism constructors are a native cycle-certificate
+format, NOT ordinary SRS CPF or a claim of stock CPF schema support. Natural
+number fields must be nonnegative. The generated executable checks each local
+rule application, every transport equation, alphabet closure, and persistent
+nonempty progress. Empty traces cannot establish nontermination by rotation.
+
+Production build: target/cycle-production-20261019/ceta-cycle
+SHA-256: ba7570bcdb56c1e2d6fa7b1f05251e6c07d5a36d8052a980af6c688496593961
+The accompanying identity.json pins the exact exported source and warm parent.
+Original-input correspondence and two independent checker invocations per
+retained root remain mandatory campaign gates.
+
 
 Files & Directories
 ===================
