@@ -15,4 +15,6 @@ session Higher_Order_Computability = Higher_Order_Values +
     Higher_Order_Recursive_Calls
     Higher_Order_Syntactic_Descent
     Higher_Order_Closure_Check
+    Higher_Order_Lambda_Closure
     Higher_Order_General_Schema
+    Higher_Order_Lambda_Schema

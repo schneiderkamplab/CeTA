@@ -77,6 +77,10 @@ qed
 lemma ho_open_identity: "ho_open HFree HBound d t=t"
   by (induction t arbitrary: d) auto
 
+lemma ho_open_closed:
+  "ho_bound_closed d t \<Longrightarrow> ho_open s b d t=ho_subst s d t"
+  by (induction t arbitrary: d) auto
+
 fun ho_type_bases where
   "ho_type_bases (HBase b)={b}"
 | "ho_type_bases (HArrow A C)=ho_type_bases A \<union> ho_type_bases C"
