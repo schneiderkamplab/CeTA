@@ -3,3 +3,4 @@ session Higher_Order_Computability = Higher_Order_Values +
   theories
     Higher_Order_Computability
     Higher_Order_Source_Computability
+    Higher_Order_Source_Substitution
