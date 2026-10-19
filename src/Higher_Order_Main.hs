@@ -58,7 +58,7 @@ context = (token "hole " >> return C.HHole)
   <++ (token "cright " >> C.HCRight <$> term <*> context)
 
 check :: ReadP (Bool, Bool)
-check = ((\accepted -> (False, accepted)) <$> (pump <++ path))
+check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
     <++ ((\accepted -> (True, accepted)) <$> application)
 
 application :: ReadP Bool
@@ -69,6 +69,20 @@ application = do
   symbol <- nat
   eof
   return (C.ho_check_application signature rules symbol)
+
+plainPump :: ReadP Bool
+plainPump = do
+  token "ho-plain-pump "
+  signature <- items ty
+  variables <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  rootType <- ty
+  start <- term
+  steps <- items step
+  ctxt <- context
+  substitution <- items term
+  eof
+  return (C.ho_check_plain_pump signature variables rules rootType start steps ctxt substitution)
 
 pump :: ReadP Bool
 pump = do

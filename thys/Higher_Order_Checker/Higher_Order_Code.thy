@@ -1,5 +1,5 @@
 theory Higher_Order_Code
-  imports Higher_Order_Pumping
+  imports Higher_Order_Plain_Path
 begin
 
 lemma ho_rule_welltyped_spec:
@@ -18,7 +18,7 @@ lemma reject_untyped_loop:
   "ho_typeof S V [] t \<noteq> Some A \<Longrightarrow> \<not> ho_check_loop S V R A t ps"
   by (cases ps) (auto simp: ho_check_loop_def split: option.splits)
 
-export_code ho_check_loop ho_check_embedding ho_check_rule_pump ho_check_step ho_typeof nat_of_integer
+export_code ho_check_loop ho_check_embedding ho_check_rule_pump ho_check_plain_pump ho_check_step ho_typeof nat_of_integer
   HBase HArrow HBound HFree HConst HApp HAbs PBound PConst PApp PAbs PMeta
   HRule HBeta HLeft HRight HUnder
   HHole HCLeft HCRight
