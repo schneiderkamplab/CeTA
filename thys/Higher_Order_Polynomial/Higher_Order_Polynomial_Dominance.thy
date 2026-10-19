@@ -112,7 +112,10 @@ fun ho_structural_polynomial_ge where
 | "ho_structural_polynomial_ge (Suc fuel) G A p q =
     (ho_polynomial_typeof G p=Some A \<and> ho_polynomial_typeof G q=Some A \<and>
      (p=q \<or>
-      (case A of HBase b \<Rightarrow> ho_check_base_polynomial_ge G b p q | _ \<Rightarrow> False) \<or>
+      (case A of HBase b \<Rightarrow> ho_check_base_polynomial_ge G b p q
+       | HArrow B C \<Rightarrow> ho_structural_polynomial_ge fuel (B#G) C
+          (ho_polynomial_normalize 16 (HPApply B C (ho_polynomial_rename Suc p) (HPVar 0)))
+          (ho_polynomial_normalize 16 (HPApply B C (ho_polynomial_rename Suc q) (HPVar 0)))) \<or>
       (case (p,q) of (HPApply B C f x,HPApply D E g y) \<Rightarrow>
         B=D \<and> C=A \<and> E=A \<and>
         ho_structural_polynomial_ge fuel G (HArrow B A) f g \<and>
@@ -163,10 +166,46 @@ next
   next
     case False
     show ?thesis
-    proof (cases "case A of HBase b \<Rightarrow> ho_check_base_polynomial_ge G b p q | _ \<Rightarrow> False")
+    proof (cases "case A of HBase b \<Rightarrow> ho_check_base_polynomial_ge G b p q
+       | HArrow B C \<Rightarrow> ho_structural_polynomial_ge fuel (B#G) C
+          (ho_polynomial_normalize 16 (HPApply B C (ho_polynomial_rename Suc p) (HPVar 0)))
+          (ho_polynomial_normalize 16 (HPApply B C (ho_polynomial_rename Suc q) (HPVar 0)))")
       case True
-      then obtain b where "A=HBase b" and "ho_check_base_polynomial_ge G b p q" by (cases A) auto
-      then show ?thesis using ho_check_base_polynomial_ge_sound[OF _ Suc.prems(2)] by blast
+      show ?thesis
+      proof (cases A)
+        case (HBase b)
+        have checked: "ho_check_base_polynomial_ge G b p q" using True HBase by simp
+        show ?thesis unfolding HBase by (rule ho_check_base_polynomial_ge_sound[OF checked Suc.prems(2)])
+      next
+        case (HArrow B C)
+        let ?p = "HPApply B C (ho_polynomial_rename Suc p) (HPVar 0)"
+        let ?q = "HPApply B C (ho_polynomial_rename Suc q) (HPVar 0)"
+        have checked: "ho_structural_polynomial_ge fuel (B#G) C
+          (ho_polynomial_normalize 16 ?p) (ho_polynomial_normalize 16 ?q)"
+          using True HArrow by simp
+        show ?thesis unfolding HArrow ho_value_ge.simps(2)
+        proof (intro allI impI)
+          fix x assume xv: "ho_value B x"
+          have ev: "ho_env_value (B#G) (ho_env_cons x e)"
+            by (rule ho_env_cons_value[OF xv Suc.prems(2)])
+          have normalized: "ho_value_ge C
+            (ho_polynomial_eval (ho_env_cons x e) (ho_polynomial_normalize 16 ?p))
+            (ho_polynomial_eval (ho_env_cons x e) (ho_polynomial_normalize 16 ?q))"
+            by (rule Suc.IH[OF checked ev])
+          have raw: "ho_value_ge C (ho_polynomial_eval (ho_env_cons x e) ?p)
+            (ho_polynomial_eval (ho_env_cons x e) ?q)"
+          proof -
+            have eq: "ho_value_ge C (ho_polynomial_eval (ho_env_cons x e) ?p)
+              (ho_polynomial_eval (ho_env_cons x e) ?q) =
+              ho_value_ge C (ho_polynomial_eval (ho_env_cons x e) (ho_polynomial_normalize 16 ?p))
+              (ho_polynomial_eval (ho_env_cons x e) (ho_polynomial_normalize 16 ?q))"
+              by (rule ho_ge_beta[OF ho_polynomial_normalize_path ho_polynomial_normalize_path])
+            show ?thesis using eq normalized by simp
+          qed
+          show "ho_value_ge C (App (ho_polynomial_eval e p) x) (App (ho_polynomial_eval e q) x)"
+            using raw by (simp add: ho_polynomial_eval_rename ho_env_cons_def)
+        qed
+      qed
     next
       case False
       obtain B f x g y where p: "p=HPApply B A f x" and q: "q=HPApply B A g y"
