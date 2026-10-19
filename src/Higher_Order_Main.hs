@@ -78,7 +78,23 @@ terminationCertificate = (token "empty " >> return C.HOEmpty)
 
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ semanticTermination <++ lambdaAccessTermination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ semanticTermination <++ componentTermination <++ lambdaAccessTermination <++ application))
+
+componentTermination :: ReadP Bool
+componentTermination = do
+  token "ho-component-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  ordinary <- items (items polynomial)
+  marked <- items (items polynomial)
+  orderFuel <- nat
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_component_schema signature rules ordinary marked orderFuel ranks arities priorities sorts closureFuel)
 
 lambdaAccessTermination :: ReadP Bool
 lambdaAccessTermination = do

@@ -1,0 +1,6 @@
+session Higher_Order_Component_Order = Higher_Order_Lambda_Access +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Component_Closure
+    Higher_Order_Component_Schema
+    Higher_Order_Component_Code
