@@ -7,5 +7,11 @@ session Higher_Order_Computability = Higher_Order_Values +
     Higher_Order_Source_Beta
     Higher_Order_Source_Fundamental
     Higher_Order_Symbol_Criterion
+    Higher_Order_Full_Application
     Higher_Order_Saturated_Neutral
     Higher_Order_Application_Descent
+    Higher_Order_Call_Reduction
+    Higher_Order_Call_Order
+    Higher_Order_Recursive_Calls
+    Higher_Order_Syntactic_Descent
+    Higher_Order_Closure_Check

@@ -57,17 +57,20 @@ theorem ho_symbols_imply_SN:
   assumes zero: "ho_zero_arity_rules R"
     and heads: "\<And>G l r. (G,l,r)\<in>set R \<Longrightarrow>
       \<exists>c. ho_application_head (ho_erase_pattern l)=HConst c"
-    and symbols: "\<And>W n T. ho_lookup S n=Some T \<Longrightarrow>
+    and finite_sorts: "finite K"
+    and symbols: "\<And>W n T. (\<And>b. b\<in>K \<Longrightarrow> HBase b\<in>set W) \<Longrightarrow> ho_lookup S n=Some T \<Longrightarrow>
       ho_source_computable S W R [] T (HConst n)"
     and ty: "ho_typeof S V [] t=Some A"
   shows "Wellfounded.accp (\<lambda>u t. ho_step S V R [] t u) t"
 proof -
-  let ?K = "\<Union>T\<in>ho_binder_types t. ho_type_bases T"
+  let ?K = "K \<union> (\<Union>T\<in>ho_binder_types t. ho_type_bases T)"
   let ?extra = "map HBase (sorted_list_of_set ?K)"
   let ?W = "V@?extra"
   interpret ext: ho_source_neutral_reducibility S ?W R "[]"
     by unfold_locales (rule zero, rule heads, assumption)
-  have finite: "finite ?K" by simp
+  have finite: "finite ?K" using finite_sorts by simp
+  have available: "HBase b\<in>set ?W" if "b\<in>K" for b
+    using that finite by simp
   have inhabited: "\<exists>x. ext.source.computable T x" if tm: "T\<in>ho_binder_types t" for T
   proof (rule ext.source_type_inhabited)
     fix b assume "b\<in>ho_type_bases T"
@@ -80,7 +83,7 @@ proof -
   qed
   have tt: "ho_typeof S ?W [] t=Some A" by (rule ho_typeof_extend_free[OF ty])
   have ct: "ext.source.computable A t"
-    by (rule ext.source_constants_suffice[OF tt symbols inhabited])
+    by (rule ext.source_constants_suffice[OF tt symbols[OF available] inhabited])
   show ?thesis by (rule ho_SN_restrict_free[OF ext.source.computable_SN[OF ct]])
 qed
 
@@ -88,7 +91,8 @@ theorem ho_symbol_termination:
   assumes zero: "ho_zero_arity_rules R"
     and heads: "\<And>G l r. (G,l,r)\<in>set R \<Longrightarrow>
       \<exists>c. ho_application_head (ho_erase_pattern l)=HConst c"
-    and symbols: "\<And>W n T. ho_lookup S n=Some T \<Longrightarrow>
+    and finite_sorts: "finite K"
+    and symbols: "\<And>W n T. (\<And>b. b\<in>K \<Longrightarrow> HBase b\<in>set W) \<Longrightarrow> ho_lookup S n=Some T \<Longrightarrow>
       ho_source_computable S W R [] T (HConst n)"
   shows "wf ((ho_relation S V R A)\<inverse>)"
 proof -
@@ -96,7 +100,7 @@ proof -
   proof (cases "ho_typeof S V [] t=Some A")
     case True
     have sn: "Wellfounded.accp (\<lambda>u t. ho_step S V R [] t u) t"
-      by (rule ho_symbols_imply_SN[OF zero heads symbols True])
+      by (rule ho_symbols_imply_SN[OF zero heads finite_sorts symbols True])
     have sub: "(\<lambda>u t. (t,u)\<in>ho_relation S V R A)\<le>(\<lambda>u t. ho_step S V R [] t u)"
       by (auto simp: ho_relation_def)
     show ?thesis using accp_subset[OF sub] sn by blast
