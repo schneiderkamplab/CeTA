@@ -1,0 +1,7 @@
+session Higher_Order_Lambda_Access = Higher_Order_Semantic_Calls +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Lambda_Access_Path
+    Higher_Order_Lambda_Access_Closure
+    Higher_Order_Lambda_Access_Schema
+    Higher_Order_Lambda_Access_Code
