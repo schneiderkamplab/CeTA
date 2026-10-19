@@ -9,7 +9,7 @@ export_code ho_check_termination ho_check_polynomial_removal ho_polynomial_resid
   HBase HArrow HBound HFree HConst HApp HAbs PBound PConst PApp PAbs PMeta
   HRule HBeta HLeft HRight HUnder HHole HCLeft HCRight
   HPVar HPNumber HPAdd HPMultiply HPApply HPAbstract
-  HOEmpty HOApplication HOGeneralSchema HOPolynomial
+  HOEmpty HOApplication HOGeneralSchema HOPartialSchema HOPolynomial
   in Haskell module_name Higher_Order_Checker
 
 end

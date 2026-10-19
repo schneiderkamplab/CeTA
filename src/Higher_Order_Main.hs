@@ -69,6 +69,7 @@ terminationCertificate :: ReadP C.Ho_termination_certificate
 terminationCertificate = (token "empty " >> return C.HOEmpty)
   <++ (token "application " >> C.HOApplication <$> nat)
   <++ (token "schema " >> C.HOGeneralSchema <$> items nat <*> nat)
+  <++ (token "partial-schema " >> C.HOPartialSchema <$> items nat <*> items nat <*> nat)
   <++ (token "polynomial " >> C.HOPolynomial <$> items polynomial <*> nat <*> terminationCertificate)
 
 check :: ReadP (Bool, Bool)
