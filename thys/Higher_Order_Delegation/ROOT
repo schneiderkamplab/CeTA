@@ -8,3 +8,5 @@ session Higher_Order_Delegation = Higher_Order_Lex +
     Higher_Order_Context_Simulation
     Higher_Order_Algebraic_Simulation
     Higher_Order_First_Order_Delegation
+    Higher_Order_Context_Property
+    Higher_Order_Candidate_Delegation
