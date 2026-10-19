@@ -1,0 +1,10 @@
+session Higher_Order_Delegation = Higher_Order_Lex +
+  options [document = false, timeout = 60]
+  theories
+    Higher_Order_Delegation_Foundation
+    Higher_Order_Finite_Branching
+    Higher_Order_Algebraic_Embedding
+    Higher_Order_Finite_Projection
+    Higher_Order_Context_Simulation
+    Higher_Order_Algebraic_Simulation
+    Higher_Order_First_Order_Delegation
