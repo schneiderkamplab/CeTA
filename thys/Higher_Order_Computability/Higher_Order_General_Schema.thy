@@ -7,54 +7,59 @@ lemma ho_apply_terms_arguments [simp]:
   by (induction xs arbitrary: f) auto
 
 definition ho_check_schema_rule where
-  "ho_check_schema_rule S rank fuel rule=(case rule of (G,l,r) \<Rightarrow>
+  "ho_check_schema_rule S rank arity fuel rule=(case rule of (G,l,r) \<Rightarrow>
     ho_rule_welltyped S (G,l,r) \<and>
     (case ho_application_head (ho_erase_pattern l) of HConst c \<Rightarrow>
       (case ho_lookup S c of None \<Rightarrow> False | Some T \<Rightarrow>
         list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A)
-          (ho_argument_types T) (ho_spine_arguments (ho_erase_pattern l)) \<and>
-        ho_check_closure S G rank c (ho_spine_arguments (ho_erase_pattern l)) fuel (ho_erase_pattern r))
+          (take (arity c) (ho_argument_types T)) (ho_spine_arguments (ho_erase_pattern l)) \<and>
+        ho_check_closure S G rank arity c (ho_spine_arguments (ho_erase_pattern l)) fuel (ho_erase_pattern r))
      | _ \<Rightarrow> False))"
 
+definition ho_check_schema_with_arities where
+  "ho_check_schema_with_arities S R ranks arities fuel=(length ranks=length S \<and> length arities=length S \<and>
+    (\<forall>i<length S. arities!i\<le>length (ho_argument_types (S!i))) \<and>
+    ho_zero_arity_rules R \<and> list_all (ho_check_schema_rule S ((!) ranks) ((!) arities) fuel) R)"
+
 definition ho_check_general_schema where
-  "ho_check_general_schema S R ranks fuel=(length ranks=length S \<and>
-    ho_zero_arity_rules R \<and> list_all (ho_check_schema_rule S ((!) ranks) fuel) R)"
+  "ho_check_general_schema S R ranks fuel=ho_check_schema_with_arities S R ranks (map (length \<circ> ho_argument_types) S) fuel"
 
 lemma schema_rule_data:
-  assumes "ho_check_schema_rule S rank fuel (G,l,r)"
+  assumes "ho_check_schema_rule S rank arity fuel (G,l,r)"
   obtains c T where "ho_rule_welltyped S (G,l,r)"
     "ho_application_head (ho_erase_pattern l)=HConst c" "ho_lookup S c=Some T"
-    "list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A) (ho_argument_types T) (ho_spine_arguments (ho_erase_pattern l))"
-    "ho_check_closure S G rank c (ho_spine_arguments (ho_erase_pattern l)) fuel (ho_erase_pattern r)"
+    "list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A) (take (arity c) (ho_argument_types T)) (ho_spine_arguments (ho_erase_pattern l))"
+    "ho_check_closure S G rank arity c (ho_spine_arguments (ho_erase_pattern l)) fuel (ho_erase_pattern r)"
   using assms unfolding ho_check_schema_rule_def by (auto split: ho_term.splits option.splits)
 
 context ho_source_neutral_reducibility
 begin
 
 theorem general_schema_symbols:
-  assumes checked: "list_all (ho_check_schema_rule S rank fuel) R"
+  assumes checked: "list_all (ho_check_schema_rule S rank arity fuel) R"
+    and bounds: "\<And>c T. ho_lookup S c=Some T \<Longrightarrow> arity c\<le>length (ho_argument_types T)"
     and inhabited: "\<And>d U b. ho_lookup S d=Some U \<Longrightarrow> b\<in>ho_type_bases U \<Longrightarrow>
       \<exists>x. source.computable (HBase b) x"
     and symbol: "ho_lookup S c=Some T"
   shows "source.computable T (HConst c)"
 proof -
-  have rule_checked: "ho_check_schema_rule S rank fuel (G,l,r)" if "(G,l,r)\<in>set R" for G l r
+  have rule_checked: "ho_check_schema_rule S rank arity fuel (G,l,r)" if "(G,l,r)\<in>set R" for G l r
     using checked that by (simp add: list_all_iff)
-  have arities: "ho_spine_length (ho_erase_pattern l)=length (ho_argument_types (S!d))"
+  have arities: "ho_spine_length (ho_erase_pattern l)=arity d"
     if member: "(G,l,r)\<in>set R" and head: "ho_application_head (ho_erase_pattern l)=HConst d" for G l r d
   proof -
     obtain e U where he: "ho_application_head (ho_erase_pattern l)=HConst e" and sy: "ho_lookup S e=Some U"
-      and args: "list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A) (ho_argument_types U) (ho_spine_arguments (ho_erase_pattern l))"
+      and args: "list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A) (take (arity e) (ho_argument_types U)) (ho_spine_arguments (ho_erase_pattern l))"
       using schema_rule_data[OF rule_checked[OF member]] by blast
-    show ?thesis using list_all2_lengthD[OF args] he head sy by (auto split: if_splits)
+    show ?thesis using list_all2_lengthD[OF args] he head bounds[OF sy] by simp
   qed
-  have root_closed: "source.computable (HBase (ho_result_sort U)) u"
+  have root_closed: "source.computable (ho_drop_type (arity d) U) u"
     if sy: "ho_lookup S d=Some U"
-      and args: "list_all2 source.computable (ho_argument_types U) xs"
+      and args: "list_all2 source.computable (take (arity d) (ho_argument_types U)) xs"
       and root: "ho_root_step S V R B (ho_apply_terms (HConst d) xs) u"
       and smaller: "\<And>e ys Z. ((e,ys),(d,xs))\<in>call_order rank \<Longrightarrow>
-        ho_lookup S e=Some Z \<Longrightarrow> list_all2 source.computable (ho_argument_types Z) ys \<Longrightarrow>
-        source.computable (HBase (ho_result_sort Z)) (ho_apply_terms (HConst e) ys)"
+        ho_lookup S e=Some Z \<Longrightarrow> list_all2 source.computable (take (arity e) (ho_argument_types Z)) ys \<Longrightarrow>
+        source.computable (ho_drop_type (arity e) Z) (ho_apply_terms (HConst e) ys)"
     for d xs U u
   proof -
     obtain G l r s where member: "(G,l,r)\<in>set R" and wt: "ho_rule_welltyped S (G,l,r)"
@@ -64,8 +69,8 @@ proof -
       using root unfolding ho_root_step_def by blast
     obtain e Z where head: "ho_application_head (ho_erase_pattern l)=HConst e"
       and es: "ho_lookup S e=Some Z"
-      and types: "list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A) (ho_argument_types Z) (ho_spine_arguments (ho_erase_pattern l))"
-      and closure: "ho_check_closure S G rank e (ho_spine_arguments (ho_erase_pattern l)) fuel (ho_erase_pattern r)"
+      and types: "list_all2 (\<lambda>A x. ho_typeof S G [] x=Some A) (take (arity e) (ho_argument_types Z)) (ho_spine_arguments (ho_erase_pattern l))"
+      and closure: "ho_check_closure S G rank arity e (ho_spine_arguments (ho_erase_pattern l)) fuel (ho_erase_pattern r)"
       using schema_rule_data[OF rule_checked[OF member]] by blast
     have ed: "e=d" using rule_instance_head_spine(1)[OF member li] head by simp
     have zu: "Z=U" using es sy ed by simp
@@ -89,39 +94,41 @@ proof -
       have mem: "ho_subst s 0 q\<in>set xs" using that mapped by force
       show ?thesis using args mem by (metis list_all2_nthD2 in_set_conv_nth)
     qed
-    have lt: "ho_typeof S G [] (ho_erase_pattern l)=Some (HBase (ho_result_sort U))"
-      using ho_apply_terms_type[where S=S and V=G and B="[]" and f="HConst d" and A=U and xs="?ls"]
-        types sy reconstruct ed zu by simp
-    have rt: "ho_typeof S G [] (ho_erase_pattern r)=Some (HBase (ho_result_sort U))"
+    have lt: "ho_typeof S G [] (ho_erase_pattern l)=Some (ho_drop_type (arity d) U)"
+      using ho_apply_prefix_type[where S=S and V=G and B="[]" and f="HConst d" and A=U and xs="?ls" and n="arity d"]
+        types sy bounds[OF sy] reconstruct ed zu by simp
+    have rt: "ho_typeof S G [] (ho_erase_pattern r)=Some (ho_drop_type (arity d) U)"
       using wt lt by (simp add: ho_rule_welltyped_def)
-    have rec: "source.computable (HBase (ho_result_sort Z)) (ho_apply_terms (HConst e) ys)"
+    have rec: "source.computable (ho_drop_type (arity e) Z) (ho_apply_terms (HConst e) ys)"
       if small: "((e,ys),(d,map (ho_subst s 0) ?ls))\<in>call_order rank"
-        and sym: "ho_lookup S e=Some Z" and aa: "list_all2 source.computable (ho_argument_types Z) ys" for e ys Z
+        and sym: "ho_lookup S e=Some Z" and aa: "list_all2 source.computable (take (arity e) (ho_argument_types Z)) ys" for e ys Z
       using smaller[of e ys Z] small sym aa mapped by simp
-    have cl: "ho_check_closure S G rank d ?ls fuel (ho_erase_pattern r)" using closure ed by simp
-    show ?thesis using ho_check_closure_sound[OF cl rt subst known inhabited rec] req by simp
+    have cl: "ho_check_closure S G rank arity d ?ls fuel (ho_erase_pattern r)" using closure ed by simp
+    show ?thesis using ho_check_closure_sound[OF cl rt subst bounds known inhabited rec] req by simp
   qed
   show ?thesis
-  proof (rule computable_from_base_calls)
+  proof (rule computable_from_prefix_calls)
     show "ho_typeof S V B (HConst c)=Some T" using symbol by simp
+    show "arity c\<le>length (ho_argument_types T)" by (rule bounds[OF symbol])
     show "\<exists>x. source.computable (HBase b) x" if "b\<in>ho_type_bases T" for b
       by (rule inhabited[OF symbol that])
-    fix xs assume args: "list_all2 source.computable (ho_argument_types T) xs"
-    show "source.computable (HBase (ho_result_sort T)) (ho_apply_terms (HConst c) xs)"
-      by (rule recursive_calls_computable[where rank=rank, OF arities root_closed symbol args])
+    fix xs assume args: "list_all2 source.computable (take (arity c) (ho_argument_types T)) xs"
+    show "source.computable (ho_drop_type (arity c) T) (ho_apply_terms (HConst c) xs)"
+      by (rule recursive_calls_computable[where rank=rank and arity=arity, OF arities bounds root_closed symbol args])
   qed
 qed
 
 end
 
-theorem ho_check_general_schema_sound:
-  assumes checked: "ho_check_general_schema S R ranks fuel"
+theorem ho_check_schema_with_arities_sound:
+  assumes checked: "ho_check_schema_with_arities S R ranks arities fuel"
   shows "wf ((ho_relation S V R A)\<inverse>)"
 proof -
-  have zero: "ho_zero_arity_rules R" and rules: "list_all (ho_check_schema_rule S ((!) ranks) fuel) R"
-    using checked unfolding ho_check_general_schema_def by auto
+  have zero: "ho_zero_arity_rules R" and rules: "list_all (ho_check_schema_rule S ((!) ranks) ((!) arities) fuel) R"
+    and bound: "\<And>c T. ho_lookup S c=Some T \<Longrightarrow> arities!c\<le>length (ho_argument_types T)"
+    using checked unfolding ho_check_schema_with_arities_def by (auto split: if_splits)
   have heads: "\<exists>c. ho_application_head (ho_erase_pattern l)=HConst c" if "(G,l,r)\<in>set R" for G l r
-    using schema_rule_data[of S "(!) ranks" fuel G l r] rules that by (auto simp: list_all_iff)
+    using schema_rule_data[of S "(!) ranks" "(!) arities" fuel G l r] rules that by (auto simp: list_all_iff)
   let ?K = "\<Union>T\<in>set S. ho_type_bases T"
   show ?thesis
   proof (rule ho_symbol_termination[where K="?K", OF zero heads])
@@ -142,8 +149,12 @@ proof -
       then show ?thesis by blast
     qed
     show "ho_source_computable S W R [] T (HConst c)"
-      by (rule src.general_schema_symbols[OF rules inhabited symbol])
+      by (rule src.general_schema_symbols[OF rules bound inhabited symbol])
   qed
 qed
+
+corollary ho_check_general_schema_sound:
+  "ho_check_general_schema S R ranks fuel \<Longrightarrow> wf ((ho_relation S V R A)\<inverse>)"
+  unfolding ho_check_general_schema_def by (rule ho_check_schema_with_arities_sound)
 
 end

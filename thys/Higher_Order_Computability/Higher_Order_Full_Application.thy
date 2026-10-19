@@ -10,6 +10,15 @@ fun ho_result_sort where
   "ho_result_sort (HBase b)=b"
 | "ho_result_sort (HArrow A C)=ho_result_sort C"
 
+fun ho_drop_type where
+  "ho_drop_type 0 A=A"
+| "ho_drop_type (Suc n) (HBase b)=HBase b"
+| "ho_drop_type (Suc n) (HArrow A C)=ho_drop_type n C"
+
+lemma ho_drop_full_type [simp]:
+  "ho_drop_type (length (ho_argument_types A)) A=HBase (ho_result_sort A)"
+  by (induction A) auto
+
 definition ho_apply_terms where
   "ho_apply_terms f xs=foldl HApp f xs"
 
@@ -104,6 +113,39 @@ corollary computable_from_base_calls:
       source.computable (HBase (ho_result_sort A)) (ho_apply_terms f xs)"
   shows "source.computable A f"
   by (rule full_computable_imp_computable[OF full_computable_from_base_calls[OF ty calls] inhabited])
+
+theorem computable_from_prefix_calls:
+  assumes ty: "ho_typeof S V B f=Some A"
+    and bound: "n\<le>length (ho_argument_types A)"
+    and inhabited: "\<And>b. b\<in>ho_type_bases A \<Longrightarrow> \<exists>x. source.computable (HBase b) x"
+    and calls: "\<And>xs. list_all2 source.computable (take n (ho_argument_types A)) xs \<Longrightarrow>
+      source.computable (ho_drop_type n A) (ho_apply_terms f xs)"
+  shows "source.computable A f"
+  using ty bound inhabited calls
+proof (induction n arbitrary: A f)
+  case 0
+  then show ?case using 0(4)[of "[]"] by simp
+next
+  case (Suc n)
+  obtain T C where eq: "A=HArrow T C" using Suc.prems(2) by (cases A) auto
+  have applied: "source.computable C (HApp f x)" if cx: "source.computable T x" for x
+  proof (rule Suc.IH)
+    show "ho_typeof S V B (HApp f x)=Some C" using Suc.prems(1) source.computable_typed[OF cx] eq by simp
+    show "n\<le>length (ho_argument_types C)" using Suc.prems(2) eq by simp
+    show "\<exists>x. source.computable (HBase b) x" if "b\<in>ho_type_bases C" for b
+      using Suc.prems(3) that eq by simp
+    fix xs assume args: "list_all2 source.computable (take n (ho_argument_types C)) xs"
+    have full: "list_all2 source.computable (take (Suc n) (ho_argument_types A)) (x#xs)"
+      using cx args eq by simp
+    show "source.computable (ho_drop_type n C) (ho_apply_terms (HApp f x) xs)"
+      using Suc.prems(4)[OF full] eq by simp
+  qed
+  obtain a where ca: "source.computable T a"
+    using source_type_inhabited[where A=T] Suc.prems(3) eq by auto
+  have sn: "source.strongly_normalizing f"
+    by (rule source_SN_function[OF source.computable_SN[OF applied[OF ca]]])
+  show ?case using Suc.prems(1) sn applied eq by simp
+qed
 
 end
 

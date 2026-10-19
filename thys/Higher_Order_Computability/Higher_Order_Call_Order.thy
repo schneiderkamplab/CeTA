@@ -61,6 +61,25 @@ qed
 
 end
 
+lemma ho_apply_prefix_type:
+  assumes ty: "ho_typeof S V B f=Some A" and bound: "n\<le>length (ho_argument_types A)"
+    and args: "list_all2 (\<lambda>T x. ho_typeof S V B x=Some T) (take n (ho_argument_types A)) xs"
+  shows "ho_typeof S V B (ho_apply_terms f xs)=Some (ho_drop_type n A)"
+  using ty bound args
+proof (induction n arbitrary: A f xs)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n)
+  obtain T C where eq: "A=HArrow T C" using Suc.prems(2) by (cases A) auto
+  obtain x ys where xs: "xs=x#ys" and xt: "ho_typeof S V B x=Some T"
+    and ys: "list_all2 (\<lambda>T x. ho_typeof S V B x=Some T) (take n (ho_argument_types C)) ys"
+    using Suc.prems(3) eq by (auto simp: list_all2_Cons1)
+  have ft: "ho_typeof S V B (HApp f x)=Some C" using Suc.prems(1) xt eq by simp
+  have n: "n\<le>length (ho_argument_types C)" using Suc.prems(2) eq by simp
+  show ?case using Suc.IH[OF ft n ys] by (simp add: eq xs)
+qed
+
 lemma ho_apply_terms_type:
   assumes ty: "ho_typeof S V B f=Some A"
     and args: "list_all2 (\<lambda>T x. ho_typeof S V B x=Some T) (ho_argument_types A) xs"
