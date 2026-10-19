@@ -410,3 +410,33 @@ statuses, mutated CPF, and SHA-256 hashes are retained under
 `4a8175dcf85748ab44557429c0c57c3c18b89f77cd442c6f515850ecf8b8c1b3`.
 The semantic, checker, and integration sources contain no `sorry`,
 axiomatization, or oracle declaration.
+
+## Higher-order selected-argument delegation (2026-10-20)
+
+`thys/Higher_Order_Filtered` extends the experimental higher-order checker
+with symbol-local argument selections and phase descent. Its well-founded
+call order compares symbol ranks, selected terminating arguments, phases,
+and finally all arguments. The last component preserves descent for reductions
+in unselected arguments. Selections may differ between symbols and arities;
+no benchmark names or fixed witnesses occur in the implementation.
+
+The computability-closure, known-symbol delegation, original typed-rule
+partition, and actual CeTA full-rewriting CPF adapter are proved in Isabelle.
+Assumptions remain disabled in the first-order checker. The isolated
+`Higher_Order_Filtered` session reuses `Higher_Order_CeTA_Semantic` and checks
+in 10.2 seconds of theory time. `Higher_Order_Filtered_Code` exports in
+197.6 seconds; 285 Haskell modules compile successfully. No HOL/AFP rebuild
+was needed. Broad proof automation was replaced by explicit elimination and
+restricted simplification where command timing exposed slowdowns.
+
+Generated experimental executable:
+`target/higher-order-20261019/filtered-delegation-checker-v1/ceta-ho-delegation`
+(SHA-256 `07d5a43eb4cb60a783d7e8cab9e0691f5c289f5d2095ea6869fc02372722707e`).
+The parsing boundary is `src/Higher_Order_Filtered_Delegation_Main.hs`.
+All 11 Ferrum delegation tests pass, including incorrect phase/selection,
+missing-rule, invalid-child-proof, and assumption mutations. Typed-applicative
+AG01 4.24 is accepted twice against its original input. A fresh 207-root union
+replay passes (183 YES, 24 NO), including all previous delegation modes.
+Artifacts and Python test logs are under `ferrum-aaecc/target/higher-order-20261019`.
+This does not replace the ten-category production checker or imply native
+Ferrum higher-order CLI integration.
