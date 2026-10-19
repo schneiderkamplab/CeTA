@@ -2,3 +2,4 @@ session Higher_Order_Computability = Higher_Order_Values +
   options [document = false, timeout = 30]
   theories
     Higher_Order_Computability
+    Higher_Order_Source_Computability
