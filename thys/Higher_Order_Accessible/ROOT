@@ -1,0 +1,18 @@
+session Higher_Order_Accessible = Higher_Order_Priority +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Candidate_Interpretation
+    Higher_Order_Accessible_Fixpoint
+    Higher_Order_Accessible_Candidates
+    Higher_Order_Candidate_Neutral
+    Higher_Order_Source_Accessible
+    Higher_Order_Candidate_Beta
+    Higher_Order_Candidate_Fundamental
+    Higher_Order_Candidate_Calls
+    Higher_Order_Candidate_Saturated
+    Higher_Order_Candidate_Prefix
+    Higher_Order_Candidate_Symbols
+    Higher_Order_Candidate_Recursion
+    Higher_Order_Accessible_Path
+    Higher_Order_Accessible_Closure
+    Higher_Order_Accessible_Schema

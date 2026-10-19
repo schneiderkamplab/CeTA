@@ -1,5 +1,5 @@
 theory Higher_Order_Polynomial_Checker
-  imports Higher_Order_Polynomial_Dominance "Higher_Order_Priority.Higher_Order_Priority_Schema"
+  imports Higher_Order_Polynomial_Dominance "Higher_Order_Accessible.Higher_Order_Accessible_Schema"
 begin
 
 fun ho_check_polynomial_ge where
@@ -160,6 +160,7 @@ datatype ho_termination_certificate = HOEmpty | HOApplication nat
   | HOPartialSchema "nat list" "nat list" nat
   | HOLambdaSchema "nat list" "nat list" nat
   | HOPrioritySchema "nat list" "nat list" "nat list" nat
+  | HOAccessibleSchema "nat list" "nat list" "nat list" "nat list" nat
   | HOPolynomial "ho_polynomial list" nat ho_termination_certificate
 
 fun ho_check_termination where
@@ -169,6 +170,7 @@ fun ho_check_termination where
 | "ho_check_termination S R (HOPartialSchema ranks arities fuel) = ho_check_schema_with_arities S R ranks arities fuel"
 | "ho_check_termination S R (HOLambdaSchema ranks arities fuel) = ho_check_lambda_schema S R ranks arities fuel"
 | "ho_check_termination S R (HOPrioritySchema ranks arities priorities fuel) = ho_check_priority_schema S R ranks arities priorities fuel"
+| "ho_check_termination S R (HOAccessibleSchema ranks arities priorities sorts fuel) = ho_check_accessible_schema S R ranks arities priorities sorts fuel"
 | "ho_check_termination S R (HOPolynomial ps fuel proof) =
     (ho_check_polynomial_removal S ps fuel R \<and>
       ho_check_termination S (ho_polynomial_residual S ps fuel R) proof)"
@@ -193,6 +195,9 @@ next
 next
   case (HOPrioritySchema ranks arities priorities fuel)
   then show ?case by (simp add: ho_check_priority_schema_sound)
+next
+  case (HOAccessibleSchema ranks arities priorities sorts fuel)
+  then show ?case by (simp add: ho_check_accessible_schema_sound)
 next
   case (HOPolynomial ps fuel cert)
   then show ?case by (auto intro: ho_check_polynomial_removal_sound)

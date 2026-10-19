@@ -72,6 +72,7 @@ terminationCertificate = (token "empty " >> return C.HOEmpty)
   <++ (token "partial-schema " >> C.HOPartialSchema <$> items nat <*> items nat <*> nat)
   <++ (token "lambda-schema " >> C.HOLambdaSchema <$> items nat <*> items nat <*> nat)
   <++ (token "priority-schema " >> C.HOPrioritySchema <$> items nat <*> items nat <*> items nat <*> nat)
+  <++ (token "accessible-schema " >> C.HOAccessibleSchema <$> items nat <*> items nat <*> items nat <*> items nat <*> nat)
   <++ (token "polynomial " >> C.HOPolynomial <$> items polynomial <*> nat <*> terminationCertificate)
 
 check :: ReadP (Bool, Bool)
