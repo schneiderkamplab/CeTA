@@ -1,0 +1,7 @@
+session Higher_Order_Lex = Higher_Order_Meta +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Lex_Order
+    Higher_Order_Lex_Closure
+    Higher_Order_Lex_Schema
+    Higher_Order_Lex_Code

@@ -104,7 +104,22 @@ metaTermination = do
 
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ metaTermination <++ modularTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ metaTermination <++ modularTermination <++ lexSemanticTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+
+lexSemanticTermination :: ReadP Bool
+lexSemanticTermination = do
+  token "ho-lex-semantic-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  orders <- items ((,) <$> items polynomial <*> items polynomial)
+  orderFuel <- nat
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_lex_semantic_schema signature rules orders orderFuel ranks arities priorities sorts closureFuel)
 
 functionalAccessTermination :: ReadP Bool
 functionalAccessTermination = do
