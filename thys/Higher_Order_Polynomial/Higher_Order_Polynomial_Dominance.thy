@@ -1,0 +1,210 @@
+theory Higher_Order_Polynomial_Dominance
+  imports Higher_Order_Polynomial_Comparison
+begin
+
+text \<open>Coefficient matching may use independently verified atom inequalities,
+not only syntactic equality. This layer is independent of the atom language.\<close>
+
+fun ho_monomial_dominates where
+  "ho_monomial_dominates R [] ys = (ys = [])"
+| "ho_monomial_dominates R (x#xs) ys =
+    list_ex (\<lambda>y. R x y \<and> ho_monomial_dominates R xs (remove1 y ys)) ys"
+
+theorem ho_monomial_dominates_sound:
+  assumes rel: "\<And>x y. R x y \<Longrightarrow> v x \<ge> v y"
+  shows "ho_monomial_dominates R xs ys \<Longrightarrow>
+    ho_monomial_value v xs \<ge> ho_monomial_value v ys"
+proof (induction xs arbitrary: ys)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons x xs)
+  obtain y where member: "y \<in> set ys" and xy: "R x y"
+    and rest: "ho_monomial_dominates R xs (remove1 y ys)"
+    using Cons.prems by (auto simp: list_ex_iff)
+  have ih: "ho_monomial_value v (remove1 y ys) \<le> ho_monomial_value v xs"
+    by (rule Cons.IH[OF rest])
+  have product: "v y * ho_monomial_value v (remove1 y ys) \<le>
+    v x * ho_monomial_value v xs" by (rule mult_le_mono[OF rel[OF xy] ih])
+  show ?case using product ho_monomial_remove[OF member, of v]
+    by (simp add: ho_monomial_value_def)
+qed
+
+fun ho_poly_consume_term where
+  "ho_poly_consume_term R c m [] = (if c=0 then Some [] else None)"
+| "ho_poly_consume_term R c m ((d,n)#p) =
+    (if ho_monomial_dominates R n m then
+      (if c\<le>d then Some ((d-c,n)#p) else ho_poly_consume_term R (c-d) m p)
+     else map_option (Cons (d,n)) (ho_poly_consume_term R c m p))"
+
+theorem ho_poly_consume_term_sound:
+  assumes rel: "\<And>x y. R x y \<Longrightarrow> v x \<ge> v y"
+  shows "ho_poly_consume_term R c m p=Some q \<Longrightarrow>
+    ho_nat_poly_value v p \<ge> c*ho_monomial_value v m + ho_nat_poly_value v q"
+proof (induction p arbitrary: c q)
+  case Nil
+  then show ?case by (auto split: if_splits)
+next
+  case (Cons entry p)
+  obtain d n where entry_eq: "entry=(d,n)" by (cases entry) auto
+  show ?case
+  proof (cases "ho_monomial_dominates R n m")
+    case True
+    note matched = True
+    have mv: "ho_monomial_value v m \<le> ho_monomial_value v n"
+      by (rule ho_monomial_dominates_sound[OF rel True])
+    show ?thesis
+    proof (cases "c\<le>d")
+      case True
+      have q: "q=(d-c,n)#p" using Cons.prems by (simp add: entry_eq matched True)
+      have decomp: "d=c+(d-c)" using True by simp
+      have linear: "d*ho_monomial_value v n = c*ho_monomial_value v n + (d-c)*ho_monomial_value v n"
+        using arg_cong[OF decomp, where f="\<lambda>i. i*ho_monomial_value v n"] by (simp only: distrib_right)
+      have bounded: "c*ho_monomial_value v m \<le> c*ho_monomial_value v n"
+        by (rule mult_le_mono2[OF mv])
+      show ?thesis unfolding entry_eq q ho_nat_poly_value.simps using linear bounded by arith
+    next
+      case False
+      have sub: "ho_poly_consume_term R (c-d) m p=Some q"
+        using Cons.prems by (simp add: entry_eq matched False)
+      have ih: "(c-d)*ho_monomial_value v m+ho_nat_poly_value v q \<le> ho_nat_poly_value v p"
+        by (rule Cons.IH[OF sub])
+      have decomp: "c=d+(c-d)" using False by simp
+      have linear: "c*ho_monomial_value v m = d*ho_monomial_value v m + (c-d)*ho_monomial_value v m"
+        using arg_cong[OF decomp, where f="\<lambda>i. i*ho_monomial_value v m"] by (simp only: distrib_right)
+      have bounded: "d*ho_monomial_value v m \<le> d*ho_monomial_value v n"
+        by (rule mult_le_mono2[OF mv])
+      show ?thesis unfolding entry_eq ho_nat_poly_value.simps using ih linear bounded by arith
+    qed
+  next
+    case False
+    obtain r where sub: "ho_poly_consume_term R c m p=Some r" and q: "q=(d,n)#r"
+      using Cons.prems by (auto simp: entry_eq False split: option.splits)
+    show ?thesis using Cons.IH[OF sub] by (simp add: entry_eq q algebra_simps)
+  qed
+qed
+
+fun ho_poly_consume where
+  "ho_poly_consume R p [] = Some p"
+| "ho_poly_consume R p ((c,m)#q) = (case ho_poly_consume_term R c m p of
+    None \<Rightarrow> None | Some r \<Rightarrow> ho_poly_consume R r q)"
+
+theorem ho_poly_consume_sound:
+  assumes rel: "\<And>x y. R x y \<Longrightarrow> v x \<ge> v y"
+  shows "ho_poly_consume R p q=Some r \<Longrightarrow>
+    ho_nat_poly_value v p \<ge> ho_nat_poly_value v q+ho_nat_poly_value v r"
+proof (induction q arbitrary: p r)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons entry q)
+  obtain c m where entry_eq: "entry=(c,m)" by (cases entry) auto
+  obtain t where sub: "ho_poly_consume_term R c m p=Some t" and rest: "ho_poly_consume R t q=Some r"
+    using Cons.prems by (auto simp: entry_eq split: option.splits)
+  have bounded: "c*ho_monomial_value v m + ho_nat_poly_value v t \<le> ho_nat_poly_value v p"
+    by (rule ho_poly_consume_term_sound[where R=R and v=v, OF rel sub])
+  show ?case using bounded Cons.IH[OF rest]
+    by (simp only: entry_eq ho_nat_poly_value.simps; arith)
+qed
+
+fun ho_function_atom_dominates where
+  "ho_function_atom_dominates G (HPApply (HBase a) (HBase b) f x)
+      (HPApply (HBase c) (HBase d) g y) =
+    (a=c \<and> b=d \<and> f=g \<and>
+      ho_polynomial_typeof G f=Some (HArrow (HBase a) (HBase b)) \<and>
+      ho_check_base_polynomial_ge G a x y)"
+| "ho_function_atom_dominates G p q = (p=q)"
+
+lemma ho_base_observe_ge:
+  "ho_value_ge (HBase b) p q \<Longrightarrow>
+    ho_observe (HBase 0) p \<ge> ho_observe (HBase 0) q"
+  using ho_observe_numeral by auto
+
+lemma ho_function_application_dominates:
+  assumes f: "ho_polynomial_typeof G f=Some (HArrow (HBase a) (HBase b))"
+    and xy: "ho_check_base_polynomial_ge G a x y" and ev: "ho_env_value G e"
+  shows "ho_polynomial_atom_value e (HPApply (HBase a) (HBase b) f x) \<ge>
+    ho_polynomial_atom_value e (HPApply (HBase a) (HBase b) f y)"
+proof -
+  have ft: "ho_polynomial_type G f (HArrow (HBase a) (HBase b))"
+    by (rule ho_polynomial_typeof_sound[OF f])
+  have xt: "ho_polynomial_type G x (HBase a)" and yt: "ho_polynomial_type G y (HBase a)"
+    using xy unfolding ho_check_base_polynomial_ge_def by (auto intro: ho_polynomial_typeof_sound)
+  have fv: "ho_value (HArrow (HBase a) (HBase b)) (ho_polynomial_eval e f)"
+    by (rule ho_polynomial_fundamental[OF ft, THEN conjunct1, rule_format, OF ev])
+  have xv: "ho_value (HBase a) (ho_polynomial_eval e x)"
+    by (rule ho_polynomial_fundamental[OF xt, THEN conjunct1, rule_format, OF ev])
+  have yv: "ho_value (HBase a) (ho_polynomial_eval e y)"
+    by (rule ho_polynomial_fundamental[OF yt, THEN conjunct1, rule_format, OF ev])
+  have ge: "ho_value_ge (HBase a) (ho_polynomial_eval e x) (ho_polynomial_eval e y)"
+    by (rule ho_check_base_polynomial_ge_sound[OF xy ev])
+  have app: "ho_value_ge (HBase b) (App (ho_polynomial_eval e f) (ho_polynomial_eval e x))
+    (App (ho_polynomial_eval e f) (ho_polynomial_eval e y))"
+    using fv xv yv ge by simp
+  show ?thesis using ho_base_observe_ge[OF app]
+    by (simp add: ho_polynomial_atom_value_def)
+qed
+
+theorem ho_function_atom_dominates_sound:
+  "ho_function_atom_dominates G p q \<Longrightarrow> ho_env_value G e \<Longrightarrow>
+    ho_polynomial_atom_value e p \<ge> ho_polynomial_atom_value e q"
+  by (induction G p q rule: ho_function_atom_dominates.induct)
+     (auto intro: ho_function_application_dominates)
+
+definition ho_check_monotone_base_ge where
+  "ho_check_monotone_base_ge G b p q =
+    (ho_polynomial_typeof G p=Some (HBase b) \<and> ho_polynomial_typeof G q=Some (HBase b) \<and>
+     ho_poly_consume (ho_function_atom_dominates G)
+       (ho_polynomial_coefficients p) (ho_polynomial_coefficients q) \<noteq> None)"
+
+definition ho_check_monotone_base_gt where
+  "ho_check_monotone_base_gt G b p q =
+    (ho_polynomial_typeof G p=Some (HBase b) \<and> ho_polynomial_typeof G q=Some (HBase b) \<and>
+     (case ho_poly_consume (ho_function_atom_dominates G)
+       (ho_polynomial_coefficients p) (ho_polynomial_coefficients q) of None \<Rightarrow> False
+       | Some r \<Rightarrow> ho_poly_positive_constant r))"
+
+lemma ho_function_poly_consume_sound:
+  assumes ev: "ho_env_value G e"
+    and check: "ho_poly_consume (ho_function_atom_dominates G) p q=Some r"
+  shows "ho_nat_poly_value (ho_polynomial_atom_value e) p \<ge>
+    ho_nat_poly_value (ho_polynomial_atom_value e) q + ho_nat_poly_value (ho_polynomial_atom_value e) r"
+  by (rule ho_poly_consume_sound[where R="ho_function_atom_dominates G" and v="ho_polynomial_atom_value e", OF _ check])
+     (use ev in \<open>auto intro: ho_function_atom_dominates_sound\<close>)
+
+theorem ho_check_monotone_base_ge_sound:
+  assumes check: "ho_check_monotone_base_ge G b p q" and ev: "ho_env_value G e"
+  shows "ho_value_ge (HBase b) (ho_polynomial_eval e p) (ho_polynomial_eval e q)"
+proof -
+  have p: "ho_polynomial_type G p (HBase b)" and q: "ho_polynomial_type G q (HBase b)"
+    using check unfolding ho_check_monotone_base_ge_def by (auto intro: ho_polynomial_typeof_sound)
+  obtain r where sub: "ho_poly_consume (ho_function_atom_dominates G)
+    (ho_polynomial_coefficients p) (ho_polynomial_coefficients q)=Some r"
+    using check unfolding ho_check_monotone_base_ge_def by (cases "ho_poly_consume (ho_function_atom_dominates G)
+      (ho_polynomial_coefficients p) (ho_polynomial_coefficients q)") auto
+  have ge: "ho_nat_poly_value (ho_polynomial_atom_value e) (ho_polynomial_coefficients p) \<ge>
+    ho_nat_poly_value (ho_polynomial_atom_value e) (ho_polynomial_coefficients q)"
+    using ho_function_poly_consume_sound[OF ev sub] by arith
+  show ?thesis unfolding ho_value_ge.simps
+    using ho_polynomial_coefficients_sound[OF p ev] ho_polynomial_coefficients_sound[OF q ev] ge by blast
+qed
+
+theorem ho_check_monotone_base_gt_sound:
+  assumes check: "ho_check_monotone_base_gt G b p q" and ev: "ho_env_value G e"
+  shows "ho_value_gt (HBase b) (ho_polynomial_eval e p) (ho_polynomial_eval e q)"
+proof -
+  have p: "ho_polynomial_type G p (HBase b)" and q: "ho_polynomial_type G q (HBase b)"
+    using check unfolding ho_check_monotone_base_gt_def by (auto intro: ho_polynomial_typeof_sound)
+  obtain r where sub: "ho_poly_consume (ho_function_atom_dominates G)
+    (ho_polynomial_coefficients p) (ho_polynomial_coefficients q)=Some r"
+    and positive: "ho_poly_positive_constant r"
+    using check unfolding ho_check_monotone_base_gt_def by (auto split: option.splits)
+  have gt: "ho_nat_poly_value (ho_polynomial_atom_value e) (ho_polynomial_coefficients p) >
+    ho_nat_poly_value (ho_polynomial_atom_value e) (ho_polynomial_coefficients q)"
+    using ho_function_poly_consume_sound[OF ev sub]
+      ho_poly_positive_constant_sound[OF positive, where v="ho_polynomial_atom_value e"] by arith
+  show ?thesis unfolding ho_value_gt.simps
+    using ho_polynomial_coefficients_sound[OF p ev] ho_polynomial_coefficients_sound[OF q ev] gt by blast
+qed
+
+end

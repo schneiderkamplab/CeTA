@@ -1,17 +1,19 @@
 theory Higher_Order_Polynomial_Checker
-  imports Higher_Order_Polynomial_Comparison
+  imports Higher_Order_Polynomial_Dominance
 begin
 
 fun ho_check_polynomial_ge where
   "ho_check_polynomial_ge fuel G (HBase b) p q =
-    ho_check_base_polynomial_ge G b (ho_polynomial_normalize fuel p) (ho_polynomial_normalize fuel q)"
+    (ho_check_base_polynomial_ge G b (ho_polynomial_normalize fuel p) (ho_polynomial_normalize fuel q) \<or>
+     ho_check_monotone_base_ge G b (ho_polynomial_normalize fuel p) (ho_polynomial_normalize fuel q))"
 | "ho_check_polynomial_ge fuel G (HArrow A B) p q = ho_check_polynomial_ge fuel (A#G) B
     (HPApply A B (ho_polynomial_rename Suc p) (HPVar 0))
     (HPApply A B (ho_polynomial_rename Suc q) (HPVar 0))"
 
 fun ho_check_polynomial_gt where
   "ho_check_polynomial_gt fuel G (HBase b) p q =
-    ho_check_base_polynomial_gt G b (ho_polynomial_normalize fuel p) (ho_polynomial_normalize fuel q)"
+    (ho_check_base_polynomial_gt G b (ho_polynomial_normalize fuel p) (ho_polynomial_normalize fuel q) \<or>
+     ho_check_monotone_base_gt G b (ho_polynomial_normalize fuel p) (ho_polynomial_normalize fuel q))"
 | "ho_check_polynomial_gt fuel G (HArrow A B) p q = ho_check_polynomial_gt fuel (A#G) B
     (HPApply A B (ho_polynomial_rename Suc p) (HPVar 0))
     (HPApply A B (ho_polynomial_rename Suc q) (HPVar 0))"
@@ -23,7 +25,8 @@ proof (induction A arbitrary: G p q e)
   case (HBase b)
   have checked: "ho_value_ge (HBase b) (ho_polynomial_eval e (ho_polynomial_normalize fuel p))
       (ho_polynomial_eval e (ho_polynomial_normalize fuel q))"
-    by (rule ho_check_base_polynomial_ge_sound) (use HBase.prems in auto)
+    using HBase.prems by (simp only: ho_check_polynomial_ge.simps;
+      blast intro: ho_check_base_polynomial_ge_sound ho_check_monotone_base_ge_sound)
   have eq: "ho_value_ge (HBase b) (ho_polynomial_eval e p) (ho_polynomial_eval e q) =
       ho_value_ge (HBase b) (ho_polynomial_eval e (ho_polynomial_normalize fuel p))
         (ho_polynomial_eval e (ho_polynomial_normalize fuel q))"
@@ -50,7 +53,8 @@ proof (induction A arbitrary: G p q e)
   case (HBase b)
   have checked: "ho_value_gt (HBase b) (ho_polynomial_eval e (ho_polynomial_normalize fuel p))
       (ho_polynomial_eval e (ho_polynomial_normalize fuel q))"
-    by (rule ho_check_base_polynomial_gt_sound) (use HBase.prems in auto)
+    using HBase.prems by (simp only: ho_check_polynomial_gt.simps;
+      blast intro: ho_check_base_polynomial_gt_sound ho_check_monotone_base_gt_sound)
   have eq: "ho_value_gt (HBase b) (ho_polynomial_eval e p) (ho_polynomial_eval e q) =
       ho_value_gt (HBase b) (ho_polynomial_eval e (ho_polynomial_normalize fuel p))
         (ho_polynomial_eval e (ho_polynomial_normalize fuel q))"
