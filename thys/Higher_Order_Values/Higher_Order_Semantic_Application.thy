@@ -148,4 +148,27 @@ proof -
   show ?thesis using eq shifted by simp
 qed
 
+lemma ho_lift_lift_zero:
+  "lift (lift t 0) (Suc k) = lift (lift t k) 0"
+  by (rule lift_lift) simp
+
+lemma ho_add_lift:
+  "lift (ho_add t u) k = ho_add (lift t k) (lift u k)"
+  by (simp add: ho_add_def numeral_2_eq_2 ho_lift_lift_zero)
+
+lemma ho_zero_lift [simp]: "lift (ho_zero A) k=ho_zero A"
+  by (induction A arbitrary: k) (simp_all add: ho_lift_lift_zero ho_church_def)
+
+lemma ho_lower_lift:
+  "lift (ho_lower A t) k=ho_lower A (lift t k)"
+  by (induction A arbitrary: t k) simp_all
+
+lemma ho_raise_lift:
+  "lift (ho_raise A t c) k=ho_raise A (lift t k) (lift c k)"
+  by (induction A arbitrary: t c k) (simp_all add: ho_add_lift ho_lift_lift_zero)
+
+lemma ho_sem_app_lift:
+  "lift (ho_sem_app A B f x) k=ho_sem_app A B (lift f k) (lift x k)"
+  by (simp add: ho_sem_app_def ho_raise_lift ho_lower_lift)
+
 end
