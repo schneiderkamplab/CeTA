@@ -1,0 +1,9 @@
+{
+  "origin": "Isabelle2025-2/src/HOL/Proofs/Lambda",
+  "theories": ["Lambda", "ListOrder", "ListApplication", "ListBeta", "LambdaType", "InductTermi", "StrongNorm"],
+  "authors": ["Tobias Nipkow", "Stefan Berghofer"],
+  "license": "COPYRIGHT",
+  "changes": "Trailing whitespace and terminal blank lines normalized; no mathematical or proof changes",
+  "reason": "Reuse existing simply-typed lambda normalization under an isolated HOL-derived session without rebuilding HOL-Proofs or the production Proof_Checker",
+  "verification": "All copied proofs are rechecked by Isabelle; no imported axiom, sorry, or quick_and_dirty acceptance"
+}

@@ -1,0 +1,10 @@
+session Higher_Order_Lambda in Isabelle_Lambda = Higher_Order_Checker +
+  options [document = false, timeout = 120]
+  theories
+    StrongNorm
+  document_files (in ".") "root.bib"
+
+session Higher_Order_Beta = Higher_Order_Lambda +
+  options [document = false, timeout = 120]
+  theories
+    Higher_Order_Beta_Bridge

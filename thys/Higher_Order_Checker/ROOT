@@ -1,0 +1,7 @@
+session Higher_Order_Checker = HOL +
+  options [document = false, timeout = 120]
+  theories
+    Higher_Order_Core
+    Higher_Order_Embedding
+    Higher_Order_Pumping
+    Higher_Order_Code
