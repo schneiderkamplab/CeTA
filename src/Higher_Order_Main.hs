@@ -57,9 +57,31 @@ context = (token "hole " >> return C.HHole)
   <++ (token "cleft " >> C.HCLeft <$> context <*> term)
   <++ (token "cright " >> C.HCRight <$> term <*> context)
 
+polynomial :: ReadP C.Ho_polynomial
+polynomial = (token "pvar " >> C.HPVar <$> nat)
+  <++ (token "pnum " >> C.HPNumber <$> nat <*> nat)
+  <++ (token "padd " >> C.HPAdd <$> nat <*> polynomial <*> polynomial)
+  <++ (token "pmul " >> C.HPMultiply <$> nat <*> polynomial <*> polynomial)
+  <++ (token "papply " >> C.HPApply <$> ty <*> ty <*> polynomial <*> polynomial)
+  <++ (token "plam " >> C.HPAbstract <$> ty <*> ty <*> polynomial)
+
+terminationCertificate :: ReadP C.Ho_termination_certificate
+terminationCertificate = (token "empty " >> return C.HOEmpty)
+  <++ (token "application " >> C.HOApplication <$> nat)
+  <++ (token "polynomial " >> C.HOPolynomial <$> items polynomial <*> nat <*> terminationCertificate)
+
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> application)
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ application))
+
+termination :: ReadP Bool
+termination = do
+  token "ho-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  certificate <- terminationCertificate
+  eof
+  return (C.ho_check_termination signature rules certificate)
 
 application :: ReadP Bool
 application = do

@@ -4,3 +4,6 @@ session Higher_Order_Polynomial = Higher_Order_Values +
     Higher_Order_Polynomial
     Higher_Order_Polynomial_Normalization
     Higher_Order_Polynomial_Translation
+    Higher_Order_Polynomial_Comparison
+    Higher_Order_Polynomial_Checker
+    Higher_Order_Polynomial_Code
