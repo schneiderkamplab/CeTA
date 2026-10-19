@@ -4,3 +4,5 @@ session Higher_Order_Values = Higher_Order_Beta +
     Higher_Order_Values
     Higher_Order_Rule_Removal
     Higher_Order_Arithmetic
+    Higher_Order_Cost
+    Higher_Order_Semantic_Application
