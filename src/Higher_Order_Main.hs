@@ -57,8 +57,18 @@ context = (token "hole " >> return C.HHole)
   <++ (token "cleft " >> C.HCLeft <$> context <*> term)
   <++ (token "cright " >> C.HCRight <$> term <*> context)
 
-check :: ReadP Bool
-check = pump <++ path
+check :: ReadP (Bool, Bool)
+check = ((\accepted -> (False, accepted)) <$> (pump <++ path))
+    <++ ((\accepted -> (True, accepted)) <$> application)
+
+application :: ReadP Bool
+application = do
+  token "ho-application "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  symbol <- nat
+  eof
+  return (C.ho_check_application signature rules symbol)
 
 pump :: ReadP Bool
 pump = do
@@ -92,6 +102,7 @@ main = do
     [path] -> do
       source <- readFile path
       case readP_to_S (skipSpaces >> check) source of
-        [(True, "")] -> putStrLn "CERTIFIED HO LOOP"
+        [((False, True), "")] -> putStrLn "CERTIFIED HO LOOP"
+        [((True, True), "")] -> putStrLn "CERTIFIED HO TERMINATION"
         _ -> putStrLn "REJECTED" >> exitFailure
     _ -> putStrLn "Usage: ceta-higher-order CAPSULE" >> exitFailure

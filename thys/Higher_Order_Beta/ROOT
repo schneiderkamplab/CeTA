@@ -8,3 +8,6 @@ session Higher_Order_Beta = Higher_Order_Lambda +
   options [document = false, timeout = 120]
   theories
     Higher_Order_Beta_Bridge
+    Higher_Order_Expansion
+    Higher_Order_Application
+    Higher_Order_Termination_Code

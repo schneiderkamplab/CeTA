@@ -18,18 +18,19 @@ export USER_HOME="$ho_output/isabelle-user"
 export ISABELLE_IDENTIFIER=higher_order_isolated
 cd "$ho_source_root"
 { time "$ho_isabelle" build -v -j1 -o threads=4 -o parallel_proofs=0 \
-  -o build_timing_threshold=0.05 -D thys/Higher_Order_Checker Higher_Order_Checker \
+  -o build_timing_threshold=0.05 -d thys/Higher_Order_Checker -D thys/Higher_Order_Beta Higher_Order_Beta \
   ; } >"$ho_output/isabelle-build.log" 2>&1
-"$ho_isabelle" export -n -d thys/Higher_Order_Checker -O "$ho_output/export" \
-  -x '*:code/**' Higher_Order_Checker >"$ho_output/export.log" 2>&1
-ho_generated="$ho_output/export/Higher_Order_Checker.Higher_Order_Code/code/export1"
+"$ho_isabelle" export -n -d thys/Higher_Order_Checker -d thys/Higher_Order_Beta -O "$ho_output/export" \
+  -x '*:code/**' Higher_Order_Beta >"$ho_output/export.log" 2>&1
+ho_generated="$ho_output/export/Higher_Order_Beta.Higher_Order_Termination_Code/code/export1"
 { time "$ho_ghc" -O1 -i"$ho_generated" -outputdir "$ho_output/ghc" \
   src/Higher_Order_Main.hs -o "$ho_output/ceta-higher-order"; } >"$ho_output/ghc-build.log" 2>&1
 sha256sum "$ho_output/ceta-higher-order" "$ho_generated/Higher_Order_Checker.hs" \
   >"$ho_output/checksums.sha256"
 git rev-parse HEAD >"$ho_output/source-commit.txt"
-git diff -- thys/Higher_Order_Checker src/Higher_Order_Main.hs scripts/build_higher_order_checker.sh \
+git diff -- thys/Higher_Order_Checker thys/Higher_Order_Beta src/Higher_Order_Main.hs scripts/build_higher_order_checker.sh \
   >"$ho_output/source.diff"
 sha256sum thys/Higher_Order_Checker/*.thy thys/Higher_Order_Checker/ROOT \
+  thys/Higher_Order_Beta/*.thy thys/Higher_Order_Beta/ROOT thys/Higher_Order_Beta/Isabelle_Lambda/*.thy \
   src/Higher_Order_Main.hs scripts/build_higher_order_checker.sh >"$ho_output/source-checksums.sha256"
 echo "$ho_output/ceta-higher-order"
