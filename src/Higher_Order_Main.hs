@@ -78,7 +78,20 @@ terminationCertificate = (token "empty " >> return C.HOEmpty)
 
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ semanticTermination <++ componentTermination <++ lambdaAccessTermination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+
+functionalAccessTermination :: ReadP Bool
+functionalAccessTermination = do
+  token "ho-functional-access-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_functional_access_schema signature rules ranks arities priorities sorts closureFuel)
 
 componentTermination :: ReadP Bool
 componentTermination = do

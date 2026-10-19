@@ -1,0 +1,7 @@
+session Higher_Order_Functional_Access = Higher_Order_Component_Order +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Functional_Access_Path
+    Higher_Order_Functional_Access_Closure
+    Higher_Order_Functional_Access_Schema
+    Higher_Order_Functional_Access_Code
