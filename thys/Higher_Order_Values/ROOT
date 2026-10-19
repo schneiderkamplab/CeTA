@@ -2,3 +2,5 @@ session Higher_Order_Values = Higher_Order_Beta +
   options [document = false, timeout = 120]
   theories
     Higher_Order_Values
+    Higher_Order_Rule_Removal
+    Higher_Order_Arithmetic
