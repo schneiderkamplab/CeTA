@@ -65,6 +65,29 @@ proof (induction t arbitrary: x rule: accp.induct)
   qed
 qed
 
+lemma source_body_SN_from_instance:
+  assumes xt: "ho_typeof S V B x=Some A"
+    and sn: "source.strongly_normalizing (ho_beta_subst x 0 t)"
+  shows "Wellfounded.accp (\<lambda>v t. ho_step S V R (A#B) t v) t"
+proof -
+  have reflection: "Wellfounded.accp (\<lambda>v t. ho_step S V R (A#B) t v) t"
+    if sy: "source.strongly_normalizing y" and eq: "y=ho_beta_subst x 0 t" for y t
+    using sy eq
+  proof (induction y arbitrary: t rule: accp.induct)
+    case (accI y)
+    show ?case
+    proof (rule accp.accI)
+      fix v assume tv: "ho_step S V R (A#B) t v"
+      have sub: "ho_step S V R B (ho_beta_subst x 0 t) (ho_beta_subst x 0 v)"
+        using ho_source_step_beta_substitution[OF tv zero, where D="[]" and T=A and C=B and x=x] xt by simp
+      have yv: "ho_step S V R B y (ho_beta_subst x 0 v)" using sub accI.prems by simp
+      show "Wellfounded.accp (\<lambda>v t. ho_step S V R (A#B) t v) v"
+        by (rule accI.IH[OF yv refl])
+    qed
+  qed
+  show ?thesis by (rule reflection[OF sn refl])
+qed
+
 lemma source_abstraction_SN:
   "Wellfounded.accp (\<lambda>v t. ho_step S V R (A#B) t v) t \<Longrightarrow>
     source.strongly_normalizing (HAbs A t)"
@@ -95,6 +118,19 @@ proof -
       source.computable_SN[OF cx] at instances[OF cx]])
   qed
   show ?thesis using ty source_abstraction_SN[OF body_sn] applied by simp
+qed
+
+corollary source_computable_abstraction_from_instances:
+  assumes ty: "ho_typeof S V B (HAbs A t)=Some (HArrow A C)"
+    and inhabited: "source.computable A a"
+    and instances: "\<And>x. source.computable A x \<Longrightarrow>
+      source.computable C (ho_beta_subst x 0 t)"
+  shows "source.computable (HArrow A C) (HAbs A t)"
+proof -
+  have body_sn: "Wellfounded.accp (\<lambda>v t. ho_step S V R (A#B) t v) t"
+    by (rule source_body_SN_from_instance[OF source.computable_typed[OF inhabited]
+      source.computable_SN[OF instances[OF inhabited]]])
+  show ?thesis by (rule source_computable_abstraction[OF ty body_sn instances])
 qed
 
 end
