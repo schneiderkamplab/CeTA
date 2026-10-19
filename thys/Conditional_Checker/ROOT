@@ -1,0 +1,5 @@
+session Conditional_Checker = Proof_Checker +
+  options [document = false, timeout = 120]
+  sessions CTRS
+  theories
+    Conditional_Nontermination
