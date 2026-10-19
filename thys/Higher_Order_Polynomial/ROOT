@@ -1,4 +1,4 @@
-session Higher_Order_Polynomial = Higher_Order_Accessible +
+session Higher_Order_Polynomial = Higher_Order_Descent +
   options [document = false, timeout = 30]
   theories
     Higher_Order_Polynomial

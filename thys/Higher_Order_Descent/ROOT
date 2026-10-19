@@ -1,0 +1,8 @@
+session Higher_Order_Descent = Higher_Order_Accessible +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Accessible_Descent
+    Higher_Order_Descent_Recursion
+    Higher_Order_Descent_Check
+    Higher_Order_Descent_Closure
+    Higher_Order_Descent_Schema
