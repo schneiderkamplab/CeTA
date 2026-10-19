@@ -1,0 +1,4 @@
+session Higher_Order_CeTA_Delegation = Proof_Checker +
+  options [document = false, timeout = 600]
+  sessions Higher_Order_Delegation
+  theories Higher_Order_CeTA_Delegation

@@ -274,5 +274,43 @@ proof -
   show ?thesis by (rule ho_SN_candidate_context[OF arities closed acc has_prop typed])
 qed
 
+lemma ho_delegation_known_call:
+  assumes signature: "\<And>c U. c\<in>F \<Longrightarrow> ho_lookup S c=Some U \<Longrightarrow>
+      arity c=length (ho_argument_types U) \<and>
+      list_all (ho_positive_type rank (rank (ho_result_sort U))) (ho_argument_types U)"
+    and delegated: "\<And>t T. ho_candidate_context F arity t \<Longrightarrow>
+      ho_typeof S V B t=Some T \<Longrightarrow> source_candidate T t"
+    and member: "c\<in>F" and symbol: "ho_lookup S c=Some T"
+    and args: "list_all2 source_candidate (take (arity c) (ho_argument_types T)) xs"
+  shows "source_candidate (ho_drop_type (arity c) T) (ho_apply_terms (HConst c) xs)"
+proof -
+  have full: "arity c=length (ho_argument_types T)" using signature[OF member symbol] by simp
+  have len: "length xs=arity c" using list_all2_lengthD[OF args] full by simp
+  have typed_args: "list_all2 (\<lambda>A x. ho_typeof S V B x=Some A)
+      (take (arity c) (ho_argument_types T)) xs"
+    by (rule list_all2_mono[OF args]) (rule source.candidate_typed)
+  have typed: "ho_typeof S V B (ho_apply_terms (HConst c) xs)=Some (ho_drop_type (arity c) T)"
+    by (rule ho_apply_prefix_type[OF _ _ typed_args]) (use symbol full in auto)
+  have children: "list_all (ho_candidate_context F arity) xs"
+  proof (unfold list_all_iff, intro ballI)
+    fix x assume mem: "x\<in>set xs"
+    obtain U where cx: "source_candidate U x" using args mem by (metis list_all2_nthD2 in_set_conv_nth)
+    show "ho_candidate_context F arity x"
+    proof (rule ho_candidate_context_of_candidate[where F=F and arity=arity, OF _ cx])
+      fix t d A y assume node: "ho_fo_node F arity t=Some d"
+        and ty: "ho_typeof S V B t=Some A" and arg: "y\<in>set (ho_spine_arguments t)"
+      show "\<exists>b U. A=HBase b \<and> (U,y)\<in>ho_accessible_arguments rank S V B t"
+        by (rule ho_fo_signature_accessible[where F=F and arity=arity, OF signature node ty arg])
+    qed
+  qed
+  have node: "ho_fo_node F arity (ho_apply_terms (HConst c) xs)=Some c"
+    by (rule ho_fo_node_call) (rule member, rule len)
+  have has_prop: "ho_candidate_context F arity (ho_apply_terms (HConst c) xs)"
+    using ho_fo_context_property.simps[of F arity "\<lambda>t. \<exists>T. source_candidate T t"
+        "ho_apply_terms (HConst c) xs"]
+    by (simp only: node option.simps ho_apply_terms_arguments ho_spine_arguments.simps append.simps children)
+  show ?thesis by (rule delegated[OF has_prop typed])
+qed
+
 end
 end

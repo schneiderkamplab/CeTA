@@ -10,3 +10,6 @@ session Higher_Order_Delegation = Higher_Order_Lex +
     Higher_Order_First_Order_Delegation
     Higher_Order_Context_Property
     Higher_Order_Candidate_Delegation
+    Higher_Order_Delegation_Partition
+    Higher_Order_Delegated_Schema
+    Higher_Order_Delegation_Check

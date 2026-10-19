@@ -1,0 +1,3 @@
+session Higher_Order_CeTA_Check = Higher_Order_CeTA_Delegation +
+  options [document = false, timeout = 120]
+  theories Higher_Order_CeTA_Check

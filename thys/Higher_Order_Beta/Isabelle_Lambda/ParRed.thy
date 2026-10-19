@@ -8,7 +8,7 @@ confluence of beta.
 
 section \<open>Parallel reduction and a complete developments\<close>
 
-theory ParRed imports Lambda Commutation begin
+theory ParRed imports Lambda HO_Lambda_Commutation begin
 
 
 subsection \<open>Parallel reduction\<close>

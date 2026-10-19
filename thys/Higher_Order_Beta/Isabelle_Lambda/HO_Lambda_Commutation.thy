@@ -5,7 +5,7 @@
 
 section \<open>Abstract commutation and confluence notions\<close>
 
-theory Commutation
+theory HO_Lambda_Commutation
 imports Main
 begin
 
