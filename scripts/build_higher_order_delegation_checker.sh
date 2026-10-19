@@ -17,6 +17,11 @@ fi
 : "${AFP:?Supply the matching AFP source directory}"
 ho_isabelle=${ISABELLE_TOOL:-/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle}
 ho_ghc=${GHC:-ghc}
+case ${HO_DELEGATION_MODE:-functional} in
+  functional) ho_session=Higher_Order_CeTA_Code; ho_driver=src/Higher_Order_Delegation_Main.hs ;;
+  semantic) ho_session=Higher_Order_CeTA_Semantic_Code; ho_driver=src/Higher_Order_Semantic_Delegation_Main.hs ;;
+  *) echo 'Unknown HO_DELEGATION_MODE' >&2; exit 2 ;;
+esac
 export USER_HOME="$HO_ISABELLE_USER_HOME" ISABELLE_IDENTIFIER="$HO_ISABELLE_IDENTIFIER"
 mkdir -p "$ho_output"
 cd "$ho_root"
@@ -26,18 +31,18 @@ for ho_dir in thys/Higher_Order_*; do
 done
 { time "$ho_isabelle" build -v -b -j1 -o threads=4 -o parallel_proofs=0 \
     -o build_timing_threshold=0.05 -d "$HO_CETA_SOURCE_DIR/thys" \
-    "${ho_dirs[@]}" Higher_Order_CeTA_Code; } >"$ho_output/isabelle-build.log" 2>&1
+    "${ho_dirs[@]}" "$ho_session"; } >"$ho_output/isabelle-build.log" 2>&1
 "$ho_isabelle" export -n -d "$HO_CETA_SOURCE_DIR/thys" "${ho_dirs[@]}" \
-  -O "$ho_output/export" -x '*:code/**' Higher_Order_CeTA_Code >"$ho_output/export.log" 2>&1
-ho_generated="$ho_output/export/Higher_Order_CeTA_Code.Higher_Order_CeTA_Code/code/export1"
+  -O "$ho_output/export" -x '*:code/**' "$ho_session" >"$ho_output/export.log" 2>&1
+ho_generated="$ho_output/export/$ho_session.$ho_session/code/export1"
 { time "$ho_ghc" -O1 -i"$ho_generated" -outputdir "$ho_output/ghc" \
-    src/Higher_Order_Delegation_Main.hs -o "$ho_output/ceta-ho-delegation"; } \
+    "$ho_driver" -o "$ho_output/ceta-ho-delegation"; } \
     >"$ho_output/ghc-build.log" 2>&1
 git rev-parse HEAD >"$ho_output/source-commit.txt"
-git diff -- thys/Higher_Order_* src/Higher_Order_Delegation_Main.hs \
+git diff -- thys/Higher_Order_* "$ho_driver" \
   scripts/build_higher_order_delegation_checker.sh >"$ho_output/source.diff"
 sha256sum thys/Higher_Order_*/*.thy thys/Higher_Order_*/ROOT \
-  thys/Higher_Order_Beta/Isabelle_Lambda/*.thy src/Higher_Order_Delegation_Main.hs \
+  thys/Higher_Order_Beta/Isabelle_Lambda/*.thy "$ho_driver" \
   scripts/build_higher_order_delegation_checker.sh >"$ho_output/source-checksums.sha256"
 sha256sum "$ho_output/ceta-ho-delegation" "$ho_generated"/*.hs >"$ho_output/checksums.sha256"
 echo "$ho_output/ceta-ho-delegation"

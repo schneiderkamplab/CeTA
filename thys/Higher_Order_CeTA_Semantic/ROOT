@@ -1,0 +1,6 @@
+session Higher_Order_CeTA_Semantic = Higher_Order_CeTA_Check +
+  options [document = false, timeout = 120]
+  theories
+    Higher_Order_Semantic_Delegated
+    Higher_Order_Semantic_Delegation_Check
+    Higher_Order_CeTA_Semantic_Check

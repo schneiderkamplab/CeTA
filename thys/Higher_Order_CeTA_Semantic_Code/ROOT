@@ -1,0 +1,3 @@
+session Higher_Order_CeTA_Semantic_Code = Higher_Order_CeTA_Semantic +
+  options [document = false, timeout = 600]
+  theories Higher_Order_CeTA_Semantic_Code
