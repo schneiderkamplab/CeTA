@@ -1,5 +1,5 @@
 theory Higher_Order_Polynomial_Checker
-  imports Higher_Order_Polynomial_Dominance
+  imports Higher_Order_Polynomial_Dominance "Higher_Order_Computability.Higher_Order_General_Schema"
 begin
 
 fun ho_check_polynomial_ge where
@@ -156,11 +156,13 @@ proof -
 qed
 
 datatype ho_termination_certificate = HOEmpty | HOApplication nat
+  | HOGeneralSchema "nat list" nat
   | HOPolynomial "ho_polynomial list" nat ho_termination_certificate
 
 fun ho_check_termination where
   "ho_check_termination S R HOEmpty = (R=[])"
 | "ho_check_termination S R (HOApplication c) = ho_check_application S R c"
+| "ho_check_termination S R (HOGeneralSchema ranks fuel) = ho_check_general_schema S R ranks fuel"
 | "ho_check_termination S R (HOPolynomial ps fuel proof) =
     (ho_check_polynomial_removal S ps fuel R \<and>
       ho_check_termination S (ho_polynomial_residual S ps fuel R) proof)"
@@ -173,6 +175,9 @@ proof (induction cert arbitrary: R)
 next
   case (HOApplication c)
   then show ?case by (simp add: ho_check_application_sound)
+next
+  case (HOGeneralSchema ranks fuel)
+  then show ?case by (simp add: ho_check_general_schema_sound)
 next
   case (HOPolynomial ps fuel cert)
   then show ?case by (auto intro: ho_check_polynomial_removal_sound)

@@ -68,6 +68,7 @@ polynomial = (token "pvar " >> C.HPVar <$> nat)
 terminationCertificate :: ReadP C.Ho_termination_certificate
 terminationCertificate = (token "empty " >> return C.HOEmpty)
   <++ (token "application " >> C.HOApplication <$> nat)
+  <++ (token "schema " >> C.HOGeneralSchema <$> items nat <*> nat)
   <++ (token "polynomial " >> C.HOPolynomial <$> items polynomial <*> nat <*> terminationCertificate)
 
 check :: ReadP (Bool, Bool)
