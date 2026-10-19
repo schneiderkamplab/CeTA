@@ -131,14 +131,36 @@ path = do
   return (if embedding then C.ho_check_embedding signature variables rules rootType start steps ctxt
           else C.ho_check_loop signature variables rules rootType start steps)
 
+terminationDiagnostics :: ReadP [String]
+terminationDiagnostics = do
+  token "ho-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  certificate <- terminationCertificate
+  eof
+  let explain stage rs (C.HOPolynomial ps fuel child) =
+        let weak = [C.ho_check_polynomial_rule_ge signature ps fuel g l r | (g,(l,r)) <- rs]
+            strict = [C.ho_check_polynomial_rule_gt signature ps fuel g l r | (g,(l,r)) <- rs]
+            residual = C.ho_polynomial_residual signature ps fuel rs
+        in ("stage=" ++ show stage ++ " weak=" ++ show weak ++ " strict=" ++ show strict
+              ++ " residual=" ++ show (length residual)) : explain (stage+1) residual child
+      explain stage rs cert = ["terminal=" ++ show stage ++ " rules=" ++ show (length rs)
+                               ++ " accepted=" ++ show (C.ho_check_termination signature rs cert)]
+  return (explain (0 :: Int) rules certificate)
+
 main :: IO ()
 main = do
   args <- getArgs
   case args of
+    ["--explain", path] -> do
+      source <- readFile path
+      case readP_to_S (skipSpaces >> terminationDiagnostics) source of
+        [(lines, "")] -> mapM_ putStrLn lines
+        _ -> putStrLn "INVALID DIAGNOSTIC INPUT" >> exitFailure
     [path] -> do
       source <- readFile path
       case readP_to_S (skipSpaces >> check) source of
         [((False, True), "")] -> putStrLn "CERTIFIED HO LOOP"
         [((True, True), "")] -> putStrLn "CERTIFIED HO TERMINATION"
         _ -> putStrLn "REJECTED" >> exitFailure
-    _ -> putStrLn "Usage: ceta-higher-order CAPSULE" >> exitFailure
+    _ -> putStrLn "Usage: ceta-higher-order [--explain] CAPSULE" >> exitFailure
