@@ -1,0 +1,15 @@
+session Higher_Order_Semantic_Calls = Higher_Order_Polynomial +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Weak_Interpretation
+    Higher_Order_Weak_Source
+    Higher_Order_Ordered_Recursion
+    Higher_Order_Semantic_Call_Order
+    Higher_Order_Weak_Polynomial
+    Higher_Order_Call_Values
+    Higher_Order_Call_Polynomial
+    Higher_Order_Call_Reduction_Order
+    Higher_Order_Call_Comparison
+    Higher_Order_Semantic_Closure
+    Higher_Order_Semantic_Schema
+    Higher_Order_Semantic_Code

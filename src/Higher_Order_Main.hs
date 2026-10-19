@@ -78,7 +78,23 @@ terminationCertificate = (token "empty " >> return C.HOEmpty)
 
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (termination <++ semanticTermination <++ application))
+
+semanticTermination :: ReadP Bool
+semanticTermination = do
+  token "ho-semantic-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  ordinary <- items polynomial
+  marked <- items polynomial
+  orderFuel <- nat
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_semantic_schema signature rules ordinary marked orderFuel ranks arities priorities sorts closureFuel)
 
 termination :: ReadP Bool
 termination = do
