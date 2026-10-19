@@ -1,4 +1,4 @@
-session Higher_Order_Polynomial = Higher_Order_Computability +
+session Higher_Order_Polynomial = Higher_Order_Priority +
   options [document = false, timeout = 30]
   theories
     Higher_Order_Polynomial

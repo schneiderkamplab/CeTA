@@ -1,0 +1,7 @@
+session Higher_Order_Priority = Higher_Order_Computability +
+  options [document = false, timeout = 30]
+  theories
+    Higher_Order_Priority_Order
+    Higher_Order_Priority_Calls
+    Higher_Order_Priority_Closure
+    Higher_Order_Priority_Schema
