@@ -8,3 +8,4 @@ session Higher_Order_Values = Higher_Order_Beta +
     Higher_Order_Semantic_Application
     Higher_Order_Interpretation
     Higher_Order_Expression_Bridge
+    Higher_Order_Source_Order
