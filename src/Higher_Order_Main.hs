@@ -106,10 +106,47 @@ metaTermination = do
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
     <++ ((\accepted -> (True, accepted)) <$> (
+#ifdef HO_GUARDED
+      guardedTermination <++
+#endif
+#ifdef HO_PREFIX
+      prefixTermination <++
+#endif
 #ifdef HO_BLOCKED
       blockedTermination <++
 #endif
       termination <++ metaTermination <++ modularTermination <++ lexSemanticTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+
+#ifdef HO_GUARDED
+guardedCertificate :: ReadP C.Ho_guarded_certificate
+guardedCertificate = (token "base " >> C.HOGBase <$> modularCertificate)
+  <++ (token "guarded-schema " >> C.HOGSchema <$> items nat <*> items nat <*> items nat <*> items nat <*> nat <*> items nat)
+  <++ (token "polynomial " >> C.HOGPolynomial <$> items polynomial <*> nat <*> guardedCertificate)
+
+guardedTermination :: ReadP Bool
+guardedTermination = do
+  token "ho-guarded-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  certificate <- guardedCertificate
+  eof
+  return (C.ho_check_guarded_certificate signature rules certificate)
+#endif
+
+#ifdef HO_PREFIX
+prefixTermination :: ReadP Bool
+prefixTermination = do
+  token "ho-prefix-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_prefix_schema signature rules ranks arities priorities sorts closureFuel)
+#endif
 
 #ifdef HO_BLOCKED
 blockedTermination :: ReadP Bool

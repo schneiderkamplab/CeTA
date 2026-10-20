@@ -1,0 +1,3 @@
+session Higher_Order_Guarded = Higher_Order_Prefix +
+  options [document = false, timeout = 60]
+  theories Higher_Order_Guarded_Terms Higher_Order_Guarded_Calls Higher_Order_Guarded_Closure Higher_Order_Guarded_Schema Higher_Order_Guarded_Code

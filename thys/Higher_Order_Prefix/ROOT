@@ -1,0 +1,3 @@
+session Higher_Order_Prefix = Higher_Order_Blocked +
+  options [document = false, timeout = 60]
+  theories Higher_Order_Prefix_Calls Higher_Order_Prefix_Substitution Higher_Order_Prefix_Schema Higher_Order_Prefix_Code
