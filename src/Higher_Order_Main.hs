@@ -106,6 +106,9 @@ metaTermination = do
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
     <++ ((\accepted -> (True, accepted)) <$> (
+#ifdef HO_CALL_EXPANSION
+      expansionTermination <++
+#endif
 #ifdef HO_GUARDED
       guardedTermination <++
 #endif
@@ -116,6 +119,28 @@ check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
       blockedTermination <++
 #endif
       termination <++ metaTermination <++ modularTermination <++ lexSemanticTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+
+#ifdef HO_CALL_EXPANSION
+expansionTermination :: ReadP Bool
+expansionTermination = do
+  token "ho-call-expansion-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  definitions <- items ((token "none " >> return Nothing)
+    <++ (token "some " >> Just <$> ((,) <$> term <*> nat)))
+  expansionFuel <- nat
+  ordinary <- items polynomial
+  marked <- items polynomial
+  orderFuel <- nat
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_expansion_input signature rules definitions expansionFuel
+    ordinary marked orderFuel ranks arities priorities sorts closureFuel)
+#endif
 
 #ifdef HO_GUARDED
 guardedCertificate :: ReadP C.Ho_guarded_certificate
