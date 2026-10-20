@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -- Parsing/CLI boundary only. All mathematical acceptance is delegated to the
 -- Isabelle-generated Higher_Order_Checker module. Numbers are nonnegative;
 -- unknown tokens, trailing data and malformed lists are rejected.
@@ -104,7 +105,26 @@ metaTermination = do
 
 check :: ReadP (Bool, Bool)
 check = ((\accepted -> (False, accepted)) <$> (pump <++ plainPump <++ path))
-    <++ ((\accepted -> (True, accepted)) <$> (termination <++ metaTermination <++ modularTermination <++ lexSemanticTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+    <++ ((\accepted -> (True, accepted)) <$> (
+#ifdef HO_BLOCKED
+      blockedTermination <++
+#endif
+      termination <++ metaTermination <++ modularTermination <++ lexSemanticTermination <++ semanticTermination <++ componentTermination <++ functionalAccessTermination <++ lambdaAccessTermination <++ application))
+
+#ifdef HO_BLOCKED
+blockedTermination :: ReadP Bool
+blockedTermination = do
+  token "ho-blocked-termination "
+  signature <- items ty
+  rules <- items ((\g l r -> (g, (l,r))) <$> items ty <*> patternTerm <*> patternTerm)
+  ranks <- items nat
+  arities <- items nat
+  priorities <- items nat
+  sorts <- items nat
+  closureFuel <- nat
+  eof
+  return (C.ho_check_blocked_schema signature rules ranks arities priorities sorts closureFuel)
+#endif
 
 lexSemanticTermination :: ReadP Bool
 lexSemanticTermination = do
