@@ -51,9 +51,22 @@ check (ConditionalLoop rs s ps sub) = case mapM (step rs) ps of
     C.conditional_check_loop (map rule rs) (term s) steps subst ||
     C.conditional_check_rewrite_loop (map rule rs) (term s) steps subst
   Nothing -> False
+checkOrdinary (ConditionalCycle rs s ps) = case mapM (step rs) ps of
+  Just steps -> C.conditional_check_rewrite_loop (map rule rs) (term s) steps []
+  Nothing -> False
+checkOrdinary (ConditionalLoop rs s ps sub) = case mapM (step rs) ps of
+  Just steps -> C.conditional_check_rewrite_loop (map rule rs) (term s) steps
+    (map (\(v,t)->([name v],term t)) sub)
+  Nothing -> False
+
 main = do
   args <- getArgs
   case args of
+    ["--ordinary", path] -> do
+      text <- readFile path
+      case readMaybe text of
+        Just cert | checkOrdinary cert -> putStrLn "CERTIFIED"
+        _ -> putStrLn "REJECTED" >> exitFailure
     [path] -> do
       text <- readFile path
       case readMaybe text of
