@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify/export the finite-term LP checker using an existing parent heap.
+"""Verify/export an LP checker using an existing parent heap (--tocl09 for full semantics).
 
 No parent session builds or search implementations. The warm home must contain
 the matching HOL-AFP heap as well as Proof_Checker and its private dependencies.
@@ -16,9 +16,13 @@ import time
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--tocl09', action='store_true', help='Export the verified infinite-tree TOCL09 bridge')
     for key in ('isabelle', 'ghc', 'warm-home', 'base-sessions', 'afp', 'out'):
         p.add_argument('--' + key, required=True, type=Path)
     a = p.parse_args()
+    suffix = 'TOCL09' if a.tocl09 else 'Finite'
+    check_name = 'tocl09' if a.tocl09 else 'finite'
+    executable = 'ceta-lp-' + check_name
     root = Path(__file__).resolve().parents[1]
     out = a.out.resolve()
     out.mkdir(parents=True, exist_ok=False)
@@ -29,10 +33,10 @@ def main():
     source.mkdir()
     for path in (root / 'thys/Logic_Programming').glob('*.thy'):
         shutil.copy2(path, source / path.name)
-    shutil.copy2(root / 'src/Haskell/Main_LP_Finite.hs', source)
+    shutil.copy2(root / ('src/Haskell/Main_LP_' + suffix + '.hs'), source)
     generated = out / 'generated'
     generated.mkdir()
-    (source / 'LP_Export.thy').write_text('''theory LP_Export
+    export = '''theory LP_Export
 imports LP_Finite_Checker
 begin
 ML \\<open>
@@ -43,7 +47,11 @@ val _ = List.app (fn (names, content) => File.write
   (Bytes.content content)) modules;
 \\<close>
 end
-''')
+'''
+    if a.tocl09:
+        export = export.replace('LP_Finite_Checker', 'LP_TOCL09_Checker').replace(
+            'check_lp_finite_xml', 'check_lp_tocl09_xml').replace('LP_Finite_Generated', 'LP_TOCL09_Generated')
+    (source / 'LP_Export.thy').write_text(export)
     env = dict(os.environ, USER_HOME=str(out / 'isabelle-user'),
                ISABELLE_IDENTIFIER='lp_private', AFP=str(a.afp.resolve()))
     cmd = [str(a.isabelle), 'console', '-n', '-l', 'Proof_Checker',
@@ -62,10 +70,11 @@ end
     started = time.monotonic()
     with (out / 'ghc.log').open('w') as log:
         subprocess.run([str(a.ghc), '-O1', '-i' + str(generated), '-outputdir', str(out / 'ghc'),
-                        str(source / 'Main_LP_Finite.hs'), '-o', str(out / 'ceta-lp-finite')],
+                        str(source / ('Main_LP_' + suffix + '.hs')), '-o', str(out / executable)],
                        stdout=log, stderr=subprocess.STDOUT, check=True, timeout=1800)
-    paths = list(source.glob('*')) + list(generated.glob('*.hs')) + [out / 'ceta-lp-finite']
-    report = dict(semantics='finite-term leftmost resolution; not rational-tree Prolog',
+    paths = list(source.glob('*')) + list(generated.glob('*.hs')) + [out / executable]
+    report = dict(semantics=('leftmost resolution over possibly infinite trees, including no-occurs-check rational unification'
+                            if a.tocl09 else 'finite-term leftmost resolution; not rational-tree Prolog'),
                   parent=str(a.warm_home.resolve()), theory_seconds=theory_seconds,
                   ghc_seconds=time.monotonic() - started,
                   source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
