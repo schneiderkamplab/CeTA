@@ -6,3 +6,5 @@ session Logic_Programming = Proof_Checker +
     LP_Mode_Refinement LP_Mode_Checker LP_Mode_Regression
     LP_PiDP_Projection LP_PiDP_Narrowing
     LP_PiDP_Source LP_PiDP_Graph LP_PiDP_Rule_Graph LP_PiDP_Checker LP_PiDP_XML
+    LP_Source_Simplify LP_Source_Simplify_XML
+    LP_Source_Loop LP_Source_Loop_XML

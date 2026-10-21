@@ -10,7 +10,9 @@ main = do
   case args of
     [path] -> do
       text <- readFile path
-      if C.check_lp_tocl09_pidp_any_xml (C.explode text)
+      if C.check_lp_full_xml (C.explode text)
         then putStrLn "CERTIFIED TOCL09 LP"
-        else putStrLn "REJECTED" >> exitFailure
+        else if C.check_lp_nontermination_xml (C.explode text)
+          then putStrLn "CERTIFIED TOCL09 LP NO"
+          else putStrLn "REJECTED" >> exitFailure
     _ -> putStrLn "usage: ceta-lp-tocl09 CERTIFICATE" >> exitFailure
