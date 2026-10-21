@@ -1,0 +1,3 @@
+session Logic_Programming = Proof_Checker +
+  options [document = false, timeout = 120]
+  theories LP_Filtered_Narrowing LP_Continuation_Machine LP_Leftmost_Resolution LP_Finite_Checker
