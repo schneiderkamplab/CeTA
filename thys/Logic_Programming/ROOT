@@ -4,4 +4,4 @@ session Logic_Programming = Proof_Checker +
     LP_Infinite_Terms LP_Infinite_Narrowing LP_Infinite_Machine LP_Infinite_Resolution LP_TOCL09_Checker
     LP_TOCL09_Regression
     LP_Mode_Refinement LP_Mode_Checker LP_Mode_Regression
-    LP_PiDP_Projection
+    LP_PiDP_Projection LP_PiDP_Narrowing
