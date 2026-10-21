@@ -49,8 +49,8 @@ val _ = List.app (fn (names, content) => File.write
 end
 '''
     if a.tocl09:
-        export = export.replace('LP_Finite_Checker', 'LP_TOCL09_Checker').replace(
-            'check_lp_finite_xml', 'check_lp_tocl09_xml').replace('LP_Finite_Generated', 'LP_TOCL09_Generated')
+        export = export.replace('LP_Finite_Checker', 'LP_Mode_Checker').replace(
+            'check_lp_finite_xml', 'check_lp_tocl09_any_xml').replace('LP_Finite_Generated', 'LP_TOCL09_Generated')
     (source / 'LP_Export.thy').write_text(export)
     env = dict(os.environ, USER_HOME=str(out / 'isabelle-user'),
                ISABELLE_IDENTIFIER='lp_private', AFP=str(a.afp.resolve()))
