@@ -20,6 +20,22 @@ fun lp_normalize_goals where
 | "lp_normalize_goals (Suc fuel) ((Fun f ss,Fun g ts)#es) gs =
     (if f=g \<and> length ss=length ts then lp_normalize_goals fuel (zip ss ts@es) gs else Some None)"
 
+declare lp_normalize_goals.simps[code del]
+
+lemma lp_normalize_goals_code[code]:
+  "lp_normalize_goals fuel es gs = (if fuel=0 then None else
+    case es of []\<Rightarrow>Some (Some gs) | (s,t)#rest\<Rightarrow>
+      (case s of Var x\<Rightarrow>
+        (if t=Var x then lp_normalize_goals (fuel-1) rest gs else
+          lp_normalize_goals (fuel-1)
+            (map (\<lambda>(l,r). (l\<cdot>lp_eliminate x t,r\<cdot>lp_eliminate x t)) rest)
+            (map (\<lambda>a. lp_atom_subst a (lp_eliminate x t)) gs))
+      | Fun f ss\<Rightarrow>(case t of Var x\<Rightarrow>
+          lp_normalize_goals (fuel-1) ((Var x,Fun f ss)#rest) gs
+        | Fun g ts\<Rightarrow>(if f=g \<and> length ss=length ts then
+          lp_normalize_goals (fuel-1) (zip ss ts@rest) gs else Some None))))"
+  by (cases fuel; cases es) (auto split: term.splits prod.splits)
+
 lemma lp_ieval_finite_subst:
   "lp_ieval (s\<cdot>\<sigma>) \<rho> = lp_ieval s (\<lambda>x. lp_ieval (\<sigma> x) \<rho>)"
   by (induct s) (auto intro!: map_cong)
