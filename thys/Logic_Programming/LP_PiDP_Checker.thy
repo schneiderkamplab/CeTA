@@ -1,5 +1,5 @@
 theory LP_PiDP_Checker
-  imports LP_PiDP_Source LP_PiDP_Graph LP_Mode_Checker
+  imports LP_PiDP_Source LP_PiDP_Rule_Graph LP_Mode_Checker
 begin
 
 definition lp_pi_rank where
@@ -8,7 +8,7 @@ definition lp_pi_rank where
 definition lp_pi_component where
   "lp_pi_component I J D R ps \<pi> option_prf = (case option_prf of
     None \<Rightarrow> list_all (\<lambda>p. list_all (\<lambda>q.
-      \<not> lp_shapes_compatible (lp_shape_cap D (snd p)) (fst q)) ps) ps
+      \<not> lp_shapes_compatible (lp_rule_cap R (snd p)) (fst q)) ps) ps
   | Some child_cert \<Rightarrow> isOK (check_dp_termination_proof I J False id
       (dpp_ops.mk J False False (map (af_rule \<pi>) ps) [] [] [] (map (af_rule \<pi>) R)) child_cert))"
 
@@ -18,7 +18,7 @@ definition lp_pi_graph_check where
     length labs=length ps \<and>
     list_all (\<lambda>p. rank p<length proofs) ps \<and>
     list_all (\<lambda>p. list_all (\<lambda>q.
-      lp_shapes_compatible (lp_shape_cap D (snd p)) (fst q) \<longrightarrow> rank q\<le>rank p) ps) ps \<and>
+      lp_shapes_compatible (lp_rule_cap R (snd p)) (fst q) \<longrightarrow> rank q\<le>rank p) ps) ps \<and>
     list_all (\<lambda>i. lp_pi_component I J D R (filter (\<lambda>p. rank p=i) ps) \<pi> (proofs!i)) [0..<length proofs])"
 
 lemma lp_pi_component_sound:
@@ -36,9 +36,9 @@ proof (cases option_prf)
     have p: "(ls 0,rs 0)\<in>set ps" and q: "(ls 1,rs 1)\<in>set ps"
       and link: "(lp_ieval (rs 0) (valuations 0),lp_ieval (ls 1) (valuations 1))\<in>(lp_pi_link (set R))\<^sup>*"
       using chain unfolding lp_pi_narrow_chain_def by (auto dest: spec[where x=0] spec[where x=1])
-    have edge: "lp_shapes_compatible (lp_shape_cap D (rs 0)) (ls 1)"
-      by (rule lp_pi_graph_edge[OF link roots])
-    have absent: "\<forall>p\<in>set ps. \<forall>q\<in>set ps. \<not> lp_shapes_compatible (lp_shape_cap D (snd p)) (fst q)"
+    have edge: "lp_shapes_compatible (lp_rule_cap R (rs 0)) (ls 1)"
+      by (rule lp_pi_rule_graph_edge[OF link])
+    have absent: "\<forall>p\<in>set ps. \<forall>q\<in>set ps. \<not> lp_shapes_compatible (lp_rule_cap R (snd p)) (fst q)"
       using ok by (simp add: lp_pi_component_def None list_all_iff)
     show False using bspec[OF bspec[OF absent p] q] edge by simp
   qed
@@ -60,10 +60,10 @@ lemma lp_pi_graph_check_sound:
     and roots: "\<And>l r. (l,r)\<in>set R \<Longrightarrow> \<exists>f ts. l=Fun f ts \<and> f\<in>D"
     and vars: "\<And>l r. (l,r)\<in>set R \<Longrightarrow> vars_term (af_term \<pi> r) \<subseteq> vars_term (af_term \<pi> l)"
   shows "\<not> lp_pi_narrow_chain (set ps) (set R) \<pi> ls rs valuations"
-proof (rule lp_pi_graph_decomposition[where rank="lp_pi_rank ps labs", OF roots])
+proof (rule lp_pi_rule_graph_decomposition[where rank="lp_pi_rank ps labs"])
   fix l r l' r'
   assume "(l,r)\<in>set ps" "(l',r')\<in>set ps"
-    "lp_shapes_compatible (lp_shape_cap D r) l'"
+    "lp_shapes_compatible (lp_rule_cap R r) l'"
   then show "lp_pi_rank ps labs (l',r')\<le>lp_pi_rank ps labs (l,r)"
     using ok by (auto simp: lp_pi_graph_check_def Let_def list_all_iff)
 next
