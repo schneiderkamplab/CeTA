@@ -1,0 +1,230 @@
+<lpTocl09AffineLoopProof><program>
+<clause><head>
+<funapp>
+  <name>lp_in_66_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_6774_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+<funapp>
+  <name>lp_in_646f75626c65_2</name>
+  <var>X</var>
+  <var>Z</var>
+</funapp>
+<funapp>
+  <name>lp_in_66_2</name>
+  <var>Z</var>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>Y</var>
+  </funapp>
+</funapp>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_6774_2</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>$anonymous1</var>
+  </funapp>
+  <funapp>
+    <name>lp_c_30_0</name>
+  </funapp>
+</funapp>
+</head><body>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_6774_2</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>X</var>
+  </funapp>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>Y</var>
+  </funapp>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_6774_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_646f75626c65_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_646f75626c65416b6b_3</name>
+  <var>X</var>
+  <funapp>
+    <name>lp_c_30_0</name>
+  </funapp>
+  <var>Y</var>
+</funapp>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_646f75626c65416b6b_3</name>
+  <funapp>
+    <name>lp_c_30_0</name>
+  </funapp>
+  <var>X</var>
+  <var>X</var>
+</funapp>
+</head><body>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_646f75626c65416b6b_3</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>X</var>
+  </funapp>
+  <var>Y</var>
+  <var>Z</var>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_646f75626c65416b6b_3</name>
+  <var>X</var>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <funapp>
+      <name>lp_c_73_1</name>
+      <var>Y</var>
+    </funapp>
+  </funapp>
+  <var>Z</var>
+</funapp>
+</body></clause>
+</program><query><name>lp_in_66_2</name><arity>2</arity><ground><index>0</index><index>1</index></ground></query><constructor><name>lp_c_73_1</name></constructor><zero><name>lp_c_30_0</name></zero><environment><binding><var>X</var>
+<affine><first>1</first><second>1</second><constant>1</constant></affine></binding><binding><var>Y</var>
+<affine><first>0</first><second>1</second><constant>0</constant></affine></binding><binding><var>Z</var>
+<affine><first>2</first><second>2</second><constant>2</constant></affine></binding></environment><atomContext><funapp>
+  <name>lp_in_66_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+</atomContext><steps><step><clauseIndex>0</clauseIndex><substitution></substitution></step></steps><prefixes><affineSuccess><atomContext><funapp>
+  <name>lp_in_6774_2</name>
+  <var>affine_slot_0</var>
+  <var>affine_slot_1</var>
+</funapp>
+</atomContext><substitution><binding><var>affine_slot_0</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <var>affine_slot_0</var>
+</funapp>
+</binding><binding><var>affine_slot_1</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <var>affine_slot_1</var>
+</funapp>
+</binding></substitution><substitution><binding><var>affine_slot_0</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <var>affine_slot_0</var>
+</funapp>
+</binding><binding><var>affine_slot_1</var>
+<funapp>
+  <name>lp_c_30_0</name>
+</funapp>
+</binding></substitution><substitution><binding><var>affine_slot_0</var>
+<var>affine_slot_0</var>
+</binding><binding><var>affine_slot_1</var>
+<var>affine_slot_1</var>
+</binding></substitution><substitution><binding><var>affine_slot_0</var>
+<var>affine_slot_0</var>
+</binding></substitution><steps><step><clauseIndex>1</clauseIndex><substitution><binding><var>$anonymous1</var>
+<var>affine_slot_0</var>
+</binding></substitution></step></steps><steps><step><clauseIndex>2</clauseIndex><substitution><binding><var>X</var>
+<var>affine_slot_0</var>
+</binding><binding><var>Y</var>
+<var>affine_slot_1</var>
+</binding></substitution></step></steps><affine><first>0</first><second>1</second><constant>0</constant></affine><environment><binding><var>affine_slot_0</var>
+<affine><first>1</first><second>0</second><constant>0</constant></affine></binding></environment></affineSuccess><resolvePattern><steps><step><clauseIndex>3</clauseIndex><substitution><binding><var>X</var>
+<var>X</var>
+</binding><binding><var>Y</var>
+<var>Z</var>
+</binding></substitution></step></steps></resolvePattern><affineSuccess><atomContext><funapp>
+  <name>lp_in_646f75626c65416b6b_3</name>
+  <var>affine_slot_0</var>
+  <var>affine_slot_1</var>
+  <var>affine_slot_2</var>
+</funapp>
+</atomContext><substitution><binding><var>affine_slot_0</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <var>affine_slot_0</var>
+</funapp>
+</binding><binding><var>affine_slot_1</var>
+<var>affine_slot_1</var>
+</binding><binding><var>affine_slot_2</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>affine_slot_2</var>
+  </funapp>
+</funapp>
+</binding></substitution><substitution><binding><var>affine_slot_0</var>
+<funapp>
+  <name>lp_c_30_0</name>
+</funapp>
+</binding><binding><var>affine_slot_1</var>
+<var>affine_slot_1</var>
+</binding><binding><var>affine_slot_2</var>
+<var>affine_slot_1</var>
+</binding></substitution><substitution><binding><var>affine_slot_0</var>
+<var>affine_slot_0</var>
+</binding><binding><var>affine_slot_1</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>affine_slot_1</var>
+  </funapp>
+</funapp>
+</binding><binding><var>affine_slot_2</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>affine_slot_2</var>
+  </funapp>
+</funapp>
+</binding></substitution><substitution><binding><var>affine_slot_1</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>affine_slot_1</var>
+  </funapp>
+</funapp>
+</binding></substitution><steps><step><clauseIndex>4</clauseIndex><substitution><binding><var>X</var>
+<var>affine_slot_1</var>
+</binding></substitution></step></steps><steps><step><clauseIndex>5</clauseIndex><substitution><binding><var>X</var>
+<var>affine_slot_0</var>
+</binding><binding><var>Y</var>
+<var>affine_slot_1</var>
+</binding><binding><var>Z</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>affine_slot_2</var>
+  </funapp>
+</funapp>
+</binding></substitution></step></steps><affine><first>1</first><second>1</second><constant>1</constant></affine><environment><binding><var>affine_slot_1</var>
+<affine><first>0</first><second>0</second><constant>0</constant></affine></binding></environment></affineSuccess></prefixes><affine><first>2</first><second>1</second><constant>0</constant></affine><affine><first>0</first><second>1</second><constant>1</constant></affine></lpTocl09AffineLoopProof>
