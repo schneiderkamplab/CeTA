@@ -9,6 +9,7 @@ not an accepting source termination checker. In particular it does not justify
 transferring nontermination from a program with cuts erased.\<close>
 
 datatype 'a lp_cut_goal = LPCAtom 'a | LPCCut nat | LPCTrue | LPCFail
+  | LPCMeta 'a | LPCExpand 'a nat | LPCUnify 'a 'a
 datatype 'a lp_cut_entry =
     LPCGoals "'a lp_cut_goal list"
   | LPCClause "'a lp_cut_goal list" nat nat
@@ -29,7 +30,8 @@ fun lp_cut_admin where
    (case g of LPCAtom a \<Rightarrow> None
     | LPCTrue \<Rightarrow> Some (LPCGoals gs # es)
     | LPCFail \<Rightarrow> Some es
-    | LPCCut m \<Rightarrow> Some (LPCGoals gs # lp_cut_prune m es))"
+    | LPCCut m \<Rightarrow> Some (LPCGoals gs # lp_cut_prune m es)
+    | _ \<Rightarrow> None)"
 
 fun lp_cut_entry_weight where
   "lp_cut_entry_weight (LPCGoals gs) = Suc (length gs)"
