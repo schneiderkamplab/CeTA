@@ -10,7 +10,7 @@ main = do
   case args of
     [path] -> do
       text <- readFile path
-      if C.check_lp_seg_full_xml (C.explode text)
+      if C.check_lp_answer_full_xml (C.explode text)
         then putStrLn "CERTIFIED TOCL09 LP"
         else if C.check_lp_nontermination_xml (C.explode text)
           then putStrLn "CERTIFIED TOCL09 LP NO"
