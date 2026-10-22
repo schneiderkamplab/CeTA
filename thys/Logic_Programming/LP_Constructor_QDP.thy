@@ -11,7 +11,7 @@ theorem constructor_chain_qdp:
     and vars: "\<And>l r. (l,r)\<in>R \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     and pairs: "\<And>l r. (l,r)\<in>D \<Longrightarrow> funs_term l\<subseteq>C"
     and roots: "\<And>q. q\<in>Q \<Longrightarrow> \<exists>f ts. q=Fun f ts \<and> f\<notin>C"
-  shows "min_ichain (False,False,af_rule \<pi> ` D,{},Q,{},af_rule \<pi> ` R)
+  shows "min_ichain (nfs,False,af_rule \<pi> ` D,{},Q,{},af_rule \<pi> ` R)
     (\<lambda>i. af_term \<pi> (ls i)) (\<lambda>i. af_term \<pi> (rs i))
     (\<lambda>i x. lp_projection \<pi> (vals i x))"
 proof -
@@ -22,7 +22,7 @@ proof -
   have filtered: "\<And>i. (af_term \<pi> (ls i),af_term \<pi> (rs i))\<in>af_rule \<pi> ` D"
     using pair unfolding af_rule_alt_def by force
   have link: "\<And>i. (af_term \<pi> (rs i)\<cdot>?subst i,
-      af_term \<pi> (ls (Suc i))\<cdot>?subst (Suc i))\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+      af_term \<pi> (ls (Suc i))\<cdot>?subst (Suc i))\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
   proof -
     fix i
     obtain a :: "('f,'v) term" where pa: "lp_iproject \<pi> (lp_ieval (rs i) (vals i)) a"
@@ -32,10 +32,10 @@ proof -
     have path: "(lp_ieval (rs i) (vals i),lp_ieval (ls (Suc i)) (vals (Suc i)))\<in>(lp_clink C R U)\<^sup>*"
       using chain unfolding lp_constructor_chain_def by blast
     obtain c where pc: "lp_iproject \<pi> (lp_ieval (ls (Suc i)) (vals (Suc i))) c"
-      and ac: "(a,c)\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+      and ac: "(a,c)\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
       by (rule constructor_links_projection[OF path pa vars roots]) blast
     have cb: "c=b" by (rule lp_iproject_unique[OF pc pb])
-    show "(af_term \<pi> (rs i)\<cdot>?subst i,af_term \<pi> (ls (Suc i))\<cdot>?subst (Suc i))\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+    show "(af_term \<pi> (rs i)\<cdot>?subst i,af_term \<pi> (ls (Suc i))\<cdot>?subst (Suc i))\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
       using ac unfolding cb lp_iproject_ieval_inverse[OF pa] lp_iproject_ieval_inverse[OF pb] .
   qed
   have normal: "\<And>i. af_term \<pi> (ls i)\<cdot>?subst i\<in>NF_terms Q"
@@ -49,7 +49,16 @@ proof -
     then show "af_term \<pi> (ls i)\<cdot>?subst i\<in>NF_terms Q"
       unfolding lp_iproject_ieval_inverse[OF pa] .
   qed
-  show ?thesis using filtered link normal by (simp add: ichain.simps NF_subst_def)
+  have subst: "\<And>i. NF_subst nfs (af_term \<pi> (ls i),af_term \<pi> (rs i)) (?subst i) Q"
+  proof -
+    fix i
+    obtain a b :: "('f,'v) term" where pa: "lp_iproject \<pi> (lp_ieval (ls i) (vals i)) a"
+      and pb: "lp_iproject \<pi> (lp_ieval (rs i) (vals i)) b"
+      using chain unfolding lp_constructor_chain_def by blast
+    show "NF_subst nfs (af_term \<pi> (ls i),af_term \<pi> (rs i)) (?subst i) Q"
+      by (rule lp_constructor_projected_subst_nf[OF pa pb valuesC roots])
+  qed
+  show ?thesis using filtered link normal subst by (simp add: ichain.simps)
 qed
 
 end
@@ -68,7 +77,7 @@ theorem constructor_qdp_source_termination:
     and dv: "\<And>l r. (l,r)\<in>set (pi_pairs sharp) \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     and pairs: "\<And>l r. (l,r)\<in>set (pi_pairs sharp) \<Longrightarrow> funs_term l\<subseteq>C"
     and roots: "\<And>q. q\<in>Q \<Longrightarrow> \<exists>f ts. q=Fun f ts \<and> f\<notin>C"
-    and finite: "finite_dpp (False,False,af_rule \<pi> ` set (pi_pairs sharp),{},Q,{},af_rule \<pi> ` set translated)"
+    and finite: "finite_dpp (nfs,False,af_rule \<pi> ` set (pi_pairs sharp),{},Q,{},af_rule \<pi> ` set translated)"
   shows "SN_on (lp_ild P) {[query]}"
 proof -
   interpret lp_filter \<pi> U by (rule filter)
@@ -80,7 +89,7 @@ proof -
       "lp_constructor_chain C (set (pi_pairs sharp)) (set translated) U \<pi> ls rs vals"
       using source_to_constructor_chain[where sharp=sharp, OF fixed range _ frames marked min measured]
         shapes rv dv by blast
-    have qchain: "min_ichain (False,False,af_rule \<pi> ` set (pi_pairs sharp),{},Q,{},af_rule \<pi> ` set translated)
+    have qchain: "min_ichain (nfs,False,af_rule \<pi> ` set (pi_pairs sharp),{},Q,{},af_rule \<pi> ` set translated)
       (\<lambda>i. af_term \<pi> (ls i)) (\<lambda>i. af_term \<pi> (rs i))
       (\<lambda>i x. (lp_projection \<pi> (vals i x)::('f,'v) term))"
       apply (rule constructor_chain_qdp[OF chain])

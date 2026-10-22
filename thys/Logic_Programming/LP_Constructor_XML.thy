@@ -24,20 +24,21 @@ definition lp_constructor_parser where
     };
     filters \<leftarrow> CPF_Proof_Parser.afs symbol_parser;
     seed \<leftarrow> xml_singleton (STR ''seed'') symbol_parser id;
+    nfs \<leftarrow>[False] xml_bool (STR ''normalSubstitutions'');
     prf \<leftarrow> xml2dp_termination_proof symbol_parser Mapping.empty Mapping.empty;
-    xml_return (P,outs,fallback,names,marks,filters,query,seed,prf)
+    xml_return (P,outs,fallback,names,marks,filters,query,seed,nfs,prf)
   }"
 
 definition check_lp_constructor_xml where
   "check_lp_constructor_xml xml = (case parse_xml_string lp_constructor_parser xml of
-    Right (P,outs,fallback,names,marks,filters,(q,n,positions),seed,prf) \<Rightarrow>
-      check_lp_constructor tp_rbt_impl dpp_rbt_impl P outs fallback names marks filters q n positions seed prf
+    Right (P,outs,fallback,names,marks,filters,(q,n,positions),seed,nfs,prf) \<Rightarrow>
+      check_lp_constructor tp_rbt_impl dpp_rbt_impl P outs fallback names marks filters q n positions seed nfs prf
     | _ \<Rightarrow> False)"
 
 theorem check_lp_constructor_xml_sound:
   fixes ts :: "((string,nat list) lab,string) term list"
   assumes parsed: "parse_xml_string lp_constructor_parser xml =
-    Right (P,outs,fallback,names,marks,filters,(q,n,positions),seed,prf)"
+    Right (P,outs,fallback,names,marks,filters,(q,n,positions),seed,nfs,prf)"
     and ok: "check_lp_constructor_xml xml" and len: "length ts=n"
     and gr: "\<And>i. i\<in>set positions \<Longrightarrow> i<n \<Longrightarrow> ground (ts!i)"
   shows "SN_on (lp_ild P) {[(q,map (\<lambda>t. lp_ieval t LPIVar) ts)]}"

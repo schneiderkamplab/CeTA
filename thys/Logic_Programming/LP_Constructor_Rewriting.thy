@@ -47,7 +47,7 @@ lemma constructor_active_projection:
     and pr: "lp_iproject \<pi> s a"
     and vars: "\<And>l r. (l,r)\<in>R \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     and roots: "\<And>q. q\<in>Q \<Longrightarrow> \<exists>f ts. q=Fun f ts \<and> f\<notin>C"
-  obtains b where "lp_iproject \<pi> t b" "(a,b)\<in>qrstep False Q (af_rule \<pi> ` R)"
+  obtains b where "lp_iproject \<pi> t b" "(a,b)\<in>qrstep nfs Q (af_rule \<pi> ` R)"
   using st pr
 proof (induct arbitrary: a thesis rule: lp_cactive.induct)
   case (root f ts r \<rho>)
@@ -65,11 +65,11 @@ next
   obtain x xs where us: "us=x#xs" and px: "lp_iproject \<pi> s x"
     and tail: "list_all2 (\<lambda>i y. i < length ss \<and> lp_iproject \<pi> (ss!i) y) indices xs"
     using raw by (cases us) (auto simp: list_all2_map1)
-  obtain y where py: "lp_iproject \<pi> t y" and xy: "(x,y)\<in>qrstep False Q (af_rule \<pi> ` R)"
+  obtain y where py: "lp_iproject \<pi> t y" and xy: "(x,y)\<in>qrstep nfs Q (af_rule \<pi> ` R)"
     by (rule frame.hyps(3)[OF _ px]) blast
   have target: "lp_iproject \<pi> (LPIFun f (t#ss)) (Fun f (y#xs))"
     by (rule lp_iproject.list) (use pi py tail in \<open>auto simp: list_all2_map1\<close>)
-  have step: "(a,Fun f (y#xs))\<in>qrstep False Q (af_rule \<pi> ` R)"
+  have step: "(a,Fun f (y#xs))\<in>qrstep nfs Q (af_rule \<pi> ` R)"
     using qrstep.ctxt[OF xy, of "More f [] Hole xs"] by (simp add: a us)
   show ?case by (rule frame.prems(1)[OF target step])
 qed
@@ -80,7 +80,7 @@ lemma constructor_link_projection:
     and pr: "lp_iproject \<pi> s a"
     and vars: "\<And>l r. (l,r)\<in>R \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     and roots: "\<And>q. q\<in>Q \<Longrightarrow> \<exists>f ts. q=Fun f ts \<and> f\<notin>C"
-  obtains b where "lp_iproject \<pi> t b" "(a,b)\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+  obtains b where "lp_iproject \<pi> t b" "(a,b)\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
 proof (cases "(s,t)\<in>lp_cactive C R U")
   case True
   show ?thesis by (rule constructor_active_projection[OF True pr vars roots])
@@ -99,16 +99,16 @@ lemma constructor_links_projection:
     and pr: "lp_iproject \<pi> s a"
     and vars: "\<And>l r. (l,r)\<in>R \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     and roots: "\<And>q. q\<in>Q \<Longrightarrow> \<exists>f ts. q=Fun f ts \<and> f\<notin>C"
-  obtains b where "lp_iproject \<pi> t b" "(a,b)\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+  obtains b where "lp_iproject \<pi> t b" "(a,b)\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
   using st pr
 proof (induct arbitrary: thesis rule: rtrancl_induct)
   case base
   show ?case by (rule base.prems(1)[OF base.prems(2)]) simp
 next
   case (step y z)
-  obtain b where pb: "lp_iproject \<pi> y b" and ab: "(a,b)\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+  obtain b where pb: "lp_iproject \<pi> y b" and ab: "(a,b)\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
     by (rule step.hyps(3)[OF _ step.prems(2)]) blast
-  obtain c where pc: "lp_iproject \<pi> z c" and bc: "(b,c)\<in>(qrstep False Q (af_rule \<pi> ` R))\<^sup>*"
+  obtain c where pc: "lp_iproject \<pi> z c" and bc: "(b,c)\<in>(qrstep nfs Q (af_rule \<pi> ` R))\<^sup>*"
     by (rule constructor_link_projection[OF step.hyps(2) pb vars roots]) blast
   show ?case by (rule step.prems(1)[OF pc rtrancl_trans[OF ab bc]])
 qed

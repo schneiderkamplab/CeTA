@@ -11,7 +11,7 @@ lemma lp_constructor_lhs_check_sound:
   by (cases l) (auto simp: lp_constructor_lhs_check_def lp_constructor_lhs_def list_all_iff)
 
 definition check_lp_constructor where
-  "check_lp_constructor I J P outs fallback names marks filters q n positions seed prf =
+  "check_lp_constructor I J P outs fallback names marks filters q n positions seed nfs prf =
     (case afs_of filters of None \<Rightarrow> False | Some \<pi> \<Rightarrow>
       let out = (\<lambda>f. the_default f (map_of outs f));
           sharp = (\<lambda>f. the_default f (map_of marks f));
@@ -31,7 +31,7 @@ definition check_lp_constructor where
          lp_check_query \<pi> (sharp q) n positions \<and>
          list_all (\<lambda>(l,r). vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)) (R@ps) \<and>
          isOK (check_dp_termination_proof I J False id
-           (dpp_ops.mk J False False (map (af_rule \<pi>) ps) [] Q [] filtered) prf))"
+           (dpp_ops.mk J nfs False (map (af_rule \<pi>) ps) [] Q [] filtered) prf))"
 
 lemma lp_map_finite_eval:
   "map_lp_iterm data id (lp_ieval t LPIVar) = lp_ieval (map_term data id t) LPIVar"
@@ -40,7 +40,7 @@ lemma lp_map_finite_eval:
 theorem check_lp_constructor_sound:
   fixes ts :: "(('f::{compare_order,countable,showl},nat list) lab,string) term list"
   assumes I: "tp_spec I" and J: "dpp_spec J"
-    and ok: "check_lp_constructor I J P outs fallback names marks filters q n positions seed prf"
+    and ok: "check_lp_constructor I J P outs fallback names marks filters q n positions seed nfs prf"
     and len: "length ts=n"
     and gr: "\<And>i. i\<in>set positions \<Longrightarrow> i<n \<Longrightarrow> ground (ts!i)"
   shows "SN_on (lp_ild P) {[(q,map (\<lambda>t. lp_ieval t LPIVar) ts)]}"
@@ -66,7 +66,7 @@ proof -
     and query: "lp_check_query \<pi> (?sharp q) n positions"
     and vars: "list_all (\<lambda>(l,r). vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)) (translated@pi_pairs ?sharp)"
     and child: "isOK (check_dp_termination_proof I J False id
-      (dpp_ops.mk J False False (map (af_rule \<pi>) (pi_pairs ?sharp)) [] ?Q [] (map (af_rule \<pi>) translated)) prf)"
+      (dpp_ops.mk J nfs False (map (af_rule \<pi>) (pi_pairs ?sharp)) [] ?Q [] (map (af_rule \<pi>) translated)) prf)"
     using ok by (auto simp: check_lp_constructor_def pi Let_def)
   have range: "range ?data\<subseteq>?C" using seed by auto
   have shape: "\<And>l r. (l,r)\<in>set translated \<Longrightarrow> lp_constructor_lhs ?C l"
@@ -101,7 +101,7 @@ proof -
   have rv: "\<And>l r. (l,r)\<in>set translated \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     and dv: "\<And>l r. (l,r)\<in>set (pi_pairs ?sharp) \<Longrightarrow> vars_term (af_term \<pi> r)\<subseteq>vars_term (af_term \<pi> l)"
     using vars by (auto simp: list_all_iff)
-  have finite: "finite_dpp (False,False,af_rule \<pi> ` set (pi_pairs ?sharp),{},set ?Q,{},af_rule \<pi> ` set translated)"
+  have finite: "finite_dpp (nfs,False,af_rule \<pi> ` set (pi_pairs ?sharp),{},set ?Q,{},af_rule \<pi> ` set translated)"
     using check_dp_termination_proof[OF I J child] by (simp add: mk_sound)
   let ?ts = "map (map_term ?data id) ts"
   have ground: "ground (af_term \<pi> (Fun (?sharp q) ?ts))"
