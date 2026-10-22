@@ -1,0 +1,23 @@
+<lpTocl09RecurrentPairProof>
+  <program>
+    <clause>
+      <head><funapp><name>p</name><var>X</var><funapp><name>s</name><var>Y</var></funapp></funapp></head>
+      <body><funapp><name>p</name><funapp><name>s</name><var>X</var></funapp><var>Y</var></funapp></body>
+    </clause>
+    <clause>
+      <head><funapp><name>p</name><var>X</var><funapp><name>z</name></funapp></funapp></head>
+      <body><funapp><name>p</name><funapp><name>z</name></funapp><funapp><name>s</name><var>X</var></funapp></funapp></body>
+    </clause>
+  </program>
+  <query><name>p</name><arity>2</arity><ground><index>0</index><index>1</index></ground></query>
+  <atomContext><funapp><name>p</name><var>X</var><var>Y</var></funapp></atomContext>
+  <termContext><funapp><name>s</name><var>X</var></funapp></termContext>
+  <firstHole><var>X</var></firstHole>
+  <secondHole><var>Y</var></secondHole>
+  <seed><funapp><name>z</name></funapp></seed>
+  <stride>1</stride><pumpBase>0</pumpBase><resetBase>0</resetBase>
+  <pumpGrowth>1</pumpGrowth><resetGrowth>0</resetGrowth><resetOffset>1</resetOffset>
+  <keepFirst>false</keepFirst>
+  <steps><step><clauseIndex>0</clauseIndex><substitution/></step></steps>
+  <steps><step><clauseIndex>1</clauseIndex><substitution/></step></steps>
+</lpTocl09RecurrentPairProof>

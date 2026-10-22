@@ -1,5 +1,5 @@
 theory LP_Source_Unify_XML
-  imports LP_Source_Neutral LP_Source_Trace_XML
+  imports LP_Source_Neutral LP_Recurrent_Pair_XML
 begin
 
 definition lp_unify_step_parser where
@@ -87,6 +87,6 @@ theorem check_lp_source_neutral_xml_sound:
 definition check_lp_nontermination_all_xml where
   "check_lp_nontermination_all_xml xml =
     (check_lp_nontermination_full_xml xml \<or> check_lp_source_unify_xml xml \<or>
-      check_lp_source_neutral_xml xml)"
+      check_lp_source_neutral_xml xml \<or> check_lp_recurrent_pair_xml xml)"
 
 end
