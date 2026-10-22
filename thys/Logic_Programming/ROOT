@@ -18,3 +18,6 @@ session Logic_Programming = Proof_Checker +
     LP_Constructor_XML
     LP_Cut_Source LP_Cut_Graph LP_Cut_Guards LP_Cut_Guards_Test
     LP_Cut_Refresh LP_Cut_Normalize LP_Cut_Meta
+    LP_Cut_State LP_Cut_Resolve LP_Cut_Failure LP_Cut_Knowledge
+    LP_Cut_Resolution_Check LP_Cut_Resolution_Test
+    LP_Cut_Scopes
