@@ -1,0 +1,83 @@
+<lpTocl09PatternLoopProof><program>
+<clause><head>
+<funapp>
+  <name>lp_in_66_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_69734e6174_1</name>
+  <var>X</var>
+</funapp>
+<funapp>
+  <name>lp_in_69734e6174_1</name>
+  <var>Y</var>
+</funapp>
+<funapp>
+  <name>lp_in_66_2</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>X</var>
+  </funapp>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>Y</var>
+  </funapp>
+</funapp>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_69734e6174_1</name>
+  <funapp>
+    <name>lp_c_30_0</name>
+  </funapp>
+</funapp>
+</head><body>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_69734e6174_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>N</var>
+  </funapp>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_69734e6174_1</name>
+  <var>N</var>
+</funapp>
+</body></clause>
+</program><query><name>lp_in_66_2</name><arity>2</arity><ground><index>0</index><index>1</index></ground></query><atomContext><funapp>
+  <name>lp_in_66_2</name>
+  <var>X</var>
+  <var>Y</var>
+</funapp>
+</atomContext><substitution><binding><var>X</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <var>X</var>
+</funapp>
+</binding><binding><var>Y</var>
+<funapp>
+  <name>lp_c_73_1</name>
+  <var>Y</var>
+</funapp>
+</binding></substitution><substitution><binding><var>X</var>
+<funapp>
+  <name>lp_c_30_0</name>
+</funapp>
+</binding><binding><var>Y</var>
+<funapp>
+  <name>lp_c_30_0</name>
+</funapp>
+</binding></substitution><steps><step><clauseIndex>0</clauseIndex><substitution></substitution></step></steps><prefixes><successPattern><substitution><binding><var>X</var>
+<var>X</var>
+</binding></substitution><substitution></substitution><steps><step><clauseIndex>1</clauseIndex><substitution></substitution></step></steps><steps><step><clauseIndex>2</clauseIndex><substitution><binding><var>N</var>
+<var>X</var>
+</binding></substitution></step></steps></successPattern><successPattern><substitution><binding><var>Y</var>
+<var>Y</var>
+</binding></substitution><substitution></substitution><steps><step><clauseIndex>1</clauseIndex><substitution></substitution></step></steps><steps><step><clauseIndex>2</clauseIndex><substitution><binding><var>N</var>
+<var>Y</var>
+</binding></substitution></step></steps></successPattern></prefixes></lpTocl09PatternLoopProof>
