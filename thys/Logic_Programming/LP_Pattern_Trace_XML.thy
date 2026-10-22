@@ -11,6 +11,20 @@ definition lp_pattern_success_parser where
     xml_return (LPPatternSuccess tsb nu basetrace steps)
   }"
 
+definition lp_pattern_instance_parser where
+  "lp_pattern_instance_parser = XMLdo (STR ''successInstance'') {
+    B \<leftarrow> xml_singleton (STR ''atomContext'') lp_atom_parser id;
+    ls \<leftarrow> lp_trace_bindings_parser;
+    lm \<leftarrow> lp_trace_bindings_parser;
+    theta \<leftarrow> lp_trace_bindings_parser;
+    eta \<leftarrow> lp_trace_bindings_parser;
+    tsb \<leftarrow> lp_trace_bindings_parser;
+    nu \<leftarrow> lp_trace_bindings_parser;
+    basetrace \<leftarrow> lp_recurrent_steps_parser;
+    steps \<leftarrow> lp_recurrent_steps_parser;
+    xml_return (LPPatternInstance B ls lm theta eta tsb nu basetrace steps)
+  }"
+
 definition lp_pattern_loop_parser where
   "lp_pattern_loop_parser = XMLdo (STR ''lpTocl09PatternLoopProof'') {
     P \<leftarrow> xml_many (STR ''program'') (XMLdo (STR ''clause'') {
@@ -28,7 +42,12 @@ definition lp_pattern_loop_parser where
     sig \<leftarrow> lp_trace_bindings_parser;
     mu \<leftarrow> lp_trace_bindings_parser;
     firststeps \<leftarrow> lp_recurrent_steps_parser;
-    steps \<leftarrow> xml_many (STR ''prefixes'') lp_pattern_success_parser id;
+    steps \<leftarrow> xml_many (STR ''prefixes'')
+      (xml_or lp_pattern_success_parser (xml_or lp_pattern_instance_parser
+        (XMLdo (STR ''resolvePattern'') {
+          trace \<leftarrow> lp_recurrent_steps_parser;
+          xml_return (LPPatternResolve trace)
+        }))) id;
     xml_return (P,query,A,sig,mu,firststeps,steps)
   }"
 

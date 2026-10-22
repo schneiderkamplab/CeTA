@@ -52,6 +52,21 @@ def main():
     ET.SubElement(guard, 'name').text = 'unproved_guard'
     tree.find('program/clause/body').insert(0, guard)
     cases.append(('cannot-skip-new-prefix', tree, False))
+    instance = ET.parse(Path(__file__).parent / 'fixtures/lp-success-instance.xml').getroot()
+    cases.extend([('instance-first', copy.deepcopy(instance), True),
+                  ('instance-second', copy.deepcopy(instance), True)])
+    for i, name in enumerate(('local-pumping', 'local-closing', 'embedding',
+                              'closing-transport', 'induction-target', 'base-transport')):
+        tree = copy.deepcopy(instance)
+        tree.find('prefixes/successInstance').findall('substitution')[i].clear()
+        cases.append(('instance-missing-' + name, tree, False))
+    for i in range(2):
+        tree = copy.deepcopy(instance)
+        tree.find('prefixes/successInstance').findall('steps')[i].clear()
+        cases.append(('instance-missing-trace-' + str(i), tree, False))
+    tree = copy.deepcopy(instance)
+    tree.find('prefixes/successInstance/atomContext/funapp/name').text = 'wrong-helper'
+    cases.append(('instance-wrong-helper', tree, False))
     results = []
     with tempfile.TemporaryDirectory(prefix='lp-pattern-check-') as directory:
         for name, tree, accepted in cases:

@@ -1,10 +1,13 @@
 theory LP_Pattern_Trace
-  imports LP_Success_Pattern_Check
+  imports LP_Success_Instance
 begin
 
 datatype ('f,'v) lp_pattern_step =
     LPPatternResolve "(nat \<times> ('f,'v) substL) list"
   | LPPatternSuccess "('f,'v) substL" "('f,'v) substL"
+      "(nat \<times> ('f,'v) substL) list" "(nat \<times> ('f,'v) substL) list"
+  | LPPatternInstance "('f,'v) lp_atom" "('f,'v) substL" "('f,'v) substL"
+      "('f,'v) substL" "('f,'v) substL" "('f,'v) substL" "('f,'v) substL"
       "(nat \<times> ('f,'v) substL) list" "(nat \<times> ('f,'v) substL) list"
 
 fun lp_pattern_run where
@@ -15,6 +18,10 @@ fun lp_pattern_run where
 | "lp_pattern_run P sig mu gs (LPPatternSuccess tsb nu basetrace steps#rest) =
     (case gs of [] \<Rightarrow> None | a#tail \<Rightarrow>
       if lp_success_pattern_check P a sig tsb mu nu basetrace steps
+      then lp_pattern_run P sig mu tail rest else None)"
+| "lp_pattern_run P sig mu gs (LPPatternInstance B ls lm theta eta tsb nu basetrace steps#rest) =
+    (case gs of [] \<Rightarrow> None | a#tail \<Rightarrow>
+      if lp_success_instance_check P a sig mu B ls lm theta eta tsb nu basetrace steps
       then lp_pattern_run P sig mu tail rest else None)"
 
 theorem lp_pattern_run_sound:
@@ -46,6 +53,18 @@ next
     have first: "(map (\<lambda>a. lp_atom_eval a env) gs @ tail,
         map (\<lambda>a. lp_atom_eval a env) more @ tail)\<in>(lp_ild P)\<^sup>*"
       using lp_success_pattern_check_sound[OF checked, of n r
+          "map (\<lambda>a. lp_atom_eval a env) more @ tail"]
+      by (simp add: gs env_def)
+    show ?thesis by (rule rtrancl_trans[OF first Cons.hyps[OF remaining]])
+  next
+    case (LPPatternInstance B ls lm theta eta tsb nu basetrace trace)
+    obtain a more where gs: "gs=a#more"
+      and checked: "lp_success_instance_check P a sig mu B ls lm theta eta tsb nu basetrace trace"
+      and remaining: "lp_pattern_run P sig mu more rest=Some hs"
+      using Cons.prems by (auto simp: LPPatternInstance split: list.splits if_splits)
+    have first: "(map (\<lambda>a. lp_atom_eval a env) gs @ tail,
+        map (\<lambda>a. lp_atom_eval a env) more @ tail)\<in>(lp_ild P)\<^sup>*"
+      using lp_success_instance_check_sound[OF checked, of n r
           "map (\<lambda>a. lp_atom_eval a env) more @ tail"]
       by (simp add: gs env_def)
     show ?thesis by (rule rtrancl_trans[OF first Cons.hyps[OF remaining]])
