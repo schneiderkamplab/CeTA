@@ -12,7 +12,7 @@ main = do
       text <- readFile path
       if C.check_lp_constructor_any_xml (C.explode text)
         then putStrLn "CERTIFIED TOCL09 LP"
-        else if C.check_lp_nontermination_full_xml (C.explode text)
+        else if C.check_lp_nontermination_all_xml (C.explode text)
           then putStrLn "CERTIFIED TOCL09 LP NO"
           else putStrLn "REJECTED" >> exitFailure
     _ -> putStrLn "usage: ceta-lp-tocl09 CERTIFICATE" >> exitFailure
