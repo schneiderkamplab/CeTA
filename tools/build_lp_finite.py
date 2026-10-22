@@ -49,12 +49,12 @@ val _ = List.app (fn (names, content) => File.write
 end
 '''
     if a.tocl09:
-        export = export.replace('LP_Finite_Checker', 'LP_SEG_Residual_XML').replace(
-            'check_lp_finite_xml', 'check_lp_answer_full_xml').replace('LP_Finite_Generated', 'LP_TOCL09_Generated')
-        export = export.replace('[@{const_name check_lp_answer_full_xml}]',
-            '[@{const_name check_lp_answer_full_xml}, @{const_name check_lp_nontermination_full_xml}]')
-        export = export.replace('imports LP_SEG_Residual_XML',
-                                'imports LP_SEG_Residual_XML LP_Source_Trace_XML')
+        export = export.replace('LP_Finite_Checker', 'LP_Constructor_XML').replace(
+            'check_lp_finite_xml', 'check_lp_constructor_any_xml').replace('LP_Finite_Generated', 'LP_TOCL09_Generated')
+        export = export.replace('[@{const_name check_lp_constructor_any_xml}]',
+            '[@{const_name check_lp_constructor_any_xml}, @{const_name check_lp_nontermination_full_xml}]')
+        export = export.replace('imports LP_Constructor_XML',
+                                'imports LP_Constructor_XML LP_Source_Trace_XML')
     (source / 'LP_Export.thy').write_text(export)
     env = dict(os.environ, USER_HOME=str(out / 'isabelle-user'),
                ISABELLE_IDENTIFIER='lp_private', AFP=str(a.afp.resolve()))

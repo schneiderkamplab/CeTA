@@ -13,3 +13,4 @@ session Logic_Programming = Proof_Checker +
     LP_SEG_Answers
     LP_SEG_Answer_Contracts
     LP_SEG_Residual_XML
+    LP_Constructor_XML
