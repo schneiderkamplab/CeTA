@@ -21,3 +21,4 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_State LP_Cut_Resolve LP_Cut_Failure LP_Cut_Knowledge
     LP_Cut_Resolution_Check LP_Cut_Resolution_Test
     LP_Cut_Scopes
+    LP_Cut_Equality LP_Cut_Equality_Test LP_Cut_Allocate
