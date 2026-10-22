@@ -67,6 +67,28 @@ def main():
     tree = copy.deepcopy(instance)
     tree.find('prefixes/successInstance/atomContext/funapp/name').text = 'wrong-helper'
     cases.append(('instance-wrong-helper', tree, False))
+    accelerated = ET.parse(Path(__file__).parent / 'fixtures/lp-accelerated-loop.xml').getroot()
+    cases.extend([('accelerated-first', copy.deepcopy(accelerated), True),
+                  ('accelerated-second', copy.deepcopy(accelerated), True)])
+    for name, path, value in [('rate', 'factor', '1'), ('offset', 'offset', '0'),
+                              ('excessive-rate', 'factor', '1000000')]:
+        tree = copy.deepcopy(accelerated)
+        tree.find('acceleration/' + path).text = value
+        cases.append(('accelerated-wrong-' + name, tree, False))
+    for i in range(5):
+        tree = copy.deepcopy(accelerated)
+        tree.find('acceleration').findall('substitution')[i].clear()
+        # Here eta already contains the ground local base. Replacing lm by
+        # identity is a valid alternative factorization, not a rejection case.
+        cases.append(('accelerated-equivalent-closing-factorization' if i == 1
+                      else 'accelerated-missing-transport-' + str(i), tree, i == 1))
+    for path in ['steps', 'prefixes']:
+        tree = copy.deepcopy(accelerated)
+        tree.find(path).clear()
+        cases.append(('accelerated-missing-' + path, tree, False))
+    tree = copy.deepcopy(accelerated)
+    tree.remove(tree.find('acceleration'))
+    cases.append(('accelerated-cannot-use-unit-loop', tree, False))
     results = []
     with tempfile.TemporaryDirectory(prefix='lp-pattern-check-') as directory:
         for name, tree, accepted in cases:

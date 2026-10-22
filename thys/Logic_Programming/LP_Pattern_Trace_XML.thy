@@ -1,5 +1,5 @@
 theory LP_Pattern_Trace_XML
-  imports LP_Pattern_Trace LP_Recurrent_Pair_XML
+  imports LP_Pattern_Acceleration LP_Recurrent_Pair_XML
 begin
 
 definition lp_pattern_success_parser where
@@ -25,6 +25,19 @@ definition lp_pattern_instance_parser where
     xml_return (LPPatternInstance B ls lm theta eta tsb nu basetrace steps)
   }"
 
+definition lp_pattern_acceleration_parser where
+  "lp_pattern_acceleration_parser = XMLdo (STR ''acceleration'') {
+    B \<leftarrow> xml_singleton (STR ''atomContext'') lp_atom_parser id;
+    ls \<leftarrow> lp_trace_bindings_parser;
+    lm \<leftarrow> lp_trace_bindings_parser;
+    theta \<leftarrow> lp_trace_bindings_parser;
+    eta \<leftarrow> lp_trace_bindings_parser;
+    delta \<leftarrow> lp_trace_bindings_parser;
+    k \<leftarrow> xml_nat (STR ''factor'');
+    b \<leftarrow> xml_nat (STR ''offset'');
+    xml_return (B,ls,lm,theta,eta,delta,k,b)
+  }"
+
 definition lp_pattern_loop_parser where
   "lp_pattern_loop_parser = XMLdo (STR ''lpTocl09PatternLoopProof'') {
     P \<leftarrow> xml_many (STR ''program'') (XMLdo (STR ''clause'') {
@@ -48,23 +61,37 @@ definition lp_pattern_loop_parser where
           trace \<leftarrow> lp_recurrent_steps_parser;
           xml_return (LPPatternResolve trace)
         }))) id;
-    xml_return (P,query,A,sig,mu,firststeps,steps)
+    acc \<leftarrow>? lp_pattern_acceleration_parser;
+    xml_return (P,query,A,sig,mu,firststeps,steps,acc)
   }"
 
 definition check_lp_pattern_loop_xml where
   "check_lp_pattern_loop_xml xml = (case parse_xml_string lp_pattern_loop_parser xml of
-    Right (P,(q,arity,positions),A,sig,mu,firststeps,steps) \<Rightarrow>
-      lp_pattern_loop_check P q arity positions A sig mu firststeps steps
+    Right (P,(q,arity,positions),A,sig,mu,firststeps,steps,acc) \<Rightarrow>
+      (case acc of None \<Rightarrow> lp_pattern_loop_check P q arity positions A sig mu firststeps steps
+      | Some (B,ls,lm,theta,eta,delta,k,b) \<Rightarrow>
+        k\<le>16 \<and> b\<le>16 \<and>
+        lp_accelerated_loop_check P q arity positions A sig mu firststeps steps B ls lm theta eta delta k b)
     | _ \<Rightarrow> False)"
 
 theorem check_lp_pattern_loop_xml_sound:
   assumes parsed: "parse_xml_string lp_pattern_loop_parser xml =
-    Right (P,(q,arity,positions),A,sig,mu,firststeps,steps)"
+    Right (P,(q,arity,positions),A,sig,mu,firststeps,steps,acc)"
     and ok: "check_lp_pattern_loop_xml xml"
   shows "\<exists>ts :: ((string,nat list) lab,string) term list.
     length ts=arity \<and> (\<forall>i\<in>set positions. i<arity \<and> ground (ts!i)) \<and>
     \<not>SN_on (lp_ild P) {[(q,map (\<lambda>t. lp_ieval t LPIVar) ts)]}"
-  by (rule lp_pattern_loop_check_sound)
-    (use parsed ok in \<open>simp add: check_lp_pattern_loop_xml_def\<close>)
+proof (cases acc)
+  case None
+  show ?thesis by (rule lp_pattern_loop_check_sound)
+    (use parsed ok None in \<open>simp add: check_lp_pattern_loop_xml_def\<close>)
+next
+  case (Some witness)
+  obtain B ls lm theta eta delta k b where witness: "witness=(B,ls,lm,theta,eta,delta,k,b)"
+    by (cases witness) auto
+  have checked: "lp_accelerated_loop_check P q arity positions A sig mu firststeps steps B ls lm theta eta delta k b"
+    using parsed ok Some witness by (simp add: check_lp_pattern_loop_xml_def)
+  show ?thesis by (rule lp_accelerated_loop_check_sound[OF checked])
+qed
 
 end
