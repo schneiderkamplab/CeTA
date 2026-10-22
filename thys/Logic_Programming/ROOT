@@ -8,6 +8,7 @@ session Logic_Programming = Proof_Checker +
     LP_PiDP_Source LP_PiDP_Graph LP_PiDP_Rule_Graph LP_PiDP_Checker LP_PiDP_XML
     LP_Source_Simplify LP_Source_Simplify_XML
     LP_Source_Loop LP_Source_Loop_XML
+    LP_Source_Trace_XML
     LP_Unification_Builtin
     LP_SEG_Answers
     LP_SEG_Answer_Contracts
