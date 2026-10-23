@@ -17,11 +17,12 @@ import time
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--tocl09', action='store_true', help='Export the verified infinite-tree TOCL09 bridge')
+    p.add_argument('--cut', action='store_true', help='Include the source-bound cut graph checker')
     for key in ('isabelle', 'ghc', 'warm-home', 'base-sessions', 'afp', 'out'):
         p.add_argument('--' + key, required=True, type=Path)
     a = p.parse_args()
-    suffix = 'TOCL09' if a.tocl09 else 'Finite'
-    check_name = 'tocl09' if a.tocl09 else 'finite'
+    suffix = 'Cut' if a.cut else ('TOCL09' if a.tocl09 else 'Finite')
+    check_name = 'cut' if a.cut else ('tocl09' if a.tocl09 else 'finite')
     executable = 'ceta-lp-' + check_name
     root = Path(__file__).resolve().parents[1]
     out = a.out.resolve()
@@ -39,6 +40,7 @@ def main():
     export = '''theory LP_Export
 imports LP_Finite_Checker
 begin
+declare [[code_timing = true]]
 ML \\<open>
 val (modules, _) = Code_Target.produce_code @{context} true
   [@{const_name check_lp_finite_xml}] "Haskell" "LP_Finite_Generated" NONE [];
@@ -48,18 +50,23 @@ val _ = List.app (fn (names, content) => File.write
 \\<close>
 end
 '''
-    if a.tocl09:
+    if a.tocl09 or a.cut:
         export = export.replace('LP_Finite_Checker', 'LP_Constructor_XML').replace(
             'check_lp_finite_xml', 'check_lp_constructor_any_xml').replace('LP_Finite_Generated', 'LP_TOCL09_Generated')
         export = export.replace('[@{const_name check_lp_constructor_any_xml}]',
             '[@{const_name check_lp_constructor_any_xml}, @{const_name check_lp_nontermination_all_xml}]')
         export = export.replace('imports LP_Constructor_XML',
                                 'imports LP_Constructor_XML LP_Source_Unify_XML')
+    if a.cut:
+        export = export.replace('LP_Source_Unify_XML', 'LP_Source_Unify_XML LP_Cut_Table_XML')
+        export = export.replace('@{const_name check_lp_nontermination_all_xml}]',
+            '@{const_name check_lp_nontermination_all_xml}, @{const_name check_lpc_xml}, @{const_name lpc_xml_diagnostics}]')
+        export = export.replace('LP_TOCL09_Generated', 'LP_Cut_Generated')
     (source / 'LP_Export.thy').write_text(export)
     env = dict(os.environ, USER_HOME=str(out / 'isabelle-user'),
                ISABELLE_IDENTIFIER='lp_private', AFP=str(a.afp.resolve()))
     cmd = [str(a.isabelle), 'console', '-n', '-l', 'Proof_Checker',
-           '-d', str(a.base_sessions.resolve()), '-o', 'threads=4', '-o', 'parallel_proofs=0']
+           '-d', str(a.base_sessions.resolve()), '-o', 'threads=4', '-o', 'parallel_proofs=0', '-o', 'quick_and_dirty=false']
     ml = ('((Thy_Info.use_thy_legacy ' + json.dumps(str(source / 'LP_Export')) +
           '; writeln "LP_FINITE_EXPORT_VERIFIED"; OS.Process.exit OS.Process.success) '
           'handle exn => (Runtime.exn_message exn |> writeln; OS.Process.exit OS.Process.failure));\n')
@@ -78,7 +85,7 @@ end
                        stdout=log, stderr=subprocess.STDOUT, check=True, timeout=1800)
     paths = list(source.glob('*')) + list(generated.glob('*.hs')) + [out / executable]
     report = dict(semantics=('leftmost resolution over possibly infinite trees, including no-occurs-check rational unification'
-                            if a.tocl09 else 'finite-term leftmost resolution; not rational-tree Prolog'),
+                            if a.tocl09 or a.cut else 'finite-term leftmost resolution; not rational-tree Prolog'),
                   parent=str(a.warm_home.resolve()), theory_seconds=theory_seconds,
                   ghc_seconds=time.monotonic() - started,
                   source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),

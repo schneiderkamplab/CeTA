@@ -1,0 +1,235 @@
+theory LP_Cut_Table_Check
+  imports LP_Cut_Table_Equality LP_Cut_Stack_Split LP_Cut_Plain_Check LP_Cut_Control_Check
+begin
+
+datatype 'f lpc_action =
+    LPCATerminal
+  | LPCAInconsistent
+  | LPCARefutedGuard nat nat "(string * 'f lpc_term) list"
+  | LPCAStack "'f lpc_link list"
+  | LPCAPlain "'f list" "('f lp_cut_symbol \<times> 'f lp_cut_symbol) list"
+  | LPCAControl "'f list" "('f lp_cut_symbol \<times> 'f lp_cut_symbol) list"
+  | LPCAAdmin "'f lpc_state" "'f lpc_link"
+  | LPCATrim "'f lpc_state" "'f lpc_state" "'f lpc_link"
+  | LPCACase 'f "'f lpc_term list" "'f lpc_term lp_cut_goal list" "'f lpc_state"
+      nat "'f lpc_state" "'f lpc_link"
+  | LPCAMeta "'f lpc_term" "'f lpc_term lp_cut_goal list" "'f lpc_state"
+      nat "'f lpc_term lp_cut_goal list" "'f lpc_link"
+  | LPCAResolution "'f lpc_term" "'f lpc_term lp_cut_goal list" nat nat "'f lpc_state"
+      nat nat "string list" "'f lpc_term lp_cut_goal list" "'f lpc_term list"
+      "(string * 'f lpc_term) list" lp_cut_coverage "'f lpc_link" "'f lpc_link"
+  | LPCAEquality "'f lpc_term" "'f lpc_term" "'f lpc_term lp_cut_goal list" "'f lpc_state"
+      nat nat "'f lpc_term lp_cut_goal list" lp_cut_coverage "'f lpc_link" "'f lpc_link"
+
+fun lpc_check_action where
+  "lpc_check_action fuel P Q nds nd LPCATerminal = (lpcn_state nd=[])"
+| "lpc_check_action fuel P Q nds nd LPCAInconsistent = lp_cut_check_inconsistent (lpcn_guards nd)"
+| "lpc_check_action fuel P Q nds nd (LPCARefutedGuard i k bindings) =
+    lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
+| "lpc_check_action fuel P Q nds nd (LPCAPlain Fs roles) = lpc_check_plain P Q nd Fs roles"
+| "lpc_check_action fuel P Q nds nd (LPCAControl Fs roles) = lpc_check_control P Q nd Fs roles"
+| "lpc_check_action fuel P Q nds nd (LPCAStack links) =
+    (length links=length (lpcn_state nd) \<and>
+     list_all (\<lambda>i. lpc_check_link fuel Q nds nd [lpcn_state nd!i]
+       (lpcn_ground nd) (lpcn_guards nd) [] (links!i)) [0..<length links])"
+| "lpc_check_action fuel P Q nds nd (LPCAAdmin successor e) =
+    (lp_cut_check_admin (lpcn_state nd) successor \<and>
+     lpc_check_link fuel Q nds nd successor (lpcn_ground nd) (lpcn_guards nd) [] e)"
+| "lpc_check_action fuel P Q nds nd (LPCATrim successor bs e) =
+    (lpcn_state nd=successor@bs \<and> lp_cut_barriers bs \<and>
+     lpc_check_link fuel Q nds nd successor (lpcn_ground nd) (lpcn_guards nd) [] e)"
+| "lpc_check_action fuel P Q nds nd (LPCACase f ts gs es m successor e) =
+    (lpcn_state nd=LPCGoals (LPCAtom (Fun (LPCUser f) ts)#gs)#es \<and>
+     lp_cut_check_case P m f ts gs es successor \<and>
+     lpc_check_link fuel Q nds nd successor (lpcn_ground nd) (lpcn_guards nd) [] e)"
+| "lpc_check_action fuel P Q nds nd (LPCAMeta a gs es m body e) =
+    (lpcn_state nd=LPCGoals (LPCMeta a#gs)#es \<and>
+     lp_cut_check_meta m a gs es body \<and>
+     lpc_check_link fuel Q nds nd (LPCGoals (body@gs)#LPCBarrier m#es)
+       (lpcn_ground nd) (lpcn_guards nd) [] e)"
+| "lpc_check_action fuel P Q nds nd
+    (LPCAResolution a gs c m es k l A successor anchors bindings mode yes no) =
+     lpc_check_resolution_node fuel P Q nds nd a gs c m es k l A successor anchors bindings mode yes no"
+| "lpc_check_action fuel P Q nds nd (LPCAEquality a b gs es k l successor mode yes no) =
+     lpc_check_equality_node fuel P Q nds nd a b gs es k l successor mode yes no"
+
+lemma lpc_allocation_reflects_SN:
+  assumes program: "lp_cut_source_program P"
+    and covers: "\<And>t. (s,t)\<in>lp_cut_source P \<Longrightarrow>
+      \<exists>n. t=map (lp_cut_scope_entry (lp_cut_scope_swap m n)) successor"
+    and sn: "SN_on (lp_cut_source P) {successor}"
+  shows "SN_on (lp_cut_source P) {s}"
+proof (rule step_reflects_SN_on)
+  fix t assume "(s,t)\<in>lp_cut_source P"
+  then obtain n where "t=map (lp_cut_scope_entry (lp_cut_scope_swap m n)) successor"
+    using covers by blast
+  then show "SN_on (lp_cut_source P) {t}"
+    using lp_cut_scope_swap_preserves_SN[OF program sn, of m n] by simp
+qed
+
+theorem lpc_action_sound:
+  fixes P :: "('a,string) lp_cut_program"
+    and \<eta> :: "string\<Rightarrow>('a lp_cut_symbol,string) lp_iterm"
+  assumes program: "lp_cut_source_program P"
+    and checked: "lpc_check_action fuel P Q nds nd action"
+    and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) \<eta>"
+    and residual: "SN_on (lp_ild Q) {[(lpcn_pred nd,map \<eta> (lpcn_vars nd))]}"
+    and ih: "\<And>j \<nu>. j<length nds \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<Longrightarrow>
+      ([(lpcn_pred nd,map \<eta> (lpcn_vars nd))],
+       [(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]) \<in> lp_ild Q \<Longrightarrow>
+      SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
+  shows "SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state nd) \<eta>}"
+proof (cases action)
+  case LPCATerminal
+  then show ?thesis using checked lp_cut_terminal_node_sound[of P]
+    by (simp add: lp_cut_state_map_def)
+next
+  case LPCAInconsistent
+  then have "lp_cut_check_inconsistent (lpcn_guards nd)" using checked by simp
+  then show ?thesis using lp_cut_checked_inconsistent[OF _ known] by blast
+next
+  case (LPCARefutedGuard i k bindings)
+  have "lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
+    using checked by (simp add: LPCARefutedGuard)
+  then show ?thesis using lp_cut_checked_refuted_guard[OF _ known] by blast
+next
+  case (LPCAPlain Fs roles)
+  have plain: "lpc_check_plain P Q nd Fs roles" using checked by (simp add: LPCAPlain)
+  show ?thesis by (rule lpc_check_plain_sound[OF plain residual])
+next
+  case (LPCAControl Fs roles)
+  have control: "lpc_check_control P Q nd Fs roles" using checked by (simp add: LPCAControl)
+  show ?thesis by (rule lpc_check_control_sound[OF control residual])
+next
+  case (LPCAStack links)
+  have len: "length links=length (lpcn_state nd)"
+    and checks: "\<And>i. i<length links \<Longrightarrow>
+      lpc_check_link fuel Q nds nd [lpcn_state nd!i]
+        (lpcn_ground nd) (lpcn_guards nd) [] (links!i)"
+    using checked by (auto simp: LPCAStack list_all_iff)
+  show ?thesis
+  proof (rule lpc_singleton_stack_SN)
+    fix e assume "e\<in>set (lp_cut_state_eval (lpcn_state nd) \<eta>)"
+    then obtain i where i: "i<length (lpcn_state nd)"
+      and e: "[e]=lp_cut_state_eval [lpcn_state nd!i] \<eta>"
+      by (auto simp: lp_cut_state_map_def in_set_conv_nth)
+    show "SN_on (lp_cut_source P) {[e]}" unfolding e
+      by (rule lpc_plain_link_sound[OF program checks known ih]) (use i len in simp)
+  qed
+next
+  case (LPCAAdmin successor e)
+  have admin: "lp_cut_check_admin (lpcn_state nd) successor"
+    and link: "lpc_check_link fuel Q nds nd successor (lpcn_ground nd) (lpcn_guards nd) [] e"
+    using checked by (simp_all add: LPCAAdmin)
+  have child: "SN_on (lp_cut_source P) {lp_cut_state_eval successor \<eta>}"
+    by (rule lpc_plain_link_sound[OF program link known ih])
+  show ?thesis
+    by (rule step_reflects_SN_on)
+      (use lp_cut_checked_admin_covers[OF admin] child in blast)
+next
+  case (LPCATrim successor bs e)
+  have shape: "lpcn_state nd=successor@bs" and barriers: "lp_cut_barriers bs"
+    and link: "lpc_check_link fuel Q nds nd successor (lpcn_ground nd) (lpcn_guards nd) [] e"
+    using checked by (simp_all add: LPCATrim)
+  have child: "SN_on (lp_cut_source P) {lp_cut_state_eval successor \<eta>}"
+    by (rule lpc_plain_link_sound[OF program link known ih])
+  have bs: "lp_cut_barriers (lp_cut_state_eval bs \<eta>)"
+    using barriers by (simp only: lp_cut_barriers_state_map)
+  show ?thesis using lp_cut_append_barriers_SN[OF child bs] shape
+    by (simp add: lp_cut_state_map_def)
+next
+  case (LPCACase f ts gs es m successor e)
+  have shape: "lpcn_state nd=LPCGoals (LPCAtom (Fun (LPCUser f) ts)#gs)#es"
+    and allocation: "lp_cut_check_case P m f ts gs es successor"
+    and link: "lpc_check_link fuel Q nds nd successor (lpcn_ground nd) (lpcn_guards nd) [] e"
+    using checked by (simp_all add: LPCACase)
+  have child: "SN_on (lp_cut_source P) {lp_cut_state_eval successor \<eta>}"
+    by (rule lpc_plain_link_sound[OF program link known ih])
+  show ?thesis
+  proof (rule lpc_allocation_reflects_SN[where m=m, OF program _ child])
+    fix t assume st: "(lp_cut_state_eval (lpcn_state nd) \<eta>,t)\<in>lp_cut_source P"
+    show "\<exists>n. t=map (lp_cut_scope_entry (lp_cut_scope_swap m n)) (lp_cut_state_eval successor \<eta>)"
+      by (rule lp_cut_checked_case_covers[OF allocation]) (use st in \<open>simp only: shape\<close>)
+  qed
+next
+  case (LPCAMeta a gs es m body e)
+  have shape: "lpcn_state nd=LPCGoals (LPCMeta a#gs)#es"
+    and allocation: "lp_cut_check_meta m a gs es body"
+    and link: "lpc_check_link fuel Q nds nd (LPCGoals (body@gs)#LPCBarrier m#es)
+      (lpcn_ground nd) (lpcn_guards nd) [] e"
+    using checked by (simp_all add: LPCAMeta)
+  have child: "SN_on (lp_cut_source P) {lp_cut_state_eval (LPCGoals (body@gs)#LPCBarrier m#es) \<eta>}"
+    by (rule lpc_plain_link_sound[OF program link known ih])
+  show ?thesis
+  proof (rule lpc_allocation_reflects_SN[where m=m, OF program _ child])
+    fix t assume st: "(lp_cut_state_eval (lpcn_state nd) \<eta>,t)\<in>lp_cut_source P"
+    show "\<exists>n. t=map (lp_cut_scope_entry (lp_cut_scope_swap m n))
+      (lp_cut_state_eval (LPCGoals (body@gs)#LPCBarrier m#es) \<eta>)"
+      by (rule lp_cut_checked_meta_covers[OF allocation]) (use st in \<open>simp only: shape\<close>)
+  qed
+next
+  case (LPCAResolution a gs c m es k l A successor anchors bindings mode yes no)
+  have resolve: "lpc_check_resolution_node fuel P Q nds nd a gs c m es k l A successor anchors bindings mode yes no"
+    using checked by (simp add: LPCAResolution)
+  show ?thesis by (rule lpc_resolution_node_sound[OF program resolve known ih])
+next
+  case (LPCAEquality a b gs es k l successor mode yes no)
+  have eq: "lpc_check_equality_node fuel P Q nds nd a b gs es k l successor mode yes no"
+    using checked by (simp add: LPCAEquality)
+  show ?thesis by (rule lpc_equality_node_sound[OF program eq known ih])
+qed
+
+definition lpc_check_table where
+  "lpc_check_table fuel P Q nds actions =
+    (lp_cut_source_program P \<and> length nds=length actions \<and>
+     list_all (\<lambda>i. lpc_check_action fuel P Q nds (nds!i) (actions!i)) [0..<length nds])"
+
+theorem lpc_table_sound:
+  assumes checked: "lpc_check_table fuel P Q nds actions"
+    and bound: "i<length nds"
+    and known: "lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) \<eta>"
+    and child: "SN_on (lp_ild Q) {[(lpcn_pred (nds!i),map \<eta> (lpcn_vars (nds!i)))]}"
+  shows "SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!i)) \<eta>}"
+proof -
+  have all: "SN_on (lp_ild Q) {xs} \<and>
+    (\<forall>j \<nu>. j<length nds \<longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
+      xs=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
+      SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
+    if sn: "SN_on (lp_ild Q) {xs}" for xs
+  proof (rule SN_on_induct[OF sn singletonI])
+    fix xs
+    assume ih: "\<And>ys. (xs,ys)\<in>lp_ild Q \<Longrightarrow>
+      SN_on (lp_ild Q) {ys} \<and>
+      (\<forall>j \<nu>. j<length nds \<longrightarrow>
+        lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
+        ys=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
+        SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
+    have current: "SN_on (lp_ild Q) {xs}"
+      by (rule step_reflects_SN_on) (use ih in blast)
+    show "SN_on (lp_ild Q) {xs} \<and>
+      (\<forall>j \<nu>. j<length nds \<longrightarrow>
+        lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
+        xs=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
+        SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
+    proof (intro conjI allI impI)
+      show "SN_on (lp_ild Q) {xs}" by (rule current)
+    next
+      fix j \<nu>
+      assume member: "j<length nds"
+        and knowledge: "lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu>"
+        and xs: "xs=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]"
+      have program: "lp_cut_source_program P"
+        and action: "lpc_check_action fuel P Q nds (nds!j) (actions!j)"
+        using checked member by (auto simp: lpc_check_table_def list_all_iff)
+      have residual: "SN_on (lp_ild Q) {[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]}"
+        using current xs by simp
+      show "SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
+        by (rule lpc_action_sound[OF program action knowledge residual]) (use ih xs in blast)
+    qed
+  qed
+  show ?thesis using all[OF child] bound known by blast
+qed
+
+end

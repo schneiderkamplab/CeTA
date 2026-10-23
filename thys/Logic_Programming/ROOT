@@ -22,3 +22,13 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Resolution_Check LP_Cut_Resolution_Test
     LP_Cut_Scopes
     LP_Cut_Equality LP_Cut_Equality_Test LP_Cut_Allocate
+    LP_Cut_Barriers LP_Cut_Scope_Source
+    LP_Cut_Instance LP_Cut_Instance_Test LP_Cut_Interface
+    LP_Cut_Residual LP_Cut_Resolution_Bridge LP_Cut_Equality_Bridge LP_Cut_Root
+    LP_Residual_Signature
+    LP_Cut_Residual_Certificate
+    LP_Cut_Inconsistent
+    LP_Cut_Table_Link LP_Cut_Table_Resolution LP_Cut_Table_Equality
+    LP_Cut_Stack_Split LP_Cut_Plain LP_Cut_Plain_Check
+    LP_Cut_Control_Residual LP_Cut_Control_Check
+    LP_Cut_Table_Check LP_Residual_Roles LP_Cut_Table_Certificate LP_Cut_Table_XML
