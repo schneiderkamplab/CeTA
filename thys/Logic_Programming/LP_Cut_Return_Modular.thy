@@ -79,4 +79,38 @@ proof -
   show ?thesis by (rule lpc_return_contract_start[OF trancl_into_rtrancl[OF entry] combined])
 qed
 
+theorem lpc_return_primitive_lower:
+  assumes lower: "\<And>vs v out. (t,v)\<in>R\<^sup>+ \<Longrightarrow> rep vs v out \<Longrightarrow>
+      lpc_return_contract P vs R v out"
+    and local: "\<And>event tt. lpc_answer_transition P ss event tt \<Longrightarrow>
+      (\<exists>u. (t,u)\<in>R\<^sup>+ \<and> rep tt u ret) \<and>
+      (\<forall>rho. event=Some rho \<longrightarrow> (t,ret rho)\<in>R\<^sup>*)"
+  shows "lpc_return_contract P ss R t ret"
+proof -
+  have sn: "SN_on (lpc_answer_steps P) {ss}"
+  proof (rule step_reflects_SN_on)
+    fix tt assume edge: "(ss,tt)\<in>lpc_answer_steps P"
+    obtain event where event: "lpc_answer_transition P ss event tt"
+      using edge by (auto simp: lpc_answer_steps_def)
+    obtain u where strict: "(t,u)\<in>R\<^sup>+" and rep: "rep tt u ret"
+      using local[OF event] by blast
+    have contract: "lpc_return_contract P tt R u ret" by (rule lower[OF strict rep])
+    show "SN_on (lpc_answer_steps P) {tt}"
+      using contract by (simp add: lpc_return_contract_def lpc_answer_instrumentation_SN)
+  qed
+  have answers: "lpc_answers_covered P ss (\<lambda>rho. (t,ret rho)\<in>R\<^sup>*)"
+  proof (rule lpc_answers_covered_intro)
+    fix event tt assume event: "lpc_answer_transition P ss event tt"
+    obtain u where strict: "(t,u)\<in>R\<^sup>+" and rep: "rep tt u ret"
+      using local[OF event] by blast
+    have contract: "lpc_return_contract P tt R t ret"
+      by (rule lpc_return_contract_start[OF trancl_into_rtrancl[OF strict] lower[OF strict rep]])
+    show "(\<forall>rho. event=Some rho \<longrightarrow> (t,ret rho)\<in>R\<^sup>*) \<and>
+      lpc_answers_covered P tt (\<lambda>rho. (t,ret rho)\<in>R\<^sup>*)"
+      using local[OF event] contract unfolding lpc_return_contract_def lpc_answers_covered_def by auto
+  qed
+  show ?thesis using sn answers
+    by (auto simp: lpc_return_contract_def lpc_answers_covered_def lpc_answer_instrumentation_SN)
+qed
+
 end
