@@ -1,5 +1,5 @@
 theory LP_Cut_Return_Composed
-  imports LP_Cut_Return_Ground_Split_Check
+  imports LP_Cut_Return_Ground_Split_Check LP_Cut_Return_Overapproximation
 begin
 
 datatype 'f lpc_return_composed_action =
@@ -13,6 +13,12 @@ datatype 'f lpc_return_composed_action =
       "'f lpc_return_module_data" "'f lpc_link" "string list"
       "'f lpc_return_module_data" "'f lpc_link" "nat list"
       "('f lp_cut_symbol,string) lp_clause list" "'f list" "'f lp_cut_symbol lp_ground_mode list"
+  | LPCRIndependentSplit "(string \<times> nat) list" "nat list"
+      "'f lpc_term lp_cut_goal list" "'f lpc_term lp_cut_goal list" "'f lpc_term list"
+      "nat list" "('f lp_cut_symbol,string) lp_clause list" "'f list" "'f lp_cut_symbol lp_ground_mode list"
+      "'f lpc_return_module_data" "'f lpc_link" "'f lpc_residual_certificate"
+      "string list" "'f lp_cut_symbol"
+      "'f lpc_return_module_data" "'f lpc_link" "'f lpc_residual_certificate" "string list"
 
 fun lpc_check_return_composed_action where
   "lpc_check_return_composed_action fuel P Q nds states nd ss returned arity (LPCRLocal a) =
@@ -25,6 +31,11 @@ fun lpc_check_return_composed_action where
     (LPCRGroundSplit bindings indices pre rest interface prefix_module prefix_link vs continuation_module continuation_link positions groundQ Fs modes) =
     lpc_check_ground_return_split fuel P Q nd ss returned arity bindings indices pre rest interface
       prefix_module prefix_link vs continuation_module continuation_link positions groundQ Fs modes"
+| "lpc_check_return_composed_action fuel P Q nds states nd ss returned arity
+    (LPCRIndependentSplit bindings indices pre rest interface positions groundQ Fs modes pm pe pc vs entry_symbol cm ce cc outputs) =
+    (lpc_check_independent_split_certificate tp_rbt_impl dpp_rbt_impl fuel P nd ss
+      bindings indices pre rest interface positions groundQ Fs modes pm pe pc vs entry_symbol cm ce cc \<and>
+     lpc_check_universal_return_edge Q nd returned arity outputs)"
 
 lemma lpc_return_composed_action_sound:
   assumes checked: "lpc_check_return_composed_action fuel P Q nds states nd ss returned arity action"
@@ -45,6 +56,13 @@ next
 next
   case (LPCRGroundSplit bindings indices pre rest interface prefix_module prefix_link vs continuation_module continuation_link positions groundQ Fs modes)
   show ?thesis by (rule lpc_ground_return_split_checked_contract[OF _ program known sn]) (use checked LPCRGroundSplit in simp)
+next
+  case (LPCRIndependentSplit bindings indices pre rest interface positions groundQ Fs modes pm pe pc vs entry_symbol cm ce cc outputs)
+  have source: "SN_on (lp_cut_mgu_source P) {map fst (lpc_return_eval eta ss)}"
+    by (rule lpc_check_independent_split_certificate_sound[OF tp_rbt_impl dpp_rbt_impl _ known])
+      (use checked LPCRIndependentSplit in auto)
+  show ?thesis by (rule lpc_independent_return_contract[OF _ source])
+    (use checked LPCRIndependentSplit in auto)
 qed
 
 definition lpc_check_return_composed where

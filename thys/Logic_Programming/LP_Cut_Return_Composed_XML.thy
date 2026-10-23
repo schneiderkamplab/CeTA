@@ -12,6 +12,20 @@ definition lpc_return_module_data_parser where
     xml_return \<lparr>lpcrm_nodes=nds,lpcrm_states=states,lpcrm_returned=returned,
       lpcrm_arity=arity,lpcrm_actions=acts\<rparr>}"
 
+definition lpc_residual_certificate_parser where
+  "lpc_residual_certificate_parser = XMLdo (STR ''residualCertificate'') {
+    Q\<leftarrow>xml_many (STR ''residual'') (XMLdo (STR ''clause'') {
+      h\<leftarrow>xml_singleton (STR ''head'') lpc_atom_parser id;
+      bs\<leftarrow>xml_many (STR ''body'') lpc_atom_parser id; xml_return (h,bs)}) id;
+    ps\<leftarrow>xml_many (STR ''predicateEncoding'') (xml_pair (STR ''encoding'') lpc_symbol_parser symbol_parser Pair) id;
+    ds\<leftarrow>xml_many (STR ''dataEncoding'') (xml_pair (STR ''encoding'') lpc_symbol_parser symbol_parser Pair) id;
+    child\<leftarrow>lp_constructor_parser;
+    xml_return (case child of (R,outs,fallback,names,marks,filters,(q,n,positions),seed,nfs,prf) \<Rightarrow>
+      \<lparr>lpcrc_source = Q,lpcrc_predicates = ps,lpcrc_constructors = ds,lpcrc_program = R,
+       lpcrc_outs = outs,lpcrc_fallback = fallback,lpcrc_names = names,lpcrc_marks = marks,
+       lpcrc_filters = filters,lpcrc_query = q,lpcrc_arity = n,lpcrc_positions = positions,
+       lpcrc_seed = seed,lpcrc_nfs = nfs,lpcrc_proof = prf\<rparr>)}"
+
 definition lpc_return_composed_action_parser where
   "lpc_return_composed_action_parser =
     (xml_change lpc_return_module_action_parser (\<lambda>a. xml_return (LPCRLocal a))) XMLor
@@ -49,7 +63,34 @@ definition lpc_return_composed_action_parser where
         pins\<leftarrow>xml_many (STR ''inputs'') (xml_nat (STR ''position'')) id;
         pouts\<leftarrow>xml_many (STR ''outputs'') (xml_nat (STR ''position'')) id;
         xml_return (LPGroundMode f n pins pouts)}) id;
-      xml_return (LPCRGroundSplit bindings indices pre rest interface prefix_module prefix_link vs continuation_module continuation_link positions groundQ Fs modes)})"
+      xml_return (LPCRGroundSplit bindings indices pre rest interface prefix_module prefix_link vs continuation_module continuation_link positions groundQ Fs modes)}) XMLor
+    (XMLdo (STR ''independentReturnSplit'') {
+      bindings\<leftarrow>xml_many (STR ''routing'') (xml_pair (STR ''route'') (xml_text (STR ''var'')) (xml_nat (STR ''index'')) Pair) id;
+      indices\<leftarrow>xml_many (STR ''projection'') (xml_nat (STR ''index'')) id;
+      pre\<leftarrow>xml_many (STR ''prefix'') lpc_goal_parser id;
+      rest\<leftarrow>xml_many (STR ''continuation'') lpc_goal_parser id;
+      interface\<leftarrow>xml_many (STR ''interface'') lpc_term_parser id;
+      positions\<leftarrow>xml_many (STR ''groundPositions'') (xml_nat (STR ''position'')) id;
+      groundQ\<leftarrow>xml_many (STR ''groundProgram'') (XMLdo (STR ''clause'') {
+        h\<leftarrow>xml_singleton (STR ''head'') lpc_atom_parser id;
+        bs\<leftarrow>xml_many (STR ''body'') lpc_atom_parser id; xml_return (h,bs)}) id;
+      Fs\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
+      modes\<leftarrow>xml_many (STR ''groundModes'') (XMLdo (STR ''groundMode'') {
+        f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
+        n\<leftarrow>xml_nat (STR ''arity'');
+        pins\<leftarrow>xml_many (STR ''inputs'') (xml_nat (STR ''position'')) id;
+        pouts\<leftarrow>xml_many (STR ''outputs'') (xml_nat (STR ''position'')) id;
+        xml_return (LPGroundMode f n pins pouts)}) id;
+      pm\<leftarrow>lpc_return_module_data_parser;
+      pe\<leftarrow>lpc_link_parser;
+      pc\<leftarrow>lpc_residual_certificate_parser;
+      vs\<leftarrow>xml_many (STR ''returnVariables'') (xml_text (STR ''var'')) id;
+      entry_symbol\<leftarrow>xml_singleton (STR ''entrySymbol'') lpc_symbol_parser id;
+      cm\<leftarrow>lpc_return_module_data_parser;
+      ce\<leftarrow>lpc_link_parser;
+      cc\<leftarrow>lpc_residual_certificate_parser;
+      outputs\<leftarrow>xml_many (STR ''freshOutputs'') (xml_text (STR ''var'')) id;
+      xml_return (LPCRIndependentSplit bindings indices pre rest interface positions groundQ Fs modes pm pe pc vs entry_symbol cm ce cc outputs)})"
 
 definition lpc_return_composed_constructor_parser where
   "lpc_return_composed_constructor_parser = XMLdo (STR ''lpCutReturnComposedConstructorGraphTerminationProof'') {

@@ -76,6 +76,10 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Ground_Split_Check
     LP_Cut_Return_Independent_Split
     LP_Constructor_Infinite_Query
+    LP_Cut_Return_Residual_Query
+    LP_Cut_Return_Entry_Certificate
+    LP_Cut_Return_Independent_Certificate
+    LP_Cut_Return_Overapproximation
     LP_Cut_Return_Composed
     LP_Cut_Return_Composed_Certificate
     LP_Cut_Return_Composed_XML
