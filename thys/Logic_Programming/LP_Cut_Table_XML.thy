@@ -103,6 +103,12 @@ definition lpc_action_parser where
   "lpc_action_parser =
     (XMLdo (STR ''terminal'') {xml_return LPCATerminal}) XMLor
     (XMLdo (STR ''inconsistent'') {xml_return LPCAInconsistent}) XMLor
+    (XMLdo (STR ''answerSplit'') {
+      pregs\<leftarrow>xml_many (STR ''prefixGoals'') lpc_goal_parser id;
+      rest\<leftarrow>xml_many (STR ''continuationGoals'') lpc_goal_parser id;
+      Fs\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
+      j\<leftarrow>xml_nat (STR ''target'');
+      xml_return (LPCAAnswerSplit pregs rest Fs j)}) XMLor
     (XMLdo (STR ''refutedGuard'') {
       i\<leftarrow>xml_nat (STR ''index''); k\<leftarrow>xml_nat (STR ''prefix'');
       bindings\<leftarrow>lpc_bindings_parser; xml_return (LPCARefutedGuard i k bindings)}) XMLor

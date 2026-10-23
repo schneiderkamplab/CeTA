@@ -34,3 +34,4 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Table_Check LP_Residual_Roles LP_Cut_Table_Certificate LP_Cut_Table_XML
     LP_Cut_Constructor_Certificate LP_Cut_Constructor_XML
     LP_Cut_Answers LP_Cut_Answer_Control LP_Cut_Answer_Split
+    LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test

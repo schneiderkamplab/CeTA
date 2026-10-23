@@ -1,5 +1,5 @@
 theory LP_Cut_Table_Check
-  imports LP_Cut_Table_Equality LP_Cut_Stack_Split LP_Cut_Plain_Check LP_Cut_Control_Check
+  imports LP_Cut_Table_Equality LP_Cut_Stack_Split LP_Cut_Plain_Check LP_Cut_Answer_Check
 begin
 
 datatype 'f lpc_action =
@@ -9,6 +9,7 @@ datatype 'f lpc_action =
   | LPCAStack "'f lpc_link list"
   | LPCAPlain "'f list" "('f lp_cut_symbol \<times> 'f lp_cut_symbol) list"
   | LPCAControl "'f list" "('f lp_cut_symbol \<times> 'f lp_cut_symbol) list"
+  | LPCAAnswerSplit "'f lpc_term lp_cut_goal list" "'f lpc_term lp_cut_goal list" "'f list" nat
   | LPCAAdmin "'f lpc_state" "'f lpc_link"
   | LPCATrim "'f lpc_state" "'f lpc_state" "'f lpc_link"
   | LPCACase 'f "'f lpc_term list" "'f lpc_term lp_cut_goal list" "'f lpc_state"
@@ -28,6 +29,8 @@ fun lpc_check_action where
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 | "lpc_check_action fuel P Q nds nd (LPCAPlain Fs roles) = lpc_check_plain P Q nd Fs roles"
 | "lpc_check_action fuel P Q nds nd (LPCAControl Fs roles) = lpc_check_control P Q nd Fs roles"
+| "lpc_check_action fuel P Q nds nd (LPCAAnswerSplit pregs rest Fs j) =
+    lpc_check_answer_split P Q nds nd pregs rest Fs j"
 | "lpc_check_action fuel P Q nds nd (LPCAStack links) =
     (length links=length (lpcn_state nd) \<and>
      list_all (\<lambda>i. lpc_check_link fuel Q nds nd [lpcn_state nd!i]
@@ -79,6 +82,11 @@ theorem lpc_action_sound:
       ([(lpcn_pred nd,map \<eta> (lpcn_vars nd))],
        [(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]) \<in> lp_ild Q \<Longrightarrow>
       SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
+    and paths: "\<And>j \<nu>. j<length nds \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<Longrightarrow>
+      ([(lpcn_pred nd,map \<eta> (lpcn_vars nd))],
+       [(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]) \<in> (lp_ild Q)\<^sup>+ \<Longrightarrow>
+      SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
   shows "SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state nd) \<eta>}"
 proof (cases action)
   case LPCATerminal
@@ -101,6 +109,11 @@ next
   case (LPCAControl Fs roles)
   have control: "lpc_check_control P Q nd Fs roles" using checked by (simp add: LPCAControl)
   show ?thesis by (rule lpc_check_control_sound[OF control residual])
+next
+  case (LPCAAnswerSplit pregs rest Fs j)
+  have split: "lpc_check_answer_split P Q nds nd pregs rest Fs j"
+    using checked by (simp add: LPCAAnswerSplit)
+  show ?thesis by (rule lpc_check_answer_split_sound[OF split known residual paths])
 next
   case (LPCAStack links)
   have len: "length links=length (lpcn_state nd)"
@@ -198,16 +211,16 @@ proof -
       xs=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
       SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
     if sn: "SN_on (lp_ild Q) {xs}" for xs
-  proof (rule SN_on_induct[OF sn singletonI])
+  proof (rule SN_on_induct[OF SN_on_trancl[OF sn] singletonI])
     fix xs
-    assume ih: "\<And>ys. (xs,ys)\<in>lp_ild Q \<Longrightarrow>
+    assume ih: "\<And>ys. (xs,ys)\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
       SN_on (lp_ild Q) {ys} \<and>
       (\<forall>j \<nu>. j<length nds \<longrightarrow>
         lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
         ys=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
         SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
     have current: "SN_on (lp_ild Q) {xs}"
-      by (rule step_reflects_SN_on) (use ih in blast)
+      by (rule step_reflects_SN_on) (use ih in \<open>blast intro: r_into_trancl\<close>)
     show "SN_on (lp_ild Q) {xs} \<and>
       (\<forall>j \<nu>. j<length nds \<longrightarrow>
         lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
@@ -226,7 +239,8 @@ proof -
       have residual: "SN_on (lp_ild Q) {[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]}"
         using current xs by simp
       show "SN_on (lp_cut_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
-        by (rule lpc_action_sound[OF program action knowledge residual]) (use ih xs in blast)
+        by (rule lpc_action_sound[OF program action knowledge residual])
+          (use ih xs in \<open>blast intro: r_into_trancl\<close>)+
     qed
   qed
   show ?thesis using all[OF child] bound known by blast

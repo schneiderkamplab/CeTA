@@ -1,5 +1,5 @@
 theory LP_Cut_MGU_Table
-  imports LP_Cut_MGU_Stack LP_Cut_Table_Check
+  imports LP_Cut_MGU_Answer_Split LP_Cut_Table_Check
 begin
 
 fun lpc_mgu_check_action where
@@ -9,6 +9,8 @@ fun lpc_mgu_check_action where
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 | "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAPlain Ss roles) = lpc_check_plain P Q nd Ss roles"
 | "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAControl Ss roles) = lpc_check_control P Q nd Ss roles"
+| "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAAnswerSplit pregs rest Ss j) =
+    (lpc_check_answer_split P Q nds nd pregs rest Ss j \<and> Fs!j=[])"
 | "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAStack links) =
     (length links=length (lpcn_state nd) \<and>
      list_all (\<lambda>i. lpc_check_link fuel Q nds nd [lpcn_state nd!i]
@@ -72,8 +74,21 @@ theorem lpc_mgu_action_sound:
       ([(lpcn_pred nd,map \<eta> (lpcn_vars nd))],
        [(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]) \<in> lp_ild Q \<Longrightarrow>
       SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
+    and paths: "\<And>j \<nu>. j<length nds \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<Longrightarrow>
+      lpc_free_knowledge (set (Fs!j)) \<nu> \<Longrightarrow>
+      ([(lpcn_pred nd,map \<eta> (lpcn_vars nd))],
+       [(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]) \<in> (lp_ild Q)\<^sup>+ \<Longrightarrow>
+      SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
   shows "SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state nd) \<eta>}"
 proof (cases action)
+  case (LPCAAnswerSplit pregs rest Ss j)
+  have split: "lpc_check_answer_split P Q nds nd pregs rest Ss j" and empty: "Fs!j=[]"
+    using checked by (simp_all add: LPCAAnswerSplit)
+  have bound: "j<length nds" using split by (simp add: lpc_check_answer_split_def)
+  show ?thesis by (rule lpc_mgu_check_answer_split_sound[OF split known residual])
+    (use paths[OF bound] in \<open>auto simp: empty lpc_free_knowledge_def\<close>)
+next
   case LPCATerminal
   show ?thesis by (rule lp_cut_conservative_implies_mgu_SN)
     (use LPCATerminal checked lp_cut_terminal_node_sound[of P] in \<open>simp add: lp_cut_state_map_def\<close>)
@@ -205,9 +220,9 @@ proof -
       xs=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
       SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
     if sn: "SN_on (lp_ild Q) {xs}" for xs
-  proof (rule SN_on_induct[OF sn singletonI])
+  proof (rule SN_on_induct[OF SN_on_trancl[OF sn] singletonI])
     fix xs
-    assume ih: "\<And>ys. (xs,ys)\<in>lp_ild Q \<Longrightarrow>
+    assume ih: "\<And>ys. (xs,ys)\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
       SN_on (lp_ild Q) {ys} \<and>
       (\<forall>j \<nu>. j<length nds \<longrightarrow>
         lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
@@ -215,7 +230,7 @@ proof -
         ys=[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))] \<longrightarrow>
         SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>})"
     have current: "SN_on (lp_ild Q) {xs}"
-      by (rule step_reflects_SN_on) (use ih in blast)
+      by (rule step_reflects_SN_on) (use ih in \<open>blast intro: r_into_trancl\<close>)
     show "SN_on (lp_ild Q) {xs} \<and>
       (\<forall>j \<nu>. j<length nds \<longrightarrow>
         lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) \<nu> \<longrightarrow>
@@ -236,7 +251,8 @@ proof -
       have residual: "SN_on (lp_ild Q) {[(lpcn_pred (nds!j),map \<nu> (lpcn_vars (nds!j)))]}"
         using current xs by simp
       show "SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
-        by (rule lpc_mgu_action_sound[OF program action knowledge freeness residual]) (use ih xs in blast)
+        by (rule lpc_mgu_action_sound[OF program action knowledge freeness residual])
+          (use ih xs in \<open>blast intro: r_into_trancl\<close>)+
     qed
   qed
   show ?thesis using all[OF child] bound known free by blast
