@@ -1,5 +1,5 @@
 theory LP_Cut_Return_Output_Groundness
-  imports LP_Cut_Return_Actual LP_Cut_Return_Interface LP_Cut_Output_Groundness
+  imports LP_Cut_Return_Preserved_Ground LP_Cut_Output_Groundness
 begin
 
 lemma lpc_return_env_commutes:
@@ -27,10 +27,11 @@ qed
 
 definition lpc_check_return_output_groundness where
   "lpc_check_return_output_groundness P pre G interface positions Q Fs modes =
-    (lpc_control_program P Q (set Fs) \<and> list_all (lpc_control_goal (set Fs)) pre \<and>
+    (list_all (\<lambda>i. i<length interface \<and> vars_term (interface!i) \<subseteq> set G) positions \<or>
+     (lpc_control_program P Q (set Fs) \<and> list_all (lpc_control_goal (set Fs)) pre \<and>
      lp_ground_check Q modes \<and>
      list_all (\<lambda>i. i<length interface \<and>
-       vars_term (interface!i) \<subseteq> lp_ground_flow modes (map lpc_control_atom pre) (set G)) positions)"
+       vars_term (interface!i) \<subseteq> lp_ground_flow modes (map lpc_control_atom pre) (set G)) positions))"
 
 theorem lpc_return_output_groundness_sound:
   assumes checked: "lpc_check_return_output_groundness P pre G interface positions Q Fs modes"
@@ -46,16 +47,26 @@ proof -
     using actual by (simp only: shape)
   obtain theta where source: "lpc_actual_return P ?ss theta" and rho: "rho=lpc_return_env interface theta"
     using lpc_actual_return_reinterface[where F="lpc_return_env interface", OF lpc_return_env_commutes mapped] by blast
+  show ?thesis
+  proof (cases "list_all (\<lambda>i. i<length interface \<and> vars_term (interface!i) \<subseteq> set G) positions")
+    case True
+    have preserved: "\<forall>x\<in>set G. lp_seg_ground (theta x)"
+      by (rule lpc_actual_return_preserves_ground_env[OF source]) (simp add: known)
+    show ?thesis using True preserved
+      by (auto simp: list_all_iff rho lpc_return_env_def lp_seg_ground_eval)
+  next
+    case False
   obtain us tail where path: "(?ss,us)\<in>(lpc_answer_steps P)\<^sup>*"
     and event: "lpc_answer_transition P us (Some theta) tail"
     using source by (auto simp: lpc_actual_return_def)
   have program: "lpc_control_program P Q (set Fs)" and domain: "list_all (lpc_control_goal (set Fs)) pre"
     and modes: "lp_ground_check Q modes"
-    using checked by (auto simp: lpc_check_return_output_groundness_def)
+    using checked False by (auto simp: lpc_check_return_output_groundness_def)
   have outputs: "\<forall>x\<in>lp_ground_flow modes (map lpc_control_atom pre) (set G). lp_seg_ground (theta x)"
     by (rule lpc_success_output_groundness[OF program domain modes known path event])
-  show ?thesis using checked outputs
+  show ?thesis using checked False outputs
     by (auto simp: lpc_check_return_output_groundness_def list_all_iff rho lpc_return_env_def lp_seg_ground_eval)
+  qed
 qed
 
 end

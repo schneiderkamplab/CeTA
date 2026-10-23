@@ -71,6 +71,7 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Projection_Edge
     LP_Cut_Return_Split_Check
     LP_Cut_Return_Actual
+    LP_Cut_Return_Preserved_Ground
     LP_Cut_Return_Output_Groundness
     LP_Cut_Return_Ground_Continuation
     LP_Cut_Return_Ground_Split_Check
