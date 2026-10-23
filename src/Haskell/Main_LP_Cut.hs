@@ -12,7 +12,7 @@ main = do
       print (C.lpc_xml_diagnostics (C.explode text))
     [path] -> do
       text <- readFile path
-      if C.check_lpc_xml (C.explode text)
+      if C.check_lpc_xml (C.explode text) || C.check_lpc_constructor_xml (C.explode text)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT"
         else if C.check_lp_constructor_any_xml (C.explode text)
           then putStrLn "CERTIFIED TOCL09 LP"

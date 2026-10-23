@@ -58,9 +58,9 @@ end
         export = export.replace('imports LP_Constructor_XML',
                                 'imports LP_Constructor_XML LP_Source_Unify_XML')
     if a.cut:
-        export = export.replace('LP_Source_Unify_XML', 'LP_Source_Unify_XML LP_Cut_Table_XML')
+        export = export.replace('LP_Source_Unify_XML', 'LP_Source_Unify_XML LP_Cut_Constructor_XML')
         export = export.replace('@{const_name check_lp_nontermination_all_xml}]',
-            '@{const_name check_lp_nontermination_all_xml}, @{const_name check_lpc_xml}, @{const_name lpc_xml_diagnostics}]')
+            '@{const_name check_lp_nontermination_all_xml}, @{const_name check_lpc_xml}, @{const_name check_lpc_constructor_xml}, @{const_name lpc_xml_diagnostics}]')
         export = export.replace('LP_TOCL09_Generated', 'LP_Cut_Generated')
     (source / 'LP_Export.thy').write_text(export)
     env = dict(os.environ, USER_HOME=str(out / 'isabelle-user'),
