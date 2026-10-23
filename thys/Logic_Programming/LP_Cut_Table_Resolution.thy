@@ -1,5 +1,5 @@
 theory LP_Cut_Table_Resolution
-  imports LP_Cut_Table_Link
+  imports LP_Cut_Table_Link LP_Cut_Negative_Guards
 begin
 
 lemma lpc_plain_link_sound:
@@ -26,7 +26,7 @@ definition lpc_check_resolution_node where
        (\<forall>x\<in>set (lpcn_vars nd). length x<k) \<and>
        lpc_check_link fuel Q nds nd (LPCGoals next#es)
          (lpcn_ground nd@sorted_list_of_set (lp_cut_anchor_vars anchors))
-         (lpcn_guards nd@[LPCHeadGuard a (fst (P!c)) True])
+         (lpcn_guards nd@lpc_negative_guards k (set (lpcn_ground nd)) (lpcn_guards nd)@[LPCHeadGuard a (fst (P!c)) True])
          (lp_cut_resolution_equations k l (lpcn_ground nd) a (fst (P!c))) yes) \<and>
      (mode\<noteq>LPCAlwaysSuccess \<longrightarrow>
        lpc_check_link fuel Q nds nd es (lpcn_ground nd)
@@ -68,7 +68,7 @@ proof (rule step_reflects_SN_on)
       and short: "\<forall>x\<in>set (lpcn_vars nd). length x<k"
       and link: "lpc_check_link fuel Q nds nd (LPCGoals next#es)
         (?G@sorted_list_of_set (lp_cut_anchor_vars anchors))
-        (?K@[LPCHeadGuard a (fst (P!c)) True])
+        (?K@lpc_negative_guards k (set ?G) ?K@[LPCHeadGuard a (fst (P!c)) True])
         (lp_cut_resolution_equations k l ?G a (fst (P!c))) yes"
       using checked possible by (auto simp: lpc_check_resolution_node_def)
     let ?env = "lp_cut_resolution_env k l \<eta> \<sigma> \<rho>"
@@ -77,10 +77,16 @@ proof (rule step_reflects_SN_on)
       by (rule lp_cut_checked_resolution_equations[OF resolve known unifier])
     have old: "map ?env (lpcn_vars nd)=map \<eta> (lpcn_vars nd)"
       by (rule lp_cut_resolution_parent_interface[OF kl short])
-    have knowledge: "lp_cut_knowledge (set (?G@sorted_list_of_set (lp_cut_anchor_vars anchors)))
+    have prior: "lp_cut_knowledge (set (?G@sorted_list_of_set (lp_cut_anchor_vars anchors)))
       (?K@[LPCHeadGuard a (fst (P!c)) True]) ?env"
       using lp_cut_check_resolution_success(2)[OF resolve known unifier]
       by (simp add: lp_cut_anchor_vars_def)
+    have negative: "list_all (\<lambda>g. lp_cut_guard_holds g ?env) (lpc_negative_guards k (set ?G) ?K)"
+      by (rule lpc_negative_guards_sound[OF _ _ known])
+        (use resolve in \<open>auto simp: lp_cut_check_resolution_def\<close>)
+    have knowledge: "lp_cut_knowledge (set (?G@sorted_list_of_set (lp_cut_anchor_vars anchors)))
+      (?K@lpc_negative_guards k (set ?G) ?K@[LPCHeadGuard a (fst (P!c)) True]) ?env"
+      using prior negative by (simp add: lp_cut_knowledge_def)
     have sn: "SN_on (lp_cut_source P) {lp_cut_state_eval (LPCGoals next#es) ?env}"
       by (rule lpc_link_sound[OF program link equations old knowledge ih])
     show ?thesis using sn result lp_cut_check_resolution_success(1)[OF resolve known unifier]
