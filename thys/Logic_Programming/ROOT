@@ -67,4 +67,16 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Module_Link
     LP_Cut_Return_Module_Certificate
     LP_Cut_Return_Module_XML
+    LP_Cut_Return_Continuation
+    LP_Cut_Return_Projection_Edge
+    LP_Cut_Return_Split_Check
+    LP_Cut_Return_Actual
+    LP_Cut_Return_Output_Groundness
+    LP_Cut_Return_Ground_Continuation
+    LP_Cut_Return_Ground_Split_Check
+    LP_Cut_Return_Independent_Split
+    LP_Constructor_Infinite_Query
+    LP_Cut_Return_Composed
+    LP_Cut_Return_Composed_Certificate
+    LP_Cut_Return_Composed_XML
     LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test
