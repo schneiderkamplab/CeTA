@@ -17,7 +17,7 @@ definition answer_test_residual :: "(string lp_cut_symbol,string) lp_clause list
     ((LPCUser ''entry'',[Var ''X'']),[(LPCUser ''p'',[Var ''X'']),(LPCUser ''continued'',[Var ''X''])])]"
 
 definition answer_test_action :: "string lpc_action" where
-  "answer_test_action = LPCAAnswerSplit [LPCAtom (Fun (LPCUser ''p'') [Var ''X''])] [LPCCut 0] [''p''] 1"
+  "answer_test_action = LPCAAnswerSplit [LPCAtom (Fun (LPCUser ''p'') [Var ''X''])] [LPCCut 0] [''p''] [] 1"
 
 lemma answer_test_accept:
   "lpc_check_action 10 answer_test_program answer_test_residual answer_test_nodes

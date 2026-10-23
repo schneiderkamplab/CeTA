@@ -9,8 +9,8 @@ fun lpc_mgu_check_action where
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 | "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAPlain Ss roles) = lpc_check_plain P Q nd Ss roles"
 | "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAControl Ss roles) = lpc_check_control P Q nd Ss roles"
-| "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAAnswerSplit pregs rest Ss j) =
-    (lpc_check_answer_split P Q nds nd pregs rest Ss j \<and> Fs!j=[])"
+| "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAAnswerSplit pregs rest Ss modes j) =
+    (lpc_check_answer_split P Q nds nd pregs rest Ss modes j \<and> Fs!j=[])"
 | "lpc_mgu_check_action fuel P Q nds Fs nd F (LPCAStack links) =
     (length links=length (lpcn_state nd) \<and>
      list_all (\<lambda>i. lpc_check_link fuel Q nds nd [lpcn_state nd!i]
@@ -82,8 +82,8 @@ theorem lpc_mgu_action_sound:
       SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state (nds!j)) \<nu>}"
   shows "SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (lpcn_state nd) \<eta>}"
 proof (cases action)
-  case (LPCAAnswerSplit pregs rest Ss j)
-  have split: "lpc_check_answer_split P Q nds nd pregs rest Ss j" and empty: "Fs!j=[]"
+  case (LPCAAnswerSplit pregs rest Ss modes j)
+  have split: "lpc_check_answer_split P Q nds nd pregs rest Ss modes j" and empty: "Fs!j=[]"
     using checked by (simp_all add: LPCAAnswerSplit)
   have bound: "j<length nds" using split by (simp add: lpc_check_answer_split_def)
   show ?thesis by (rule lpc_mgu_check_answer_split_sound[OF split known residual])

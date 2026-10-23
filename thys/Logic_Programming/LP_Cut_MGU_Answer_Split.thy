@@ -120,7 +120,7 @@ qed
 theorem lpc_mgu_check_answer_split_sound:
   fixes P :: "('a,string) lp_cut_program"
     and \<eta> :: "string \<Rightarrow> ('a lp_cut_symbol,string) lp_iterm"
-  assumes checked: "lpc_check_answer_split P Q nds nd pregs rest Fs j"
+  assumes checked: "lpc_check_answer_split P Q nds nd pregs rest Fs modes j"
     and incoming: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) \<eta>"
     and residual: "SN_on (lp_ild Q) {[(lpcn_pred nd,map \<eta> (lpcn_vars nd))]}"
     and ih: "\<And>\<rho>.
@@ -138,7 +138,9 @@ proof -
     and domain: "list_all (lpc_control_goal (set Fs)) pregs"
     and program: "lpc_control_program P Q (set Fs)"
     and child: "lpcn_state ?child=[LPCGoals rest]"
-    and ground: "set (lpcn_ground ?child) \<subseteq> set (lpcn_ground nd)"
+    and modes: "lp_ground_check Q modes"
+    and ground: "set (lpcn_ground ?child) \<subseteq>
+      lp_ground_flow modes (map lpc_control_atom pregs) (set (lpcn_ground nd))"
     and guards: "set (lpcn_guards ?child) \<subseteq> set (filter lpc_answer_negative_guard (lpcn_guards nd))"
     and clause: "((lpcn_pred nd,map Var (lpcn_vars nd)),map lpc_control_atom pregs @ ?tail)\<in>set Q"
     using checked by (auto simp: lpc_check_answer_split_def)
@@ -165,7 +167,7 @@ proof -
     have reach: "(?root,[(lpcn_pred ?child,map \<rho> (lpcn_vars ?child))])\<in>(lp_ild Q)\<^sup>+"
       using entry suffix by (meson r_into_trancl trancl_rtrancl_trancl)
     have known: "lp_cut_knowledge (set (lpcn_ground ?child)) (lpcn_guards ?child) \<rho>"
-      by (rule lpc_answer_knowledge_preserved[OF answers incoming ground guards])
+      by (rule lpc_answer_knowledge_outputs[OF modes answers incoming ground guards])
     show "SN_on (lp_cut_mgu_source P) {[LPCGoals (map (lp_cut_map (\<lambda>t. lp_ieval t \<rho>)) rest)]}"
       using ih[OF known reach] by (simp add: child lp_cut_state_map_def)
   qed

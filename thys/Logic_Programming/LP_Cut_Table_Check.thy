@@ -9,7 +9,8 @@ datatype 'f lpc_action =
   | LPCAStack "'f lpc_link list"
   | LPCAPlain "'f list" "('f lp_cut_symbol \<times> 'f lp_cut_symbol) list"
   | LPCAControl "'f list" "('f lp_cut_symbol \<times> 'f lp_cut_symbol) list"
-  | LPCAAnswerSplit "'f lpc_term lp_cut_goal list" "'f lpc_term lp_cut_goal list" "'f list" nat
+  | LPCAAnswerSplit "'f lpc_term lp_cut_goal list" "'f lpc_term lp_cut_goal list" "'f list"
+      "'f lp_cut_symbol lp_ground_mode list" nat
   | LPCAAdmin "'f lpc_state" "'f lpc_link"
   | LPCATrim "'f lpc_state" "'f lpc_state" "'f lpc_link"
   | LPCACase 'f "'f lpc_term list" "'f lpc_term lp_cut_goal list" "'f lpc_state"
@@ -29,8 +30,8 @@ fun lpc_check_action where
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 | "lpc_check_action fuel P Q nds nd (LPCAPlain Fs roles) = lpc_check_plain P Q nd Fs roles"
 | "lpc_check_action fuel P Q nds nd (LPCAControl Fs roles) = lpc_check_control P Q nd Fs roles"
-| "lpc_check_action fuel P Q nds nd (LPCAAnswerSplit pregs rest Fs j) =
-    lpc_check_answer_split P Q nds nd pregs rest Fs j"
+| "lpc_check_action fuel P Q nds nd (LPCAAnswerSplit pregs rest Fs modes j) =
+    lpc_check_answer_split P Q nds nd pregs rest Fs modes j"
 | "lpc_check_action fuel P Q nds nd (LPCAStack links) =
     (length links=length (lpcn_state nd) \<and>
      list_all (\<lambda>i. lpc_check_link fuel Q nds nd [lpcn_state nd!i]
@@ -110,8 +111,8 @@ next
   have control: "lpc_check_control P Q nd Fs roles" using checked by (simp add: LPCAControl)
   show ?thesis by (rule lpc_check_control_sound[OF control residual])
 next
-  case (LPCAAnswerSplit pregs rest Fs j)
-  have split: "lpc_check_answer_split P Q nds nd pregs rest Fs j"
+  case (LPCAAnswerSplit pregs rest Fs modes j)
+  have split: "lpc_check_answer_split P Q nds nd pregs rest Fs modes j"
     using checked by (simp add: LPCAAnswerSplit)
   show ?thesis by (rule lpc_check_answer_split_sound[OF split known residual paths])
 next

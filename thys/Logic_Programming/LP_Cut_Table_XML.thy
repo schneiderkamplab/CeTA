@@ -108,7 +108,20 @@ definition lpc_action_parser where
       rest\<leftarrow>xml_many (STR ''continuationGoals'') lpc_goal_parser id;
       Fs\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
       j\<leftarrow>xml_nat (STR ''target'');
-      xml_return (LPCAAnswerSplit pregs rest Fs j)}) XMLor
+      xml_return (LPCAAnswerSplit pregs rest Fs [] j)}) XMLor
+    (XMLdo (STR ''groundAnswerSplit'') {
+      pregs\<leftarrow>xml_many (STR ''prefixGoals'') lpc_goal_parser id;
+      rest\<leftarrow>xml_many (STR ''continuationGoals'') lpc_goal_parser id;
+      Fs\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
+      modes\<leftarrow>xml_many (STR ''groundModes'')
+        (XMLdo (STR ''groundMode'') {
+          f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
+          n\<leftarrow>xml_nat (STR ''arity'');
+          pins\<leftarrow>xml_many (STR ''inputs'') (xml_nat (STR ''position'')) id;
+          pouts\<leftarrow>xml_many (STR ''outputs'') (xml_nat (STR ''position'')) id;
+          xml_return (LPGroundMode f n pins pouts)}) id;
+      j\<leftarrow>xml_nat (STR ''target'');
+      xml_return (LPCAAnswerSplit pregs rest Fs modes j)}) XMLor
     (XMLdo (STR ''refutedGuard'') {
       i\<leftarrow>xml_nat (STR ''index''); k\<leftarrow>xml_nat (STR ''prefix'');
       bindings\<leftarrow>lpc_bindings_parser; xml_return (LPCARefutedGuard i k bindings)}) XMLor

@@ -13,6 +13,7 @@ session Logic_Programming = Proof_Checker +
     LP_Source_Unify_XML
     LP_Unification_Builtin
     LP_SEG_Answers
+    LP_Answer_Groundness LP_Answer_Groundness_Test LP_Cut_Output_Groundness
     LP_SEG_Answer_Contracts
     LP_SEG_Residual_XML
     LP_Constructor_XML
