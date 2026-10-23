@@ -10,6 +10,20 @@ definition lpc_body_only_variables where
   "lpc_body_only_variables h bs =
     (\<Union>g\<in>set bs. \<Union>t\<in>set (lp_cut_terms g). vars_term t) - vars_term h"
 
+fun lpc_term_variable_list where
+  "lpc_term_variable_list (Var x) = [x]"
+| "lpc_term_variable_list (Fun f ts) = concat (map lpc_term_variable_list ts)"
+
+lemma lpc_term_variable_list_set [simp]:
+  "set (lpc_term_variable_list t) = vars_term t"
+  by (induct t) simp_all
+
+lemma lpc_body_only_variables_code [code]:
+  "lpc_body_only_variables h bs =
+    set (filter (\<lambda>x. x\<notin>vars_term h)
+      (concat (map (\<lambda>g. concat (map lpc_term_variable_list (lp_cut_terms g))) bs)))"
+  by (auto simp: lpc_body_only_variables_def)
+
 theorem lpc_mgu_body_only_knowledge:
   assumes mgu: "lpc_mgu_resolve a gs h bs \<sigma> \<rho>"
   shows "lpc_free_knowledge (lpc_body_only_variables h bs) \<rho>"
