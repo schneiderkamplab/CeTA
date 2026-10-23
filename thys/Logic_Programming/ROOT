@@ -37,4 +37,6 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Answers LP_Cut_Answer_Control LP_Cut_Answer_Split
     LP_Cut_Return_Contracts LP_Cut_Return_Contracts_Test LP_Cut_Return_Sequence
     LP_Cut_Return_Sequence_Test
+    LP_Cut_Return_Attachment LP_Cut_Scope_Ownership LP_Cut_Return_Source
+    LP_Cut_Return_Source_Test
     LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test
