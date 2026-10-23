@@ -40,4 +40,15 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Attachment LP_Cut_Scope_Ownership LP_Cut_Return_Source
     LP_Cut_Return_Source_Test
     LP_Cut_Return_Admin
+    LP_Cut_Return_Resolution
+    LP_Cut_Return_Resolution_Test
+    LP_Cut_Return_State
+    LP_Cut_Return_Steps
+    LP_Cut_Return_Link
+    LP_Cut_Return_Scopes
+    LP_Cut_Return_Table
+    LP_Cut_Return_Table_Resolution
+    LP_Cut_Return_Table_Equality
+    LP_Cut_Return_Allocate
+    LP_Cut_Return_Check
     LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test
