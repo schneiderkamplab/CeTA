@@ -1,5 +1,5 @@
 theory LP_Cut_MGU_Resolution
-  imports LP_Cut_MGU_Link LP_Cut_Table_Resolution
+  imports LP_Cut_MGU_Link LP_Cut_Table_Resolution LP_Cut_MGU_Head_Knowledge
 begin
 
 definition lpc_mgu_body_free where
@@ -50,7 +50,7 @@ definition lpc_mgu_check_resolution_node where
          (lpcn_guards nd@lpc_negative_guards k (set (lpcn_ground nd)) (lpcn_guards nd)@[LPCHeadGuard a (fst (P!c)) True])
          (lp_cut_resolution_equations k l (lpcn_ground nd) a (fst (P!c))) yes \<and>
        lpc_check_link_free fuel (lp_cut_resolution_equations k l (lpcn_ground nd) a (fst (P!c)))
-         (lpc_mgu_body_free (fst (P!c)) (snd (P!c)) l) (Fs!lpcl_target yes) (lpcl_bindings yes)) \<and>
+         (lpc_mgu_result_free F (lpcn_ground nd) a (fst (P!c)) (snd (P!c)) l) (Fs!lpcl_target yes) (lpcl_bindings yes)) \<and>
      (mode\<noteq>LPCAlwaysSuccess \<longrightarrow>
        lpc_check_link fuel Q nds nd es (lpcn_ground nd)
          (lpcn_guards nd@[LPCHeadGuard a (fst (P!c)) False]) [] no \<and>
@@ -101,7 +101,7 @@ proof (rule step_reflects_SN_on)
         (?K@lpc_negative_guards k (set ?G) ?K@[LPCHeadGuard a (fst (P!c)) True])
         (lp_cut_resolution_equations k l ?G a (fst (P!c))) yes"
       and free_link: "lpc_check_link_free fuel (lp_cut_resolution_equations k l ?G a (fst (P!c)))
-        (lpc_mgu_body_free (fst (P!c)) (snd (P!c)) l) (Fs!lpcl_target yes) (lpcl_bindings yes)"
+        (lpc_mgu_result_free F ?G a (fst (P!c)) (snd (P!c)) l) (Fs!lpcl_target yes) (lpcl_bindings yes)"
       using checked possible by (auto simp: lpc_mgu_check_resolution_node_def)
     let ?env = "lp_cut_resolution_env k l \<eta> \<sigma> \<rho>"
     have kl: "k\<le>l" using resolve by (auto simp: lp_cut_check_resolution_def)
@@ -118,8 +118,10 @@ proof (rule step_reflects_SN_on)
     have knowledge: "lp_cut_knowledge (set (?G@sorted_list_of_set (lp_cut_anchor_vars anchors)))
       (?K@lpc_negative_guards k (set ?G) ?K@[LPCHeadGuard a (fst (P!c)) True]) ?env"
       using prior negative by (simp add: lp_cut_knowledge_def)
-    have body_free: "lpc_free_knowledge (set (lpc_mgu_body_free (fst (P!c)) (snd (P!c)) l)) ?env"
-      by (rule lpc_mgu_body_free_sound[OF mgu])
+    have ground: "\<forall>x\<in>set ?G. lp_seg_ground (\<eta> x)"
+      using known by (simp add: lp_cut_knowledge_def)
+    have body_free: "lpc_free_knowledge (set (lpc_mgu_result_free F ?G a (fst (P!c)) (snd (P!c)) l)) ?env"
+      by (rule lpc_mgu_result_free_sound[OF mgu free ground])
     have sn: "SN_on (lp_cut_mgu_source P) {lp_cut_state_eval (LPCGoals next#es) ?env}"
       by (rule lpc_mgu_link_sound[OF program link free_link equations old knowledge body_free ih])
     show ?thesis using sn result lp_cut_check_resolution_success(1)[OF resolve known unifier]
