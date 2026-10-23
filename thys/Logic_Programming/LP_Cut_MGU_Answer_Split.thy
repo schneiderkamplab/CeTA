@@ -173,4 +173,3 @@ proof -
 qed
 
 end
-
