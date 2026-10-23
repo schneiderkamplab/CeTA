@@ -102,4 +102,3 @@ proof -
 qed
 
 end
-

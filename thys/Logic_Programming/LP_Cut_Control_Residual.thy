@@ -166,4 +166,3 @@ proof -
 qed
 
 end
-
