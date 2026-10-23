@@ -51,4 +51,6 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Table_Equality
     LP_Cut_Return_Allocate
     LP_Cut_Return_Check
+    LP_Cut_Return_Certificate
+    LP_Cut_Return_XML
     LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test
