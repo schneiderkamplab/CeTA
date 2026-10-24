@@ -1,10 +1,12 @@
 theory LP_Cut_Return_Module
-  imports LP_Cut_Return_Check LP_Cut_Return_Barriers LP_Cut_Return_Scope_Contracts
+  imports LP_Cut_Return_Check LP_Cut_Return_Parallel LP_Cut_Return_Scope_Contracts
 begin
 
 datatype 'f lpc_return_module_action =
     LPCRPrimitive "'f lpc_return_action"
   | LPCRTrim "'f lpc_return_state" "'f lpc_return_state" "'f lpc_link"
+  | LPCRParallel "'f lpc_link list"
+  | LPCRRefuted nat nat "(string * 'f lpc_term) list"
 
 definition lpc_return_module_rep where
   "lpc_return_module_rep nds states ss t =
@@ -16,6 +18,11 @@ fun lpc_check_return_module_action where
 | "lpc_check_return_module_action fuel P Q nds states nd ss returned arity (LPCRTrim successor barriers e) =
     (ss=successor@barriers \<and> lp_cut_barriers (map fst barriers) \<and>
       lpc_check_return_table_link fuel Q nds states nd successor (lpcn_ground nd) (lpcn_guards nd) [] e)"
+| "lpc_check_return_module_action fuel P Q nds states nd ss returned arity (LPCRParallel links) =
+    (length links=length ss \<and> list_all (\<lambda>i.
+      lpc_check_return_table_link fuel Q nds states nd [ss!i] (lpcn_ground nd) (lpcn_guards nd) [] (links!i)) [0..<length ss])"
+| "lpc_check_return_module_action fuel P Q nds states nd ss returned arity (LPCRRefuted i k bindings) =
+    lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 
 theorem lpc_return_module_action_sound:
   fixes P :: "('f,string) lp_cut_program"
@@ -65,6 +72,31 @@ next
     using barriers by (simp add: lpc_return_eval_erases lp_cut_state_map_def list_all_iff lp_cut_barrier_entry_map)
   show ?thesis using lpc_return_contract_append_barriers[OF at_parent suffix]
     by (simp add: shape lpc_return_eval_def)
+next
+  case (LPCRParallel links)
+  show ?thesis
+  proof (rule lpc_return_contract_singletons)
+    fix e assume member: "e\<in>set (lpc_return_eval eta ss)"
+    obtain i where index: "i<length ss" and e: "[e]=lpc_return_eval eta [ss!i]"
+      using member by (auto simp: lpc_return_eval_def in_set_conv_nth)
+    have link: "lpc_check_return_table_link fuel Q nds states nd [ss!i] (lpcn_ground nd) (lpcn_guards nd) [] (links!i)"
+      using checked LPCRParallel index by (auto simp: list_all_iff)
+    have equations: "lp_equations [] eta" by (simp add: lp_equations_def)
+    obtain v swaps where strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+"
+      and rep: "lpc_return_rep nds states (lpc_return_scope_word swaps (lpc_return_eval eta [ss!i])) v"
+      using lpc_return_table_link_sound[OF link equations refl known] by blast
+    have child: "lpc_return_contract P (lpc_return_eval eta [ss!i]) (lp_ild Q) v
+      (\<lambda>rho. [(returned,map rho [0..<arity])])"
+      by (rule lower[OF strict]) (use rep in \<open>auto simp: lpc_return_module_rep_def\<close>)
+    show "lpc_return_contract P [e] (lp_ild Q) [(lpcn_pred nd,map eta (lpcn_vars nd))]
+      (\<lambda>rho. [(returned,map rho [0..<arity])])"
+      unfolding e by (rule lpc_return_contract_start[OF trancl_into_rtrancl[OF strict] child])
+  qed
+next
+  case (LPCRRefuted i k bindings)
+  have "lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
+    using checked LPCRRefuted by simp
+  then show ?thesis using lp_cut_checked_refuted_guard[OF _ known] by blast
 qed
 
 definition lpc_check_return_module where

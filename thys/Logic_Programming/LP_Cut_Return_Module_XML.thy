@@ -7,7 +7,11 @@ definition lpc_return_module_action_parser where
     (xml_change lpc_return_action_parser (\<lambda>a. xml_return (LPCRPrimitive a))) XMLor
     (XMLdo (STR ''trimBarriers'') {successor\<leftarrow>lpc_return_state_parser;
       barriers\<leftarrow>lpc_return_state_parser; e\<leftarrow>lpc_link_parser;
-      xml_return (LPCRTrim successor barriers e)})"
+      xml_return (LPCRTrim successor barriers e)}) XMLor
+    (XMLdo (STR ''parallelAlternatives'') {links\<leftarrow>xml_many (STR ''links'') lpc_link_parser id;
+      xml_return (LPCRParallel links)}) XMLor
+    (XMLdo (STR ''refutedGuard'') {i\<leftarrow>xml_nat (STR ''index''); k\<leftarrow>xml_nat (STR ''prefix'');
+      bindings\<leftarrow>lpc_bindings_parser; xml_return (LPCRRefuted i k bindings)})"
 
 definition lpc_return_module_constructor_parser where
   "lpc_return_module_constructor_parser = XMLdo (STR ''lpCutReturnModuleConstructorGraphTerminationProof'') {

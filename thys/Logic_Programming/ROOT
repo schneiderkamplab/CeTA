@@ -63,6 +63,7 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Split_Shape_Test
     LP_Cut_Return_Barriers
     LP_Cut_Return_Scope_Contracts
+    LP_Cut_Return_Parallel
     LP_Cut_Return_Module
     LP_Cut_Return_Module_Link
     LP_Cut_Return_Module_Certificate
@@ -84,4 +85,11 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Composed
     LP_Cut_Return_Composed_Certificate
     LP_Cut_Return_Composed_XML
+    LP_Cut_Return_Semantic_Module
+    LP_Cut_Return_Semantic_Link
+    LP_Cut_Return_Semantic_Split
+    LP_Cut_Return_Semantic_Ground_Split
+    LP_Cut_Return_Nested
+    LP_Cut_Return_Nested_Certificate
+    LP_Cut_Return_Nested_XML
     LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test
