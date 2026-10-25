@@ -2,6 +2,7 @@ session Logic_Programming = Proof_Checker +
   options [document = false, timeout = 120]
   theories LP_Cut_Control
     LP_Filtered_Narrowing LP_Continuation_Machine LP_Leftmost_Resolution LP_Finite_Checker
+    LP_Dependency_Triples LP_Dependency_Triple_Chains
     LP_Infinite_Terms LP_Infinite_Narrowing LP_Infinite_Machine LP_Infinite_Resolution LP_TOCL09_Checker
     LP_TOCL09_Regression
     LP_Mode_Refinement LP_Mode_Checker LP_Mode_Regression
@@ -72,6 +73,41 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Projection_Edge
     LP_Cut_Return_Split_Check
     LP_Cut_Return_Actual
+    LP_Cut_SEG_TRS_Returns
+    LP_Cut_SEG_Interfaces
+    LP_Cut_SEG_Reinterface
+    LP_Cut_SEG_Rules
+    LP_Cut_SEG_Regions
+    LP_Cut_SEG_Control
+    LP_Cut_SEG_Measure
+    LP_Cut_SEG_Finite
+    LP_Cut_SEG_Emit
+    LP_Cut_SEG_Observations
+    LP_Cut_SEG_Instance
+    LP_Cut_SEG_Region_Contract
+    LP_Cut_SEG_Roles
+    LP_Cut_SEG_Roles_XML
+    LP_Cut_SEG_Encoded_Emit
+    LP_Cut_SEG_Captured
+    LP_Cut_SEG_Return_Bridge
+    LP_Cut_SEG_Connection
+    LP_Cut_SEG_Context_Region
+    LP_Cut_SEG_Split_Lower
+    LP_Cut_SEG_Root_Representation
+    LP_Cut_SEG_Connection_Check
+    LP_Cut_SEG_Region_Check
+    LP_Cut_SEG_Certificate
+    LP_Cut_SEG_Certificate_XML
+    LP_Cut_SEG_Prefix
+    LP_Cut_SEG_Child
+    LP_Cut_SEG_Split_Bridge
+    LP_Cut_SEG_Split_Composition
+    LP_Cut_SEG_Split_Check
+    LP_Cut_SEG_Graph
+    LP_Cut_SEG_Ground_XML
+    LP_Cut_SEG_Instance_XML
+    LP_Cut_SEG_Control_XML
+    LP_Cut_SEG_Measure_XML
     LP_Cut_Return_Preserved_Ground
     LP_Cut_Return_Output_Groundness
     LP_Cut_Return_Ground_Continuation
@@ -93,3 +129,23 @@ session Logic_Programming = Proof_Checker +
     LP_Cut_Return_Nested_Certificate
     LP_Cut_Return_Nested_XML
     LP_Cut_Answer_Knowledge LP_Cut_Answer_Check LP_Cut_MGU_Answer_Split LP_Cut_Answer_Test
+
+session Logic_Programming_SEG_Code = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Cut_SEG_Code
+
+session Logic_Programming_Triples_Code = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Dependency_Triple_Code LP_Cut_SEG_Triple_Proofs
+
+session Logic_Programming_SEG_Free_Code = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Cut_SEG_Free_Code
+
+session Logic_Programming_Cut_NO_Code = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Cut_NO_Code
+
+session Logic_Programming_Cut_Projected_Residual = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Cut_Projected_Certificate_Regression LP_Cut_SEG_Projected_Code

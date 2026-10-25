@@ -1,0 +1,5 @@
+theory LP_Cut_Projected_Code
+  imports LP_Cut_Projected_Certificate_Regression
+begin
+export_code check_lpc_projected_xml in Haskell module_name LP_Cut_Projected_Generated
+end
