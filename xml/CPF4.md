@@ -1,5 +1,10 @@
 # Certification Problem Format 4.0
 
+For all production categories, including cycle rewriting, higher-order
+rewriting and LP with cut, see [Certificate formats](CERTIFICATE_FORMATS.md).
+This page describes the repository's CPF4 dialect, not the separate native
+certificate interfaces or an externally standardized release.
+
 CPF 4.0 is a conservative extension of CPF 3.x. A CPF 3.x certification
 problem is also a CPF 4.0 certification problem with the same meaning.
 New producers should write:

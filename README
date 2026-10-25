@@ -1,5 +1,8 @@
 Contents
 ========
+Certificate formats for all production categories, through LP with cut:
+xml/CERTIFICATE_FORMATS.md (schemas, native interfaces and semantic scope).
+
  1) Files & Directories
  2) Compilation
  3) Dependencies
