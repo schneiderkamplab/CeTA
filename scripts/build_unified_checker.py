@@ -32,6 +32,10 @@ def main():
             archive=ROOT/spec['archive']
             if sha(archive)!=spec['archive_sha256']:raise ValueError(f'Archive hash mismatch: {key}')
             source.mkdir(parents=True,exist_ok=True)
+            # A newer verified export can remove or merge generated modules.
+            # Drop obsolete files only in the builder's private extraction cache.
+            for stale in source.glob('*.hs'):
+                if stale.name not in spec['sources']:stale.unlink()
             with tarfile.open(archive,'r:gz') as bundle:
                 for member in bundle.getmembers():
                     if not member.isfile() or member.name not in spec['sources'] or Path(member.name).name!=member.name:

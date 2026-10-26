@@ -6,7 +6,7 @@
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
       "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
-      "Ceta_Relative.hs": "cfacd443598a9fb9fea4003a0d73aa51268fec19633c8feaad3c394ace8a3fd3",
+      "Ceta_Relative.hs": "c3c846d7800bbaded819be90a112b79f9c80072c2b23455fd3294ba91d458cb1",
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
       "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
@@ -14,9 +14,11 @@
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/equational-production-20261019/export-relative",
+    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/cpf-export/Usable_Rules_CPF_Export.Usable_Rules_CPF_Export/code/export1",
     "archive": "tests/unified/exports/cpf.tar.gz",
-    "archive_sha256": "6311f14f24293414faca6feb17b943bd63fa9f5d1331799679ec62c21dcd517d"
+    "archive_sha256": "dee3398bc5e8a7453bd0d90028d89991b45cf4667ee28c82754be56b9fabbb37",
+    "optimization_theory": "thys/Usable_Rules_Membership/Usable_Rules_Membership.thy",
+    "optimization_theory_sha256": "862bc29fc1168573df695d335502c8f8c3ecb07d10eac18f6f68bdf0574911e7"
   },
   "cycle": {
     "module": "Ceta.Category.Cycle",
@@ -48,7 +50,7 @@
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
       "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
-      "Conditional_Erasure_Generated.hs": "6640e4504ddc2588f928ee7fc3b78ac47792f00456be38655e958915c34ae6f7",
+      "Conditional_Erasure_Generated.hs": "f48877c5a876ac218aff6b73456d6c3ac7869af637721a4ed4554a36b058c248",
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
       "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
@@ -56,9 +58,11 @@
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/conditional-ordinary-20261021/erasure-generated",
+    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/erasure-indexed",
     "archive": "tests/unified/exports/conditional-erasure.tar.gz",
-    "archive_sha256": "05db14ccb7c07ba7956a847e46d58bc9d668d9c5180a4c209b8b60d66e4510a8"
+    "archive_sha256": "f36057300fdbcf4e90ad649bf1117f74f8ca189abc66dac9acc8552c30b6e410",
+    "optimization_theory": "thys/Usable_Rules_Membership/Usable_Rules_Membership.thy",
+    "optimization_theory_sha256": "862bc29fc1168573df695d335502c8f8c3ecb07d10eac18f6f68bdf0574911e7"
   },
   "lp": {
     "module": "Ceta.Category.LogicProgramming",
@@ -73,19 +77,21 @@
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
       "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
       "LP_Cut_NO_Generated.hs": "5cf29b7b5dbc7af4654b64ab1b480ccab7a02792a7344872ad376e0c9bdeb75a",
-      "LP_Cut_Projected_Generated.hs": "56a2042df46d1828e6933748d2565c125a0585dd1fc8f7e1aec91e5150d0f92e",
-      "LP_Return_Module_Generated.hs": "c80d30139766153ebefdacb82d345141b5c3e7cda2766daae7d70fd1d8471619",
-      "LP_SEG_Certificate_Generated.hs": "e03d5cfb6bde9f4b6b1e8b26eca532da9f104f873b599dc88118eb2a74ea32c7",
-      "LP_SEG_Projected_Generated.hs": "1017fe6dedcf3f42361ceee131bcb624d316681bb6c293017fdd0b06be5120bc",
-      "LP_Triples_Generated.hs": "9b056bf55fcf837600991b37a273a2050693021482cf17fa0a5139e0dafe9689",
+      "LP_Cut_Projected_Generated.hs": "75e18936823502ef026b9754bff50e263b6eaaad1d45d41d36ea574ad263d9b2",
+      "LP_Return_Module_Generated.hs": "7e85569e6806f9dddca2b4be3c0472692a2f978c6c59c86e4fa37715a02b84f8",
+      "LP_SEG_Certificate_Generated.hs": "daee9741dcd988337b832709c411cc960925f06003cce779cee45e8c1135eac5",
+      "LP_SEG_Projected_Generated.hs": "c7fe23a33b51e4fcd7635d2447461eddf095a68ee0b242b6ec43cfd49ad548be",
+      "LP_Triples_Generated.hs": "59b3c91edeffdc3f8ffd4965d3e6e3ecc832f9085b7ecd6395eb65a391dd0344",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "origin": "/work/dfm/festschrift/CeTA/target/lp-cut-integrated-v145-20261025/checksums.sha256",
+    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-category-final",
     "archive": "tests/unified/exports/lp.tar.gz",
-    "archive_sha256": "1e21b7ed2d65c737e7ddf45599a1733f55e96715233c8473ff5744039ff83ab0"
+    "archive_sha256": "8688d70959f7b1f3e8441ad0f493a22924060994fcecd110bcd932ea6953e13b",
+    "optimization_theory": "thys/Usable_Rules_Membership/Usable_Rules_Membership.thy",
+    "optimization_theory_sha256": "862bc29fc1168573df695d335502c8f8c3ecb07d10eac18f6f68bdf0574911e7"
   },
   "higher-order": {
     "module": "Ceta.Category.HigherOrder",
@@ -183,7 +189,7 @@
       "Generalized_Usable_Rules.hs": "766e24ebbf043a8dcf8151f0b4872bfc8e631e30c070263d72a2170f7f7c35f5",
       "Generalized_Usable_Rules_Impl.hs": "3e8e3b6ba5110709e6616b8840cdfa1427ec2ce480615149a6133cf036d4d6ff",
       "Generic_Reduction_Pair_Processor_Impl.hs": "a9511de71e6ef326f7277aeb2afe2bc54adf3d0571cb1777711696a83ae8a608",
-      "Generic_Usable_Rules_Impl.hs": "edcdd52215efc4afce10280495a081167ca339904424a43a072adefc7f436ba5",
+      "Generic_Usable_Rules_Impl.hs": "d09508af5c38bce5d0e7a111e0618edc6d824ff3475e33b3644e4cc88a84deb3",
       "Graph.hs": "72741d3f2b8ae6c8419ca8910155d42a15d6d27b61725b223cdd4b0ea948ec87",
       "Group.hs": "ad9e1015d87a2959f1b230f242fffd624032022effe4e99cc276fc240d340d6c",
       "Groups_List.hs": "84e76c1b48f3759923b452731946a4e3f378541ac1f357b5b157dcc98af4297b",
@@ -382,7 +388,7 @@
       "Uncurry.hs": "a4042e70a6e5630822fb42bf6ecb3bb13b971a492c49c7d5dcc315e3aa791d35",
       "Uncurry_Impl.hs": "4a3e49e61d1753894d5357d496d9c6ecb4beadd10665b9fe1a43f5af78b5cdab",
       "Usable_Replacement_Map_Impl.hs": "ea236d274bb2885531b9fc0f680e8e5c037559fdc429b89ad2201fb0ed96e24f",
-      "Usable_Rules_Impl.hs": "e21a1772dd566257657a6c370e2b75b84bec22f721173b3b435d4674005068d2",
+      "Usable_Rules_Impl.hs": "79940a4b83eefd0c8dca544e898d2112b7cba3f9796bade645522909f86935b4",
       "Util.hs": "59e744670d3cd3818a7104404080c3c2b1d2c631a74f98a93da9329ba9a44948",
       "Utility.hs": "6d0958d47590003070323c0407509f2859015db2552777651431f56b9d2c5405",
       "WPO.hs": "46ec7c49f51e7bebd95f6285cb30295af45fdd2cfb0b44da725b1b2a22b8b4d8",
@@ -392,8 +398,10 @@
       "Xml.hs": "fbb2d1e67b39eee55e88e3aa6879f2423e1e41375835b2e8b4767a4bde12cfed",
       "Xmlt.hs": "fd562b1ea28149d588fb24ba45b433e0b00a7b650c26574c66de999868308a45"
     },
-    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/higher-order-20261019/filtered-delegation-checker-v1/export/Higher_Order_Filtered_Code.Higher_Order_Filtered_Code/code/export1",
+    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/ho-export-char-order/Usable_Rules_HO_Export.Usable_Rules_HO_Export/code/export1",
     "archive": "tests/unified/exports/higher-order-delegation.tar.gz",
-    "archive_sha256": "6f418665433e0dd826b0f36ac9183f3991312bdcabaef681f8d23d5c64182d31"
+    "archive_sha256": "4084414b2efbf305c3664b235c3f140ad71e8dad1ba66442143ede18c32db48a",
+    "optimization_theory": "thys/Usable_Rules_Membership/Usable_Rules_Membership.thy",
+    "optimization_theory_sha256": "862bc29fc1168573df695d335502c8f8c3ecb07d10eac18f6f68bdf0574911e7"
   }
 }
