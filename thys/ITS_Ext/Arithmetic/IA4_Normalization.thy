@@ -33,7 +33,7 @@ fun lower_exp :: "'v ia4_exp \<Rightarrow> 'v ia4_variable IA.exp" where
   "lower_exp (Var (v,ty)) = Var (IA4_Old v,ty)"
 | "lower_exp (Fun (IA4_Base f) es) = Fun f (map lower_exp es)"
 | "lower_exp (Fun IA4_Div [a,d]) = IA.var (IA4_Quot (Fun IA4_Div [a,d]))"
-| "lower_exp (Fun IA4_Mod [a,d]) = IA.var (IA4_Rem (Fun IA4_Mod [a,d]))"
+| "lower_exp (Fun IA4_Mod [a,d]) = IA.var (IA4_Rem (Fun IA4_Div [a,d]))"
 | "lower_exp _ = IA.const 0"
 
 fun quotient_value where
@@ -119,7 +119,7 @@ fun constraints where
   "constraints (Var _) = []"
 | "constraints (Fun (IA4_Base _) es) = concat (map constraints es)"
 | "constraints (Fun IA4_Div [a,d]) = constraints a @ constraints d @ qr_constraints (Fun IA4_Div [a,d]) a d"
-| "constraints (Fun IA4_Mod [a,d]) = constraints a @ constraints d @ qr_constraints (Fun IA4_Mod [a,d]) a d"
+| "constraints (Fun IA4_Mod [a,d]) = constraints a @ constraints d @ qr_constraints (Fun IA4_Div [a,d]) a d"
 | "constraints _ = []"
 
 lemma qr_constraints_type:
@@ -207,7 +207,7 @@ next
       by (rule Fun.hyps[OF _ a sa], simp add: es)
     have cd: "IA.satisfies (lifted_valuation alpha) (Conjunction (constraints d))"
       by (rule Fun.hyps[OF _ d sd], simp add: es)
-    from ca cd qr_constraints_satisfied[OF assms(1) a d closed nz, of IA4_Mod]
+    from ca cd qr_constraints_satisfied[OF assms(1) a d closed nz, of IA4_Div]
     show ?thesis by (auto simp: IA4_Mod es)
   qed
 qed
