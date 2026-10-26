@@ -27,7 +27,7 @@ cd "$ho_source_root"
   -d thys/Higher_Order_Values -d thys/Higher_Order_Computability -d thys/Higher_Order_Priority -d thys/Higher_Order_Accessible -d thys/Higher_Order_Descent -d thys/Higher_Order_Polynomial -d thys/Higher_Order_Semantic_Calls -d thys/Higher_Order_Lambda_Access -d thys/Higher_Order_Component_Order -d thys/Higher_Order_Functional_Access -d thys/Higher_Order_Modular -d thys/Higher_Order_Meta -d thys/Higher_Order_Lex -d thys/Higher_Order_Blocked -O "$ho_output/export" \
   -x '*:code/**' Higher_Order_Blocked >"$ho_output/export.log" 2>&1
 ho_generated="$ho_output/export/Higher_Order_Blocked.Higher_Order_Blocked_Code/code/export1"
-{ time "$ho_ghc" -DHO_BLOCKED -O1 -i"$ho_generated" -outputdir "$ho_output/ghc" \
+{ time "$ho_ghc" -DHO_BLOCKED -O2 -i"$ho_generated" -outputdir "$ho_output/ghc" \
   src/Higher_Order_Main.hs -o "$ho_output/ceta-higher-order"; } >"$ho_output/ghc-build.log" 2>&1
 sha256sum "$ho_output/ceta-higher-order" "$ho_generated/Higher_Order_Checker.hs" \
   >"$ho_output/checksums.sha256"
