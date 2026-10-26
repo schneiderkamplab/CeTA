@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<certificationProblem>
+  <cpfVersion>4.0</cpfVersion>
+  <lookupTables><ruleTable/></lookupTables>
+  <input><lts>
+    <initial><locationId>entry</locationId></initial>
+    <transition><transitionId>step</transitionId>
+      <source><locationId>entry</locationId></source>
+      <target><locationId>exit</locationId></target>
+      <formula><conjunction>
+        <eq><post><variableId>x</variableId></post><div><variableId>x</variableId><constant>2</constant></div></eq>
+        <eq><mod><variableId>x</variableId><constant>2</constant></mod><constant>0</constant></eq>
+      </conjunction></formula>
+    </transition>
+  </lts></input>
+  <property><termination/></property><answer><yes/></answer>
+  <proof><ltsTerminationProof><switchToCooperationTermination>
+    <cutPoints><cutPoint><locationId>entry</locationId><skipId>skip</skipId><skipFormula><conjunction/></skipFormula></cutPoint></cutPoints>
+    <sccDecomposition/>
+  </switchToCooperationTermination></ltsTerminationProof></proof>
+</certificationProblem>

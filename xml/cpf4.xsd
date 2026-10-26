@@ -7,7 +7,7 @@ right-forward-closure proof processors. Every CPF 3.x document remains a
 CPF 4.0 document; the existing CPF 3.x vocabulary is unchanged.
     </xs:documentation>
   </xs:annotation>
-  <xs:include schemaLocation="lts.xsd"/>
+  <xs:include schemaLocation="lts4.xsd"/>
   <xs:element name="name" type="xs:string"/>
   <xs:group name="label">
     <xs:annotation>
