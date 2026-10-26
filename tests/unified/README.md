@@ -37,13 +37,13 @@ common generated foundations across export boundaries; it does not introduce new
 theorems or alternate proof criteria. Sharing those foundations requires compatible
 Isabelle exports and can be a separate verified build improvement.
 
-`build_unified_checker.py` hashes the generated source set, adapter, compiler version,
+`build_unified_checker.py` hashes the generated source set, adapter, shared input helpers, compiler version,
 and flags. Unchanged category archives are reused; a changed category recompiles
 independently, then the small dispatcher is relinked. All compilation uses `-O2`,
 including generated modules and the main layer. Fresh object directories prevent
 reuse of historical `-O0` objects. Haskell runtime/system libraries remain the
 compiler distribution's libraries. The default build has four concurrent category
-builds. It does not modify shared heaps or another worktree's artifacts.
+builds, each using up to four GHC compilation jobs. It does not modify shared heaps or another worktree's artifacts.
 
 The committed `exports/*.tar.gz` files are unchanged generated Haskell snapshots,
 not hand-resolved generated-code merges. `scripts/unified-exports.json` records
@@ -87,3 +87,14 @@ The 36 higher-order child proofs are retained in `children.tar.gz`, with their
 original hashes. The runner extracts and verifies them privately instead of
 relying on the old production thread's child-proof paths. Its certificate/input
 archive is the frozen frontier archive identified by the provenance hash.
+
+## Input conversion
+
+`Ceta.Input.Characters` caches the generated decoder's exact singleton result
+for each ASCII character. It retains `readFile`, the original non-ASCII decoder
+and every XML/parser obligation. There is no whitespace normalization or
+certificate rewriting. Each category keeps its own generated character type.
+Run `runghc -isrc/Haskell -itarget/unified-exports/cpf
+tests/unified/Characters.hs` to compare all ASCII values and Unicode rejection
+against the generated decoder. Performance measurements and final validation
+are recorded in `docs/performance-next-20261026/`.

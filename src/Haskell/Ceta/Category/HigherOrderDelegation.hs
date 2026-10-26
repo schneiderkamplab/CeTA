@@ -2,6 +2,7 @@
 -- first-order CPF are checked by the Isabelle-generated combined checker.
 module Ceta.Category.HigherOrderDelegation (run) where
 
+import Ceta.Input.Characters (cachedCharacters)
 import qualified Higher_Order_Core as C
 import qualified Higher_Order_Algebraic_Embedding as F
 import qualified Higher_Order_CeTA_Check as D
@@ -99,10 +100,12 @@ main = do
       source <- readFile sourceFile
       cpf <- readFile cpfFile
       case readP_to_S (skipSpaces >> (delegation <++ semanticDelegation <++ filteredDelegation)) source of
-        [(check, "")] | check (A.explode cpf) -> putStrLn "CERTIFIED YES"
+        [(check, "")] | check (decodeA cpf) -> putStrLn "CERTIFIED YES"
         _ -> putStrLn "REJECTED" >> exitFailure
     _ -> putStrLn "usage: ceta-ho-delegation SOURCE-CERTIFICATE FIRST-ORDER-PROOF.xml" >> exitFailure
 
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
 run args = withArgs args main
+
+decodeA = cachedCharacters A.explode

@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 -- Every acceptance branch is generated from Isabelle.
 module Ceta.Category.LogicProgramming (run) where
+import Ceta.Input.Characters (cachedCharacters)
 #ifdef LP_SEG_TRIPLES
 import qualified LP_Triples_Generated as T
 #endif
@@ -20,20 +21,20 @@ main = do
   case args of
     [path] -> do
       input <- readFile path
-      let xml = R.explode input
+      let xml = decodeR input
       if
 #ifdef LP_SEG_TRIPLES
-        T.check_lpc_seg_triples_xml (T.explode input) ||
+        T.check_lpc_seg_triples_xml (decodeT input) ||
 #endif
 #ifdef LP_SEG_PROJECTED
-        G.check_lpc_seg_projected_certificate_xml (G.explode input) ||
+        G.check_lpc_seg_projected_certificate_xml (decodeG input) ||
 #endif
-        P.check_lpc_projected_xml (P.explode input)
+        P.check_lpc_projected_xml (decodeP input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT"
-        else if N.check_lpc_no_xml (N.explode input)
+        else if N.check_lpc_no_xml (decodeN input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT NO"
-        else if S.check_lpc_seg_free_certificate_xml (S.explode input) ||
-                S.check_lpc_seg_certificate_xml (S.explode input) ||
+        else if S.check_lpc_seg_free_certificate_xml (decodeS input) ||
+                S.check_lpc_seg_certificate_xml (decodeS input) ||
                 R.check_lpc_return_nested_constructor_xml xml ||
                 R.check_lpc_return_composed_constructor_xml xml ||
                 R.check_lpc_return_module_constructor_xml xml ||
@@ -50,3 +51,19 @@ main = do
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
 run args = withArgs args main
+
+#ifdef LP_SEG_TRIPLES
+decodeT = cachedCharacters T.explode
+#endif
+
+#ifdef LP_SEG_PROJECTED
+decodeG = cachedCharacters G.explode
+#endif
+
+decodeP = cachedCharacters P.explode
+
+decodeR = cachedCharacters R.explode
+
+decodeS = cachedCharacters S.explode
+
+decodeN = cachedCharacters N.explode

@@ -1,5 +1,6 @@
 module Ceta.Category.Rewriting (run) where
 
+import Ceta.Input.Characters (cachedCharacters)
 import Ceta_Relative
 import System.Environment (getArgs, withArgs)
 import System.Exit (ExitCode(..), exitWith)
@@ -75,10 +76,10 @@ parse assumptions input property _ ("--answer" : answer : args) =
 parse assumptions input property answer [path] = do
   proof <- readFile path
   start assumptions
-    (mapMaybe explode input)
-    (mapMaybe (explode . replace shortProperty) property)
-    (mapMaybe (explode . replace shortAnswer) answer)
-    (explode proof)
+    (mapMaybe decode input)
+    (mapMaybe (decode . replace shortProperty) property)
+    (mapMaybe (decode . replace shortAnswer) answer)
+    (decode proof)
 parse _ _ _ _ _ = do
   hPutStrLn stderr usage
   exitWith (ExitFailure 4)
@@ -113,3 +114,5 @@ usage = "usage: ceta [(parameters) certificate | --version]\n\
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
 run args = withArgs args main
+
+decode = cachedCharacters explode

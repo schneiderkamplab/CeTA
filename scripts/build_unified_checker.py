@@ -42,7 +42,8 @@ def main():
         for p in source.glob('*.hs'):
             if re.search(r'OPTIONS_GHC[^\n]*(?:-O(?:0|1|3)?\b|-fno-)',p.read_text()):
                 raise ValueError(f'Optimization override in {p}')
-        identity=dict(sources=actual,adapter=sha(adapter),ghc=version,cpp=spec['cpp'],optimization='-O2')
+        helpers={str(p.relative_to(ROOT)):sha(p) for p in (ROOT/'src/Haskell/Ceta/Input').glob('*.hs')}
+        identity=dict(sources=actual,adapter=sha(adapter),helpers=helpers,ghc=version,cpp=spec['cpp'],optimization='-O2')
         digest=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
         unit='ceta-'+key+'-1.0-'+digest[:16];work=out/unit;work.mkdir(exist_ok=True);receipt=work/'build.json'
         if receipt.exists():
@@ -56,8 +57,9 @@ def main():
             match=re.search(r'^module\s+([\w.]+)',p.read_text(),re.M)
             if not match:raise ValueError(f'No module declaration: {p}')
             modules.append(match[1])
-        cmd=[ghc,'-O2','-fforce-recomp','-rtsopts','-package','array','-XRankNTypes',*spec['cpp'],'-this-unit-id',unit,'-i','-i'+str(source),'-outputdir',str(obj),'--make','-no-link',str(adapter)]
+        cmd=[ghc,'-j4','-O2','-fforce-recomp','-rtsopts','-package','array','-XRankNTypes',*spec['cpp'],'-this-unit-id',unit,'-i','-i'+str(source),'-i'+str(ROOT/'src/Haskell'),'-outputdir',str(obj),'--make','-no-link',str(adapter)]
         t=time.monotonic();run(cmd,work/'build.log')
+        modules=sorted('.'.join(p.relative_to(obj).with_suffix('').parts) for p in obj.rglob('*.hi') if '.'.join(p.relative_to(obj).with_suffix('').parts)!=spec['module'])
         archive=work/('libHS'+unit+'.a');subprocess.run([ar,'crs',str(archive),*[str(p) for p in sorted(obj.rglob('*.o'))]],check=True)
         conf=work/'package.conf'
         conf.write_text(f'name: ceta-{key}\nversion: 1.0\nid: {unit}\nkey: {unit}\nexposed: True\nexposed-modules: {spec["module"]}\nhidden-modules: '+ ' '.join(sorted(modules))+f'\nimport-dirs: {obj}\nlibrary-dirs: {work}\nhs-libraries: HS{unit}\ndepends: '+ ' '.join(dependencies)+'\n')
@@ -67,7 +69,7 @@ def main():
     # Package-db mutations are sequential, after independent compilations finish.
     for r in records:subprocess.run([pkg,'--package-db='+str(db),'update',r['configuration']],check=True,stdout=subprocess.DEVNULL)
     obj=out/'main';obj.mkdir(exist_ok=True);binary=out/'ceta'
-    cmd=[ghc,'-O2','-fforce-recomp','-rtsopts','-package-db',str(db),'-outputdir',str(obj)]
+    cmd=[ghc,'-j4','-O2','-fforce-recomp','-rtsopts','-package-db',str(db),'-outputdir',str(obj)]
     for r in records:cmd+=['-package-id',r['unit']]
     temporary=out/'ceta.linked'
     cmd+=['--make',str(ROOT/'src/Haskell/Main_Unified.hs'),'-o',str(temporary)]
