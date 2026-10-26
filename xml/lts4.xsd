@@ -452,4 +452,42 @@ formula how x should be updated, as long as it is non-conflicting.</xs:documenta
       </xs:element>
     </xs:choice>
   </xs:group>
+  <xs:complexType name="integerLassoState">
+    <xs:annotation><xs:documentation>
+      A total integer valuation: unlisted integer coordinates are zero and
+      Boolean coordinates are false. Native certificates list every coordinate.
+    </xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="locationId" type="locationId"/>
+      <xs:element name="substitution">
+        <xs:complexType><xs:sequence>
+          <xs:element name="substEntry" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType><xs:sequence>
+              <xs:element name="variableId" type="variableId"/>
+              <xs:element name="constant" type="xs:integer"/>
+            </xs:sequence></xs:complexType>
+          </xs:element>
+        </xs:sequence></xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="integerLassoStep">
+    <xs:sequence>
+      <xs:element ref="transition"/>
+      <xs:element name="state" type="integerLassoState"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="ltsNonterminationProof">
+    <xs:choice><xs:element name="equivalentState">
+      <xs:complexType><xs:sequence>
+        <xs:element name="state" type="integerLassoState"/>
+        <xs:element name="stem"><xs:complexType><xs:sequence>
+          <xs:element name="transitionStep" type="integerLassoStep" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence></xs:complexType></xs:element>
+        <xs:element name="loop"><xs:complexType><xs:sequence>
+          <xs:element name="transitionStep" type="integerLassoStep" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence></xs:complexType></xs:element>
+      </xs:sequence></xs:complexType>
+    </xs:element></xs:choice>
+  </xs:group>
 </xs:schema>

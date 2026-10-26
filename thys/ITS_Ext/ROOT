@@ -1,0 +1,21 @@
+session ITS_Ground in Ground = LTS +
+  options [document = false]
+  theories
+    "IA_Nontermination"
+    "ITS_Parser"
+
+session ITS_Arithmetic in Arithmetic = ITS_Ground +
+  options [document = false]
+  theories
+    "IA_Div_Mod"
+    "IA4_Normalization"
+    "IA4_Checker"
+    "IA4_Definability"
+
+session ITS_Ext in Integration = ITS_Arithmetic +
+  options [document = false]
+  theories
+    "IA4_Instance"
+    "IA4_Parser"
+    "IA4_Nontermination"
+    "ITS4_Parser"

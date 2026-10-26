@@ -5895,6 +5895,9 @@ is untrusted.
           <xs:group ref="ltsTerminationProof"/>
         </xs:complexType>
       </xs:element>
+      <xs:element name="ltsNonterminationProof">
+        <xs:complexType><xs:group ref="ltsNonterminationProof"/></xs:complexType>
+      </xs:element>
       <xs:element name="ltsSafetyProof">
         <xs:complexType>
           <xs:group ref="ltsSafetyProof"/>
