@@ -28,7 +28,7 @@ partial_function (sum_bot) ia4_exp_parser' :: "'a xmlt \<Rightarrow> 'a ia4_exp 
 
 definition ia4_bexp_parser' :: "'a xmlt \<Rightarrow> 'a ia4_exp formula xmlt" where
  "ia4_bexp_parser' v \<equiv>
-  (let ia4_bexp_parser'' = 
+  (let ia4_bexp_parser'' =
   XMLdo (STR ''leq'') {
     l \<leftarrow> ia4_exp_parser' v;
     r \<leftarrow> ia4_exp_parser' v;
@@ -54,7 +54,7 @@ definition ia4_bexp_parser' :: "'a xmlt \<Rightarrow> 'a ia4_exp formula xmlt" w
   XMLdo STR ''not'' {a \<leftarrow> ia4_bexp_parser''; xml_return (NegAtom a)}
   XMLor xml_change ia4_bexp_parser'' (xml_return \<circ> Atom))"
 
-definition "ia4_exp_parser \<equiv> ia4_exp_parser' variable_parser" 
+definition "ia4_exp_parser \<equiv> ia4_exp_parser' variable_parser"
 definition "ia4_atom_parser \<equiv> xml_change (ia4_bexp_parser' variable_parser) xml_return"
 definition "ia4_tatom_parser \<equiv> xml_change (ia4_bexp_parser' trans_var_parser) xml_return"
 definition "ia4_atom_parser' = xml_change (ia4_bexp_parser' variable_parser) xml_return"
