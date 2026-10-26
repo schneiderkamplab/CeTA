@@ -1,0 +1,4 @@
+{
+  "valid_for_final_binary": false,
+  "reason": "A cache-rebuild test relinked the executable during validation. There were 25 process-launch errors, and the final binary hash guard failed. The entire first run is excluded from final acceptance. Atomic publishing and an immutable runner copy fix the race; frontier-final.json.gz is the authoritative rerun."
+}

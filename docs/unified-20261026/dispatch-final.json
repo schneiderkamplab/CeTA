@@ -1,0 +1,74 @@
+[
+  {
+    "category": "cpf",
+    "returncode": 2,
+    "stdout": "UNSUPPORTED\n",
+    "stderr": "Fatal: parse error on <unknown-certificate> at []:\nexpecting [certificationProblem]\n"
+  },
+  {
+    "category": "cycle",
+    "returncode": 1,
+    "stdout": "REJECTED\n",
+    "stderr": ""
+  },
+  {
+    "category": "conditional",
+    "returncode": 1,
+    "stdout": "REJECTED\n",
+    "stderr": ""
+  },
+  {
+    "category": "conditional-erasure",
+    "returncode": 1,
+    "stdout": "REJECTED\n",
+    "stderr": ""
+  },
+  {
+    "category": "lp",
+    "returncode": 1,
+    "stdout": "REJECTED\n",
+    "stderr": ""
+  },
+  {
+    "category": "higher-order",
+    "returncode": 1,
+    "stdout": "REJECTED\n",
+    "stderr": ""
+  },
+  {
+    "category": "higher-order-delegation",
+    "returncode": 1,
+    "stdout": "REJECTED\n",
+    "stderr": ""
+  },
+  {
+    "args": [
+      "--category"
+    ],
+    "returncode": 1
+  },
+  {
+    "args": [
+      "--category",
+      "unknown",
+      "/tmp/tmpj9a_ikip/bad"
+    ],
+    "returncode": 1
+  },
+  {
+    "args": [
+      "--category",
+      "cycle"
+    ],
+    "returncode": 1
+  },
+  {
+    "args": [
+      "--category",
+      "lp",
+      "/tmp/tmpj9a_ikip/bad",
+      "/tmp/tmpj9a_ikip/bad"
+    ],
+    "returncode": 1
+  }
+]

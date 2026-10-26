@@ -1,0 +1,48 @@
+{
+  "project_trace_counts": {
+    "-O3": 1246
+  },
+  "main": {
+    "path": "../CeTA-Lean/.lake/build/ir/Main.c.o.export.trace",
+    "sha256": "8dadd4288351ceb8c0f9ce17a009b83b843e9c82f368d03fa9dd90bb40f33612",
+    "trace": {
+      "synthetic": false,
+      "schemaVersion": "2025-09-10",
+      "outputs": "3a5c0799e6f15c6a.o",
+      "log": [
+        {
+          "message": ".> /work/dfm/festschrift/CeTA-Lean/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/clang -c -o /work/dfm/festschrift/CeTA-Lean/.lake/build/ir/Main.c.o.export /work/dfm/festschrift/CeTA-Lean/.lake/build/ir/Main.c -I /work/dfm/festschrift/CeTA-Lean/.tools/elan/toolchains/leanprover--lean4---v4.35.0/include -fstack-clash-protection -ffp-contract=off -fdata-sections -ffunction-sections -fPIC -fvisibility=hidden -Wno-unused-command-line-argument --sysroot /work/dfm/festschrift/CeTA-Lean/.tools/elan/toolchains/leanprover--lean4---v4.35.0 -nostdinc -isystem /work/dfm/festschrift/CeTA-Lean/.tools/elan/toolchains/leanprover--lean4---v4.35.0/include/clang -O3 -DNDEBUG -DLEAN_EXPORTING",
+          "level": "trace"
+        }
+      ],
+      "inputs": [
+        [
+          "Main:c",
+          [
+            [
+              "/work/dfm/festschrift/CeTA-Lean/.lake/build/ir/Main.c",
+              "a8923969b5953ff5"
+            ],
+            [
+              "Lean 4.35.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+              "407ce514b71d5a10"
+            ]
+          ]
+        ],
+        [
+          "Lean 4.35.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc",
+          "407ce514b71d5a10"
+        ],
+        [
+          "traceArgs: #[-O3, -DNDEBUG, -DLEAN_EXPORTING]",
+          "c1efb66122fb2b9a"
+        ],
+        [
+          "x86_64-unknown-linux-gnu",
+          "53a0e8937c307c28"
+        ]
+      ],
+      "depHash": "1e9301110d55c038"
+    }
+  }
+}

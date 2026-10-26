@@ -1,0 +1,44 @@
+[
+  {
+    "adapter": "src/Haskell/Ceta/Category/Rewriting.hs",
+    "original_sha256": "6d2cf1c0700c72d88d3bb03bf4e0fb21d58f3a59fda4641aa6b48856fc9d927b",
+    "adapter_sha256": "26578a3d55eb98fe28b4c0a189843875da1241ffa3ce3e303f7602257c169ae4",
+    "logic_unchanged": true
+  },
+  {
+    "adapter": "src/Haskell/Ceta/Category/Cycle.hs",
+    "original_sha256": "23943941f8e7f767c67551195e4a0a846f351dd635fd6254ff918e5e427f9342",
+    "adapter_sha256": "029d4a10c1ed81255ce6efae2c1795bad560c2457a9ae4f672763868ac027979",
+    "logic_unchanged": true
+  },
+  {
+    "adapter": "src/Haskell/Ceta/Category/Conditional.hs",
+    "original_sha256": "dd2ae63e07c2eec4c0e69a00a293267a7af7e41dd06525a51341759122227aee",
+    "adapter_sha256": "156058f94c218f556a15e160bf2d09abdc4ba1b39b079e244c70d5a019f6b509",
+    "logic_unchanged": true
+  },
+  {
+    "adapter": "src/Haskell/Ceta/Category/ConditionalErasure.hs",
+    "original_sha256": "667439f2ecc85227ea7e3c414a66ac97e570d105c50396ad76b9451de0fc16fe",
+    "adapter_sha256": "18e7fcee390e7e0dd34d5c8056281280255637cd54487a50566bb5c953a330b4",
+    "logic_unchanged": true
+  },
+  {
+    "adapter": "src/Haskell/Ceta/Category/LogicProgramming.hs",
+    "original_sha256": "3e54bdcef0fe7ea2d36705224ffe22cc50fc2d966be20c116b670d62a33893d7",
+    "adapter_sha256": "46fc781cafe78890b0c31e8ed85b98509ae69edde1350161a96a984d48bc24de",
+    "logic_unchanged": true
+  },
+  {
+    "adapter": "src/Haskell/Ceta/Category/HigherOrder.hs",
+    "original_sha256": "17f46f1ab414ae6a50e290801525c80740363137752c7725c13060d262e37645",
+    "adapter_sha256": "226cc4c65d0f885ab4da7240582d1a8089cc31ef1f35955107690d3d50d60391",
+    "logic_unchanged": true
+  },
+  {
+    "adapter": "src/Haskell/Ceta/Category/HigherOrderDelegation.hs",
+    "original_sha256": "0a5d576cbfc62fd039308d0500d48a98d6aab7c4b817f477d71f0a2295f8a56f",
+    "adapter_sha256": "c1c241f881386e7e8d9c8193b7505c12763893d6e880523aebd5f9bd11171282",
+    "logic_unchanged": true
+  }
+]
