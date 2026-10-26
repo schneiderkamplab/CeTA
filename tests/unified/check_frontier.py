@@ -22,14 +22,17 @@ def main():
  assert set(previous)=={r['root'] for r in meta['jobs']}
  child_spec=json.loads((Path(__file__).parent/'children.json').read_text())
  assert child_spec['children']==meta['child_sha256']
- child_archive=Path(__file__).parent/'children.tar.gz';assert sha(child_archive)==child_spec['archive_sha256']
- children=a.output.parent/'children';children.mkdir(exist_ok=True)
+ compact_spec=json.loads((Path(__file__).parent/'compact-children.json').read_text())
+ assert compact_spec['original_archive_sha256']==child_spec['archive_sha256']
+ assert set(compact_spec['children'])==set(child_spec['children'])
+ child_archive=Path(__file__).parent/'compact-children.tar.gz';assert sha(child_archive)==compact_spec['archive_sha256']
+ children=a.output.parent/'compact-children';children.mkdir(exist_ok=True)
  with tarfile.open(child_archive,'r:gz') as bundle:
   for member in bundle.getmembers():
    assert member.isfile() and member.name in child_spec['children'] and Path(member.name).name==member.name
    child=children/member.name
-   if not child.exists() or sha(child)!=child_spec['children'][member.name]:child.write_bytes(bundle.extractfile(member).read())
-   assert sha(child)==child_spec['children'][member.name]
+   if not child.exists() or sha(child)!=compact_spec['children'][member.name]:child.write_bytes(bundle.extractfile(member).read())
+   assert sha(child)==compact_spec['children'][member.name]
  mapping={}
  for original,entry in meta['binaries'].items():
   name=Path(original).name
@@ -48,7 +51,8 @@ def main():
    with tempfile.TemporaryDirectory(prefix='ceta-unified-') as d:
     f=Path(d)/'proof';f.write_bytes(proof);cmd=[str(binary),'--category',category,*row['flags'],str(f)]
     if row['child']:
-     child=children/Path(row['child']).name;assert sha(child)==meta['child_sha256'][child.name];cmd.append(str(child))
+     child=children/Path(row['child']).name;assert sha(child)==compact_spec['children'][child.name];cmd.append(str(child))
+     result.update(child_original_sha256=meta['child_sha256'][child.name],child_compact_sha256=compact_spec['children'][child.name])
     result['preparation_seconds']=time.monotonic()-start;t=time.monotonic();r=subprocess.run(cmd,capture_output=True,text=True)
     result.update(returncode=r.returncode,stdout=r.stdout,stderr=r.stderr,native_seconds=time.monotonic()-t,status='accepted' if r.returncode==0 and r.stdout.strip()==expected else 'failed')
   except Exception as e:result.update(status='error',reason=repr(e))

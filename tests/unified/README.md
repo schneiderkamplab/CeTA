@@ -98,3 +98,11 @@ Run `runghc -isrc/Haskell -itarget/unified-exports/cpf
 tests/unified/Characters.hs` to compare all ASCII values and Unicode rejection
 against the generated decoder. Performance measurements and final validation
 are recorded in `docs/performance-next-20261026/`.
+
+## Compact delegation children
+
+The default frontier runner uses `compact-children.tar.gz`. Its manifest records
+both original and compact hashes; `children.tar.gz` retains the original corpus.
+Only element-only XML layout was removed; leaf values and explicit whitespace
+preservation are retained. All 36 compact source-bound delegations passed twice.
+See `docs/compact-children-20261026/` for sizes and timings.
