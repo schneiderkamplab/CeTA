@@ -1,0 +1,116 @@
+{
+  "workers": 3,
+  "order": [
+    "old",
+    "new",
+    "new",
+    "old"
+  ],
+  "same_compact_certificates": true,
+  "old_binary_sha256": "e99680153bbd40cb6966b818d5a6c5e68ef2e07e907d4d1c7129ee2cbcd1d106",
+  "new_binary_sha256": "8b5e6c3560cf10f1952b68b52931e2e6becac7b8e93f1a19776b277edef3d28c",
+  "results": [
+    {
+      "root": "SRS_Standard/ICFP_2010/68989.ari",
+      "compact_proof_sha256": "741b541690b48f05f2dd93c154a43b1cfe146df89eb5312abb828353304c2428",
+      "runs": [
+        {
+          "variant": "old",
+          "seconds": 18.760945605114102,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "new",
+          "seconds": 14.266359475906938,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "new",
+          "seconds": 14.115861164871603,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "old",
+          "seconds": 15.264998611994088,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/85782.ari",
+      "compact_proof_sha256": "f0f3b5cb9b9a5c1ad011bd83bdeeac68e3ef5544148bab72b77439675a7ccefb",
+      "runs": [
+        {
+          "variant": "old",
+          "seconds": 39.643189397640526,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "new",
+          "seconds": 40.818691219668835,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "new",
+          "seconds": 39.67734332475811,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "old",
+          "seconds": 39.44631479308009,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/29415.ari",
+      "compact_proof_sha256": "311f9fc00ba2cba94d092e400e458f4fc91da8a1a12bfe043c55d6971ab0927f",
+      "runs": [
+        {
+          "variant": "old",
+          "seconds": 29.730705035850406,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "new",
+          "seconds": 30.87193398317322,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "new",
+          "seconds": 30.503755549900234,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "variant": "old",
+          "seconds": 29.117393210995942,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ]
+}

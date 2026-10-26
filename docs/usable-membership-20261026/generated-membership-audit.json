@@ -1,0 +1,58 @@
+[
+  {
+    "category": "cpf",
+    "module": "Ceta_Relative.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "c3c846d7800bbaded819be90a112b79f9c80072c2b23455fd3294ba91d458cb1"
+  },
+  {
+    "category": "conditional-erasure",
+    "module": "Conditional_Erasure_Generated.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "f48877c5a876ac218aff6b73456d6c3ac7869af637721a4ed4554a36b058c248"
+  },
+  {
+    "category": "higher-order-delegation",
+    "module": "Usable_Rules_Impl.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "79940a4b83eefd0c8dca544e898d2112b7cba3f9796bade645522909f86935b4"
+  },
+  {
+    "category": "lp",
+    "module": "LP_Cut_Projected_Generated.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "75e18936823502ef026b9754bff50e263b6eaaad1d45d41d36ea574ad263d9b2"
+  },
+  {
+    "category": "lp",
+    "module": "LP_Return_Module_Generated.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "7e85569e6806f9dddca2b4be3c0472692a2f978c6c59c86e4fa37715a02b84f8"
+  },
+  {
+    "category": "lp",
+    "module": "LP_SEG_Certificate_Generated.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "daee9741dcd988337b832709c411cc960925f06003cce779cee45e8c1135eac5"
+  },
+  {
+    "category": "lp",
+    "module": "LP_SEG_Projected_Generated.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "c7fe23a33b51e4fcd7635d2447461eddf095a68ee0b242b6ec43cfd49ad548be"
+  },
+  {
+    "category": "lp",
+    "module": "LP_Triples_Generated.hs",
+    "shared_set_worker": true,
+    "obsolete_list_worker": false,
+    "sha256": "59b3c91edeffdc3f8ffd4965d3e6e3ecc832f9085b7ecd6395eb65a391dd0344"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "roots": 5412,
+  "formats": {
+    "higher-order": 228,
+    "pure-lp": 363,
+    "lp-cut": 91,
+    "cycle": 200,
+    "cpf": 4375,
+    "conditional": 38,
+    "conditional-ordinary": 117
+  },
+  "identities_match": true
+}

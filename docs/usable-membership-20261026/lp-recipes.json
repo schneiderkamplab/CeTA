@@ -1,0 +1,50 @@
+[
+  {
+    "module": "LP_Return_Module_Generated",
+    "recipe": "/work/dfm/festschrift/CeTA/target/lp-cut-return-v36-20261024/LP_Return_Recursive_Ground_Export.thy",
+    "recipe_sha256": "c6af544105b5cfcec7eb19e9c22096edc8b7ab018138c246bc2a6b8a09a6126d",
+    "imports": [
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Return_Nested_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Constructor_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Source_Unify_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Constructor_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_MGU_XML"
+    ]
+  },
+  {
+    "module": "LP_SEG_Certificate_Generated",
+    "recipe": "/work/dfm/festschrift/CeTA/target/lp-cut-seg-free-v71-20261024/LP_Cut_SEG_Free_Export71.thy",
+    "recipe_sha256": "5aa139d648f6d8cb45985f2048541f074d1429059e87c41a92714e5d80e76e67",
+    "imports": [
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_SEG_Free_Certificate_XML"
+    ]
+  },
+  {
+    "module": "LP_Cut_Projected_Generated",
+    "recipe": "/work/dfm/festschrift/CeTA/target/lp-cut-projected-v93-20261024/LP_Cut_Projected_Export93.thy",
+    "recipe_sha256": "b5508e88ccad82f17b907e1bf8b5c1567b2b61b835eee675ec727c5fa94c00dc",
+    "imports": [
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Projected_XML"
+    ]
+  },
+  {
+    "module": "LP_SEG_Projected_Generated",
+    "recipe": "/work/dfm/festschrift/CeTA/target/LP_SEG_Observed_Export_v126.thy",
+    "recipe_sha256": "35171db8040c712f9837df0c9a5f391527d9ce3260fc654eae33ba30bfb643df",
+    "imports": [
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_SEG_Projected_Certificate_XML"
+    ]
+  },
+  {
+    "module": "LP_Triples_Generated",
+    "recipe": "/work/dfm/festschrift/CeTA/target/LP_Triples_Export_v145.thy",
+    "recipe_sha256": "17f1908d351ce530ecd831c15a1218da1d09a7657bba70ab795c2b7e54449ae2",
+    "imports": [
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Return_Triples_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Return_Nested_Triples_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Return_Composed_Triples_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_Return_Module_Triples_XML",
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_SEG_Triple_XML"
+    ]
+  }
+]

@@ -41,9 +41,11 @@ def main():
  def check(row):
   category=mapping[Path(row['binary']).name];start=time.monotonic()
   old=previous[row['root']];assert old['status']=='accepted'
-  assert all(old[k]==row[k] for k in ['proof_sha256','input_sha256','answer'])
+  assert all(old[k]==row[k] for k in ['input_sha256','answer'])
+  assert old['proof_sha256']==row.get('original_proof_sha256',row['proof_sha256'])
   expected=old['checks'][0]['verdict']
   result={k:row[k] for k in ['root','answer','input_sha256','proof_sha256']};result['category']=category
+  if 'original_proof_sha256' in row:result['original_proof_sha256']=row['original_proof_sha256']
   try:
    with zipfile.ZipFile(a.archive) as z:inp=z.read(row['input']);proof=z.read(row['proof'])
    if row['proof'].endswith('.gz'):proof=gzip.decompress(proof)
