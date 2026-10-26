@@ -1,0 +1,9 @@
+{
+  "roots": 5412,
+  "exact_root_sets_equal": true,
+  "verdicts_and_hashes_equal": true,
+  "seconds": 344.25150279467925,
+  "previous_unified_seconds": 357.9587320960127,
+  "workers": 32,
+  "note": "One run per binary; wall time is not a controlled speedup estimate."
+}
