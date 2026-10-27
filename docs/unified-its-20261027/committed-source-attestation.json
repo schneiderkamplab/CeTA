@@ -1,0 +1,28 @@
+{
+  "commit": "303a0368a2bcb0fa118e77eb42076ed5a7b25a4a",
+  "merged_consolidated_commit": "ca521b7d9448d1945c14f04ca3c3eb8c7f9c855a",
+  "binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "files": {
+    "scripts/unified-exports.json": "9efc44559f0684cc30bcdb69002823112c8df1b83a4fad9cb49f5942bb8783ac",
+    "scripts/build_unified_checker.py": "e624c3bddb6533e8bc8bd2b9f9151ff2f4f3b03d91986f86225e45bd3f29eb7e",
+    "src/Haskell/Main_Unified.hs": "6e15b59399641d9a1105de7e772d2c6721cd22e1db35dc5ff0219904494b0d83",
+    "src/Haskell/Ceta/Input/Characters.hs": "a1e6fe5dadea29c955e804b9882dcb9830797daf43f5ff580c706b16342821dc",
+    "src/Haskell/Ceta/Category/Rewriting.hs": "3c6b1ee1ecacd2687126dbca72af6b68a559fa4d9c94d1ce5e4d9c487f5cf830",
+    "tests/unified/exports/cpf.tar.gz": "957b6622887bdecf2406be41a7184354fcf54685baa6dcac6be688feebbe7470",
+    "src/Haskell/Ceta/Category/Cycle.hs": "029d4a10c1ed81255ce6efae2c1795bad560c2457a9ae4f672763868ac027979",
+    "tests/unified/exports/cycle.tar.gz": "ec35535f6b6e988ca5c978939c1aa34a0ffa6f133ac7fef62b00b8ca101a5f07",
+    "src/Haskell/Ceta/Category/Conditional.hs": "156058f94c218f556a15e160bf2d09abdc4ba1b39b079e244c70d5a019f6b509",
+    "tests/unified/exports/conditional.tar.gz": "d5f4e287f0ad4cfb792f6022d738aabe7a5511d9dcefb176f28948364b479bec",
+    "src/Haskell/Ceta/Category/ConditionalErasure.hs": "90eed96c28b1b2adbb9b2738ce235e57bac8bb782a2175b36fc881b356fba371",
+    "tests/unified/exports/conditional-erasure.tar.gz": "6523308785a4c26b365f592aa4cffa8e7e8fe79d5113cd4577900b5953d8adae",
+    "src/Haskell/Ceta/Category/LogicProgramming.hs": "787fe765634eab061f4fd0e148b0270d467a16e7b300ec72ec800468572d0b88",
+    "tests/unified/exports/lp.tar.gz": "a3c22020938e94c162afe76aa867baf10d2a73f17ab82e9a999dd6a38ead424c",
+    "src/Haskell/Ceta/Category/HigherOrder.hs": "226cc4c65d0f885ab4da7240582d1a8089cc31ef1f35955107690d3d50d60391",
+    "tests/unified/exports/higher-order.tar.gz": "b7b32b71a75749417e271a6388b31222f439896c0b76a1c4fc6784dd5bbe52b9",
+    "src/Haskell/Ceta/Category/HigherOrderDelegation.hs": "4bbc6b84dd49ac356acd7844c214051ab3aed3e6525e804745aa3eca65850f0a",
+    "tests/unified/exports/higher-order-delegation.tar.gz": "56f782b438a1d6bf0380f304a644f5aa266c56b60abb231fb3aebb46f941f10f",
+    "src/Haskell/Ceta/Category/ITS.hs": "bd10958ede22a4cfe19c53be92adf1904f85707845343b73bcfc46c3de954c96",
+    "tests/unified/exports/its.tar.gz": "06bffc68f971549df86bc49d2ab349e4bc865d412b88c6c7c449da6d90546344"
+  },
+  "build_receipt_sha256": "586b67f705fd386da0bb61e4ebfc05ae35ae58b1c5b78b1d3380cac8261be891"
+}

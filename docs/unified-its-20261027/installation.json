@@ -1,0 +1,8 @@
+{
+  "installed_executable": "/work/dfm/festschrift/CeTA/ceta",
+  "installed_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "verified_frozen_binary": "/work/dfm/festschrift/CeTA/target/unified-its-20261027/ceta",
+  "relinked_binary_sha256": "fd6c948ac2d72d2cc18ece1ca79db45d7db19592ba50a9747ea8845bdd85eeff",
+  "relinked_binary_is_production": false,
+  "reason": "Install the exact immutable binary validated on all 6526 roots; a later make relink has a different byte hash and is retained separately."
+}
