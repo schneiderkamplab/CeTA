@@ -10,7 +10,7 @@ def memory_ok():
  return (m['MemTotal']-m['MemAvailable'])*1024<2*1024**4
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--binary',type=Path,required=True);p.add_argument('--provenance',type=Path,required=True);p.add_argument('--baseline-results',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--workers',type=int,default=32);a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--binary',type=Path,required=True);p.add_argument('--provenance',type=Path,required=True);p.add_argument('--baseline-results',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--workers',type=int,default=32);p.add_argument('--child-spec',type=Path,default=Path(__file__).parent/'compact-children.json');a=p.parse_args()
  source_binary=a.binary.resolve();digest=sha(source_binary)
  cache=a.output.parent/'checkers';cache.mkdir(exist_ok=True);binary=cache/digest
  if not binary.exists():
@@ -22,11 +22,11 @@ def main():
  assert set(previous)=={r['root'] for r in meta['jobs']}
  child_spec=json.loads((Path(__file__).parent/'children.json').read_text())
  assert child_spec['children']==meta['child_sha256']
- compact_spec=json.loads((Path(__file__).parent/'compact-children.json').read_text())
+ compact_spec=json.loads(a.child_spec.read_text())
  assert compact_spec['original_archive_sha256']==child_spec['archive_sha256']
  assert set(compact_spec['children'])==set(child_spec['children'])
- child_archive=Path(__file__).parent/'compact-children.tar.gz';assert sha(child_archive)==compact_spec['archive_sha256']
- children=a.output.parent/'compact-children';children.mkdir(exist_ok=True)
+ child_archive=a.child_spec.with_suffix('.tar.gz');assert sha(child_archive)==compact_spec['archive_sha256']
+ children=a.output.parent/(a.child_spec.stem+'-'+compact_spec['archive_sha256'][:12]);children.mkdir(exist_ok=True)
  with tarfile.open(child_archive,'r:gz') as bundle:
   for member in bundle.getmembers():
    assert member.isfile() and member.name in child_spec['children'] and Path(member.name).name==member.name
@@ -74,6 +74,6 @@ def main():
     print(len(results),'/',len(meta['jobs']),dict(collections.Counter(r['status'] for r in results)),round(time.monotonic()-started,1),flush=True);last=time.monotonic()
  assert sha(binary)==digest
  assert len(results)==len(meta['jobs']) and {r['root'] for r in results}=={r['root'] for r in meta['jobs']}
- report=dict(binary_sha256=digest,provenance_sha256=sha(a.provenance),baseline_results_sha256=sha(a.baseline_results),archive_sha256=meta['archive_sha256'],workers=a.workers,checks_per_root=1,seconds=time.monotonic()-started,counts=dict(collections.Counter(r['status'] for r in results)),results=results)
+ report=dict(binary_sha256=digest,provenance_sha256=sha(a.provenance),baseline_results_sha256=sha(a.baseline_results),archive_sha256=meta['archive_sha256'],child_archive_sha256=compact_spec['archive_sha256'],workers=a.workers,checks_per_root=1,seconds=time.monotonic()-started,counts=dict(collections.Counter(r['status'] for r in results)),results=results)
  a.output.write_bytes(gzip.compress(json.dumps(report).encode(),mtime=0));print(report['counts'],report['seconds'],flush=True);assert all(r['status']=='accepted' for r in results)
 if __name__=='__main__':main()
