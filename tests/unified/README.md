@@ -10,6 +10,7 @@ make ceta
 ./ceta --category conditional --ordinary conditional.certificate
 ./ceta --category conditional-erasure erasure.xml
 ./ceta --category lp lp-certificate.xml
+./ceta --category its its-proof.cpf.xml
 ./ceta --category higher-order higher-order.certificate
 ./ceta --category higher-order-delegation higher-order.certificate child.cpf.xml
 ```
@@ -22,7 +23,7 @@ flag when translating an existing invocation. LP covers pure LP and LP with cut.
 The higher-order adapter retains `--explain`. Verdict text and exit codes are
 preserved from the category entry points.
 
-`src/Haskell/Main_Unified.hs` only dispatches. Seven files under
+`src/Haskell/Main_Unified.hs` only dispatches. Eight files under
 `src/Haskell/Ceta/Category/` own the category-specific parsing and invocation.
 No child checker processes are launched. A failed category never falls back to a
 checker for another relation. Unknown categories and malformed invocations fail.
@@ -106,3 +107,16 @@ both original and compact hashes; `children.tar.gz` retains the original corpus.
 Only element-only XML layout was removed; leaf values and explicit whitespace
 preservation are retained. All 36 compact source-bound delegations passed twice.
 See `docs/compact-children-20261026/` for sizes and timings.
+
+## ITS integration (2026-10-27)
+
+The `consolidated` history is merged into `main` at `ef8d864`. ITS is the eighth
+dispatch category, backed by a fresh `ITS_Ext` Isabelle export from the merged
+source tree. Its adapter calls only `check_its4_string`; it does not invoke the
+standalone `ceta-its` binary. CPF3/CPF4 ITS termination, exact-state lassos,
+recurrent regions/cycles and nonzero constant-divisor arithmetic share this path.
+Generated modules are archived without edits. `make ceta` includes ITS by default.
+
+Frontier validation accepts `--passes 2` for two checks per retained root with
+one immutable binary. ITS guidance replay must use that identical executable
+with `--category its`; standalone development binaries are not production pins.

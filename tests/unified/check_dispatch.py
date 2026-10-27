@@ -3,7 +3,7 @@
 import argparse,json,subprocess,tempfile
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('binary',type=Path);a=p.parse_args();binary=str(a.binary.resolve())
-expected=['cpf','cycle','conditional','conditional-erasure','lp','higher-order','higher-order-delegation']
+expected=['cpf','cycle','conditional','conditional-erasure','lp','higher-order','higher-order-delegation','its']
 r=subprocess.run([binary,'--list-categories'],capture_output=True,text=True);assert r.returncode==0 and r.stdout.splitlines()==expected
 results=[]
 with tempfile.TemporaryDirectory() as d:

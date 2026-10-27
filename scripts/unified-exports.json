@@ -421,5 +421,29 @@
     "archive_sha256": "56f782b438a1d6bf0380f304a644f5aa266c56b60abb231fb3aebb46f941f10f",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115"
+  },
+  "its": {
+    "module": "Ceta.Category.ITS",
+    "adapter": "src/Haskell/Ceta/Category/ITS.hs",
+    "cpp": [],
+    "sources": {
+      "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+      "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+      "ITS_Checker.hs": "bb07a42d42cb863a691a1968361d11fa59d5bd8d1364f8f681842c4b899dd618",
+      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+    },
+    "archive": "tests/unified/exports/its.tar.gz",
+    "verified_session": "ITS_Ext",
+    "source_commit": "d7de2046dab2f7c93365ff2d1e8702dac4bbee99",
+    "integration_base_commit": "ef8d86480ee4b33c91dd8357947d8624fe727853",
+    "verification_log": "target/unified-its-20261027/isabelle-build.log",
+    "archive_sha256": "06bffc68f971549df86bc49d2ab349e4bc865d412b88c6c7c449da6d90546344",
+    "origin": "/work/dfm/festschrift/CeTA/target/unified-its-20261027/export/ITS_Ext.ITS4_Parser/code/export1",
+    "optimization_theory": "thys/ITS_Ext/Integration/ITS4_Parser.thy",
+    "optimization_theory_sha256": "4790d35ad0c04c9529027a42a7d789ba68d67b0a2e0bb682e5a45faa121916f6"
   }
 }

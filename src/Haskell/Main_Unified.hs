@@ -10,6 +10,7 @@ import qualified Ceta.Category.ConditionalErasure as ConditionalErasure
 import qualified Ceta.Category.LogicProgramming as LogicProgramming
 import qualified Ceta.Category.HigherOrder as HigherOrder
 import qualified Ceta.Category.HigherOrderDelegation as HigherOrderDelegation
+import qualified Ceta.Category.ITS as ITS
 
 main :: IO ()
 main = getArgs >>= dispatch
@@ -24,9 +25,10 @@ dispatch ("--category" : category : args) = case category of
   "lp" -> LogicProgramming.run args
   "higher-order" -> HigherOrder.run args
   "higher-order-delegation" -> HigherOrderDelegation.run args
+  "its" -> ITS.run args
   _ -> hPutStrLn stderr ("Unknown certificate category: " ++ category) >> exitFailure
 dispatch ["--category"] = hPutStrLn stderr "Missing category; use --list-categories" >> exitFailure
 dispatch args = Rewriting.run args
 
 categories :: [String]
-categories = ["cpf", "cycle", "conditional", "conditional-erasure", "lp", "higher-order", "higher-order-delegation"]
+categories = ["cpf", "cycle", "conditional", "conditional-erasure", "lp", "higher-order", "higher-order-delegation", "its"]

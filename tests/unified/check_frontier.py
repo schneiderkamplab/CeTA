@@ -10,7 +10,7 @@ def memory_ok():
  return (m['MemTotal']-m['MemAvailable'])*1024<2*1024**4
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--binary',type=Path,required=True);p.add_argument('--provenance',type=Path,required=True);p.add_argument('--baseline-results',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--workers',type=int,default=32);p.add_argument('--child-spec',type=Path,default=Path(__file__).parent/'compact-children.json');a=p.parse_args()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--binary',type=Path,required=True);p.add_argument('--provenance',type=Path,required=True);p.add_argument('--baseline-results',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--workers',type=int,default=32);p.add_argument('--passes',type=int,choices=(1,2),default=1);p.add_argument('--child-spec',type=Path,default=Path(__file__).parent/'compact-children.json');a=p.parse_args()
  source_binary=a.binary.resolve();digest=sha(source_binary)
  cache=a.output.parent/'checkers';cache.mkdir(exist_ok=True);binary=cache/digest
  if not binary.exists():
@@ -55,8 +55,11 @@ def main():
     if row['child']:
      child=children/Path(row['child']).name;assert sha(child)==compact_spec['children'][child.name];cmd.append(str(child))
      result.update(child_original_sha256=meta['child_sha256'][child.name],child_compact_sha256=compact_spec['children'][child.name])
-    result['preparation_seconds']=time.monotonic()-start;t=time.monotonic();r=subprocess.run(cmd,capture_output=True,text=True)
-    result.update(returncode=r.returncode,stdout=r.stdout,stderr=r.stderr,native_seconds=time.monotonic()-t,status='accepted' if r.returncode==0 and r.stdout.strip()==expected else 'failed')
+    result['preparation_seconds']=time.monotonic()-start;t=time.monotonic();checks=[]
+    for _ in range(a.passes):
+     r=subprocess.run(cmd,capture_output=True,text=True)
+     checks.append(dict(returncode=r.returncode,stdout=r.stdout,stderr=r.stderr,accepted=r.returncode==0 and r.stdout.strip()==expected))
+    result.update(returncode=r.returncode,stdout=r.stdout,stderr=r.stderr,checks=checks,native_seconds=time.monotonic()-t,status='accepted' if all(c['accepted'] for c in checks) else 'failed')
   except Exception as e:result.update(status='error',reason=repr(e))
   result['seconds']=time.monotonic()-start;return result
  started=time.monotonic();results=[];todo=iter(meta['jobs']);pending=set();exhausted=False;last=started
@@ -74,6 +77,6 @@ def main():
     print(len(results),'/',len(meta['jobs']),dict(collections.Counter(r['status'] for r in results)),round(time.monotonic()-started,1),flush=True);last=time.monotonic()
  assert sha(binary)==digest
  assert len(results)==len(meta['jobs']) and {r['root'] for r in results}=={r['root'] for r in meta['jobs']}
- report=dict(binary_sha256=digest,provenance_sha256=sha(a.provenance),baseline_results_sha256=sha(a.baseline_results),archive_sha256=meta['archive_sha256'],child_archive_sha256=compact_spec['archive_sha256'],workers=a.workers,checks_per_root=1,seconds=time.monotonic()-started,counts=dict(collections.Counter(r['status'] for r in results)),results=results)
+ report=dict(binary_sha256=digest,provenance_sha256=sha(a.provenance),baseline_results_sha256=sha(a.baseline_results),archive_sha256=meta['archive_sha256'],child_archive_sha256=compact_spec['archive_sha256'],workers=a.workers,checks_per_root=a.passes,seconds=time.monotonic()-started,counts=dict(collections.Counter(r['status'] for r in results)),results=results)
  a.output.write_bytes(gzip.compress(json.dumps(report).encode(),mtime=0));print(report['counts'],report['seconds'],flush=True);assert all(r['status']=='accepted' for r in results)
 if __name__=='__main__':main()
