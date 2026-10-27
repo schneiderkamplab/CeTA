@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/work/dfm/festschrift/CeTA-consolidated/target/srs161533-profile-20261027/ceta-profile",
+    "/work/dfm/festschrift/CeTA-consolidated/target/srs161533-profile-20261027/proof.xml",
+    "+RTS",
+    "-p",
+    "-s",
+    "-RTS"
+  ],
+  "seconds": 182.18990715699329,
+  "returncode": 0,
+  "stdout": "CERTIFIED\n",
+  "stderr": " 452,996,463,200 bytes allocated in the heap\n  89,585,206,672 bytes copied during GC\n  15,249,130,144 bytes maximum residency (17 sample(s))\n      65,252,704 bytes maximum slop\n           31074 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0     107542 colls,     0 par   16.175s  16.266s     0.0002s    0.0049s\n  Gen  1        17 colls,     0 par   18.124s  18.219s     1.0717s    6.9127s\n\n  INIT    time    0.000s  (  0.001s elapsed)\n  MUT     time  146.701s  (147.060s elapsed)\n  GC      time   34.299s  ( 34.484s elapsed)\n  RP      time    0.000s  (  0.000s elapsed)\n  PROF    time    0.000s  (  0.000s elapsed)\n  EXIT    time    0.001s  (  0.001s elapsed)\n  Total   time  181.002s  (181.547s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    3,087,880,843 bytes per MUT second\n\n  Productivity  81.0% of total user, 81.0% of total elapsed\n\n"
+}
