@@ -477,6 +477,14 @@ formula how x should be updated, as long as it is non-conflicting.</xs:documenta
       <xs:element name="state" type="integerLassoState"/>
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="integerSuccessorPolicy">
+    <xs:sequence><xs:element name="assignment" minOccurs="0" maxOccurs="unbounded">
+      <xs:complexType><xs:sequence>
+        <xs:element name="variableId" type="variableId"/>
+        <xs:group ref="expression"/>
+      </xs:sequence></xs:complexType>
+    </xs:element></xs:sequence>
+  </xs:complexType>
   <xs:group name="ltsNonterminationProof">
     <xs:choice><xs:element name="equivalentState">
       <xs:complexType><xs:sequence>
@@ -488,6 +496,29 @@ formula how x should be updated, as long as it is non-conflicting.</xs:documenta
           <xs:element name="transitionStep" type="integerLassoStep" minOccurs="1" maxOccurs="unbounded"/>
         </xs:sequence></xs:complexType></xs:element>
       </xs:sequence></xs:complexType>
-    </xs:element></xs:choice>
+    </xs:element>
+    <xs:element name="recurrentSet"><xs:complexType><xs:sequence>
+      <xs:element name="state" type="integerLassoState"/>
+      <xs:element name="stem"><xs:complexType><xs:sequence>
+        <xs:element name="transitionStep" type="integerLassoStep" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence></xs:complexType></xs:element>
+      <xs:element name="region"><xs:complexType><xs:group ref="formula"/></xs:complexType></xs:element>
+      <xs:element ref="transition"/>
+      <xs:element name="policy" type="integerSuccessorPolicy" minOccurs="2" maxOccurs="2"/>
+    </xs:sequence></xs:complexType></xs:element>
+    <xs:element name="recurrentCycle"><xs:complexType><xs:sequence>
+      <xs:element name="state" type="integerLassoState"/>
+      <xs:element name="stem"><xs:complexType><xs:sequence>
+        <xs:element name="transitionStep" type="integerLassoStep" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence></xs:complexType></xs:element>
+      <xs:element name="region"><xs:complexType><xs:group ref="formula"/></xs:complexType></xs:element>
+      <xs:element name="cycle"><xs:complexType><xs:sequence>
+        <xs:element name="policyStep" minOccurs="1" maxOccurs="unbounded"><xs:complexType><xs:sequence>
+          <xs:element ref="transition"/>
+          <xs:element name="policy" type="integerSuccessorPolicy" minOccurs="2" maxOccurs="2"/>
+        </xs:sequence></xs:complexType></xs:element>
+      </xs:sequence></xs:complexType></xs:element>
+    </xs:sequence></xs:complexType></xs:element>
+    </xs:choice>
   </xs:group>
 </xs:schema>

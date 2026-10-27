@@ -18,4 +18,6 @@ session ITS_Ext in Integration = ITS_Arithmetic +
     "IA4_Instance"
     "IA4_Parser"
     "IA4_Nontermination"
+    "IA4_Recurrent"
+    "IA4_Recurrent_Cycle"
     "ITS4_Parser"
