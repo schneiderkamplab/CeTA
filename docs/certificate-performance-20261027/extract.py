@@ -1,0 +1,4 @@
+from pathlib import Path
+import os,subprocess,sys
+R=Path.cwd();O=R/'target/certificate-performance-20261027';base=R/'target/equational-production-20261019/source/thys';dirs=[base,base/'Relative_ADP',base/'RFC_Absolute_Ext',R/'thys/Usable_Rules_Membership',R/'thys/Certificate_Performance']+[p.parent for p in (R/'thys').glob('Higher_Order_*/ROOT')];args=[a for d in dirs for a in ['-d',str(d)]]
+env=dict(os.environ,USER_HOME=str(R/'target/usable-membership-20261026/user'),ISABELLE_IDENTIFIER='usable_membership_20261026',AFP=str(R/'target/consolidation-build/afp-source/thys'));kind=sys.argv[1];session='Certificate_Performance_'+kind+'_Export';subprocess.run(['/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle','export','-n',*args,'-O',str(O/(sys.argv[2] if len(sys.argv)>2 else kind.lower()+'-export')),'-x','*:code/**',session],env=env,check=True)

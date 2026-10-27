@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/work/dfm/festschrift/CeTA-consolidated/target/unified-usable-membership-20261026/ceta",
+    "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/161533-shared.xml",
+    "+RTS",
+    "-s",
+    "-RTS"
+  ],
+  "seconds": 21.608635575990775,
+  "returncode": 0,
+  "stdout": "CERTIFIED\n",
+  "stderr": "  39,021,049,368 bytes allocated in the heap\n   7,255,681,448 bytes copied during GC\n     738,005,976 bytes maximum residency (41 sample(s))\n       1,752,104 bytes maximum slop\n            1644 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0      8389 colls,     0 par    1.650s   1.661s     0.0002s    0.0034s\n  Gen  1        41 colls,     0 par    2.002s   2.013s     0.0491s    0.5453s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time   17.815s  ( 17.895s elapsed)\n  GC      time    3.652s  (  3.674s elapsed)\n  EXIT    time    0.000s  (  0.001s elapsed)\n  Total   time   21.468s  ( 21.570s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    2,190,323,000 bytes per MUT second\n\n  Productivity  83.0% of total user, 83.0% of total elapsed\n\n"
+}

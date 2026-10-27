@@ -1,0 +1,31 @@
+{
+  "module": "LP_Cut_NO_Generated",
+  "command": [
+    "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+    "console",
+    "-n",
+    "-l",
+    "Proof_Checker",
+    "-d",
+    "/work/dfm/festschrift/CeTA-consolidated/target/equational-production-20261019/source/thys",
+    "-o",
+    "threads=4",
+    "-o",
+    "parallel_proofs=0",
+    "-o",
+    "quick_and_dirty=false"
+  ],
+  "seconds": 241.31300499899953,
+  "returncode": 0,
+  "verified": true,
+  "recipe": {
+    "module": "LP_Cut_NO_Generated",
+    "imports": [
+      "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/lp-source-committed/thys/Logic_Programming/LP_Cut_NO_XML"
+    ],
+    "recipe": "/work/dfm/festschrift/CeTA/target/LP_NO_Renaming_Export_v133.thy",
+    "wrapper_source_sha256": "a79e18a097ce3826caf8b4f2417c6bac598d33b0d1e466ead40feea1dd99b9a2"
+  },
+  "baseline_sha256": "5cf29b7b5dbc7af4654b64ab1b480ccab7a02792a7344872ad376e0c9bdeb75a",
+  "baseline_matches_production": true
+}

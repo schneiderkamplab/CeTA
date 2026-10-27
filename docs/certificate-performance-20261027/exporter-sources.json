@@ -1,0 +1,10 @@
+{
+  "binary_sha256": "2b77a744f0be7c575a5675ae7a6cc32a14983ab464681d66da26974b1dbd6c0b",
+  "files": {
+    "tools/cpf-share/README.md": "8af9ca1f0d2b261b68efccf3dfd91d8c81ca7cbd2dc53c323ab2ad102142b2b3",
+    "tools/cpf-share/Cargo.lock": "8734a648820533fe2dd2745d72fe7e0c89e4eac40ed711e942c61cd8247248cc",
+    "tools/cpf-share/Cargo.toml": "2911763a4b7f051b5f610a384ac046012d6399233cd9849c310bb91a3421ee04",
+    "tools/cpf-share/.gitignore": "306fd52e74fca6746e12acc750f232de15e71da917756a1270d74c91f5eb7368",
+    "tools/cpf-share/src/main.rs": "9c4aa49cb9fc8284f585cef98891e028058215560a31c3e3899b34c8d27de8e6"
+  }
+}

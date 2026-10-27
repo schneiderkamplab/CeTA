@@ -1,0 +1,37 @@
+{
+  "binary_sha256": "dc31c2c32fd7c1bb000c08e7d8d492330307cbceeb74a4ed54de48ff1e101cd1",
+  "runs": [
+    {
+      "variant": "before",
+      "repeat": 0,
+      "seconds": 4.625292780998279,
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "  33,313,135,616 bytes allocated in the heap\n     368,970,880 bytes copied during GC\n      10,044,904 bytes maximum residency (29 sample(s))\n          76,312 bytes maximum slop\n              29 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0      7968 colls,     0 par    0.202s   0.204s     0.0000s    0.0030s\n  Gen  1        29 colls,     0 par    0.140s   0.142s     0.0049s    0.0180s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time    4.213s  (  4.265s elapsed)\n  GC      time    0.342s  (  0.346s elapsed)\n  EXIT    time    0.000s  (  0.009s elapsed)\n  Total   time    4.556s  (  4.620s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    7,906,667,733 bytes per MUT second\n\n  Productivity  92.5% of total user, 92.3% of total elapsed\n\n"
+    },
+    {
+      "variant": "after",
+      "repeat": 0,
+      "seconds": 4.344104991003405,
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "  33,258,336,784 bytes allocated in the heap\n     350,490,192 bytes copied during GC\n       7,635,960 bytes maximum residency (27 sample(s))\n          34,336 bytes maximum slop\n              24 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0      7957 colls,     0 par    0.139s   0.140s     0.0000s    0.0012s\n  Gen  1        27 colls,     0 par    0.093s   0.094s     0.0035s    0.0085s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time    4.061s  (  4.097s elapsed)\n  GC      time    0.232s  (  0.234s elapsed)\n  EXIT    time    0.000s  (  0.008s elapsed)\n  Total   time    4.294s  (  4.340s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    8,188,886,207 bytes per MUT second\n\n  Productivity  94.6% of total user, 94.4% of total elapsed\n\n"
+    },
+    {
+      "variant": "before",
+      "repeat": 1,
+      "seconds": 4.414716546001728,
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "  33,313,135,616 bytes allocated in the heap\n     369,133,592 bytes copied during GC\n      10,044,904 bytes maximum residency (29 sample(s))\n          76,312 bytes maximum slop\n              29 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0      7968 colls,     0 par    0.159s   0.160s     0.0000s    0.0025s\n  Gen  1        29 colls,     0 par    0.121s   0.123s     0.0042s    0.0145s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time    4.085s  (  4.122s elapsed)\n  GC      time    0.280s  (  0.283s elapsed)\n  EXIT    time    0.000s  (  0.005s elapsed)\n  Total   time    4.365s  (  4.410s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    8,155,756,313 bytes per MUT second\n\n  Productivity  93.6% of total user, 93.5% of total elapsed\n\n"
+    },
+    {
+      "variant": "after",
+      "repeat": 1,
+      "seconds": 4.485750218998874,
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "  33,258,336,784 bytes allocated in the heap\n     350,490,000 bytes copied during GC\n       7,635,960 bytes maximum residency (27 sample(s))\n          34,336 bytes maximum slop\n              24 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0      7957 colls,     0 par    0.175s   0.177s     0.0000s    0.0019s\n  Gen  1        27 colls,     0 par    0.125s   0.127s     0.0047s    0.0116s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time    4.123s  (  4.168s elapsed)\n  GC      time    0.300s  (  0.304s elapsed)\n  EXIT    time    0.000s  (  0.008s elapsed)\n  Total   time    4.424s  (  4.480s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    8,065,583,435 bytes per MUT second\n\n  Productivity  93.2% of total user, 93.0% of total elapsed\n\n"
+    }
+  ]
+}
