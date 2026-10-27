@@ -1,0 +1,13 @@
+session Certificate_Performance = Proof_Checker +
+  options [document = false]
+  theories Certificate_Performance
+
+session Certificate_Performance_HO_Export in HO = Usable_Rules_HO_Export +
+  options [document = false]
+  sessions Certificate_Performance
+  theories Certificate_Performance_HO_Export
+
+session Certificate_Performance_CPF_Export in CPF = Usable_Rules_CPF_Export +
+  options [document = false]
+  sessions Certificate_Performance
+  theories Certificate_Performance_CPF_Export

@@ -1,7 +1,7 @@
 module Ceta.Category.Rewriting (run) where
 
 import Ceta.Input.Characters (cachedCharacters)
-import Ceta_Relative
+import Ceta_Relative (Cert_result(..), certify_proof_integrated, explode)
 import System.Environment (getArgs, withArgs)
 import System.Exit (ExitCode(..), exitWith)
 import System.IO (hPutStrLn, stderr)

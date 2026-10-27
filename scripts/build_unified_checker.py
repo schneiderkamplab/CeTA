@@ -11,6 +11,15 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def save(p,d):p.write_text(json.dumps(d,indent=2)+'\n')
 def run(cmd,log):
     with log.open('w') as f:subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT,check=True)
+def check_public_api(source,spec):
+    # Public helpers inhibit specialization in the large CPF module. Preserve
+    # the production export boundary, independently of semantic equivalence.
+    for module,expected in spec.get('public_api',{}).items():
+        text=(source/(module+'.hs')).read_text()
+        match=re.search(r'\bmodule\s+'+re.escape(module)+r'\s*\((.*?)\)\s*where',text,re.S)
+        if not match:raise ValueError(f'No explicit export interface: {module}')
+        actual={re.sub(r'\s+','',item) for item in match.group(1).split(',')}
+        if actual!=set(expected):raise ValueError(f'Public export interface mismatch: {module}')
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--exports',type=Path,help='Override the committed, hash-verified export snapshots')
@@ -43,6 +52,7 @@ def main():
                     (source/member.name).write_bytes(bundle.extractfile(member).read())
         actual={p.name:sha(p) for p in source.glob('*.hs')}
         if actual!=spec['sources']:raise ValueError(f'Export snapshot mismatch: {key}')
+        check_public_api(source,spec)
         for p in source.glob('*.hs'):
             if re.search(r'OPTIONS_GHC[^\n]*(?:-O(?:0|1|3)?\b|-fno-)',p.read_text()):
                 raise ValueError(f'Optimization override in {p}')
