@@ -5,7 +5,7 @@ GHC?=ghc
 CETA_BUILD_DIR?=target/haskell
 CETA_BIN_DIR?=.
 STATIC=
-override GHC_ARGS:= -O2 -package array -XRankNTypes  $(GHC_ARGS) $(if $(STATIC), -static -optl-static -optl-pthread, )
+override GHC_ARGS:= -package array -XRankNTypes $(filter-out -O -O0 -O1 -O2 -O3,$(GHC_ARGS)) -O2 $(if $(STATIC), -static -optl-static -optl-pthread, )
 SRC=src
 GENERATED=generated
 ISABELLE?=isabelle
@@ -43,7 +43,16 @@ test: ceta
 	done 
 	@echo "   "
 
-ceta: haskell
+CETA_UNIFIED_BUILD_DIR?=target/unified
+CETA_BUILD_JOBS?=4
+
+.PHONY: ceta ceta-unified
+ceta: ceta-unified
+
+ceta-unified:
+	GHC="$(GHC)" python3 scripts/build_unified_checker.py --output "$(CETA_UNIFIED_BUILD_DIR)" --jobs "$(CETA_BUILD_JOBS)"
+	@mkdir -p "$(CETA_BIN_DIR)"
+	cp "$(CETA_UNIFIED_BUILD_DIR)/ceta" "$(CETA_BIN_DIR)/ceta"
 
 ceta-ordinary:
 	@mkdir -p "$(CETA_BUILD_DIR)/ordinary" "$(CETA_BIN_DIR)"

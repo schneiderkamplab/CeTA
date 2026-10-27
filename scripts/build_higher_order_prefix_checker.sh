@@ -18,7 +18,7 @@ done
 "$ho_isabelle" export -n "${ho_dirs[@]}" -O "$ho_output/export" \
   -x '*:code/**' Higher_Order_Prefix >"$ho_output/export.log" 2>&1
 ho_generated="$ho_output/export/Higher_Order_Prefix.Higher_Order_Prefix_Code/code/export1"
-{ time "${GHC:-ghc}" -DHO_PREFIX -DHO_BLOCKED -O1 -i"$ho_generated" \
+{ time "${GHC:-ghc}" -DHO_PREFIX -DHO_BLOCKED -O2 -i"$ho_generated" \
   -outputdir "$ho_output/ghc" src/Higher_Order_Main.hs \
   -o "$ho_output/ceta-higher-order"; } >"$ho_output/ghc-build.log" 2>&1
 sha256sum "$ho_output/ceta-higher-order" "$ho_generated/Higher_Order_Checker.hs" \

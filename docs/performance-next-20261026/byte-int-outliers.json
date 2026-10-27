@@ -1,0 +1,138 @@
+{
+  "binary_sha256": "b6069507d57a3088e81e17f3864096df17cd2a08b7c6eba1c4953ddcd3ea84dd",
+  "results": [
+    {
+      "id": 5,
+      "root": "SRS_Standard/ICFP_2010/149713.ari",
+      "proof_sha256": "59e400053fd0d0acbd424bc556d39911c633d69b81dc55117eaf9a70df950018",
+      "checks": [
+        {
+          "seconds": 195.46549614612013,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 193.58900036197156,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "root": "SRS_Relative/Waldmann_26/14.ari",
+      "proof_sha256": "29147ecd36f8084a8eb176232925fa5c4e54bd6e887fa0bb4603611a37ab6fcc",
+      "checks": [
+        {
+          "seconds": 88.39267945010215,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 89.68891091784462,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "root": "Logic_Programming_with_Cut/Schneider_Kamp_08/minus2.pl",
+      "proof_sha256": "8499aedda8a9d06f8ce463004815e5dc6722a77e0bf4ae1e404ceb44e246ec88",
+      "checks": [
+        {
+          "seconds": 2.6785710039548576,
+          "returncode": 0,
+          "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 2.642331924289465,
+          "returncode": 0,
+          "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "root": "SRS_Relative/ICFP_2010_relative/138477.ari",
+      "proof_sha256": "324f1b9768a965d1c642e8f31135247425cc38ad5fb18f2fcfa23ba06deea85d",
+      "checks": [
+        {
+          "seconds": 9.823679357767105,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 9.793694755993783,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "root": "TRS_Standard/Applicative_05/Ex9Maps.ari",
+      "proof_sha256": "0ef6def82f32c8a9f42c5bd166ec920c07d1a2756276d9a8c8756041e005c507",
+      "checks": [
+        {
+          "seconds": 7.967180844396353,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 8.157026365865022,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "root": "SRS_Standard/ICFP_2010/259405.ari",
+      "proof_sha256": "2d62994f5473ca3ab2e9097fc983a1f9c87b1e93edbaccd76acea8da990b37ef",
+      "checks": [
+        {
+          "seconds": 17.59539985237643,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 17.544960550032556,
+          "returncode": 0,
+          "stdout": "CERTIFIED\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h31.ari",
+      "proof_sha256": "1e9ee07f58c8c937f2fd1ddd739cbf4c2ae32a29cff5b26517522a367a198412",
+      "checks": [
+        {
+          "seconds": 68.80871248384938,
+          "returncode": 0,
+          "stdout": "CERTIFIED YES\n",
+          "stderr": ""
+        },
+        {
+          "seconds": 68.43045580992475,
+          "returncode": 0,
+          "stdout": "CERTIFIED YES\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ]
+}

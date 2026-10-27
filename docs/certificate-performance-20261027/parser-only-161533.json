@@ -1,0 +1,33 @@
+{
+  "binary_sha256": "2617f48e5896b682ef8279235e4de311fd4f57a3b1d988ee0eeee3192239f72b",
+  "runs": [
+    {
+      "form": "explicit",
+      "command": [
+        "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/ceta-parser-only",
+        "/work/dfm/festschrift/CeTA-consolidated/target/srs161533-profile-20261027/proof.xml",
+        "+RTS",
+        "-s",
+        "-RTS"
+      ],
+      "seconds": 65.33916374199907,
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": " 167,505,631,136 bytes allocated in the heap\n  40,919,553,064 bytes copied during GC\n   5,417,078,184 bytes maximum residency (18 sample(s))\n      10,887,768 bytes maximum slop\n           12468 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0     39182 colls,     0 par   10.519s  10.610s     0.0003s    0.0075s\n  Gen  1        18 colls,     0 par   12.194s  12.307s     0.6837s    3.6763s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time   41.628s  ( 41.927s elapsed)\n  GC      time   22.713s  ( 22.918s elapsed)\n  EXIT    time    0.000s  (  0.005s elapsed)\n  Total   time   64.342s  ( 64.850s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    4,023,854,490 bytes per MUT second\n\n  Productivity  64.7% of total user, 64.7% of total elapsed\n\n"
+    },
+    {
+      "form": "shared",
+      "command": [
+        "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/ceta-parser-only",
+        "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/161533-shared.xml",
+        "+RTS",
+        "-s",
+        "-RTS"
+      ],
+      "seconds": 27.088626584998565,
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "  34,709,784,696 bytes allocated in the heap\n   6,785,625,416 bytes copied during GC\n     760,310,608 bytes maximum residency (36 sample(s))\n       1,893,552 bytes maximum slop\n            1661 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0      7358 colls,     0 par    1.747s   1.766s     0.0002s    0.0041s\n  Gen  1        36 colls,     0 par    2.159s   2.181s     0.0606s    0.7248s\n\n  INIT    time    0.000s  (  0.000s elapsed)\n  MUT     time   22.898s  ( 23.091s elapsed)\n  GC      time    3.906s  (  3.946s elapsed)\n  EXIT    time    0.000s  (  0.003s elapsed)\n  Total   time   26.805s  ( 27.040s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    1,515,831,317 bytes per MUT second\n\n  Productivity  85.4% of total user, 85.4% of total elapsed\n\n"
+    }
+  ]
+}

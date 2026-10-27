@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/work/dfm/festschrift/CeTA-consolidated/target/h31-profile-20261026/ceta-ho-profile",
+    "/work/dfm/festschrift/CeTA-consolidated/target/compact-children-20261026/1e9ee07f58c8c937f2fd1ddd739cbf4c2ae32a29cff5b26517522a367a198412.source",
+    "/work/dfm/festschrift/CeTA-consolidated/target/compact-children-20261026/compact-children/584ddee5c6ddec5514007eb9a076a6c0201909be12737a00bacee3a61ebef51b.xml",
+    "+RTS",
+    "-p",
+    "-s",
+    "-RTS"
+  ],
+  "binary_sha256": "573b11ef54e2aefa3672e1a7d5de17f5ce0df6627a26921c8b57a11fce40d6f8",
+  "source_sha256": "1e9ee07f58c8c937f2fd1ddd739cbf4c2ae32a29cff5b26517522a367a198412",
+  "child_sha256": "9ebc6df942b811441e3e3b47021e2897312f36306416d97ce1ce42c79ed6a817",
+  "seconds": 218.76557661173865,
+  "returncode": 0,
+  "stdout": "CERTIFIED YES\n",
+  "stderr": " 468,708,284,192 bytes allocated in the heap\n   2,565,305,952 bytes copied during GC\n     462,776,016 bytes maximum residency (12 sample(s))\n       1,837,360 bytes maximum slop\n             933 MiB total memory in use (0 MiB lost due to fragmentation)\n\n                                     Tot time (elapsed)  Avg pause  Max pause\n  Gen  0     112213 colls,     0 par    0.985s   0.985s     0.0000s    0.0008s\n  Gen  1        12 colls,     0 par    0.636s   0.639s     0.0533s    0.2896s\n\n  INIT    time    0.000s  (  0.002s elapsed)\n  MUT     time  215.960s  (216.924s elapsed)\n  GC      time    1.621s  (  1.624s elapsed)\n  RP      time    0.000s  (  0.000s elapsed)\n  PROF    time    0.000s  (  0.000s elapsed)\n  EXIT    time    0.000s  (  0.001s elapsed)\n  Total   time  217.581s  (218.551s elapsed)\n\n  %GC     time       0.0%  (0.0% elapsed)\n\n  Alloc rate    2,170,351,833 bytes per MUT second\n\n  Productivity  99.3% of total user, 99.3% of total elapsed\n\n"
+}

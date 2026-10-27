@@ -1,0 +1,32 @@
+[
+  {
+    "module": "LP_Cut_Projected_Generated",
+    "baseline_sha256": "56a2042df46d1828e6933748d2565c125a0585dd1fc8f7e1aec91e5150d0f92e",
+    "baseline_matches_production": true,
+    "indexed_sha256": "75e18936823502ef026b9754bff50e263b6eaaad1d45d41d36ea574ad263d9b2"
+  },
+  {
+    "module": "LP_Return_Module_Generated",
+    "baseline_sha256": "c80d30139766153ebefdacb82d345141b5c3e7cda2766daae7d70fd1d8471619",
+    "baseline_matches_production": true,
+    "indexed_sha256": "7e85569e6806f9dddca2b4be3c0472692a2f978c6c59c86e4fa37715a02b84f8"
+  },
+  {
+    "module": "LP_SEG_Certificate_Generated",
+    "baseline_sha256": "e03d5cfb6bde9f4b6b1e8b26eca532da9f104f873b599dc88118eb2a74ea32c7",
+    "baseline_matches_production": true,
+    "indexed_sha256": "daee9741dcd988337b832709c411cc960925f06003cce779cee45e8c1135eac5"
+  },
+  {
+    "module": "LP_SEG_Projected_Generated",
+    "baseline_sha256": "1017fe6dedcf3f42361ceee131bcb624d316681bb6c293017fdd0b06be5120bc",
+    "baseline_matches_production": true,
+    "indexed_sha256": "c7fe23a33b51e4fcd7635d2447461eddf095a68ee0b242b6ec43cfd49ad548be"
+  },
+  {
+    "module": "LP_Triples_Generated",
+    "baseline_sha256": "9b056bf55fcf837600991b37a273a2050693021482cf17fa0a5139e0dafe9689",
+    "baseline_matches_production": true,
+    "indexed_sha256": "59b3c91edeffdc3f8ffd4965d3e6e3ecc832f9085b7ecd6395eb65a391dd0344"
+  }
+]

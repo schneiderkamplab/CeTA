@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle",
+    "console",
+    "-n",
+    "-l",
+    "Proof_Checker",
+    "-d",
+    "/work/dfm/festschrift/CeTA-consolidated/target/equational-production-20261019/source/thys",
+    "-o",
+    "threads=4",
+    "-o",
+    "parallel_proofs=0",
+    "-o",
+    "quick_and_dirty=false"
+  ],
+  "returncode": 0,
+  "seconds": 190.59759510168806
+}

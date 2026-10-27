@@ -1,0 +1,526 @@
+{
+  "roots": 5412,
+  "workers": 32,
+  "checks_per_root": 1,
+  "binary_sha256": "8b5e6c3560cf10f1952b68b52931e2e6becac7b8e93f1a19776b277edef3d28c",
+  "exact_identities_preserved": true,
+  "baseline_wall_seconds": 344.25150279467925,
+  "wall_seconds": 331.7325104698539,
+  "categories": {
+    "higher-order": 192,
+    "higher-order-delegation": 36,
+    "lp": 454,
+    "cycle": 200,
+    "cpf": 4459,
+    "conditional": 63,
+    "conditional-erasure": 8
+  },
+  "before": {
+    "native_seconds": {
+      "min": 0.011146362870931625,
+      "median": 0.10864733066409826,
+      "mean": 1.0466676246000906,
+      "p95": 3.4965388718759636,
+      "p99": 15.958448373219078,
+      "max": 115.65284126019105,
+      "max_root": "SRS_Standard/ICFP_2010/149849.ari",
+      "sum": 5664.56518433569
+    },
+    "preparation_seconds": {
+      "min": 0.018813882023096085,
+      "median": 0.25890335463918746,
+      "mean": 0.2942392884791331,
+      "p95": 0.539001340046525,
+      "p99": 0.7480920800846074,
+      "max": 7.88461737614125,
+      "max_root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h31.ari",
+      "sum": 1592.4230292490683
+    },
+    "seconds": {
+      "min": 0.03197513008490205,
+      "median": 0.48190891719423234,
+      "mean": 1.4142408686805674,
+      "p95": 3.6581614320399236,
+      "p99": 15.987940976107556,
+      "max": 122.53558838088065,
+      "max_root": "SRS_Standard/ICFP_2010/149849.ari",
+      "sum": 7653.8715812992305
+    }
+  },
+  "after": {
+    "native_seconds": {
+      "min": 0.011839909013360739,
+      "median": 0.118461640086025,
+      "mean": 0.971334899438914,
+      "p95": 4.0683803061954675,
+      "p99": 19.806475577508305,
+      "max": 86.68264859635383,
+      "max_root": "SRS_Standard/ICFP_2010/161533.ari",
+      "sum": 5256.864475763403
+    },
+    "preparation_seconds": {
+      "min": 0.022345453035086393,
+      "median": 0.22035841294564307,
+      "mean": 0.23502179808950455,
+      "p95": 0.43852591607719654,
+      "p99": 0.6844535143766558,
+      "max": 1.1562752588652074,
+      "max_root": "TRS_Standard/Transformed_CSR_04/OvConsOS_complete_noand_GM.ari",
+      "sum": 1271.9379712603986
+    },
+    "seconds": {
+      "min": 0.034345590975135565,
+      "median": 0.4355350860860199,
+      "mean": 1.2796003310342305,
+      "p95": 4.192430125246755,
+      "p99": 19.88851648187737,
+      "max": 87.53732907120138,
+      "max_root": "SRS_Standard/ICFP_2010/161533.ari",
+      "sum": 6925.196991557255
+    }
+  },
+  "largest_native_after": [
+    {
+      "root": "SRS_Standard/ICFP_2010/161533.ari",
+      "category": "cpf",
+      "before_native": 107.38100471626967,
+      "after_native": 86.68264859635383,
+      "before_preparation": 4.766301190014929,
+      "after_preparation": 0.8526950650848448,
+      "input_sha256": "475217b788d35ecf033751a13852177f465d90674e1e9e5ee71537b8d32b9524",
+      "original_proof_sha256": "9b8d656a0b68a78369e0b0343601bc2cf6f59a3643ace0203dd794dc04aa1466",
+      "compact_proof_sha256": "783392ee7b7268230a390aaf00995f7187b0536751f4d2446efeb6d8984cd352"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149849.ari",
+      "category": "cpf",
+      "before_native": 115.65284126019105,
+      "after_native": 72.38268223078921,
+      "before_preparation": 6.8783158948645,
+      "after_preparation": 1.0462433868087828,
+      "input_sha256": "078aba61d3d822d83d11165c43b9f0c82cc8c714f12d418d69cba003ca76ec26",
+      "original_proof_sha256": "bbc65e5af23a78a48f5bc6606ff34645dfe959222549baf51a6b070bc98e980f",
+      "compact_proof_sha256": "6738b051c547a2fab9a9c40018e6a03d4695f964900aeae2b81d3ec7abb03332"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149713.ari",
+      "category": "cpf",
+      "before_native": 111.78506151214242,
+      "after_native": 70.74249088112265,
+      "before_preparation": 6.7726484490558505,
+      "after_preparation": 0.9190248320810497,
+      "input_sha256": "d257bd8c72b3ffd74422e9010f49d6db635ce3d65ca78c4715a4c09547cc5f32",
+      "original_proof_sha256": "59e400053fd0d0acbd424bc556d39911c633d69b81dc55117eaf9a70df950018",
+      "compact_proof_sha256": "26d34c3b9468b076c26dd8c6023476791ece94ff872eefdd9409e69299477f82"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/166848.ari",
+      "category": "cpf",
+      "before_native": 96.22032601200044,
+      "after_native": 69.9959824308753,
+      "before_preparation": 4.5311065460555255,
+      "after_preparation": 0.822550144046545,
+      "input_sha256": "ec86c0e4859195809da3b714304f9cd44d958a26a629815c14ba5d01ae8f6004",
+      "original_proof_sha256": "9c4b0acfde25bbf0f5072d6e38577b62385fcb6edb041ffcf379236007dfe368",
+      "compact_proof_sha256": "9efef05570fbc6fbdbba23e843441d4f69fbc7ff9eac2b0adef5d6725169ddf0"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165975.ari",
+      "category": "cpf",
+      "before_native": 92.36179426498711,
+      "after_native": 69.43412862392142,
+      "before_preparation": 4.606943297199905,
+      "after_preparation": 0.7554362933151424,
+      "input_sha256": "3da3b5a9a8670e875fe7983453e1af6e634d092b8ddd691b4c21da89d148e213",
+      "original_proof_sha256": "ed65ffd02f58ad418519bcac0263cf81058cdd6992978be7e960fe74211384c2",
+      "compact_proof_sha256": "e5987e61cc29fe24d1fc60054bed6b14a86405cdf1e8e9163ee8124eb0fc400f"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149633.ari",
+      "category": "cpf",
+      "before_native": 102.11562532698736,
+      "after_native": 68.83383225137368,
+      "before_preparation": 6.618466824758798,
+      "after_preparation": 0.8058171980082989,
+      "input_sha256": "468d3b180801ef7f2b0424b53840f63ed068a27e9d44f295caff9b132932741d",
+      "original_proof_sha256": "e61018d870cfef3580b4be532cc014469b23712c3b1095616a4ff0975b7d253f",
+      "compact_proof_sha256": "dfdb3e99b3f51ca730f5de5a8d6744a3e58ac0e25575dba3a793e88cdd3bc3cf"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/150815.ari",
+      "category": "cpf",
+      "before_native": 109.95921278791502,
+      "after_native": 68.3010036367923,
+      "before_preparation": 6.785163539927453,
+      "after_preparation": 0.9169724439270794,
+      "input_sha256": "9dae34cccc8ea52a4d5cb7c180e5837b8fd7d515cf14b3b3fd0a436e480506ad",
+      "original_proof_sha256": "154d571e597318e4a0210c8c7288282443b8215e09351f042031e312a14b8cbc",
+      "compact_proof_sha256": "5c97a7f04d4695c1ef372a2363de87a14f36e2b0576326e4c2da360e1c1c83ac"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/160254.ari",
+      "category": "cpf",
+      "before_native": 87.42735008709133,
+      "after_native": 67.95325618702918,
+      "before_preparation": 3.65720350202173,
+      "after_preparation": 0.7178017478436232,
+      "input_sha256": "d3c834a94c83cea4ea1462071bed75a6ac8fecfc4f16d619fd4081443d7d86f3",
+      "original_proof_sha256": "10bb4dbedb8d91db49f297b467173f1dd8ed0baac0038cd8428554aa63017579",
+      "compact_proof_sha256": "6d1f42cc97da49b510e06a4e52d5074add01fbb91f9e58130b512e78fc7a184d"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/160364.ari",
+      "category": "cpf",
+      "before_native": 89.8536304240115,
+      "after_native": 67.04775450704619,
+      "before_preparation": 4.196378808002919,
+      "after_preparation": 0.7209319290705025,
+      "input_sha256": "eed534896902400b97be35608ee1f34a6966d9910f996d9e78bafe1c846259dc",
+      "original_proof_sha256": "ca41e55c2d8f1ce09d9fa7158934a3349cc8a7a5849de7fc768bbbe029d6c294",
+      "compact_proof_sha256": "06e7e7fc53d4d036502586a077518d9243cef3399571fad47dc41d63bb425b1d"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165713.ari",
+      "category": "cpf",
+      "before_native": 85.9833679641597,
+      "after_native": 66.74337821407244,
+      "before_preparation": 3.758184505160898,
+      "after_preparation": 0.7596535771153867,
+      "input_sha256": "6bf36ebcd533c415b0f35bc6ef9accf6ddf03f4dd08b582d3190852939918678",
+      "original_proof_sha256": "b03dd48cd43d300371c6a135d0c5e06437b4c5b417b409fc90a91f48cdd60023",
+      "compact_proof_sha256": "ee42bdb1625ba05d208ff72ec5cd876d8a3dece560a05b8d579c05c6f6df71e2"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/167087.ari",
+      "category": "cpf",
+      "before_native": 92.03750591399148,
+      "after_native": 66.17246261006221,
+      "before_preparation": 3.6861212328076363,
+      "after_preparation": 0.7017270079813898,
+      "input_sha256": "c49ef3eff283195b4ce6ffdbdcde55847f237609201739ad3cf1512b780778ef",
+      "original_proof_sha256": "5dcbdb07b3f6fe3f6b61a58e862107a33d24559e267a685c2c8c8bf306c54637",
+      "compact_proof_sha256": "938fbd8a96523e3c9f84bd9c7446589e22e26a417ac880a2c5a68d930b8d38f8"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165936.ari",
+      "category": "cpf",
+      "before_native": 92.81806904589757,
+      "after_native": 65.13699366012588,
+      "before_preparation": 4.636454735416919,
+      "after_preparation": 0.7119321338832378,
+      "input_sha256": "0c2138700f6e7791baa093aef4880dae2420e698f8133156c611c74964fa5c63",
+      "original_proof_sha256": "1f462272573a7573525f13e76cc721a738fbb099db2047e00bd0742ef7ffb1d8",
+      "compact_proof_sha256": "37a4c0f56b4135f4791f7817fd397ec2049e894b02c4622231030f104df217c9"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165755.ari",
+      "category": "cpf",
+      "before_native": 89.58413192629814,
+      "after_native": 63.698512353003025,
+      "before_preparation": 3.9953884538263083,
+      "after_preparation": 0.7570394529029727,
+      "input_sha256": "2c1e00932f46a14467dbe52fa111b4014f5642efc70ae5dec4a2142b24f00bc9",
+      "original_proof_sha256": "7b8628cd348f0b6fe3dae7c544c277a0ee5e81473f5a810c3300ae40a6debaa8",
+      "compact_proof_sha256": "60d8c26c0e772ef572e9f7e1de1154bb7f83f5578fc2548ec2d960cbc4ffdef5"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165904.ari",
+      "category": "cpf",
+      "before_native": 81.81717597693205,
+      "after_native": 63.39067064598203,
+      "before_preparation": 3.815143915824592,
+      "after_preparation": 0.6341686500236392,
+      "input_sha256": "75677878721be42f3e5d476ae1584cba5a7837b0af5af6317e7b4a07542139e9",
+      "original_proof_sha256": "7a1454a220808f6b7d31088c2c9d58a943e21accf99ca0528a1f63ea853d0821",
+      "compact_proof_sha256": "ca771ca2cf8b896471b8756dd2eef921a8a9df4e4d62e3b828ae962347948aca"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/167433.ari",
+      "category": "cpf",
+      "before_native": 85.76959506003186,
+      "after_native": 62.80034321313724,
+      "before_preparation": 3.419028351083398,
+      "after_preparation": 0.684654104989022,
+      "input_sha256": "fccea948fdb34d3d8ba0be1839629073db0c16598d25dbffeb64428ed611249f",
+      "original_proof_sha256": "2dc99dbb3f428d882aac48379f285a727772d3c0dce6c97b10501848cfe5cd0c",
+      "compact_proof_sha256": "0404e8016c5ec98af47a4d54dbdbf76403ae920b138327adbbdabe62f6ef9e83"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/150067.ari",
+      "category": "cpf",
+      "before_native": 94.22840222204104,
+      "after_native": 61.15376806585118,
+      "before_preparation": 5.440931976772845,
+      "after_preparation": 0.9849261599592865,
+      "input_sha256": "96a3af063c25b513c00ed10e075312e27f4332f0e8bd506f1b917ef802e47ca6",
+      "original_proof_sha256": "ac9b9a5f3d93f41430430a85a6f859b600b044f0cbe4efb288f1a7ae1805f718",
+      "compact_proof_sha256": "569aedcbccf2e7e9eebd77e75482d03672bc571518083c66059a9396349edf9e"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/161593.ari",
+      "category": "cpf",
+      "before_native": 81.33674633596092,
+      "after_native": 60.85162783972919,
+      "before_preparation": 3.6391541436314583,
+      "after_preparation": 0.6269949846901,
+      "input_sha256": "417d3f74f8e13ff1980432717a5c7d4ece1ae4f316973a70a7f91e2736f54488",
+      "original_proof_sha256": "79d0e37e4fa90c962be738697a1d3541d1785a473e3251f39b1222721d0f703a",
+      "compact_proof_sha256": "39c4910372a86f00b9bb02694b3065fd10bc819ceddcf1bf01d4b4647f5031bd"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/162095.ari",
+      "category": "cpf",
+      "before_native": 72.98860079515725,
+      "after_native": 60.0191709343344,
+      "before_preparation": 3.847447840962559,
+      "after_preparation": 0.6731218369677663,
+      "input_sha256": "3918c7820d5ba71f165f2ca17caba2b270927413d182c47eac914c180827febe",
+      "original_proof_sha256": "aab00e2df311621274abd087b5622ea83940e6c9c422d0f9270c22530b4f2016",
+      "compact_proof_sha256": "46df05d77e0d346ab7e1db43db9937e1ba88c01f128355e653c584366318787a"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149361.ari",
+      "category": "cpf",
+      "before_native": 90.56750882091,
+      "after_native": 59.075971430167556,
+      "before_preparation": 4.873335815966129,
+      "after_preparation": 0.7044845707714558,
+      "input_sha256": "8af1a72b6f4d05118a9b6b513a0af6f5819c058917b9bb6874baa3de88cb966e",
+      "original_proof_sha256": "a18efc756d390ffb8d4a63c2b6701012dfa76fa4b42fe19f5e900987f9044892",
+      "compact_proof_sha256": "025aa0f7ebad2706a3f92d3e6bffa211d680a6a95469b4f820c80cf307ed526f"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149277.ari",
+      "category": "cpf",
+      "before_native": 87.21446615410969,
+      "after_native": 58.77501956792548,
+      "before_preparation": 4.397509360220283,
+      "after_preparation": 0.6828305539675057,
+      "input_sha256": "b6cb4e0a5efc54d88c6431d8a6a3454b74e591182ec4f972d80a2162d9a84bef",
+      "original_proof_sha256": "a555244e950d80cdad4fc74995faed5dfc6ee3f2f49c3e50591de38f35120e94",
+      "compact_proof_sha256": "82e9e2f682e384a4eecadf5bcbec2dd65b506a37874dbbabc9574292530872e6"
+    }
+  ],
+  "largest_native_slowdowns": [
+    {
+      "root": "SRS_Standard/ICFP_2010/68989.ari",
+      "category": "cpf",
+      "before_native": 11.984311316162348,
+      "after_native": 19.886313112918288,
+      "before_preparation": 0.17001093411818147,
+      "after_preparation": 0.02582792518660426,
+      "input_sha256": "eb6578b36f79e649aeb504d051a875b2b30106d3878e760735b4181ac31efda8",
+      "original_proof_sha256": "4f679f9eaed2101d98f765aa038c6d26bf345706e2d97193489948ceef02eb4d",
+      "compact_proof_sha256": "741b541690b48f05f2dd93c154a43b1cfe146df89eb5312abb828353304c2428"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/3786.ari",
+      "category": "cpf",
+      "before_native": 42.71380215091631,
+      "after_native": 50.39587783906609,
+      "before_preparation": 0.07213770179077983,
+      "after_preparation": 0.20902288099750876,
+      "input_sha256": "804a3b4c867d6b055c58c1c7ce45c5a65b6bec2d945e2405c2d9f5ff3a6438a9",
+      "original_proof_sha256": "757f72363413d5d13b8b6ca7c2bf0a2f0a004f358ba18d79e7ee1990a720e5fd",
+      "compact_proof_sha256": "9bf47295f33d9ab734af754f662c035d53d5a7dee2d8f23930afed9cd8c4d054"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/85782.ari",
+      "category": "cpf",
+      "before_native": 34.48849939974025,
+      "after_native": 42.10252115316689,
+      "before_preparation": 0.025736179668456316,
+      "after_preparation": 0.28081701695919037,
+      "input_sha256": "51c2498077258b0c7637ff49077c964f7c17f2bd48780454bb4afcbb49f79838",
+      "original_proof_sha256": "2ab46b3507a817c238fb299fa0c048736c1336e086c28070504a2d2432c186fb",
+      "compact_proof_sha256": "f0f3b5cb9b9a5c1ad011bd83bdeeac68e3ef5544148bab72b77439675a7ccefb"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/29415.ari",
+      "category": "cpf",
+      "before_native": 25.40655606193468,
+      "after_native": 32.42097690189257,
+      "before_preparation": 0.1786848627962172,
+      "after_preparation": 0.16474495083093643,
+      "input_sha256": "a3c75d9762d0bc7f6b4edf5618b781931790feec9391af037f56814dcf5a3f38",
+      "original_proof_sha256": "5c4982b61b7eb9116357e89be4713d2066b86b5258580176d51a027ddd5be18f",
+      "compact_proof_sha256": "311f9fc00ba2cba94d092e400e458f4fc91da8a1a12bfe043c55d6971ab0927f"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/3533.ari",
+      "category": "cpf",
+      "before_native": 34.19357513682917,
+      "after_native": 41.11736024590209,
+      "before_preparation": 0.052024869713932276,
+      "after_preparation": 0.2721193521283567,
+      "input_sha256": "0d704dbbf6b3ab12e60bf1525d85a0946a77da0e44589e99633fa9e77f916d70",
+      "original_proof_sha256": "d96133ae8d695620164f7d658d99171f86e2c6ea10f8b7d75af93610a9822f36",
+      "compact_proof_sha256": "cf4e0ddc40dc9dc161743a47152be449c3ee546601a833d44a7f8b5d9bc20f86"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86617.ari",
+      "category": "cpf",
+      "before_native": 37.78960145637393,
+      "after_native": 44.5013425918296,
+      "before_preparation": 0.16273011080920696,
+      "after_preparation": 0.08677274826914072,
+      "input_sha256": "6b850d752817704d129e5b7700210d3a31306440d241c56a859a6f167664f06a",
+      "original_proof_sha256": "8c956e74fbc2512a0a85761e29200173ec8c34e9d9ab0f2d2954b9339435a3df",
+      "compact_proof_sha256": "ff0457bd17d6c7b0732d0ca81c95a315b290e8259c584e1b0bc618126649bda8"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/85721.ari",
+      "category": "cpf",
+      "before_native": 41.21053819730878,
+      "after_native": 47.0953561430797,
+      "before_preparation": 0.028863375075161457,
+      "after_preparation": 0.26248859195038676,
+      "input_sha256": "ed05d958683a6fcab69b02dbd984584d7b227d7ac3f03765fceb6532d2361fb2",
+      "original_proof_sha256": "3360b6fbe27622cd7a849f76f7e41609f0ca68d62d04c0918d0e570c075d2161",
+      "compact_proof_sha256": "dd9d0d602eca24eb713ed157edf6fe09b95948c3af9dccc46a994bf3241450a5"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86025.ari",
+      "category": "cpf",
+      "before_native": 32.289170613046736,
+      "after_native": 37.90482850978151,
+      "before_preparation": 0.023608975112438202,
+      "after_preparation": 0.08628405025228858,
+      "input_sha256": "339458e761b0b390cf062593110fc5eb35277990538d109c892c04b79e36cb7d",
+      "original_proof_sha256": "5cccf237036ab09e9397e8b68f37601554970a7cdd782ac1c89808978d2cb234",
+      "compact_proof_sha256": "22d00dc8be6ccfa60462268320ab1980c90625f1340e19e442b4a33053e1b41d"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86577.ari",
+      "category": "cpf",
+      "before_native": 26.552807270083576,
+      "after_native": 31.859387119300663,
+      "before_preparation": 0.023037320002913475,
+      "after_preparation": 0.08685283688828349,
+      "input_sha256": "b2191b1d1da00e530d039a39c65463243ca5862d12097e05203952cd8e8f2d69",
+      "original_proof_sha256": "5da46062d4b30823e4a639c4ecf040cb2204eecbccf0ea2bf1649df49c7fd862",
+      "compact_proof_sha256": "528e8627c1e076e08d513e057695219b6099d13572e133d9a1dfe3be84f3358f"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/213147.ari",
+      "category": "cpf",
+      "before_native": 23.22326956409961,
+      "after_native": 28.27444508066401,
+      "before_preparation": 0.1664907792583108,
+      "after_preparation": 0.0562315690331161,
+      "input_sha256": "9c884394e0e74a57362796e99ec5b50d54cd49e9a46e011085bc6c27a93bbc3c",
+      "original_proof_sha256": "679bf2e64d99343cb2f7ca86b7bb9524e2e97173c63da115fbc7a7f798396dbc",
+      "compact_proof_sha256": "2d33e84dc6c96a815865d4886e57bce5782e154b86fe89d743c371376cab7ba8"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/96156.ari",
+      "category": "cpf",
+      "before_native": 20.304137421306223,
+      "after_native": 25.14164932211861,
+      "before_preparation": 0.02286387188360095,
+      "after_preparation": 0.25085863191634417,
+      "input_sha256": "e44ca045faccba743d865c0dfd862c4bf0bbf56c2bd2b743d4cf8fb35a5f4690",
+      "original_proof_sha256": "6cb845e0bfe0c09c76a197f379ecce753880593079a5943980058a6c0604a301",
+      "compact_proof_sha256": "e01222600a22bb0ca052dea91eb928862c4f43c3bcc5432fabec8a4fea04023a"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/259405.ari",
+      "category": "cpf",
+      "before_native": 17.516476550139487,
+      "after_native": 22.33556491928175,
+      "before_preparation": 0.028327326755970716,
+      "after_preparation": 0.03206666000187397,
+      "input_sha256": "b7ae14f00643c476aa51510c7b9b6ba89c350217d90efa980b2a8076e362aad4",
+      "original_proof_sha256": "2d62994f5473ca3ab2e9097fc983a1f9c87b1e93edbaccd76acea8da990b37ef",
+      "compact_proof_sha256": "18166bee7947b2e89f378dd6906f30491a7249e34f0dfeb56cad329389d84f0b"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/5076.ari",
+      "category": "cpf",
+      "before_native": 24.074064761865884,
+      "after_native": 28.821388572920114,
+      "before_preparation": 0.21414954401552677,
+      "after_preparation": 0.21478779101744294,
+      "input_sha256": "b157400e59111b107313cf1cfde3dcbd76fadf64331fbd75bca470cb9e4fed20",
+      "original_proof_sha256": "0a9a25df70727f63502a0907c0f58273befa55adc25e7003eaf3bce92db8e514",
+      "compact_proof_sha256": "5925a0194e6634510b2f409190ceb959bdc510c96bbec8be13055fca1b6f4b0d"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86857.ari",
+      "category": "cpf",
+      "before_native": 19.255697487853467,
+      "after_native": 23.811498844996095,
+      "before_preparation": 0.023576585575938225,
+      "after_preparation": 0.028783139772713184,
+      "input_sha256": "b8163ac68d6f71cc828d4a2a9f5910ee6792ffc57c47688d504f4ec812cd68e7",
+      "original_proof_sha256": "cd36700a8d482de128926c2172f381b989e683f931b6b0079dea0dc3c34fe4f1",
+      "compact_proof_sha256": "18c0b63b00cfb88837b71e31e37ff2e4261438926c258b017892442921516044"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/96673.ari",
+      "category": "cpf",
+      "before_native": 22.32152664801106,
+      "after_native": 26.78619930986315,
+      "before_preparation": 0.022975141182541847,
+      "after_preparation": 0.02829230297356844,
+      "input_sha256": "3c02e533db0a954260e82eb707a2aa80907bc66f2212d6230b933e4f2b508002",
+      "original_proof_sha256": "e93c9471f4aa67ab450ed719bc2caa695ab1a817e1f0d54d2a4fc66c1a75c5f0",
+      "compact_proof_sha256": "9038f3e8a7fc88ea1782b6e2afb8ca0d170799892e3a9228e2a92a84b5ab4b1b"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/96612.ari",
+      "category": "cpf",
+      "before_native": 15.739291312173009,
+      "after_native": 20.162845180835575,
+      "before_preparation": 0.02220676699653268,
+      "after_preparation": 0.03701378684490919,
+      "input_sha256": "0513ca4e1e937bce91b320af6367bfefdbc882c781223f1f0b45a81cc062ee8d",
+      "original_proof_sha256": "21468739ed2fc601f54dfdb049d4e2b06883d8e30863328194c04b8fa312d691",
+      "compact_proof_sha256": "17dce6c7f24498834c8419afcfe77d08faca06d60592a546f464d576c14e9a31"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97888.ari",
+      "category": "cpf",
+      "before_native": 18.673855565954,
+      "after_native": 22.9997750245966,
+      "before_preparation": 0.02420200128108263,
+      "after_preparation": 0.029146358370780945,
+      "input_sha256": "35c31580422bedc31daf165dc0459590f76772db6b0cfc6eabc336eb88a8e0bd",
+      "original_proof_sha256": "bdd8f5e01be002e04c4926e6955a443beca05733fe8c87e1a2f3eb94ecfc8033",
+      "compact_proof_sha256": "13bf3dac4cda5886489585b5c34feb24bb085fe9f974a985701dcf5ed7722470"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/96370.ari",
+      "category": "cpf",
+      "before_native": 15.745214376132935,
+      "after_native": 19.95956316124648,
+      "before_preparation": 0.0227057128213346,
+      "after_preparation": 0.026658780872821808,
+      "input_sha256": "26e71987a38d7e5ca12bdc582587c2499277c25ac50e5a8aea90659b34b73cb7",
+      "original_proof_sha256": "106d5258ff4d77950bab91978ed1d344c5af244a5414bf488911ee3191d3a85b",
+      "compact_proof_sha256": "1ac994e40fa5c214437fb90611d5dd81f2186b1065770664bed6aae9cd267b18"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97885.ari",
+      "category": "cpf",
+      "before_native": 20.220253594685346,
+      "after_native": 24.377462754957378,
+      "before_preparation": 0.1663234131410718,
+      "after_preparation": 0.030761579051613808,
+      "input_sha256": "8c0a80a6fe1fab52a3dbaba9cd1dd2328ec79f839743b17fcce7ba620f12c083",
+      "original_proof_sha256": "f850f4f55d4f68f8e892aa8b7c610b85adb86a2739c06f5cf59eff0c009d15ab",
+      "compact_proof_sha256": "5f1255fc2906e89140b43f2df59ac783240e96a4078cae4aa70c6b30ab9a867d"
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97917.ari",
+      "category": "cpf",
+      "before_native": 18.59285373799503,
+      "after_native": 22.51183747826144,
+      "before_preparation": 0.024794227443635464,
+      "after_preparation": 0.02769987564533949,
+      "input_sha256": "2cd5774ffa9ae9e79f1698a12b2bda7a02a8dfec3760ca68db5dd7b673bfafa6",
+      "original_proof_sha256": "8059f70ece191107821fbf17ad8bed4fd94e5b469fdf5519d2029effe40f6fa1",
+      "compact_proof_sha256": "4941c17cc50470fc51b78b8bc6b9d3a7be1bddde049b608243268ab07a9c4df4"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "equal": true,
+  "original": {
+    "expanded_tree_sha256": "637ac029d0158b1e0dd6d26379f45bc93c74f8da1c43436de84c11023f21c980",
+    "table_entries": 0,
+    "references": 0
+  },
+  "shared": {
+    "expanded_tree_sha256": "637ac029d0158b1e0dd6d26379f45bc93c74f8da1c43436de84c11023f21c980",
+    "table_entries": 275560,
+    "references": 512877
+  }
+}

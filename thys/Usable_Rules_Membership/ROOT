@@ -1,0 +1,13 @@
+session Usable_Rules_Membership = Proof_Checker +
+  options [document = false]
+  theories Usable_Rules_Membership
+
+session Usable_Rules_HO_Export in "HO" = Higher_Order_Filtered_Code +
+  options [document = false]
+  sessions Usable_Rules_Membership
+  theories Usable_Rules_HO_Export
+
+session Usable_Rules_CPF_Export in "CPF" = Relative_ADP_Ceta_Dev +
+  options [document = false]
+  sessions Usable_Rules_Membership
+  theories Usable_Rules_CPF_Export

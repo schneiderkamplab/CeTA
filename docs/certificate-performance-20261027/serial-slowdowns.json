@@ -1,0 +1,1086 @@
+{
+  "workers": 1,
+  "roots": 27,
+  "results": [
+    {
+      "root": "Logic_Programming/BCGGV05/maximum-fbf.pl",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.023055216995999217
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.024424521005130373
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.023508594997110777
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.02302300800511148
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.023242747003678232
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.023043706998578273
+        }
+      ],
+      "median": {
+        "before": 0.023055216995999217,
+        "after": 0.023508594997110777
+      },
+      "ratio": 1.0196648767691163
+    },
+    {
+      "root": "SRS_Cycle/Zantema_16/nt04.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.011901202000444755
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.011925261002033949
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012033512000925839
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.01167721301317215
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011809332005213946
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.01146026399510447
+        }
+      ],
+      "median": {
+        "before": 0.011809332005213946,
+        "after": 0.011925261002033949
+      },
+      "ratio": 1.0098167277174372
+    },
+    {
+      "root": "SRS_Relative/Hofbauer_26/mnm1.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012113171003875323
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.01213078100408893
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012227459999849088
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012131701005273499
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012204290003865026
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.0122553809924284
+        }
+      ],
+      "median": {
+        "before": 0.012131701005273499,
+        "after": 0.012227459999849088
+      },
+      "ratio": 1.0078932867315116
+    },
+    {
+      "root": "SRS_Relative/Hofbauer_26/mnm3.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.0120972709992202
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.011959930998273194
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.011613554001087323
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011654022993752733
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012666157999774441
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.01166477300284896
+        }
+      ],
+      "median": {
+        "before": 0.0120972709992202,
+        "after": 0.01166477300284896
+      },
+      "ratio": 0.9642483005961329
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-560.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012377110004308634
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012119280989281833
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.011861042003147304
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011695243010763079
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012444838997907937
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012591299004270695
+        }
+      ],
+      "median": {
+        "before": 0.012377110004308634,
+        "after": 0.012119280989281833
+      },
+      "ratio": 0.9791688839367957
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-320.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.011988901009317487
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.011920822013053112
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012383588997181505
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011936332011828199
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011886052001500502
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.011851661998662166
+        }
+      ],
+      "median": {
+        "before": 0.011936332011828199,
+        "after": 0.011920822013053112
+      },
+      "ratio": 0.9987006059516678
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-408.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.01219481100270059
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012912277001305483
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012893507999251597
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012443708998034708
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011938412004383281
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.01286152699321974
+        }
+      ],
+      "median": {
+        "before": 0.01219481100270059,
+        "after": 0.012893507999251597
+      },
+      "ratio": 1.057294614602578
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/aabbaaaaa-aaaaaaabbaabb.srs.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012680058003752492
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.023113086994271725
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.02298506800434552
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012613398997928016
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012422219006111845
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.02309581800363958
+        }
+      ],
+      "median": {
+        "before": 0.012613398997928016,
+        "after": 0.02309581800363958
+      },
+      "ratio": 1.831054262806837
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/baabbaab-aabbaabaabaabb.srs.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012301220005610958
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012379689986119047
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012490829001762904
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012072611003532074
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011919721990125254
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012438829013262875
+        }
+      ],
+      "median": {
+        "before": 0.012072611003532074,
+        "after": 0.012438829013262875
+      },
+      "ratio": 1.0303346152397073
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/babbabbaba-ababbabbabba.srs.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.01215732099080924
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012684948000242002
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012729937996482477
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012144911001087166
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012234310008352622
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012808208004571497
+        }
+      ],
+      "median": {
+        "before": 0.01215732099080924,
+        "after": 0.012729937996482477
+      },
+      "ratio": 1.0471005911669296
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z089.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.01212847100396175
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012532278007711284
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012745807995088398
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012121790990931913
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011897421994945034
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012499068994657136
+        }
+      ],
+      "median": {
+        "before": 0.012121790990931913,
+        "after": 0.012532278007711284
+      },
+      "ratio": 1.0338635616705856
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z091.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012325689996941946
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012544728990178555
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012301429989747703
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.01233145898731891
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012421869992977008
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012304019997827709
+        }
+      ],
+      "median": {
+        "before": 0.01233145898731891,
+        "after": 0.012304019997827709
+      },
+      "ratio": 0.9977748789077254
+    },
+    {
+      "root": "TRS_Conditional/COPS/316.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.011905602004844695
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012524649006081745
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012565017997985706
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.01218195099500008
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.01197657099692151
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012441569997463375
+        }
+      ],
+      "median": {
+        "before": 0.01197657099692151,
+        "after": 0.012524649006081745
+      },
+      "ratio": 1.0457625149386343
+    },
+    {
+      "root": "TRS_Conditional_Termination/COPS/358.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012130900999181904
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.01261478899687063
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012320730005740188
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011797032988397405
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.01202783100598026
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012416069002938457
+        }
+      ],
+      "median": {
+        "before": 0.01202783100598026,
+        "after": 0.012416069002938457
+      },
+      "ratio": 1.0322783049383686
+    },
+    {
+      "root": "TRS_Innermost/Applicative_AG01_innermost/#4.15.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012377930004731752
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012661518005188555
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012606008007423952
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012485349012422375
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012324949988396838
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.013537744001951069
+        }
+      ],
+      "median": {
+        "before": 0.012377930004731752,
+        "after": 0.012661518005188555
+      },
+      "ratio": 1.0229107775167896
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex6_GM04_iGM.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012430089991539717
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012572388994158246
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012211000997922383
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011784861999331042
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011726343000191264
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012169940993771888
+        }
+      ],
+      "median": {
+        "before": 0.011784861999331042,
+        "after": 0.012211000997922383
+      },
+      "ratio": 1.0361598632733697
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex9_BLR02_L.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.011939242001972161
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012130791001254693
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.01226270999177359
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011874441988766193
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011590163005166687
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.01238229000591673
+        }
+      ],
+      "median": {
+        "before": 0.011874441988766193,
+        "after": 0.01226270999177359
+      },
+      "ratio": 1.0326977893676788
+    },
+    {
+      "root": "TRS_Standard/AProVE_07/thiemann08.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012247050006408244
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012468309010728262
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.01271393800561782
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012324039998929948
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012350770004559308
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012928666998050176
+        }
+      ],
+      "median": {
+        "before": 0.012324039998929948,
+        "after": 0.01271393800561782
+      },
+      "ratio": 1.0316371909472646
+    },
+    {
+      "root": "TRS_Standard/AProVE_07/thiemann29.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.043079039998701774
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.023490835999837145
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.0231244380120188
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.035328808007761836
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.03294078000180889
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.0235782949894201
+        }
+      ],
+      "median": {
+        "before": 0.035328808007761836,
+        "after": 0.023490835999837145
+      },
+      "ratio": 0.6649201409420931
+    },
+    {
+      "root": "TRS_Standard/AProVE_08/id_inc.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.6128131320001557
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.015445243989233859
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.07248123700264841
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012509859006968327
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012030561003484763
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012729897993267514
+        }
+      ],
+      "median": {
+        "before": 0.012509859006968327,
+        "after": 0.015445243989233859
+      },
+      "ratio": 1.234645728671318
+    },
+    {
+      "root": "TRS_Standard/Strategy_removed_AG01/#4.20.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.29231877499842085
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012814576999517158
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012467028995160945
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012096410995582119
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.012121861000196077
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012325069998041727
+        }
+      ],
+      "median": {
+        "before": 0.012121861000196077,
+        "after": 0.012467028995160945
+      },
+      "ratio": 1.0284748352550226
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_GM04_L.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012074981001205742
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012344319999101572
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012285320000955835
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012217770010465756
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.01333725500444416
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012181790996692143
+        }
+      ],
+      "median": {
+        "before": 0.012217770010465756,
+        "after": 0.012285320000955835
+      },
+      "ratio": 1.0055288314014927
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_GM99_L.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012092311008018441
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012240360010764562
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.012319710003794171
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011834081989945844
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011877442011609674
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012401270010741428
+        }
+      ],
+      "median": {
+        "before": 0.011877442011609674,
+        "after": 0.012319710003794171
+      },
+      "ratio": 1.0372359630762416
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/LISTUTILITIES_nosorts-noand_FR.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012304289994062856
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012349619995802641
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.01213298000220675
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.012053012003889307
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011913620997802354
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012488950000260957
+        }
+      ],
+      "median": {
+        "before": 0.012053012003889307,
+        "after": 0.012349619995802641
+      },
+      "ratio": 1.0246086199713087
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/LengthOfFiniteLists_nosorts_noand_C.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.012022840994177386
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012079671010724269
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.0120274619985139
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.011926181992748752
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.011919951997697353
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.012655188009375706
+        }
+      ],
+      "median": {
+        "before": 0.011926181992748752,
+        "after": 0.012079671010724269
+      },
+      "ratio": 1.0128699208236835
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_nokinds_noand_C.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.022833429000456817
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.023549894991447218
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.022934997992706485
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.022470561001682654
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.022604558995226398
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.02338504600629676
+        }
+      ],
+      "median": {
+        "before": 0.022604558995226398,
+        "after": 0.02338504600629676
+      },
+      "ratio": 1.034527858350839
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/OvConsOS_complete-noand_Z.ari",
+      "runs": [
+        {
+          "variant": "before",
+          "repeat": 0,
+          "seconds": 0.022519499994814396
+        },
+        {
+          "variant": "after",
+          "repeat": 0,
+          "seconds": 0.012360590000753291
+        },
+        {
+          "variant": "after",
+          "repeat": 1,
+          "seconds": 0.02300340699730441
+        },
+        {
+          "variant": "before",
+          "repeat": 1,
+          "seconds": 0.022339631002978422
+        },
+        {
+          "variant": "before",
+          "repeat": 2,
+          "seconds": 0.022235572003410198
+        },
+        {
+          "variant": "after",
+          "repeat": 2,
+          "seconds": 0.023458586001652293
+        }
+      ],
+      "median": {
+        "before": 0.022339631002978422,
+        "after": 0.02300340699730441
+      },
+      "ratio": 1.0297129345707408
+    }
+  ]
+}

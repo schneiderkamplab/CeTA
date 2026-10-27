@@ -35,7 +35,7 @@ done
 "$ho_isabelle" export -n -d "$HO_CETA_SOURCE_DIR/thys" "${ho_dirs[@]}" \
   -O "$ho_output/export" -x '*:code/**' "$ho_session" >"$ho_output/export.log" 2>&1
 ho_generated="$ho_output/export/$ho_session.$ho_session/code/export1"
-{ time "$ho_ghc" -O1 -i"$ho_generated" -outputdir "$ho_output/ghc" \
+{ time "$ho_ghc" -O2 -i"$ho_generated" -outputdir "$ho_output/ghc" \
     "$ho_driver" -o "$ho_output/ceta-ho-delegation"; } \
     >"$ho_output/ghc-build.log" 2>&1
 git rev-parse HEAD >"$ho_output/source-commit.txt"

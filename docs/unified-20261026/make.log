@@ -1,0 +1,3 @@
+GHC="ghc" python3 scripts/build_unified_checker.py --output "target/unified-o2-20261026" --jobs "4"
+/work/dfm/festschrift/CeTA-consolidated/target/unified-o2-20261026/ceta
+cp "target/unified-o2-20261026/ceta" "target/unified-release/ceta"

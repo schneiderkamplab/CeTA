@@ -1,0 +1,35 @@
+{
+  "binary_sha256": "3eba608f0ea41a6f76cc85986fcc16d3edf05da53812dab30eeb148fff141673",
+  "counts": {
+    "accepted": 5412
+  },
+  "workers": 32,
+  "checks_per_root": 1,
+  "seconds": 357.9587320960127,
+  "benchmark_categories": {
+    "Higher_Order_Rewriting": 228,
+    "Logic_Programming": 363,
+    "Logic_Programming_with_Cut": 91,
+    "SRS_Cycle": 200,
+    "SRS_Relative": 403,
+    "SRS_Standard": 1720,
+    "TRS_Conditional": 122,
+    "TRS_Conditional_Termination": 117,
+    "TRS_Contextsensitive": 110,
+    "TRS_Equational": 71,
+    "TRS_Innermost": 311,
+    "TRS_Outermost": 207,
+    "TRS_Relative": 113,
+    "TRS_Standard": 1356
+  },
+  "entry_points": {
+    "higher-order": 192,
+    "higher-order-delegation": 36,
+    "lp": 454,
+    "cycle": 200,
+    "cpf": 4459,
+    "conditional": 63,
+    "conditional-erasure": 8
+  },
+  "semantic_negatives": 408
+}

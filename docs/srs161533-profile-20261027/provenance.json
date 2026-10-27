@@ -1,0 +1,26 @@
+{
+  "production_binary_sha256": "8b5e6c3560cf10f1952b68b52931e2e6becac7b8e93f1a19776b277edef3d28c",
+  "export": {
+    "module": "Ceta.Category.Rewriting",
+    "adapter": "src/Haskell/Ceta/Category/Rewriting.hs",
+    "cpp": [],
+    "sources": {
+      "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+      "Ceta_Relative.hs": "c3c846d7800bbaded819be90a112b79f9c80072c2b23455fd3294ba91d458cb1",
+      "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+      "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+    },
+    "origin": "/work/dfm/festschrift/CeTA-consolidated/target/usable-membership-20261026/cpf-export/Usable_Rules_CPF_Export.Usable_Rules_CPF_Export/code/export1",
+    "archive": "tests/unified/exports/cpf.tar.gz",
+    "archive_sha256": "dee3398bc5e8a7453bd0d90028d89991b45cf4667ee28c82754be56b9fabbb37",
+    "optimization_theory": "thys/Usable_Rules_Membership/Usable_Rules_Membership.thy",
+    "optimization_theory_sha256": "862bc29fc1168573df695d335502c8f8c3ecb07d10eac18f6f68bdf0574911e7"
+  },
+  "source_commit": "f82d3f984e1a356df0ebc4b77ea65b78ee404580",
+  "proof_sha256": "783392ee7b7268230a390aaf00995f7187b0536751f4d2446efeb6d8984cd352"
+}

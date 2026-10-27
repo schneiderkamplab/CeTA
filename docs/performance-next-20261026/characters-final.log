@@ -1,0 +1,60 @@
+
+target/unified-exports/cpf/Uint.hs:11:19: warning: [GHC-68441] [-Wdeprecations]
+    In the use of ‘bitSize’
+    (imported from Data.Bits, but defined in GHC.Bits):
+    Deprecated: "Use 'bitSizeMaybe' or 'finiteBitSize' instead"
+   |
+11 |     bitSize_aux = Data.Bits.bitSize
+   |                   ^^^^^^^^^^^^^^^^^
+
+target/unified-exports/cpf/Ceta_Relative.hs:31159:1: warning: [GHC-94210] [-Woverlapping-patterns]
+    Pattern match has inaccessible right hand side
+    In an equation for ‘zantema_pair_impl’:
+        zantema_pair_impl (Fun va (ve : Fun vl vm : vk),
+                           Fun vb (vd : Fun vh vi : vg)) = ...
+      |
+31159 | zantema_pair_impl (Fun va (ve : Fun vl vm : vk), Fun vb (vd : Fun vh vi : vg)) =
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^...
+
+target/unified-exports/cpf/Ceta_Relative.hs:31161:1: warning: [GHC-94210] [-Woverlapping-patterns]
+    Pattern match has inaccessible right hand side
+    In an equation for ‘zantema_pair_impl’:
+        zantema_pair_impl (v, Fun vb (Fun va vc : Fun vh vi : vg)) = ...
+      |
+31161 | zantema_pair_impl (v, Fun vb (Fun va vc : Fun vh vi : vg)) = Nothing;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+target/unified-exports/cpf/Ceta_Relative.hs:31162:1: warning: [GHC-53633] [-Woverlapping-patterns]
+    Pattern match is redundant
+    In an equation for ‘zantema_pair_impl’:
+        zantema_pair_impl (v, Fun vb (vd : Fun vh [] : vg)) = ...
+      |
+31162 | zantema_pair_impl (v, Fun vb (vd : Fun vh [] : vg)) = Nothing;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+target/unified-exports/cpf/Ceta_Relative.hs:31163:1: warning: [GHC-53633] [-Woverlapping-patterns]
+    Pattern match is redundant
+    In an equation for ‘zantema_pair_impl’:
+        zantema_pair_impl (v,
+                           Fun vb (vd : Fun vh (Fun ve vf : vc) : vg)) = ...
+      |
+31163 | zantema_pair_impl (v, Fun vb (vd : Fun vh (Fun ve vf : vc) : vg)) = Nothing;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+target/unified-exports/cpf/Ceta_Relative.hs:31164:1: warning: [GHC-53633] [-Woverlapping-patterns]
+    Pattern match is redundant
+    In an equation for ‘zantema_pair_impl’:
+        zantema_pair_impl (v,
+                           Fun vb (vd : Fun vh (va : ve : vf) : vg)) = ...
+      |
+31164 | zantema_pair_impl (v, Fun vb (vd : Fun vh (va : ve : vf) : vg)) = Nothing;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+target/unified-exports/cpf/Ceta_Relative.hs:31165:1: warning: [GHC-53633] [-Woverlapping-patterns]
+    Pattern match is redundant
+    In an equation for ‘zantema_pair_impl’:
+        zantema_pair_impl (v, Fun vb (vd : Fun vh vi : va : vc)) = ...
+      |
+31165 | zantema_pair_impl (v, Fun vb (vd : Fun vh vi : va : vc)) = Nothing;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+All ASCII characters and non-ASCII rejection behavior agree with the generated decoder.

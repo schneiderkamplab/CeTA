@@ -1,0 +1,2553 @@
+{
+  "roots": 5412,
+  "before_wall_seconds": 331.7325104698539,
+  "after_wall_seconds": 347.6933324929996,
+  "before_native": {
+    "count": 5412,
+    "min": 0.011839909013360739,
+    "median": 0.118461640086025,
+    "mean": 0.971334899438914,
+    "p95": 4.0683803061954675,
+    "p99": 19.806475577508305,
+    "max": 86.68264859635383,
+    "sum": 5256.864475763403
+  },
+  "after_native": {
+    "count": 5412,
+    "min": 0.011856829005409963,
+    "median": 0.13152720199286705,
+    "mean": 0.7582662565196796,
+    "p95": 3.848533159594072,
+    "p99": 17.40107685349375,
+    "max": 53.66516403899004,
+    "sum": 4103.736980284506
+  },
+  "before_preparation": {
+    "count": 5412,
+    "min": 0.022345453035086393,
+    "median": 0.22035841294564307,
+    "mean": 0.23502179808950455,
+    "p95": 0.43852591607719654,
+    "p99": 0.6844535143766558,
+    "max": 1.1562752588652074,
+    "sum": 1271.9379712603986
+  },
+  "after_preparation": {
+    "count": 5412,
+    "min": 0.0238859460077947,
+    "median": 0.2837967860104982,
+    "mean": 0.3109295552893258,
+    "p95": 0.5923646642942912,
+    "p99": 1.6085239163263767,
+    "max": 1.755874810012756,
+    "sum": 1682.7507532258314
+  },
+  "slowdowns_to_repeat": [
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h26.ari",
+      "before": 3.3051111907698214,
+      "after": 4.2105267550068675,
+      "ratio": 1.2739440557296828,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.45802313508465886,
+      "after_preparation": 0.367657135007903
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h28.ari",
+      "before": 1.519157208967954,
+      "after": 1.8819465279957512,
+      "ratio": 1.2388095957983571,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.5369424358941615,
+      "after_preparation": 0.25324644800275564
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h30.ari",
+      "before": 4.1078704269602895,
+      "after": 7.735996810995857,
+      "ratio": 1.8832134432049945,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.45406026020646095,
+      "after_preparation": 0.4186824530042941
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h31.ari",
+      "before": 20.455967948306352,
+      "after": 25.698454644007143,
+      "ratio": 1.256281526689371,
+      "category": "higher-order-delegation",
+      "before_preparation": 1.0331695396453142,
+      "after_preparation": 1.3968945800006622
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h34.ari",
+      "before": 1.186557861045003,
+      "after": 1.5192517190007493,
+      "ratio": 1.2803857012609081,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.20030734408646822,
+      "after_preparation": 0.22357427899260074
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h35.ari",
+      "before": 1.081687682773918,
+      "after": 1.368366035996587,
+      "ratio": 1.2650287673494636,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.3524877317249775,
+      "after_preparation": 0.2786557170038577
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h36.ari",
+      "before": 1.121496410574764,
+      "after": 1.4483232649945421,
+      "ratio": 1.2914203303176692,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.1681830077432096,
+      "after_preparation": 0.2063932410092093
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h38.ari",
+      "before": 1.860452520661056,
+      "after": 2.316310666006757,
+      "ratio": 1.2450254119808042,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.16444251080974936,
+      "after_preparation": 0.3482896269997582
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h40.ari",
+      "before": 0.4998052711598575,
+      "after": 0.7671321090019774,
+      "ratio": 1.5348619817909406,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.3311891872435808,
+      "after_preparation": 0.26392005701200105
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h41.ari",
+      "before": 1.6700290846638381,
+      "after": 2.0187257780053187,
+      "ratio": 1.2087967787768619,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.32720712199807167,
+      "after_preparation": 0.49481574099627323
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h53.ari",
+      "before": 0.03818863909691572,
+      "after": 0.32347584499802906,
+      "ratio": 8.470473225744103,
+      "category": "higher-order",
+      "before_preparation": 0.16766184009611607,
+      "after_preparation": 0.3547765860130312
+    },
+    {
+      "root": "Higher_Order_Rewriting/Typed_Applicative_11/AotoYamada_05__019.ari",
+      "before": 0.0869634598493576,
+      "after": 0.40438455999537837,
+      "ratio": 4.650051420399708,
+      "category": "higher-order",
+      "before_preparation": 0.14369085198268294,
+      "after_preparation": 0.3867244249995565
+    },
+    {
+      "root": "Higher_Order_Rewriting/Typed_Applicative_11/AotoYamada_05__023.ari",
+      "before": 0.08888903819024563,
+      "after": 0.2953442180005368,
+      "ratio": 3.3226168717049616,
+      "category": "higher-order",
+      "before_preparation": 0.16826429590582848,
+      "after_preparation": 0.22806082700844854
+    },
+    {
+      "root": "Higher_Order_Rewriting/Typed_Applicative_11/Applicative_05__Hamming.ari",
+      "before": 0.028041813056916,
+      "after": 0.25790944500477053,
+      "ratio": 9.197317037999506,
+      "category": "higher-order",
+      "before_preparation": 0.15766046335920691,
+      "after_preparation": 0.4720656199933728
+    },
+    {
+      "root": "Higher_Order_Rewriting/Typed_Applicative_11/Applicative_first_order_05__12.ari",
+      "before": 0.07295552873983979,
+      "after": 0.35576583100191783,
+      "ratio": 4.876475260299773,
+      "category": "higher-order-delegation",
+      "before_preparation": 0.2033562147989869,
+      "after_preparation": 0.43005539900332224
+    },
+    {
+      "root": "Higher_Order_Rewriting/Typed_Applicative_11/Applicative_first_order_05__18.ari",
+      "before": 0.06354243913665414,
+      "after": 0.29676617099903524,
+      "ratio": 4.670361651695664,
+      "category": "higher-order",
+      "before_preparation": 0.2753442698158324,
+      "after_preparation": 0.32832788200175855
+    },
+    {
+      "root": "Logic_Programming/BCGGV05/flatlength-bfb.pl",
+      "before": 0.053404093254357576,
+      "after": 0.3469657240057131,
+      "ratio": 6.4969874566197605,
+      "category": "lp",
+      "before_preparation": 0.2902640150859952,
+      "after_preparation": 0.3341271440003766
+    },
+    {
+      "root": "Logic_Programming/BCGGV05/maximum-fbf.pl",
+      "before": 0.12109456397593021,
+      "after": 0.3805576140002813,
+      "ratio": 3.1426482040591366,
+      "category": "lp",
+      "before_preparation": 0.2527921530418098,
+      "after_preparation": 0.16602664200763684
+    },
+    {
+      "root": "Logic_Programming/BCGGV05/prefix-fb.pl",
+      "before": 0.038488647900521755,
+      "after": 0.24459914899489377,
+      "ratio": 6.355098511828418,
+      "category": "lp",
+      "before_preparation": 0.1568181631155312,
+      "after_preparation": 0.17477379100455437
+    },
+    {
+      "root": "Logic_Programming/Payet_23/payet-nonloop-3_2.pl",
+      "before": 0.06576608680188656,
+      "after": 0.30629773599503096,
+      "ratio": 4.657381195839138,
+      "category": "lp",
+      "before_preparation": 0.24341902788728476,
+      "after_preparation": 0.3372886190045392
+    },
+    {
+      "root": "Logic_Programming/SGST06/baby91.pl",
+      "before": 0.7860906249843538,
+      "after": 0.9942673710029339,
+      "ratio": 1.2648253768739752,
+      "category": "lp",
+      "before_preparation": 0.1582719744183123,
+      "after_preparation": 0.34118785099417437
+    },
+    {
+      "root": "Logic_Programming/SGST06/parse.pl",
+      "before": 0.1255583600141108,
+      "after": 0.4009482169931289,
+      "ratio": 3.1933215514129727,
+      "category": "lp",
+      "before_preparation": 0.3264042269438505,
+      "after_preparation": 0.31188506000034977
+    },
+    {
+      "root": "Logic_Programming/talp_apt/mergesort_ap.pl",
+      "before": 0.3066873108036816,
+      "after": 0.5726317720109364,
+      "ratio": 1.8671518248027308,
+      "category": "lp",
+      "before_preparation": 0.2604324910789728,
+      "after_preparation": 0.36671363000641577
+    },
+    {
+      "root": "Logic_Programming/talp_apt/naive_rev.pl",
+      "before": 0.06203438900411129,
+      "after": 0.2865441199974157,
+      "ratio": 4.619117308924009,
+      "category": "lp",
+      "before_preparation": 0.24218343710526824,
+      "after_preparation": 0.22974263899959624
+    },
+    {
+      "root": "Logic_Programming/talp_talp/binary2.pl",
+      "before": 0.6159687549807131,
+      "after": 0.9305465730139986,
+      "ratio": 1.5107041801870864,
+      "category": "lp",
+      "before_preparation": 0.31445749197155237,
+      "after_preparation": 0.21615415399719495
+    },
+    {
+      "root": "Logic_Programming/talp_talp/slowsort-oi.pl",
+      "before": 0.04363357508555055,
+      "after": 0.3188307870004792,
+      "ratio": 7.307005817775894,
+      "category": "lp",
+      "before_preparation": 0.2421710668131709,
+      "after_preparation": 0.45889753199298866
+    },
+    {
+      "root": "Logic_Programming/terminweb_new/NJ6.pl",
+      "before": 0.033541828859597445,
+      "after": 0.2496759049972752,
+      "ratio": 7.443717694774254,
+      "category": "lp",
+      "before_preparation": 0.2612436171621084,
+      "after_preparation": 0.19286840400309302
+    },
+    {
+      "root": "Logic_Programming/terminweb_new/transpose.pl",
+      "before": 0.05186832416802645,
+      "after": 0.2763081090088235,
+      "ratio": 5.3271069277991066,
+      "category": "lp",
+      "before_preparation": 0.31379879591986537,
+      "after_preparation": 0.35361708200071007
+    },
+    {
+      "root": "Logic_Programming_with_Cut/Schneider_Kamp_08/divminus.pl",
+      "before": 0.1333779408596456,
+      "after": 0.3979526920011267,
+      "ratio": 2.983646991670794,
+      "category": "lp",
+      "before_preparation": 0.22840905329212546,
+      "after_preparation": 0.39035563700599596
+    },
+    {
+      "root": "Logic_Programming_with_Cut/Schneider_Kamp_08/negationasfailure.pl",
+      "before": 0.1521974029019475,
+      "after": 0.38792998901044484,
+      "ratio": 2.548860766437434,
+      "category": "lp",
+      "before_preparation": 0.2537053539417684,
+      "after_preparation": 0.3191407449921826
+    },
+    {
+      "root": "Logic_Programming_with_Cut/Stroeder_09/countstack2.pl",
+      "before": 1.0149471149779856,
+      "after": 1.2389417500089621,
+      "ratio": 1.220695868509203,
+      "category": "lp",
+      "before_preparation": 0.27864586701616645,
+      "after_preparation": 0.2804627589939628
+    },
+    {
+      "root": "Logic_Programming_with_Cut/Stroeder_09/divminus2.pl",
+      "before": 0.9810573277063668,
+      "after": 1.1836812920082593,
+      "ratio": 1.2065363140150138,
+      "category": "lp",
+      "before_preparation": 0.31743451301008463,
+      "after_preparation": 0.2898842439899454
+    },
+    {
+      "root": "Logic_Programming_with_Cut/Stroeder_09/rev.pl",
+      "before": 0.8062731581740081,
+      "after": 1.1579611329943873,
+      "ratio": 1.4361896104998184,
+      "category": "lp",
+      "before_preparation": 0.29005645541474223,
+      "after_preparation": 0.5662207929999568
+    },
+    {
+      "root": "SRS_Cycle/Wenzel_16/aababaaaa-aaaaaababaabab.srs.ari",
+      "before": 0.12108143791556358,
+      "after": 0.3338643260067329,
+      "ratio": 2.7573534949225986,
+      "category": "cycle",
+      "before_preparation": 0.16766499634832144,
+      "after_preparation": 0.2635052489931695
+    },
+    {
+      "root": "SRS_Cycle/Wenzel_16/abaaaaaaa-aaaaaaaababaab.srs.ari",
+      "before": 0.19646369526162744,
+      "after": 0.400210280000465,
+      "ratio": 2.0370698996957763,
+      "category": "cycle",
+      "before_preparation": 0.19751092698425055,
+      "after_preparation": 0.3049372130044503
+    },
+    {
+      "root": "SRS_Cycle/Wenzel_16/abababaababa-ababaababaabab.srs.ari",
+      "before": 0.07434994215145707,
+      "after": 0.32906458800425753,
+      "ratio": 4.425888958110086,
+      "category": "cycle",
+      "before_preparation": 0.17562970472499728,
+      "after_preparation": 0.4800814710033592
+    },
+    {
+      "root": "SRS_Cycle/Wenzel_16/ababbbabbab-abbabbbababbba.srs.ari",
+      "before": 0.1357565359212458,
+      "after": 0.3407393819943536,
+      "ratio": 2.509929851127176,
+      "category": "cycle",
+      "before_preparation": 0.15440605906769633,
+      "after_preparation": 0.695341169994208
+    },
+    {
+      "root": "SRS_Cycle/Wenzel_16/abacaaaaa-aaaaaabacaabac.srs.ari",
+      "before": 0.04728653188794851,
+      "after": 0.2606557029939722,
+      "ratio": 5.512260945920696,
+      "category": "cycle",
+      "before_preparation": 0.20561950700357556,
+      "after_preparation": 0.32125056500080973
+    },
+    {
+      "root": "SRS_Cycle/Wenzel_16/bccaaaaaaa-aaaaaaabccbcca.srs.ari",
+      "before": 0.06997279031202197,
+      "after": 0.2789338919974398,
+      "ratio": 3.9863194072098675,
+      "category": "cycle",
+      "before_preparation": 0.28243193309754133,
+      "after_preparation": 0.3959706309979083
+    },
+    {
+      "root": "SRS_Cycle/Zantema_16/nt04.ari",
+      "before": 0.02506126184016466,
+      "after": 0.2534414010006003,
+      "ratio": 10.11287470746665,
+      "category": "cycle",
+      "before_preparation": 0.2682471130974591,
+      "after_preparation": 0.3269245499977842
+    },
+    {
+      "root": "SRS_Relative/Hofbauer_26/mnm1.ari",
+      "before": 0.02123688580468297,
+      "after": 0.29682272199715953,
+      "ratio": 13.976753688231765,
+      "category": "cpf",
+      "before_preparation": 0.1852318849414587,
+      "after_preparation": 0.44257530599134043
+    },
+    {
+      "root": "SRS_Relative/Hofbauer_26/mnm3.ari",
+      "before": 0.035510017070919275,
+      "after": 0.2535659199929796,
+      "ratio": 7.140687076735763,
+      "category": "cpf",
+      "before_preparation": 0.1891760602593422,
+      "after_preparation": 0.5557970549998572
+    },
+    {
+      "root": "SRS_Relative/Hofbauer_26/mnm4.ari",
+      "before": 0.02843834087252617,
+      "after": 0.2586464949999936,
+      "ratio": 9.094992431498277,
+      "category": "cpf",
+      "before_preparation": 0.06896442594006658,
+      "after_preparation": 0.5066484620037954
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/124791.ari",
+      "before": 3.555021576117724,
+      "after": 4.670892365000327,
+      "ratio": 1.3138857992814756,
+      "category": "cpf",
+      "before_preparation": 0.210341386962682,
+      "after_preparation": 0.7059310970071238
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/128056.ari",
+      "before": 4.068954173009843,
+      "after": 4.897968347999267,
+      "ratio": 1.203741339848071,
+      "category": "cpf",
+      "before_preparation": 0.32163666607812047,
+      "after_preparation": 0.438255768007366
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/140287.ari",
+      "before": 4.051962609868497,
+      "after": 4.930810784004279,
+      "ratio": 1.2168944432002804,
+      "category": "cpf",
+      "before_preparation": 0.3450004397891462,
+      "after_preparation": 0.37665855899103917
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/140649.ari",
+      "before": 3.849906431045383,
+      "after": 4.805805534007959,
+      "ratio": 1.248291515672763,
+      "category": "cpf",
+      "before_preparation": 0.2616199837066233,
+      "after_preparation": 0.3703751010034466
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/3562.ari",
+      "before": 0.697224744129926,
+      "after": 1.0095699439989403,
+      "ratio": 1.4479835268307828,
+      "category": "cpf",
+      "before_preparation": 0.40912601677700877,
+      "after_preparation": 0.48126412100100424
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/3786.ari",
+      "before": 1.5430916929617524,
+      "after": 1.9180156100046588,
+      "ratio": 1.2429693055526023,
+      "category": "cpf",
+      "before_preparation": 0.3003229112364352,
+      "after_preparation": 0.24734554100723471
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/3939.ari",
+      "before": 0.44658610969781876,
+      "after": 0.930049885995686,
+      "ratio": 2.0825768329986833,
+      "category": "cpf",
+      "before_preparation": 0.39842983381822705,
+      "after_preparation": 0.21296873499522917
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/3995.ari",
+      "before": 0.441032615955919,
+      "after": 0.7170646010054043,
+      "ratio": 1.6258765793346097,
+      "category": "cpf",
+      "before_preparation": 0.4298325558193028,
+      "after_preparation": 0.36203494301298633
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/41378.ari",
+      "before": 2.0022003650665283,
+      "after": 2.7425892079918412,
+      "ratio": 1.3697875876177414,
+      "category": "cpf",
+      "before_preparation": 0.2897279472090304,
+      "after_preparation": 0.27925968999625184
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/4141.ari",
+      "before": 3.0339379338547587,
+      "after": 3.7506475200061686,
+      "ratio": 1.236230800292212,
+      "category": "cpf",
+      "before_preparation": 0.2911980478093028,
+      "after_preparation": 0.7026115229964489
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/4157.ari",
+      "before": 0.9877705262042582,
+      "after": 1.2505736279999837,
+      "ratio": 1.2660568369109053,
+      "category": "cpf",
+      "before_preparation": 0.264345436822623,
+      "after_preparation": 0.6660420289990725
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/4840.ari",
+      "before": 1.6125908051617444,
+      "after": 2.0494405560020823,
+      "ratio": 1.2708993189357305,
+      "category": "cpf",
+      "before_preparation": 0.3624679697677493,
+      "after_preparation": 0.4638558790029492
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/4920.ari",
+      "before": 0.41628725128248334,
+      "after": 0.6268885860044975,
+      "ratio": 1.5059038778468494,
+      "category": "cpf",
+      "before_preparation": 0.278810225892812,
+      "after_preparation": 0.24829790700459853
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/4964.ari",
+      "before": 1.3304255711846054,
+      "after": 1.6190989190072287,
+      "ratio": 1.216978201618291,
+      "category": "cpf",
+      "before_preparation": 0.26581860799342394,
+      "after_preparation": 0.35698135900020134
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/54097.ari",
+      "before": 2.358138465322554,
+      "after": 2.851199639000697,
+      "ratio": 1.2090891527061793,
+      "category": "cpf",
+      "before_preparation": 0.27405178593471646,
+      "after_preparation": 0.5611721680033952
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/91242.ari",
+      "before": 1.5998436557129025,
+      "after": 2.0888062970043393,
+      "ratio": 1.3056315156455405,
+      "category": "cpf",
+      "before_preparation": 0.18027717573568225,
+      "after_preparation": 0.25211492700327653
+    },
+    {
+      "root": "SRS_Relative/Mixed_relative_SRS/zr02new.ari",
+      "before": 0.07448494201526046,
+      "after": 0.3575832460046513,
+      "ratio": 4.800745443708471,
+      "category": "cpf",
+      "before_preparation": 0.3117212885990739,
+      "after_preparation": 0.27073136299441103
+    },
+    {
+      "root": "SRS_Relative/Mixed_relative_SRS/zr04new.ari",
+      "before": 0.11411861190572381,
+      "after": 0.3869612970011076,
+      "ratio": 3.3908692941409577,
+      "category": "cpf",
+      "before_preparation": 0.2921580420807004,
+      "after_preparation": 0.06171483900106978
+    },
+    {
+      "root": "SRS_Relative/Mixed_relative_SRS/zr08.ari",
+      "before": 0.05522643169388175,
+      "after": 0.26472463400568813,
+      "ratio": 4.793440855875821,
+      "category": "cpf",
+      "before_preparation": 0.26961730420589447,
+      "after_preparation": 0.399596963005024
+    },
+    {
+      "root": "SRS_Relative/Mixed_relative_SRS/zr12.ari",
+      "before": 0.06793908309191465,
+      "after": 0.30865431198617443,
+      "ratio": 4.543103879818287,
+      "category": "cpf",
+      "before_preparation": 0.2280381261371076,
+      "after_preparation": 0.5523436429939466
+    },
+    {
+      "root": "SRS_Relative/Waldmann_06_relative/r1.ari",
+      "before": 0.061905769631266594,
+      "after": 0.30836484300380107,
+      "ratio": 4.981197145928964,
+      "category": "cpf",
+      "before_preparation": 0.09475888404995203,
+      "after_preparation": 0.4803649259993108
+    },
+    {
+      "root": "SRS_Relative/Waldmann_06_relative/r10.ari",
+      "before": 0.08702396275475621,
+      "after": 0.32812856399687007,
+      "ratio": 3.7705541509477687,
+      "category": "cpf",
+      "before_preparation": 0.07359874714165926,
+      "after_preparation": 0.494554994002101
+    },
+    {
+      "root": "SRS_Relative/Waldmann_06_relative/r5.ari",
+      "before": 0.03356170793995261,
+      "after": 0.43682919500861317,
+      "ratio": 13.015702174340236,
+      "category": "cpf",
+      "before_preparation": 0.16496556298807263,
+      "after_preparation": 0.2957418980076909
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-105.ari",
+      "before": 0.054968114010989666,
+      "after": 0.27255628499551676,
+      "ratio": 4.95844345216256,
+      "category": "cpf",
+      "before_preparation": 0.1565443449653685,
+      "after_preparation": 0.4527064449939644
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-106.ari",
+      "before": 0.02501127263531089,
+      "after": 0.2777710579975974,
+      "ratio": 11.105834638955576,
+      "category": "cpf",
+      "before_preparation": 0.3506002346985042,
+      "after_preparation": 0.289989217009861
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-115.ari",
+      "before": 0.03406698629260063,
+      "after": 0.24444901599781588,
+      "ratio": 7.175539799683142,
+      "category": "cpf",
+      "before_preparation": 0.26667968183755875,
+      "after_preparation": 0.3077603569981875
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-38.ari",
+      "before": 0.15885377023369074,
+      "after": 0.36586327299301047,
+      "ratio": 2.3031450399621414,
+      "category": "cpf",
+      "before_preparation": 0.1705555166117847,
+      "after_preparation": 0.3197844959940994
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-58.ari",
+      "before": 0.05238691018894315,
+      "after": 0.2548429629969178,
+      "ratio": 4.864630536097265,
+      "category": "cpf",
+      "before_preparation": 0.3825869942083955,
+      "after_preparation": 0.31612903499626555
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-65.ari",
+      "before": 0.14417913323268294,
+      "after": 0.4885427840054035,
+      "ratio": 3.3884430642052106,
+      "category": "cpf",
+      "before_preparation": 0.3116063098423183,
+      "after_preparation": 0.3790450870001223
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-67.ari",
+      "before": 0.07556764502078295,
+      "after": 0.3672846259869402,
+      "ratio": 4.860342357975136,
+      "category": "cpf",
+      "before_preparation": 0.3756248173303902,
+      "after_preparation": 0.19081310700858012
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-79.ari",
+      "before": 0.025856156833469868,
+      "after": 0.37313036699197255,
+      "ratio": 14.431006486972136,
+      "category": "cpf",
+      "before_preparation": 0.17501811869442463,
+      "after_preparation": 0.35961107500770595
+    },
+    {
+      "root": "SRS_Relative/Waldmann_19/random-99.ari",
+      "before": 0.038148030173033476,
+      "after": 0.3151757890009321,
+      "ratio": 8.261915164986087,
+      "category": "cpf",
+      "before_preparation": 0.25981798581779003,
+      "after_preparation": 0.33182897500228137
+    },
+    {
+      "root": "SRS_Relative/Waldmann_23/size-8-alpha-3-num-4.ari",
+      "before": 0.023335692938417196,
+      "after": 0.2361425679991953,
+      "ratio": 10.119372440423117,
+      "category": "cpf",
+      "before_preparation": 0.3102863682433963,
+      "after_preparation": 0.4854516600025818
+    },
+    {
+      "root": "SRS_Relative/Waldmann_25/21.ari",
+      "before": 0.030538588296622038,
+      "after": 0.2488806140027009,
+      "ratio": 8.149709200219654,
+      "category": "cpf",
+      "before_preparation": 0.3209356409497559,
+      "after_preparation": 0.17663389901281334
+    },
+    {
+      "root": "SRS_Relative/Waldmann_26/3.ari",
+      "before": 0.1184113658964634,
+      "after": 0.3345170320098987,
+      "ratio": 2.825041578376808,
+      "category": "cpf",
+      "before_preparation": 0.2306377491913736,
+      "after_preparation": 0.3092207989975577
+    },
+    {
+      "root": "SRS_Standard/CirponsMitchellSmith_25/no_subst_baaaabaaaa_abaa.ari",
+      "before": 0.02931972499936819,
+      "after": 0.3511185670067789,
+      "ratio": 11.975506830788664,
+      "category": "cpf",
+      "before_preparation": 0.3828390217386186,
+      "after_preparation": 0.20199431099172216
+    },
+    {
+      "root": "SRS_Standard/CirponsMitchellSmith_25/no_subst_baaaabaaba_abaa.ari",
+      "before": 1.1005163667723536,
+      "after": 1.342512285002158,
+      "ratio": 1.2198930661427068,
+      "category": "cpf",
+      "before_preparation": 0.49405772238969803,
+      "after_preparation": 0.36511884699575603
+    },
+    {
+      "root": "SRS_Standard/CirponsMitchellSmith_25/no_subst_babaaaaaba_aababa.ari",
+      "before": 0.07643147930502892,
+      "after": 0.36724229699757416,
+      "ratio": 4.804856589677585,
+      "category": "cpf",
+      "before_preparation": 0.3230750570073724,
+      "after_preparation": 0.23738119199697394
+    },
+    {
+      "root": "SRS_Standard/Gebhardt_06/05.ari",
+      "before": 0.03688233811408281,
+      "after": 0.23928121199423913,
+      "ratio": 6.4876909716001485,
+      "category": "cpf",
+      "before_preparation": 0.308770467992872,
+      "after_preparation": 0.39104145699820947
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/107193.ari",
+      "before": 9.92014260403812,
+      "after": 12.364861551992362,
+      "ratio": 1.2464398996602215,
+      "category": "cpf",
+      "before_preparation": 0.32074893172830343,
+      "after_preparation": 0.3426378299918724
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/107220.ari",
+      "before": 6.796591813210398,
+      "after": 8.220104041000013,
+      "ratio": 1.209445008161703,
+      "category": "cpf",
+      "before_preparation": 0.28925214102491736,
+      "after_preparation": 0.35188088400173
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/123759.ari",
+      "before": 4.3838991811499,
+      "after": 5.2714306529960595,
+      "ratio": 1.2024525280285665,
+      "category": "cpf",
+      "before_preparation": 0.32434520963579416,
+      "after_preparation": 0.4420305189996725
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/124791.ari",
+      "before": 4.3471590229310095,
+      "after": 5.382336433991441,
+      "ratio": 1.2381273391656322,
+      "category": "cpf",
+      "before_preparation": 0.2739534159190953,
+      "after_preparation": 0.4751390919991536
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/128280.ari",
+      "before": 4.679302692878991,
+      "after": 5.656012432998978,
+      "ratio": 1.208729762579017,
+      "category": "cpf",
+      "before_preparation": 0.3634060239419341,
+      "after_preparation": 0.4690899819979677
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/128486.ari",
+      "before": 4.799659335054457,
+      "after": 5.860495251006796,
+      "ratio": 1.2210231689162794,
+      "category": "cpf",
+      "before_preparation": 0.46906645968556404,
+      "after_preparation": 0.371797992993379
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/128620.ari",
+      "before": 4.658003607299179,
+      "after": 5.8613246559980325,
+      "ratio": 1.2583340740254532,
+      "category": "cpf",
+      "before_preparation": 0.5728353159502149,
+      "after_preparation": 0.31245183300052304
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/130304.ari",
+      "before": 9.127380391117185,
+      "after": 11.458564656000817,
+      "ratio": 1.255405621875073,
+      "category": "cpf",
+      "before_preparation": 0.451501680072397,
+      "after_preparation": 0.47762759900069796
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/130472.ari",
+      "before": 8.875113307964057,
+      "after": 10.735221837006975,
+      "ratio": 1.2095870175960182,
+      "category": "cpf",
+      "before_preparation": 0.4667672631330788,
+      "after_preparation": 0.47133505099918693
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/131982.ari",
+      "before": 4.344825047068298,
+      "after": 5.395378408997203,
+      "ratio": 1.2417941690512426,
+      "category": "cpf",
+      "before_preparation": 0.34441425278782845,
+      "after_preparation": 0.8318466509954305
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/132235.ari",
+      "before": 4.507076777052134,
+      "after": 5.645038547998411,
+      "ratio": 1.2524833339294839,
+      "category": "cpf",
+      "before_preparation": 0.3098668400198221,
+      "after_preparation": 0.6909259929961991
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/132478.ari",
+      "before": 4.574605432339013,
+      "after": 6.003836696996586,
+      "ratio": 1.3124272214941175,
+      "category": "cpf",
+      "before_preparation": 0.2874461920000613,
+      "after_preparation": 0.4105176580051193
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/132540.ari",
+      "before": 4.871173515915871,
+      "after": 6.005061981006293,
+      "ratio": 1.232775215538022,
+      "category": "cpf",
+      "before_preparation": 0.27186463959515095,
+      "after_preparation": 0.38386770299985074
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/132720.ari",
+      "before": 4.637934483122081,
+      "after": 5.72948371199891,
+      "ratio": 1.235352446837938,
+      "category": "cpf",
+      "before_preparation": 0.12781819608062506,
+      "after_preparation": 0.26264710498799104
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/132738.ari",
+      "before": 4.641418121755123,
+      "after": 5.729683280995232,
+      "ratio": 1.234468244552074,
+      "category": "cpf",
+      "before_preparation": 0.05392070021480322,
+      "after_preparation": 0.2564755149942357
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/135652.ari",
+      "before": 4.274662908166647,
+      "after": 5.205912075005472,
+      "ratio": 1.2178532405583828,
+      "category": "cpf",
+      "before_preparation": 0.07597041316330433,
+      "after_preparation": 0.06787386699579656
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/135782.ari",
+      "before": 4.374034722801298,
+      "after": 5.286412217988982,
+      "ratio": 1.2085894495605107,
+      "category": "cpf",
+      "before_preparation": 0.025187871884554625,
+      "after_preparation": 0.032605845990474336
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/138089.ari",
+      "before": 7.945180887822062,
+      "after": 9.776609324995661,
+      "ratio": 1.2305080857228452,
+      "category": "cpf",
+      "before_preparation": 0.024977283086627722,
+      "after_preparation": 0.07989361700310837
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/138254.ari",
+      "before": 4.1240324270911515,
+      "after": 5.01757207501214,
+      "ratio": 1.216666494194188,
+      "category": "cpf",
+      "before_preparation": 0.024879962671548128,
+      "after_preparation": 0.04329091199906543
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/139025.ari",
+      "before": 4.535336139146239,
+      "after": 5.557918278995203,
+      "ratio": 1.225469978073436,
+      "category": "cpf",
+      "before_preparation": 0.023915930185467005,
+      "after_preparation": 0.06728033999388572
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/139180.ari",
+      "before": 4.714839078951627,
+      "after": 6.215510408990667,
+      "ratio": 1.3182868608895817,
+      "category": "cpf",
+      "before_preparation": 0.035877343732863665,
+      "after_preparation": 0.06173370900796726
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/212612.ari",
+      "before": 0.03280388517305255,
+      "after": 0.23532244699890725,
+      "ratio": 7.173615129960822,
+      "category": "cpf",
+      "before_preparation": 0.027988665271550417,
+      "after_preparation": 0.16120231300010346
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/213281.ari",
+      "before": 1.1233894247561693,
+      "after": 1.4286977570009185,
+      "ratio": 1.271774262349867,
+      "category": "cpf",
+      "before_preparation": 0.025515310931950808,
+      "after_preparation": 0.3236752679949859
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/213407.ari",
+      "before": 0.033444291446357965,
+      "after": 0.2373657560092397,
+      "ratio": 7.0973474319214045,
+      "category": "cpf",
+      "before_preparation": 0.04076605523005128,
+      "after_preparation": 0.06627081599435769
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/249459.ari",
+      "before": 0.013252436649054289,
+      "after": 0.25473848600813653,
+      "ratio": 19.222011223597512,
+      "category": "cpf",
+      "before_preparation": 0.026688643265515566,
+      "after_preparation": 0.08106250899436418
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/26957.ari",
+      "before": 3.665369226131588,
+      "after": 4.513264011009596,
+      "ratio": 1.2313258863071952,
+      "category": "cpf",
+      "before_preparation": 0.027732966002076864,
+      "after_preparation": 0.07494941100594588
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/3268.ari",
+      "before": 0.09212443977594376,
+      "after": 0.3009746659954544,
+      "ratio": 3.267044735658162,
+      "category": "cpf",
+      "before_preparation": 0.08741765422746539,
+      "after_preparation": 0.1244964030047413
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/3589.ari",
+      "before": 0.10342705063521862,
+      "after": 0.3055600530060474,
+      "ratio": 2.954353344984577,
+      "category": "cpf",
+      "before_preparation": 0.09351181285455823,
+      "after_preparation": 0.31587258900981396
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/91210.ari",
+      "before": 1.7840249417349696,
+      "after": 2.1523972360009793,
+      "ratio": 1.2064838252248684,
+      "category": "cpf",
+      "before_preparation": 0.03191197291016579,
+      "after_preparation": 0.08491982900886796
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-220.ari",
+      "before": 0.07648017117753625,
+      "after": 0.3920581340062199,
+      "ratio": 5.126271659305271,
+      "category": "cpf",
+      "before_preparation": 0.32115043699741364,
+      "after_preparation": 0.3766090319986688
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-275.ari",
+      "before": 0.04118867591023445,
+      "after": 0.29942610100260936,
+      "ratio": 7.269621913925346,
+      "category": "cpf",
+      "before_preparation": 0.3097158148884773,
+      "after_preparation": 0.2918644589954056
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-285.ari",
+      "before": 0.0426767379976809,
+      "after": 0.279157712997403,
+      "ratio": 6.54121486540449,
+      "category": "cpf",
+      "before_preparation": 0.2324449778534472,
+      "after_preparation": 0.3436711079993984
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-294.ari",
+      "before": 0.031860383693128824,
+      "after": 0.3224001250055153,
+      "ratio": 10.119153871804933,
+      "category": "cpf",
+      "before_preparation": 0.4782160469330847,
+      "after_preparation": 0.3025663849984994
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-298.ari",
+      "before": 0.029318187851458788,
+      "after": 0.24707753499387763,
+      "ratio": 8.42744907174008,
+      "category": "cpf",
+      "before_preparation": 0.4164635888300836,
+      "after_preparation": 0.3806372410035692
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-299.ari",
+      "before": 0.0318686543032527,
+      "after": 0.24068302700470667,
+      "ratio": 7.552343588607103,
+      "category": "cpf",
+      "before_preparation": 0.3132895566523075,
+      "after_preparation": 0.3491405609966023
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-351.ari",
+      "before": 0.032667919993400574,
+      "after": 0.24160799199307803,
+      "ratio": 7.395879261424866,
+      "category": "cpf",
+      "before_preparation": 0.14285006560385227,
+      "after_preparation": 0.29739963200700004
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-437.ari",
+      "before": 0.05090955505147576,
+      "after": 0.3167203740013065,
+      "ratio": 6.221236341214603,
+      "category": "cpf",
+      "before_preparation": 0.33196790190413594,
+      "after_preparation": 0.29997181800717954
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-438.ari",
+      "before": 0.04507862729951739,
+      "after": 0.2782924070052104,
+      "ratio": 6.1734889386968925,
+      "category": "cpf",
+      "before_preparation": 0.2994526820257306,
+      "after_preparation": 0.47488304699072614
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-44.ari",
+      "before": 0.049976437818259,
+      "after": 0.2920260279934155,
+      "ratio": 5.843274165625369,
+      "category": "cpf",
+      "before_preparation": 0.2963384292088449,
+      "after_preparation": 0.6154692380077904
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-511.ari",
+      "before": 0.16407597996294498,
+      "after": 0.3981564330024412,
+      "ratio": 2.4266588753110665,
+      "category": "cpf",
+      "before_preparation": 0.09417183790355921,
+      "after_preparation": 0.22383167200314347
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-535.ari",
+      "before": 0.031098899897187948,
+      "after": 0.2630706540076062,
+      "ratio": 8.45916269955883,
+      "category": "cpf",
+      "before_preparation": 0.6065006097778678,
+      "after_preparation": 0.3563025339972228
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-548.ari",
+      "before": 0.09728634590283036,
+      "after": 0.3026233549899189,
+      "ratio": 3.110645714786936,
+      "category": "cpf",
+      "before_preparation": 0.3463624492287636,
+      "after_preparation": 0.4147635199915385
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-550.ari",
+      "before": 0.07472460297867656,
+      "after": 0.33761275799770374,
+      "ratio": 4.518093700598785,
+      "category": "cpf",
+      "before_preparation": 0.6137872911058366,
+      "after_preparation": 0.3544350339943776
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-560.ari",
+      "before": 0.03523074369877577,
+      "after": 0.2649369349965127,
+      "ratio": 7.520049456285506,
+      "category": "cpf",
+      "before_preparation": 0.2712044180370867,
+      "after_preparation": 0.4363387599878479
+    },
+    {
+      "root": "SRS_Standard/Waldmann_07_size12/size-12-alpha-3-num-99.ari",
+      "before": 0.05711719999089837,
+      "after": 0.2591178239963483,
+      "ratio": 4.53659885354392,
+      "category": "cpf",
+      "before_preparation": 0.19853418692946434,
+      "after_preparation": 0.3175359400047455
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-126.ari",
+      "before": 0.05704205110669136,
+      "after": 0.286630115006119,
+      "ratio": 5.0248914519221355,
+      "category": "cpf",
+      "before_preparation": 0.16183819761499763,
+      "after_preparation": 0.3840430039999774
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-152.ari",
+      "before": 0.029752706177532673,
+      "after": 0.2425244079931872,
+      "ratio": 8.151339462906604,
+      "category": "cpf",
+      "before_preparation": 0.1397488326765597,
+      "after_preparation": 0.2588273050059797
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-234.ari",
+      "before": 0.014918382745236158,
+      "after": 0.28042442600417417,
+      "ratio": 18.79724034387851,
+      "category": "cpf",
+      "before_preparation": 0.16176284803077579,
+      "after_preparation": 0.2871426929923473
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-320.ari",
+      "before": 0.06315109739080071,
+      "after": 0.3049888529931195,
+      "ratio": 4.82950994668776,
+      "category": "cpf",
+      "before_preparation": 0.21932354662567377,
+      "after_preparation": 0.4192585769924335
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-403.ari",
+      "before": 0.024882324039936066,
+      "after": 0.26010373899771366,
+      "ratio": 10.453353898142627,
+      "category": "cpf",
+      "before_preparation": 0.2313796509988606,
+      "after_preparation": 0.4268801090074703
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-408.ari",
+      "before": 0.029393086675554514,
+      "after": 0.3674067779938923,
+      "ratio": 12.499768467646348,
+      "category": "cpf",
+      "before_preparation": 0.22325857216492295,
+      "after_preparation": 0.08990778699808288
+    },
+    {
+      "root": "SRS_Standard/Waldmann_19/random-87.ari",
+      "before": 0.05194381112232804,
+      "after": 0.29303530300967395,
+      "ratio": 5.641390122868993,
+      "category": "cpf",
+      "before_preparation": 0.18753787875175476,
+      "after_preparation": 0.5013975830079289
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/aabaaabaaba-aaabaabaabaaab.srs.ari",
+      "before": 0.08168689627200365,
+      "after": 0.32402833699597977,
+      "ratio": 3.9667113305054436,
+      "category": "cpf",
+      "before_preparation": 0.18429013201966882,
+      "after_preparation": 0.26266512599249836
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/aabbaaaaa-aaaaaaabbaabb.srs.ari",
+      "before": 0.0359826716594398,
+      "after": 0.26724305299285334,
+      "ratio": 7.426993068279964,
+      "category": "cpf",
+      "before_preparation": 0.38130020489916205,
+      "after_preparation": 0.21164563301135786
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/abaaaaaaaa-aaaaaaaaaabaab.srs.ari",
+      "before": 0.19558608764782548,
+      "after": 0.40626489200803917,
+      "ratio": 2.077166616981287,
+      "category": "cpf",
+      "before_preparation": 0.2551715299487114,
+      "after_preparation": 0.3144428550003795
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/abaaaaabaa-aaabaaabaaaaab.srs.ari",
+      "before": 0.014863462187349796,
+      "after": 0.22075536698685028,
+      "ratio": 14.852217081342856,
+      "category": "cpf",
+      "before_preparation": 0.2225468154065311,
+      "after_preparation": 0.21554211400507484
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/abababaab-aababaabababab.srs.ari",
+      "before": 0.035936031956225634,
+      "after": 0.26517775299726054,
+      "ratio": 7.379160651912783,
+      "category": "cpf",
+      "before_preparation": 0.2702763322740793,
+      "after_preparation": 0.3310408920078771
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/baabaabbaab-aabbaabaabaabb.srs.ari",
+      "before": 0.08112464938312769,
+      "after": 0.40829104199656285,
+      "ratio": 5.0328851354207425,
+      "category": "cpf",
+      "before_preparation": 0.3918387838639319,
+      "after_preparation": 0.51406033000967
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/baabbaab-aabbaabaabaabb.srs.ari",
+      "before": 0.05045105563476682,
+      "after": 0.26052478699421044,
+      "ratio": 5.163911512184052,
+      "category": "cpf",
+      "before_preparation": 0.34329552110284567,
+      "after_preparation": 0.3055440400057705
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/bababaa-aaaaaababababa.srs.ari",
+      "before": 0.8523627649992704,
+      "after": 1.1613677770073991,
+      "ratio": 1.3625275817959894,
+      "category": "cpf",
+      "before_preparation": 0.4384522349573672,
+      "after_preparation": 0.44245333000435494
+    },
+    {
+      "root": "SRS_Standard/Wenzel_16/babbabbaba-ababbabbabba.srs.ari",
+      "before": 0.04095194302499294,
+      "after": 0.26056266701198183,
+      "ratio": 6.362644792042238,
+      "category": "cpf",
+      "before_preparation": 0.3630240950733423,
+      "after_preparation": 0.4623466199991526
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z035.ari",
+      "before": 0.0702467099763453,
+      "after": 0.2760974879929563,
+      "ratio": 3.9303974248178837,
+      "category": "cpf",
+      "before_preparation": 0.2518227118998766,
+      "after_preparation": 0.3736867570114555
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z087.ari",
+      "before": 0.09899730002507567,
+      "after": 0.30964595900150016,
+      "ratio": 3.1278222630624057,
+      "category": "cpf",
+      "before_preparation": 0.21946288598701358,
+      "after_preparation": 0.3829898800031515
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z088.ari",
+      "before": 0.08720357529819012,
+      "after": 0.3744580229977146,
+      "ratio": 4.294067321405873,
+      "category": "cpf",
+      "before_preparation": 0.28429928701370955,
+      "after_preparation": 0.23205064999638125
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z089.ari",
+      "before": 0.032429665327072144,
+      "after": 0.25541496300138533,
+      "ratio": 7.875966662787791,
+      "category": "cpf",
+      "before_preparation": 0.2620168928988278,
+      "after_preparation": 0.4114479260024382
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z091.ari",
+      "before": 0.16409759037196636,
+      "after": 0.39079892000881955,
+      "ratio": 2.381503098997252,
+      "category": "cpf",
+      "before_preparation": 0.1439605657942593,
+      "after_preparation": 0.4833398640039377
+    },
+    {
+      "root": "SRS_Standard/Zantema_04/z096.ari",
+      "before": 0.1627454748377204,
+      "after": 0.399733534999541,
+      "ratio": 2.4561883235041115,
+      "category": "cpf",
+      "before_preparation": 0.33662679558619857,
+      "after_preparation": 0.4024742019973928
+    },
+    {
+      "root": "SRS_Standard/Zantema_06/01.ari",
+      "before": 0.05531663820147514,
+      "after": 0.29514653199294116,
+      "ratio": 5.33558331795135,
+      "category": "cpf",
+      "before_preparation": 0.23480791691690683,
+      "after_preparation": 0.3977023359911982
+    },
+    {
+      "root": "TRS_Conditional/COPS/307.ari",
+      "before": 0.07976583298295736,
+      "after": 0.28988938899419736,
+      "ratio": 3.634255146011384,
+      "category": "cpf",
+      "before_preparation": 0.2617792938835919,
+      "after_preparation": 0.30907040199963376
+    },
+    {
+      "root": "TRS_Conditional/COPS/308.ari",
+      "before": 0.024502146057784557,
+      "after": 0.32703165199200157,
+      "ratio": 13.347061568433537,
+      "category": "cpf",
+      "before_preparation": 0.47258349414914846,
+      "after_preparation": 0.42960904400388245
+    },
+    {
+      "root": "TRS_Conditional/COPS/312.ari",
+      "before": 0.046623320784419775,
+      "after": 0.6395436269958736,
+      "ratio": 13.71724742544704,
+      "category": "conditional",
+      "before_preparation": 0.41806341288611293,
+      "after_preparation": 0.4977910210000118
+    },
+    {
+      "root": "TRS_Conditional/COPS/316.ari",
+      "before": 0.061437583062797785,
+      "after": 0.48864465799124446,
+      "ratio": 7.953513690338069,
+      "category": "cpf",
+      "before_preparation": 0.3263188558630645,
+      "after_preparation": 0.5063630869990448
+    },
+    {
+      "root": "TRS_Conditional/COPS/317.ari",
+      "before": 0.12587826559320092,
+      "after": 0.41291971899045166,
+      "ratio": 3.2803098854640935,
+      "category": "cpf",
+      "before_preparation": 0.31529016932472587,
+      "after_preparation": 0.5399879480100935
+    },
+    {
+      "root": "TRS_Conditional/COPS/321.ari",
+      "before": 0.11801439709961414,
+      "after": 0.43990118299552705,
+      "ratio": 3.7275213347420078,
+      "category": "cpf",
+      "before_preparation": 0.18663088278844953,
+      "after_preparation": 0.49317491400870495
+    },
+    {
+      "root": "TRS_Conditional/COPS/370.ari",
+      "before": 0.08339635888114572,
+      "after": 0.3137187180109322,
+      "ratio": 3.7617795575228388,
+      "category": "cpf",
+      "before_preparation": 0.12919357372447848,
+      "after_preparation": 0.25094962600269355
+    },
+    {
+      "root": "TRS_Conditional/COPS/376.ari",
+      "before": 0.07210029289126396,
+      "after": 0.28197992900095414,
+      "ratio": 3.9109401320493147,
+      "category": "cpf",
+      "before_preparation": 0.2723566126078367,
+      "after_preparation": 0.3782953530026134
+    },
+    {
+      "root": "TRS_Conditional/COPS/388.ari",
+      "before": 0.03491051588207483,
+      "after": 0.2460500200104434,
+      "ratio": 7.04802016795118,
+      "category": "cpf",
+      "before_preparation": 0.22079149214550853,
+      "after_preparation": 0.25961600099981297
+    },
+    {
+      "root": "TRS_Conditional/Mixed_CTRS_2014/ex3-muterm14.ari",
+      "before": 0.10174430906772614,
+      "after": 0.3499474269920029,
+      "ratio": 3.4394791236830775,
+      "category": "conditional",
+      "before_preparation": 0.15290729282423854,
+      "after_preparation": 0.2417734710033983
+    },
+    {
+      "root": "TRS_Conditional_Termination/COPS/358.ari",
+      "before": 0.060261507984250784,
+      "after": 0.26040855700557586,
+      "ratio": 4.321308339539613,
+      "category": "cpf",
+      "before_preparation": 0.3511629607528448,
+      "after_preparation": 0.3351696110039484
+    },
+    {
+      "root": "TRS_Contextsensitive/CSR_04/Ex16_Luc06.ari",
+      "before": 0.06508050998672843,
+      "after": 0.3066652549896389,
+      "ratio": 4.712090532974861,
+      "category": "cpf",
+      "before_preparation": 0.4239319609478116,
+      "after_preparation": 0.21233568899333477
+    },
+    {
+      "root": "TRS_Contextsensitive/Gutierrez_26/secret4.ari",
+      "before": 0.06083703599870205,
+      "after": 0.3474284689873457,
+      "ratio": 5.710805322513708,
+      "category": "cpf",
+      "before_preparation": 0.29535180469974875,
+      "after_preparation": 0.24738460300432052
+    },
+    {
+      "root": "TRS_Contextsensitive/Maude_06/LengthOfFiniteLists_nokinds.ari",
+      "before": 0.08050591126084328,
+      "after": 0.36910039000213146,
+      "ratio": 4.584761345116973,
+      "category": "cpf",
+      "before_preparation": 0.1745722289197147,
+      "after_preparation": 0.33665291299985256
+    },
+    {
+      "root": "TRS_Equational/Mixed_C/AC46.ari",
+      "before": 0.06439724285155535,
+      "after": 0.3533390579978004,
+      "ratio": 5.486866243828115,
+      "category": "cpf",
+      "before_preparation": 0.2012640768662095,
+      "after_preparation": 0.4598779160005506
+    },
+    {
+      "root": "TRS_Innermost/AG01_innermost/#4.35.ari",
+      "before": 0.060940316412597895,
+      "after": 0.2630649080092553,
+      "ratio": 4.316763080588029,
+      "category": "cpf",
+      "before_preparation": 0.47779110400006175,
+      "after_preparation": 0.43568357698677573
+    },
+    {
+      "root": "TRS_Innermost/AG01_innermost/#4.4.ari",
+      "before": 0.01862635789439082,
+      "after": 0.2869777680025436,
+      "ratio": 15.407079023697094,
+      "category": "cpf",
+      "before_preparation": 0.22120531974360347,
+      "after_preparation": 0.47799283599306364
+    },
+    {
+      "root": "TRS_Innermost/Applicative_AG01_innermost/#4.15.ari",
+      "before": 0.10179288918152452,
+      "after": 0.34969931600790005,
+      "ratio": 3.4354002408192845,
+      "category": "cpf",
+      "before_preparation": 0.28224899619817734,
+      "after_preparation": 0.48178485700918827
+    },
+    {
+      "root": "TRS_Innermost/Applicative_AG01_innermost/#4.17.ari",
+      "before": 0.09818498278036714,
+      "after": 0.4344819130055839,
+      "ratio": 4.42513611248972,
+      "category": "cpf",
+      "before_preparation": 0.2260815310291946,
+      "after_preparation": 0.5592586700076936
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex1_GM99_C.ari",
+      "before": 0.028326941654086113,
+      "after": 0.23345241601055022,
+      "ratio": 8.241356192325659,
+      "category": "cpf",
+      "before_preparation": 0.37839338509365916,
+      "after_preparation": 0.10216948000015691
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex2_Luc03b_iGM.ari",
+      "before": 0.07205831306055188,
+      "after": 0.28984345399658196,
+      "ratio": 4.022345815298525,
+      "category": "cpf",
+      "before_preparation": 0.20357483811676502,
+      "after_preparation": 0.2774915860063629
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex4_7_56_Bor03_C.ari",
+      "before": 0.04017957579344511,
+      "after": 0.3338555540103698,
+      "ratio": 8.309086082109284,
+      "category": "cpf",
+      "before_preparation": 0.3189993337728083,
+      "after_preparation": 0.47609862600802444
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex5_Zan97_iGM.ari",
+      "before": 0.07707435404881835,
+      "after": 0.2847718300035922,
+      "ratio": 3.694767650251337,
+      "category": "cpf",
+      "before_preparation": 0.19208709197118878,
+      "after_preparation": 0.7064534060045844
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex6_9_Luc02c_C.ari",
+      "before": 0.07411142624914646,
+      "after": 0.3278594150033314,
+      "ratio": 4.4238713461152335,
+      "category": "cpf",
+      "before_preparation": 0.17581910407170653,
+      "after_preparation": 0.3666618010029197
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex6_GM04_iGM.ari",
+      "before": 0.018453719094395638,
+      "after": 0.2422155820095213,
+      "ratio": 13.125570014939795,
+      "category": "cpf",
+      "before_preparation": 0.21387833822518587,
+      "after_preparation": 0.5408070120029151
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex9_BLR02_GM.ari",
+      "before": 0.06641834508627653,
+      "after": 0.4379018449981231,
+      "ratio": 6.593085757094588,
+      "category": "cpf",
+      "before_preparation": 0.1657896228134632,
+      "after_preparation": 0.21337736600253265
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/Ex9_BLR02_L.ari",
+      "before": 0.14446053467690945,
+      "after": 0.3575951360107865,
+      "ratio": 2.4753828913243283,
+      "category": "cpf",
+      "before_preparation": 0.11479626875370741,
+      "after_preparation": 0.2641401830042014
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/LengthOfFiniteLists_complete_GM.ari",
+      "before": 0.06014310894533992,
+      "after": 0.3249681590095861,
+      "ratio": 5.403248430421648,
+      "category": "cpf",
+      "before_preparation": 0.29113985085859895,
+      "after_preparation": 0.36291400001209695
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/MYNAT_nokinds_noand_GM.ari",
+      "before": 0.13380376622080803,
+      "after": 0.3345232620049501,
+      "ratio": 2.50010348328243,
+      "category": "cpf",
+      "before_preparation": 0.12810228718444705,
+      "after_preparation": 0.23540269599470776
+    },
+    {
+      "root": "TRS_Innermost/Transformed_CSR_innermost_04/MYNAT_nosorts_noand_GM.ari",
+      "before": 0.01255112187936902,
+      "after": 0.24306606799655128,
+      "ratio": 19.36608299502633,
+      "category": "cpf",
+      "before_preparation": 0.14148058602586389,
+      "after_preparation": 0.6906507850071648
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/Ex9_Luc04_L.ari",
+      "before": 0.042611765675246716,
+      "after": 0.3070135289890459,
+      "ratio": 7.204900433576514,
+      "category": "cpf",
+      "before_preparation": 0.24111712398007512,
+      "after_preparation": 0.3861450130061712
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/MYNAT_nokinds_L.ari",
+      "before": 0.12291806703433394,
+      "after": 0.33473577999393456,
+      "ratio": 2.723243116900259,
+      "category": "cpf",
+      "before_preparation": 0.26531353080645204,
+      "after_preparation": 0.5081758550077211
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/OvConsOS_complete_L.ari",
+      "before": 0.0411326321773231,
+      "after": 0.40677826100727543,
+      "ratio": 9.889429376988351,
+      "category": "cpf",
+      "before_preparation": 0.2764610480517149,
+      "after_preparation": 0.368272933003027
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/OvConsOS_nokinds-noand_L.ari",
+      "before": 0.19378556590527296,
+      "after": 0.4072216190106701,
+      "ratio": 2.101403255233828,
+      "category": "cpf",
+      "before_preparation": 0.29603551235049963,
+      "after_preparation": 0.3013434669992421
+    },
+    {
+      "root": "TRS_Outermost/Strategy_outermost_added_08/PALINDROME_complete-noand_L.ari",
+      "before": 0.06081858603283763,
+      "after": 0.32289775999379344,
+      "ratio": 5.309195445935755,
+      "category": "cpf",
+      "before_preparation": 0.32154462533071637,
+      "after_preparation": 0.36818306300847325
+    },
+    {
+      "root": "TRS_Outermost/Zantema_08/toyama_stop.ari",
+      "before": 0.13166099088266492,
+      "after": 0.3500135840004077,
+      "ratio": 2.6584456159253476,
+      "category": "cpf",
+      "before_preparation": 0.232726339250803,
+      "after_preparation": 0.15832028999284375
+    },
+    {
+      "root": "TRS_Standard/AG01/#3.16.ari",
+      "before": 0.14518873114138842,
+      "after": 0.3771121489990037,
+      "ratio": 2.5973926904269344,
+      "category": "cpf",
+      "before_preparation": 0.22356976987794042,
+      "after_preparation": 0.23597461300960276
+    },
+    {
+      "root": "TRS_Standard/AG01/#3.4.ari",
+      "before": 0.036886155139654875,
+      "after": 0.2956259149941616,
+      "ratio": 8.014549466456742,
+      "category": "cpf",
+      "before_preparation": 0.2534417458809912,
+      "after_preparation": 0.48961176798911765
+    },
+    {
+      "root": "TRS_Standard/AG01/#3.40.ari",
+      "before": 0.0330789121799171,
+      "after": 0.2667763400095282,
+      "ratio": 8.0648462246438,
+      "category": "cpf",
+      "before_preparation": 0.22320594172924757,
+      "after_preparation": 0.4203065229958156
+    },
+    {
+      "root": "TRS_Standard/AProVE_07/thiemann05.ari",
+      "before": 0.04072466818615794,
+      "after": 0.2498226839961717,
+      "ratio": 6.134431417690098,
+      "category": "cpf",
+      "before_preparation": 0.28217334812507033,
+      "after_preparation": 0.4210570099967299
+    },
+    {
+      "root": "TRS_Standard/AProVE_07/thiemann08.ari",
+      "before": 0.051414520014077425,
+      "after": 0.3756532370025525,
+      "ratio": 7.306364756487033,
+      "category": "cpf",
+      "before_preparation": 0.2737293862737715,
+      "after_preparation": 0.2649845190026099
+    },
+    {
+      "root": "TRS_Standard/AProVE_07/thiemann14.ari",
+      "before": 0.13905482785776258,
+      "after": 0.5038401870115194,
+      "ratio": 3.6233203461795025,
+      "category": "cpf",
+      "before_preparation": 0.07915550610050559,
+      "after_preparation": 0.37488787999609485
+    },
+    {
+      "root": "TRS_Standard/AProVE_07/thiemann29.ari",
+      "before": 0.0816834638826549,
+      "after": 0.30242973200802226,
+      "ratio": 3.70245968562851,
+      "category": "cpf",
+      "before_preparation": 0.3545776237733662,
+      "after_preparation": 0.3587859399995068
+    },
+    {
+      "root": "TRS_Standard/AProVE_08/id_inc.ari",
+      "before": 0.026815430261194706,
+      "after": 0.4245350720011629,
+      "ratio": 15.83174567277104,
+      "category": "cpf",
+      "before_preparation": 0.2015965380705893,
+      "after_preparation": 0.5370857709931443
+    },
+    {
+      "root": "TRS_Standard/AProVE_08/thiemann40_modified.ari",
+      "before": 0.05475030466914177,
+      "after": 0.4201467539969599,
+      "ratio": 7.673870611970529,
+      "category": "cpf",
+      "before_preparation": 0.216102363076061,
+      "after_preparation": 0.39929966899217106
+    },
+    {
+      "root": "TRS_Standard/Applicative_05/Ex9Maps.ari",
+      "before": 8.92024541227147,
+      "after": 11.235056228004396,
+      "ratio": 1.2595007994453236,
+      "category": "cpf",
+      "before_preparation": 0.18029971327632666,
+      "after_preparation": 0.26767209499666933
+    },
+    {
+      "root": "TRS_Standard/EEG_IJCAR_12/emmes-nonloop-ex4_1.ari",
+      "before": 0.07005827687680721,
+      "after": 0.41149455700360704,
+      "ratio": 5.873603738887165,
+      "category": "cpf",
+      "before_preparation": 0.16182299610227346,
+      "after_preparation": 0.3794179780088598
+    },
+    {
+      "root": "TRS_Standard/EEG_IJCAR_12/enger-nonloop-swapXY.ari",
+      "before": 0.040240850299596786,
+      "after": 0.32056704099522904,
+      "ratio": 7.966209426703917,
+      "category": "cpf",
+      "before_preparation": 0.24738121265545487,
+      "after_preparation": 0.13733020499057602
+    },
+    {
+      "root": "TRS_Standard/HirokawaMiddeldorp_04/t002.ari",
+      "before": 0.07372566033154726,
+      "after": 0.2948753490054514,
+      "ratio": 3.999629812461294,
+      "category": "cpf",
+      "before_preparation": 0.4010435859672725,
+      "after_preparation": 0.29610926299938
+    },
+    {
+      "root": "TRS_Standard/HirokawaMiddeldorp_04/t006.ari",
+      "before": 0.03780479030683637,
+      "after": 0.26505060800991487,
+      "ratio": 7.011032354859666,
+      "category": "cpf",
+      "before_preparation": 0.24493208480998874,
+      "after_preparation": 0.22266207898792345
+    },
+    {
+      "root": "TRS_Standard/Kaliszyk_19/arith.ari",
+      "before": 0.13885479886084795,
+      "after": 0.44725015899166465,
+      "ratio": 3.220991731368768,
+      "category": "cpf",
+      "before_preparation": 0.2429839032702148,
+      "after_preparation": 0.36011545298970304
+    },
+    {
+      "root": "TRS_Standard/MNZ_10/0.ari",
+      "before": 0.14374812692403793,
+      "after": 0.38944673699734267,
+      "ratio": 2.709229993675962,
+      "category": "cpf",
+      "before_preparation": 0.33820423716679215,
+      "after_preparation": 0.2934334659948945
+    },
+    {
+      "root": "TRS_Standard/MNZ_10/1.ari",
+      "before": 0.06189475255087018,
+      "after": 0.298673700002837,
+      "ratio": 4.825509234524566,
+      "category": "cpf",
+      "before_preparation": 0.29200212424620986,
+      "after_preparation": 0.42804839499876834
+    },
+    {
+      "root": "TRS_Standard/MNZ_10/labelled.ari",
+      "before": 1.0703069320879877,
+      "after": 1.3365036729956046,
+      "ratio": 1.2487106575945577,
+      "category": "cpf",
+      "before_preparation": 0.2619981677271426,
+      "after_preparation": 0.5938640980020864
+    },
+    {
+      "root": "TRS_Standard/SK90/2.11.ari",
+      "before": 0.0892710811458528,
+      "after": 0.3340126940020127,
+      "ratio": 3.741555380698217,
+      "category": "cpf",
+      "before_preparation": 0.2864733086898923,
+      "after_preparation": 0.4467868810024811
+    },
+    {
+      "root": "TRS_Standard/SK90/2.25.ari",
+      "before": 0.05301595292985439,
+      "after": 0.27354377500887495,
+      "ratio": 5.159650254156551,
+      "category": "cpf",
+      "before_preparation": 0.4257344761863351,
+      "after_preparation": 0.26046282099559903
+    },
+    {
+      "root": "TRS_Standard/SK90/2.36.ari",
+      "before": 0.0903728362172842,
+      "after": 0.2953729869914241,
+      "ratio": 3.2683823962463263,
+      "category": "cpf",
+      "before_preparation": 0.21099922619760036,
+      "after_preparation": 0.40612172399414703
+    },
+    {
+      "root": "TRS_Standard/Saito_26/SH25_echelon.ari",
+      "before": 0.18945900304242969,
+      "after": 0.3961754549964098,
+      "ratio": 2.0910880382268537,
+      "category": "cpf",
+      "before_preparation": 0.2113259849138558,
+      "after_preparation": 0.25795940500393044
+    },
+    {
+      "root": "TRS_Standard/Secret_05_TRS/aprove1.ari",
+      "before": 0.1207081195898354,
+      "after": 0.3576338799903169,
+      "ratio": 2.962798867263877,
+      "category": "cpf",
+      "before_preparation": 0.27395915426313877,
+      "after_preparation": 0.31236277701100335
+    },
+    {
+      "root": "TRS_Standard/Strategy_removed_AG01/#4.20.ari",
+      "before": 0.023600343614816666,
+      "after": 0.2789642389980145,
+      "ratio": 11.820346497958461,
+      "category": "cpf",
+      "before_preparation": 0.13366799196228385,
+      "after_preparation": 0.18802666298870463
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/Ex1_2_AEL03_L.ari",
+      "before": 0.028621322009712458,
+      "after": 0.23184005299117416,
+      "ratio": 8.100256616815281,
+      "category": "cpf",
+      "before_preparation": 0.20251669501885772,
+      "after_preparation": 0.281618246997823
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/Ex1_GM03_Z.ari",
+      "before": 0.021594383753836155,
+      "after": 0.25075681699672714,
+      "ratio": 11.612131184441937,
+      "category": "cpf",
+      "before_preparation": 0.4080783436074853,
+      "after_preparation": 0.5778828070033342
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/Ex24_Luc06_FR.ari",
+      "before": 0.03911762498319149,
+      "after": 0.24885589598852675,
+      "ratio": 6.3617332620643,
+      "category": "cpf",
+      "before_preparation": 0.24455705611035228,
+      "after_preparation": 0.30061191000277176
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/Ex4_Zan97_FR.ari",
+      "before": 0.06152047496289015,
+      "after": 0.27786744400509633,
+      "ratio": 4.5166661046214145,
+      "category": "cpf",
+      "before_preparation": 0.1411214889958501,
+      "after_preparation": 0.367494395992253
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/Ex9_Luc04_GM.ari",
+      "before": 0.09626053925603628,
+      "after": 0.3275339279934997,
+      "ratio": 3.402577323219813,
+      "category": "cpf",
+      "before_preparation": 0.09624678967520595,
+      "after_preparation": 0.46456679300172254
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/Ex9_Luc06_C.ari",
+      "before": 0.040417380165308714,
+      "after": 0.3585131470026681,
+      "ratio": 8.870271787442306,
+      "category": "cpf",
+      "before_preparation": 0.26520122261717916,
+      "after_preparation": 0.3215266249899287
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_GM01_Z.ari",
+      "before": 0.12047297088429332,
+      "after": 0.40406425899709575,
+      "ratio": 3.35398269031793,
+      "category": "cpf",
+      "before_preparation": 0.32231476809829473,
+      "after_preparation": 0.4602374629903352
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_GM04_FR.ari",
+      "before": 0.030866092070937157,
+      "after": 0.2922196479921695,
+      "ratio": 9.467335460562472,
+      "category": "cpf",
+      "before_preparation": 0.21573442500084639,
+      "after_preparation": 0.56393790099537
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_GM04_L.ari",
+      "before": 0.03356987005099654,
+      "after": 0.2916843209968647,
+      "ratio": 8.688872508405968,
+      "category": "cpf",
+      "before_preparation": 0.16794671909883618,
+      "after_preparation": 0.8114533530024346
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/ExIntrod_GM99_L.ari",
+      "before": 0.04863873217254877,
+      "after": 0.4938676599995233,
+      "ratio": 10.153793858102606,
+      "category": "cpf",
+      "before_preparation": 0.1497235014103353,
+      "after_preparation": 0.5587250950047746
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/LISTUTILITIES_complete_noand_C.ari",
+      "before": 0.23966765822842717,
+      "after": 0.5355717399943387,
+      "ratio": 2.2346433555247804,
+      "category": "cpf",
+      "before_preparation": 0.3300075037404895,
+      "after_preparation": 0.8257770269992761
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/LISTUTILITIES_nosorts-noand_FR.ari",
+      "before": 0.07065988425165415,
+      "after": 0.27129578399762977,
+      "ratio": 3.8394597850091827,
+      "category": "cpf",
+      "before_preparation": 0.2116618133150041,
+      "after_preparation": 0.5036777250061277
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/LengthOfFiniteLists_nokinds_noand_iGM.ari",
+      "before": 0.09340302273631096,
+      "after": 0.38034246700408403,
+      "ratio": 4.072057368826712,
+      "category": "cpf",
+      "before_preparation": 0.2181821339763701,
+      "after_preparation": 0.31571625199285336
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/LengthOfFiniteLists_nosorts_noand_C.ari",
+      "before": 0.031013912055641413,
+      "after": 0.3492200790060451,
+      "ratio": 11.260110571653026,
+      "category": "cpf",
+      "before_preparation": 0.19162105210125446,
+      "after_preparation": 0.2277040020126151
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_complete-noand_FR.ari",
+      "before": 0.09896839689463377,
+      "after": 0.32349115500983316,
+      "ratio": 3.2686308474233092,
+      "category": "cpf",
+      "before_preparation": 0.04114166600629687,
+      "after_preparation": 0.6259528480004519
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_complete_C.ari",
+      "before": 0.08083380805328488,
+      "after": 0.31235159700736403,
+      "ratio": 3.8641207748305613,
+      "category": "cpf",
+      "before_preparation": 0.30074483482167125,
+      "after_preparation": 0.4119355229922803
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_complete_L.ari",
+      "before": 0.06724818982183933,
+      "after": 0.40793656099413056,
+      "ratio": 6.066134450233934,
+      "category": "cpf",
+      "before_preparation": 0.1722577093169093,
+      "after_preparation": 0.3202741410059389
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_complete_noand_GM.ari",
+      "before": 0.13881054893136024,
+      "after": 0.41226339200511575,
+      "ratio": 2.969971628085513,
+      "category": "cpf",
+      "before_preparation": 0.36004981910809875,
+      "after_preparation": 0.7223547589965165
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_nokinds_iGM.ari",
+      "before": 0.03523029200732708,
+      "after": 0.30345483699056786,
+      "ratio": 8.613463576386376,
+      "category": "cpf",
+      "before_preparation": 1.080522536765784,
+      "after_preparation": 0.22436757800460327
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/MYNAT_nokinds_noand_C.ari",
+      "before": 0.0611620070412755,
+      "after": 0.3081194760015933,
+      "ratio": 5.037759401741955,
+      "category": "cpf",
+      "before_preparation": 1.0878817238844931,
+      "after_preparation": 0.20209591899765655
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/OvConsOS_complete-noand_Z.ari",
+      "before": 0.04707337869331241,
+      "after": 0.281386968010338,
+      "ratio": 5.977624207593026,
+      "category": "cpf",
+      "before_preparation": 1.0624828776344657,
+      "after_preparation": 0.18436665000626817
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/OvConsOS_complete_L.ari",
+      "before": 0.03319343086332083,
+      "after": 0.31867505799164064,
+      "ratio": 9.600545942473838,
+      "category": "cpf",
+      "before_preparation": 1.0522344140335917,
+      "after_preparation": 0.5643172289856011
+    },
+    {
+      "root": "TRS_Standard/Transformed_CSR_04/OvConsOS_nokinds_FR.ari",
+      "before": 0.06277644913643599,
+      "after": 0.5281495640083449,
+      "ratio": 8.413179962767318,
+      "category": "cpf",
+      "before_preparation": 0.3929973621852696,
+      "after_preparation": 0.6426759110036073
+    },
+    {
+      "root": "TRS_Standard/Yamada_26/YKS15-Ex13.ari",
+      "before": 0.055572060868144035,
+      "after": 0.3428602479980327,
+      "ratio": 6.1696514874900545,
+      "category": "cpf",
+      "before_preparation": 0.1472562118433416,
+      "after_preparation": 0.25321270601125434
+    },
+    {
+      "root": "TRS_Standard/Yamada_26/YKS15-Ex9.ari",
+      "before": 0.02130467491224408,
+      "after": 0.23436026299896184,
+      "ratio": 11.000414883790217,
+      "category": "cpf",
+      "before_preparation": 0.06705562025308609,
+      "after_preparation": 0.1900124639942078
+    },
+    {
+      "root": "TRS_Standard/Zantema_05/jw15.ari",
+      "before": 0.10093119880184531,
+      "after": 0.3293220699997619,
+      "ratio": 3.262837199093497,
+      "category": "cpf",
+      "before_preparation": 0.2979186372831464,
+      "after_preparation": 0.29938423600106034
+    },
+    {
+      "root": "TRS_Standard/Zantema_05/jw22.ari",
+      "before": 0.040188850834965706,
+      "after": 0.2700261900026817,
+      "ratio": 6.718932848105959,
+      "category": "cpf",
+      "before_preparation": 0.1797520760446787,
+      "after_preparation": 0.34926072899543215
+    },
+    {
+      "root": "TRS_Standard/Zantema_05/jw27.ari",
+      "before": 0.02305401721969247,
+      "after": 0.2600429050071398,
+      "ratio": 11.279721990708596,
+      "category": "cpf",
+      "before_preparation": 0.39077139319851995,
+      "after_preparation": 0.4946711759985192
+    }
+  ],
+  "worst_before": [
+    {
+      "root": "SRS_Standard/ICFP_2010/161533.ari",
+      "before": 86.68264859635383,
+      "after": 23.622901082999306,
+      "ratio": 0.2725216806999246,
+      "category": "cpf",
+      "before_preparation": 0.8526950650848448,
+      "after_preparation": 0.13394561399763916
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149849.ari",
+      "before": 72.38268223078921,
+      "after": 21.602035023999633,
+      "ratio": 0.2984420355565497,
+      "category": "cpf",
+      "before_preparation": 1.0462433868087828,
+      "after_preparation": 0.12437161199341062
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149713.ari",
+      "before": 70.74249088112265,
+      "after": 22.48474877398985,
+      "ratio": 0.31783937056688816,
+      "category": "cpf",
+      "before_preparation": 0.9190248320810497,
+      "after_preparation": 0.12289497000165284
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/166848.ari",
+      "before": 69.9959824308753,
+      "after": 22.802808054999332,
+      "ratio": 0.32577309815628774,
+      "category": "cpf",
+      "before_preparation": 0.822550144046545,
+      "after_preparation": 0.11872321300324984
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165975.ari",
+      "before": 69.43412862392142,
+      "after": 16.4697994080052,
+      "ratio": 0.23720034706867527,
+      "category": "cpf",
+      "before_preparation": 0.7554362933151424,
+      "after_preparation": 0.11296511298860423
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149633.ari",
+      "before": 68.83383225137368,
+      "after": 21.085212243997375,
+      "ratio": 0.30632047576541244,
+      "category": "cpf",
+      "before_preparation": 0.8058171980082989,
+      "after_preparation": 0.21643742801097687
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/150815.ari",
+      "before": 68.3010036367923,
+      "after": 22.49843779600633,
+      "ratio": 0.329401276672996,
+      "category": "cpf",
+      "before_preparation": 0.9169724439270794,
+      "after_preparation": 0.12013245400157757
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/160254.ari",
+      "before": 67.95325618702918,
+      "after": 21.554273703994113,
+      "ratio": 0.3171926543839169,
+      "category": "cpf",
+      "before_preparation": 0.7178017478436232,
+      "after_preparation": 0.11904099999810569
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/160364.ari",
+      "before": 67.04775450704619,
+      "after": 18.823216071003117,
+      "ratio": 0.28074342249634837,
+      "category": "cpf",
+      "before_preparation": 0.7209319290705025,
+      "after_preparation": 0.1592707719973987
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165713.ari",
+      "before": 66.74337821407244,
+      "after": 20.40647755500686,
+      "ratio": 0.30574535034105116,
+      "category": "cpf",
+      "before_preparation": 0.7596535771153867,
+      "after_preparation": 0.11758451900095679
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/167087.ari",
+      "before": 66.17246261006221,
+      "after": 20.581086687991046,
+      "ratio": 0.31102192477360635,
+      "category": "cpf",
+      "before_preparation": 0.7017270079813898,
+      "after_preparation": 0.11094549400149845
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165936.ari",
+      "before": 65.13699366012588,
+      "after": 21.30325012600224,
+      "ratio": 0.32705301440774337,
+      "category": "cpf",
+      "before_preparation": 0.7119321338832378,
+      "after_preparation": 0.1204477340070298
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165755.ari",
+      "before": 63.698512353003025,
+      "after": 19.532038868012023,
+      "ratio": 0.30663257502419833,
+      "category": "cpf",
+      "before_preparation": 0.7570394529029727,
+      "after_preparation": 0.30842481800937094
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/165904.ari",
+      "before": 63.39067064598203,
+      "after": 19.169138333993033,
+      "ratio": 0.3023968375574846,
+      "category": "cpf",
+      "before_preparation": 0.6341686500236392,
+      "after_preparation": 0.2935833149967948
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/167433.ari",
+      "before": 62.80034321313724,
+      "after": 18.49464652800816,
+      "ratio": 0.2944991314018688,
+      "category": "cpf",
+      "before_preparation": 0.684654104989022,
+      "after_preparation": 0.11669272399740294
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/150067.ari",
+      "before": 61.15376806585118,
+      "after": 17.556887429003837,
+      "ratio": 0.2870941232942237,
+      "category": "cpf",
+      "before_preparation": 0.9849261599592865,
+      "after_preparation": 0.3698205130058341
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/161593.ari",
+      "before": 60.85162783972919,
+      "after": 17.42368586199882,
+      "ratio": 0.286330645219373,
+      "category": "cpf",
+      "before_preparation": 0.6269949846901,
+      "after_preparation": 0.2658677489962429
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/162095.ari",
+      "before": 60.0191709343344,
+      "after": 19.277760338998633,
+      "ratio": 0.3211933793635702,
+      "category": "cpf",
+      "before_preparation": 0.6731218369677663,
+      "after_preparation": 0.11037227699125651
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149361.ari",
+      "before": 59.075971430167556,
+      "after": 16.13422840400017,
+      "ratio": 0.27310982813159657,
+      "category": "cpf",
+      "before_preparation": 0.7044845707714558,
+      "after_preparation": 0.21549837199563626
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/149277.ari",
+      "before": 58.77501956792548,
+      "after": 16.420396178000374,
+      "ratio": 0.27937712822066435,
+      "category": "cpf",
+      "before_preparation": 0.6828305539675057,
+      "after_preparation": 0.10995435601216741
+    }
+  ],
+  "worst_after": [
+    {
+      "root": "SRS_Standard/ICFP_2010/3786.ari",
+      "before": 50.39587783906609,
+      "after": 53.66516403899004,
+      "ratio": 1.0648720954988438,
+      "category": "cpf",
+      "before_preparation": 0.20902288099750876,
+      "after_preparation": 0.16573703900212422
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/85721.ari",
+      "before": 47.0953561430797,
+      "after": 49.83470224699704,
+      "ratio": 1.0581659494323596,
+      "category": "cpf",
+      "before_preparation": 0.26248859195038676,
+      "after_preparation": 0.0903237009915756
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86617.ari",
+      "before": 44.5013425918296,
+      "after": 46.620142468993436,
+      "ratio": 1.0476120439016339,
+      "category": "cpf",
+      "before_preparation": 0.08677274826914072,
+      "after_preparation": 0.04439004001324065
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/85782.ari",
+      "before": 42.10252115316689,
+      "after": 43.54931736600702,
+      "ratio": 1.0343636479054723,
+      "category": "cpf",
+      "before_preparation": 0.28081701695919037,
+      "after_preparation": 0.06291428400436416
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/3533.ari",
+      "before": 41.11736024590209,
+      "after": 41.899693314000615,
+      "ratio": 1.01902683108594,
+      "category": "cpf",
+      "before_preparation": 0.2721193521283567,
+      "after_preparation": 0.3559149909997359
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86025.ari",
+      "before": 37.90482850978151,
+      "after": 39.902663742992445,
+      "ratio": 1.0527066157994986,
+      "category": "cpf",
+      "before_preparation": 0.08628405025228858,
+      "after_preparation": 0.17919104899920058
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/29415.ari",
+      "before": 32.42097690189257,
+      "after": 38.3321938119916,
+      "ratio": 1.1823269214862542,
+      "category": "cpf",
+      "before_preparation": 0.16474495083093643,
+      "after_preparation": 0.19230515099479817
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86577.ari",
+      "before": 31.859387119300663,
+      "after": 34.124453691008966,
+      "ratio": 1.0710957358729638,
+      "category": "cpf",
+      "before_preparation": 0.08685283688828349,
+      "after_preparation": 0.02793842500250321
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/5076.ari",
+      "before": 28.821388572920114,
+      "after": 31.213543214995298,
+      "ratio": 1.0829992849242105,
+      "category": "cpf",
+      "before_preparation": 0.21478779101744294,
+      "after_preparation": 0.055698001000564545
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/213147.ari",
+      "before": 28.27444508066401,
+      "after": 30.491417156998068,
+      "ratio": 1.0784090393289514,
+      "category": "cpf",
+      "before_preparation": 0.0562315690331161,
+      "after_preparation": 0.15853114699712023
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/96673.ari",
+      "before": 26.78619930986315,
+      "after": 28.27618176699616,
+      "ratio": 1.0556250044994018,
+      "category": "cpf",
+      "before_preparation": 0.02829230297356844,
+      "after_preparation": 0.03199431400571484
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97885.ari",
+      "before": 24.377462754957378,
+      "after": 26.928292786993552,
+      "ratio": 1.1046388649088363,
+      "category": "cpf",
+      "before_preparation": 0.030761579051613808,
+      "after_preparation": 0.17839554300007876
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/96156.ari",
+      "before": 25.14164932211861,
+      "after": 26.606740058996365,
+      "ratio": 1.058273453666734,
+      "category": "cpf",
+      "before_preparation": 0.25085863191634417,
+      "after_preparation": 0.028942439996171743
+    },
+    {
+      "root": "SRS_Relative/ICFP_2010_relative/97901.ari",
+      "before": 23.392565209884197,
+      "after": 26.482991154000047,
+      "ratio": 1.1321114600467175,
+      "category": "cpf",
+      "before_preparation": 0.2555178231559694,
+      "after_preparation": 0.3236978859931696
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97929.ari",
+      "before": 23.882884248159826,
+      "after": 26.478372979006963,
+      "ratio": 1.1086756818765355,
+      "category": "cpf",
+      "before_preparation": 0.028922108933329582,
+      "after_preparation": 0.033677405008347705
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/213719.ari",
+      "before": 24.160773352254182,
+      "after": 26.469662143004825,
+      "ratio": 1.0955635300695052,
+      "category": "cpf",
+      "before_preparation": 0.19661421328783035,
+      "after_preparation": 0.16535809000197332
+    },
+    {
+      "root": "Higher_Order_Rewriting/Hamana_Kikuchi_18/h31.ari",
+      "before": 20.455967948306352,
+      "after": 25.698454644007143,
+      "ratio": 1.256281526689371,
+      "category": "higher-order-delegation",
+      "before_preparation": 1.0331695396453142,
+      "after_preparation": 1.3968945800006622
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/86857.ari",
+      "before": 23.811498844996095,
+      "after": 25.36758653400466,
+      "ratio": 1.0653502620367625,
+      "category": "cpf",
+      "before_preparation": 0.028783139772713184,
+      "after_preparation": 0.02994153399777133
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97917.ari",
+      "before": 22.51183747826144,
+      "after": 25.225062445999356,
+      "ratio": 1.1205243672515823,
+      "category": "cpf",
+      "before_preparation": 0.02769987564533949,
+      "after_preparation": 0.0640229470009217
+    },
+    {
+      "root": "SRS_Standard/ICFP_2010/97888.ari",
+      "before": 22.9997750245966,
+      "after": 24.618192001013085,
+      "ratio": 1.0703666437904589,
+      "category": "cpf",
+      "before_preparation": 0.029146358370780945,
+      "after_preparation": 0.03049372100213077
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "root": "SRS_Relative/ICFP_2010_relative/128056.ari",
+  "answer": "yes",
+  "input_sha256": "b543560a0680e7e5fbfb3f1aa3ca378a3787a65c5d576b2fe0c3ac3f843d9be9",
+  "proof_sha256": "d8c95f06c661631f05a5a1102de3e852cf32dc63842f6faace636a9e1d73d4fc",
+  "proof_format": "cpf",
+  "evidence": "target/production-all-20261025/rewriting/SRS_Relative/input-audit.json",
+  "input": "inputs/b543560a0680e7e5fbfb3f1aa3ca378a3787a65c5d576b2fe0c3ac3f843d9be9.ari",
+  "proof": "proofs/486fb31fa0c2bf959847eb0e89971b6fba11bb571ed57962dcdb786566fce1ae.proof.gz",
+  "original_proof_sha256": "486fb31fa0c2bf959847eb0e89971b6fba11bb571ed57962dcdb786566fce1ae",
+  "compact_proof_sha256": "d8c95f06c661631f05a5a1102de3e852cf32dc63842f6faace636a9e1d73d4fc"
+}

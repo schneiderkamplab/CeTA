@@ -55,7 +55,7 @@ end
     assert 'ORDINARY_ERASURE_EXPORT_VERIFIED' in (out / 'isabelle.log').read_text()
     isabelle_seconds = time.monotonic() - start
     (out / 'ghc').mkdir()
-    cmd = [str(a.ghc), '-O1', '-i' + str(out / 'generated'), '-outputdir', str(out / 'ghc'),
+    cmd = [str(a.ghc), '-O2', '-i' + str(out / 'generated'), '-outputdir', str(out / 'ghc'),
            str(source / 'Main_Conditional_Ordinary.hs'), '-o', str(out / 'ceta-conditional-erasure')]
     start = time.monotonic()
     with (out / 'ghc.log').open('w') as log:

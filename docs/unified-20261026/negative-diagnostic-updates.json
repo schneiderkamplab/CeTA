@@ -1,0 +1,30 @@
+[
+  {
+    "id": "e514cd54de6e2c7a75b70a4b-omitted-graph-components",
+    "mutation_sha256": "5bb40a16ba640df80d5d3a98e362087ecc150eded06376624126463041ccddbf",
+    "old_expected_regex": "(?:Dependency Pair|CSR dependency pair).*is missing in decomposition",
+    "current_diagnostic": "typed MU-TERM dependency pair leq#(s(X), s(Y)) -> leq#(X, Y) is missing in decomposition\n\n",
+    "unchanged_from_production": true
+  },
+  {
+    "id": "babfa4b476f9721fdd5073c3-omitted-graph-components",
+    "mutation_sha256": "682152382fcbd994d3725b5edba68f291256715d88a75702fee0a4c4c6429b0b",
+    "old_expected_regex": "(?:Dependency Pair|CSR dependency pair).*is missing in decomposition",
+    "current_diagnostic": "typed MU-TERM dependency pair fact#(X) -> if#(zero(X), s(0), prod(X, fact(p(X)))) is missing in decomposition\n\n",
+    "unchanged_from_production": true
+  },
+  {
+    "id": "d0ffec402b43a91f635f85ad-omitted-graph-components",
+    "mutation_sha256": "6dcb9668f05e29496ba68584681b2e81bcb90fcb3a8998fd1a6ddf0c3d350633",
+    "old_expected_regex": "(?:Dependency Pair|CSR dependency pair).*is missing in decomposition",
+    "current_diagnostic": "typed MU-TERM dependency pair plus#(x, y) -> if#(isZero(x), y, s(plus(p(x), y))) is missing in decomposition\n\n",
+    "unchanged_from_production": true
+  },
+  {
+    "id": "7f78188ca457ccaed11177a9-omitted-graph-components",
+    "mutation_sha256": "cc79db3ef14315f9200355fc15735167e823ffd4900ce514f7e664fa3f5db831",
+    "old_expected_regex": "(?:Dependency Pair|CSR dependency pair).*is missing in decomposition",
+    "current_diagnostic": "typed MU-TERM dependency pair fact#(X) -> if#(zero(X), s(0), prod(X, fact(p(X)))) is missing in decomposition\n\n",
+    "unchanged_from_production": true
+  }
+]
