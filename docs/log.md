@@ -3,3 +3,5 @@
 ## 2026-10-28
 
 - Added OKF indexes and typed metadata; preserved existing document bodies. Architecture requirements remain unverified until their gates pass.
+
+- Pointed architecture links at the maintained Ferrum checkout for integration; checker implementation and executable are unchanged.
