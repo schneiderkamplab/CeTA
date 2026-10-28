@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 -- Every acceptance branch is generated from Isabelle.
-module Ceta.Category.LogicProgramming (run) where
+module Ceta.Category.LogicProgramming (run, runProlog) where
 import Ceta.Input.Characters (cachedCharacters)
 #ifdef LP_SEG_TRIPLES
 import qualified LP_Triples_Generated as T
@@ -12,6 +12,9 @@ import qualified LP_Cut_Projected_Generated as P
 import qualified LP_Return_Module_Generated as R
 import qualified LP_SEG_Certificate_Generated as S
 import qualified LP_Cut_NO_Generated as N
+#ifdef LP_PROLOG_STATIC
+import qualified Prolog_Static_Generated as PS
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -31,6 +34,10 @@ main = do
 #endif
         P.check_lpc_projected_xml (decodeP input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT"
+#ifdef LP_SEG_TRIPLES
+        else if T.check_lp_triple_pidp_xml (decodeT input)
+        then putStrLn "CERTIFIED LP DEPENDENCY-TRIPLE CHILD"
+#endif
         else if N.check_lpc_no_xml (decodeN input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT NO"
         else if S.check_lpc_seg_free_certificate_xml (decodeS input) ||
@@ -51,6 +58,19 @@ main = do
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
 run args = withArgs args main
+
+-- Prolog has an explicit source bridge; an LP child alone is insufficient.
+runProlog :: [String] -> IO ()
+runProlog [path] = do
+  input <- readFile path
+#ifdef LP_PROLOG_STATIC
+  if PS.check_lpp_static_xml (cachedCharacters PS.explode input)
+    then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG"
+    else putStrLn "REJECTED" >> exitFailure
+#else
+  putStrLn "UNSUPPORTED" >> exitFailure
+#endif
+runProlog _ = putStrLn "usage: ceta --category prolog certificate.xml" >> exitFailure
 
 #ifdef LP_SEG_TRIPLES
 decodeT = cachedCharacters T.explode

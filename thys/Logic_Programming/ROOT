@@ -149,3 +149,7 @@ session Logic_Programming_Cut_NO_Code = Logic_Programming +
 session Logic_Programming_Cut_Projected_Residual = Logic_Programming +
   options [document = false, timeout = 900]
   theories LP_Cut_Projected_Certificate_Regression LP_Cut_SEG_Projected_Code
+
+session Prolog_Static_Code = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Prolog_Static_Code

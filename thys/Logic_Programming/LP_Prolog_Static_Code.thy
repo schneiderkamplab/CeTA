@@ -1,0 +1,5 @@
+theory LP_Prolog_Static_Code
+  imports LP_Prolog_Static_Audit
+begin
+export_code check_lpp_static_xml in Haskell module_name Prolog_Static_Generated
+end

@@ -87,7 +87,8 @@
     "adapter": "src/Haskell/Ceta/Category/LogicProgramming.hs",
     "cpp": [
       "-DLP_SEG_TRIPLES",
-      "-DLP_SEG_PROJECTED"
+      "-DLP_SEG_PROJECTED",
+      "-DLP_PROLOG_STATIC"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -100,6 +101,7 @@
       "LP_SEG_Certificate_Generated.hs": "5d505823a4a9e36731d8ccd0dbc83aeff5515a71b424b911b8608ee98464869a",
       "LP_SEG_Projected_Generated.hs": "7aca74b8e87f96073d2548d0bd8d2eb5dcb241449552ff85b6344f959f8a9654",
       "LP_Triples_Generated.hs": "6ed7bd4fe79bac44d8c9e81ff1cad93e550ed6e4e8e5b817d0aafe6af4228328",
+      "Prolog_Static_Generated.hs": "46f615da0d2d5f1ef85c7ed0e286adc6f464fc5b5904c9d794697f737a561624",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
@@ -107,9 +109,18 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp.tar.gz",
-    "archive_sha256": "a3c22020938e94c162afe76aa867baf10d2a73f17ab82e9a999dd6a38ead424c",
+    "archive_sha256": "d88205265436c31b1d77f6c2c05a0ab8ef58bd46d0ddf760d2596ef0836fc148",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
-    "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115"
+    "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
+    "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
+    "prolog_export_origin": "target/prolog/generated/Prolog_Static_Generated.hs",
+    "prolog_source_theory_hashes": {
+      "thys/Logic_Programming/LP_Prolog_Errors.thy": "eabe4cac01a80edce1f796d0e4013722b796eaa50f9ac2220cf712b078d18666",
+      "thys/Logic_Programming/LP_Prolog_Static.thy": "fdbd1e53283cf4817085d2492c2c3c9439c238f6226b6d661e80241895ccb746",
+      "thys/Logic_Programming/LP_Prolog_Static_Audit.thy": "4457ca95ff1e4881309e0304f2cffa663e96edb0f5a0809c942536f5d1e27e75",
+      "thys/Logic_Programming/LP_Prolog_Static_Code.thy": "a081f634f4cc28582aecf182336276840d265219432641252d50dc83fd94c31b",
+      "thys/Logic_Programming/LP_Prolog_Static_XML.thy": "ae2a543f1c20d6dccb639040ffba7bc5cbd3546377d5c0a5b56ad466581d2c86"
+    }
   },
   "higher-order": {
     "module": "Ceta.Category.HigherOrder",

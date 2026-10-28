@@ -23,6 +23,7 @@ dispatch ("--category" : category : args) = case category of
   "conditional" -> Conditional.run args
   "conditional-erasure" -> ConditionalErasure.run args
   "lp" -> LogicProgramming.run args
+  "prolog" -> LogicProgramming.runProlog args
   "higher-order" -> HigherOrder.run args
   "higher-order-delegation" -> HigherOrderDelegation.run args
   "its" -> ITS.run args
@@ -31,4 +32,4 @@ dispatch ["--category"] = hPutStrLn stderr "Missing category; use --list-categor
 dispatch args = Rewriting.run args
 
 categories :: [String]
-categories = ["cpf", "cycle", "conditional", "conditional-erasure", "lp", "higher-order", "higher-order-delegation", "its"]
+categories = ["cpf", "cycle", "conditional", "conditional-erasure", "lp", "prolog", "higher-order", "higher-order-delegation", "its"]
