@@ -17,3 +17,5 @@ okf_version: "0.2"
 - [usable-membership-20261026](usable-membership-20261026/index.md) — Directory index.
 
 [Update log](log.md)
+
+- [Frozen branch reconciliation](branch-reconciliation.md)
