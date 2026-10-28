@@ -10,3 +10,5 @@
 - Pointed architecture links at the maintained Ferrum checkout for integration; checker implementation and executable are unchanged.
 
 - Connected existing generated initial/return triple checkers to the unified LP adapter. Isolated O2 build and LP regression/negative checks pass; generated exports and installed main executable are unchanged.
+
+- Integrated the existing verified finite-LP export into the isolated unified checker (`54a99ee`). Existing generated sources and other category libraries are unchanged. The new candidate passes 346 positive/81 negative checks, all 91 retained cut artifacts, and finite/dispatch regressions; main is unchanged.

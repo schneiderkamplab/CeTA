@@ -1,0 +1,3968 @@
+{
+  "status": "passed",
+  "checker_sha256": "c89d366b2d2c57d73f8fe13157975882814a0af1cff2ebba6584bfbfdb9e0f44",
+  "changed_libraries": [
+    "lp"
+  ],
+  "existing_generated_sources_unchanged": true,
+  "added_generated_module": "LP_Finite_Generated.hs",
+  "retained_cut_roots": 91,
+  "positive_checks": 346,
+  "negative_checks": 81,
+  "results": [
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/normal/certificate.xml",
+      "sha256": "274199dcf044cdc3919977d030f6b04323d5ccc22f52d18262185cb3c4d9147e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023403825995046645
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/normal/certificate.xml",
+      "sha256": "274199dcf044cdc3919977d030f6b04323d5ccc22f52d18262185cb3c4d9147e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023695225012488663
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/unify/certificate.xml",
+      "sha256": "650f578af7f94aab2999c5b31c2c08ac67e5da847276cea5d796b15db257dd98",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012796049995813519
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/unify/certificate.xml",
+      "sha256": "650f578af7f94aab2999c5b31c2c08ac67e5da847276cea5d796b15db257dd98",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012636930012376979
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/trace/certificate.xml",
+      "sha256": "855a1b77d34f16c8c4bb2fe337e5f2de656aecc7032f25c4ee3d1c79e0d28bd3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.013363504986045882
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/trace/certificate.xml",
+      "sha256": "855a1b77d34f16c8c4bb2fe337e5f2de656aecc7032f25c4ee3d1c79e0d28bd3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012654541002120823
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/inputs-first/certificate.xml",
+      "sha256": "b4e4ebee057a0ecddc695f46232bbf42528f9701fc66ea131311b72e38dde444",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.024282510014018044
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/inputs-first/certificate.xml",
+      "sha256": "b4e4ebee057a0ecddc695f46232bbf42528f9701fc66ea131311b72e38dde444",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023712604015599936
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/constructor/certificate.xml",
+      "sha256": "b4e4ebee057a0ecddc695f46232bbf42528f9701fc66ea131311b72e38dde444",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02380711300065741
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/constructor/certificate.xml",
+      "sha256": "b4e4ebee057a0ecddc695f46232bbf42528f9701fc66ea131311b72e38dde444",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.024062781973043457
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/mode/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022955029999138787
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/mode/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.0247882749827113
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/head/certificate.xml",
+      "sha256": "7c851aea527e8eb8d7611b9a2ce9456c87d65fa8460a1a98bc40f1bcceae6dff",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011601419013459235
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/head/certificate.xml",
+      "sha256": "7c851aea527e8eb8d7611b9a2ce9456c87d65fa8460a1a98bc40f1bcceae6dff",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012026145996060222
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/recurrent/certificate.xml",
+      "sha256": "a23f7b4f193d7391eaf3466e332bb7ad9341aa50726cb85531d8a92e35d9ea1c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011879806988872588
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/recurrent/certificate.xml",
+      "sha256": "a23f7b4f193d7391eaf3466e332bb7ad9341aa50726cb85531d8a92e35d9ea1c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012409331975504756
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/pattern/certificate.xml",
+      "sha256": "37557d94145d25cf1adaa0e56b0f0af9268749871d8a821f0b26c8079bdc9f28",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012322244001552463
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/pattern/certificate.xml",
+      "sha256": "37557d94145d25cf1adaa0e56b0f0af9268749871d8a821f0b26c8079bdc9f28",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012425941997207701
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/filtered/certificate.xml",
+      "sha256": "c15307507e469f0eae420b957daf37ee7f2c852ec796c23716879f4d7c1dbaa5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.013337265001609921
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/filtered/certificate.xml",
+      "sha256": "c15307507e469f0eae420b957daf37ee7f2c852ec796c23716879f4d7c1dbaa5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.013442255003610626
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/pidp/certificate.xml",
+      "sha256": "87bbcb8ded96cb36207bba4aec072f4cf21e1b2d9a062216e40bb44980a08e8f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02308367899968289
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/pidp/certificate.xml",
+      "sha256": "87bbcb8ded96cb36207bba4aec072f4cf21e1b2d9a062216e40bb44980a08e8f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02304601899231784
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/simplify/certificate.xml",
+      "sha256": "f9d2d139ee4aab6124037e6bf1bbb701c5b412edaec16d7390ccab68ff9cc158",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012518422008724883
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/simplify/certificate.xml",
+      "sha256": "f9d2d139ee4aab6124037e6bf1bbb701c5b412edaec16d7390ccab68ff9cc158",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023596175014972687
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/pattern/certificate.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012340123998001218
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/pattern/certificate.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012501932011218742
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/unify/certificate.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01172366799437441
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/unify/certificate.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01166051800828427
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/simplify/certificate.xml",
+      "sha256": "5d667bc178da18a87daf7c411b0fb9c848dd2e39f2904233e5bc99c84232accb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.013560193998273462
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/simplify/certificate.xml",
+      "sha256": "5d667bc178da18a87daf7c411b0fb9c848dd2e39f2904233e5bc99c84232accb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012407983012963086
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/head/certificate.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011767538002459332
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/head/certificate.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011789367999881506
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/mode/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012872679013526067
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/mode/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02339945698622614
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/trace/certificate.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011427550984080881
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/trace/certificate.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011766117007937282
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/inputs-first/certificate.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022688071010634303
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/inputs-first/certificate.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022406913980375975
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/filtered/certificate.xml",
+      "sha256": "0c23298f85c412cee3a055a4cdba3e362e8ab9f83e195e5846d95da4f2ce247e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012841549003496766
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/filtered/certificate.xml",
+      "sha256": "0c23298f85c412cee3a055a4cdba3e362e8ab9f83e195e5846d95da4f2ce247e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02329926801030524
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/constructor/certificate.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023446595994755626
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/constructor/certificate.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02368452399969101
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/normal/certificate.xml",
+      "sha256": "55791bdb19e31e08bb31eb34914d662e3b9f9026af85591bb67c2f88a62268ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012674521014560014
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/normal/certificate.xml",
+      "sha256": "55791bdb19e31e08bb31eb34914d662e3b9f9026af85591bb67c2f88a62268ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.01280609899549745
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/pidp/certificate.xml",
+      "sha256": "045e3823d0d4edc7eb179cd74441a18afcced751f16bbb8fb507bf7a93f151c3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012674531026277691
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/pidp/certificate.xml",
+      "sha256": "045e3823d0d4edc7eb179cd74441a18afcced751f16bbb8fb507bf7a93f151c3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.013162545976229012
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/recurrent/certificate.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011453011014964432
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/recurrent/certificate.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011328121006954461
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/trace/certificate.xml",
+      "sha256": "855a1b77d34f16c8c4bb2fe337e5f2de656aecc7032f25c4ee3d1c79e0d28bd3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01164105799398385
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/trace/certificate.xml",
+      "sha256": "855a1b77d34f16c8c4bb2fe337e5f2de656aecc7032f25c4ee3d1c79e0d28bd3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.0117308679909911
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/normal/certificate.xml",
+      "sha256": "274199dcf044cdc3919977d030f6b04323d5ccc22f52d18262185cb3c4d9147e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.01271973000257276
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/normal/certificate.xml",
+      "sha256": "274199dcf044cdc3919977d030f6b04323d5ccc22f52d18262185cb3c4d9147e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012597252003615722
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/unify/certificate.xml",
+      "sha256": "650f578af7f94aab2999c5b31c2c08ac67e5da847276cea5d796b15db257dd98",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011746547999791801
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/unify/certificate.xml",
+      "sha256": "650f578af7f94aab2999c5b31c2c08ac67e5da847276cea5d796b15db257dd98",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011704878997988999
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/mode/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02266955201048404
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/mode/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012537652015453205
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/pattern/certificate.xml",
+      "sha256": "37557d94145d25cf1adaa0e56b0f0af9268749871d8a821f0b26c8079bdc9f28",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012270723993424326
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/pattern/certificate.xml",
+      "sha256": "37557d94145d25cf1adaa0e56b0f0af9268749871d8a821f0b26c8079bdc9f28",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012589222023962066
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/constructor/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.025773917994229123
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/constructor/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012704281019978225
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/recurrent/certificate.xml",
+      "sha256": "a23f7b4f193d7391eaf3466e332bb7ad9341aa50726cb85531d8a92e35d9ea1c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011546169989742339
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/recurrent/certificate.xml",
+      "sha256": "a23f7b4f193d7391eaf3466e332bb7ad9341aa50726cb85531d8a92e35d9ea1c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01153590899775736
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/pidp/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02368044399190694
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/pidp/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012846598983742297
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/simplify/certificate.xml",
+      "sha256": "f9d2d139ee4aab6124037e6bf1bbb701c5b412edaec16d7390ccab68ff9cc158",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.01303709700005129
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/simplify/certificate.xml",
+      "sha256": "f9d2d139ee4aab6124037e6bf1bbb701c5b412edaec16d7390ccab68ff9cc158",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012251344014657661
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/inputs-first/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.013002057996345684
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/inputs-first/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012562431016704068
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/filtered/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02323974799946882
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/filtered/certificate.xml",
+      "sha256": "190cd52abe85607e77f44d679fc7e9d673355790f6131fea026f40d473d3bc12",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012366943003144115
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/head/certificate.xml",
+      "sha256": "7c851aea527e8eb8d7611b9a2ce9456c87d65fa8460a1a98bc40f1bcceae6dff",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011777617008192465
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/head/certificate.xml",
+      "sha256": "7c851aea527e8eb8d7611b9a2ce9456c87d65fa8460a1a98bc40f1bcceae6dff",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011716748005710542
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/constructor/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02258129301480949
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/constructor/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022908749990165234
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/unify/certificate.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01185580700985156
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/unify/certificate.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01155083900084719
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/head/certificate.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011320280988002196
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/head/certificate.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012201745004858822
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/simplify/certificate.xml",
+      "sha256": "5d667bc178da18a87daf7c411b0fb9c848dd2e39f2904233e5bc99c84232accb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012565501994686201
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/simplify/certificate.xml",
+      "sha256": "5d667bc178da18a87daf7c411b0fb9c848dd2e39f2904233e5bc99c84232accb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02320909799891524
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/filtered/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02332467699307017
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/filtered/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012390032992698252
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/mode/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012254594010300934
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/mode/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.013011217990424484
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/trace/certificate.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011874887015437707
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/trace/certificate.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012114974990254268
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/inputs-first/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02270303200930357
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/inputs-first/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022575333015993237
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/recurrent/certificate.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011417129979236051
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/recurrent/certificate.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011497129977215081
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/pidp/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023391856986563653
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/pidp/certificate.xml",
+      "sha256": "45d2c4c85f77ba542f75379149812d9e441a18a7c6585a80bb1aa4f208fe743b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023227787984069437
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/normal/certificate.xml",
+      "sha256": "55791bdb19e31e08bb31eb34914d662e3b9f9026af85591bb67c2f88a62268ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012934108002809808
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/normal/certificate.xml",
+      "sha256": "55791bdb19e31e08bb31eb34914d662e3b9f9026af85591bb67c2f88a62268ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012439893005648628
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/pattern/certificate.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011934706009924412
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/pattern/certificate.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011882735998369753
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/normal/mutation.xml",
+      "sha256": "f347a5931ca909b0d085afb731eff02a053b48f66c8cf10ff9869350f3042871",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012771469977451488
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/unify/mutation.xml",
+      "sha256": "223e07e2b724e1693e8e67b3cc49f4145aceb6ce9ce574d806fe2d710c9ae365",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011740938003640622
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/trace/mutation.xml",
+      "sha256": "9988a1c41a089f2ff9cb1530c331de20437971127734e9df23adada65ed6d013",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012192874011816457
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/inputs-first/mutation.xml",
+      "sha256": "252cac4729f63ca587d232113bc93878ba9d1333c191f17e025bde5a7f8065c8",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022690892015816644
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/constructor/mutation.xml",
+      "sha256": "252cac4729f63ca587d232113bc93878ba9d1333c191f17e025bde5a7f8065c8",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022612043016124517
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/mode/mutation.xml",
+      "sha256": "eb352144fc6d76e984b2a673d1212e052b6e612cf3d817f022c2ad7c5d3fd200",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023292377998586744
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/head/mutation.xml",
+      "sha256": "4eb5e1125af2808d61481bc841e7cac8e9e50da90dc18018e5b26b642d261d70",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011539920000359416
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/recurrent/mutation.xml",
+      "sha256": "9c7b4f49eed9b33dbf49c6bf7c0b520cf93daa019be2e3d348de864c37990b03",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011681478004902601
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/pattern/mutation.xml",
+      "sha256": "55f49d983d1bc3ad4805cd292285ff2780ff4a057fbdd0a40a20a6a580d69245",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.01174309800262563
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/filtered/mutation.xml",
+      "sha256": "6811e83875699028b2f78ba29e359079573751f84477c673de0c248f8e9c197d",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022790611983509734
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/pidp/mutation.xml",
+      "sha256": "d997200215d2da3c0355e1a40fd6484a2ad1b6d8357ed51550cc98c4c3ad5236",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02335584699176252
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/family-transport/simplify/mutation.xml",
+      "sha256": "6ca89c4413ef11e65e3c1b7e8eacae4c32ebc999a7d275d267867f2bea48db5f",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023021269007585943
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/pattern/mutation.xml",
+      "sha256": "e66c9af99704a23d8f77e5cc847db8cfddbf071bb7a860f4ce8a16ca35e19289",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011794818012276664
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/unify/mutation.xml",
+      "sha256": "a923c6138ddd651c229218c845b053e4f89be65220a3a7e01b66b987a1709cc0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011384151002857834
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/simplify/mutation.xml",
+      "sha256": "da6b152ff145ccdd03eaaf694e8ad2859b6ecdb90f2feac93bb6e796a4174d86",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012640470988117158
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/head/mutation.xml",
+      "sha256": "0f782bc6872c553038476e3760e5d2dab3e68a8f6a2872c531a3caec39a23fa6",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011352960980730131
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/mode/mutation.xml",
+      "sha256": "c2c43693ad863cdefb54e819fea2f695e4e76b36fced1e5bcdd9698c8e45f2b0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023102329025277868
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/trace/mutation.xml",
+      "sha256": "0111d5e8e4aff5d0b6193551cf6b3745b0137fb3b7de40e98b801c8a1a278015",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011514029989484698
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/inputs-first/mutation.xml",
+      "sha256": "3a0c54b961b95058f601a299cbfa552a28d67e343b2b0360103aa191229183ae",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023403505998430774
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/filtered/mutation.xml",
+      "sha256": "baebfadeee5519ae52fbf348cd83063e849e95d2caae9715a8536e5fed2c3c96",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.01242039300268516
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/constructor/mutation.xml",
+      "sha256": "3a0c54b961b95058f601a299cbfa552a28d67e343b2b0360103aa191229183ae",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023519724985817447
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/normal/mutation.xml",
+      "sha256": "48edc426b6ee7ec6a48cc88a9d0c92f41a5470725167850ee25317753ab1b103",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012274684006115422
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/pidp/mutation.xml",
+      "sha256": "da9b522a6791df8b858a8e944f7d37a283dec58b7ba2ae6779c498f38e546349",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022218755999347195
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/native/recurrent/mutation.xml",
+      "sha256": "4b128d6655c609a69d41b28b93d639c38563ff8a572f5155c1f1c56f4133d43f",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011658928997348994
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/trace/mutation.xml",
+      "sha256": "9988a1c41a089f2ff9cb1530c331de20437971127734e9df23adada65ed6d013",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011573319003218785
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/normal/mutation.xml",
+      "sha256": "f347a5931ca909b0d085afb731eff02a053b48f66c8cf10ff9869350f3042871",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012272054009372368
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/unify/mutation.xml",
+      "sha256": "223e07e2b724e1693e8e67b3cc49f4145aceb6ce9ce574d806fe2d710c9ae365",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011227911978494376
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/mode/mutation.xml",
+      "sha256": "eb352144fc6d76e984b2a673d1212e052b6e612cf3d817f022c2ad7c5d3fd200",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02282705102697946
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/pattern/mutation.xml",
+      "sha256": "55f49d983d1bc3ad4805cd292285ff2780ff4a057fbdd0a40a20a6a580d69245",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012188473978312686
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/constructor/mutation.xml",
+      "sha256": "eb352144fc6d76e984b2a673d1212e052b6e612cf3d817f022c2ad7c5d3fd200",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02228890502010472
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/recurrent/mutation.xml",
+      "sha256": "9c7b4f49eed9b33dbf49c6bf7c0b520cf93daa019be2e3d348de864c37990b03",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011769497010391206
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/pidp/mutation.xml",
+      "sha256": "eb352144fc6d76e984b2a673d1212e052b6e612cf3d817f022c2ad7c5d3fd200",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02257284300867468
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/simplify/mutation.xml",
+      "sha256": "6ca89c4413ef11e65e3c1b7e8eacae4c32ebc999a7d275d267867f2bea48db5f",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012445553002180532
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/inputs-first/mutation.xml",
+      "sha256": "eb352144fc6d76e984b2a673d1212e052b6e612cf3d817f022c2ad7c5d3fd200",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023726663988782093
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/filtered/mutation.xml",
+      "sha256": "eb352144fc6d76e984b2a673d1212e052b6e612cf3d817f022c2ad7c5d3fd200",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022917661000974476
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/renamed/head/mutation.xml",
+      "sha256": "4eb5e1125af2808d61481bc841e7cac8e9e50da90dc18018e5b26b642d261d70",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011525289010023698
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/constructor/mutation.xml",
+      "sha256": "c2c43693ad863cdefb54e819fea2f695e4e76b36fced1e5bcdd9698c8e45f2b0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.023234257998410612
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/unify/mutation.xml",
+      "sha256": "a923c6138ddd651c229218c845b053e4f89be65220a3a7e01b66b987a1709cc0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011392790998797864
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/head/mutation.xml",
+      "sha256": "0f782bc6872c553038476e3760e5d2dab3e68a8f6a2872c531a3caec39a23fa6",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011254131997702643
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/simplify/mutation.xml",
+      "sha256": "da6b152ff145ccdd03eaaf694e8ad2859b6ecdb90f2feac93bb6e796a4174d86",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.0128679389890749
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/filtered/mutation.xml",
+      "sha256": "c2c43693ad863cdefb54e819fea2f695e4e76b36fced1e5bcdd9698c8e45f2b0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02296783000929281
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/mode/mutation.xml",
+      "sha256": "c2c43693ad863cdefb54e819fea2f695e4e76b36fced1e5bcdd9698c8e45f2b0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02301239999360405
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/trace/mutation.xml",
+      "sha256": "0111d5e8e4aff5d0b6193551cf6b3745b0137fb3b7de40e98b801c8a1a278015",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011294691008515656
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/inputs-first/mutation.xml",
+      "sha256": "c2c43693ad863cdefb54e819fea2f695e4e76b36fced1e5bcdd9698c8e45f2b0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02245860398397781
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/recurrent/mutation.xml",
+      "sha256": "4b128d6655c609a69d41b28b93d639c38563ff8a572f5155c1f1c56f4133d43f",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011440979986218736
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/pidp/mutation.xml",
+      "sha256": "c2c43693ad863cdefb54e819fea2f695e4e76b36fced1e5bcdd9698c8e45f2b0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022479134000604972
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/normal/mutation.xml",
+      "sha256": "48edc426b6ee7ec6a48cc88a9d0c92f41a5470725167850ee25317753ab1b103",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012385273003019392
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-common-ac36f54/strict/pattern/mutation.xml",
+      "sha256": "e66c9af99704a23d8f77e5cc847db8cfddbf071bb7a860f4ce8a16ca35e19289",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012147105007898062
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-split/certificate.xml",
+      "sha256": "701d5c784ffbaa1583e07a9bbb241d07ab51e274b3aa30ec7e8c1ec477ddad98",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023129848996177316
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-split/certificate.xml",
+      "sha256": "701d5c784ffbaa1583e07a9bbb241d07ab51e274b3aa30ec7e8c1ec477ddad98",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022154436010168865
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-fact/certificate.xml",
+      "sha256": "16e6d3a2870bbcec703bbf0908a3bb43079163296c7b2704f08e8981bb0e7407",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012036445987178013
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-fact/certificate.xml",
+      "sha256": "16e6d3a2870bbcec703bbf0908a3bb43079163296c7b2704f08e8981bb0e7407",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012277453992282972
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-copy/certificate.xml",
+      "sha256": "34b696764984756a2f8cf61944d200f4afb6cba7369e0e9ba0d3c2de4001931b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02332578698405996
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-copy/certificate.xml",
+      "sha256": "34b696764984756a2f8cf61944d200f4afb6cba7369e0e9ba0d3c2de4001931b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023312037024879828
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-copy/certificate.xml",
+      "sha256": "33842a64f0f321b115039d510b80d2976b06168f07d8ea01dea27d57a1fcbdd5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022643042990239337
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-copy/certificate.xml",
+      "sha256": "33842a64f0f321b115039d510b80d2976b06168f07d8ea01dea27d57a1fcbdd5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02225117597845383
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-fact/certificate.xml",
+      "sha256": "fc7774090805e5875a8a023977eb6e6097ece729a8b3db249b51d85ca6cc4392",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012581081013195217
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-fact/certificate.xml",
+      "sha256": "fc7774090805e5875a8a023977eb6e6097ece729a8b3db249b51d85ca6cc4392",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011993175983661786
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-split/certificate.xml",
+      "sha256": "7816f7dfcd7a7c43eddbf428988ff84bc1c93621e0f5ea6da08767ad83640af3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023075409000739455
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-split/certificate.xml",
+      "sha256": "7816f7dfcd7a7c43eddbf428988ff84bc1c93621e0f5ea6da08767ad83640af3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02300246900995262
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-copy/certificate.xml",
+      "sha256": "33842a64f0f321b115039d510b80d2976b06168f07d8ea01dea27d57a1fcbdd5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022534632997121662
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-copy/certificate.xml",
+      "sha256": "33842a64f0f321b115039d510b80d2976b06168f07d8ea01dea27d57a1fcbdd5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023270628007594496
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-fact/certificate.xml",
+      "sha256": "fc7774090805e5875a8a023977eb6e6097ece729a8b3db249b51d85ca6cc4392",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012343632988631725
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-fact/certificate.xml",
+      "sha256": "fc7774090805e5875a8a023977eb6e6097ece729a8b3db249b51d85ca6cc4392",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012223635014379397
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-split/certificate.xml",
+      "sha256": "7816f7dfcd7a7c43eddbf428988ff84bc1c93621e0f5ea6da08767ad83640af3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022676082007819787
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-split/certificate.xml",
+      "sha256": "7816f7dfcd7a7c43eddbf428988ff84bc1c93621e0f5ea6da08767ad83640af3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02261284299311228
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-split/mutation.xml",
+      "sha256": "9dda98d479a22c5c8ab09cd275604b5a9e5b9ec04b8ecec419c371d6b1e28472",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022429203992942348
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-fact/mutation.xml",
+      "sha256": "50fcc6263f73c31e3e02f5c011d531818c07098bdaf7d2ecc9dfa4f7f6a5206b",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012533731001894921
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/renamed/answer-copy/mutation.xml",
+      "sha256": "87ec53bb0dbaaee13d0136cd9f7a0f84ad3b560d3b05667c94a77f5c267021af",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02248175398563035
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-copy/mutation.xml",
+      "sha256": "3241fb3fec84cb87691ccfc5a4f7e59459185f01964528f2f15ab35a4b5c1be6",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022431784018408507
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-fact/mutation.xml",
+      "sha256": "aa6c305e9acf8794ec1c1cbbec9bb71f4c47b8271457552ae196bbf66b44ff08",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012101135012926534
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/native/answer-split/mutation.xml",
+      "sha256": "07e77be39efd6545bcac39bc4eeb892cb32a60b8babe7f49f2ca1afc9de81b86",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02312089898623526
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-copy/mutation.xml",
+      "sha256": "3241fb3fec84cb87691ccfc5a4f7e59459185f01964528f2f15ab35a4b5c1be6",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02295933000277728
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-fact/mutation.xml",
+      "sha256": "aa6c305e9acf8794ec1c1cbbec9bb71f4c47b8271457552ae196bbf66b44ff08",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012106565001886338
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-answer-common-70f6a37/strict/answer-split/mutation.xml",
+      "sha256": "07e77be39efd6545bcac39bc4eeb892cb32a60b8babe7f49f2ca1afc9de81b86",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02316932799294591
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/pattern/tocl09-lp.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012098205013899133
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/pattern/tocl09-lp.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01204732499900274
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/unify/tocl09-lp.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011553468997590244
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/unify/tocl09-lp.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012076825980329886
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/head/tocl09-lp.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011671168002067134
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/head/tocl09-lp.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011469249991932884
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/recurrent/tocl09-lp.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011570058995857835
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/recurrent/tocl09-lp.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011424150987295434
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/ordered-query/tocl09-lp.xml",
+      "sha256": "ead2699ce46c5e38d247a4ad99f3f52a5f87ee2113bb86e48c68ad86dfeba31d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012503532023401931
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/ordered-query/tocl09-lp.xml",
+      "sha256": "ead2699ce46c5e38d247a4ad99f3f52a5f87ee2113bb86e48c68ad86dfeba31d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012435602984623984
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/trace/tocl09-lp.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011339121003402397
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/trace/tocl09-lp.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01167277799686417
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/head/tocl09-lp.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01129799199406989
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/head/tocl09-lp.xml",
+      "sha256": "7669048192ef873a4a26bc48d670eab4fefcd7e6f4181af95f51d31cc08c8483",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01128058199537918
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/pattern/tocl09-lp.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.0120290560007561
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/pattern/tocl09-lp.xml",
+      "sha256": "4d9484274b3289b0319c732e30d248c649f2a9ec635f23f439f2a90707eef8f8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011955225985730067
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/recurrent/tocl09-lp.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.012206854007672518
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/recurrent/tocl09-lp.xml",
+      "sha256": "edeb1e6f9fbf675b9bf8c812711c0b0ca9bc2dc39258210c97ef203314a34d38",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01165124899125658
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/ordered-query/tocl09-lp.xml",
+      "sha256": "ead2699ce46c5e38d247a4ad99f3f52a5f87ee2113bb86e48c68ad86dfeba31d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011920577002456412
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/ordered-query/tocl09-lp.xml",
+      "sha256": "ead2699ce46c5e38d247a4ad99f3f52a5f87ee2113bb86e48c68ad86dfeba31d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01299766800366342
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/trace/tocl09-lp.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.01143163099186495
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/trace/tocl09-lp.xml",
+      "sha256": "e54b3c3306257cb9f8acbf14b97009e2fd78399604378bd4b6714bfd47acd37b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011321161000523716
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/unify/tocl09-lp.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011357031005900353
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/unify/tocl09-lp.xml",
+      "sha256": "ed78dd3d7be3ca643fd9110c867d999e368d04d843dc85e5f8d8a1f7c98e6fdd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP NO\n",
+      "seconds": 0.011358631018083543
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/pattern/mutation.xml",
+      "sha256": "e66c9af99704a23d8f77e5cc847db8cfddbf071bb7a860f4ce8a16ca35e19289",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011888987006386742
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/unify/mutation.xml",
+      "sha256": "a923c6138ddd651c229218c845b053e4f89be65220a3a7e01b66b987a1709cc0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011510390002513304
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/head/mutation.xml",
+      "sha256": "0f782bc6872c553038476e3760e5d2dab3e68a8f6a2872c531a3caec39a23fa6",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011219892010558397
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/recurrent/mutation.xml",
+      "sha256": "4b128d6655c609a69d41b28b93d639c38563ff8a572f5155c1f1c56f4133d43f",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011545778979780152
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/ordered-query/mutation.xml",
+      "sha256": "40418f7a82482bc9bb525e03cc941f176d185883029ef2a3e3942bab6c07eb56",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011571290000574663
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/strict/trace/mutation.xml",
+      "sha256": "0111d5e8e4aff5d0b6193551cf6b3745b0137fb3b7de40e98b801c8a1a278015",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011280830978648737
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/head/mutation.xml",
+      "sha256": "0f782bc6872c553038476e3760e5d2dab3e68a8f6a2872c531a3caec39a23fa6",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011166543001309037
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/pattern/mutation.xml",
+      "sha256": "e66c9af99704a23d8f77e5cc847db8cfddbf071bb7a860f4ce8a16ca35e19289",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012060225009918213
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/recurrent/mutation.xml",
+      "sha256": "4b128d6655c609a69d41b28b93d639c38563ff8a572f5155c1f1c56f4133d43f",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011514040001202375
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/ordered-query/mutation.xml",
+      "sha256": "40418f7a82482bc9bb525e03cc941f176d185883029ef2a3e3942bab6c07eb56",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011482750996947289
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/trace/mutation.xml",
+      "sha256": "0111d5e8e4aff5d0b6193551cf6b3745b0137fb3b7de40e98b801c8a1a278015",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011258690996328369
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-loop-compat-976118e/native/unify/mutation.xml",
+      "sha256": "a923c6138ddd651c229218c845b053e4f89be65220a3a7e01b66b987a1709cc0",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011594089010031894
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/simplify/tocl09-lp.xml",
+      "sha256": "b540322cb36d85654d968ad72a201da8c2f66828a964094f52084b136cd7a1d8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012413813004968688
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/simplify/tocl09-lp.xml",
+      "sha256": "b540322cb36d85654d968ad72a201da8c2f66828a964094f52084b136cd7a1d8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012109505012631416
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/normal/tocl09-lp.xml",
+      "sha256": "55791bdb19e31e08bb31eb34914d662e3b9f9026af85591bb67c2f88a62268ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011974916007602587
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/normal/tocl09-lp.xml",
+      "sha256": "55791bdb19e31e08bb31eb34914d662e3b9f9026af85591bb67c2f88a62268ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012528761988505721
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/pidp/tocl09-lp.xml",
+      "sha256": "045e3823d0d4edc7eb179cd74441a18afcced751f16bbb8fb507bf7a93f151c3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012631080986466259
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/pidp/tocl09-lp.xml",
+      "sha256": "045e3823d0d4edc7eb179cd74441a18afcced751f16bbb8fb507bf7a93f151c3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023092188988812268
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/mode/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011919137003133073
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/mode/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011911596986465156
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/constructor/tocl09-lp.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02259231300558895
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/constructor/tocl09-lp.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.022440483997343108
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/filtered/tocl09-lp.xml",
+      "sha256": "83b783c0ec4e0d3cbe8f66251804489e86ee6b6a6925b4d0407981ed797be656",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012118754995753989
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/filtered/tocl09-lp.xml",
+      "sha256": "83b783c0ec4e0d3cbe8f66251804489e86ee6b6a6925b4d0407981ed797be656",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012465253006666899
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/pidp/tocl09-lp.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.023085608991095796
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/pidp/tocl09-lp.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.0234375559957698
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/normal/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011986566008999944
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/normal/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011938236013520509
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/mode/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.01291299902368337
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/mode/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012673219986027107
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/simplify/tocl09-lp.xml",
+      "sha256": "b540322cb36d85654d968ad72a201da8c2f66828a964094f52084b136cd7a1d8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012234383990289643
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/simplify/tocl09-lp.xml",
+      "sha256": "b540322cb36d85654d968ad72a201da8c2f66828a964094f52084b136cd7a1d8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.01222463502199389
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/filtered/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.012254943983862177
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/filtered/tocl09-lp.xml",
+      "sha256": "2774b6248388ae84bab67edde47fbebea43450b9d7dcb868e219c2dff5b15f3e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.011987136007519439
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/constructor/tocl09-lp.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.02310244902037084
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/constructor/tocl09-lp.xml",
+      "sha256": "9ef7022342fffd9c57ba0aeb45a7626a32ccbe8275a35fb0bf125ce32ce9555c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED TOCL09 LP\n",
+      "seconds": 0.0230029099911917
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/simplify/mutation.xml",
+      "sha256": "3c9b9e392b5c7ddef2bbb619167b62c40bc6a638fcb09cc9d2d4a472ca890104",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.01228484301827848
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/normal/mutation.xml",
+      "sha256": "48edc426b6ee7ec6a48cc88a9d0c92f41a5470725167850ee25317753ab1b103",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012921288987854496
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/pidp/mutation.xml",
+      "sha256": "da9b522a6791df8b858a8e944f7d37a283dec58b7ba2ae6779c498f38e546349",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022524303989484906
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/mode/mutation.xml",
+      "sha256": "fd366bd9cbbda3771b86592418a45f69687fb068678beba375ce39acd406e345",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012008756020804867
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/constructor/mutation.xml",
+      "sha256": "3a0c54b961b95058f601a299cbfa552a28d67e343b2b0360103aa191229183ae",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022425603994634002
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/filtered/mutation.xml",
+      "sha256": "2088202e4d89625b150bba792a1bda6a121e6f99cf6e8b7544ef68e3b5c48d79",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012041894980939105
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/pidp/mutation.xml",
+      "sha256": "3a0c54b961b95058f601a299cbfa552a28d67e343b2b0360103aa191229183ae",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.02229519499815069
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/normal/mutation.xml",
+      "sha256": "fd366bd9cbbda3771b86592418a45f69687fb068678beba375ce39acd406e345",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012068095995346084
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/mode/mutation.xml",
+      "sha256": "fd366bd9cbbda3771b86592418a45f69687fb068678beba375ce39acd406e345",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011968495993642136
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/simplify/mutation.xml",
+      "sha256": "3c9b9e392b5c7ddef2bbb619167b62c40bc6a638fcb09cc9d2d4a472ca890104",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.011906047002412379
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/filtered/mutation.xml",
+      "sha256": "fd366bd9cbbda3771b86592418a45f69687fb068678beba375ce39acd406e345",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.012299783003982157
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/strict/constructor/mutation.xml",
+      "sha256": "3a0c54b961b95058f601a299cbfa552a28d67e343b2b0360103aa191229183ae",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "seconds": 0.022768130991607904
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/filtered/finite-lp.xml",
+      "sha256": "b9e0bf17eb15d1546eceea9430795e12aa26a4c14f014c9cc598fc81c39f9257",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED FINITE-TERM LP\n",
+      "seconds": 0.012292233004700392
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum-state-local/target/lp-positive-compat-44df783-finite/native/filtered/finite-lp.xml",
+      "sha256": "b9e0bf17eb15d1546eceea9430795e12aa26a4c14f014c9cc598fc81c39f9257",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED FINITE-TERM LP\n",
+      "seconds": 0.012217663985211402
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/lateinst.pl/native/cut-lp.xml",
+      "sha256": "5f818ac5680499b545bec831e966856c8f56aa203220b8b2badfcea679364414",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05307887401431799
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/lateinst.pl/native/cut-lp.xml",
+      "sha256": "5f818ac5680499b545bec831e966856c8f56aa203220b8b2badfcea679364414",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05358067899942398
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/latesplit.pl/native/cut-lp.xml",
+      "sha256": "b52e23d9e9a29885692fd7e37c320e9b5fe770c1e01ee6f58538d0f76c73ce4b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06327230398892425
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/latesplit.pl/native/cut-lp.xml",
+      "sha256": "b52e23d9e9a29885692fd7e37c320e9b5fe770c1e01ee6f58538d0f76c73ce4b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06341003297711723
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts04.pl/native/cut-lp.xml",
+      "sha256": "36f24f98fdb21b185363953b4f3db514eb3b229bbb8cad52d37d32b229fc6b82",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.02244390401756391
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts04.pl/native/cut-lp.xml",
+      "sha256": "36f24f98fdb21b185363953b4f3db514eb3b229bbb8cad52d37d32b229fc6b82",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.023436235991539434
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts05.pl/native/cut-lp.xml",
+      "sha256": "337b23f37c9d1ce3487d11e8d434fdba3264727d63a2c32412aed4887d6b09ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.033901083981618285
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts05.pl/native/cut-lp.xml",
+      "sha256": "337b23f37c9d1ce3487d11e8d434fdba3264727d63a2c32412aed4887d6b09ac",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.022883969999384135
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts06.pl/native/cut-lp.xml",
+      "sha256": "362ff55e4fd284506477f9e36f2ee5ecaecc327781d4d8d8d61bc95f7714e7cd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011256061989115551
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts06.pl/native/cut-lp.xml",
+      "sha256": "362ff55e4fd284506477f9e36f2ee5ecaecc327781d4d8d8d61bc95f7714e7cd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011627369007328525
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts07.pl/native/cut-lp.xml",
+      "sha256": "e86219db29d1d3d24a4b049e5ca059df843ba4a81dad6347ed1edcb986aa6ad8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011411350016715005
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts07.pl/native/cut-lp.xml",
+      "sha256": "e86219db29d1d3d24a4b049e5ca059df843ba4a81dad6347ed1edcb986aa6ad8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011563580017536879
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts09.pl/native/cut-lp.xml",
+      "sha256": "5dc60fb138c3775dbe635b20577f304c692b3fc55d8db12399260e65f146a872",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.022911590000148863
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts09.pl/native/cut-lp.xml",
+      "sha256": "5dc60fb138c3775dbe635b20577f304c692b3fc55d8db12399260e65f146a872",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0227879710146226
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts10.pl/native/cut-lp.xml",
+      "sha256": "dbfd783b1f8797e25d280a3be9dce252d755341cebcab46a0afbbddfcdae8894",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011628339008893818
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/AProVE_10_cut/ts10.pl/native/cut-lp.xml",
+      "sha256": "dbfd783b1f8797e25d280a3be9dce252d755341cebcab46a0afbbddfcdae8894",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.01134149101562798
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/divminus.pl/native/cut-lp.xml",
+      "sha256": "733dc07a622fd19f28a4c8e469a85a1fcbeae544af4fe6a9a22388aaad740a65",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.13529629897675477
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/divminus.pl/native/cut-lp.xml",
+      "sha256": "733dc07a622fd19f28a4c8e469a85a1fcbeae544af4fe6a9a22388aaad740a65",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.145329651015345
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/divminuslinear.pl/native/cut-lp.xml",
+      "sha256": "76b90431ca2db4f326543fe4893fc4a742c28154be13daa8ac282dd42c00ad28",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.17578847199911252
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/divminuslinear.pl/native/cut-lp.xml",
+      "sha256": "76b90431ca2db4f326543fe4893fc4a742c28154be13daa8ac282dd42c00ad28",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.16523208501166664
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus1.pl/native/cut-lp.xml",
+      "sha256": "db9bf2750ab3645419e44684c92b635008da35c66573cf768fef2a059c30edb2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.6511229639872909
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus1.pl/native/cut-lp.xml",
+      "sha256": "db9bf2750ab3645419e44684c92b635008da35c66573cf768fef2a059c30edb2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.6543344380042981
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus2.pl/native/cut-lp.xml",
+      "sha256": "8499aedda8a9d06f8ce463004815e5dc6722a77e0bf4ae1e404ceb44e246ec88",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 3.0174415259971283
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus2.pl/native/cut-lp.xml",
+      "sha256": "8499aedda8a9d06f8ce463004815e5dc6722a77e0bf4ae1e404ceb44e246ec88",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 3.0688614919781685
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus3.pl/native/cut-lp.xml",
+      "sha256": "51da369637ff0684d8d6afd133bccb2d826e928cd374ea58627f800d58ac48b1",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.10481240801163949
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus3.pl/native/cut-lp.xml",
+      "sha256": "51da369637ff0684d8d6afd133bccb2d826e928cd374ea58627f800d58ac48b1",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.10481242800597101
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus4.pl/native/cut-lp.xml",
+      "sha256": "bf17055ad8db941fa51af838f8821ca1baf5bc497092f7fc46ff74b18b11ebcc",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04362695798045024
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/minus4.pl/native/cut-lp.xml",
+      "sha256": "bf17055ad8db941fa51af838f8821ca1baf5bc497092f7fc46ff74b18b11ebcc",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04392222501337528
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/negationasfailure.pl/native/cut-lp.xml",
+      "sha256": "2636dee691b86e9e58325f9905ee8c61031bca7aacafa3785eed7e513bd03d59",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07406931900186464
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/negationasfailure.pl/native/cut-lp.xml",
+      "sha256": "2636dee691b86e9e58325f9905ee8c61031bca7aacafa3785eed7e513bd03d59",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07421930800774135
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/short1.pl/native/cut-lp.xml",
+      "sha256": "805be059a6ac09d7db01a598e0376a70414035567a62e608b835f3907c5516fe",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0744359259842895
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/short1.pl/native/cut-lp.xml",
+      "sha256": "805be059a6ac09d7db01a598e0376a70414035567a62e608b835f3907c5516fe",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07413614899269305
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/short2.pl/native/cut-lp.xml",
+      "sha256": "2d32fe150196ac2e863754739c53742375496e941101e71614fae68a6bdd3b51",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04374085701419972
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_08/short2.pl/native/cut-lp.xml",
+      "sha256": "2d32fe150196ac2e863754739c53742375496e941101e71614fae68a6bdd3b51",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04380822600796819
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/append_linear.pl/native/cut-lp.xml",
+      "sha256": "16daa69375867e9dfc3a1c6910c798c6e8e5063413c08c39a51c24d9b4b7dd35",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05447901299339719
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/append_linear.pl/native/cut-lp.xml",
+      "sha256": "16daa69375867e9dfc3a1c6910c798c6e8e5063413c08c39a51c24d9b4b7dd35",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05370369800948538
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/hidden_flatten.pl/native/cut-lp.xml",
+      "sha256": "521c0a0fc8df9151a443e5c7bb71b0541325578d7294fd3188796c5a376c2bb2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0334576370078139
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/hidden_flatten.pl/native/cut-lp.xml",
+      "sha256": "521c0a0fc8df9151a443e5c7bb71b0541325578d7294fd3188796c5a376c2bb2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.03360761600197293
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/less1.pl/native/cut-lp.xml",
+      "sha256": "d32bbf1ae781aa89cdadf14244e39b924800a7bd8adecb29bf0f6b944a068741",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.2371948899817653
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/less1.pl/native/cut-lp.xml",
+      "sha256": "d32bbf1ae781aa89cdadf14244e39b924800a7bd8adecb29bf0f6b944a068741",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.25905678898561746
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/less2.pl/native/cut-lp.xml",
+      "sha256": "e540880b3d39d45c6b471d5b7814d79be96e5d42805651276309563f8737dfc0",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.44879170099738985
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/less2.pl/native/cut-lp.xml",
+      "sha256": "e540880b3d39d45c6b471d5b7814d79be96e5d42805651276309563f8737dfc0",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.43017111701192334
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/max_valued.pl/native/cut-lp.xml",
+      "sha256": "c04f442844bbe638a85f372907e0f2c72fb7180f0ce860c9bf5efbd48d5121e7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.02345766601501964
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/max_valued.pl/native/cut-lp.xml",
+      "sha256": "c04f442844bbe638a85f372907e0f2c72fb7180f0ce860c9bf5efbd48d5121e7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.023855873005231842
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/negationasfailure.pl/native/cut-lp.xml",
+      "sha256": "2636dee691b86e9e58325f9905ee8c61031bca7aacafa3785eed7e513bd03d59",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07418377898284234
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/negationasfailure.pl/native/cut-lp.xml",
+      "sha256": "2636dee691b86e9e58325f9905ee8c61031bca7aacafa3785eed7e513bd03d59",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07393343999865465
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/psk01.pl/native/cut-lp.xml",
+      "sha256": "b6cf8f371ab5bf434cc3b18ab36ef747b3c2157ef1aee50dc35d3afc6583f111",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.012067375995684415
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/psk01.pl/native/cut-lp.xml",
+      "sha256": "b6cf8f371ab5bf434cc3b18ab36ef747b3c2157ef1aee50dc35d3afc6583f111",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011809816991444677
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/psk02.pl/native/cut-lp.xml",
+      "sha256": "5ec026c00494738f4c8aff2dcb1d91c05a98c7fe0937f538630026bc9f6896e3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07457949497620575
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/psk02.pl/native/cut-lp.xml",
+      "sha256": "5ec026c00494738f4c8aff2dcb1d91c05a98c7fe0937f538630026bc9f6896e3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07397769999806769
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/psk03.pl/native/cut-lp.xml",
+      "sha256": "a1dd815071fb51a438658298c2cea3efbb5f63a5dbb5a5d38711bbd14afd6a9e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.01149189000716433
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/psk03.pl/native/cut-lp.xml",
+      "sha256": "a1dd815071fb51a438658298c2cea3efbb5f63a5dbb5a5d38711bbd14afd6a9e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011612759000854567
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/shape.pl/native/cut-lp.xml",
+      "sha256": "7ac4b26e15d1e9946de7fd9f52b7d1c244b351f9cad49a8ac259617636e73083",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05461665100301616
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/shape.pl/native/cut-lp.xml",
+      "sha256": "7ac4b26e15d1e9946de7fd9f52b7d1c244b351f9cad49a8ac259617636e73083",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05409049600712024
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/shuffle.pl/native/cut-lp.xml",
+      "sha256": "7e8021ec1c2ce4f023eb877845356cd63d28cf089e94ea04d9f161f090f52ccb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05436722401645966
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/shuffle.pl/native/cut-lp.xml",
+      "sha256": "7e8021ec1c2ce4f023eb877845356cd63d28cf089e94ea04d9f161f090f52ccb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0542846440221183
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/soundex.pl/native/cut-lp.xml",
+      "sha256": "c1dd4cf587154635c3989e0ea45493c08a7f43bfc82341b1088c91a99dc55837",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07424349698703736
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/soundex.pl/native/cut-lp.xml",
+      "sha256": "c1dd4cf587154635c3989e0ea45493c08a7f43bfc82341b1088c91a99dc55837",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.08409996100817807
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/star1.pl/native/cut-lp.xml",
+      "sha256": "9a8676f2761f6ea4c3f2c82a92198cbc3e5784b05ea63ceda783903b4570e103",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06410446701920591
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/star1.pl/native/cut-lp.xml",
+      "sha256": "9a8676f2761f6ea4c3f2c82a92198cbc3e5784b05ea63ceda783903b4570e103",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06401894800364971
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/star2.pl/native/cut-lp.xml",
+      "sha256": "275f138dcb8666579c26a45ec30a149a71decee762ad19ef1f1ad0a7b9d2a333",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.02361262499471195
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/star2.pl/native/cut-lp.xml",
+      "sha256": "275f138dcb8666579c26a45ec30a149a71decee762ad19ef1f1ad0a7b9d2a333",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.023613515018951148
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/thief2.pl/native/cut-lp.xml",
+      "sha256": "63c604440253538735b1b7eeea56bf3de4ce3af625f68beceb9374b2bc6ff42f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.03355565699166618
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Schneider_Kamp_09/thief2.pl/native/cut-lp.xml",
+      "sha256": "63c604440253538735b1b7eeea56bf3de4ce3af625f68beceb9374b2bc6ff42f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.03415442199911922
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/add1.pl/native/cut-lp.xml",
+      "sha256": "f51a95957fb687bd5174a175c9b4aa0dd5c7e930360b33f237c32840b5b9a9cd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0741093090036884
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/add1.pl/native/cut-lp.xml",
+      "sha256": "f51a95957fb687bd5174a175c9b4aa0dd5c7e930360b33f237c32840b5b9a9cd",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.08382736198836938
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/add3.pl/native/cut-lp.xml",
+      "sha256": "1f46b15e55c47459e91defe3256daf2853cab47e417c5845cfad4dcc1f3d9538",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.2992050930042751
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/add3.pl/native/cut-lp.xml",
+      "sha256": "1f46b15e55c47459e91defe3256daf2853cab47e417c5845cfad4dcc1f3d9538",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.29905254498589784
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/app1.pl/native/cut-lp.xml",
+      "sha256": "1889bdbea6ace959b03143cbe23ef285da2f3ce4a46f96d3d6677fd5233f081a",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.13480822299607098
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/app1.pl/native/cut-lp.xml",
+      "sha256": "1889bdbea6ace959b03143cbe23ef285da2f3ce4a46f96d3d6677fd5233f081a",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.13501941098365933
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/app3.pl/native/cut-lp.xml",
+      "sha256": "663edf9b061e473f47c3302b2824aeff2b64ff69cc16f27b0fc810640aa19ad2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.36030197399668396
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/app3.pl/native/cut-lp.xml",
+      "sha256": "663edf9b061e473f47c3302b2824aeff2b64ff69cc16f27b0fc810640aa19ad2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.3598500480002258
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/applast.pl/native/cut-lp.xml",
+      "sha256": "93000e18ae06610736d1602f06d7fe3bf8a9edbafcffc50a1c4cc260008d65ff",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.023215037974296138
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/applast.pl/native/cut-lp.xml",
+      "sha256": "93000e18ae06610736d1602f06d7fe3bf8a9edbafcffc50a1c4cc260008d65ff",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.013141977018676698
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/bappend.pl/native/cut-lp.xml",
+      "sha256": "b06acc3af9ceac2e3a7248e55aeb03f0a32c899b2ad3b0f4219f440d54e82bd7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07441005698638037
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/bappend.pl/native/cut-lp.xml",
+      "sha256": "b06acc3af9ceac2e3a7248e55aeb03f0a32c899b2ad3b0f4219f440d54e82bd7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06431482499465346
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/blist.pl/native/cut-lp.xml",
+      "sha256": "da0aeac91c4e30d12e62c8d02b6fbe43f331223b8b17a636e310a6941d1b763b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05525207699974999
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/blist.pl/native/cut-lp.xml",
+      "sha256": "da0aeac91c4e30d12e62c8d02b6fbe43f331223b8b17a636e310a6941d1b763b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05390894698211923
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/btappend.pl/native/cut-lp.xml",
+      "sha256": "f438d96cbfd874c71f405e0a806d3e7c0c117cccaa60710c5f67a68027d0d06f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.21838223800295964
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/btappend.pl/native/cut-lp.xml",
+      "sha256": "f438d96cbfd874c71f405e0a806d3e7c0c117cccaa60710c5f67a68027d0d06f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.217668383003911
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/btapplast.pl/native/cut-lp.xml",
+      "sha256": "cdce4da17a321ca748a3e49f754428d27b3feae9bfa9d316fa1df394daee7c97",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.5917353989789262
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/btapplast.pl/native/cut-lp.xml",
+      "sha256": "cdce4da17a321ca748a3e49f754428d27b3feae9bfa9d316fa1df394daee7c97",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.666239795013098
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/btree.pl/native/cut-lp.xml",
+      "sha256": "ea16b6675ff0fcd5df9edbffb804eb8fbb706180693ef736bf1428fa372e0817",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.14574462702148594
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/btree.pl/native/cut-lp.xml",
+      "sha256": "ea16b6675ff0fcd5df9edbffb804eb8fbb706180693ef736bf1428fa372e0817",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.1459979749924969
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/countstack.pl/native/cut-lp.xml",
+      "sha256": "f97fdfdfc1f264b60da8f8752dfbd5c2254f7cac1928a8baa25f5a4f037598b3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.24599389999639243
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/countstack.pl/native/cut-lp.xml",
+      "sha256": "f97fdfdfc1f264b60da8f8752dfbd5c2254f7cac1928a8baa25f5a4f037598b3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.24649563699495047
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/countstack2.pl/native/cut-lp.xml",
+      "sha256": "60d4f1a4305581de75b13b32802fd8d911e7caf6a8eb8fc81546b5804d16e790",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.1852176150132436
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/countstack2.pl/native/cut-lp.xml",
+      "sha256": "60d4f1a4305581de75b13b32802fd8d911e7caf6a8eb8fc81546b5804d16e790",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.3098149470170029
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/cutpos1.pl/native/cut-lp.xml",
+      "sha256": "5752189bef6bdfff3cc47d11c37fb9c8c41f9ac96089198cbdba8e719106e935",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.03309080100734718
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/cutpos1.pl/native/cut-lp.xml",
+      "sha256": "5752189bef6bdfff3cc47d11c37fb9c8c41f9ac96089198cbdba8e719106e935",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.03328218901879154
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/cutpos2.pl/native/cut-lp.xml",
+      "sha256": "92d1024d6491b69f3ede7f68a5c8dc4728fcebdcb8ba41f878dbc623392c09b5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011615109018748626
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/cutpos2.pl/native/cut-lp.xml",
+      "sha256": "92d1024d6491b69f3ede7f68a5c8dc4728fcebdcb8ba41f878dbc623392c09b5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT NO\n",
+      "seconds": 0.011423390009440482
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/dependency.pl/native/cut-lp.xml",
+      "sha256": "2481e5d2b01ccc38a050f7f93f01a7aeaefa01993d6de7a9274c3da5111cf943",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.3286285430076532
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/dependency.pl/native/cut-lp.xml",
+      "sha256": "2481e5d2b01ccc38a050f7f93f01a7aeaefa01993d6de7a9274c3da5111cf943",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.33786904098815285
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/dependency2.pl/native/cut-lp.xml",
+      "sha256": "8979dca2fa88b0c146b49ef1891f1dd1df2c1c55925c84ca0ae8bed292a408c4",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.7920841679733712
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/dependency2.pl/native/cut-lp.xml",
+      "sha256": "8979dca2fa88b0c146b49ef1891f1dd1df2c1c55925c84ca0ae8bed292a408c4",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.8330085469933692
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/divminus2.pl/native/cut-lp.xml",
+      "sha256": "d5a102d88b55b9119ed91255ef88693ed2bfe58deb17ea9d147e2e2b3ea5964a",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.119347411004128
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/divminus2.pl/native/cut-lp.xml",
+      "sha256": "d5a102d88b55b9119ed91255ef88693ed2bfe58deb17ea9d147e2e2b3ea5964a",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.0437886040017474
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/divremain.pl/native/cut-lp.xml",
+      "sha256": "adc12cf4ea2b7ea848c020d021b64221ce440fca3a4babdcadd9bcb9a7cbb35e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.1059931080089882
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/divremain.pl/native/cut-lp.xml",
+      "sha256": "adc12cf4ea2b7ea848c020d021b64221ce440fca3a4babdcadd9bcb9a7cbb35e",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.11556314301560633
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/duplicate1.pl/native/cut-lp.xml",
+      "sha256": "01f39b615e3af96a4bc2a5a435f44c1e9993d072c34dad412c3ec1a83180204b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.12497986000380479
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/duplicate1.pl/native/cut-lp.xml",
+      "sha256": "01f39b615e3af96a4bc2a5a435f44c1e9993d072c34dad412c3ec1a83180204b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.12485093099530786
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/duplicate2.pl/native/cut-lp.xml",
+      "sha256": "dfd67f735f62a1aa68ab9492a807abaf3b1683291ba42b46aee4fcf0e9f474a2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.34934682000312023
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/duplicate2.pl/native/cut-lp.xml",
+      "sha256": "dfd67f735f62a1aa68ab9492a807abaf3b1683291ba42b46aee4fcf0e9f474a2",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.3493993600131944
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/evenodd1.pl/native/cut-lp.xml",
+      "sha256": "3febeb39642a16c47d005c37ffc77b52f28316a251bf58904b792c20280e9ff6",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.08400233098655008
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/evenodd1.pl/native/cut-lp.xml",
+      "sha256": "3febeb39642a16c47d005c37ffc77b52f28316a251bf58904b792c20280e9ff6",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0838736220030114
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/evenodd2.pl/native/cut-lp.xml",
+      "sha256": "aa93efef90a75351a71b482e2bf44c71b214c1d0ff6d250eaecaf5f42e4a53b5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.13642858000821434
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/evenodd2.pl/native/cut-lp.xml",
+      "sha256": "aa93efef90a75351a71b482e2bf44c71b214c1d0ff6d250eaecaf5f42e4a53b5",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.1356944759900216
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/fold1.pl/native/cut-lp.xml",
+      "sha256": "fedb133c944d6113e4f0e7740b2451c42c94af8332751c8ea92bdb46fecb0460",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.18591026199283078
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/fold1.pl/native/cut-lp.xml",
+      "sha256": "fedb133c944d6113e4f0e7740b2451c42c94af8332751c8ea92bdb46fecb0460",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.185692292987369
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/fold2.pl/native/cut-lp.xml",
+      "sha256": "b27f0568648986444c1f6c8f9b3a305bd95fe3bf1b39d9e86a39ff86c3cdb2e8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.17615779797779396
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/fold2.pl/native/cut-lp.xml",
+      "sha256": "b27f0568648986444c1f6c8f9b3a305bd95fe3bf1b39d9e86a39ff86c3cdb2e8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.19715627399273217
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/fold3.pl/native/cut-lp.xml",
+      "sha256": "6f3e44fcefd1b9cc9fb62c219feb2f959f1ebda035a50b46877cbb1034b01a47",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.19707246401230805
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/fold3.pl/native/cut-lp.xml",
+      "sha256": "6f3e44fcefd1b9cc9fb62c219feb2f959f1ebda035a50b46877cbb1034b01a47",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.18595027198898606
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/giesl97.pl/native/cut-lp.xml",
+      "sha256": "44b4a95106320992fcf71a90a8b52bca19f632eb448513cca65dc5f401625e18",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.10474592901300639
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/giesl97.pl/native/cut-lp.xml",
+      "sha256": "44b4a95106320992fcf71a90a8b52bca19f632eb448513cca65dc5f401625e18",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.10474559798603877
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/gopher1.pl/native/cut-lp.xml",
+      "sha256": "f5a031c910caf7933c9c5de7bb19bb0acb22ee06dd28b677dcc697d2c1b6b83b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.3599426169821527
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/gopher1.pl/native/cut-lp.xml",
+      "sha256": "f5a031c910caf7933c9c5de7bb19bb0acb22ee06dd28b677dcc697d2c1b6b83b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.36842670099576935
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/gopher2.pl/native/cut-lp.xml",
+      "sha256": "e09def6b4d34c0ff6ec9e4ec768c51dc778bead829f4914d40c57147d2bd3948",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.7220434269984253
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/gopher2.pl/native/cut-lp.xml",
+      "sha256": "e09def6b4d34c0ff6ec9e4ec768c51dc778bead829f4914d40c57147d2bd3948",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.6701933439762797
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/inorder-oi.pl/native/cut-lp.xml",
+      "sha256": "fc354ff42f5f4f1d62b506d2eec6fcc5f188e2d7cf2eb3e448ac1ce99f812768",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05425507400650531
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/inorder-oi.pl/native/cut-lp.xml",
+      "sha256": "fc354ff42f5f4f1d62b506d2eec6fcc5f188e2d7cf2eb3e448ac1ce99f812768",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.054160085011972114
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/len.pl/native/cut-lp.xml",
+      "sha256": "d2107db1f9e6c04db2c929041142db42f3cef2e40f96ef747fe3a1b7d73d80dc",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.08453966802335344
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/len.pl/native/cut-lp.xml",
+      "sha256": "d2107db1f9e6c04db2c929041142db42f3cef2e40f96ef747fe3a1b7d73d80dc",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.08455666698864661
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/len2.pl/native/cut-lp.xml",
+      "sha256": "1f95e78bf2522526bd79366434da99f6db2f61894f760cbc1bab0823cef4ebee",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.2876917840039823
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/len2.pl/native/cut-lp.xml",
+      "sha256": "1f95e78bf2522526bd79366434da99f6db2f61894f760cbc1bab0823cef4ebee",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.29896075499709696
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/less.pl/native/cut-lp.xml",
+      "sha256": "c51f1fe0d7c44a7de17fd61480b661d8e11ecad1d176b3cb0850a6e918839110",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.5114475690061226
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/less.pl/native/cut-lp.xml",
+      "sha256": "c51f1fe0d7c44a7de17fd61480b661d8e11ecad1d176b3cb0850a6e918839110",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.4894466910045594
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/list.pl/native/cut-lp.xml",
+      "sha256": "5c781fd0872fb20096a27863bc9b8ff3efc5527e31471b8190313991c1633781",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.043631837994325906
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/list.pl/native/cut-lp.xml",
+      "sha256": "5c781fd0872fb20096a27863bc9b8ff3efc5527e31471b8190313991c1633781",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04396668600384146
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/list2.pl/native/cut-lp.xml",
+      "sha256": "b5f5253dd9166c74282bc69265a67a5ce089a8e63f0042fc965687613fbca910",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.09451839802204631
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/list2.pl/native/cut-lp.xml",
+      "sha256": "b5f5253dd9166c74282bc69265a67a5ce089a8e63f0042fc965687613fbca910",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0945849179988727
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/lte1.pl/native/cut-lp.xml",
+      "sha256": "711c9e25cd29e5dc84a8a6c6504f795c53a179956bac8ff54d5ca1e48ea11fc7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.399760874977801
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/lte1.pl/native/cut-lp.xml",
+      "sha256": "711c9e25cd29e5dc84a8a6c6504f795c53a179956bac8ff54d5ca1e48ea11fc7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.38947494598687626
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/lte2.pl/native/cut-lp.xml",
+      "sha256": "59b6cf75920c19e421aa9879d2e8d49c899ea868224457465899887688ca5b5d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.9635200240008999
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/lte2.pl/native/cut-lp.xml",
+      "sha256": "59b6cf75920c19e421aa9879d2e8d49c899ea868224457465899887688ca5b5d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.927967412979342
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/map.pl/native/cut-lp.xml",
+      "sha256": "50ce2732c23288bac77e70d290e4245d7d65f46c71e6c103e6fae8ffbe459ed3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.16547084201010875
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/map.pl/native/cut-lp.xml",
+      "sha256": "50ce2732c23288bac77e70d290e4245d7d65f46c71e6c103e6fae8ffbe459ed3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.16600285802269354
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/mul1.pl/native/cut-lp.xml",
+      "sha256": "39d6ab525dd4a51b6474508b3799dd0d6f107b97b8ed01837b4c609f8f727901",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.23650967501453124
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/mul1.pl/native/cut-lp.xml",
+      "sha256": "39d6ab525dd4a51b6474508b3799dd0d6f107b97b8ed01837b4c609f8f727901",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.24734159000217915
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/num.pl/native/cut-lp.xml",
+      "sha256": "e6db8abc3b8f5054dbeae6f0186518fb7dd76f0eefa9c3b700677807a65aacef",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04391449500690214
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/num.pl/native/cut-lp.xml",
+      "sha256": "e6db8abc3b8f5054dbeae6f0186518fb7dd76f0eefa9c3b700677807a65aacef",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.043637756985845044
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/num2.pl/native/cut-lp.xml",
+      "sha256": "a41041fd45f726f430a44377d0102bd76f2cb5e180836054f8df9df74cc8aef3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.0964597640268039
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/num2.pl/native/cut-lp.xml",
+      "sha256": "a41041fd45f726f430a44377d0102bd76f2cb5e180836054f8df9df74cc8aef3",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.09454845800064504
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ordered.pl/native/cut-lp.xml",
+      "sha256": "87c186fc30e05f092ae31bd3aff6e4f27944cd32c0931c99dbd2b0dee5375eed",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.17569987301249057
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ordered.pl/native/cut-lp.xml",
+      "sha256": "87c186fc30e05f092ae31bd3aff6e4f27944cd32c0931c99dbd2b0dee5375eed",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.17577207199065015
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ordered3.pl/native/cut-lp.xml",
+      "sha256": "82bcbe502fcfb328e2be108662243dccfad8faf31d49ec12963f1c541c0e1f55",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.4273405379790347
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ordered3.pl/native/cut-lp.xml",
+      "sha256": "82bcbe502fcfb328e2be108662243dccfad8faf31d49ec12963f1c541c0e1f55",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.4692096400249284
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/overlap1.pl/native/cut-lp.xml",
+      "sha256": "b8ad8643a5b984e5ae503e2f1608d2f5c0f280486ed42efb642f968d360fca2c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.8245289439801127
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/overlap1.pl/native/cut-lp.xml",
+      "sha256": "b8ad8643a5b984e5ae503e2f1608d2f5c0f280486ed42efb642f968d360fca2c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.8557564590009861
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/overlap2.pl/native/cut-lp.xml",
+      "sha256": "d0f12f44980c7713a8bf775d9161882f994851dc48a9ac078784b45cbdcc67e9",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.0318922280275729
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/overlap2.pl/native/cut-lp.xml",
+      "sha256": "d0f12f44980c7713a8bf775d9161882f994851dc48a9ac078784b45cbdcc67e9",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.9364202359865885
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/plumer453a.pl/native/cut-lp.xml",
+      "sha256": "00bbba3d5fa6065d2eefaef4895e65a26a4d748386c7e5ffcf7da6bab77d1d8b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04421092302072793
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/plumer453a.pl/native/cut-lp.xml",
+      "sha256": "00bbba3d5fa6065d2eefaef4895e65a26a4d748386c7e5ffcf7da6bab77d1d8b",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04397857500589453
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/plumer453b.pl/native/cut-lp.xml",
+      "sha256": "da86a03c5844a4b6fb33f73a927bfd7eef7872fc9e4382540b1b6c0de8a7aa14",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05397278699092567
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/plumer453b.pl/native/cut-lp.xml",
+      "sha256": "da86a03c5844a4b6fb33f73a927bfd7eef7872fc9e4382540b1b6c0de8a7aa14",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05411544599337503
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/plumer453c.pl/native/cut-lp.xml",
+      "sha256": "525a7002904bc287b326024b7040592ed21395cecfe8da8dffd72597fb525263",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06408097699750215
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/plumer453c.pl/native/cut-lp.xml",
+      "sha256": "525a7002904bc287b326024b7040592ed21395cecfe8da8dffd72597fb525263",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.07459036499494687
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/preorder.pl/native/cut-lp.xml",
+      "sha256": "29c362985e5eca1ba26054e238af41af66627667e274e15e8425b0f795035f8c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.7124948819982819
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/preorder.pl/native/cut-lp.xml",
+      "sha256": "29c362985e5eca1ba26054e238af41af66627667e274e15e8425b0f795035f8c",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.6602131619874854
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/quot1.pl/native/cut-lp.xml",
+      "sha256": "8884bfc1ca0e05387c782d8db851da7bd54008c0407ea7ff5b58c39b1e595358",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.16545731198857538
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/quot1.pl/native/cut-lp.xml",
+      "sha256": "8884bfc1ca0e05387c782d8db851da7bd54008c0407ea7ff5b58c39b1e595358",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.1657203109934926
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/quot2.pl/native/cut-lp.xml",
+      "sha256": "10493a6a65ee84e3c596ea405db55917518974f453ed9317e5bd3ae8466d7304",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.33693395799491554
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/quot2.pl/native/cut-lp.xml",
+      "sha256": "10493a6a65ee84e3c596ea405db55917518974f453ed9317e5bd3ae8466d7304",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.3688886470044963
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/rev.pl/native/cut-lp.xml",
+      "sha256": "515affd26e0418dd57af9d98ab241e81bd9c3fb643e9e87b21ecf53e79a31ceb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.9722545350086875
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/rev.pl/native/cut-lp.xml",
+      "sha256": "515affd26e0418dd57af9d98ab241e81bd9c3fb643e9e87b21ecf53e79a31ceb",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.9746082459751051
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/rev2.pl/native/cut-lp.xml",
+      "sha256": "332fcad92f70d175673dd9993fd3398dec768756a210b0da9a51e163ffaf500d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.5134302809892688
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/rev2.pl/native/cut-lp.xml",
+      "sha256": "332fcad92f70d175673dd9993fd3398dec768756a210b0da9a51e163ffaf500d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.3168075619905721
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/select1.pl/native/cut-lp.xml",
+      "sha256": "70b7b8162d46978b489dec8db8c7725d6fb62c216a94e889e66bc7ad80cd0b15",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.20710131601663306
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/select1.pl/native/cut-lp.xml",
+      "sha256": "70b7b8162d46978b489dec8db8c7725d6fb62c216a94e889e66bc7ad80cd0b15",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.20609955402323976
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/select2.pl/native/cut-lp.xml",
+      "sha256": "7c95aca4e1e1f1f7c3ad1e79ff5846a4a8eb13c7b9238693d01fa69435d5b609",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.339427015016554
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/select2.pl/native/cut-lp.xml",
+      "sha256": "7c95aca4e1e1f1f7c3ad1e79ff5846a4a8eb13c7b9238693d01fa69435d5b609",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.47999002301367
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/transpose1.pl/native/cut-lp.xml",
+      "sha256": "a55bdaaccea8688007d0ef353af99422a48b78f9df7b72ce668e941b12ddb1b7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.9492311159847304
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/transpose1.pl/native/cut-lp.xml",
+      "sha256": "a55bdaaccea8688007d0ef353af99422a48b78f9df7b72ce668e941b12ddb1b7",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 1.0129496660083532
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/tree.pl/native/cut-lp.xml",
+      "sha256": "30a4551d68297618c1dd086fd978e4bf76c2ce1147bbc0057f7f4eb141567a6f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06420775700826198
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/tree.pl/native/cut-lp.xml",
+      "sha256": "30a4551d68297618c1dd086fd978e4bf76c2ce1147bbc0057f7f4eb141567a6f",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.06438540501403622
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/tree2.pl/native/cut-lp.xml",
+      "sha256": "1bd0892ed43880ee2c5efbbe6bdc4e2f077ac70a309ef6012feb02dce815c8e8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.2572837920160964
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/tree2.pl/native/cut-lp.xml",
+      "sha256": "1bd0892ed43880ee2c5efbbe6bdc4e2f077ac70a309ef6012feb02dce815c8e8",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.25649488900671713
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ts01.pl/native/cut-lp.xml",
+      "sha256": "3f96ebf4e6c0176e4a1fdb4cb8e323a16de491206d2b06a15677f44f217e1b9d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.05346325098071247
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ts01.pl/native/cut-lp.xml",
+      "sha256": "3f96ebf4e6c0176e4a1fdb4cb8e323a16de491206d2b06a15677f44f217e1b9d",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.054314743989380077
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ts02.pl/native/cut-lp.xml",
+      "sha256": "d9c2e7303f4d8e0db4d3e0217f7fdf31cedd20a62dc488c5367ac7f1eaa1c180",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.04362002699053846
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/production-all-20261025/Logic_Programming_with_Cut/cases/Stroeder_09/ts02.pl/native/cut-lp.xml",
+      "sha256": "d9c2e7303f4d8e0db4d3e0217f7fdf31cedd20a62dc488c5367ac7f1eaa1c180",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED SOURCE-BOUND LP WITH CUT\n",
+      "seconds": 0.043788437003968284
+    }
+  ],
+  "checker_commit": "54a99ee",
+  "finite_dispatch_checks": [
+    {
+      "artifact": "lp-finite.xml",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED FINITE-TERM LP\n"
+    },
+    {
+      "artifact": "lp-finite.xml",
+      "expected": true,
+      "accepted": true,
+      "returncode": 0,
+      "stdout": "CERTIFIED FINITE-TERM LP\n"
+    },
+    {
+      "artifact": "source-loop.xml",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n"
+    },
+    {
+      "artifact": "missing-child-proof.xml",
+      "expected": false,
+      "accepted": false,
+      "returncode": 1,
+      "stdout": "REJECTED\n"
+    }
+  ],
+  "dispatch_checks": [
+    {
+      "category": "cpf",
+      "returncode": 2,
+      "stdout": "UNSUPPORTED\n",
+      "stderr": "Fatal: parse error on <unknown-certificate> at []:\nexpecting [certificationProblem]\n"
+    },
+    {
+      "category": "cycle",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": ""
+    },
+    {
+      "category": "conditional",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": ""
+    },
+    {
+      "category": "conditional-erasure",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": ""
+    },
+    {
+      "category": "lp",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": ""
+    },
+    {
+      "category": "higher-order",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": ""
+    },
+    {
+      "category": "higher-order-delegation",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": ""
+    },
+    {
+      "category": "its",
+      "returncode": 1,
+      "stdout": "Fatal: parse error on <unknown-certificate> at []:\nexpecting [certificationProblem]\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "--category"
+      ],
+      "returncode": 1
+    },
+    {
+      "args": [
+        "--category",
+        "unknown",
+        "/tmp/tmpyq04abtw/bad"
+      ],
+      "returncode": 1
+    },
+    {
+      "args": [
+        "--category",
+        "cycle"
+      ],
+      "returncode": 1
+    },
+    {
+      "args": [
+        "--category",
+        "lp",
+        "/tmp/tmpyq04abtw/bad",
+        "/tmp/tmpyq04abtw/bad"
+      ],
+      "returncode": 1
+    }
+  ]
+}

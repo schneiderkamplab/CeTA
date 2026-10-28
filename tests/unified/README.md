@@ -120,3 +120,9 @@ Generated modules are archived without edits. `make ceta` includes ITS by defaul
 Frontier validation accepts `--passes 2` for two checks per retained root with
 one immutable binary. ITS guidance replay must use that identical executable
 with `--category its`; standalone development binaries are not production pins.
+
+Finite LP artifact dispatch is covered by
+`python3 tests/unified/check_lp_finite.py PATH_TO_UNIFIED_CETA`. It checks the
+retained artifact twice and rejects a looping-source mutation and a missing
+child proof. The finite checker is linked into the same executable as the
+rational-tree LP and other category checkers.

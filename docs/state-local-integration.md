@@ -25,3 +25,21 @@ checks each and six semantic mutations. Return-triple families still require
 fresh per-family migration gates. The full-frontier gate remains open.
 [Recorded regression checks](data/lp-triples-dispatch-3344eae-validation.json)
 and the private build at `target/unified-lp-triples` retain the evidence.
+
+## Finite LP artifact dispatch
+
+Revision `54a99ee` adds the existing Isabelle-generated finite-LP checker to the
+same LP library and unified dispatcher. The imported export is byte-identical
+to the verified `lp-finite-production-v2-20261021` snapshot; its four recorded
+LP theory files are byte-identical to the current checkout. The preserved
+[export identity](data/lp-finite-export-20261021-identity.json) records its source
+revision and parent environment. No existing generated module was edited, and
+other category libraries retain their archive hashes.
+
+The isolated O2 executable at `target/unified-lp-finite/ceta` has SHA-256
+`c89d366b2d2c57d73f8fe13157975882814a0af1cff2ebba6584bfbfdb9e0f44`.
+It passes 346 positive checks and 81 negative checks, including all 91 retained
+cut roots, plus the finite-artifact and unified-dispatch regression tests.
+[Validation evidence](data/lp-finite-unified-54a99ee-validation.json).
+The previous `b4165eef...` candidate and main executable are preserved. This
+is a checker-library regression gate, not a new full-frontier replay.
