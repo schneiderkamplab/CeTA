@@ -47,3 +47,32 @@ release or full ISO Prolog certification.
 [Retained validation evidence](prolog-static-validation.json.gz) records the
 byte-identical clean re-export, theory audit, unified dispatch rejection tests
 and all 408 protected semantic-negative rejections, with one checker hash.
+
+
+## Source nontermination
+
+The same unified checker now accepts static Prolog source NO certificates.
+`LP_Prolog_Static_NO` defines ordinary resolution only when the active call is
+neither builtin nor undefined; an undefined procedure aborts the complete stack.
+The static NO connection requires every reachable static predicate to be defined.
+The existing LP source-loop certificate then transfers with its checked stem,
+loop and saved-stack closure. A second shared LP rule, in
+`LP_Cut_Uniform_Recursion`, proves nontermination of a first universally matching
+clause with a single same-predicate recursive call whose arguments use only head
+variables. Arguments may grow or otherwise change indefinitely.
+
+`LP_Prolog_Static_NO_XML` and `LP_Prolog_Uniform_NO_XML` provide the source
+wrappers; `LP_Cut_Uniform_Recursion_XML` is reusable for ordered LP. All are
+exported from Isabelle into the existing unified LP module. The dependency audit
+covers the new source theorems and forbids admissions. Ferrum additionally audits
+that a NO query decodes to an actual original Prolog query, including the source
+symbol encoding and typed literals.
+
+[NO integration validation](prolog-static-no-validation.json.gz) retains the
+verified export log, source hashes, all 408 protected semantic negatives,
+source/child checks and strict state-local replay. Seven Prolog YES results and
+one Prolog NO result pass two checks each and strict replay. The NO is structural
+changing-argument recursion in `Weinert_15/descend-nonterm.pl`; subtraction is not
+executed there. Fifty-five extended DT children are independently checked but do
+not establish source Prolog verdicts. Mutation controls include positive ordinary
+LP certificates rejected by the stricter Prolog source wrapper.

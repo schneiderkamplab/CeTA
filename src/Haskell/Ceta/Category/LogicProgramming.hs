@@ -38,6 +38,10 @@ main = do
         else if T.check_lp_triple_pidp_xml (decodeT input)
         then putStrLn "CERTIFIED LP DEPENDENCY-TRIPLE CHILD"
 #endif
+#ifdef LP_PROLOG_STATIC
+        else if PS.check_lpc_uniform_xml (cachedCharacters PS.explode input)
+        then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT NO"
+#endif
         else if N.check_lpc_no_xml (decodeN input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT NO"
         else if S.check_lpc_seg_free_certificate_xml (decodeS input) ||
@@ -66,7 +70,10 @@ runProlog [path] = do
 #ifdef LP_PROLOG_STATIC
   if PS.check_lpp_static_xml (cachedCharacters PS.explode input)
     then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG"
-    else putStrLn "REJECTED" >> exitFailure
+    else if PS.check_lpp_static_no_xml (cachedCharacters PS.explode input) ||
+      PS.check_lpp_uniform_xml (cachedCharacters PS.explode input)
+      then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG NO"
+      else putStrLn "REJECTED" >> exitFailure
 #else
   putStrLn "UNSUPPORTED" >> exitFailure
 #endif
