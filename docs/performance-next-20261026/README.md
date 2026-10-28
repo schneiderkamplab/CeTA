@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # CeTA input-conversion performance (2026-10-26)
 
 The shared Haskell input helper caches the exact generated singleton conversion

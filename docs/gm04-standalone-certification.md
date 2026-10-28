@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Independently certified GM04 residuals (2026-09-15)
 
 `Proof_Checker/GM04_Standalone_DP_Checker.thy` connects an ordinary DP

@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Frozen baseline coverage and minimization evidence
 
 The 3,484 eligible root records induce 45,753 observed obligations: 44,810 HPC

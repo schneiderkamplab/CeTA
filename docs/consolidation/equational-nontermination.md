@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Equational nontermination integration — 2026-10-19
 
 `thys/Proof_Checker/Proof_Checker.thy` now accepts a native

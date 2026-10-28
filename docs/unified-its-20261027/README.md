@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Unified checker including ITS, 2026-10-27
 
 The previous unified checker was present on `consolidated` but had not been

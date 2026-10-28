@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Compact delegation children
 
 All 36 retained first-order child certificates were compacted using the Ferrum

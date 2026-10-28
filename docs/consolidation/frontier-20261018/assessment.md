@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Second frontier integration
 
 The source archive freezes the modified and untracked files of the development

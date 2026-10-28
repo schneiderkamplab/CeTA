@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Upstream patch-series extraction and remaining outline
 
 Extraction has started: `upstream-proof-series/manifest.json` records five

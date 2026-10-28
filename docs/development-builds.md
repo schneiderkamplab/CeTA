@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Layered Isabelle builds
 
 The proof checker is split into persistent Isabelle heaps so that CSR

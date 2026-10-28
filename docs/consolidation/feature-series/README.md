@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 This series contains the complete consolidation delta through `ecb7c83`, split
 into 26 feature commits on branch `consolidated-features-20261018`. Applying
 every patch to pinned main `e52c7ce` reproduces

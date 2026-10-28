@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Theorem and problem-variant retirement
 
 This follow-up supersedes the historical assessment's requirement to defer every

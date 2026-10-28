@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Refactoring paths with incomplete genuine replay coverage
 
 The user explicitly authorized this follow-up after the earlier consolidation

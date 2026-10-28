@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Frontier integration snapshot
 
 The user explicitly reopened relative ADP and outermost-RZ for integration.

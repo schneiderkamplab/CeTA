@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # XML/CPF decoding, batch rule operations, and certificate term sharing
 
 The four parser refinements and both additional optimizations are implemented

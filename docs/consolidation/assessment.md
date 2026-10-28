@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # CeTA consolidation assessment
 
 Historical assessment checkpoint, subsequently approved by the user. Counts and

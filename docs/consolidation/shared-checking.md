@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Shared root and residual checking
 
 This batch continues theorem consolidation from `7e9ac72`. Relative ADP and

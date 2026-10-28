@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Shared usable-rule membership and compact frontier
 
 The executable usable-rule closure check now constructs one set per usable-rule

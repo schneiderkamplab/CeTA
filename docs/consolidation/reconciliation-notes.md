@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Reconciliation and export decisions
 
 The reconciled source has passed all four Isabelle integration/export targets.

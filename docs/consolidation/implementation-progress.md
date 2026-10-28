@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Implementation evidence after approval
 
 The user approved proceeding beyond the assessment checkpoint. Work remains

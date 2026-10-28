@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Unified production CeTA, 2026-10-26
 
 The stable entry points used by the frozen 5,412-root, 14-category frontier are now

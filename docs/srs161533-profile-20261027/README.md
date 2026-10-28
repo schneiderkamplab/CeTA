@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # Current CeTA profile: SRS_Standard/ICFP_2010/161533.ari
 
 Both the current production executable and its privately compiled profiling

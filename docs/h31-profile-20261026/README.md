@@ -1,3 +1,6 @@
+---
+type: Historical Report
+---
 # h31 compact-child checking profile
 
 Profiled the complete source-bound higher-order delegation for h31 against its
