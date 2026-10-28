@@ -24,6 +24,10 @@ main = do
       let xml = decodeR input
       if
 #ifdef LP_SEG_TRIPLES
+        T.check_lpc_return_triples_xml (decodeT input) ||
+        T.check_lpc_return_nested_triples_xml (decodeT input) ||
+        T.check_lpc_return_composed_triples_xml (decodeT input) ||
+        T.check_lpc_return_module_triples_xml (decodeT input) ||
         T.check_lpc_seg_triples_xml (decodeT input) ||
 #endif
 #ifdef LP_SEG_PROJECTED
@@ -41,6 +45,10 @@ main = do
                 R.check_lpc_return_constructor_xml xml || R.check_lpc_xml xml ||
                 R.check_lpc_constructor_xml xml || R.check_lpc_mgu_constructor_xml xml
           then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT"
+#ifdef LP_SEG_TRIPLES
+        else if T.check_lp_initial_triples_xml (decodeT input)
+          then putStrLn "CERTIFIED TOCL09 LP"
+#endif
         else if R.check_lp_constructor_any_xml xml
           then putStrLn "CERTIFIED TOCL09 LP"
         else if R.check_lp_nontermination_all_xml xml
