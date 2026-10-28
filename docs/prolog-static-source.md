@@ -76,3 +76,31 @@ changing-argument recursion in `Weinert_15/descend-nonterm.pl`; subtraction is n
 executed there. Fifty-five extended DT children are independently checked but do
 not establish source Prolog verdicts. Mutation controls include positive ordinary
 LP certificates rejected by the stricter Prolog source wrapper.
+
+
+## Finite undefined-entry errors
+
+`LP_Prolog_Undefined_XML` proves termination when the declared entry signature is
+absent from the complete source definition signature and the fixed builtin
+signature. The only source transition raises an uncaught existence error and
+discards the complete alternative stack. The empty state has no successor.
+The result holds for every argument valuation, so it also covers all query modes.
+No clause body is entered. Unsupported builtins are explicitly excluded.
+
+The certificate records the complete ordered definition-signature list after
+the selected source preprocessing, including explicit libraries. Ferrum audits
+that list, the query, modes and profile against the original parsed source.
+The formal theorem applies to every program with exactly that definition set;
+unreachable clause bodies need no termination assumption. Changed source
+signatures are source-audit failures, not additional axioms in the checker.
+
+[Current validation](prolog-error-validation.json.gz) pins the regenerated export
+and unified checker. All **14 source YES and one source NO** pass two checks and
+strict state-local replay. Five new YES proofs are finite undefined-entry errors.
+The existing verified negative-unification SEG rules additionally prove
+`lateinstance.pl` and `divrempredef.pl`. A Ferrum writer bug that omitted the entry
+encoding when there were no dependency triples was corrected; checker diagnostics
+accepted the source graph and child separately while rejecting the incomplete
+connection. The accepting checker was not weakened. Mutations now cover that
+missing encoding and altered unification evidence as well as finite-error
+builtin exclusion. All 408 protected semantic negatives still reject.
