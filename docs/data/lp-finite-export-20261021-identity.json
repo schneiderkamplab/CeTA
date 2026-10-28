@@ -1,0 +1,25 @@
+{
+  "semantics": "finite-term leftmost resolution; not rational-tree Prolog",
+  "parent": "/work/dfm/festschrift/CeTA/target/lp-tocl09-20261021/isabelle-user/.isabelle/lp_tocl09",
+  "theory_seconds": 199.37044060602784,
+  "ghc_seconds": 73.27886099996977,
+  "source_commit": "7ac49ec5e3ca4e12f7120e10cfbc5f6ab956b5f7",
+  "hashes": {
+    "source/LP_Leftmost_Resolution.thy": "41aac784433d3bf358ec629280f7264d29a96100b88420f5e99f98329461d674",
+    "source/LP_Continuation_Machine.thy": "e6c71d99e518996c17d7ab1bda6b0f8149fa831f4a346898676c5220f51011fc",
+    "source/LP_Filtered_Narrowing.thy": "ade213a95aee5060d5374021c403e857e001262f23afc8de742fb7ac28f5fe78",
+    "source/LP_Finite_Checker.thy": "3edd8f5bb0acd6ddee6a6d7a6767a73d11526347109b83a91a0701c4d543cd21",
+    "source/LP_Export.thy": "2c4d4828e30daec5089ce816994c33974db8df6b5fad7b7ef4ac28da8e541915",
+    "source/Main_LP_Finite.hs": "844e6008e202ca1856fb0a9ab3355c66f28be304f7c6fa96c69c3bae1096a94b",
+    "generated/LP_Finite_Generated.hs": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d",
+    "generated/Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+    "generated/IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+    "generated/Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+    "generated/Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+    "generated/Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+    "generated/Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+    "generated/Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+    "generated/Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+    "ceta-lp-finite": "17a797824d900fd84aecd02172595bc1cd45c6baa8bd75311114e32b5b28d0b2"
+  }
+}

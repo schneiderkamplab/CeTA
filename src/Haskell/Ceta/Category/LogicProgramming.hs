@@ -8,6 +8,7 @@ import qualified LP_Triples_Generated as T
 #ifdef LP_SEG_PROJECTED
 import qualified LP_SEG_Projected_Generated as G
 #endif
+import qualified LP_Finite_Generated as F
 import qualified LP_Cut_Projected_Generated as P
 import qualified LP_Return_Module_Generated as R
 import qualified LP_SEG_Certificate_Generated as S
@@ -51,6 +52,8 @@ main = do
 #endif
         else if R.check_lp_constructor_any_xml xml
           then putStrLn "CERTIFIED TOCL09 LP"
+        else if F.check_lp_finite_xml (decodeF input)
+          then putStrLn "CERTIFIED FINITE-TERM LP"
         else if R.check_lp_nontermination_all_xml xml
           then putStrLn "CERTIFIED TOCL09 LP NO"
         else putStrLn "REJECTED" >> exitFailure
@@ -75,3 +78,5 @@ decodeR = cachedCharacters R.explode
 decodeS = cachedCharacters S.explode
 
 decodeN = cachedCharacters N.explode
+
+decodeF = cachedCharacters F.explode

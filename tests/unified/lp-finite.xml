@@ -1,0 +1,167 @@
+<lpFiniteTerminationProof>
+<program>
+<clause><head>
+<funapp>
+  <name>lp_in_70_1</name>
+  <funapp>
+    <name>lp_c_7a_0</name>
+  </funapp>
+</funapp>
+</head><body>
+</body></clause>
+<clause><head>
+<funapp>
+  <name>lp_in_70_1</name>
+  <funapp>
+    <name>lp_c_73_1</name>
+    <var>X</var>
+  </funapp>
+</funapp>
+</head><body>
+<funapp>
+  <name>lp_in_70_1</name>
+  <var>X</var>
+</funapp>
+</body></clause>
+</program><returns>
+<return><name>lp_in_70_1</name><name>lp_out_70_1</name></return>
+</returns><fallback><name>lp_unused_continuation</name></fallback><continuations>
+<clause></clause>
+<clause><name>lp_u_1_0</name></clause>
+</continuations><query><name>lp_in_70_1</name><arity>1</arity><ground><index>0</index></ground></query><argumentFilter>
+<argumentFilterEntry><name>lp_c_73_1</name><arity>1</arity><nonCollapsing><position>1</position></nonCollapsing></argumentFilterEntry>
+<argumentFilterEntry><name>lp_c_7a_0</name><arity>0</arity><nonCollapsing></nonCollapsing></argumentFilterEntry>
+<argumentFilterEntry><name>lp_in_70_1</name><arity>1</arity><nonCollapsing><position>1</position></nonCollapsing></argumentFilterEntry>
+<argumentFilterEntry><name>lp_out_70_1</name><arity>1</arity><nonCollapsing><position>1</position></nonCollapsing></argumentFilterEntry>
+<argumentFilterEntry><name>lp_u_1_0</name><arity>2</arity><nonCollapsing><position>1</position><position>2</position></nonCollapsing></argumentFilterEntry>
+</argumentFilter>
+<trsTerminationProof>
+      <dpTrans>
+        <dps>
+          <rules>
+            <rule>
+              <funapp>
+                <sharp>
+                  <name>lp_in_70_1</name>
+                </sharp>
+                <funapp>
+                  <name>lp_c_73_1</name>
+                  <var>X</var>
+                </funapp>
+              </funapp>
+              <funapp>
+                <sharp>
+                  <name>lp_u_1_0</name>
+                </sharp>
+                <funapp>
+                  <name>lp_in_70_1</name>
+                  <var>X</var>
+                </funapp>
+                <var>X</var>
+              </funapp>
+            </rule>
+            <rule>
+              <funapp>
+                <sharp>
+                  <name>lp_in_70_1</name>
+                </sharp>
+                <funapp>
+                  <name>lp_c_73_1</name>
+                  <var>X</var>
+                </funapp>
+              </funapp>
+              <funapp>
+                <sharp>
+                  <name>lp_in_70_1</name>
+                </sharp>
+                <var>X</var>
+              </funapp>
+            </rule>
+          </rules>
+        </dps>
+        <dpProof>
+          <depGraphProc>
+            <component>
+              <dps>
+                <rules>
+                  <rule>
+                    <funapp>
+                      <sharp>
+                        <name>lp_in_70_1</name>
+                      </sharp>
+                      <funapp>
+                        <name>lp_c_73_1</name>
+                        <var>X</var>
+                      </funapp>
+                    </funapp>
+                    <funapp>
+                      <sharp>
+                        <name>lp_in_70_1</name>
+                      </sharp>
+                      <var>X</var>
+                    </funapp>
+                  </rule>
+                </rules>
+              </dps>
+              <dpProof>
+                <sizeChangeProc>
+                  <subtermCriterion/>
+                  <sizeChangeGraph>
+                    <rule>
+                      <funapp>
+                        <sharp>
+                          <name>lp_in_70_1</name>
+                        </sharp>
+                        <funapp>
+                          <name>lp_c_73_1</name>
+                          <var>X</var>
+                        </funapp>
+                      </funapp>
+                      <funapp>
+                        <sharp>
+                          <name>lp_in_70_1</name>
+                        </sharp>
+                        <var>X</var>
+                      </funapp>
+                    </rule>
+                    <edge>
+                      <position>1</position>
+                      <strict>true</strict>
+                      <position>1</position>
+                    </edge>
+                  </sizeChangeGraph>
+                </sizeChangeProc>
+              </dpProof>
+            </component>
+            <component>
+              <dps>
+                <rules>
+                  <rule>
+                    <funapp>
+                      <sharp>
+                        <name>lp_in_70_1</name>
+                      </sharp>
+                      <funapp>
+                        <name>lp_c_73_1</name>
+                        <var>X</var>
+                      </funapp>
+                    </funapp>
+                    <funapp>
+                      <sharp>
+                        <name>lp_u_1_0</name>
+                      </sharp>
+                      <funapp>
+                        <name>lp_in_70_1</name>
+                        <var>X</var>
+                      </funapp>
+                      <var>X</var>
+                    </funapp>
+                  </rule>
+                </rules>
+              </dps>
+            </component>
+          </depGraphProc>
+        </dpProof>
+      </dpTrans>
+    </trsTerminationProof>
+</lpFiniteTerminationProof>

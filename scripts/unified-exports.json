@@ -103,13 +103,23 @@
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
-      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+      "LP_Finite_Generated.hs": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp.tar.gz",
-    "archive_sha256": "a3c22020938e94c162afe76aa867baf10d2a73f17ab82e9a999dd6a38ead424c",
+    "archive_sha256": "c3d7d769b3961ef8d35fb76702cf84fb36bd1e62a1d2a712bbd389150a7a0608",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
-    "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115"
+    "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
+    "additional_exports": [
+      {
+        "module": "LP_Finite_Generated.hs",
+        "source_commit": "7ac49ec5e3ca4e12f7120e10cfbc5f6ab956b5f7",
+        "origin": "/work/dfm/festschrift/CeTA/target/lp-finite-production-v2-20261021",
+        "identity": "docs/data/lp-finite-export-20261021-identity.json",
+        "current_theories_match": true
+      }
+    ]
   },
   "higher-order": {
     "module": "Ceta.Category.HigherOrder",
