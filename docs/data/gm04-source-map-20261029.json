@@ -340,5 +340,15 @@
   "retained_csr_checks": 220,
   "retained_csr_artifact": "target/gm04-source-map/retained-csr110-rechecks.jsonl",
   "ferrum_csr_unit_tests": 164,
-  "initial_test_expectation": "Requiring rejection whenever the optional map is absent was too strong: two certificates remain valid under the original map and are also accepted by the preceding checker. The wrapper-sensitive fixture is rejected without the explicit map."
+  "initial_test_expectation": "Requiring rejection whenever the optional map is absent was too strong: two certificates remain valid under the original map and are also accepted by the preceding checker. The wrapper-sensitive fixture is rejected without the explicit map.",
+  "broader_checks": {
+    "semantic_negatives": 408,
+    "semantic_rejections": 408,
+    "negative_report": "target/gm04-source-map/all-negatives.json.gz",
+    "negative_report_sha256": "36da457b8a59a0202d3a71d98b1443e9228b0672034fe8d8c711a6ddd79db86e",
+    "dispatcher_cases": 12,
+    "dispatcher_report": "target/gm04-source-map/dispatch.log",
+    "retained_composition_and_mutations": 28,
+    "composition_report": "target/gm04-source-map/retained-composition/certificate-validation.json"
+  }
 }

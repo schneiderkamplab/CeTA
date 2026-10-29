@@ -28,7 +28,8 @@ The implementation is in `GM04_Standalone_DP_Checker.thy` and
 CPF library. The unified O2 executable has SHA-256
 `362c56d7335a60bff89f84c19d54f437be5582fb2e125bb299514d99e0f94fac`.
 All 21 source-map checks, 220 retained CSR checks and 164 focused Ferrum CSR tests
-pass. The retained wrapper-sensitive fixture passes twice and rejects all five
+pass. Broader gates reject all 408 retained semantic negatives and pass twelve
+dispatch checks plus 28 retained composition/mutation checks. The retained wrapper-sensitive fixture passes twice and rejects all five
 semantic mutations. Omitting the optional map remains valid for source proofs
 that do not require the auxiliary restriction, matching the preceding checker.
 [Evidence](data/gm04-source-map-20261029.json) records both outcomes and the corrected
