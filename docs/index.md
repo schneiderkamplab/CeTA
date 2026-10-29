@@ -21,3 +21,5 @@ okf_version: "0.2"
 - [Frozen branch reconciliation](branch-reconciliation.md)
 
 - [GM04 source-proof replacement maps](gm04-source-proof-map.md) — Specification; focused executable gates passed.
+
+- [Full-frontier release](state-local-release-20261029.md) — Unified CeTA validates all 6,526 roots.
