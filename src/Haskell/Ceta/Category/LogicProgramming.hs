@@ -74,7 +74,8 @@ runProlog [path] = do
     else if PS.check_lpp_return_triples_xml (cachedCharacters PS.explode input) ||
       PS.check_lpp_module_triples_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG"
-    else if PS.check_lpp_test_no_xml (cachedCharacters PS.explode input)
+    else if PS.check_lpp_test_no_xml (cachedCharacters PS.explode input) ||
+      PS.check_lpp_integer_no_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG NO"
     else if PS.check_lpp_static_no_xml (cachedCharacters PS.explode input) ||
       PS.check_lpp_uniform_xml (cachedCharacters PS.explode input)

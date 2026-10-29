@@ -206,3 +206,36 @@ Full strict replay preserves 17 YES and two NO on 221 benchmark inputs. There
 is no additional benchmark result or production release. Artifacts live under
 `target/prolog-extended/root-tests-*` and sibling Ferrum's
 `target/prolog-root-tests-*`.
+
+## 2026-10-29 Integer-literal source loops
+
+The new source NO checker admits exact `N is N` steps for arbitrary signed
+integers inside the reachable stem and repeated loop. It reconstructs the
+canonical integer symbol from the integer evidence; quoted atoms and floats
+cannot impersonate integers. This is a NO underapproximation with a proved
+extension theorem, not a general arithmetic semantics or a YES rule.
+
+The barrier-pumping theorem now has a shared relational interface, instantiated
+by ordinary LP-with-cut and the Prolog builtin source relation. Both instances
+retain scope freshness, a nonempty loop, the full source and reachable entry.
+Extended loops currently require barrier-only suffixes; pending alternatives
+are not silently erased. Ferrum also continues past repeated multi-goal states
+until an atomic pumping core is found, benefiting the shared native search.
+
+[Verified export and dependency audit](prolog-integer-no-audit-20261029.log.gz)
+passed. Generated code was integrated through `make ceta`; the unified executable
+SHA-256 is `91b9bdb1e397907c5fde4e081163cde6868db6ea2db0655e1fa69b72e31f215d`.
+Ferrum `36323e4` strictly replays all 221 Prolog roots: **17 YES + three NOs**,
+with `Weinert_15/is.pl` adding the new source NO and all prior roots preserved.
+Five additional fixtures pass two checks and strict replay. Seventeen arithmetic
+checks include four positives and thirteen rejections, including an unreachable
+loop after removal of its stem. Missing or conflicting guidance yields UNKNOWN.
+All 219 retained certificates pass twice, the prior root-test and module suites
+pass 22 and 13 checks, and 13 malformed dispatcher cases reject.
+
+Artifacts are retained under `target/prolog-extended/integer-*` and sibling
+Ferrum's `target/prolog-integer-*`; durable source replay and failed-attempt
+records are in its `docs/data/prolog-integer-checkpoint-20261029.tar.gz`.
+General arithmetic source reconstruction, integer-fact certification, rational
+projections and mixed cycles remain open. This is a development checkpoint,
+not a production release.
