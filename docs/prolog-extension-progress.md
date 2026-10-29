@@ -108,3 +108,31 @@ This adds an accepting certificate family, not benchmark coverage: the Prolog
 frontier remains 14 YES and one NO. Extended split coverage, other builtin
 semantics, full rational/functor projection checking and complete ITS/PiDP
 parent reconstruction remain open. Mixed cycles remain open as requested.
+
+## Identity-test equations and two additional source YESs
+
+The same return-table constructor now supports `==/2` and `\==/2`. Equality is
+an observation of the current values, not an instruction to bind them. Only
+the equality outcome supplies equations to the shared checked normalization
+and linking rules; the other outcome retains its unconstrained interface.
+Saved alternatives and their answer environments participate in the checked
+link. A syntactically identical operand pair has one feasible outcome; otherwise
+both are checked. Cyclic conditional normalizations that native search cannot
+represent remain open.
+
+The combined builtin relation retains the previous variable-test semantics.
+`LP_Prolog_Identity_Test` proves local coverage and conditional equations, and
+its source theorem is composed through the existing shared return table and
+PiDP child. [The full dependency audit and regenerated export](prolog-identity-return-audit-20261029.log.gz)
+pass without proof admissions or additional oracles. Unified CeTA SHA-256 is
+`3894a20eb211f3cf412f57ccbb730318990f054d0f078fd2f1afa1e70816e306`.
+
+`equality1.pl` and `equality2.pl` now have complete source YES certificates,
+each independently checked twice, including fresh strict replay. Ten positive
+checks cover these discoveries/replays and a negative-identity fixture; eight
+equality-certificate mutations are rejected. All nine variable-test mutations
+remain rejected. The same executable preserves 145 retained source, residual
+and fixture certificates twice, including all 93 cut results. Dispatcher tests
+pass. Ferrum's full 221-input strict source replay yields **16 YES, one NO and
+204 unresolved/rejected**; no existing source result is lost. This is a new
+source frontier, not completion of extended Prolog certification or a release.

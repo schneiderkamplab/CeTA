@@ -1,5 +1,5 @@
 theory LP_Prolog_Return_Check
-  imports LP_Prolog_Var_Test LP_Cut_Return_Check
+  imports LP_Prolog_Identity_Test LP_Cut_Return_Check
 begin
 
 lemma lpp_scope_goal_atom:
@@ -87,17 +87,21 @@ qed
 datatype lpp_return_action = LPPRCut "string lpc_return_action"
   | LPPRVar string "string lpc_term" "string lpc_term lp_cut_goal list"
       "string lpc_term list" "string lpc_return_state" "string lpc_link" "string lpc_link"
+  | LPPRIdentity string "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
+      "string lpc_term list" "string lpc_return_state" "string lpc_link" "string lpc_link"
 
 fun lpp_check_return_action where
   "lpp_check_return_action fuel P Q nds states nd ss returned arity (LPPRCut action) =
     (lpp_no_builtin_frame ss \<and> lpc_check_return_action fuel P Q nds states nd ss returned arity action)"
 | "lpp_check_return_action fuel P Q nds states nd ss returned arity (LPPRVar f a gs active saved yes no) =
     lpp_check_var_node fuel Q nds states nd ss f a gs active saved yes no"
+| "lpp_check_return_action fuel P Q nds states nd ss returned arity (LPPRIdentity f a b gs active saved yes no) =
+    lpp_check_identity_node fuel Q nds states nd ss f a b gs active saved yes no"
 
 theorem lpp_return_action_sound:
   assumes checked: "lpp_check_return_action fuel P Q nds states nd ss returned arity action"
     and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
-    and step: "lpp_answer_transition P lpp_builtin_signature lpp_var_builtin (lpc_return_eval eta ss) event tt"
+    and step: "lpp_answer_transition P lpp_builtin_signature lpp_test_builtin (lpc_return_eval eta ss) event tt"
   shows "(\<exists>u swaps. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
       lpc_return_rep nds states (lpc_return_scope_word swaps tt) u) \<and>
     (\<forall>rho. event=Some rho \<longrightarrow>
@@ -106,12 +110,17 @@ proof (cases action)
   case (LPPRCut a)
   have clear: "lpp_no_builtin_frame ss" and check: "lpc_check_return_action fuel P Q nds states nd ss returned arity a"
     using checked LPPRCut by auto
-  show ?thesis by (rule lpc_return_action_sound[OF check known lpp_nonbuiltin_answer_base[OF clear step]])
+  show ?thesis by (rule lpc_return_action_sound[OF check known lpp_test_nonbuiltin_answer_base[OF clear step]])
 next
   case (LPPRVar f a gs active saved yes no)
   have check: "lpp_check_var_node fuel Q nds states nd ss f a gs active saved yes no"
     using checked LPPRVar by simp
-  show ?thesis using lpp_var_node_sound[OF check known step] by auto
+  show ?thesis using lpp_test_var_node_sound[OF check known step] by auto
+next
+  case (LPPRIdentity f a b gs active saved yes no)
+  have check: "lpp_check_identity_node fuel Q nds states nd ss f a b gs active saved yes no"
+    using checked LPPRIdentity by simp
+  show ?thesis using lpp_identity_node_sound[OF check known step] by auto
 qed
 
 definition lpp_check_return_table where
@@ -126,16 +135,16 @@ theorem lpp_check_return_table_contract:
     and root: "i<length nds"
     and known: "lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta"
     and residual: "SN_on (lp_ild Q) {[(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))]}"
-  shows "lpp_return_contract P lpp_builtin_signature lpp_var_builtin (lpc_return_eval eta (states!i)) (lp_ild Q)
+  shows "lpp_return_contract P lpp_builtin_signature lpp_test_builtin (lpc_return_eval eta (states!i)) (lp_ild Q)
     [(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))] (\<lambda>rho. [(returned,map rho [0..<arity])])"
 proof -
-  have valid: "lp_answer_graph_valid (lpp_answer_transition P lpp_builtin_signature lpp_var_builtin) (lp_ild Q)
+  have valid: "lp_answer_graph_valid (lpp_answer_transition P lpp_builtin_signature lpp_test_builtin) (lp_ild Q)
     (\<lambda>ss t. \<exists>swaps. lpc_return_rep nds states (lpc_return_scope_word swaps ss) t)
     (\<lambda>rho. [(returned,map rho [0..<arity])]) (\<lambda>_. 0)"
   proof (rule lpp_return_graph_scope_valid[OF program])
     fix ss t event tt
     assume rep: "lpc_return_rep nds states ss t"
-      and step: "lpp_answer_transition P lpp_builtin_signature lpp_var_builtin ss event tt"
+      and step: "lpp_answer_transition P lpp_builtin_signature lpp_test_builtin ss event tt"
     obtain j nu where j: "j<length nds" and ss: "ss=lpc_return_eval nu (states!j)"
       and knowledge: "lp_cut_knowledge (set (lpcn_ground (nds!j))) (lpcn_guards (nds!j)) nu"
       and t: "t=[(lpcn_pred (nds!j),map nu (lpcn_vars (nds!j)))]"

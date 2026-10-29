@@ -19,7 +19,7 @@ theorem lpp_return_root_sound:
       (\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (us!i)) \<Longrightarrow>
       SN_on (lp_ild (lp_roles_program p d Q))
         {[(p (lpcn_pred (nds!r)),map (\<lambda>t. lp_ieval t LPIVar) us)]}"
-  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_var_builtin)
+  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin)
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
 proof -
   let ?nd = "nds!r"
@@ -47,12 +47,12 @@ proof -
   have residual: "SN_on (lp_ild Q) {[(lpcn_pred ?nd,map ?env ?vs)]}"
     by (rule lp_roles_termination_reflect[where p=p and d=d])
       (use mapped vals in \<open>simp add: lp_roles_iatom_def map_map o_def lp_map_finite_eval\<close>)
-  have contract: "lpp_return_contract P lpp_builtin_signature lpp_var_builtin (lpc_return_eval ?env (states!r)) (lp_ild Q)
+  have contract: "lpp_return_contract P lpp_builtin_signature lpp_test_builtin (lpc_return_eval ?env (states!r)) (lp_ild Q)
     [(lpcn_pred ?nd,map ?env ?vs)] (\<lambda>rho. [(returned,map rho [0..<arity])])"
     by (rule lpp_check_return_table_contract[OF table program bound known residual])
   have state: "map fst (states!r)=lpcn_state ?nd"
     using table bound by (auto simp: lpp_check_return_table_def list_all_iff)
-  have source: "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_var_builtin) {lp_cut_state_eval (lpcn_state ?nd) ?env}"
+  have source: "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin) {lp_cut_state_eval (lpcn_state ?nd) ?env}"
     using contract by (simp add: lpp_return_contract_def lpc_return_eval_erases state)
   show ?thesis using source root vals
     by (simp add: lp_cut_check_root_def lp_cut_state_map_def map_map o_def)
@@ -69,7 +69,7 @@ theorem lpp_return_root_triples_sound:
       SN_on (lp_triple_calls (set (lp_dependency_triples (lp_roles_program p d Q)))
         (lp_roles_program p d Q))
         {(p (lpcn_pred (nds!r)),map (\<lambda>t. lp_ieval t LPIVar) us)}"
-  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_var_builtin)
+  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin)
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
 proof (rule lpp_return_root_sound[where p=p and d=d, OF checked len ground])
   fix us :: "('b,string) term list"
@@ -90,11 +90,18 @@ definition lpp_return_action_parser where
       active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id;
       saved\<leftarrow>lpc_return_state_parser;
       yes\<leftarrow>lpc_link_parser; no\<leftarrow>lpc_link_parser;
-      xml_return (LPPRVar f a gs active saved yes no)})"
+      xml_return (LPPRVar f a gs active saved yes no)}) XMLor
+    (XMLdo (STR ''identityTest'') {
+      f\<leftarrow>xml_text (STR ''predicate''); a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id;
+      saved\<leftarrow>lpc_return_state_parser;
+      yes\<leftarrow>lpc_link_parser; no\<leftarrow>lpc_link_parser;
+      xml_return (LPPRIdentity f a b gs active saved yes no)})"
 
 fun lpp_var_template where
   "lpp_var_template (LPCAtom (Fun (LPCUser f) ts)) =
-    ((f,length ts)\<notin>lpp_builtin_signature \<or> (lpp_var_name f \<and> length ts=1))"
+    ((f,length ts)\<notin>lpp_builtin_signature \<or> (lpp_var_name f \<and> length ts=1) \<or> (lpp_identity_name f \<and> length ts=2))"
 | "lpp_var_template (LPCAtom _) = False"
 | "lpp_var_template (LPCMeta _) = False"
 | "lpp_var_template (LPCExpand _ _) = False"
@@ -102,7 +109,7 @@ fun lpp_var_template where
 
 definition lpp_var_source where
   "lpp_var_source P q modes =
-    (((q,length modes)\<notin>lpp_builtin_signature \<or> (lpp_var_name q \<and> length modes=1)) \<and>
+    (((q,length modes)\<notin>lpp_builtin_signature \<or> (lpp_var_name q \<and> length modes=1) \<or> (lpp_identity_name q \<and> length modes=2)) \<and>
       list_all (\<lambda>c. list_all lpp_var_template (snd c)) P)"
 
 definition check_lpp_return_triples where
@@ -121,7 +128,7 @@ theorem check_lpp_return_triples_sound:
       D R outs fallback dnames pnames marks filters q' n positions labs proofs"
     and len: "length ts=length modes"
     and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
-  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_var_builtin)
+  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin)
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
 proof (rule lpp_return_root_triples_sound[where p="lpc_lookup fallback predicates"
     and d="lpc_lookup fallback constructors", OF _ len ground])
@@ -182,7 +189,7 @@ theorem check_lpp_return_triples_xml_sound:
       (D,R,outs,fallback,dnames,pnames,marks,filters,(q',n,positions),labs,proofs))"
     and ok: "check_lpp_return_triples_xml xml" and len: "length ts=length modes"
     and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
-  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_var_builtin)
+  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin)
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
   by (rule check_lpp_return_triples_sound[OF tp_rbt_impl dpp_rbt_impl _ len ground])
     (use parsed ok in \<open>auto simp: check_lpp_return_triples_xml_def\<close>)
@@ -195,7 +202,7 @@ corollary check_lpp_return_triples_xml_uncaught_errors:
     and ok: "check_lpp_return_triples_xml xml" and len: "length ts=length modes"
     and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
   shows "SN_on (lp_prolog_stop_extension
-    (lpp_atomic_source P lpp_builtin_signature lpp_var_builtin) E)
+    (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin) E)
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
   by (rule lpp_atomic_uncaught_errors)
     (rule check_lpp_return_triples_xml_sound[OF parsed ok len ground])
