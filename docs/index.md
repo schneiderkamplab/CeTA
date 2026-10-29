@@ -10,6 +10,7 @@ okf_version: "0.2"
 - [gm04-standalone-certification](gm04-standalone-certification.md) — Concept document.
 - [h31-profile-20261026](h31-profile-20261026/index.md) — Directory index.
 - [performance-next-20261026](performance-next-20261026/index.md) — Directory index.
+- [prolog-extension-progress](prolog-extension-progress.md) — Verification report.
 - [prolog-static-source](prolog-static-source.md) — Verification report.
 - [srs161533-profile-20261027](srs161533-profile-20261027/index.md) — Directory index.
 - [state-local-integration](state-local-integration.md) — Concept document.
