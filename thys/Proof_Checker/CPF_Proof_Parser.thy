@@ -3083,6 +3083,12 @@ where
           (Conservative_CSR_Dependency_Pairs U P S prf))
       };
       gm = XMLdo (STR ''csrGmTransformation'') {
+        removals \<leftarrow>* XMLdo (STR ''ruleRemoval'') {
+          redp \<leftarrow> CPF_Proof_Parser.redtriple symbol_parser Sharp False;
+          Rr \<leftarrow> xml_singleton (STR ''trs'')
+            (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
+          xml_return (redp, Rr)
+        };
         mark \<leftarrow> xml_singleton (STR ''markSymbol'') symbol_parser id;
         c \<leftarrow> xml_singleton (STR ''groundConstant'') symbol_parser id;
         active \<leftarrow>* XMLdo (STR ''activeSymbol'') {
@@ -3093,7 +3099,7 @@ where
         };
         prf \<leftarrow> xml2trs_termination_proof
           symbol_parser termIndexMap ruleMap;
-        xml_return (GM_CSR_Transformation mark c active prf)
+        xml_return (GM_CSR_Transformation removals mark c active prf)
       };
       guarded = xml_singleton (STR ''csrGuardedTerminationProof'')
         (xml2guarded_csr_termination_proof termIndexMap ruleMap) Guarded_CSR_Proof;

@@ -4,6 +4,7 @@ License: LGPL (see file COPYING.LESSER)
 *)
 theory CSR_GM_Transformation
   imports
+    CSR_Signature_Rule_Removal
     CSR_Checker_Extensions.CSR_Conservative_Checker
     CSR_Checker_Extensions.CSR_Innermost_DP_Checker
     CSR_Checker_Extensions.CSR_Innermost_Unhiding_Checker
@@ -1335,6 +1336,7 @@ datatype ('f, 'l, 'v) gm_extended_csr_termination_proof =
       "('f, 'l, 'v) trsLL"
       "('f, 'l, 'v) dp_termination_proof"
   | GM_CSR_Transformation
+      "(('f, 'l) lab redtriple_impl \<times> ('f, 'l, 'v) trsLL) list"
       "('f, 'l) lab"
       "('f, 'l) lab"
       "((('f, 'l) lab \<times> nat) \<times> ('f, 'l) lab) list"
@@ -1495,17 +1497,20 @@ where
         (add_index i 1) dpp prf
     })"
 | "check_gm_extended_csr_termination_proof I J a i \<mu> R
-      (GM_CSR_Transformation mark c active prf) =
+      (GM_CSR_Transformation removals mark c active prf) =
     debug i (STR ''Giesl-Middeldorp CSR transformation'') (do {
-      check_wf_trs R;
-      let D = defined_list R;
+      R' \<leftarrow> csr_rule_removals_impl removals \<mu> R;
+      check_wf_trs R';
+      let D = defined_list R';
       let F = remdups (funas_trs_list R);
+      check (set (funas_trs_list R') \<subseteq> set F)
+        (showsl_lit (STR ''residual CSR signature is not covered''));
       check (distinct (map fst active) \<and> set (map fst active) = set D)
         (showsl_lit (STR ''active-symbol map does not cover the defined signature exactly''));
       check ((c, 0) \<in> set F)
         (showsl_lit (STR ''ground source-signature constant is missing''));
       let act = (\<lambda>fn. the (map_of active fn));
-      let T = gm_transformed_rules_list (mu_of \<mu>) (set D) act mark F R D;
+      let T = gm_transformed_rules_list (mu_of \<mu>) (set D) act mark F R' D;
       check_trs_termination_proof I J False (add_index i 1)
         (tp_ops.mk I False [] T []) prf
     })"
@@ -1912,13 +1917,16 @@ next
     by (rule SN_restrict_mu_to_sig_imp_SN_sig_csstep[OF restricted'])
   then show ?thesis .
 next
-  case (GM_CSR_Transformation mark c active child)
-  let ?D = "defined_list R"
+  case (GM_CSR_Transformation removals mark c active child)
+  from ok GM_CSR_Transformation obtain R' where remove:
+      "csr_rule_removals_impl removals \<mu> R = Inr R'"
+    by (cases "csr_rule_removals_impl removals \<mu> R", auto)
+  let ?D = "defined_list R'"
   let ?F = "remdups (funas_trs_list R)"
   let ?act = "\<lambda>fn. the (map_of active fn)"
-  let ?T = "gm_transformed_rules_list (mu_of \<mu>) (set ?D) ?act mark ?F R ?D"
-  from ok GM_CSR_Transformation have wf: "wf_trs (set R)"
-    and keys: "distinct (map fst active) \<and> set (map fst active) = set ?D"
+  let ?T = "gm_transformed_rules_list (mu_of \<mu>) (set ?D) ?act mark ?F R' ?D"
+  from ok GM_CSR_Transformation remove have wf: "wf_trs (set R')"
+    and source_sig: "funas_trs (set R') \<subseteq> set ?F"
     and ground_c: "(c, 0) \<in> set ?F"
     and child_ok: "isOK (check_trs_termination_proof I J False (add_index i 1)
       (tp_ops.mk I False [] ?T []) child)"
@@ -1926,11 +1934,12 @@ next
   from check_trs_termination_proof[OF I J child_ok]
   have child_SN: "SN (rstep (set ?T))"
     unfolding tp_spec.mk_sound[OF I] SN_qrel_def by auto
-  have source_sig: "funas_trs (set R) \<subseteq> set ?F" by simp
   have transformed: "set (gm_transformed_rules_list (mu_of \<mu>) (set ?D)
-      ?act mark ?F R ?D) \<subseteq> set ?T" by simp
+      ?act mark ?F R' ?D) \<subseteq> set ?T" by simp
   from gm_transformed_rules_list_sound[OF wf source_sig ground_c transformed child_SN]
-  show ?thesis by simp
+  have residual: "SN (sig_step (set (funas_trs_list R))
+      (csstep (mu_of \<mu>) (set R')))" by simp
+  show ?thesis by (rule csr_rule_removals_impl_sig_sound[OF remove residual])
 qed
 
 lemma check_gm_existing_global_sound:

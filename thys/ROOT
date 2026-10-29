@@ -376,6 +376,7 @@ session Proof_Checker in Proof_Checker = CSR_Guarded_List_Measure_Check +
     Outermost_RZ_Ext
   theories
     CSR_Muterm_Typed_Checker
+    CSR_Signature_Rule_Removal
     CSR_GM_Transformation
     GM04_Complete_Transformation
     GM04_Sanitizing_Phase
