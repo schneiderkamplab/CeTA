@@ -1,0 +1,8 @@
+{
+  "source_artifact": "/work/dfm/festschrift/ferrum-state-local/target/remaining11/gm04-generation/TRS_Innermost/LISTUTILITIES_nokinds_C/proof.cpf.xml",
+  "certificate_sha256": "f6cfde89a1acff2f79a0ff71bcc097d8a8450379dee3b6a46796e3ddebbd8e01",
+  "compressed_sha256": "aab7ba3fcf997bb9767a89857e89b20a61a1d41cf3d97b24b650e1e727dccb49",
+  "generator_sha256": "34a47ca7f343575488a4a12776067326e225eef7dfbb2557beacad95c14b5dc6",
+  "status": "passed two positive checks and five semantic-negative checks in the three-root gate",
+  "checker_sha256": "362c56d7335a60bff89f84c19d54f437be5582fb2e125bb299514d99e0f94fac"
+}

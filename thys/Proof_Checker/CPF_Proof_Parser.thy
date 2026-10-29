@@ -3220,6 +3220,8 @@ definition xml2gm04_standalone_dp_proof where
     XMLdo (STR ''gm04StandaloneDpProof'') {
       \<mu> \<leftarrow> xml_singleton (STR ''sourceReplacementMap'')
         (CPF_Input_Parser.replacement_map symbol_parser) id;
+      proof_mu \<leftarrow>? xml_singleton (STR ''sourceProofReplacementMap'')
+        (CPF_Input_Parser.replacement_map symbol_parser) id;
       R \<leftarrow> xml_singleton (STR ''sourceTrs'')
         (CPF_Input_Parser.rules symbol_parser termIndexMap ruleMap) id;
       active \<leftarrow> xml_singleton (STR ''activeSymbol'') symbol_parser id;
@@ -3232,7 +3234,8 @@ definition xml2gm04_standalone_dp_proof where
         (xml2dp_termination_proof symbol_parser termIndexMap ruleMap) id;
       source_child \<leftarrow> xml_singleton (STR ''sourceProof'')
         (xml2conservative_csr_termination_proof termIndexMap ruleMap) id;
-      xml_return (GM04_Standalone_DP_Proof (map fst \<mu>) \<mu> R active mark proper ok
+      xml_return (GM04_Standalone_DP_Proof (map fst \<mu>) \<mu>
+        (case proof_mu of None \<Rightarrow> \<mu> | Some m \<Rightarrow> m) R active mark proper ok
         top_sym top_sharp child source_child)
     }"
 

@@ -132,3 +132,8 @@ CSR removal/GM composition: `python3 tests/unified/check_csr_gm_composition.py
 matrix, repeated and mixed removal prefixes twice and rejects five semantic
 mutations per fixture. The checker must be the unified executable regenerated
 from the matching Isabelle theories.
+
+The GM04 source-proof map regression is run with
+`python3 tests/unified/check_gm04_source_map.py --checker PATH --output DIRECTORY`.
+It checks the retained compressed certificate twice and rejects changes to
+source activity, the fixed map, the required auxiliary map, the source proof and Q.

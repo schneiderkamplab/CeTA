@@ -2,6 +2,8 @@
 
 ## 2026-10-29
 
+- Proved agreement-based transport between the fixed GM04 source map and an explicit source-proof map. Regenerated the unified O2 checker; 21 source-map checks, 220 retained CSR checks and the retained mutation fixture pass. Full-frontier preservation remains pending. [Contract](gm04-source-proof-map.md).
+
 - Proved signature-preserving CSR removal/GM composition, regenerated the production CPF export, and built the unified O2 checker. The 28 composition/mutation checks and 220 retained CSR checks pass; fresh runtime and full-frontier gates remain pending.
 
 ## 2026-10-28

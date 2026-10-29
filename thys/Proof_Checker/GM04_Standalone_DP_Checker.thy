@@ -5,11 +5,28 @@ begin
 
 datatype ('f,'l,'v) gm04_standalone_dp_proof =
   GM04_Standalone_DP_Proof
-    "(('f,'l) lab \<times> nat) list" "('f,'l) lab muL" "('f,'l,'v) trsLL"
+    "(('f,'l) lab \<times> nat) list" "('f,'l) lab muL" "('f,'l) lab muL" "('f,'l,'v) trsLL"
     "('f,'l) lab" "('f,'l) lab" "('f,'l) lab" "('f,'l) lab"
     "('f,'l) lab" "('f,'l) lab"
     "('f,'l,'v) dp_termination_proof"
     "('f,'l,'v) gm_extended_csr_termination_proof"
+
+text \<open>The source proof may choose activity for auxiliary symbols outside
+its ambient signature. Agreement on the actual source signature preserves the
+restricted rewrite relation; no global termination conclusion is inferred.\<close>
+
+lemma gm04_sig_csstep_cong:
+  assumes agree: "\<And>fn. fn \<in> F \<Longrightarrow> \<mu> fn = \<nu> fn"
+  shows "sig_step F (csstep \<mu> R) = sig_step F (csstep \<nu> R)"
+proof -
+  have restricted: "restrict_mu_to_sig F \<mu> = restrict_mu_to_sig F \<nu>"
+    using agree unfolding restrict_mu_to_sig_def fun_eq_iff by auto
+  have cond: "\<And>t p. funas_term t \<subseteq> F \<Longrightarrow>
+      csstep_cond \<mu> p t = csstep_cond \<nu> p t"
+    using csstep_cond_restrict_mu_to_sig restricted by metis
+  show ?thesis
+    unfolding sig_step_def csstep_def csstep_p_def using cond by auto
+qed
 
 fun check_gm04_standalone_dp_proof ::
   "('tp, ('f::{showl,compare_order,countable},label_type) lab,string) tp_ops \<Rightarrow>
@@ -17,9 +34,11 @@ fun check_gm04_standalone_dp_proof ::
    ('f,label_type,string) gm04_standalone_dp_proof \<Rightarrow> showsl check"
 where
   "check_gm04_standalone_dp_proof I J i dpp
-    (GM04_Standalone_DP_Proof F \<mu> R active mark proper ok top_sym top_sharp child source_child) =
+    (GM04_Standalone_DP_Proof F \<mu> \<nu> R active mark proper ok top_sym top_sharp child source_child) =
     debug i (STR ''standalone Giesl-Middeldorp residual with CSR child'') (do {
       check_wf_trs R;
+      check (list_all (\<lambda>fn. mu_of \<mu> fn = mu_of \<nu> fn) F)
+        (showsl_lit (STR ''source proof replacement map changes an ambient symbol''));
       check (set (funas_trs_list R) \<subseteq> set F)
         (showsl_lit (STR ''source signature is incomplete''));
       check (set F = set (funas_trs_list R) \<or> gm04_source_proof_is_global source_child)
@@ -34,7 +53,7 @@ where
         (showsl_lit (STR ''GM04 pair arguments escape the signature''));
       check (list_all (\<lambda>(f,n). f \<noteq> top_sharp) (funas_trs_list S))
         (showsl_lit (STR ''GM04 sharp role is not fresh''));
-      check_gm_extended_csr_termination_proof I J False (add_index i 1) \<mu> R source_child;
+      check_gm_extended_csr_termination_proof I J False (add_index i 1) \<nu> R source_child;
       check_dp_termination_proof I J True (add_index i 2) dpp child;
       check (gm04_residual_assm P S (map fst S) (dp_assms True child))
         (showsl_lit (STR ''DP proof does not have exactly the certified GM04 premise''))
@@ -45,10 +64,11 @@ lemma check_gm04_standalone_dp_proof_sound:
     and checked: "isOK (check_gm04_standalone_dp_proof I J i dpp prf)"
   shows "finite_dpp (dpp_ops.dpp J dpp)"
 proof (cases "prf")
-  case (GM04_Standalone_DP_Proof F \<mu> R active mark proper ok_sym top_sym top_sharp child source_child)
+  case (GM04_Standalone_DP_Proof F \<mu> \<nu> R active mark proper ok_sym top_sym top_sharp child source_child)
   let ?S = "gm04_non_top_rules (mu_of \<mu>) active mark proper ok_sym F R"
   let ?P = "gm04_top_pairs active mark proper ok_sym top_sharp"
   from checked GM04_Standalone_DP_Proof have wf: "wf_trs (set R)"
+    and agreement: "list_all (\<lambda>fn. mu_of \<mu> fn = mu_of \<nu> fn) F"
     and signature: "funas_trs (set R) \<subseteq> set F"
     and global_or_same: "set F = set (funas_trs_list R) \<or> gm04_source_proof_is_global source_child"
     and fresh_list: "gm04_roles_fresh_list active mark proper ok_sym top_sym F"
@@ -56,14 +76,14 @@ proof (cases "prf")
     and pair_check: "gm04_pair_args_signature_list top_sharp ?P ?S"
     and sharp_fresh: "list_all (\<lambda>(f,n). f \<noteq> top_sharp) (funas_trs_list ?S)"
     and source_ok: "isOK (check_gm_extended_csr_termination_proof I J False
-      (add_index i 1) \<mu> R source_child)"
+      (add_index i 1) \<nu> R source_child)"
     and child_ok: "isOK (check_dp_termination_proof I J True (add_index i 2) dpp child)"
     and residual: "gm04_residual_assm ?P ?S (map fst ?S) (dp_assms True child)"
     by (simp_all add: Let_def)
-  have source: "SN (sig_step (set F) (csstep (mu_of \<mu>) (set R)))"
+  have source_local: "SN (sig_step (set F) (csstep (mu_of \<nu>) (set R)))"
   proof (cases "set F = set (funas_trs_list R)")
     case True
-    have "SN (sig_step (set (funas_trs_list R)) (csstep (mu_of \<mu>) (set R)))"
+    have "SN (sig_step (set (funas_trs_list R)) (csstep (mu_of \<nu>) (set R)))"
       by (rule check_gm_extended_csr_termination_proof_sound[OF I J source_ok])
     with True show ?thesis by simp
   next
@@ -72,10 +92,15 @@ proof (cases "prf")
     then obtain old where child: "source_child = Existing_CSR_Proof old"
       and old_global: "extended_csr_proof_is_global old"
       by (cases source_child) auto
-    have global_source: "SN (csstep (mu_of \<mu>) (set R))"
+    have global_source: "SN (csstep (mu_of \<nu>) (set R))"
       using check_gm_existing_global_sound[OF I J _ old_global] source_ok child by simp
     show ?thesis by (rule SN_subset[OF global_source], unfold sig_step_def, auto)
   qed
+  have relation: "sig_step (set F) (csstep (mu_of \<mu>) (set R)) =
+      sig_step (set F) (csstep (mu_of \<nu>) (set R))"
+    by (rule gm04_sig_csstep_cong, use agreement in \<open>auto simp: list_all_iff\<close>)
+  have source: "SN (sig_step (set F) (csstep (mu_of \<mu>) (set R)))"
+    using source_local relation by simp
   have fresh: "gm04_roles_fresh active mark proper ok_sym top_sym F"
     by (rule gm04_roles_fresh_list_sound[OF fresh_list])
   have wf_S: "wf_trs (set ?S)" by (rule gm04_non_top_rules_wf[OF wf])
