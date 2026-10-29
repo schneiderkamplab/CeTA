@@ -9,10 +9,16 @@ definition lpp_return_check_root where
      lp_cut_check_root q modes (lpcn_vars (nds!r)) (lpcn_state (nds!r))
        (lpcn_ground (nds!r)) (lpcn_guards (nds!r)))"
 
-theorem lpp_return_root_sound:
+theorem lpp_return_root_contract_sound:
   fixes ts :: "(string lp_cut_symbol,string) term list"
     and p d :: "string lp_cut_symbol\<Rightarrow>'b"
-  assumes checked: "lpp_return_check_root fuel P Q nds states returned arity acts r q modes"
+  assumes root: "lp_cut_check_root q modes (lpcn_vars (nds!r)) (lpcn_state (nds!r))
+      (lpcn_ground (nds!r)) (lpcn_guards (nds!r))"
+    and state: "map fst (states!r)=lpcn_state (nds!r)"
+    and contract_rule: "\<And>eta. lp_cut_knowledge (set (lpcn_ground (nds!r))) (lpcn_guards (nds!r)) eta \<Longrightarrow>
+      SN_on (lp_ild Q) {[(lpcn_pred (nds!r),map eta (lpcn_vars (nds!r)))]} \<Longrightarrow>
+      lpp_return_contract P lpp_builtin_signature lpp_test_builtin (lpc_return_eval eta (states!r)) (lp_ild Q)
+        [(lpcn_pred (nds!r),map eta (lpcn_vars (nds!r)))] (\<lambda>rho. [(returned,map rho [0..<arity])])"
     and len: "length ts=length modes"
     and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
     and child: "\<And>us::('b,string) term list. length us=length modes \<Longrightarrow>
@@ -26,10 +32,6 @@ proof -
   let ?vs = "lpcn_vars ?nd"
   let ?vals = "map (\<lambda>t. lp_ieval t LPIVar) ts"
   let ?env = "lp_cut_query_env ?vs ?vals"
-  have root: "lp_cut_check_root q modes ?vs (lpcn_state ?nd) (lpcn_ground ?nd) (lpcn_guards ?nd)"
-    and table: "lpp_check_return_table fuel P Q nds states returned arity acts" and bound: "r<length nds"
-    and program: "lp_cut_source_program P"
-    using checked by (auto simp: lpp_return_check_root_def)
   have lengths: "length ?vs=length ?vals" and distinct: "distinct ?vs"
     using root len by (auto simp: lp_cut_check_root_def)
   have vals: "map ?env ?vs=?vals" by (rule lp_cut_query_env_values[OF lengths distinct])
@@ -49,13 +51,39 @@ proof -
       (use mapped vals in \<open>simp add: lp_roles_iatom_def map_map o_def lp_map_finite_eval\<close>)
   have contract: "lpp_return_contract P lpp_builtin_signature lpp_test_builtin (lpc_return_eval ?env (states!r)) (lp_ild Q)
     [(lpcn_pred ?nd,map ?env ?vs)] (\<lambda>rho. [(returned,map rho [0..<arity])])"
-    by (rule lpp_check_return_table_contract[OF table program bound known residual])
-  have state: "map fst (states!r)=lpcn_state ?nd"
-    using table bound by (auto simp: lpp_check_return_table_def list_all_iff)
+    by (rule contract_rule[OF known residual])
   have source: "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin) {lp_cut_state_eval (lpcn_state ?nd) ?env}"
     using contract by (simp add: lpp_return_contract_def lpc_return_eval_erases state)
   show ?thesis using source root vals
     by (simp add: lp_cut_check_root_def lp_cut_state_map_def map_map o_def)
+qed
+
+theorem lpp_return_root_sound:
+  fixes ts :: "(string lp_cut_symbol,string) term list"
+    and p d :: "string lp_cut_symbol\<Rightarrow>'b"
+  assumes checked: "lpp_return_check_root fuel P Q nds states returned arity acts r q modes"
+    and len: "length ts=length modes"
+    and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
+    and child: "\<And>us::('b,string) term list. length us=length modes \<Longrightarrow>
+      (\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (us!i)) \<Longrightarrow>
+      SN_on (lp_ild (lp_roles_program p d Q))
+        {[(p (lpcn_pred (nds!r)),map (\<lambda>t. lp_ieval t LPIVar) us)]}"
+  shows "SN_on (lpp_atomic_source P lpp_builtin_signature lpp_test_builtin)
+    {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
+proof (rule lpp_return_root_contract_sound[where p=p and d=d, OF _ _ _ len ground child])
+  show "lp_cut_check_root q modes (lpcn_vars (nds!r)) (lpcn_state (nds!r))
+    (lpcn_ground (nds!r)) (lpcn_guards (nds!r))"
+    using checked by (simp add: lpp_return_check_root_def)
+  show "map fst (states!r)=lpcn_state (nds!r)"
+    using checked by (auto simp: lpp_return_check_root_def lpp_check_return_table_def list_all_iff)
+next
+  fix eta
+  assume known: "lp_cut_knowledge (set (lpcn_ground (nds!r))) (lpcn_guards (nds!r)) eta"
+    and residual: "SN_on (lp_ild Q) {[(lpcn_pred (nds!r),map eta (lpcn_vars (nds!r)))]}"
+  show "lpp_return_contract P lpp_builtin_signature lpp_test_builtin (lpc_return_eval eta (states!r)) (lp_ild Q)
+    [(lpcn_pred (nds!r),map eta (lpcn_vars (nds!r)))] (\<lambda>rho. [(returned,map rho [0..<arity])])"
+    by (rule lpp_check_return_table_contract[OF _ _ _ known residual])
+      (use checked in \<open>auto simp: lpp_return_check_root_def\<close>)
 qed
 
 theorem lpp_return_root_triples_sound:

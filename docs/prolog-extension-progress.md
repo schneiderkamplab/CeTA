@@ -163,3 +163,25 @@ The [audit log](prolog-test-no-audit-20261029.log.gz) records verified export.
 Full source replay, mutations and preservation evidence are retained in the
 sibling Ferrum worktree under `target/prolog-test-no-*` and its durable
 `docs/data/prolog-test-no-frontier-20261029.tar.gz` checkpoint.
+
+## 2026-10-29 Shared return modules
+
+The Prolog return checker now instantiates language-independent answer contracts
+for barrier trimming and complete alternative-stack decomposition. Ordinary
+LP-with-cut return contracts are instances of the same interface. Each module
+link must descend in the checked residual; saved answer tuples, scope transport,
+entry assumptions and all alternative children remain explicit. A guarded
+refutation reuses the existing checked cut rule.
+
+Isabelle verified the source-root theorem and regenerated the module XML checker;
+[the complete audit](prolog-return-module-audit-20261029.log.gz) is retained.
+The `make ceta` unified executable has SHA-256
+`51ba973bd2e0d53f3f2e350569f4b30775e70b12b7ca080fb9d2a554939d176e`.
+Twelve new module certificates pass twice; thirteen fixture checks include two
+positive checks and eleven rejection checks. All 181 retained certificates pass
+twice, including 93 LP-with-cut certificates. Thirteen malformed dispatcher
+cases reject. Ferrum's full strict 221-root replay preserves 17 YES and two NO;
+three module fixtures pass strict replay, and missing child guidance is UNKNOWN.
+No new benchmark root or production-release claim follows from this extension.
+Artifacts are in `target/prolog-extended/module-*` and sibling Ferrum's
+`target/prolog-return-module-*`.
