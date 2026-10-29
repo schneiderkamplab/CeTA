@@ -101,7 +101,7 @@
       "LP_SEG_Certificate_Generated.hs": "5d505823a4a9e36731d8ccd0dbc83aeff5515a71b424b911b8608ee98464869a",
       "LP_SEG_Projected_Generated.hs": "7aca74b8e87f96073d2548d0bd8d2eb5dcb241449552ff85b6344f959f8a9654",
       "LP_Triples_Generated.hs": "6ed7bd4fe79bac44d8c9e81ff1cad93e550ed6e4e8e5b817d0aafe6af4228328",
-      "Prolog_Static_Generated.hs": "d2187dc20ee46d624534b8452531ddc839ec89ab46508d0a7dffe422fd8d1975",
+      "Prolog_Static_Generated.hs": "7b21904ec5183ecfd7bb203c45a289124a2dff743348a1130dcd271c9fc5f638",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
@@ -109,11 +109,11 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp.tar.gz",
-    "archive_sha256": "3753c02150539bb29fd90567c4c535e9cfcf644588cb4e0e3779b4fa683db970",
+    "archive_sha256": "54635145ec0c859ef01c58378dc9105f02a4cac5735309bd8fe98f331512301e",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
-    "prolog_export_origin": "target/prolog-extended/module-generated-02/Prolog_Static_Generated.hs",
+    "prolog_export_origin": "target/prolog-extended/root-tests-generated-01/Prolog_Static_Generated.hs",
     "prolog_source_theory_hashes": {
       "thys/Logic_Programming/LP_Answer_Contracts.thy": "e5b479ab68766d7a742cfebdf4b28fe28873713b2bdb6b31f6e44c9edcc2c912",
       "thys/Logic_Programming/LP_Answer_Graph.thy": "480916076b41c0c621f0fdba35b65c0d2a29c661a8abf9744c0f0fc2bdc32878",
@@ -138,11 +138,11 @@
       "thys/Logic_Programming/LP_Prolog_Static_NO.thy": "dcc70536c8fd0f752a2e86d2be515c3e056dcc1de1fb87a439b416d998bbe29a",
       "thys/Logic_Programming/LP_Prolog_Static_NO_XML.thy": "1bc7a32371cb70e7649d216b2a3b8e00709d267626e0f094a5da42109315bc97",
       "thys/Logic_Programming/LP_Prolog_Static_XML.thy": "094887c675d2dac18cf269a810477917417e70ff846a06d6fc0ef6749c6d4c30",
-      "thys/Logic_Programming/LP_Prolog_Test_NO.thy": "013b390efe5a8ed8f31ca80fbafb9d71c68a80e9725237f25e7fc24897aa2a6d",
+      "thys/Logic_Programming/LP_Prolog_Test_NO.thy": "4a31a69b3de4cd60ec417f013e8b97ab59eb362e67dc01fa1f471666715d8572",
       "thys/Logic_Programming/LP_Prolog_Test_NO_XML.thy": "48ee7ff07bc3e77192a20a6353408d709d7a30baf3e57fda81ef69070e7e70e2",
       "thys/Logic_Programming/LP_Prolog_Undefined_XML.thy": "d32c98ec1f8dd37108d6f499414b59d761fb519e753a29ba65e0f9b47ef9f0d4",
       "thys/Logic_Programming/LP_Prolog_Uniform_NO_XML.thy": "e32bca0bb5a1c094381672828cb1557d1387249d6881ea89cbf68f2ad5f6fbcf",
-      "thys/Logic_Programming/LP_Prolog_Var_Test.thy": "8159e56f92ff93bc02863db060a74c0c80299888175b65ee74ee6f6d80c65371"
+      "thys/Logic_Programming/LP_Prolog_Var_Test.thy": "1baa787a1769a53f35150efc2bb3f86a2b4c4097f4539e6ee69a2fa1f3810c71"
     }
   },
   "higher-order": {

@@ -23,15 +23,23 @@ fun lpp_finite_var where
   "lpp_finite_var (Var x) = True"
 | "lpp_finite_var (Fun f ts) = False"
 
+fun lpp_finite_compound where
+  "lpp_finite_compound (Var x) = False"
+| "lpp_finite_compound (Fun f ts) = (ts\<noteq>[])"
+
 fun lpp_no_test where
   "lpp_no_test f [a] = (if lpp_var_name f then
-    Some (if f=''1:var'' then lpp_finite_var a else \<not>lpp_finite_var a) else None)"
+    Some (if f=''1:var'' then lpp_finite_var a else if f=''1:nonvar'' then \<not>lpp_finite_var a else if f=''1:compound'' then lpp_finite_compound a else \<not>lpp_finite_var a \<and> \<not>lpp_finite_compound a) else None)"
 | "lpp_no_test f [a,b] = (if lpp_identity_name f then
     Some (if f=''2:=='' then a=b else a\<noteq>b) else None)"
 | "lpp_no_test f ts = None"
 
 lemma lpp_finite_var_eval:
   "lpp_is_var (lp_ieval a LPIVar) = lpp_finite_var a"
+  by (cases a) simp_all
+
+lemma lpp_finite_compound_eval:
+  "lpp_is_compound (lp_ieval a LPIVar) = lpp_finite_compound a"
   by (cases a) simp_all
 
 lemma lpp_no_test_sound:
@@ -41,7 +49,7 @@ lemma lpp_no_test_sound:
   using assms
   by (induct f ts rule: lpp_no_test.induct)
     (auto simp: lpp_test_builtin_def lpp_var_builtin_def lpp_var_holds_def
-      lpp_identity_holds_def lpp_finite_var_eval
+      lpp_identity_holds_def lpp_finite_var_eval lpp_finite_compound_eval
       dest: lp_seg_ieval_injective split: if_splits)
 
 datatype lpp_no_action = LPPNOOrdinary "string lpc_no_action" | LPPNOTest

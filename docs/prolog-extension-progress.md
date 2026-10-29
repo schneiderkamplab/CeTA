@@ -185,3 +185,24 @@ three module fixtures pass strict replay, and missing child guidance is UNKNOWN.
 No new benchmark root or production-release claim follows from this extension.
 Artifacts are in `target/prolog-extended/module-*` and sibling Ferrum's
 `target/prolog-return-module-*`.
+
+## 2026-10-29 Atomic and compound source tests
+
+The existing unary test rule now checks `atomic/1` and `compound/1` by the
+outer term constructor, including rational values. Groundness cannot select an
+atomic/compound outcome for a variable template; both outcomes remain checked.
+The finite exact-prefix evaluator uses the same classification for NO proofs.
+No test binds its argument. The behavior follows
+[the documented type tests](https://www.swi-prolog.org/pldoc/man?section=typetest).
+
+[Isabelle export and dependency audit](prolog-root-tests-audit-20261029.log.gz)
+passed; the generated checker was integrated through `make ceta`, SHA-256
+`68fe3a6ed11be74845866b98603c3bc69c6049420e5894b3f1bd4d858dececbb`.
+Five YES and two NO fixtures pass original-source audit, two unified checks and
+strict guidance replay. Twenty-two fixture checks pass (14 positives and eight
+mutations); the prior cyclic-list module passes its 13 checks again. All 200
+retained certificates pass twice, and 13 malformed dispatcher cases reject.
+Full strict replay preserves 17 YES and two NO on 221 benchmark inputs. There
+is no additional benchmark result or production release. Artifacts live under
+`target/prolog-extended/root-tests-*` and sibling Ferrum's
+`target/prolog-root-tests-*`.

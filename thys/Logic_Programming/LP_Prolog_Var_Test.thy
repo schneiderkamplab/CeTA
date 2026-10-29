@@ -11,11 +11,15 @@ fun lpp_is_var where
   "lpp_is_var (LPIVar x) = True"
 | "lpp_is_var (LPIFun f ts) = False"
 
+fun lpp_is_compound where
+  "lpp_is_compound (LPIVar x) = False"
+| "lpp_is_compound (LPIFun f ts) = (ts\<noteq>[])"
+
 definition lpp_var_name where
-  "lpp_var_name f = (f=''1:var'' \<or> f=''1:nonvar'')"
+  "lpp_var_name f = (f=''1:var'' \<or> f=''1:nonvar'' \<or> f=''1:compound'' \<or> f=''1:atomic'')"
 
 definition lpp_var_holds where
-  "lpp_var_holds f t = (if f=''1:var'' then lpp_is_var t else \<not>lpp_is_var t)"
+  "lpp_var_holds f t = (if f=''1:var'' then lpp_is_var t else if f=''1:nonvar'' then \<not>lpp_is_var t else if f=''1:compound'' then lpp_is_compound t else \<not>lpp_is_var t \<and> \<not>lpp_is_compound t)"
 
 definition lpp_var_builtin where
   "lpp_var_builtin f ts result = (lpp_var_name f \<and> (\<exists>t. ts=[t] \<and>
@@ -55,15 +59,15 @@ qed
 
 fun lpp_var_outcomes where
   "lpp_var_outcomes f G (Var x) =
-    (if x\<in>set G then [f=''1:nonvar''] else [False,True])"
-| "lpp_var_outcomes f G (Fun g ts) = [f=''1:nonvar'']"
+    (if (f=''1:var'' \<or> f=''1:nonvar'') \<and> x\<in>set G then [f=''1:nonvar''] else [False,True])"
+| "lpp_var_outcomes f G (Fun g ts) = [if f=''1:var'' then False else if f=''1:nonvar'' then True else if f=''1:compound'' then ts\<noteq>[] else ts=[]]"
 
 lemma lpp_var_outcomes_cover:
   assumes name: "lpp_var_name f" and known: "lp_cut_knowledge (set G) guards eta"
   shows "lpp_var_holds f (lp_ieval a eta)\<in>set (lpp_var_outcomes f G a)"
 proof (cases a)
   case (Fun g ts)
-  then show ?thesis using name by (auto simp: lpp_var_name_def lpp_var_holds_def)
+  then show ?thesis using name by (auto simp: lpp_var_name_def lpp_var_holds_def split: if_splits)
 next
   case (Var x)
   show ?thesis
@@ -74,7 +78,7 @@ next
     case True
     have ground: "lp_seg_ground (eta x)" using known True by (simp add: lp_cut_knowledge_def)
     have "\<not>lpp_is_var (eta x)" using ground by (cases rule: lp_seg_ground.cases) simp
-    then show ?thesis using name Var True by (auto simp: lpp_var_name_def lpp_var_holds_def)
+    then show ?thesis using name Var True by (auto simp: lpp_var_name_def lpp_var_holds_def split: if_splits)
   qed
 qed
 
