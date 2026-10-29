@@ -153,3 +153,8 @@ session Logic_Programming_Cut_Projected_Residual = Logic_Programming +
 session Prolog_Static_Code = Logic_Programming +
   options [document = false, timeout = 900]
   theories LP_Prolog_Static_Code
+
+session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
+  options [document = false, timeout = 900]
+  sessions ITS_Arithmetic
+  theories LP_Prolog_Arithmetic_ITS
