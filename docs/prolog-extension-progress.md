@@ -17,7 +17,9 @@ failure and uncaught errors. Success substitutes only the active continuation
 and its return environment. Failure resumes saved alternatives with their saved
 environments. An uncaught error clears the entire stack. Erasure, source-step
 lifting, termination transfer and the extended return contract are proved.
-All ordinary cut transitions remain included. The relation supplied for a
+Ordinary cut transitions are inherited except at a recognized builtin call,
+where builtin dispatch takes precedence. Exact single-outcome lemmas exclude a
+spurious failing clause-lookup branch before a cut. The relation supplied for a
 builtin must itself be justified: this interface neither proves finite builtin
 evaluation nor handles enumerating builtins with internal choice points.
 There is no executable source-certificate acceptance for this interface yet.
@@ -63,3 +65,12 @@ theorems. The final re-export is byte-identical to the first projection export;
 its generated-module SHA-256 is
 `b250c62334faaa23aa080ffcff491edeec5c73a9d1a3e853287ec96112d61d31`.
 The manifest also pins the shared graph and refactored cut-contract theories.
+
+The dispatch refinement changes only unexported extension theorems. The
+accepted static source-certificate language and generated checking code remain
+unchanged. The recognized builtin set and interpreted outcome relation are
+explicit proof parameters; an accepting source bridge must check both.
+
+[Dispatch refinement audit](prolog-dispatch-audit-20261029.log.gz) checks the
+updated source instrumentation, return contract and exact builtin-outcome
+lemmas, including their dependencies. No skipped proof or new oracle is used.
