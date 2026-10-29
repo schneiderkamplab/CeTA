@@ -1,5 +1,9 @@
 # Update log
 
+## 2026-10-29
+
+- Proved signature-preserving CSR removal/GM composition, regenerated the production CPF export, and built the unified O2 checker. The 28 composition/mutation checks and 220 retained CSR checks pass; fresh runtime and full-frontier gates remain pending.
+
 ## 2026-10-28
 
 - Audited frozen AAECC and raw-superiority branches against integrated main; retained source identities and obsolete-wrapper dispositions. Checker sources and executable remain unchanged.

@@ -1,0 +1,346 @@
+{
+  "source_head": "8d9da4c0cb7487faa793ef7a518293ebea7702bc",
+  "source_files": {
+    "thys/Proof_Checker/CSR_Signature_Rule_Removal.thy": "6185b75d1d3d6013703d1a17fde8b56d05bcc72ea65e5233d2b90bf06c7f8952",
+    "thys/Proof_Checker/CSR_GM_Transformation.thy": "73d160b928a11d24775c1af587efa122971c4a596eb8c9b0bb6885bbce1689f5",
+    "thys/Proof_Checker/CPF_Proof_Parser.thy": "0cc7026248b8073dccc54b65a13ccd9a311c0c9faa9c831d4895fa6e58b2ea5e",
+    "thys/ROOT": "1ee9361074d42917557f431268a75e9bbab0bd0d527829bdb24335a0713eccea"
+  },
+  "logs": {
+    "export-build.log": "4a84557c8237a84085835360a3f7de135b5ac76e56a53b574a7d02da25c0f8b9",
+    "export.log": "1191a37a793e2277d2a6781e6cb2443c45e2f415daf24a72b803e2255b0b3313"
+  },
+  "archive_sha256": "3e8240633f4074319fbeabe1d7e399f57fffc88cc5e70c2156eb810cafe52cf8",
+  "sources": {
+    "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+    "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+    "Ceta_Relative.hs": "8ae6cb885b9520ddbaae357a826e0a7f163c32ab41a3bf979dd3194e891454f4",
+    "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+    "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+    "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+    "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+    "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+    "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+  },
+  "certificate_validation": {
+    "checker": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/bin/ceta",
+    "checker_sha256": "c3e853ea0a13cd5543797f6d6e5e0ece8046b9102a708a42cb607ee1f539da49",
+    "checks": [
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.matrix.xml",
+        "certificate_sha256": "c51c403844f7a51db06ad46a20e212e673f83dbc8c9aa914c71ba346167d92a3",
+        "label": "removal-gm.cpf.matrix.xml:positive:0",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.011657614988507703,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.matrix.xml",
+        "certificate_sha256": "c51c403844f7a51db06ad46a20e212e673f83dbc8c9aa914c71ba346167d92a3",
+        "label": "removal-gm.cpf.matrix.xml:positive:1",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.011978413007454947,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.matrix-missing-prefix.xml",
+        "certificate_sha256": "715934dc5864cdfd17c34be1caf70cf4651e78504756b00cde16e7a7760a2f87",
+        "label": "removal-gm.cpf.matrix.xml:missing-prefix",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011922122997930273,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.matrix-false-child.xml",
+        "certificate_sha256": "39d1c1b5652500cc71b1066780238cadc1f83ccf216331cdc85ab42d29824628",
+        "label": "removal-gm.cpf.matrix.xml:false-child",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.01199763300246559,
+        "stdout": "REJECTED\n",
+        "stderr": "1.1: R is not empty in the following termination-problem \nrules:\n\nfActive(a) -> a\nfActive(x1) -> f(x1)\nmark(h(x1)) -> h(mark(x1))\nmark(f(x1)) -> fActive(mark(x1))\nmark(a) -> a\n\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.matrix-unknown-constant.xml",
+        "certificate_sha256": "19f7feab8fe036e3a3eb02a2c799a55e043941adb241e2ca897f5c38867e25f2",
+        "label": "removal-gm.cpf.matrix.xml:unknown-constant",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011712174979038537,
+        "stdout": "REJECTED\n",
+        "stderr": "ground source-signature constant is missing\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.matrix-missing-active-map.xml",
+        "certificate_sha256": "5563e98f4be544b92b965b61e06a95ea4d0306b775db632b2dd1bbcb7f6855c3",
+        "label": "removal-gm.cpf.matrix.xml:missing-active-map",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.013310002977959812,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.matrix-false-source.xml",
+        "certificate_sha256": "a80191e0a4b1548f9ecd8147660bba61c7e27806b6dc4a50abe6142b734a5a4a",
+        "label": "removal-gm.cpf.matrix.xml:false-source",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011916663002921268,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.mixed.xml",
+        "certificate_sha256": "d9c1d5792f858960f4263ce8cab56678925f88569fd5d84db65d1aa7f8f260ff",
+        "label": "removal-gm.cpf.mixed.xml:positive:0",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.012191930989501998,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.mixed.xml",
+        "certificate_sha256": "d9c1d5792f858960f4263ce8cab56678925f88569fd5d84db65d1aa7f8f260ff",
+        "label": "removal-gm.cpf.mixed.xml:positive:1",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.012350000004516914,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.mixed-missing-prefix.xml",
+        "certificate_sha256": "a1bdd0b041d43ea52b5eff41486ac236c6a0f7747308cad4a73eb197c946fbf7",
+        "label": "removal-gm.cpf.mixed.xml:missing-prefix",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011893852992216125,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.mixed-false-child.xml",
+        "certificate_sha256": "741f8c619afb02e423efc1aa0be04d1c60670c1bf7a3eca89f54366017a795fb",
+        "label": "removal-gm.cpf.mixed.xml:false-child",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012368600000627339,
+        "stdout": "REJECTED\n",
+        "stderr": "1.1: R is not empty in the following termination-problem \nrules:\n\nfActive(a) -> a\nfActive(x1) -> f(x1)\nmark(h(x1)) -> h(mark(x1))\nmark(f(x1)) -> fActive(mark(x1))\nmark(a) -> a\nmark(k(x1)) -> k(mark(x1))\n\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.mixed-unknown-constant.xml",
+        "certificate_sha256": "df0b63b51b489c7c4c268f210a3277d69f299d7b089bdcadfced2ecaaf662c23",
+        "label": "removal-gm.cpf.mixed.xml:unknown-constant",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012307020981097594,
+        "stdout": "REJECTED\n",
+        "stderr": "ground source-signature constant is missing\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.mixed-missing-active-map.xml",
+        "certificate_sha256": "d6a62aaef206a1934aa2e79a81d6350722bacb87b79999192eebd60ae750cddb",
+        "label": "removal-gm.cpf.mixed.xml:missing-active-map",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012113090982893482,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.mixed-false-source.xml",
+        "certificate_sha256": "3764a5886f2fb03b6f75af15f28ae06492420a7a683a84f639b6ed5d89271799",
+        "label": "removal-gm.cpf.mixed.xml:false-source",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012009293015580624,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.two.xml",
+        "certificate_sha256": "c0f8cab8c626162a7de82136835cf2764d3b34c4f8b11365188cb81d4d659267",
+        "label": "removal-gm.cpf.two.xml:positive:0",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.012002981995465234,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.two.xml",
+        "certificate_sha256": "c0f8cab8c626162a7de82136835cf2764d3b34c4f8b11365188cb81d4d659267",
+        "label": "removal-gm.cpf.two.xml:positive:1",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.01178585397428833,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.two-missing-prefix.xml",
+        "certificate_sha256": "a1bdd0b041d43ea52b5eff41486ac236c6a0f7747308cad4a73eb197c946fbf7",
+        "label": "removal-gm.cpf.two.xml:missing-prefix",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.01220317097613588,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.two-false-child.xml",
+        "certificate_sha256": "fc43a9b494fe72503638cc1f2131476366f978a28b29fca5cf581c44e13b7a8f",
+        "label": "removal-gm.cpf.two.xml:false-child",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011644434998743236,
+        "stdout": "REJECTED\n",
+        "stderr": "1.1: R is not empty in the following termination-problem \nrules:\n\nfActive(a) -> a\nfActive(x1) -> f(x1)\nmark(h(x1)) -> h(mark(x1))\nmark(f(x1)) -> fActive(mark(x1))\nmark(a) -> a\nmark(k(x1)) -> k(mark(x1))\n\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.two-unknown-constant.xml",
+        "certificate_sha256": "69b11db515481a2e8b243b903c133e0b7ebac39fd24efd07a4e4d227b9be769a",
+        "label": "removal-gm.cpf.two.xml:unknown-constant",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011760533991036937,
+        "stdout": "REJECTED\n",
+        "stderr": "ground source-signature constant is missing\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.two-missing-active-map.xml",
+        "certificate_sha256": "f0753ff5272937e98fd7e7f2c133e672b2bb478967c16e89ed7f10c9cbae743b",
+        "label": "removal-gm.cpf.two.xml:missing-active-map",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012199340999359265,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf.two-false-source.xml",
+        "certificate_sha256": "32a86aed830305bd3e07abcac660d60dcf9d38ba7c5a21c1bfdf9b2d8b29bc5e",
+        "label": "removal-gm.cpf.two.xml:false-source",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011658734001684934,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.xml",
+        "certificate_sha256": "85dd311e80505a084f87d6d71854c53a7f79906448b9cea70e7f2af1e6e547ff",
+        "label": "removal-gm.cpf.xml:positive:0",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.012087262002751231,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/removal-gm.cpf.xml",
+        "certificate_sha256": "85dd311e80505a084f87d6d71854c53a7f79906448b9cea70e7f2af1e6e547ff",
+        "label": "removal-gm.cpf.xml:positive:1",
+        "expected_acceptance": true,
+        "accepted": true,
+        "returncode": 0,
+        "seconds": 0.011799973988672718,
+        "stdout": "CERTIFIED\n",
+        "stderr": ""
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf-missing-prefix.xml",
+        "certificate_sha256": "715934dc5864cdfd17c34be1caf70cf4651e78504756b00cde16e7a7760a2f87",
+        "label": "removal-gm.cpf.xml:missing-prefix",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012002163013676181,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf-false-child.xml",
+        "certificate_sha256": "169105532d06d15c8102366423eda001b05fde5d9b7442372ce3991396c3c1fd",
+        "label": "removal-gm.cpf.xml:false-child",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011680284980684519,
+        "stdout": "REJECTED\n",
+        "stderr": "1.1: R is not empty in the following termination-problem \nrules:\n\nfActive(a) -> a\nfActive(x1) -> f(x1)\nmark(h(x1)) -> h(mark(x1))\nmark(f(x1)) -> fActive(mark(x1))\nmark(a) -> a\n\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf-unknown-constant.xml",
+        "certificate_sha256": "73dd3f303c585088450805be074abe29c4ee10ed9d97479cc149f9a2b841cdb5",
+        "label": "removal-gm.cpf.xml:unknown-constant",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.011900993005838245,
+        "stdout": "REJECTED\n",
+        "stderr": "ground source-signature constant is missing\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf-missing-active-map.xml",
+        "certificate_sha256": "7fa4afa942158a11df1432e9167647a419ada294e63e71bf24357af740047426",
+        "label": "removal-gm.cpf.xml:missing-active-map",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.012403909000568092,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      },
+      {
+        "file": "/work/dfm/festschrift/CeTA-state-local/target/csr-composition/mutations/removal-gm.cpf-false-source.xml",
+        "certificate_sha256": "ad50413ee49f10e8143ba93010feb6c5357a32538d5bbe03c73781f2678b879d",
+        "label": "removal-gm.cpf.xml:false-source",
+        "expected_acceptance": false,
+        "accepted": false,
+        "returncode": 1,
+        "seconds": 0.01191744301468134,
+        "stdout": "REJECTED\n",
+        "stderr": "active-symbol map does not cover the defined signature exactly\n"
+      }
+    ],
+    "passed": true
+  },
+  "retained_csr": {
+    "roots": 110,
+    "checks_per_root": 2,
+    "report": "/work/dfm/festschrift/ferrum-state-local/target/csr-composition/existing-csr110-rechecks.jsonl"
+  },
+  "verified_source_commit": "12426a8c373f724a5809e153e90c4d7df31046f7"
+}

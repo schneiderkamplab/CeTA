@@ -126,3 +126,9 @@ Finite LP artifact dispatch is covered by
 retained artifact twice and rejects a looping-source mutation and a missing
 child proof. The finite checker is linked into the same executable as the
 rational-tree LP and other category checkers.
+
+CSR removal/GM composition: `python3 tests/unified/check_csr_gm_composition.py
+--checker target/unified/ceta --output target/csr-gm-regression` checks scalar,
+matrix, repeated and mixed removal prefixes twice and rejects five semantic
+mutations per fixture. The checker must be the unified executable regenerated
+from the matching Isabelle theories.

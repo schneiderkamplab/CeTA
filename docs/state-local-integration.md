@@ -43,3 +43,29 @@ cut roots, plus the finite-artifact and unified-dispatch regression tests.
 [Validation evidence](data/lp-finite-unified-54a99ee-validation.json).
 The previous `b4165eef...` candidate and main executable are preserved. This
 is a checker-library regression gate, not a new full-frontier replay.
+
+## CSR rule-removal / GM composition candidate
+
+The current candidate adds signature-preserving rule-removal soundness lemmas
+in `CSR_Signature_Rule_Removal.thy` and composes arbitrary polynomial/matrix
+removal prefixes with GM in `CSR_GM_Transformation.thy`. GM's conclusion is
+signature-restricted; the composition preserves the caller's signature rather
+than assuming unrestricted termination of the residual. The parser accepts an
+optional sequence of `ruleRemoval` children inside `csrGmTransformation`;
+existing artifacts use an empty sequence.
+
+The complete production Isabelle build and export passed with proof checking
+enabled. The new unified O2 checker has SHA-256
+`c3e853ea0a13cd5543797f6d6e5e0ece8046b9102a708a42cb607ee1f539da49`.
+It passes eight positive checks over four composition fixtures and rejects all
+20 semantic mutations. All 110 retained CSR certificates pass two checks each.
+The reproducible fixture gate is `tests/unified/check_csr_gm_composition.py`.
+
+[Export identities and certificate evidence](data/csr-gm-composition-20261029-validation.json)
+record the source snapshot, generated-module hashes and checking results.
+Only the CPF generated module changed; other category exports remain unchanged.
+No generated checking logic was edited. The old export archive and production
+executable are preserved. Fresh native/strict replay and the full-frontier gate
+remain pending. See Ferrum's
+[composition contract](../../ferrum-state-local/docs/csr-proof-composition.md)
+for state identity and runtime integration gates.
