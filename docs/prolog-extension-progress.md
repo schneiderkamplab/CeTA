@@ -74,3 +74,37 @@ explicit proof parameters; an accepting source bridge must check both.
 [Dispatch refinement audit](prolog-dispatch-audit-20261029.log.gz) checks the
 updated source instrumentation, return contract and exact builtin-outcome
 lemmas, including their dependencies. No skipped proof or new oracle is used.
+
+## Executable variable-test source bridge
+
+The shared return table now checks `var/1` and `nonvar/1` in the selected
+source profile. Unknown shapes require both outcomes; constructors and checked
+groundness establish nonvar. Successful tests preserve the active answer
+environment, failure restores the saved alternatives, and the root theorem
+also permits uncaught errors that stop execution. Other builtins and dynamic
+calls remain outside this source fragment. The complete original program,
+query modes, table, residual program, role encoding and dependency-triple
+child are checked together. Ordinary LP dispatch rejects this extended format.
+
+`LP_Prolog_Return_Check` delegates ordinary frames to the existing cut checker
+and uses the shared transition-parameterized answer-graph theorem. It does not
+introduce a parallel SEG or erase return environments. The fixed builtin
+signature moved to its own theory without changing its members. Native free
+variable facts are not assumed by this first coverage rule.
+
+[Full Isabelle dependency audit and generated export](prolog-var-return-audit-20261029.log.gz)
+passes without skipped proofs or additional proof oracles. `make ceta` builds
+one unified executable, SHA-256
+`956f47b46b30f67fe2d4c73581803d9c26479bf84a47e0fcd7062d5f89254503`.
+The export is regenerated from Isabelle; generated checking logic is not patched.
+Four positive fixtures and their strict replays pass twice. Nine semantic or
+structural mutations are rejected, including missing outcomes, lost saved
+alternatives, changed source clauses and lost entry groundness. The same
+executable preserves 15 Prolog source certificates, 93 cut source certificates
+and 29 retained residual certificates, each checked twice. Dispatcher rejection
+tests pass. Artifacts are retained in Ferrum's `target/prolog-var-*` directories.
+
+This adds an accepting certificate family, not benchmark coverage: the Prolog
+frontier remains 14 YES and one NO. Extended split coverage, other builtin
+semantics, full rational/functor projection checking and complete ITS/PiDP
+parent reconstruction remain open. Mixed cycles remain open as requested.
