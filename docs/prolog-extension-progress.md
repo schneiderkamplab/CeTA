@@ -136,3 +136,30 @@ and fixture certificates twice, including all 93 cut results. Dispatcher tests
 pass. Ferrum's full 221-input strict source replay yields **16 YES, one NO and
 204 unresolved/rejected**; no existing source result is lost. This is a new
 source frontier, not completion of extended Prolog certification or a release.
+
+## Test-bearing nontermination prefixes
+
+The executable `prologTestSourceNonterminationProof` checks an exact prefix
+containing `var`, `nonvar`, `==` and `\==`, then reuses the ordered LP-with-cut
+loop/pending-stack pumping theorem. The local component check retains the
+complete original program, requires all component predicates to be defined and
+non-builtin, and checks every relevant clause body. Undefined calls cannot be
+traversed as ordinary failure. Finite witness terms embed injectively into the
+rational runtime model; this route does not yet execute cyclic unifiers.
+
+Isabelle verifies the prefix steps, reachability, component preservation, pump
+transfer, XML root theorem and dependency audit. The unified checker is
+regenerated without generated-code edits. Its SHA-256 is
+`38fec526bfee085d73c7f68a0437755c7d231d9d076dd19e8f8bcc003373ad73`.
+Ferrum's fresh full strict replay retains 16 YESs and two NOs across 221 Prolog
+roots; `inequality1.pl` is the new NO. Four fixtures also pass strict replay.
+Twelve negative checks reject, including wrong-category dispatch. The same
+checker preserves 162 retained certificates twice, including 93 cut proofs.
+Thirteen malformed dispatcher invocations reject. This is a development
+checkpoint; rational/functor source projection and arithmetic source proofs
+remain incomplete.
+
+The [audit log](prolog-test-no-audit-20261029.log.gz) records verified export.
+Full source replay, mutations and preservation evidence are retained in the
+sibling Ferrum worktree under `target/prolog-test-no-*` and its durable
+`docs/data/prolog-test-no-frontier-20261029.tar.gz` checkpoint.

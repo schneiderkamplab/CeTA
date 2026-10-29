@@ -25,7 +25,7 @@ if a.export:
 begin
 ML \<open>
 val (modules, _) = Code_Target.produce_code @{context} true
-  [@{const_name check_lpp_return_triples_xml}, @{const_name lpp_check_graph_projection}, @{const_name check_lpp_static_xml}, @{const_name check_lpp_static_no_xml},
+  [@{const_name check_lpp_test_no_xml}, @{const_name check_lpp_return_triples_xml}, @{const_name lpp_check_graph_projection}, @{const_name check_lpp_static_xml}, @{const_name check_lpp_static_no_xml},
    @{const_name check_lpc_uniform_xml}, @{const_name check_lpp_uniform_xml}, @{const_name check_lpp_undefined_xml}] "Haskell" "Prolog_Static_Generated" NONE [];
 val root = Path.explode '''+json.dumps(str(a.export.resolve()))+r''';
 val _ = List.app (fn (names, bytes) => Bytes.write (root + Path.make names) bytes) modules;
