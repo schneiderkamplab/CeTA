@@ -158,7 +158,7 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
   options [document = false, timeout = 900]
   sessions ITS_Arithmetic ITS_Ext
   theories
-    LP_Prolog_Return_Shape_Context
+    LP_Prolog_Return_Shape_Context LP_Prolog_Shape_Observations_Test
     LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends
     LP_Prolog_Context_Code LP_Prolog_Context_Control
     LP_Prolog_Context_Observed_Control LP_Prolog_Context_Triple_Observed

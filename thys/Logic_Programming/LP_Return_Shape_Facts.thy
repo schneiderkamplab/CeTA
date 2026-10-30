@@ -104,4 +104,16 @@ next
   qed
 qed
 
+
+definition lp_return_shape_ground_vars where
+  "lp_return_shape_ground_vars fuel G shape t = (case lp_return_shape_facts fuel G shape t of
+    None \<Rightarrow> {} | Some facts \<Rightarrow> set (map snd (filter (\<lambda>(s,x). s=LPReturnGround) facts)))"
+
+lemma lp_return_shape_ground_vars_sound:
+  assumes held: "lp_return_shape_holds G shape (lp_ieval t eta)"
+  shows "\<forall>x\<in>lp_return_shape_ground_vars fuel G shape t. lp_seg_ground (eta x)"
+  using lp_return_shape_facts_sound[where fuel=fuel, OF held]
+  by (auto simp: lp_return_shape_ground_vars_def lp_return_facts_valid_def
+    lp_return_shape_known_def lp_return_ground_exact split: option.splits)
+
 end

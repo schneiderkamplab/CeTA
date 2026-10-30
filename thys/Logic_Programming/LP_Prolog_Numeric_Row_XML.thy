@@ -28,8 +28,28 @@ definition lpp_numeric_comparison_parser where
     (XMLdo (STR ''equal'') {xml_return LPPIntEqual}) XMLor
     (XMLdo (STR ''notEqual'') {xml_return LPPIntNotEqual})"
 
+definition lpp_return_shape_parser where
+  "lpp_return_shape_parser =
+    (XMLdo (STR ''any'') {xml_return LPReturnAny}) XMLor
+    (XMLdo (STR ''ground'') {xml_return LPReturnGround}) XMLor
+    (xml_change (xml_nat (STR ''node'')) (\<lambda>i. xml_return (LPReturnShape i)))"
+
+definition lpp_return_grammar_parser where
+  "lpp_return_grammar_parser = xml_many (STR ''grammar'')
+    (xml_many (STR ''shapeNode'') (XMLdo (STR ''production'') {
+      f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
+      children\<leftarrow>xml_many (STR ''arguments'') lpp_return_shape_parser id;
+      xml_return (f,children)}) id) id"
+
+definition lpp_shape_observation_parser where
+  "lpp_shape_observation_parser = XMLdo (STR ''returnShape'') {
+    G\<leftarrow>lpp_return_grammar_parser;
+    shape\<leftarrow>xml_singleton (STR ''shape'') lpp_return_shape_parser id;
+    t\<leftarrow>xml_singleton (STR ''term'') lpc_term_parser id;
+    xml_return (LPPOShape G shape t)}"
+
 definition lpp_numeric_observation_parser where
-  "lpp_numeric_observation_parser =
+  "lpp_numeric_observation_parser = lpp_shape_observation_parser XMLor
     (xml_singleton (STR ''groundGuard'') lpc_term_parser LPPOGround) XMLor
     (XMLdo (STR ''evaluationGuard'') {e\<leftarrow>lpc_term_parser; t\<leftarrow>lpc_term_parser; xml_return (LPPOEvaluation e t)}) XMLor
     (xml_change (xml_singleton (STR ''comparisonGuard'') lpc_term_parser id)

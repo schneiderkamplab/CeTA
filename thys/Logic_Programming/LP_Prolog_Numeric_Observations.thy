@@ -1,5 +1,5 @@
 theory LP_Prolog_Numeric_Observations
-  imports LP_Prolog_Finite_Comparison LP_Prolog_Numeric_Guards LP_Prolog_Integer_Test_Check LP_Cut_SEG_Triple_Prefix
+  imports LP_Return_Shape_Facts LP_Prolog_Finite_Comparison LP_Prolog_Numeric_Guards LP_Prolog_Integer_Test_Check LP_Cut_SEG_Triple_Prefix
 begin
 
 text \<open>Numeric observations travel with the shared active return frame.
@@ -9,12 +9,14 @@ closure permits ordinary shared unification and helper return transport.\<close>
 
 datatype 'v lpp_numeric_observation =
     LPPOGround "(string lp_cut_symbol,'v) term"
+  | LPPOShape "string lp_cut_symbol lp_return_grammar" lp_return_shape "(string lp_cut_symbol,'v) term"
   | LPPOInteger "(string lp_cut_symbol,'v) term"
   | LPPOEvaluation "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPOComparison lpp_integer_comparison "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
 fun lpp_numeric_observation_holds where
   "lpp_numeric_observation_holds eta (LPPOGround t) = lp_seg_ground (lp_ieval t eta)"
+| "lpp_numeric_observation_holds eta (LPPOShape G shape t) = lp_return_shape_holds G shape (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOInteger t) = lpp_is_integer (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOEvaluation e t) = lpp_integer_result (lp_ieval e eta) (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOComparison comparison a b) =
@@ -50,7 +52,7 @@ lemma lpp_numeric_observation_subst:
   shows "lpp_numeric_observation_holds eta observation \<Longrightarrow>
     lpp_numeric_observation_holds (\<lambda>x. lp_isubst (eta x) sigma) observation"
   by (cases observation) (auto simp: lp_ieval_subst[symmetric] lp_seg_ground_subst intro: lpp_is_integer_subst
-    lpp_integer_result_subst lpp_finite_comparison_subst lp_seg_ground_subst)
+    lpp_integer_result_subst lpp_finite_comparison_subst lp_seg_ground_subst lp_return_shape_subst)
 
 lemma lpp_numeric_observations_subst:
   fixes eta :: "'v \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm"

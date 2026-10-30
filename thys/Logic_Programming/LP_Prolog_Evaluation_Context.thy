@@ -9,6 +9,7 @@ finite groundness, not integer typing.\<close>
 
 fun lpp_evaluation_observation_holds where
   "lpp_evaluation_observation_holds E eta (LPPOGround t) = lp_seg_ground (lp_ieval t eta)"
+| "lpp_evaluation_observation_holds E eta (LPPOShape G shape t) = lp_return_shape_holds G shape (lp_ieval t eta)"
 | "lpp_evaluation_observation_holds E eta (LPPOInteger t) = lpp_is_integer (lp_ieval t eta)"
 | "lpp_evaluation_observation_holds E eta (LPPOEvaluation e t) = E (lp_ieval e eta) (lp_ieval t eta)"
 | "lpp_evaluation_observation_holds E eta (LPPOComparison c a b) =
@@ -46,7 +47,7 @@ lemma lpp_evaluation_observation_subst:
     and observed: "lpp_evaluation_observation_holds E eta observation"
   shows "lpp_evaluation_observation_holds E (\<lambda>x. lp_isubst (eta x) sigma) observation"
   using observed by (cases observation)
-    (auto simp: lp_ieval_subst[symmetric] lp_seg_ground_subst intro: stable lp_seg_ground_subst lpp_is_integer_subst lpp_finite_comparison_subst)
+    (auto simp: lp_ieval_subst[symmetric] lp_seg_ground_subst intro: stable lp_seg_ground_subst lpp_is_integer_subst lpp_finite_comparison_subst lp_return_shape_subst)
 
 lemma lpp_evaluation_context_integer:
   fixes P :: "'v lpp_success_clause list" and facts :: "'v lpp_success_atom list"
@@ -73,7 +74,7 @@ lemma lpp_evaluation_observation_ground:
   shows "\<forall>x\<in>lpp_observation_ground_vars observation. lp_seg_ground (eta x)"
   using observed by (cases observation)
     (auto simp: lp_seg_ground_eval lpp_finite_compare_outcome_def
-      dest: evaluation lpp_integer_ground_vars)
+      dest: evaluation lpp_integer_ground_vars lp_return_shape_ground_vars_sound)
 
 
 text \<open>Integer entailments in a link carry the same independently checked

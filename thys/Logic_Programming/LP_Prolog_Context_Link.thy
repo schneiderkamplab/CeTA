@@ -62,6 +62,7 @@ fun lpp_context_guard_check where
 
 fun lpp_observation_ground_vars where
   "lpp_observation_ground_vars (LPPOGround t) = vars_term t"
+| "lpp_observation_ground_vars (LPPOShape G shape t) = lp_return_shape_ground_vars 16 G shape t"
 | "lpp_observation_ground_vars (LPPOInteger t) = vars_term t"
 | "lpp_observation_ground_vars (LPPOEvaluation e t) = vars_term e \<union> vars_term t"
 | "lpp_observation_ground_vars (LPPOComparison c a b) = vars_term a \<union> vars_term b"
@@ -96,7 +97,8 @@ lemma lpp_observation_ground_vars_sound:
     \<forall>x\<in>lpp_observation_ground_vars observation. lp_seg_ground (eta x)"
   by (cases observation)
     (auto simp: lp_seg_ground_eval lpp_integer_result_def lpp_finite_compare_outcome_def
-      dest: lpp_integer_ground_vars lpp_integer_literal_ground_vars lpp_integer_evaluation_ground)
+      dest: lpp_integer_ground_vars lpp_integer_literal_ground_vars lpp_integer_evaluation_ground
+        lp_return_shape_ground_vars_sound)
 
 lemma lpp_observations_ground_sound:
   "list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>

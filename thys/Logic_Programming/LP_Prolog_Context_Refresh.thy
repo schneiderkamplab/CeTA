@@ -8,6 +8,7 @@ fun lpp_context_guard_terms where
 | "lpp_context_guard_terms (LPPSOpaque t) = [t]"
 fun lpp_context_observation_terms where
   "lpp_context_observation_terms (LPPOGround t) = [t]"
+| "lpp_context_observation_terms (LPPOShape G shape t) = [t]"
 | "lpp_context_observation_terms (LPPOInteger t) = [t]"
 | "lpp_context_observation_terms (LPPOEvaluation e t) = [e,t]"
 | "lpp_context_observation_terms (LPPOComparison c a b) = [a,b]"
