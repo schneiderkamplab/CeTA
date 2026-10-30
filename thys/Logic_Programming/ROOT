@@ -156,5 +156,9 @@ session Prolog_Static_Code = Logic_Programming +
 
 session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
   options [document = false, timeout = 900]
-  sessions ITS_Arithmetic
-  theories LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends LP_Prolog_Context_Code LP_Prolog_Context_Control
+  sessions ITS_Arithmetic ITS_Ext
+  theories
+    LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends
+    LP_Prolog_Context_Code LP_Prolog_Context_Control
+    LP_Prolog_Context_Observed_Control LP_Prolog_Context_Triple_Observed
+    LP_Prolog_Numeric_Component_XML LP_Prolog_Numeric_Calls_Regression
