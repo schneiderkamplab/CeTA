@@ -27,6 +27,14 @@ definition lpp_evaluation_action_parser where
       yf\<leftarrow>lpp_evaluation_types_parser (STR ''yesTypes'');
       nf\<leftarrow>lpp_evaluation_types_parser (STR ''noTypes'');
       xml_return (LPPEPrimitive (LPPETermTest f a gs active saved yes no yf nf))}) XMLor
+    (XMLdo (STR ''groundDisequality'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      yes\<leftarrow>lpc_link_parser; no\<leftarrow>lpc_link_parser;
+      yf\<leftarrow>lpp_evaluation_types_parser (STR ''yesTypes'');
+      nf\<leftarrow>lpp_evaluation_types_parser (STR ''noTypes'');
+      xml_return (LPPEPrimitive (LPPEGroundDisequality a b gs active saved yes no yf nf))}) XMLor
     (XMLdo (STR ''identityTest'') {
       f\<leftarrow>xml_text (STR ''predicate''); a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
       gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;

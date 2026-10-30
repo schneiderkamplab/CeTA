@@ -14,36 +14,36 @@ fun lpp_source_return_calls :: "(string lp_cut_symbol,string) term lp_cut_goal l
 | "lpp_source_return_calls (g#gs) = lpp_source_return_calls gs"
 
 lemma lpp_source_return_safe:
-  "list_all (lpc_control_goal F) gs \<Longrightarrow> list_all lpc_model_safe_goal gs"
-  by (auto simp: list_all_iff lpc_control_goal_iff)
+  "list_all (lpc_return_control_goal F) gs \<Longrightarrow> list_all lpc_model_safe_goal gs"
+  by (auto simp: list_all_iff lpc_return_control_goal_iff lpc_control_goal_iff)
 
 lemma lpp_source_return_body:
-  assumes control: "list_all (lpc_control_goal F) gs"
+  assumes control: "list_all (lpc_return_control_goal F) gs"
     and model: "list_all (lpc_model_goal (lpp_source_return_model SP))
       (map (lp_cut_bind m (\<lambda>t. lp_ieval t eta)) gs)"
   shows "list_all (lpp_guarded_success SP lpp_integer_result)
     (map (\<lambda>b. lpp_success_atom_eval b eta) (lpp_source_return_calls gs))"
   using control model
-  by (induct gs) (auto simp: lpc_control_goal_iff lpp_success_atom_eval_def)
+  by (induct gs) (auto simp: lpc_return_control_goal_iff lpc_control_goal_iff lpp_success_atom_eval_def)
 
 definition lpp_source_return_program_check :: "(string,string) lp_cut_program \<Rightarrow> string set \<Rightarrow> string lpp_success_clause list \<Rightarrow> bool" where
   "lpp_source_return_program_check P F SP = (\<forall>c<length P. \<exists>f ts.
     fst (P!c)=Fun (LPCUser f) ts \<and> (f\<in>F \<longrightarrow>
-      list_all (lpc_control_goal F) (snd (P!c)) \<and>
+      list_all (lpc_return_control_goal F) (snd (P!c)) \<and>
       ((f,ts),lpp_source_return_calls (snd (P!c)),[])\<in>set SP))"
 
 lemma lpp_source_return_program_check_code[code]:
   "lpp_source_return_program_check P F SP = list_all (\<lambda>c.
     case fst c of Fun (LPCUser f) ts \<Rightarrow>
-      (f\<in>F \<longrightarrow> list_all (lpc_control_goal F) (snd c) \<and>
+      (f\<in>F \<longrightarrow> list_all (lpc_return_control_goal F) (snd c) \<and>
         ((f,ts),lpp_source_return_calls (snd c),[])\<in>set SP)
     | _ \<Rightarrow> False) P"
 proof -
   have local: "(\<exists>f ts. fst c=Fun (LPCUser f) ts \<and>
-      (f\<in>F \<longrightarrow> list_all (lpc_control_goal F) (snd c) \<and>
+      (f\<in>F \<longrightarrow> list_all (lpc_return_control_goal F) (snd c) \<and>
         ((f,ts),lpp_source_return_calls (snd c),[])\<in>set SP)) =
     (case fst c of Fun (LPCUser f) ts \<Rightarrow>
-      (f\<in>F \<longrightarrow> list_all (lpc_control_goal F) (snd c) \<and>
+      (f\<in>F \<longrightarrow> list_all (lpc_return_control_goal F) (snd c) \<and>
         ((f,ts),lpp_source_return_calls (snd c),[])\<in>set SP) | _ \<Rightarrow> False)" for c
   proof (cases "fst c")
     case (Var x) then show ?thesis by simp
@@ -55,7 +55,7 @@ qed
 
 lemma lpp_source_return_clause:
   assumes head: "h=Fun (LPCUser f) ts"
-    and control: "list_all (lpc_control_goal F) gs"
+    and control: "list_all (lpc_return_control_goal F) gs"
     and clause: "((f,ts),lpp_source_return_calls gs,[])\<in>set SP"
   shows "lpc_model_program [(h,gs)] (lpp_source_return_model SP)"
 proof -
@@ -80,12 +80,12 @@ theorem lpp_source_return_program_sound:
 proof (unfold lpc_scoped_model_program_def, intro allI impI)
   fix c assume index: "c<length P"
   obtain f ts where head: "fst (P!c)=Fun (LPCUser f) ts"
-    and selected: "f\<in>F \<Longrightarrow> list_all (lpc_control_goal F) (snd (P!c)) \<and>
+    and selected: "f\<in>F \<Longrightarrow> list_all (lpc_return_control_goal F) (snd (P!c)) \<and>
       ((f,ts),lpp_source_return_calls (snd (P!c)),[])\<in>set SP"
     using checked index by (auto simp: lpp_source_return_program_check_def)
   have model: "lpc_model_program [P!c] (lpp_source_return_model SP)" if f: "f\<in>F"
   proof -
-    have body: "list_all (lpc_control_goal F) (snd (P!c))"
+    have body: "list_all (lpc_return_control_goal F) (snd (P!c))"
       and clause: "((f,ts),lpp_source_return_calls (snd (P!c)),[])\<in>set SP"
       using selected[OF f] by auto
     have "lpc_model_program [(fst (P!c),snd (P!c))] (lpp_source_return_model SP)"
@@ -93,7 +93,7 @@ proof (unfold lpc_scoped_model_program_def, intro allI impI)
     then show ?thesis by simp
   qed
   show "\<exists>g ts. fst (P!c)=Fun g ts \<and> (\<forall>f. g=LPCUser f \<longrightarrow> f\<in>F \<longrightarrow>
-    list_all (lpc_control_goal F) (snd (P!c)) \<and> lpc_model_program [P!c] (lpp_source_return_model SP))"
+    list_all (lpc_return_control_goal F) (snd (P!c)) \<and> lpc_model_program [P!c] (lpp_source_return_model SP))"
     using head selected model by blast
 qed
 

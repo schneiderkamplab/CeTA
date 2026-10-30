@@ -28,8 +28,8 @@ next
   have continued: "lpc_model_goals M K (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) gs)
     (\<lambda>x. lp_isubst (eta x) sigma)"
     by (rule lpc_model_builtin[OF before model stable])
-  have control: "list_all (lpc_control_igoal F) gs" using success known by simp
-  show ?thesis using success known continued lpc_control_subst(1)[OF control] by simp
+  have control: "list_all (lpc_return_control_igoal F) gs" using success known by simp
+  show ?thesis using success known continued lpc_return_control_subst[OF control] by simp
 qed (use known in auto)
 
 lemma lpp_scoped_model_domain_answer_preserved:

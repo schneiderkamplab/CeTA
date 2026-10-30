@@ -30,19 +30,19 @@ fun lpp_inline_return_guards :: "(string lp_cut_symbol,string) term lp_cut_goal 
 | "lpp_inline_return_guards (g#gs) = lpp_inline_return_guards gs"
 
 lemma lpp_inline_return_body:
-  assumes control: "list_all (lpc_control_goal F) gs"
+  assumes control: "list_all (lpc_return_control_goal F) gs"
     and model: "list_all (lpc_model_goal (lpp_inline_return_model SP E))
       (map (lp_cut_bind m (\<lambda>t. lp_ieval t eta)) gs)"
   shows "list_all (lpp_guarded_success SP E)
     (map (\<lambda>b. lpp_success_atom_eval b eta) (lpp_inline_return_calls gs)) \<and>
     list_all (lpp_success_guard_holds E eta) (lpp_inline_return_guards gs)"
   using control model
-  by (induct gs) (auto simp: lpc_control_goal_iff lpp_success_atom_eval_def)
+  by (induct gs) (auto simp: lpc_return_control_goal_iff lpc_control_goal_iff lpp_success_atom_eval_def)
 
 lemma lpp_inline_return_clause:
   assumes head: "h=Fun (LPCUser f) ts"
     and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
-    and control: "list_all (lpc_control_goal F) gs"
+    and control: "list_all (lpc_return_control_goal F) gs"
     and clause: "((f,ts),lpp_inline_return_calls gs,lpp_inline_return_guards gs)\<in>set SP"
   shows "lpc_model_program [(h,gs)] (lpp_inline_return_model SP E)"
 proof -
@@ -65,21 +65,21 @@ qed
 definition lpp_inline_return_program_check :: "(string,string) lp_cut_program \<Rightarrow> string set \<Rightarrow> string lpp_success_clause list \<Rightarrow> bool" where
   "lpp_inline_return_program_check P F SP = (\<forall>c<length P. \<exists>f ts.
     fst (P!c)=Fun (LPCUser f) ts \<and> (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and>
-      list_all (lpc_control_goal F) (snd (P!c)) \<and>
+      list_all (lpc_return_control_goal F) (snd (P!c)) \<and>
       ((f,ts),lpp_inline_return_calls (snd (P!c)),lpp_inline_return_guards (snd (P!c)))\<in>set SP))"
 
 lemma lpp_inline_return_program_check_code[code]:
   "lpp_inline_return_program_check P F SP = list_all (\<lambda>c.
     case fst c of Fun (LPCUser f) ts \<Rightarrow>
-      (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_control_goal F) (snd c) \<and>
+      (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_return_control_goal F) (snd c) \<and>
         ((f,ts),lpp_inline_return_calls (snd c),lpp_inline_return_guards (snd c))\<in>set SP)
     | _ \<Rightarrow> False) P"
 proof -
   have local: "(\<exists>f ts. fst c=Fun (LPCUser f) ts \<and>
-      (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_control_goal F) (snd c) \<and>
+      (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_return_control_goal F) (snd c) \<and>
         ((f,ts),lpp_inline_return_calls (snd c),lpp_inline_return_guards (snd c))\<in>set SP)) =
     (case fst c of Fun (LPCUser f) ts \<Rightarrow>
-      (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_control_goal F) (snd c) \<and>
+      (f\<in>F \<longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_return_control_goal F) (snd c) \<and>
         ((f,ts),lpp_inline_return_calls (snd c),lpp_inline_return_guards (snd c))\<in>set SP) | _ \<Rightarrow> False)" for c
   proof (cases "fst c")
     case (Var x) then show ?thesis by simp
@@ -95,14 +95,14 @@ theorem lpp_inline_return_program_sound:
 proof (unfold lpc_scoped_model_program_def, intro allI impI)
   fix c assume index: "c<length P"
   obtain f ts where head: "fst (P!c)=Fun (LPCUser f) ts"
-    and selected: "f\<in>F \<Longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_control_goal F) (snd (P!c)) \<and>
+    and selected: "f\<in>F \<Longrightarrow> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<and> list_all (lpc_return_control_goal F) (snd (P!c)) \<and>
       ((f,ts),lpp_inline_return_calls (snd (P!c)),lpp_inline_return_guards (snd (P!c)))\<in>set SP"
     using checked index by (auto simp: lpp_inline_return_program_check_def)
   have model: "lpc_model_program [P!c] (lpp_inline_return_model SP E)" if f: "f\<in>F"
   proof -
     have ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
       using selected[OF f] by auto
-    have body: "list_all (lpc_control_goal F) (snd (P!c))"
+    have body: "list_all (lpc_return_control_goal F) (snd (P!c))"
       and clause: "((f,ts),lpp_inline_return_calls (snd (P!c)),lpp_inline_return_guards (snd (P!c)))\<in>set SP"
       using selected[OF f] by auto
     have "lpc_model_program [(fst (P!c),snd (P!c))] (lpp_inline_return_model SP E)"
@@ -110,7 +110,7 @@ proof (unfold lpc_scoped_model_program_def, intro allI impI)
     then show ?thesis by simp
   qed
   show "\<exists>g ts. fst (P!c)=Fun g ts \<and> (\<forall>f. g=LPCUser f \<longrightarrow> f\<in>F \<longrightarrow>
-    list_all (lpc_control_goal F) (snd (P!c)) \<and> lpc_model_program [P!c] (lpp_inline_return_model SP E))"
+    list_all (lpc_return_control_goal F) (snd (P!c)) \<and> lpc_model_program [P!c] (lpp_inline_return_model SP E))"
     using head selected model by blast
 qed
 
