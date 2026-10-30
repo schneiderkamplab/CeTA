@@ -279,3 +279,57 @@ matches export 16 byte for byte (SHA-256
 `guarded-backends-20.log` additionally verifies that the existing variable and
 identity-test actions remain sound under the integer-extended operation relation
 (`LP_Prolog_Integer_Legacy`); their proof machinery is reused.
+
+## 2026-10-30 — checked source contexts and staged arithmetic
+
+The arithmetic extension now has checked source contexts on the existing
+LP-with-cut return tables. `LP_Prolog_Context_*` proves their introduction by
+successful integer tests, comparisons and evaluations, transport through the
+shared checked links, preservation through refresh/unification and clause
+resolution, and propagation through administrative, allocation and meta-call
+steps. Annotation-only variables participate in freshness and refresh bounds.
+Failures cannot acquire successful-branch facts. The implementation reuses the
+existing source transition relation, return stack, links, MGU checks and scope
+operations.
+
+`LP_Prolog_Context_Is_Staged` handles Ferrum's evaluation-then-unification
+representation of `is/2`: both control edges simulate one atomic source step.
+The intermediate equality must have a complete checked action, and its result
+variable must be fresh for both the source and the context. This is available
+through the extended context action datatype and XML parser; it does not turn
+an intermediate graph state into an already completed source step.
+
+`LP_Prolog_Context_Graph` checks every action, context and typing row and proves
+a domain-aware source termination implication from a terminating control
+residual. The root requires an empty context. The unsupported-builtin envelope
+prevents absent evaluator rules from becoming false termination proofs.
+`LP_Prolog_Context_Query` binds that implication to the actual query and its
+groundness modes. `LP_Prolog_Context_XML` parses the table, arithmetic actions,
+contexts and checked transfer contracts using the existing return-table and
+arithmetic parsers. Its diagnostic endpoint still requires a residual proof;
+it is not a production root checker.
+
+Verification: `target/prolog-extended/guarded-backends-25.log` and
+`guarded-backends-export-25/` contain the combined Isabelle replay and generated
+code. `context-node-tests-25/results.log` records 44 positive and mutation checks,
+including staged evaluation, missing edges, missing rows, captured annotation
+variables, insufficient refresh bounds and invented root assumptions.
+`context-xml-mutations-26/results.json` records 12 parser/table checks. The first
+XML fixture attempt is retained under `context-xml-mutations-25/`; its positive
+case used an incorrect argument wrapper and was rejected. No generated code
+was patched.
+
+Still unfinished: native contextual source-table emission, complete helper and
+Split/boundary composition, binding observed numeric paths to the complete ITS
+child systems, mixed-backend SCC assembly, and unified root certification and
+strict replay. These proofs do not establish additional certified roots and do
+not authorize replacing the installed unified checker.
+
+Fresh replay from `integer-export-full.heap` also passed:
+`guarded-backends-clean-26.log` and `guarded-backends-clean-26-full.heap`.
+Its generated module is byte-identical to export 25, SHA-256
+`b5cbc827f5e499234aad3d1e9dfdbe41863d06dc0d5599c11480f082758ca7ea`.
+`context-xml-native-mutations-27/results.json` adds a native Ferrum annotation
+to the checked diagnostic table (13 checks). The source annotation came from
+`ferrum-prolog-shared/target/prolog-source-context-native-27/`; this remains a
+component interoperability test, not a source verdict.

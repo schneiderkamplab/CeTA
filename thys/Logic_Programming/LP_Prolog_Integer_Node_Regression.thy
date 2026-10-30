@@ -1,5 +1,5 @@
 theory LP_Prolog_Integer_Node_Regression
-  imports LP_Prolog_Integer_Return_Actions
+  imports LP_Prolog_Context_Is
 begin
 
 text \<open>Executable local-node regressions, not source-root certificates.
@@ -72,6 +72,53 @@ definition lpp_integer_action_regressions where
       (LPPIRIs [] (LPPEVariable ''x'') (lpp_integer_term 1) (Var ''x'') [] [] [] ''r'' 8 16 [] LPCBoth [] lpp_reg_yes lpp_reg_no)),
     (''action-cannot-use-plain-cut-rule'',\<not>lpp_reg_action lpp_reg_program ''1:integer'' [lpp_integer_term 7]
       (LPPIRCut LPCRTerminal))]"
+
+
+definition lpp_reg_context_test :: "string lpp_source_context list \<Rightarrow> bool" where
+  "lpp_reg_context_test contexts = (let ss=lpp_reg_source ''1:integer'' [lpp_integer_term 7] in
+    lpp_check_context_integer_test 40 lpp_reg_program lpp_reg_nodes lpp_reg_states contexts
+      (lpp_reg_node (map fst ss) ''source'') ss ([],[],[]) (lpp_integer_term 7)
+      [] [] [] lpp_reg_yes lpp_reg_no)"
+
+definition lpp_context_node_regressions where
+  "lpp_context_node_regressions = [
+    (''context-integer-success'',lpp_reg_context_test
+      [([],[LPPSInteger (lpp_integer_term 7)],[LPPOInteger (lpp_integer_term 7)]),([],[],[])]),
+    (''context-no-fact-on-failure'',\<not>lpp_reg_context_test
+      [([],[],[]),([],[LPPSInteger (lpp_integer_term 7)],[])]),
+    (''context-no-unrelated-variable'',\<not>lpp_reg_context_test
+      [([],[LPPSInteger (Var ''x'')],[]),([],[],[])]),
+    (''context-no-invented-evaluation'',\<not>lpp_reg_context_test
+      [([],[],[LPPOEvaluation (lpp_integer_term 0) (lpp_integer_term 1)]),([],[],[])])]"
+
+definition lpp_reg_context_comparison :: "string lpp_source_context list \<Rightarrow> bool" where
+  "lpp_reg_context_comparison contexts = (let ss=lpp_reg_source ''2:<'' [lpp_integer_term 7,lpp_integer_term 9] in
+    lpp_check_context_comparison 40 lpp_reg_program lpp_reg_nodes lpp_reg_states contexts
+      (lpp_reg_node (map fst ss) ''source'') ss ([],[],[]) [] ''2:<'' LPPIntLess False
+      (lpp_integer_term 7) (lpp_integer_term 9) (LPPEConstant 7) (LPPEConstant 9)
+      [] [] [] lpp_reg_yes lpp_reg_no)"
+
+definition lpp_reg_context_is :: "string lpp_source_context \<Rightarrow> string lpp_source_context list \<Rightarrow> nat \<Rightarrow> bool" where
+  "lpp_reg_context_is source_context contexts k = (let ss=lpp_reg_source ''2:is'' [lpp_integer_term 1,lpp_integer_term 1] in
+    lpp_check_context_is_node 40 ([]::(string,string) lp_cut_program) lpp_reg_program lpp_reg_nodes lpp_reg_states contexts
+      (lpp_reg_node (map fst ss) ''source'') ss source_context [] (LPPEConstant 1)
+      (lpp_integer_term 1) (lpp_integer_term 1) [] [] [] ''r'' k (2 * k) [] LPCBoth [] lpp_reg_yes lpp_reg_no)"
+
+definition lpp_context_arithmetic_regressions where
+  "lpp_context_arithmetic_regressions = [
+    (''comparison-observation'',lpp_reg_context_comparison
+      [([],[],[LPPOComparison LPPIntLess (lpp_integer_term 7) (lpp_integer_term 9)]),([],[],[])]),
+    (''comparison-no-fact-on-failure'',\<not>lpp_reg_context_comparison
+      [([],[],[]),([],[],[LPPOComparison LPPIntLess (lpp_integer_term 7) (lpp_integer_term 9)])]),
+    (''comparison-no-reversed-fact'',\<not>lpp_reg_context_comparison
+      [([],[],[LPPOComparison LPPIntLess (lpp_integer_term 9) (lpp_integer_term 7)]),([],[],[])]),
+    (''context-is'',lpp_reg_context_is ([],[],[]) [([],[],[]),([],[],[])] 8),
+    (''context-is-result-observation'',lpp_reg_context_is ([],[],[])
+      [([],[LPPSEvaluates (lpp_integer_term 1) (Var ''r'')],[LPPOEvaluation (lpp_integer_term 1) (Var ''r'')]),([],[],[])] 8),
+    (''context-is-captured-annotation-variable'',\<not>lpp_reg_context_is ([],[LPPSInteger (Var ''r'')],[]) [([],[],[]),([],[],[])] 8),
+    (''context-is-too-small-refresh'',\<not>lpp_reg_context_is ([],[LPPSInteger (Var ''longcontextvariable'')],[]) [([],[],[]),([],[],[])] 8),
+    (''context-is-invented-value'',\<not>lpp_reg_context_is ([],[],[])
+      [([],[],[LPPOEvaluation (lpp_integer_term 1) (lpp_integer_term 2)]),([],[],[])] 8)]"
 
 ML \<open>
 val checked = [@{thm lpp_integer_is_node_sound}, @{thm lpp_integer_test_node_sound},
