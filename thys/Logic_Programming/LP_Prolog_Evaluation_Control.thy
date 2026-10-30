@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Control
- imports LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
+ imports LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
 begin
 
 datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
@@ -27,7 +27,7 @@ fun lpp_check_evaluation_module_action where
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPERefuted i k bindings) =
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEFiniteIs a e gs active saved result_var middle fs) =
-    lpp_check_finite_context_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+    lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEConstantIs evidence a e gs active saved middle fs) =
     lpp_check_finite_context_constant T fs fuel P Q nds states contexts Fs nd F ss source_context evidence a e gs active saved middle"
 
@@ -55,13 +55,13 @@ theorem lpp_evaluation_control_action:
   shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) (lpc_return_eval eta ss) R t ret"
 proof (cases action)
   case (LPPEFiniteIs a e gs active saved result_var middle fs)
-  have check: "lpp_check_finite_context_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+  have check: "lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
     using checked LPPEFiniteIs by simp
   have bounds: "lpcl_target middle<length nds \<and> lpcl_target middle<length states \<and>
     lpcl_target middle<length contexts \<and> lpcl_target middle<length Fs"
-    using check by (auto simp: lpp_check_finite_context_is_def lpp_check_evaluation_link_def lpc_check_return_table_link_def lpc_check_return_link_def lpc_check_link_def)
+    using check by (auto simp: lpp_check_finite_observed_is_def lpp_check_evaluation_link_def lpc_check_return_table_link_def lpc_check_return_link_def lpc_check_link_def)
   show ?thesis
-  proof (rule lpp_finite_context_is_contract[where J=J, OF transfer check known free observed invariant frames])
+  proof (rule lpp_finite_observed_is_contract[where J=J, OF transfer check known free observed invariant frames])
     fix rho
     assume edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
       [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+"
