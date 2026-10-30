@@ -18,6 +18,9 @@ import qualified Prolog_Static_Generated as PS
 #ifdef LP_PROLOG_CONTEXT
 import qualified Prolog_Context_Generated as PC
 #endif
+#ifdef LP_PROLOG_CONTEXT_ITS
+import qualified Prolog_Context_ITS_Generated as PCI
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -76,6 +79,9 @@ runProlog [path] = do
     then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG"
     else if
 #ifdef LP_PROLOG_CONTEXT
+#ifdef LP_PROLOG_CONTEXT_ITS
+      PCI.check_lpp_context_its_xml (cachedCharacters PCI.explode input) ||
+#endif
       PC.check_lpp_context_certificate_xml (cachedCharacters PC.explode input) ||
 #endif
       PS.check_lpp_return_triples_xml (cachedCharacters PS.explode input) ||
