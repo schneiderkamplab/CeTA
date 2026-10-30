@@ -50,8 +50,19 @@ definition lpp_context_staged_regressions where
     (''staged-is-captured-context'',\<not>lpp_reg_staged_check lpp_reg_staged_program [] (LPPEConstant 1) (lpp_integer_term 1) ([],[LPPSInteger (Var ''r'')],[]) lpp_reg_staged_link),
     (''staged-is-missing-input-type'',\<not>lpp_reg_staged_check lpp_reg_staged_program [] (LPPEVariable ''x'') (Var ''x'') ([],[],[]) lpp_reg_staged_link)]"
 
+definition lpp_reg_normalized_context :: "string lpc_term \<Rightarrow> string lpc_term \<Rightarrow> (string lpc_term * string lpc_term) list \<Rightarrow> bool" where
+  "lpp_reg_normalized_context target_term normalized_term eqs =
+    lpp_check_context_table_link 40 lpp_reg_program lpp_reg_nodes lpp_reg_states
+      ([([],[],[]),([],[LPPSInteger target_term],[])]::string lpp_source_context list) (lpp_reg_node [] ''source'') [] [] [] eqs
+      ([],[LPPSInteger (Var ''x'')],[])
+      (lpp_reg_no\<lparr>lpcl_vars:=[''x''],lpcl_terms:=[normalized_term]\<rparr>)"
+
 definition lpp_context_graph_regressions where
   "lpp_context_graph_regressions = [
+    (''normalized-context'',lpp_reg_normalized_context (lpp_integer_term 7) (lpp_integer_term 7) [(Var ''x'',lpp_integer_term 7)]),
+    (''normalized-context-missing-equation'',\<not>lpp_reg_normalized_context (lpp_integer_term 7) (lpp_integer_term 7) []),
+    (''normalized-context-wrong-value'',\<not>lpp_reg_normalized_context (lpp_integer_term 8) (lpp_integer_term 7) [(Var ''x'',lpp_integer_term 7)]),
+    (''normalized-context-corrupt-substitution'',\<not>lpp_reg_normalized_context (lpp_integer_term 8) (lpp_integer_term 8) [(Var ''x'',lpp_integer_term 7)]),
     (''empty-root-context'',lpp_reg_root_check lpp_reg_graph_contexts 0),
     (''unproved-root-context'',\<not>lpp_reg_root_check ([([],[LPPSInteger (Var ''x'')],[])]@tl lpp_reg_graph_contexts) 0),
     (''root-index-bound'',\<not>lpp_reg_root_check lpp_reg_graph_contexts 3),

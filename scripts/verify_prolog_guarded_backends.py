@@ -54,7 +54,7 @@ ML \<open>
 val (modules, _) = Code_Target.produce_code @{context} true
   [@{const_name lpp_check_expression_bridge}, @{const_name lpp_check_numeric_guard},
    @{const_name lpp_check_path_types}, @{const_name check_lpp_success_transfer_xml},
-   @{const_name lpp_integer_node_regressions}, @{const_name lpp_integer_action_regressions}, @{const_name lpp_context_node_regressions}, @{const_name lpp_context_arithmetic_regressions}, @{const_name lpp_context_graph_regressions}, @{const_name lpp_context_staged_regressions}, @{const_name check_lpp_context_table_xml}, @{const_name check_lpp_numeric_row_guard_xml}, @{const_name check_lpp_numeric_path_xml}] "Haskell" "Prolog_Transfer_Generated" NONE [];
+   @{const_name lpp_integer_node_regressions}, @{const_name lpp_integer_action_regressions}, @{const_name lpp_context_node_regressions}, @{const_name lpp_context_arithmetic_regressions}, @{const_name lpp_context_graph_regressions}, @{const_name lpp_context_staged_regressions}, @{const_name check_lpp_context_table_xml}, @{const_name check_lpp_context_module_xml}, @{const_name check_lpp_numeric_row_guard_xml}, @{const_name check_lpp_numeric_path_xml}] "Haskell" "Prolog_Transfer_Generated" NONE [];
 val root = Path.explode '''+json.dumps(str(a.export.resolve()))+r''';
 val _ = List.app (fn (names, bytes) => Bytes.write (root + Path.make names) bytes) modules;
 \<close>

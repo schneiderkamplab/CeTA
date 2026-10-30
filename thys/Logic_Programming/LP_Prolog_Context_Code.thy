@@ -1,0 +1,5 @@
+theory LP_Prolog_Context_Code
+ imports LP_Prolog_Context_Certificate
+begin
+export_code check_lpp_context_certificate_xml in Haskell module_name Prolog_Context_Generated
+end

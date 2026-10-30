@@ -77,24 +77,15 @@ proof -
     using evaluated by (simp add: lpp_fresh_term_eval[OF fe] lpp_integer_result_def)
   have facts: "lpp_source_context_holds SP (lpp_add_evaluation_observation e (Var result_var) source_context) ?nu"
     by (rule lpp_add_evaluation_observation_holds[OF old_context evaluation])
-  obtain ps gs' os where origin: "lpp_add_evaluation_observation e (Var result_var) source_context=(ps,gs',os)"
-    by (cases "lpp_add_evaluation_observation e (Var result_var) source_context") auto
-  obtain cps cgs cos where target: "contexts!lpcl_target middle=(cps,cgs,cos)"
-    by (cases "contexts!lpcl_target middle") auto
-  have base: "lpc_check_return_table_link fuel Q nds states nd ?synthetic
-    (result_var#lpcn_ground nd) (lpcn_guards nd) [] middle"
-    and transport: "lpp_check_context_transport ps gs' os cps cgs cos (lpcl_bindings middle)"
-    using link by (auto simp: lpp_check_context_table_link_def origin target)
-  have true_context: "lpp_path_context_holds SP ps gs' os ?nu" using facts by (simp add: origin)
   have equations: "lp_equations [] ?nu" by (simp add: lp_equations_def)
   obtain rho where same: "lpc_return_eval ?nu ?synthetic=lpc_return_eval rho (states!lpcl_target middle)"
     and knowledge: "lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho"
-    and child_context: "lpp_path_context_holds SP cps cgs cos rho"
+    and child_context: "lpp_source_context_holds SP (contexts!lpcl_target middle) rho"
     and edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
       [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q"
-    using lpp_return_context_link_sound[OF base equations parent extended transport true_context] by (simp add: swaps) blast
+    using lpp_context_table_link_witness[OF link equations parent extended facts] by (simp add: swaps) blast
   have child_facts: "lpp_source_context_holds SP (contexts!lpcl_target middle) rho"
-    using child_context by (simp add: target)
+    using child_context .
   have child_step: "lpc_answer_transition P (lpc_return_eval rho (states!lpcl_target middle)) event tt"
     using actual by (simp only: same)
   show ?thesis using lpp_context_cut_action_sound[OF action knowledge child_facts child_step] edge silent

@@ -14,18 +14,6 @@ fun lpp_context_terms where
   "lpp_context_terms (facts,guards,observations) =
     concat (map snd facts) @ concat (map lpp_context_guard_terms guards) @
     concat (map lpp_context_observation_terms observations)"
-fun lpp_source_context_subst where
-  "lpp_source_context_subst (facts,guards,observations) mu =
-    (map (\<lambda>a. lpp_success_atom_subst a mu) facts,
-     map (\<lambda>g. lpp_success_guard_subst g mu) guards,
-     map (\<lambda>observation. lpp_numeric_observation_substitute observation mu) observations)"
-
-lemma lpp_context_subst_eval:
-  "lpp_source_context_holds P (lpp_source_context_subst source_context mu) eta =
-    lpp_source_context_holds P source_context (\<lambda>x. lp_ieval (mu x) eta)"
-  by (cases source_context) (auto simp: lpp_path_context_holds_def list_all_iff
-    lpp_success_atom_subst_eval lpp_success_guard_subst_eval lpp_numeric_observation_substitute_eval)
-
 lemma lpp_context_runtime_subst:
   fixes eta :: "'v \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm"
     and sigma :: "'w \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm"

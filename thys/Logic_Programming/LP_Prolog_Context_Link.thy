@@ -12,17 +12,36 @@ definition lpp_check_context_transport where
   "lpp_check_context_transport facts guards observations child_facts child_guards child_observations bindings =
     (let mu=lp_cut_instance_subst bindings in
       list_all (\<lambda>b. lpp_success_atom_subst b mu\<in>set facts) child_facts \<and>
-      list_all (\<lambda>g. lpp_success_guard_subst g mu\<in>set guards) child_guards \<and>
+      list_all (\<lambda>g. case g of LPPSOpaque _ \<Rightarrow> True | _ \<Rightarrow> lpp_success_guard_subst g mu\<in>set guards) child_guards \<and>
       list_all (\<lambda>observation. lpp_numeric_observation_substitute observation mu\<in>set observations) child_observations)"
+
+lemma lpp_context_guard_transport:
+  assumes checked: "(case g of LPPSOpaque _ \<Rightarrow> True | _ \<Rightarrow> lpp_success_guard_subst g mu\<in>set guards)"
+    and known: "list_all (lpp_success_guard_holds E eta) guards"
+  shows "lpp_success_guard_holds E eta (lpp_success_guard_subst g mu)"
+  using checked known by (cases g) (auto simp: list_all_iff)
 
 lemma lpp_context_transport_sound:
   assumes checked: "lpp_check_context_transport facts guards observations child_facts child_guards child_observations bindings"
     and source: "lpp_path_context_holds P facts guards observations eta"
   shows "lpp_path_context_holds P child_facts child_guards child_observations
     (\<lambda>x. lp_ieval (lp_cut_instance_subst bindings x) eta)"
-  using checked source by (auto simp: lpp_check_context_transport_def lpp_path_context_holds_def
+proof -
+  let ?mu = "lp_cut_instance_subst bindings"
+  have guards: "list_all (lpp_success_guard_holds lpp_integer_result eta) guards"
+    using source by (simp add: lpp_path_context_holds_def)
+  have child: "list_all (\<lambda>g. lpp_success_guard_holds lpp_integer_result eta (lpp_success_guard_subst g ?mu)) child_guards"
+  proof (unfold list_all_iff, intro ballI)
+    fix g assume member: "g\<in>set child_guards"
+    have check: "(case g of LPPSOpaque _ \<Rightarrow> True | _ \<Rightarrow> lpp_success_guard_subst g ?mu\<in>set guards)"
+      using checked member by (auto simp: lpp_check_context_transport_def Let_def list_all_iff)
+    show "lpp_success_guard_holds lpp_integer_result eta (lpp_success_guard_subst g ?mu)"
+      by (rule lpp_context_guard_transport[OF check guards])
+  qed
+  show ?thesis using checked source child by (auto simp: lpp_check_context_transport_def lpp_path_context_holds_def
     Let_def list_all_iff lpp_success_atom_subst_eval[symmetric]
     lpp_success_guard_subst_eval[symmetric] lpp_numeric_observation_substitute_eval[symmetric])
+qed
 
 text \<open>The target context uses exactly the substitution already checked
 by the shared return link. It cannot be attached to a different environment,

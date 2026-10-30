@@ -8,6 +8,7 @@ main :: IO ()
 main = do
   [file] <- getArgs
   input <- readFile file
-  if G.check_lpp_context_table_xml (map (G.char_of_integer . toInteger . ord) input)
+  let encoded = map (G.char_of_integer . toInteger . ord) input
+  if G.check_lpp_context_table_xml encoded || G.check_lpp_context_module_xml encoded
     then putStrLn "VALID SOURCE CONTEXT TABLE; NO SOURCE VERDICT"
     else putStrLn "REJECTED" >> exitFailure

@@ -157,4 +157,4 @@ session Prolog_Static_Code = Logic_Programming +
 session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
   options [document = false, timeout = 900]
   sessions ITS_Arithmetic
-  theories LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends
+  theories LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends LP_Prolog_Context_Code LP_Prolog_Context_Control

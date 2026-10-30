@@ -15,6 +15,9 @@ import qualified LP_Cut_NO_Generated as N
 #ifdef LP_PROLOG_STATIC
 import qualified Prolog_Static_Generated as PS
 #endif
+#ifdef LP_PROLOG_CONTEXT
+import qualified Prolog_Context_Generated as PC
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -71,7 +74,11 @@ runProlog [path] = do
   if PS.check_lpp_static_xml (cachedCharacters PS.explode input) ||
     PS.check_lpp_undefined_xml (cachedCharacters PS.explode input)
     then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG"
-    else if PS.check_lpp_return_triples_xml (cachedCharacters PS.explode input) ||
+    else if
+#ifdef LP_PROLOG_CONTEXT
+      PC.check_lpp_context_certificate_xml (cachedCharacters PC.explode input) ||
+#endif
+      PS.check_lpp_return_triples_xml (cachedCharacters PS.explode input) ||
       PS.check_lpp_module_triples_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG"
     else if PS.check_lpp_test_no_xml (cachedCharacters PS.explode input) ||
