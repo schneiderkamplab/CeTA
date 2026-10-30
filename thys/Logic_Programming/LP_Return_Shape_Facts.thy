@@ -30,6 +30,21 @@ fun lp_return_shape_facts where
       | _ \<Rightarrow> Some [])
      else None)"
 
+declare lp_return_shape_facts.simps[code del]
+lemma lp_return_shape_facts_code[code]:
+  "lp_return_shape_facts fuel G shape t =
+    (if fuel=0 then Some [] else
+      case shape of LPReturnAny \<Rightarrow> Some []
+      | LPReturnGround \<Rightarrow> Some (map (Pair LPReturnGround) (vars_term_list t))
+      | LPReturnShape i \<Rightarrow> (case t of Var x \<Rightarrow> Some [(LPReturnShape i,x)]
+        | Fun f ts \<Rightarrow> (if i<length G then
+          (case filter (\<lambda>(g,shapes). f=g \<and> length shapes=length ts) (G!i) of
+            [] \<Rightarrow> None
+          | [(_,shapes)] \<Rightarrow> lp_return_merge_facts
+              (map (\<lambda>j. lp_return_shape_facts (fuel-1) G (shapes!j) (ts!j)) [0..<length ts])
+          | _ \<Rightarrow> Some []) else None)))"
+  by (cases fuel; cases shape; cases t) (auto split: list.splits prod.splits)
+
 definition lp_return_facts_valid where
   "lp_return_facts_valid G rho result =
     (case result of None \<Rightarrow> False | Some known \<Rightarrow> lp_return_shape_known G known rho)"

@@ -65,6 +65,17 @@ fun lp_return_shape_check where
     (i<length G \<and> list_ex (\<lambda>(g,shapes). f=g \<and>
       list_all2 (lp_return_shape_check fuel G known) shapes ts) (G!i))"
 
+declare lp_return_shape_check.simps[code del]
+lemma lp_return_shape_check_code[code]:
+  "lp_return_shape_check fuel G known shape t =
+    (if fuel=0 then False else
+      case shape of LPReturnAny \<Rightarrow> True
+      | LPReturnGround \<Rightarrow> (\<forall>x\<in>vars_term t. (LPReturnGround,x)\<in>set known)
+      | LPReturnShape i \<Rightarrow> (case t of Var x \<Rightarrow> ((LPReturnShape i,x)\<in>set known)
+        | Fun f ts \<Rightarrow> (i<length G \<and> list_ex (\<lambda>(g,shapes). f=g \<and>
+            list_all2 (lp_return_shape_check (fuel-1) G known) shapes ts) (G!i))))"
+  by (cases fuel; cases shape; cases t) auto
+
 theorem lp_return_shape_check_sound:
   assumes checked: "lp_return_shape_check fuel G known shape t"
     and known: "lp_return_shape_known G known rho"
