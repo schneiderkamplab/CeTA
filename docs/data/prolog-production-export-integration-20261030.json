@@ -1,0 +1,25 @@
+{
+  "main_archive": "tests/unified/exports/lp.tar.gz",
+  "main_sha256": "c3d7d769b3961ef8d35fb76702cf84fb36bd1e62a1d2a712bbd389150a7a0608",
+  "prolog_archive": "tests/unified/exports/lp-source-finite-observed-evaluation.tar.gz",
+  "prolog_sha256": "a28f9bd5e699692f0af6c980b8dde4adcebc2cea9922689537f6adc0caab9b62",
+  "identical_common_modules": [
+    "Array.hs",
+    "Bit_Shifts.hs",
+    "Data_Bits.hs",
+    "IArray.hs",
+    "LP_Cut_NO_Generated.hs",
+    "LP_Cut_Projected_Generated.hs",
+    "LP_Return_Module_Generated.hs",
+    "LP_SEG_Certificate_Generated.hs",
+    "LP_SEG_Projected_Generated.hs",
+    "LP_Triples_Generated.hs",
+    "Str_Literal.hs",
+    "Uint.hs",
+    "Uint32.hs",
+    "Uint64.hs"
+  ],
+  "added_module": "LP_Finite_Generated.hs",
+  "added_module_sha256": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d",
+  "generated_source_edits": false
+}

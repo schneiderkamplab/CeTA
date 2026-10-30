@@ -109,11 +109,12 @@
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
-      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+      "LP_Finite_Generated.hs": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-finite-observed-evaluation.tar.gz",
-    "archive_sha256": "a28f9bd5e699692f0af6c980b8dde4adcebc2cea9922689537f6adc0caab9b62",
+    "archive": "tests/unified/exports/lp-source-production-integration.tar.gz",
+    "archive_sha256": "3e77791af2208f70837aef4e417be0285bed514fd82a846f97d6ed657ee341a4",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -495,6 +496,31 @@
       "thys/Logic_Programming/LP_Prolog_Uniform_NO_XML.thy": "e32bca0bb5a1c094381672828cb1557d1387249d6881ea89cbf68f2ad5f6fbcf",
       "thys/Logic_Programming/LP_Prolog_Var_Test.thy": "1baa787a1769a53f35150efc2bb3f86a2b4c4097f4539e6ee69a2fa1f3810c71",
       "thys/Logic_Programming/LP_Scoped_Answer_Composition.thy": "88ed32cbefd1da561aa3a056df0a9555eb9029684855f2421b75d3afb60b2a44"
+    },
+    "integration_provenance": {
+      "main_archive": "tests/unified/exports/lp.tar.gz",
+      "main_sha256": "c3d7d769b3961ef8d35fb76702cf84fb36bd1e62a1d2a712bbd389150a7a0608",
+      "prolog_archive": "tests/unified/exports/lp-source-finite-observed-evaluation.tar.gz",
+      "prolog_sha256": "a28f9bd5e699692f0af6c980b8dde4adcebc2cea9922689537f6adc0caab9b62",
+      "identical_common_modules": [
+        "Array.hs",
+        "Bit_Shifts.hs",
+        "Data_Bits.hs",
+        "IArray.hs",
+        "LP_Cut_NO_Generated.hs",
+        "LP_Cut_Projected_Generated.hs",
+        "LP_Return_Module_Generated.hs",
+        "LP_SEG_Certificate_Generated.hs",
+        "LP_SEG_Projected_Generated.hs",
+        "LP_Triples_Generated.hs",
+        "Str_Literal.hs",
+        "Uint.hs",
+        "Uint32.hs",
+        "Uint64.hs"
+      ],
+      "added_module": "LP_Finite_Generated.hs",
+      "added_module_sha256": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d",
+      "generated_source_edits": false
     }
   },
   "higher-order": {
