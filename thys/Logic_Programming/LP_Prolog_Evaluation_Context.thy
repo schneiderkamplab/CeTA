@@ -72,7 +72,8 @@ lemma lpp_evaluation_observation_ground:
     and observed: "lpp_evaluation_observation_holds E eta observation"
   shows "\<forall>x\<in>lpp_observation_ground_vars observation. lp_seg_ground (eta x)"
   using observed by (cases observation)
-    (auto simp: lp_seg_ground_eval dest: evaluation lpp_integer_ground_vars)
+    (auto simp: lp_seg_ground_eval lpp_finite_compare_outcome_def
+      dest: evaluation lpp_integer_ground_vars)
 
 
 text \<open>Integer entailments in a link carry the same independently checked
