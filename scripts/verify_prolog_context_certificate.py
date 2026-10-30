@@ -15,17 +15,17 @@ a=p.parse_args()
 root=Path(__file__).resolve().parents[1]
 poly=Path(os.environ['POLYML_HOME'])/'x86_64-linux/poly'
 code='fun chain p = (case PolyML.SaveState.showParent p of NONE => [] | SOME q => chain q) @ [p]; PolyML.SaveState.loadHierarchy (chain '+json.dumps(str(a.heap.resolve()))+');'
-theory=str(root/'thys/Logic_Programming/LP_Prolog_Context_Certificate')
+theory=str(root/'thys/Logic_Programming/LP_Prolog_Context_Composed_Certificate')
 temporary=None
 if a.export:
  a.export.mkdir(parents=True,exist_ok=False)
  temporary=tempfile.TemporaryDirectory(prefix='prolog-static-export-')
  driver=Path(temporary.name)/'Prolog_Context_Reexport.thy'
- driver.write_text('theory Prolog_Context_Reexport\n imports '+json.dumps(theory)+r'''
+ driver.write_text('theory Prolog_Context_Reexport\n imports '+json.dumps(theory)+' '+json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Context_Certificate'))+r'''
 begin
 ML \<open>
 val (modules, _) = Code_Target.produce_code @{context} true
-  [@{const_name check_lpp_context_certificate_xml}] "Haskell" "Prolog_Context_Generated" NONE [];
+  [@{const_name check_lpp_context_certificate_xml}, @{const_name check_lpp_context_composed_certificate_xml}] "Haskell" "Prolog_Context_Generated" NONE [];
 val root = Path.explode '''+json.dumps(str(a.export.resolve()))+r''';
 val _ = List.app (fn (names, bytes) => Bytes.write (root + Path.make names) bytes) modules;
 \<close>
