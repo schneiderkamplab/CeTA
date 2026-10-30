@@ -167,9 +167,31 @@ next
   then show ?thesis using lp_cut_checked_refuted_guard[OF _ known] by blast
 qed
 
-theorem lpp_evaluation_control_contract:
+
+text \<open>Local source checks may use independently justified stronger
+contexts. Targets retain the original context table, including saved failure
+alternatives. The identity instance is the existing checker.\<close>
+
+definition lpp_check_evaluation_control_contexts where
+  "lpp_check_evaluation_control_contexts fuel P Q nds states contexts local_contexts Fs T returned arity actions =
+    (length nds=length Fs \<and> length nds=length states \<and> length nds=length contexts \<and>
+     length nds=length local_contexts \<and> length nds=length actions \<and>
+     list_all (\<lambda>i. map fst (states!i)=lpcn_state (nds!i) \<and>
+       (case actions!i of None \<Rightarrow> True | Some action \<Rightarrow>
+         lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs (nds!i) (Fs!i) (states!i) (local_contexts!i) returned arity action)) [0..<length nds])"
+
+lemma lpp_check_evaluation_control_contexts_identity:
+  "lpp_check_evaluation_control_contexts fuel P Q nds states contexts contexts Fs T returned arity actions =
+   lpp_check_evaluation_control fuel P Q nds states contexts Fs T returned arity actions"
+  by (simp add: lpp_check_evaluation_control_contexts_def lpp_check_evaluation_control_def)
+
+theorem lpp_evaluation_control_contract_contexts:
   fixes SP :: "string lpp_success_clause list"
-  assumes checked: "lpp_check_evaluation_control fuel P Q nds states contexts Fs T returned arity actions"
+  assumes checked: "lpp_check_evaluation_control_contexts fuel P Q nds states contexts local_contexts Fs T returned arity actions"
+    and enrich: "\<And>i eta. i<length nds \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_evaluation_context_holds lpp_finite_evaluation_result SP (contexts!i) eta \<Longrightarrow>
+      lpp_evaluation_context_holds lpp_finite_evaluation_result SP (local_contexts!i) eta"
     and ranked: "lpc_seg_ranked_control rank_of Q"
     and transfer: "lpp_check_transfer_program T SP receipts"
     and program: "lp_cut_source_program P"
@@ -216,12 +238,14 @@ proof -
       case (Some action)
       have member: "i\<in>set [0..<length nds]" using index by simp
       have local: "case actions!i of None \<Rightarrow> True | Some action \<Rightarrow>
-          lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs (nds!i) (Fs!i) (states!i) (contexts!i) returned arity action"
-        using checked member unfolding lpp_check_evaluation_control_def list_all_iff by blast
-      have check: "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs (nds!i) (Fs!i) (states!i) (contexts!i) returned arity action"
+          lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs (nds!i) (Fs!i) (states!i) (local_contexts!i) returned arity action"
+        using checked member unfolding lpp_check_evaluation_control_contexts_def list_all_iff by blast
+      have check: "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs (nds!i) (Fs!i) (states!i) (local_contexts!i) returned arity action"
         using local Some by auto
+      have observed_local: "lpp_evaluation_context_holds lpp_finite_evaluation_result SP (local_contexts!i) eta"
+        by (rule enrich[OF index known observed])
       show ?thesis
-      proof (rule lpp_evaluation_control_action[where J=J, OF transfer check known free observed current stable frames subset])
+      proof (rule lpp_evaluation_control_action[where J=J, OF transfer check known free observed_local current stable frames subset])
         fix vs c assume edge: "([(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))],c)\<in>(lp_ild Q)\<^sup>+"
           and child: "lpp_evaluation_module_rep SP nds states contexts Fs vs c"
           and inv_child: "J vs"
@@ -238,6 +262,37 @@ proof -
     show "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) us R t ret" using restored by (simp add: shape[symmetric] lpc_return_scope_word_inverse)
   qed
   show ?thesis using all[of a] represented invariant by auto
+qed
+
+theorem lpp_evaluation_control_contract:
+  fixes SP :: "string lpp_success_clause list"
+  assumes checked: "lpp_check_evaluation_control fuel P Q nds states contexts Fs T returned arity actions"
+    and ranked: "lpc_seg_ranked_control rank_of Q"
+    and transfer: "lpp_check_transfer_program T SP receipts"
+    and program: "lp_cut_source_program P"
+    and invariant: "J ss"
+    and stable: "\<And>xs ev ys. lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain xs ev ys \<Longrightarrow> J xs \<Longrightarrow> J ys"
+    and frames: "\<And>xs ys. map snd xs=map snd ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
+    and subset: "\<And>xs ys. set xs\<subseteq> set ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
+    and scopes: "\<And>swaps xs. J (lpc_return_scope_word swaps xs)=J xs"
+    and represented: "lpp_evaluation_module_rep SP nds states contexts Fs ss a"
+    and boundary: "\<And>i eta. i<length nds \<Longrightarrow> actions!i=None \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_evaluation_context_holds lpp_finite_evaluation_result SP (contexts!i) eta \<Longrightarrow>
+      lpc_free_knowledge (set (Fs!i)) eta \<Longrightarrow>
+      J (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) (lpc_return_eval eta (states!i)) R t ret"
+    and emit: "\<And>i eta rho tt. i<length nds \<Longrightarrow>
+      J (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain (lpc_return_eval eta (states!i)) (Some rho) tt \<Longrightarrow>
+      (t,ret rho)\<in>R\<^sup>*"
+  shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) ss R t ret"
+proof -
+  have control: "lpp_check_evaluation_control_contexts fuel P Q nds states contexts contexts Fs T returned arity actions"
+    using checked by (simp add: lpp_check_evaluation_control_contexts_identity)
+  show ?thesis
+    by (rule lpp_evaluation_control_contract_contexts[OF control _ ranked transfer program invariant
+      stable frames subset scopes represented boundary emit]) assumption
 qed
 
 ML \<open>
