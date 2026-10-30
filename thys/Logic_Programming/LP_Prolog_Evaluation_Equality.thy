@@ -12,7 +12,7 @@ definition lpp_check_evaluation_equality_node where
          active (concat (map snd saved)) outputs \<and>
        lpp_check_evaluation_link T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved) (lpcn_ground nd)
          (lpcn_guards nd@lpc_negative_guards k (set (lpcn_ground nd)) (lpcn_guards nd)@[LPCEqGuard a b True])
-         [(a\<cdot>lp_cut_refresh k (set (lpcn_ground nd)),b\<cdot>lp_cut_refresh k (set (lpcn_ground nd))) ] (lpc_unify_untouched_free F (lpcn_ground nd) a b gs k) (lpp_source_context_subst source_context (lp_cut_refresh k (set (lpcn_ground nd)))) yes) \<and>
+         [(a\<cdot>lp_cut_refresh k (set (lpcn_ground nd)),b\<cdot>lp_cut_refresh k (set (lpcn_ground nd))) ] (lpc_unify_untouched_free F (lpcn_ground nd) a b gs k) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes) \<and>
      (mode\<noteq>LPCAlwaysSuccess \<longrightarrow>
        lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved (lpcn_ground nd)
          (lpcn_guards nd@[LPCEqGuard a b False]) [] F source_context no))"
@@ -72,7 +72,7 @@ proof -
     have payload: "lpc_check_return_values fuel k ?G ?eqs active (concat (map snd saved)) outputs"
       and short: "lpc_return_short k saved"
       and link: "lpp_check_evaluation_link T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved) ?G
-        (?K@lpc_negative_guards k (set ?G) ?K@[LPCEqGuard a b True]) ?eqs (lpc_unify_untouched_free F ?G a b gs k) (lpp_source_context_subst source_context (lp_cut_refresh k (set ?G))) yes"
+        (?K@lpc_negative_guards k (set ?G) ?K@[LPCEqGuard a b True]) ?eqs (lpc_unify_untouched_free F ?G a b gs k) (lpp_evaluation_fork_context source_context k (set ?G)) yes"
       using checked possible by (auto simp: lpp_check_evaluation_equality_node_def)
     let ?env = "lp_cut_resolution_env k l eta sigma eta"
     have same: "tt=lpc_return_eval ?env ((LPCGoals next,outputs)#saved)"
@@ -96,8 +96,8 @@ proof -
     have ground: "\<forall>x\<in>set ?G. lp_seg_ground (eta x)"
       using known by (simp add: lp_cut_knowledge_def)
     have facts: "lpp_evaluation_context_holds E SP
-      (lpp_source_context_subst source_context (lp_cut_refresh k (set ?G))) ?env"
-      by (rule lpp_evaluation_context_refresh_sound[OF stable observed context_short bounds ground])
+      (lpp_evaluation_fork_context source_context k (set ?G)) ?env"
+      by (rule lpp_evaluation_context_fork_sound[OF stable observed context_short bounds ground])
     have preserved: "lpc_free_knowledge (set (lpc_unify_untouched_free F ?G a b gs k)) ?env"
       by (rule lpc_unify_untouched_free_sound[OF mgu ground free bounds])
     show ?thesis using lpp_evaluation_link_sound[OF contract evaluation program link equations old knowledge preserved facts] event same by simp

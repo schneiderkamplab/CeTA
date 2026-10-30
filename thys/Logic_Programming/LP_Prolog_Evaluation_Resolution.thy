@@ -14,7 +14,7 @@ definition lpp_check_evaluation_resolution_node where
          (lpcn_ground nd@sorted_list_of_set (lp_cut_anchor_vars anchors))
          (lpcn_guards nd@lpc_negative_guards k (set (lpcn_ground nd)) (lpcn_guards nd)@[LPCHeadGuard a (fst (P!c)) True])
          (lp_cut_resolution_equations k l (lpcn_ground nd) a (fst (P!c)))
-         (lpc_return_resolution_free fuel F (lpcn_ground nd) a gs (fst (P!c)) (snd (P!c)) k l) (lpp_source_context_subst source_context (lp_cut_refresh k (set (lpcn_ground nd)))) yes) \<and>
+         (lpc_return_resolution_free fuel F (lpcn_ground nd) a gs (fst (P!c)) (snd (P!c)) k l) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes) \<and>
      (mode\<noteq>LPCAlwaysSuccess \<longrightarrow>
        lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved (lpcn_ground nd)
          (lpcn_guards nd@[LPCHeadGuard a (fst (P!c)) False]) [] F source_context no))"
@@ -80,7 +80,7 @@ proof -
         (?G@sorted_list_of_set (lp_cut_anchor_vars anchors))
         (?K@lpc_negative_guards k (set ?G) ?K@[LPCHeadGuard a (fst (P!c)) True])
         (lp_cut_resolution_equations k l ?G a (fst (P!c)))
-        (lpc_return_resolution_free fuel F ?G a gs (fst (P!c)) (snd (P!c)) k l) (lpp_source_context_subst source_context (lp_cut_refresh k (set (lpcn_ground nd)))) yes"
+        (lpc_return_resolution_free fuel F ?G a gs (fst (P!c)) (snd (P!c)) k l) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes"
       using checked possible by (auto simp: lpp_check_evaluation_resolution_node_def)
     let ?env = "lp_cut_resolution_env k l eta sigma rho"
     have same: "tt=lpc_return_eval ?env ((LPCGoals next,outputs)#saved)"
@@ -109,8 +109,8 @@ proof -
     have context_short: "lpp_context_short k source_context"
       using checked possible by (simp add: lpp_check_evaluation_resolution_node_def)
     have facts: "lpp_evaluation_context_holds E SP
-      (lpp_source_context_subst source_context (lp_cut_refresh k (set ?G))) ?env"
-      by (rule lpp_evaluation_context_refresh_sound[OF stable observed context_short bounds ground])
+      (lpp_evaluation_fork_context source_context k (set ?G)) ?env"
+      by (rule lpp_evaluation_context_fork_sound[OF stable observed context_short bounds ground])
     show ?thesis using lpp_evaluation_link_sound[OF contract evaluation program link equations old knowledge body_free facts] event same by simp
   next
     assume failure: "event=None \<and> tt=?saved \<and>
