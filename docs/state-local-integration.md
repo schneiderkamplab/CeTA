@@ -119,3 +119,22 @@ metadata and archived evidence are in the sibling Ferrum ledger at
 Fourteen of the required 30 additional YESs are certified. Equality free-knowledge
 transport and finite-ground arithmetic remain active development. Production
 promotion remains gated on protected-category replay with the same checker.
+
+## Equality preserves untouched free variables, 2026-10-30
+
+`f48a500cf730b687f9b858b3404f49353347d41e` adds a checked MGU continuation theorem and uses it in
+the established source equality receipt. It requires ground/free coverage of
+both operands, distinct incoming free variables, untouchedness, continuation
+occurrence and refresh bounds. The established graph is unchanged.
+
+Verification 202, export 204 and unified `make ceta` build 206 pass. Checker
+SHA-256 is `dd33df0536f6ac474f004befd18d1ac223b3d3567dff20934b5d39d3e141a081`. Fresh strict replay preserves 31 Prolog
+YESs and three NOs on 221 roots, and 84 cut YESs and nine NOs on 112 roots,
+with two checks each and authorized receipts. All 33 cohort cases, 739 mutation
+checks and 66 strict controls pass. Pinned evidence is in the sibling Ferrum
+`docs/data/prolog-free-equality-preservation-20261030.json` and archive.
+
+There is no additional benchmark gain in this checker-only integration. Finite
+evaluation foundations at `877bdc0` and subsequent contextual transport proofs
+remain separate development; they are not exported in this checker. The milestone
+still requires 16 more YES roots, and protected-category promotion remains gated.
