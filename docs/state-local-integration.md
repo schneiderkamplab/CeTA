@@ -29,3 +29,21 @@ category-library receipts are in `target/prolog-composed-unified-272`. Ferrum's
 `target/prolog-composed-baseline-289` strictly preserves 17 YES and three NOs on
 all 221 Prolog inputs using that same checker. This development integration does
 not establish the protected-category production release gate.
+
+The established-SEG extension is integrated at CeTA
+`3b49a96dd2c2ec992f1468bea33832dded4b72d9` on `codex/prolog-source`.
+`prologEstablishedSEGDependencyTriplesProof` checks the existing graph's finite
+referenced modules, complete local control, saved contexts and exact common
+triples child. Actual successful return properties remain separate obligations
+from helper termination. The generated export is
+`tests/unified/exports/lp-established-returns.tar.gz`; Isabelle verification and
+export evidence is retained in `target/prolog-free-staged-export-49.log`.
+
+The unified `make ceta` build `target/prolog-free-staged-unified-54/ceta` has
+SHA-256 `4c050baa2cfba9cc74ca3bc4d1ab8199a263ef2c776d0cd4829169f6be1292a3`.
+With Ferrum `1a8f8e348ce9f9b18c21f1d9ca02253fcb8c4d99`, fresh strict replay
+certifies 18 Prolog YESs and three NOs on all 221 inputs, and preserves 84
+LP-with-cut YESs and nine NOs on all 112 inputs. Each retained source result is
+audited and checked twice with that executable. The 30-gain milestone and
+protected-category promotion gate remain open. Additional source return-model
+theories under development are not exported by this snapshot.
