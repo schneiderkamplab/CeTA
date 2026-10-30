@@ -105,9 +105,54 @@ lemma lpp_observations_ground_sound:
     \<forall>x\<in>lpp_observations_ground observations. lp_seg_ground (eta x)"
   using lpp_observation_ground_vars_sound by (auto simp: lpp_observations_ground_def list_all_iff)
 
+fun lpp_observation_shape_facts where
+  "lpp_observation_shape_facts G (LPPOShape H shape t) =
+    (if G=H then case lp_return_shape_facts 16 G shape t of None \<Rightarrow> [] | Some facts \<Rightarrow> facts else [])"
+| "lpp_observation_shape_facts G _ = []"
+
+definition lpp_observations_shape_facts where
+  "lpp_observations_shape_facts G observations = concat (map (lpp_observation_shape_facts G) observations)"
+
+lemma lpp_observation_shape_facts_sound:
+  assumes held: "lpp_numeric_observation_holds eta observation"
+  shows "lp_return_shape_known G (lpp_observation_shape_facts G observation) eta"
+proof (cases observation)
+  case (LPPOShape H shape t)
+  have observed: "lp_return_shape_holds H shape (lp_ieval t eta)"
+    using held LPPOShape by simp
+  have facts: "lp_return_facts_valid H eta (lp_return_shape_facts 16 H shape t)"
+    by (rule lp_return_shape_facts_sound[OF observed])
+  show ?thesis
+  proof (cases "G=H")
+    case False
+    then show ?thesis by (simp add: LPPOShape lp_return_shape_known_def)
+  next
+    case True
+    show ?thesis
+    proof (cases "lp_return_shape_facts 16 H shape t")
+      case None
+      then show ?thesis using True by (simp add: LPPOShape lp_return_shape_known_def)
+    next
+      case (Some known)
+      have known: "lp_return_shape_known H known eta"
+        using facts[unfolded Some] by (simp add: lp_return_facts_valid_def)
+      show ?thesis using known True Some by (simp add: LPPOShape)
+    qed
+  qed
+qed (simp_all add: lp_return_shape_known_def)
+
+lemma lpp_observations_shape_facts_sound:
+  "list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>
+    lp_return_shape_known G (lpp_observations_shape_facts G observations) eta"
+  using lpp_observation_shape_facts_sound
+  by (fastforce simp: lpp_observations_shape_facts_def lp_return_shape_known_def list_all_iff)
+
 fun lpp_context_observation_check where
   "lpp_context_observation_check guards observations (LPPOGround t) =
     (vars_term t \<subseteq> lpp_observations_ground observations)"
+| "lpp_context_observation_check guards observations (LPPOShape G shape t) =
+    (LPPOShape G shape t\<in>set observations \<or>
+      lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t)"
 | "lpp_context_observation_check guards observations (LPPOInteger t) = lpp_context_integer guards t"
 | "lpp_context_observation_check guards observations observation = (observation\<in>set observations)"
 
@@ -118,12 +163,18 @@ lemma lpp_context_guard_check_sound:
   by (cases g) (auto simp: list_all_iff intro: lpp_context_integer_sound)
 
 lemma lpp_context_observation_check_sound:
-  "lpp_context_observation_check guards observations observation \<Longrightarrow>
-   list_all (lpp_success_guard_holds lpp_integer_result eta) guards \<Longrightarrow>
-   list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>
-   lpp_numeric_observation_holds eta observation"
-  by (cases observation) (auto simp: list_all_iff lpp_is_integer_def
-      lp_seg_ground_eval dest: lpp_context_integer_sound lpp_observations_ground_sound[unfolded list_all_iff])
+  assumes checked: "lpp_context_observation_check guards observations observation"
+    and guards: "list_all (lpp_success_guard_holds lpp_integer_result eta) guards"
+    and observations: "list_all (lpp_numeric_observation_holds eta) observations"
+  shows "lpp_numeric_observation_holds eta observation"
+proof -
+  have shapes: "lp_return_shape_holds G shape (lp_ieval t eta)"
+    if "lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t" for G shape t
+    by (rule lp_return_shape_check_sound[OF that lpp_observations_shape_facts_sound[OF observations]])
+  show ?thesis using checked guards observations
+    by (cases observation) (auto simp: list_all_iff lpp_is_integer_def
+      lp_seg_ground_eval intro: shapes dest: lpp_context_integer_sound lpp_observations_ground_sound[unfolded list_all_iff])
+qed
 
 definition lpp_check_context_transport where
   "lpp_check_context_transport facts guards observations child_facts child_guards child_observations bindings =

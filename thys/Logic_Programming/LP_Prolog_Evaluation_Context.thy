@@ -104,9 +104,46 @@ fun lpp_evaluation_guard_check where
 | "lpp_evaluation_guard_check K guards (LPPSOpaque t) = True"
 | "lpp_evaluation_guard_check K guards g = (g\<in>set guards)"
 
+lemma lpp_evaluation_observation_shape_facts:
+  assumes held: "lpp_evaluation_observation_holds E eta observation"
+  shows "lp_return_shape_known G (lpp_observation_shape_facts G observation) eta"
+proof (cases observation)
+  case (LPPOShape H shape t)
+  have observed: "lp_return_shape_holds H shape (lp_ieval t eta)"
+    using held LPPOShape by simp
+  have facts: "lp_return_facts_valid H eta (lp_return_shape_facts 16 H shape t)"
+    by (rule lp_return_shape_facts_sound[OF observed])
+  show ?thesis
+  proof (cases "G=H")
+    case False
+    then show ?thesis by (simp add: LPPOShape lp_return_shape_known_def)
+  next
+    case True
+    show ?thesis
+    proof (cases "lp_return_shape_facts 16 H shape t")
+      case None
+      then show ?thesis using True by (simp add: LPPOShape lp_return_shape_known_def)
+    next
+      case (Some known)
+      have known: "lp_return_shape_known H known eta"
+        using facts[unfolded Some] by (simp add: lp_return_facts_valid_def)
+      show ?thesis using known True Some by (simp add: LPPOShape)
+    qed
+  qed
+qed (simp_all add: lp_return_shape_known_def)
+
+lemma lpp_evaluation_observations_shape_facts:
+  "list_all (lpp_evaluation_observation_holds E eta) observations \<Longrightarrow>
+    lp_return_shape_known G (lpp_observations_shape_facts G observations) eta"
+  using lpp_evaluation_observation_shape_facts
+  by (fastforce simp: lpp_observations_shape_facts_def lp_return_shape_known_def list_all_iff)
+
 fun lpp_evaluation_observation_check where
   "lpp_evaluation_observation_check K guards observations (LPPOGround t) =
     (vars_term t \<subseteq> lpp_observations_ground observations)"
+| "lpp_evaluation_observation_check K guards observations (LPPOShape G shape t) =
+    (LPPOShape G shape t\<in>set observations \<or>
+      lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t)"
 | "lpp_evaluation_observation_check K guards observations (LPPOInteger t) = lpp_context_integer_from K guards t"
 | "lpp_evaluation_observation_check K guards observations observation = (observation\<in>set observations)"
 
@@ -128,8 +165,11 @@ proof -
   have ground: "\<forall>x\<in>lpp_observations_ground observations. lp_seg_ground (eta x)"
     using lpp_evaluation_observation_ground[OF evaluation] observations
     by (auto simp: lpp_observations_ground_def list_all_iff)
+  have shapes: "lp_return_shape_holds G shape (lp_ieval t eta)"
+    if "lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t" for G shape t
+    by (rule lp_return_shape_check_sound[OF that lpp_evaluation_observations_shape_facts[OF observations]])
   show ?thesis using checked known guards observations ground
-    by (cases observation) (auto simp: lp_seg_ground_eval list_all_iff intro: lpp_context_integer_from_sound)
+    by (cases observation) (auto simp: lp_seg_ground_eval list_all_iff intro: shapes lpp_context_integer_from_sound)
 qed
 
 definition lpp_check_evaluation_context_transport where

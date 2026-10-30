@@ -35,4 +35,27 @@ lemma lpsh_not_integer_evidence:
   "\<not>lpp_check_numeric_observation K (LPPOShape lpsh_keys (LPReturnShape 0) t) numeric_test"
   by simp
 
+lemma lpsh_tail_shape_transport:
+  "lpp_evaluation_observation_check [] []
+    [LPPOShape lpsh_keys (LPReturnShape 0) lpsh_pattern]
+    (LPPOShape lpsh_keys (LPReturnShape 0) (Var ''tail''))"
+  by (simp add: lpp_observations_shape_facts_def lpsh_keys_def lpsh_pattern_def eval_nat_numeral)
+
+lemma lpsh_payload_shape_transport_rejected:
+  "\<not>lpp_evaluation_observation_check [] []
+    [LPPOShape lpsh_keys (LPReturnShape 0) lpsh_pattern]
+    (LPPOShape lpsh_keys (LPReturnShape 0) (Var ''payload''))"
+  by (simp add: lpp_observations_shape_facts_def lpsh_keys_def lpsh_pattern_def eval_nat_numeral)
+
+lemma lpsh_empty_shape_transport_rejected:
+  "\<not>lpp_evaluation_observation_check [] [] []
+    (LPPOShape lpsh_keys (LPReturnShape 0) (Var ''tail''))"
+  by (simp add: lpp_observations_shape_facts_def eval_nat_numeral)
+
+lemma lpsh_wrong_grammar_transport_rejected:
+  "\<not>lpp_evaluation_observation_check [] []
+    [LPPOShape lpsh_keys (LPReturnShape 0) lpsh_pattern]
+    (LPPOShape [[]] (LPReturnShape 0) (Var ''tail''))"
+  by (simp add: lpp_observations_shape_facts_def lpsh_keys_def eval_nat_numeral)
+
 end
