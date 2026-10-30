@@ -69,8 +69,31 @@ definition lpp_established_integer_split_parser where
     evidence\<leftarrow>lpp_source_integer_receipt_parser;
     xml_return (None,LPPTIntegerSplit split evidence)}"
 
+definition lpp_source_ground_receipt_parser where
+  "lpp_source_ground_receipt_parser = XMLdo (STR ''sourceGroundReturn'') {
+    model\<leftarrow>XMLdo (STR ''sourceReturnModel'') {
+      F\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
+      transfer\<leftarrow>lpp_transfer_contract_parser; xml_return (F,transfer)};
+    modes\<leftarrow>xml_many (STR ''groundModes'') (XMLdo (STR ''groundMode'') {
+      f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
+      n\<leftarrow>xml_nat (STR ''arity'');
+      pins\<leftarrow>xml_many (STR ''inputs'') (xml_nat (STR ''position'')) id;
+      pouts\<leftarrow>xml_many (STR ''outputs'') (xml_nat (STR ''position'')) id;
+      xml_return (LPGroundMode f n pins pouts)}) id;
+    K\<leftarrow>xml_many (STR ''ground'') (xml_text (STR ''var'')) id;
+    xml_return (case model of (F,(summaries,SP,proofs)) \<Rightarrow>
+      \<lparr>lppsgr_model = \<lparr>lppsir_predicates = F,lppsir_summaries = summaries,lppsir_program = SP,
+        lppsir_proofs = proofs,lppsir_facts = [],lppsir_integers = []\<rparr>,
+        lppsgr_modes = modes,lppsgr_ground = K\<rparr>)}"
+
+definition lpp_established_ground_split_parser where
+  "lpp_established_ground_split_parser = XMLdo (STR ''prologTripleGroundSplit'') {
+    split\<leftarrow>lpc_triple_split_parser;
+    evidence\<leftarrow>lpp_source_ground_receipt_parser;
+    xml_return (None,LPPTGroundSplit split evidence)}"
+
 definition lpp_established_component_parser where
-  "lpp_established_component_parser = lpp_established_region_parser XMLor lpp_established_split_parser XMLor lpp_established_integer_split_parser"
+  "lpp_established_component_parser = lpp_established_region_parser XMLor lpp_established_split_parser XMLor lpp_established_integer_split_parser XMLor lpp_established_ground_split_parser"
 
 fun lpp_established_component_header where
   "lpp_established_component_header P fuel transfer (None,component) = True"

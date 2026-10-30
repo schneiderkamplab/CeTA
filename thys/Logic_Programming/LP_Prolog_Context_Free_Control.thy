@@ -19,6 +19,9 @@ fun lpp_check_context_free_module_action where
 | "lpp_check_context_free_module_action fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPCMRefuted i k bindings) =
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
 
+| "lpp_check_context_free_module_action fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPCMFiniteComparison evidence) =
+    lpp_check_free_finite_comparison_receipt fuel Q nds states contexts Fs nd F ss source_context evidence"
+
 definition lpp_check_context_free_control where
   "lpp_check_context_free_control fuel P Q nds states contexts Fs T typings returned arity actions =
     (length nds=length Fs \<and> length nds=length states \<and> length nds=length contexts \<and> length nds=length typings \<and> length nds=length actions \<and>
@@ -58,6 +61,28 @@ proof (cases action)
     obtain u swaps where strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+"
       and rep: "lpp_context_free_rep SP nds states contexts Fs (lpc_return_scope_word swaps tt) u"
       using lpp_context_free_source_sound[OF check known free observed typed actual] by blast
+    have child: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) tt R t ret"
+      by (rule lower[OF strict _ stable[OF step invariant]])
+        (use rep in \<open>auto simp: lpp_context_free_module_rep_def\<close>)
+    show "(\<forall>rho. event=Some rho \<longrightarrow> (t,ret rho)\<in>R\<^sup>*) \<and>
+      lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) tt R t ret"
+      using child step emit by blast
+  qed
+next
+  case (LPPCMFiniteComparison evidence)
+  have check: "lpp_check_free_finite_comparison_receipt fuel Q nds states contexts Fs nd F ss source_context evidence"
+    using checked LPPCMFiniteComparison by simp
+  show ?thesis
+  proof (rule lp_answer_contract_intro)
+    fix event tt
+    assume step: "lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain (lpc_return_eval eta ss) event tt"
+    have supported: "\<not>lpp_builtin_domain_bad lpp_builtin_signature lpp_integer_source_domain (map fst (lpc_return_eval eta ss))"
+      by (rule lpp_free_finite_receipt_domain[OF check known observed])
+    have actual: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin (lpc_return_eval eta ss) event tt"
+      using step supported by (simp add: lpp_domain_answers_def)
+    obtain u swaps where strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+"
+      and rep: "lpp_context_free_rep SP nds states contexts Fs (lpc_return_scope_word swaps tt) u"
+      using lpp_free_finite_receipt_sound[OF check known free observed actual] by blast
     have child: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) tt R t ret"
       by (rule lower[OF strict _ stable[OF step invariant]])
         (use rep in \<open>auto simp: lpp_context_free_module_rep_def\<close>)

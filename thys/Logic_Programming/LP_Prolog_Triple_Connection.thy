@@ -16,7 +16,7 @@ definition lpp_triple_root_rep where
 definition lpp_triple_check_connection where
   "lpp_triple_check_connection fuel D Q roots contexts context nd F ss inp out receipt =
     (lpctc_target receipt<length roots \<and> lpctc_target receipt<length contexts \<and>
-      lpp_source_context_transport context (contexts!lpctc_target receipt) (lpctc_bindings receipt) \<and>
+      lpp_source_context_transport (lpp_context_add_ground context (lpcn_ground nd)) (contexts!lpctc_target receipt) (lpctc_bindings receipt) \<and>
       (let root=roots!lpctc_target receipt; child=lpctr_node root;
            mu=lp_cut_instance_subst (lpctc_bindings receipt) in
        case (ss,lpcn_state child) of ([(e,observed)],[ce]) \<Rightarrow>
@@ -49,7 +49,7 @@ proof -
   let ?mu = "lp_cut_instance_subst (lpctc_bindings receipt)"
   let ?eta = "\<lambda>x. lp_ieval (?mu x) eta"
   have index: "?i<length roots" "?i<length contexts"
-    and transport: "lpp_source_context_transport context (contexts!?i) (lpctc_bindings receipt)"
+    and transport: "lpp_source_context_transport (lpp_context_add_ground context (lpcn_ground nd)) (contexts!?i) (lpctc_bindings receipt)"
     using checked by (auto simp: lpp_triple_check_connection_def)
   obtain e observed ce where ss: "ss=[(e,observed)]"
     and state: "lpcn_state ?child=[ce]"
@@ -70,9 +70,12 @@ proof -
     by (rule lpc_seg_instance_boundary_knowledge[OF inst known])
   have child_free: "lpc_free_knowledge (set (lpctr_free ?root)) ?eta"
     by (rule lpc_checked_link_free_sound[OF free_check _ free]) (simp add: lp_equations_def)
+  have enriched: "lpp_source_context_holds SP (lpp_context_add_ground context (lpcn_ground nd)) eta"
+    by (rule lpp_context_add_ground_sound[OF observed])
+      (use known in \<open>auto simp: lp_cut_knowledge_def\<close>)
   have child_context: "lpp_source_context_holds SP (contexts!?i) ?eta"
-    using lpp_context_transport_sound transport observed
-    by (cases "context"; cases "contexts!?i") auto
+    using lpp_context_transport_sound transport enriched
+    by (cases "lpp_context_add_ground context (lpcn_ground nd)"; cases "contexts!?i") auto
   obtain sigma where matching: "lp_iatom_subst a sigma=
       lp_atom_eval (lpc_triple_observation_atom observed inp) eta"
     using invariant by (auto simp: ss lpc_triple_instance_invariant_def

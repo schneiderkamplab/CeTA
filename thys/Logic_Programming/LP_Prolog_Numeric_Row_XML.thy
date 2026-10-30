@@ -30,6 +30,7 @@ definition lpp_numeric_comparison_parser where
 
 definition lpp_numeric_observation_parser where
   "lpp_numeric_observation_parser =
+    (xml_singleton (STR ''groundGuard'') lpc_term_parser LPPOGround) XMLor
     (XMLdo (STR ''evaluationGuard'') {e\<leftarrow>lpc_term_parser; t\<leftarrow>lpc_term_parser; xml_return (LPPOEvaluation e t)}) XMLor
     (xml_change (xml_singleton (STR ''comparisonGuard'') lpc_term_parser id)
       (\<lambda>t. case t of Fun (LPCUser f) [a,b] \<Rightarrow>

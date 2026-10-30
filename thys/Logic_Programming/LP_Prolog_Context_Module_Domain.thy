@@ -43,6 +43,33 @@ proof (cases action)
       using lpp_context_source_action_sound[OF check known observed _ actual] integers LPPCMPrimitive by (auto simp: lpp_context_module_rep_def)
   qed
 next
+  case (LPPCMFiniteComparison evidence)
+  have check: "lpp_check_finite_comparison_receipt fuel Q nds states contexts nd ss source_context evidence"
+    using checked LPPCMFiniteComparison by simp
+  show ?thesis
+  proof (rule lp_answer_contract_primitive[where rep="\<lambda>vs v out.
+      out=(\<lambda>rho. [(returned,map rho [0..<arity])]) \<and> lpp_context_module_rep SP nds states contexts vs v"])
+    fix vs v and out :: "(nat\<Rightarrow>(string lp_cut_symbol,string) lp_iterm)\<Rightarrow>
+      (string lp_cut_symbol\<times>(string lp_cut_symbol,string) lp_iterm list) list"
+    assume strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+"
+      and represented: "out=(\<lambda>rho. [(returned,map rho [0..<arity])]) \<and> lpp_context_module_rep SP nds states contexts vs v"
+    show "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) vs (lp_ild Q) v out"
+      using lower[OF strict] represented by auto
+  next
+    fix event tt
+    assume step: "lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain (lpc_return_eval eta ss) event tt"
+    have supported: "\<not>lpp_builtin_domain_bad lpp_builtin_signature lpp_integer_source_domain (map fst (lpc_return_eval eta ss))"
+      by (rule lpp_finite_receipt_domain[OF check known observed])
+    have actual: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin (lpc_return_eval eta ss) event tt"
+      using step supported by (simp add: lpp_domain_answers_def)
+    show "(\<exists>u. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
+      ((\<lambda>rho. [(returned,map rho [0..<arity])])=(\<lambda>rho. [(returned,map rho [0..<arity])]) \<and>
+       lpp_context_module_rep SP nds states contexts tt u)) \<and>
+      (\<forall>rho. event=Some rho \<longrightarrow>
+        ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(returned,map rho [0..<arity])])\<in>(lp_ild Q)\<^sup>*)"
+      using lpp_finite_receipt_sound[OF check known observed actual] by (auto simp: lpp_context_module_rep_def)
+  qed
+next
   case (LPPCMTrim successor barriers e)
   have shape: "ss=successor@barriers" and barriers: "lp_cut_barriers (map fst barriers)"
     and link: "lpp_check_context_table_link fuel Q nds states contexts nd successor (lpcn_ground nd) (lpcn_guards nd) [] source_context e"

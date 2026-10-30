@@ -65,11 +65,16 @@ next
   have typed: "lpp_integer_known K eta" using integers LPPIRCompare by simp
   have descriptor: "lpp_comparison_descriptor f comparison reversed"
     using check by (simp add: lpp_check_integer_comparison_node_def)
+  obtain n m where left: "lpp_integer_evaluation (lp_ieval a eta) n"
+    and right: "lpp_integer_evaluation (lp_ieval b eta) m"
+    using check lpp_checked_expression_finishes[OF _ typed, of ea]
+      lpp_checked_expression_finishes[OF _ typed, of eb]
+    by (auto simp: lpp_check_integer_comparison_node_def)
   have exact: "\<And>outcome. lpp_integer_source_builtin f [lp_ieval a eta,lp_ieval b eta] outcome =
     lpp_integer_compare_outcome comparison
       (if reversed then lp_ieval b eta else lp_ieval a eta)
       (if reversed then lp_ieval a eta else lp_ieval b eta) outcome"
-    by (rule lpp_integer_source_comparison[OF descriptor])
+    by (rule lpp_integer_source_comparison[OF descriptor left right])
   show ?thesis using lpp_integer_comparison_node_sound[OF check known typed exact step] by auto
 next
   case (LPPIRIs K evidence a e gs active saved result_var k l continuation mode outputs yes no)

@@ -2,8 +2,21 @@ theory LP_Prolog_Context_Module_XML
  imports LP_Prolog_Context_XML LP_Prolog_Context_Module_Domain
 begin
 
+definition lpp_finite_comparison_parser where
+  "lpp_finite_comparison_parser = XMLdo (STR ''finiteComparison'') {
+    f\<leftarrow>xml_text (STR ''predicate''); comparison\<leftarrow>lpp_numeric_comparison_parser;
+    reversed\<leftarrow>xml_bool (STR ''reversed''); a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+    gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+    active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id;
+    saved\<leftarrow>lpc_return_state_parser;
+    yes\<leftarrow>lpc_link_parser; no\<leftarrow>lpc_link_parser; error\<leftarrow>lpc_link_parser;
+    xml_return \<lparr>lppfc_predicate = f, lppfc_comparison = comparison, lppfc_reversed = reversed,
+      lppfc_left = a, lppfc_right = b, lppfc_goals = gs, lppfc_active = active, lppfc_saved = saved,
+      lppfc_yes = yes, lppfc_no = no, lppfc_error = error\<rparr>}"
+
 definition lpp_context_module_action_parser where
   "lpp_context_module_action_parser =
+    (xml_change lpp_finite_comparison_parser (xml_return o LPPCMFiniteComparison)) XMLor
     (xml_change lpp_context_source_action_parser (xml_return o LPPCMPrimitive)) XMLor
     (XMLdo (STR ''trimBarriers'') {successor\<leftarrow>lpc_return_state_parser;
       barriers\<leftarrow>lpc_return_state_parser; e\<leftarrow>lpc_link_parser;

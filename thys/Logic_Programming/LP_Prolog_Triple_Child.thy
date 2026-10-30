@@ -5,7 +5,7 @@ begin
 definition lpp_triple_check_child where
   "lpp_triple_check_child fuel roots contexts context pre G guards F vs inp out receipt =
     (lpcsh_target receipt<length roots \<and> lpcsh_target receipt<length contexts \<and>
-      lpp_source_context_transport context (contexts!lpcsh_target receipt) (lpcsh_bindings receipt) \<and>
+      lpp_source_context_transport (lpp_context_add_ground context G) (contexts!lpcsh_target receipt) (lpcsh_bindings receipt) \<and>
       (let entry=roots!lpcsh_target receipt; nd=lpctr_node entry;
            mu=lp_cut_instance_subst (lpcsh_bindings receipt) in
        case lpcn_state nd of [ce] \<Rightarrow>
@@ -37,7 +37,7 @@ proof -
   let ?mu = "lp_cut_instance_subst (lpcsh_bindings receipt)"
   let ?eta = "\<lambda>x. lp_ieval (?mu x) eta"
   have index: "?i<length roots" "?i<length contexts"
-    and transport: "lpp_source_context_transport context (contexts!?i) (lpcsh_bindings receipt)"
+    and transport: "lpp_source_context_transport (lpp_context_add_ground context G) (contexts!?i) (lpcsh_bindings receipt)"
     using checked by (auto simp: lpp_triple_check_child_def)
   obtain ce where state: "lpcn_state ?nd=[ce]"
     using checked by (auto simp: lpp_triple_check_child_def Let_def split: list.splits;
@@ -54,9 +54,12 @@ proof -
     by (rule lpc_seg_instance_boundary_knowledge[OF inst known])
   have child_free: "lpc_free_knowledge (set (lpctr_free ?entry)) ?eta"
     by (rule lpc_checked_link_free_sound[OF free_check _ free]) (simp add: lp_equations_def)
+  have enriched: "lpp_source_context_holds SP (lpp_context_add_ground context G) eta"
+    by (rule lpp_context_add_ground_sound[OF observed])
+      (use known in \<open>auto simp: lp_cut_knowledge_def\<close>)
   have child_context: "lpp_source_context_holds SP (contexts!?i) ?eta"
-    using lpp_context_transport_sound transport observed
-    by (cases "context"; cases "contexts!?i") auto
+    using lpp_context_transport_sound transport enriched
+    by (cases "lpp_context_add_ground context G"; cases "contexts!?i") auto
   have call_eval: "lp_atom_eval inp eta=lp_atom_eval (lpctr_input ?entry) ?eta"
     by (simp add: inp[symmetric] lp_atom_subst_def lp_atom_eval_def lp_ieval_finite_subst map_map o_def)
   have edge': "(a,lp_atom_eval (lpctr_input ?entry) ?eta)\<in>lp_triple_calls (set D) Q"

@@ -1,11 +1,12 @@
 theory LP_Prolog_Context_Module
-  imports LP_Prolog_Context_Graph LP_Prolog_Return_Modular LP_Cut_Return_Module
+  imports LP_Prolog_Context_Finite_Comparison LP_Prolog_Context_Graph LP_Prolog_Return_Modular LP_Cut_Return_Module
 begin
 
 datatype lpp_context_module_action = LPPCMPrimitive lpp_context_source_action
   | LPPCMTrim "string lpc_return_state" "string lpc_return_state" "string lpc_link"
   | LPPCMParallel "string lpc_link list"
   | LPPCMRefuted nat nat "(string * string lpc_term) list"
+  | LPPCMFiniteComparison lpp_finite_comparison_receipt
 
 definition lpp_context_module_rep where
   "lpp_context_module_rep SP nds states contexts ss t =
@@ -27,6 +28,9 @@ fun lpp_check_context_module_action where
 
 | "lpp_check_context_module_action fuel P Q nds states contexts nd ss source_context returned arity (LPPCMRefuted i k bindings) =
     lp_cut_check_refuted_guard fuel (lpcn_guards nd) i k bindings"
+
+| "lpp_check_context_module_action fuel P Q nds states contexts nd ss source_context returned arity (LPPCMFiniteComparison evidence) =
+    lpp_check_finite_comparison_receipt fuel Q nds states contexts nd ss source_context evidence"
 
 theorem lpp_context_module_action_sound:
   fixes SP :: "string lpp_success_clause list"
@@ -63,6 +67,29 @@ proof (cases action)
       (\<forall>rho. event=Some rho \<longrightarrow>
         ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(returned,map rho [0..<arity])])\<in>(lp_ild Q)\<^sup>*)"
       using lpp_context_source_action_sound[OF check known observed _ step] integers LPPCMPrimitive by (auto simp: lpp_context_module_rep_def)
+  qed
+next
+  case (LPPCMFiniteComparison evidence)
+  have check: "lpp_check_finite_comparison_receipt fuel Q nds states contexts nd ss source_context evidence"
+    using checked LPPCMFiniteComparison by simp
+  show ?thesis
+  proof (rule lp_answer_contract_primitive[where rep="\<lambda>vs v out.
+      out=(\<lambda>rho. [(returned,map rho [0..<arity])]) \<and> lpp_context_module_rep SP nds states contexts vs v"])
+    fix vs v and out :: "(nat\<Rightarrow>(string lp_cut_symbol,string) lp_iterm)\<Rightarrow>
+      (string lp_cut_symbol\<times>(string lp_cut_symbol,string) lp_iterm list) list"
+    assume strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+"
+      and represented: "out=(\<lambda>rho. [(returned,map rho [0..<arity])]) \<and> lpp_context_module_rep SP nds states contexts vs v"
+    show "lp_answer_contract (lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin) vs (lp_ild Q) v out"
+      using lower[OF strict] represented by auto
+  next
+    fix event tt
+    assume step: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin (lpc_return_eval eta ss) event tt"
+    show "(\<exists>u. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
+      ((\<lambda>rho. [(returned,map rho [0..<arity])])=(\<lambda>rho. [(returned,map rho [0..<arity])]) \<and>
+       lpp_context_module_rep SP nds states contexts tt u)) \<and>
+      (\<forall>rho. event=Some rho \<longrightarrow>
+        ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(returned,map rho [0..<arity])])\<in>(lp_ild Q)\<^sup>*)"
+      using lpp_finite_receipt_sound[OF check known observed step] by (auto simp: lpp_context_module_rep_def)
   qed
 next
   case (LPPCMTrim successor barriers e)

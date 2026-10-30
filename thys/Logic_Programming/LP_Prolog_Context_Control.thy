@@ -39,6 +39,29 @@ proof (cases action)
       using child simulation emit by blast
   qed
 next
+  case (LPPCMFiniteComparison evidence)
+  have check: "lpp_check_finite_comparison_receipt fuel Q nds states contexts nd ss source_context evidence"
+    using checked LPPCMFiniteComparison by simp
+  show ?thesis
+  proof (rule lp_answer_contract_intro)
+    fix event tt
+    assume step: "lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain (lpc_return_eval eta ss) event tt"
+    have supported: "\<not>lpp_builtin_domain_bad lpp_builtin_signature lpp_integer_source_domain (map fst (lpc_return_eval eta ss))"
+      by (rule lpp_finite_receipt_domain[OF check known observed])
+    have actual: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin (lpc_return_eval eta ss) event tt"
+      using step supported by (simp add: lpp_domain_answers_def)
+    have simulation: "(\<exists>u swaps. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
+        lpp_context_return_rep SP nds states contexts (lpc_return_scope_word swaps tt) u) \<and>
+      (\<forall>rho. event=Some rho \<longrightarrow>
+        ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(returned,map rho [0..<arity])])\<in>(lp_ild Q)\<^sup>*)"
+      using lpp_finite_receipt_sound[OF check known observed actual] by auto
+    have child: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) tt R t ret"
+      using simulation lower by (auto simp: lpp_context_module_rep_def)
+    show "(\<forall>rho. event=Some rho \<longrightarrow> (t,ret rho)\<in>R\<^sup>*) \<and>
+      lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) tt R t ret"
+      using child simulation emit by blast
+  qed
+next
   case (LPPCMTrim successor barriers e)
   have shape: "ss=successor@barriers" and barriers: "lp_cut_barriers (map fst barriers)"
     and link: "lpp_check_context_table_link fuel Q nds states contexts nd successor (lpcn_ground nd) (lpcn_guards nd) [] source_context e"

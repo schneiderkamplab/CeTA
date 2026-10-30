@@ -41,7 +41,7 @@ proof -
   have descriptor: "lpp_source_comparison f=Some (comparison,reversed)"
     using name lpp_source_comparison_descriptor by blast
   have domain: "lpp_integer_source_domain f [lp_ieval a eta,lp_ieval b eta]"
-    using ev by (simp only: lpp_integer_source_domain.simps ni ne if_False descriptor option.case; auto)
+    using ev by (simp only: lpp_integer_source_domain.simps ni ne if_False descriptor option.case; auto dest: lpp_integer_evaluation_ground)
   show ?thesis using domain
     by (simp add: shape lpc_return_eval_def del: lpp_integer_source_domain.simps)
 qed

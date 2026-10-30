@@ -59,8 +59,54 @@ fun lpp_context_guard_check where
 | "lpp_context_guard_check guards (LPPSOpaque t) = True"
 | "lpp_context_guard_check guards g = (g\<in>set guards)"
 
+
+fun lpp_observation_ground_vars where
+  "lpp_observation_ground_vars (LPPOGround t) = vars_term t"
+| "lpp_observation_ground_vars (LPPOInteger t) = vars_term t"
+| "lpp_observation_ground_vars (LPPOEvaluation e t) = vars_term t"
+| "lpp_observation_ground_vars (LPPOComparison c a b) = {}"
+
+definition lpp_observations_ground where
+  "lpp_observations_ground observations = (\<Union>observation\<in>set observations. lpp_observation_ground_vars observation)"
+
+declare lpp_observations_ground_def[code del]
+
+lemma lpp_observations_ground_code [code]:
+  "lpp_observations_ground [] = {}"
+  "lpp_observations_ground (observation#observations) =
+    lpp_observation_ground_vars observation \<union> lpp_observations_ground observations"
+  by (auto simp: lpp_observations_ground_def)
+
+lemma lpp_integer_finite_ground:
+  "lpp_is_integer t \<Longrightarrow> lp_seg_ground t"
+  by (auto simp: lpp_is_integer_def lpp_integer_value_def intro: lp_seg_ground.intros)
+
+lemma lpp_integer_ground_vars:
+  "lpp_is_integer (lp_ieval t eta) \<Longrightarrow>
+    \<forall>x\<in>vars_term t. lp_seg_ground (eta x)"
+  using lpp_integer_finite_ground[of "lp_ieval t eta"] by (simp add: lp_seg_ground_eval)
+
+lemma lpp_integer_literal_ground_vars:
+  "lp_ieval t eta = lpp_integer_value n \<Longrightarrow>
+    \<forall>x\<in>vars_term t. lp_seg_ground (eta x)"
+  by (rule lpp_integer_ground_vars) (auto simp: lpp_is_integer_def)
+
+lemma lpp_observation_ground_vars_sound:
+  "lpp_numeric_observation_holds eta observation \<Longrightarrow>
+    \<forall>x\<in>lpp_observation_ground_vars observation. lp_seg_ground (eta x)"
+  by (cases observation)
+    (auto simp: lp_seg_ground_eval lpp_integer_result_def
+      dest: lpp_integer_ground_vars lpp_integer_literal_ground_vars)
+
+lemma lpp_observations_ground_sound:
+  "list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>
+    \<forall>x\<in>lpp_observations_ground observations. lp_seg_ground (eta x)"
+  using lpp_observation_ground_vars_sound by (auto simp: lpp_observations_ground_def list_all_iff)
+
 fun lpp_context_observation_check where
-  "lpp_context_observation_check guards observations (LPPOInteger t) = lpp_context_integer guards t"
+  "lpp_context_observation_check guards observations (LPPOGround t) =
+    (vars_term t \<subseteq> lpp_observations_ground observations)"
+| "lpp_context_observation_check guards observations (LPPOInteger t) = lpp_context_integer guards t"
 | "lpp_context_observation_check guards observations observation = (observation\<in>set observations)"
 
 lemma lpp_context_guard_check_sound:
@@ -75,7 +121,7 @@ lemma lpp_context_observation_check_sound:
    list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>
    lpp_numeric_observation_holds eta observation"
   by (cases observation) (auto simp: list_all_iff lpp_is_integer_def
-      dest: lpp_context_integer_sound)
+      lp_seg_ground_eval dest: lpp_context_integer_sound lpp_observations_ground_sound[unfolded list_all_iff])
 
 definition lpp_check_context_transport where
   "lpp_check_context_transport facts guards observations child_facts child_guards child_observations bindings =

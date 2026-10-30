@@ -33,12 +33,12 @@ proof -
     using lpp_comparison_selected[OF descriptor] by (simp add: numeral_2_eq_2)
   have outcomes: "\<And>outcome. lpp_integer_source_builtin f [lp_ieval a eta,lp_ieval b eta] outcome =
     (outcome=(if ?truth then LPPBuiltinSuccess LPIVar else LPPBuiltinFailure))"
-    unfolding lpp_integer_source_comparison[OF descriptor]
+    unfolding lpp_integer_source_comparison[OF descriptor left right]
     by (cases reversed) (use lpp_integer_compare_outcome_exact[OF left right]
       lpp_integer_compare_outcome_exact[OF right left] in simp_all)
   have truth: "lpp_numeric_observation_holds eta observation = ?truth"
     unfolding observation_def
-    by (cases reversed) (simp_all add: lpp_integer_compare_outcome_exact[OF left right]
+    by (cases reversed) (simp_all add: lpp_finite_comparison_integer[OF left right] lpp_finite_comparison_integer[OF right left] lpp_integer_compare_outcome_exact[OF left right]
       lpp_integer_compare_outcome_exact[OF right left])
   show ?thesis using step
     by (simp add: shape lpc_return_eval_def truth

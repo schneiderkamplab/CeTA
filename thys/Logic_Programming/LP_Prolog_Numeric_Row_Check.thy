@@ -8,7 +8,8 @@ produce an equality in the numeric child. Integer type tests supply type
 facts separately and cannot be substituted for an arbitrary numeric guard.\<close>
 
 fun lpp_check_numeric_observation where
-  "lpp_check_numeric_observation K (LPPOInteger t) numeric_test = False"
+  "lpp_check_numeric_observation K (LPPOGround t) numeric_test = False"
+| "lpp_check_numeric_observation K (LPPOInteger t) numeric_test = False"
 | "lpp_check_numeric_observation K (LPPOEvaluation e t) (comparison,a,b) =
     (comparison=LPPIntEqual \<and> t=lpp_expression_term a \<and> e=lpp_expression_term b \<and>
       lpp_expression_check K a \<and> lpp_expression_check K b)"
@@ -26,6 +27,9 @@ proof -
     by (cases numeric_test; auto)
   show ?thesis
   proof (cases observation)
+    case (LPPOGround t)
+    then show ?thesis using checked by simp
+  next
     case (LPPOInteger t)
     then show ?thesis using checked by simp
   next
@@ -51,7 +55,9 @@ proof -
       using checked lpp_expression_evaluation[of K a eta rho, OF _ typed]
         lpp_expression_evaluation[of K b eta rho, OF _ typed]
       by (auto simp: LPPOComparison numeric_test)
-    show ?thesis using checked observed lpp_integer_compare_outcome_exact[OF left right,
+    have integer_observation: "lpp_integer_compare_outcome c (lp_ieval l eta) (lp_ieval r eta) (LPPBuiltinSuccess LPIVar)"
+      using observed by (simp only: LPPOComparison lpp_numeric_observation_holds.simps lpp_finite_comparison_integer[OF left right])
+    show ?thesis using checked integer_observation lpp_integer_compare_outcome_exact[OF left right,
       where comparison=c and outcome="LPPBuiltinSuccess LPIVar"]
       by (auto simp: numeric_test LPPOComparison split: if_splits)
   qed

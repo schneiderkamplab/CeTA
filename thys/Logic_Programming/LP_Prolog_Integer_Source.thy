@@ -1,12 +1,12 @@
 theory LP_Prolog_Integer_Source
-  imports LP_Prolog_Builtin_Domain LP_Prolog_Identity_Test
+  imports LP_Prolog_Finite_Comparison LP_Prolog_Identity_Test
 begin
 
 text \<open>A single interpreted operation relation extends the existing term
 tests with integer tests, evaluation and comparison. Its domain is explicit:
 unsupported arithmetic has no certified source-node rule and is protected by
 the domain envelope. The relation is not a claim of completeness for Prolog
-floating point arithmetic or cyclic arithmetic expressions.\<close>
+floating point evaluation or cyclic arithmetic expressions. Finite ground comparisons additionally use a conservative finite-outcome envelope.\<close>
 
 fun lpp_source_comparison where
   "lpp_source_comparison f =
@@ -29,7 +29,7 @@ fun lpp_integer_source_builtin where
      else if f=''2:is'' then (length ts=2 \<and> lpp_integer_is_outcome (ts!0) (ts!1) outcome)
      else (case lpp_source_comparison f of
        Some (comparison,reversed) \<Rightarrow> (length ts=2 \<and>
-         lpp_integer_compare_outcome comparison (if reversed then ts!1 else ts!0) (if reversed then ts!0 else ts!1) outcome)
+         lpp_finite_compare_outcome comparison (if reversed then ts!1 else ts!0) (if reversed then ts!0 else ts!1) outcome)
        | None \<Rightarrow> lpp_test_builtin f ts outcome))"
 
 fun lpp_integer_source_domain where
@@ -38,7 +38,7 @@ fun lpp_integer_source_domain where
      else if f=''2:is'' then (length ts=2 \<and> (\<exists>n. lpp_integer_evaluation (ts!1) n))
      else (case lpp_source_comparison f of
        Some pair \<Rightarrow> (length ts=2 \<and>
-         (\<exists>n. lpp_integer_evaluation (ts!0) n) \<and> (\<exists>m. lpp_integer_evaluation (ts!1) m))
+         lp_seg_ground (ts!0) \<and> lp_seg_ground (ts!1))
        | None \<Rightarrow> ((lpp_var_name f \<and> length ts=1) \<or> (lpp_identity_name f \<and> length ts=2))))"
 
 lemma lpp_integer_source_test[simp]:
@@ -49,8 +49,21 @@ lemma lpp_integer_source_is[simp]:
   "lpp_integer_source_builtin ''2:is'' [a,e] outcome = lpp_integer_is_outcome a e outcome"
   by simp
 
+lemma lpp_integer_source_finite_comparison:
+  assumes name: "lpp_comparison_descriptor f comparison reversed"
+  shows "lpp_integer_source_builtin f [a,b] outcome =
+    lpp_finite_compare_outcome comparison (if reversed then b else a) (if reversed then a else b) outcome"
+proof -
+  have names: "f\<noteq>''1:integer''" "f\<noteq>''2:is''"
+    using name by (cases comparison; cases reversed; auto)+
+  have descriptor: "lpp_source_comparison f=Some (comparison,reversed)"
+    using name lpp_source_comparison_descriptor by blast
+  show ?thesis by (simp only: lpp_integer_source_builtin.simps names if_False descriptor option.case prod.case; simp)
+qed
+
 lemma lpp_integer_source_comparison:
   assumes name: "lpp_comparison_descriptor f comparison reversed"
+    and left: "lpp_integer_evaluation a n" and right: "lpp_integer_evaluation b m"
   shows "lpp_integer_source_builtin f [a,b] outcome =
     lpp_integer_compare_outcome comparison (if reversed then b else a) (if reversed then a else b) outcome"
 proof -
@@ -59,7 +72,7 @@ proof -
   have descriptor: "lpp_source_comparison f=Some (comparison,reversed)"
     using name lpp_source_comparison_descriptor by blast
   show ?thesis by (simp only: lpp_integer_source_builtin.simps names if_False descriptor
-    option.case prod.case; simp)
+    option.case prod.case; cases reversed; simp add: lpp_finite_comparison_integer[OF left right] lpp_finite_comparison_integer[OF right left])
 qed
 
 lemma lpp_integer_source_selected:
@@ -125,13 +138,12 @@ next
     next
       case (Some pair)
       obtain comparison reversed where pair: "pair=(comparison,reversed)" by (cases pair) auto
-      obtain n m where len: "length ts=2" and left: "lpp_integer_evaluation (ts!0) n"
-        and right: "lpp_integer_evaluation (ts!1) m"
-        using domain by (simp only: lpp_integer_source_domain.simps ni ne if_False Some option.case; blast)
-      have ev: "\<exists>outcome. lpp_integer_compare_outcome comparison
+      have len: "length ts=2" and left: "lp_seg_ground (ts!0)" and right: "lp_seg_ground (ts!1)"
+        using domain by (simp only: lpp_integer_source_domain.simps ni ne if_False Some option.case; blast)+
+      have ev: "\<exists>outcome. lpp_finite_compare_outcome comparison
         (if reversed then ts!1 else ts!0) (if reversed then ts!0 else ts!1) outcome"
-        by (cases reversed; simp only: if_True if_False lpp_integer_compare_outcome_exact[OF left right]
-          lpp_integer_compare_outcome_exact[OF right left]; blast)
+        by (cases reversed) (use lpp_finite_comparison_total[OF left right]
+          lpp_finite_comparison_total[OF right left] in simp_all)
       show ?thesis using ev by (simp only: lpp_integer_source_builtin.simps ni ne if_False Some pair option.case prod.case len HOL.simp_thms)
     qed
   qed

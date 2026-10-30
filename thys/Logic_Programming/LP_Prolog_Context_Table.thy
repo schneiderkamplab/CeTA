@@ -9,6 +9,25 @@ fun lpp_source_context_holds where
   "lpp_source_context_holds P (facts,guards,observations) eta =
     lpp_path_context_holds P facts guards observations eta"
 
+
+fun lpp_context_add_ground where
+  "lpp_context_add_ground (facts,guards,observations) G =
+    (facts,guards,observations @ map (\<lambda>x. LPPOGround (Var x)) G)"
+
+fun lpp_source_context_ground where
+  "lpp_source_context_ground (facts,guards,observations) = lpp_observations_ground observations"
+
+lemma lpp_source_context_ground_sound:
+  "lpp_source_context_holds SP source_context eta \<Longrightarrow>
+    \<forall>x\<in>lpp_source_context_ground source_context. lp_seg_ground (eta x)"
+  by (cases source_context) (auto simp: lpp_path_context_holds_def dest: lpp_observations_ground_sound)
+
+lemma lpp_context_add_ground_sound:
+  "lpp_source_context_holds SP source_context eta \<Longrightarrow>
+   (\<forall>x\<in>set G. lp_seg_ground (eta x)) \<Longrightarrow>
+   lpp_source_context_holds SP (lpp_context_add_ground source_context G) eta"
+  by (cases source_context) (auto simp: lpp_path_context_holds_def list_all_iff)
+
 fun lpp_source_context_transport where
   "lpp_source_context_transport (facts,guards,observations) (child_facts,child_guards,child_observations) bindings =
     lpp_check_context_transport facts guards observations child_facts child_guards child_observations bindings"

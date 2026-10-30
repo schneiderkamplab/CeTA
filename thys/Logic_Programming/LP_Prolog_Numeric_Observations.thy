@@ -1,5 +1,5 @@
 theory LP_Prolog_Numeric_Observations
-  imports LP_Prolog_Numeric_Guards LP_Prolog_Integer_Test_Check LP_Cut_SEG_Triple_Prefix
+  imports LP_Prolog_Finite_Comparison LP_Prolog_Numeric_Guards LP_Prolog_Integer_Test_Check LP_Cut_SEG_Triple_Prefix
 begin
 
 text \<open>Numeric observations travel with the shared active return frame.
@@ -8,15 +8,17 @@ future operation or erase its finite-domain obligation. Their substitution
 closure permits ordinary shared unification and helper return transport.\<close>
 
 datatype 'v lpp_numeric_observation =
-    LPPOInteger "(string lp_cut_symbol,'v) term"
+    LPPOGround "(string lp_cut_symbol,'v) term"
+  | LPPOInteger "(string lp_cut_symbol,'v) term"
   | LPPOEvaluation "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPOComparison lpp_integer_comparison "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
 fun lpp_numeric_observation_holds where
-  "lpp_numeric_observation_holds eta (LPPOInteger t) = lpp_is_integer (lp_ieval t eta)"
+  "lpp_numeric_observation_holds eta (LPPOGround t) = lp_seg_ground (lp_ieval t eta)"
+| "lpp_numeric_observation_holds eta (LPPOInteger t) = lpp_is_integer (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOEvaluation e t) = lpp_integer_result (lp_ieval e eta) (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOComparison comparison a b) =
-    lpp_integer_compare_outcome comparison (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    lpp_finite_compare_outcome comparison (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
 
 lemma lpp_integer_result_subst:
   fixes e t :: "(string lp_cut_symbol,'w) lp_iterm"
@@ -47,8 +49,8 @@ lemma lpp_numeric_observation_subst:
     and sigma :: "'w \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm"
   shows "lpp_numeric_observation_holds eta observation \<Longrightarrow>
     lpp_numeric_observation_holds (\<lambda>x. lp_isubst (eta x) sigma) observation"
-  by (cases observation) (auto simp: lp_ieval_subst[symmetric] intro: lpp_is_integer_subst
-    lpp_integer_result_subst lpp_integer_comparison_success_subst)
+  by (cases observation) (auto simp: lp_ieval_subst[symmetric] lp_seg_ground_subst intro: lpp_is_integer_subst
+    lpp_integer_result_subst lpp_finite_comparison_subst lp_seg_ground_subst)
 
 lemma lpp_numeric_observations_subst:
   fixes eta :: "'v \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm"
@@ -69,7 +71,7 @@ lemma lpp_integer_is_emits:
 lemma lpp_integer_comparison_emits:
   "lpp_integer_compare_outcome comparison (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar) \<Longrightarrow>
     lpp_numeric_observation_holds eta (LPPOComparison comparison a b)"
-  by simp
+  by (auto intro: lpp_integer_comparison_finite)
 
 text \<open>Reuse the shared saved-answer transport theorem for ordinary LP
 steps; builtin success updates only the active environment, while failure and

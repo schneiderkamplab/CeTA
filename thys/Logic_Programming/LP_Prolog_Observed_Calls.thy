@@ -5,7 +5,8 @@ begin
 type_synonym 'v lpp_observed_triple = "'v lpp_guarded_triple * 'v lpp_numeric_observation list"
 
 fun lpp_numeric_observation_substitute where
-  "lpp_numeric_observation_substitute (LPPOInteger t) mu = LPPOInteger (t\<cdot>mu)"
+  "lpp_numeric_observation_substitute (LPPOGround t) mu = LPPOGround (t\<cdot>mu)"
+| "lpp_numeric_observation_substitute (LPPOInteger t) mu = LPPOInteger (t\<cdot>mu)"
 | "lpp_numeric_observation_substitute (LPPOEvaluation e t) mu = LPPOEvaluation (e\<cdot>mu) (t\<cdot>mu)"
 | "lpp_numeric_observation_substitute (LPPOComparison c a b) mu = LPPOComparison c (a\<cdot>mu) (b\<cdot>mu)"
 
