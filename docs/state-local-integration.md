@@ -69,3 +69,157 @@ executable are preserved. Fresh native/strict replay and the full-frontier gate
 remain pending. See Ferrum's
 [composition contract](../../ferrum-state-local/docs/csr-proof-composition.md)
 for state identity and runtime integration gates.
+
+
+The Prolog helper-return extension adds `prologContextComposedDependencyTriplesProof`
+to the existing unified LP adapter. Its prefix and continuation use the shared
+answer-sensitive return graph, with checked scope separation, saved answers,
+failure branches and stack-destroying errors. The root theorem requires a checked
+common PiDP residual; a helper termination proof alone cannot establish its
+returned-value relation. The constructor does not import ordinary-cut groundness
+summaries into Prolog.
+
+The regenerated `Prolog_Context_Generated` export retains the existing contextual
+entry point and adds the composed entry point. The hash-verified snapshot is
+`tests/unified/exports/lp-context-composed.tar.gz`. Isabelle verification and the
+dependency audit pass in `target/prolog-composed-verify-297.log`; the original
+export is retained in `target/prolog-composed-export-270`. Unified build and
+category-library receipts are in `target/prolog-composed-unified-272`. Ferrum's
+`target/prolog-composed-baseline-289` strictly preserves 17 YES and three NOs on
+all 221 Prolog inputs using that same checker. This development integration does
+not establish the protected-category production release gate.
+
+The established-SEG extension is integrated at CeTA
+`3b49a96dd2c2ec992f1468bea33832dded4b72d9` on `codex/prolog-source`.
+`prologEstablishedSEGDependencyTriplesProof` checks the existing graph's finite
+referenced modules, complete local control, saved contexts and exact common
+triples child. Actual successful return properties remain separate obligations
+from helper termination. The generated export is
+`tests/unified/exports/lp-established-returns.tar.gz`; Isabelle verification and
+export evidence is retained in `target/prolog-free-staged-export-49.log`.
+
+The unified `make ceta` build `target/prolog-free-staged-unified-54/ceta` has
+SHA-256 `4c050baa2cfba9cc74ca3bc4d1ab8199a263ef2c776d0cd4829169f6be1292a3`.
+With Ferrum `1a8f8e348ce9f9b18c21f1d9ca02253fcb8c4d99`, fresh strict replay
+certifies 18 Prolog YESs and three NOs on all 221 inputs, and preserves 84
+LP-with-cut YESs and nine NOs on all 112 inputs. Each retained source result is
+audited and checked twice with that executable. The 30-gain milestone and
+protected-category promotion gate remain open. Additional source return-model
+theories under development are not exported by this snapshot.
+
+## Established source integer returns, 2026-10-30
+
+Commit `8dd70dba936a951a5e7aad2cb111ecbfc9c2ec2c` adds a checked model of
+actual successful source returns and instantiates it for integer facts across
+established SEG Splits. It covers every reachable clause and applicable builtin,
+uses the shared conditional transfer checker, and keeps return properties
+separate from termination. The shared LP-with-cut operational semantics supplies
+all execution, substitution, saved-alternative and answer transitions.
+
+Verification and dependency audits pass in
+`target/prolog-source-integer-wire-92.log` and the verified export log
+`target/prolog-source-integer-wire-export-93.log`. The exported archive is
+`tests/unified/exports/lp-source-integer-returns-wire.tar.gz`. The unified
+`make ceta` build at `target/prolog-source-integer-unified-94/ceta` has SHA-256
+`2c3688af4b0560a6ec71efbe1c782f3a19f3f32febb9addcc60f7e0b76950080`.
+No generated checking logic was edited.
+
+Ferrum integration `a30a21cad9e47e1ac0ad7c10a8d715a7e8097293` strictly replays
+20 YESs and three NOs on the fixed 221 Prolog roots, preserving every previous
+verdict. The same checker preserves 84 YESs and nine NOs on all 112 LP-with-cut
+roots. All retained results have original-source audits, complete receipts and
+two checks. Three mutation suites pass 29 checks each; nine strict advice
+controls pass. Evidence is pinned in Ferrum's
+`docs/data/prolog-source-returns-frontier-20261030.json` and accompanying archive.
+The requested 30-gain milestone has achieved three gains and remains active;
+protected-category promotion is still gated.
+
+## Established finite-ground returns, 2026-10-30
+
+Commit `df37ebf0b913f2f5803d19a51a41ef0b4bc72157` checks actual successful
+finite-ground returns across nested established SEG Splits and all three finite
+comparison outcomes. It preserves shared operational semantics and separates
+return properties from termination. Checked source contexts transport groundness
+without treating ground values as integers. Generated checking logic is unchanged
+by hand; `tests/unified/exports/lp-source-ground-returns.tar.gz` comes from the
+verified export in `target/prolog-ground-export-133`.
+
+The unified `make ceta` build at `target/prolog-ground-unified-135/ceta` has
+SHA-256 `692c9aa4f713aff1a0e1697b06364a0eadae11373ec701b94b986c8b4c292376`.
+Ferrum `50ebaceae51b5dfdcf68a22f7026334603b906e2` strictly certifies 30 YESs
+and three NOs on all 221 Prolog roots and preserves 84 YESs and nine NOs on all
+112 LP-with-cut roots with this checker. Every retained result is source-audited,
+checked twice and reconstructed from authorized witness-free guidance.
+[Persistent audit evidence](../../ferrum-prolog-shared/docs/data/prolog-ground-returns-frontier-20261030.json)
+records the full validation and remaining obligations. The requested 30-gain
+milestone still needs 17 additional YES roots. Protected-category promotion is
+not claimed. Arithmetic normalization theories under development are not part
+of this pinned checker.
+
+## Established identity interfaces and normalized evaluation, 2026-10-30
+
+CeTA `c37fd837d569716a9712fa5802b716145992fb1f` verifies identity tests and constant/integer evaluation
+normalization with complete referenced-module dependencies. Successful identity
+links may use either independently checked specialized or original interfaces.
+Export `tests/unified/exports/lp-source-normalized-identity-interfaces.tar.gz`
+comes from verified `target/prolog-identity-export-180`; unified `make ceta`
+build `target/prolog-identity-unified-182/ceta` has SHA-256
+`995b2317fb0d269aefc517a3a5097889e53999b20a8e0ba6a7f8b662a99b5de0`. No generated checking logic was edited manually.
+
+Ferrum `022386693f7ff7e10cc0c6f19e9289cf50615735` strictly replays all 221 Prolog roots to 31 YES
+and three NOs, preserving previous verdicts with source audits, authorized
+receipts and two checks each. The same checker preserves 84 YES and nine NOs
+on all 112 LP-with-cut roots. The cohort has 32 cases, strict controls 63 cases,
+and mutation validation 705 checks; redundant annotation removals are explicitly
+classified, with necessary removals rejecting in the cohort. Immutable audit
+metadata and archived evidence are in the sibling Ferrum ledger at
+`docs/data/prolog-identity-normalization-frontier-20261030.json`.
+
+Fourteen of the required 30 additional YESs are certified. Equality free-knowledge
+transport and finite-ground arithmetic remain active development. Production
+promotion remains gated on protected-category replay with the same checker.
+
+## Equality preserves untouched free variables, 2026-10-30
+
+`f48a500cf730b687f9b858b3404f49353347d41e` adds a checked MGU continuation theorem and uses it in
+the established source equality receipt. It requires ground/free coverage of
+both operands, distinct incoming free variables, untouchedness, continuation
+occurrence and refresh bounds. The established graph is unchanged.
+
+Verification 202, export 204 and unified `make ceta` build 206 pass. Checker
+SHA-256 is `dd33df0536f6ac474f004befd18d1ac223b3d3567dff20934b5d39d3e141a081`. Fresh strict replay preserves 31 Prolog
+YESs and three NOs on 221 roots, and 84 cut YESs and nine NOs on 112 roots,
+with two checks each and authorized receipts. All 33 cohort cases, 739 mutation
+checks and 66 strict controls pass. Pinned evidence is in the sibling Ferrum
+`docs/data/prolog-free-equality-preservation-20261030.json` and archive.
+
+There is no additional benchmark gain in this checker-only integration. Finite
+evaluation foundations at `877bdc0` and subsequent contextual transport proofs
+remain separate development; they are not exported in this checker. The milestone
+still requires 16 more YES roots, and protected-category promotion remains gated.
+
+## Established finite evaluation milestone, 2026-10-30
+
+Source commit `5f4e343f43d7cce1997a594705ff01eb4a5f2d5b` checks finite-ground arithmetic and conditional actual
+helper returns within the established Prolog SEG. It reuses the shared
+LP-with-cut answer semantics, retains failure/error alternatives and complete
+nested module dependencies, and keeps groundness separate from integer facts.
+The new XML constructor is `prologEstablishedFiniteSEGDependencyTriplesProof`;
+legacy constructors remain supported by the same unified executable.
+
+Isabelle verification 246 and export 247 pass. Unified `make ceta` build 249
+has SHA-256 `88d8e3f093ac8d9e14b82b67ec8e212640053075cbb1f710bf2564f6ea20f220`. Export commit `5fba3d458c5385a1dae150c148442fd6c201599d` pins
+`tests/unified/exports/lp-source-finite-observed-evaluation.tar.gz`; generated
+checking logic was not edited manually. The persistent tree is
+`/work/dfm/festschrift/CeTA-prolog-source`, branch `codex/prolog-source`.
+
+Ferrum `3181c5cbda4e6278163bb917a30e4c504235b84e` strictly replays all 221 roots to **48 YES + 3 NO**,
+31 additional YESs over the milestone baseline, and preserves **84 YES +
+nine NO** on all 112 cut roots with this same checker. Every retained result
+has original-source audits, two checks and authorized complete receipts.
+Validation includes 467 shared tests, 43 final cohort cases, 33 legacy cases,
+five further negative controls, 701 mutation-suite checks and 66 strict replay
+controls. [Pinned audit metadata](../../ferrum-prolog-shared/docs/data/prolog-finite-milestone-20261030.json)
+and its archive retain exact identities and all attempts. The requested
+30-gain development milestone is complete; protected-category production
+promotion and a fresh matched AProVE comparison remain separate gates.

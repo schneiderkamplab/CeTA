@@ -10,6 +10,7 @@ make ceta
 ./ceta --category conditional --ordinary conditional.certificate
 ./ceta --category conditional-erasure erasure.xml
 ./ceta --category lp lp-certificate.xml
+./ceta --category prolog prolog-static-certificate.xml
 ./ceta --category its its-proof.cpf.xml
 ./ceta --category higher-order higher-order.certificate
 ./ceta --category higher-order-delegation higher-order.certificate child.cpf.xml
@@ -19,7 +20,11 @@ make ceta
 AC/equational, RFC/match-bounds and other CPF processor paths. `conditional`
 without `--ordinary` retains the existing operational conditional interpretation;
 `--ordinary` explicitly selects ordinary rewrite-loop checking. Do not discard this
-flag when translating an existing invocation. LP covers pure LP and LP with cut.
+flag when translating an existing invocation. LP covers pure LP and LP with cut. Explicit `prolog` dispatch checks the
+source-bound Prolog proofs, including static wrappers, shared return tables for
+variable/identity tests, and test-bearing prefixes into checked ordinary loop
+components. Other builtin and extended-source constructors remain rejected. A standalone dependency-triple child accepted under `lp` is not
+a source Prolog verdict.
 The higher-order adapter retains `--explain`. Verdict text and exit codes are
 preserved from the category entry points.
 

@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 -- Every acceptance branch is generated from Isabelle.
-module Ceta.Category.LogicProgramming (run) where
+module Ceta.Category.LogicProgramming (run, runProlog) where
 import Ceta.Input.Characters (cachedCharacters)
 #ifdef LP_SEG_TRIPLES
 import qualified LP_Triples_Generated as T
@@ -13,6 +13,15 @@ import qualified LP_Cut_Projected_Generated as P
 import qualified LP_Return_Module_Generated as R
 import qualified LP_SEG_Certificate_Generated as S
 import qualified LP_Cut_NO_Generated as N
+#ifdef LP_PROLOG_STATIC
+import qualified Prolog_Static_Generated as PS
+#endif
+#ifdef LP_PROLOG_CONTEXT
+import qualified Prolog_Context_Generated as PC
+#endif
+#ifdef LP_PROLOG_CONTEXT_ITS
+import qualified Prolog_Context_ITS_Generated as PCI
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -36,6 +45,14 @@ main = do
 #endif
         P.check_lpc_projected_xml (decodeP input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT"
+#ifdef LP_SEG_TRIPLES
+        else if T.check_lp_triple_pidp_xml (decodeT input)
+        then putStrLn "CERTIFIED LP DEPENDENCY-TRIPLE CHILD"
+#endif
+#ifdef LP_PROLOG_STATIC
+        else if PS.check_lpc_uniform_xml (cachedCharacters PS.explode input)
+        then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT NO"
+#endif
         else if N.check_lpc_no_xml (decodeN input)
         then putStrLn "CERTIFIED SOURCE-BOUND LP WITH CUT NO"
         else if S.check_lpc_seg_free_certificate_xml (decodeS input) ||
@@ -62,6 +79,39 @@ main = do
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
 run args = withArgs args main
+
+-- Prolog has an explicit source bridge; an LP child alone is insufficient.
+runProlog :: [String] -> IO ()
+runProlog [path] = do
+  input <- readFile path
+#ifdef LP_PROLOG_STATIC
+  if PS.check_lpp_static_xml (cachedCharacters PS.explode input) ||
+    PS.check_lpp_undefined_xml (cachedCharacters PS.explode input)
+    then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG"
+    else if
+#ifdef LP_PROLOG_CONTEXT
+#ifdef LP_PROLOG_CONTEXT_ITS
+      PCI.check_lpp_context_its_xml (cachedCharacters PCI.explode input) ||
+#endif
+      PC.check_lpp_established_finite_triples_xml (cachedCharacters PC.explode input) ||
+      PC.check_lpp_established_triples_xml (cachedCharacters PC.explode input) ||
+      PC.check_lpp_context_composed_certificate_xml (cachedCharacters PC.explode input) ||
+      PC.check_lpp_context_certificate_xml (cachedCharacters PC.explode input) ||
+#endif
+      PS.check_lpp_return_triples_xml (cachedCharacters PS.explode input) ||
+      PS.check_lpp_module_triples_xml (cachedCharacters PS.explode input)
+      then putStrLn "CERTIFIED SOURCE-BOUND PROLOG"
+    else if PS.check_lpp_test_no_xml (cachedCharacters PS.explode input) ||
+      PS.check_lpp_integer_no_xml (cachedCharacters PS.explode input)
+      then putStrLn "CERTIFIED SOURCE-BOUND PROLOG NO"
+    else if PS.check_lpp_static_no_xml (cachedCharacters PS.explode input) ||
+      PS.check_lpp_uniform_xml (cachedCharacters PS.explode input)
+      then putStrLn "CERTIFIED SOURCE-BOUND STATIC PROLOG NO"
+      else putStrLn "REJECTED" >> exitFailure
+#else
+  putStrLn "UNSUPPORTED" >> exitFailure
+#endif
+runProlog _ = putStrLn "usage: ceta --category prolog certificate.xml" >> exitFailure
 
 #ifdef LP_SEG_TRIPLES
 decodeT = cachedCharacters T.explode

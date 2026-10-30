@@ -149,3 +149,20 @@ session Logic_Programming_Cut_NO_Code = Logic_Programming +
 session Logic_Programming_Cut_Projected_Residual = Logic_Programming +
   options [document = false, timeout = 900]
   theories LP_Cut_Projected_Certificate_Regression LP_Cut_SEG_Projected_Code
+
+session Prolog_Static_Code = Logic_Programming +
+  options [document = false, timeout = 900]
+  theories LP_Prolog_Static_Code
+
+session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
+  options [document = false, timeout = 900]
+  sessions ITS_Arithmetic ITS_Ext
+  theories
+    LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends
+    LP_Prolog_Context_Code LP_Prolog_Context_Control
+    LP_Prolog_Context_Observed_Control LP_Prolog_Context_Triple_Observed
+    LP_Prolog_Context_ITS_XML
+    LP_Prolog_Numeric_Component_XML LP_Prolog_Numeric_Calls_Regression
+    LP_Prolog_Context_Composed_Certificate
+    LP_Prolog_Context_References_Certificate
+    LP_Prolog_Triple_XML

@@ -1,5 +1,5 @@
 theory LP_Cut_Return_Contracts
-  imports LP_Cut_Answers
+  imports LP_Cut_Answers LP_Answer_Graph
 begin
 
 text \<open>A cut-aware return contract describes the actual ordered execution,
@@ -33,71 +33,18 @@ lemma lpc_return_graph_SN:
     and sn: "SN_on R {t}"
     and represented: "rep ss t"
   shows "SN_on (lpc_answer_steps P) {ss}"
-proof -
-  have all: "\<forall>ss. rep ss t \<longrightarrow> SN_on (lpc_answer_steps P) {ss}"
-  proof (rule SN_on_induct[OF SN_on_trancl[OF sn] singletonI])
-    fix t
-    assume outer: "\<And>u. (t,u)\<in>R\<^sup>+ \<Longrightarrow>
-      \<forall>ss. rep ss u \<longrightarrow> SN_on (lpc_answer_steps P) {ss}"
-    have local: "\<forall>ss. weight ss=k \<longrightarrow> rep ss t \<longrightarrow>
-      SN_on (lpc_answer_steps P) {ss}" for k
-    proof (induct k rule: less_induct)
-      case (less k)
-      show ?case
-      proof (intro allI impI)
-        fix ss assume w: "weight ss=k" and rep: "rep ss t"
-        show "SN_on (lpc_answer_steps P) {ss}"
-        proof (rule step_reflects_SN_on)
-          fix tt assume step: "(ss,tt)\<in>lpc_answer_steps P"
-          obtain event where event: "lpc_answer_transition P ss event tt"
-            using step by (auto simp: lpc_answer_steps_def)
-          have covered: "(\<exists>u. (t,u)\<in>R\<^sup>+ \<and> rep tt u) \<or>
-            (rep tt t \<and> weight tt < weight ss)"
-            using valid rep event unfolding lpc_return_graph_valid_def by blast
-          show "SN_on (lpc_answer_steps P) {tt}"
-            using covered outer less.hyps w by blast
-        qed
-      qed
-    qed
-    show "\<forall>ss. rep ss t \<longrightarrow> SN_on (lpc_answer_steps P) {ss}"
-      using local by blast
-  qed
-  show ?thesis using all represented by blast
-qed
+  using lp_answer_graph_SN[of "lpc_answer_transition P" R rep ret weight t ss]
+  assms by (simp add: lp_answer_graph_valid_def lpc_return_graph_valid_def
+    lp_answer_steps_def lpc_answer_steps_def)
 
 lemma lpc_return_graph_path:
   assumes valid: "lpc_return_graph_valid P R rep ret weight"
     and path: "(ss,tt)\<in>(lpc_answer_steps P)\<^sup>*"
     and represented: "rep ss t"
   shows "\<exists>u. (t,u)\<in>R\<^sup>* \<and> rep tt u"
-  using path represented
-proof (induct rule: rtrancl_induct)
-  case base then show ?case by blast
-next
-  case (step us vs)
-  obtain u where before: "(t,u)\<in>R\<^sup>*" and rep: "rep us u"
-    using step.hyps(3)[OF step.prems] by blast
-  obtain event where event: "lpc_answer_transition P us event vs"
-    using step.hyps(2) by (auto simp: lpc_answer_steps_def)
-  have covered: "(\<exists>v. (u,v)\<in>R\<^sup>+ \<and> rep vs v) \<or>
-    (rep vs u \<and> weight vs < weight us)"
-    using valid rep event unfolding lpc_return_graph_valid_def by blast
-  have successor: "\<exists>v. (u,v)\<in>R\<^sup>* \<and> rep vs v"
-  proof (cases "\<exists>v. (u,v)\<in>R\<^sup>+ \<and> rep vs v")
-    case True
-    then obtain v where uv: "(u,v)\<in>R\<^sup>+" and rv: "rep vs v" by blast
-    have "(u,v)\<in>R\<^sup>*" by (rule trancl_into_rtrancl[OF uv])
-    then show ?thesis using rv by blast
-  next
-    case False
-    then have "rep vs u" using covered by blast
-    then show ?thesis by blast
-  qed
-  obtain v where uv: "(u,v)\<in>R\<^sup>*" and repv: "rep vs v"
-    using successor by blast
-  have tv: "(t,v)\<in>R\<^sup>*" by (rule rtrancl_trans[OF before uv])
-  show ?case using tv repv by blast
-qed
+  using lp_answer_graph_path[of "lpc_answer_transition P" R rep ret weight ss tt t]
+  assms by (simp add: lp_answer_graph_valid_def lpc_return_graph_valid_def
+    lp_answer_steps_def lpc_answer_steps_def)
 
 theorem lpc_return_graph_contract:
   assumes valid: "lpc_return_graph_valid P R rep ret weight"

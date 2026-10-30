@@ -1,5 +1,5 @@
 theory IA_Div_Mod
-  imports LTS.IA_Instance
+  imports LTS.IA_Instance Proof_Checker.Container_Setup
 begin
 
 definition euclid_quot :: "int \<Rightarrow> int \<Rightarrow> int" where
@@ -62,7 +62,10 @@ text \<open>A separate interpreted signature extends the established integer
 
 datatype ia4_sig = IA4_Base IA.sig | IA4_Div | IA4_Mod
 
-derive compare_order IA.sig IA.ty ia4_sig
+text \<open>Reuse the unified checker's existing order on IA.ty. Deriving a
+second order in this theory prevents importing ITS and Prolog proofs together.\<close>
+
+derive compare_order IA.sig ia4_sig
 
 instantiation ia4_sig :: showl
 begin
