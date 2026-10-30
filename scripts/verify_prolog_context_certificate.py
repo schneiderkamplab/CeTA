@@ -22,17 +22,18 @@ poly=Path(os.environ['POLYML_HOME'])/'x86_64-linux/poly'
 os.environ.setdefault('ML_HOME',str(poly.parent))
 os.environ.setdefault('ML_PLATFORM','x86_64-linux')
 code='fun chain p = (case PolyML.SaveState.showParent p of NONE => [] | SOME q => chain q) @ [p]; PolyML.SaveState.loadHierarchy (chain '+json.dumps(str(a.heap.resolve()))+');'
-theory=str(root/'thys/Logic_Programming/LP_Prolog_Triple_XML')
+theory=str(root/'thys/Logic_Programming/LP_Prolog_Finite_Triple_XML')
 temporary=None
 if a.export:
  a.export.mkdir(parents=True,exist_ok=False)
  temporary=tempfile.TemporaryDirectory(prefix='prolog-static-export-')
  driver=Path(temporary.name)/'Prolog_Context_Reexport.thy'
- driver.write_text('theory Prolog_Context_Reexport\n imports '+json.dumps(theory)+' '+json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Context_Certificate'))+' '+json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Context_Composed_Certificate'))+r'''
+ driver.write_text('theory Prolog_Context_Reexport\n imports '+json.dumps(theory)+' '+json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Triple_XML'))+' '+json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Context_Certificate'))+' '+json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Context_Composed_Certificate'))+r'''
 begin
 ML \<open>
 val (modules, _) = Code_Target.produce_code @{context} true
   [@{const_name check_lpp_context_certificate_xml}, @{const_name check_lpp_context_composed_certificate_xml},
+   @{const_name check_lpp_established_finite_triples_xml}, @{const_name lpp_established_finite_triples_diagnostics_xml},
    @{const_name check_lpp_established_triples_xml}, @{const_name lpp_established_triples_diagnostics_xml}] "Haskell" "Prolog_Context_Generated" NONE [];
 val root = Path.explode '''+json.dumps(str(a.export.resolve()))+r''';
 val _ = List.app (fn (names, bytes) => Bytes.write (root + Path.make names) bytes) modules;
@@ -45,7 +46,7 @@ command='((Thy_Info.use_thy_legacy '+json.dumps(theory)+'; '+save+'writeln "PROL
 a.log.parent.mkdir(parents=True,exist_ok=True)
 with a.log.open('w') as log:
  r=subprocess.run([str(poly),'-q','--minheap','1000','--gcthreads','4','--eval',code,'-i'],input=command,text=True,stdout=log,stderr=subprocess.STDOUT)
-if r.returncode or 'PROLOG_STATIC_VERIFIED' not in a.log.read_text():raise SystemExit(1)
+if r.returncode or 'PROLOG_STATIC_VERIFIED' not in a.log.read_text().splitlines():raise SystemExit(1)
 print('Prolog source theorem and dependency audit passed')
 
 if temporary: temporary.cleanup()
