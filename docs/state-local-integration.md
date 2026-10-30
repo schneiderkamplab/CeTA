@@ -96,3 +96,26 @@ records the full validation and remaining obligations. The requested 30-gain
 milestone still needs 17 additional YES roots. Protected-category promotion is
 not claimed. Arithmetic normalization theories under development are not part
 of this pinned checker.
+
+## Established identity interfaces and normalized evaluation, 2026-10-30
+
+CeTA `c37fd837d569716a9712fa5802b716145992fb1f` verifies identity tests and constant/integer evaluation
+normalization with complete referenced-module dependencies. Successful identity
+links may use either independently checked specialized or original interfaces.
+Export `tests/unified/exports/lp-source-normalized-identity-interfaces.tar.gz`
+comes from verified `target/prolog-identity-export-180`; unified `make ceta`
+build `target/prolog-identity-unified-182/ceta` has SHA-256
+`995b2317fb0d269aefc517a3a5097889e53999b20a8e0ba6a7f8b662a99b5de0`. No generated checking logic was edited manually.
+
+Ferrum `022386693f7ff7e10cc0c6f19e9289cf50615735` strictly replays all 221 Prolog roots to 31 YES
+and three NOs, preserving previous verdicts with source audits, authorized
+receipts and two checks each. The same checker preserves 84 YES and nine NOs
+on all 112 LP-with-cut roots. The cohort has 32 cases, strict controls 63 cases,
+and mutation validation 705 checks; redundant annotation removals are explicitly
+classified, with necessary removals rejecting in the cohort. Immutable audit
+metadata and archived evidence are in the sibling Ferrum ledger at
+`docs/data/prolog-identity-normalization-frontier-20261030.json`.
+
+Fourteen of the required 30 additional YESs are certified. Equality free-knowledge
+transport and finite-ground arithmetic remain active development. Production
+promotion remains gated on protected-category replay with the same checker.
