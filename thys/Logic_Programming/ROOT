@@ -164,3 +164,5 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
     LP_Prolog_Context_ITS_XML
     LP_Prolog_Numeric_Component_XML LP_Prolog_Numeric_Calls_Regression
     LP_Prolog_Context_Composed_Certificate
+    LP_Prolog_Context_References_Certificate
+    LP_Prolog_Triple_XML

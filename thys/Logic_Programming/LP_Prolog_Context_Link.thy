@@ -8,12 +8,81 @@ definition lpp_path_context_holds where
      list_all (lpp_success_guard_holds lpp_integer_result eta) guards \<and>
      list_all (lpp_numeric_observation_holds eta) observations)"
 
+
+text \<open>Literal recognition reconstructs the canonical source symbol. The
+candidate decoder is untrusted arithmetic: only the final exact term equality
+can establish an integer fact. Evaluation facts refer to actual earlier
+successful integer operations, never merely to ground arguments.\<close>
+definition lpp_context_literal_candidate :: "(string lp_cut_symbol,'v) term \<Rightarrow> int" where
+  "lpp_context_literal_candidate t = (case t of Fun (LPCUser encoded_name) [] \<Rightarrow>
+    let payload=drop (length (lpp_integer_name 0)-2) encoded_name;
+        negative=take 2 payload=''2d'';
+        digits=(if negative then drop 2 payload else payload);
+        value=foldl (\<lambda>n i. 10*n + int (length (takeWhile (\<lambda>c. c\<noteq>digits!(2*i+1)) ''0123456789'')))
+          0 [0..<length digits div 2]
+    in (if negative then -value else value) | _ \<Rightarrow> 0)"
+
+definition lpp_context_integer where
+  "lpp_context_integer guards t =
+    (t=lpp_integer_term (lpp_context_literal_candidate t) \<or>
+     LPPSInteger t\<in>set guards \<or>
+     list_ex (\<lambda>g. case g of LPPSEvaluates e u \<Rightarrow> u=t | _ \<Rightarrow> False) guards)"
+
+lemma lpp_context_integer_sound:
+  assumes "lpp_context_integer guards t"
+    "list_all (lpp_success_guard_holds lpp_integer_result eta) guards"
+  shows "lpp_is_integer (lp_ieval t eta)"
+proof -
+  have literal: "t=lpp_integer_term (lpp_context_literal_candidate t) \<Longrightarrow>
+    lpp_is_integer (lp_ieval t eta)"
+    by (metis lpp_integer_literal_eval lpp_is_integer_def)
+  have tested: "LPPSInteger t\<in>set guards \<Longrightarrow> lpp_is_integer (lp_ieval t eta)"
+    using assms(2) by (auto simp: list_all_iff)
+  have evaluated: "list_ex (\<lambda>g. case g of LPPSEvaluates e u \<Rightarrow> u=t | _ \<Rightarrow> False) guards
+    \<Longrightarrow> lpp_is_integer (lp_ieval t eta)"
+  proof -
+    assume exists: "list_ex (\<lambda>g. case g of LPPSEvaluates e u \<Rightarrow> u=t | _ \<Rightarrow> False) guards"
+    then obtain g where member: "g\<in>set guards" and shape:
+      "(case g of LPPSEvaluates e u \<Rightarrow> u=t | _ \<Rightarrow> False)"
+      by (auto simp: list_ex_iff)
+    have holds: "lpp_success_guard_holds lpp_integer_result eta g"
+      using assms(2) member by (auto simp: list_all_iff)
+    show ?thesis using holds shape
+      by (cases g) (auto simp: lpp_integer_result_def lpp_is_integer_def)
+  qed
+  show ?thesis using assms(1) literal tested evaluated
+    unfolding lpp_context_integer_def by blast
+qed
+
+fun lpp_context_guard_check where
+  "lpp_context_guard_check guards (LPPSInteger t) = lpp_context_integer guards t"
+| "lpp_context_guard_check guards (LPPSOpaque t) = True"
+| "lpp_context_guard_check guards g = (g\<in>set guards)"
+
+fun lpp_context_observation_check where
+  "lpp_context_observation_check guards observations (LPPOInteger t) = lpp_context_integer guards t"
+| "lpp_context_observation_check guards observations observation = (observation\<in>set observations)"
+
+lemma lpp_context_guard_check_sound:
+  "lpp_context_guard_check guards g \<Longrightarrow>
+   list_all (lpp_success_guard_holds lpp_integer_result eta) guards \<Longrightarrow>
+   lpp_success_guard_holds lpp_integer_result eta g"
+  by (cases g) (auto simp: list_all_iff intro: lpp_context_integer_sound)
+
+lemma lpp_context_observation_check_sound:
+  "lpp_context_observation_check guards observations observation \<Longrightarrow>
+   list_all (lpp_success_guard_holds lpp_integer_result eta) guards \<Longrightarrow>
+   list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>
+   lpp_numeric_observation_holds eta observation"
+  by (cases observation) (auto simp: list_all_iff lpp_is_integer_def
+      dest: lpp_context_integer_sound)
+
 definition lpp_check_context_transport where
   "lpp_check_context_transport facts guards observations child_facts child_guards child_observations bindings =
     (let mu=lp_cut_instance_subst bindings in
       list_all (\<lambda>b. lpp_success_atom_subst b mu\<in>set facts) child_facts \<and>
-      list_all (\<lambda>g. case g of LPPSOpaque _ \<Rightarrow> True | _ \<Rightarrow> lpp_success_guard_subst g mu\<in>set guards) child_guards \<and>
-      list_all (\<lambda>observation. lpp_numeric_observation_substitute observation mu\<in>set observations) child_observations)"
+      list_all (\<lambda>g. lpp_context_guard_check guards (lpp_success_guard_subst g mu)) child_guards \<and>
+      list_all (\<lambda>observation. lpp_context_observation_check guards observations (lpp_numeric_observation_substitute observation mu)) child_observations)"
 
 lemma lpp_context_guard_transport:
   assumes checked: "(case g of LPPSOpaque _ \<Rightarrow> True | _ \<Rightarrow> lpp_success_guard_subst g mu\<in>set guards)"
@@ -27,20 +96,15 @@ lemma lpp_context_transport_sound:
   shows "lpp_path_context_holds P child_facts child_guards child_observations
     (\<lambda>x. lp_ieval (lp_cut_instance_subst bindings x) eta)"
 proof -
-  let ?mu = "lp_cut_instance_subst bindings"
   have guards: "list_all (lpp_success_guard_holds lpp_integer_result eta) guards"
-    using source by (simp add: lpp_path_context_holds_def)
-  have child: "list_all (\<lambda>g. lpp_success_guard_holds lpp_integer_result eta (lpp_success_guard_subst g ?mu)) child_guards"
-  proof (unfold list_all_iff, intro ballI)
-    fix g assume member: "g\<in>set child_guards"
-    have check: "(case g of LPPSOpaque _ \<Rightarrow> True | _ \<Rightarrow> lpp_success_guard_subst g ?mu\<in>set guards)"
-      using checked member by (auto simp: lpp_check_context_transport_def Let_def list_all_iff)
-    show "lpp_success_guard_holds lpp_integer_result eta (lpp_success_guard_subst g ?mu)"
-      by (rule lpp_context_guard_transport[OF check guards])
-  qed
-  show ?thesis using checked source child by (auto simp: lpp_check_context_transport_def lpp_path_context_holds_def
-    Let_def list_all_iff lpp_success_atom_subst_eval[symmetric]
-    lpp_success_guard_subst_eval[symmetric] lpp_numeric_observation_substitute_eval[symmetric])
+    and observations: "list_all (lpp_numeric_observation_holds eta) observations"
+    using source by (auto simp: lpp_path_context_holds_def)
+  show ?thesis using checked source
+    lpp_context_guard_check_sound[OF _ guards]
+    lpp_context_observation_check_sound[OF _ guards observations]
+    by (auto simp: lpp_check_context_transport_def lpp_path_context_holds_def
+      Let_def list_all_iff lpp_success_atom_subst_eval[symmetric]
+      lpp_success_guard_subst_eval[symmetric] lpp_numeric_observation_substitute_eval[symmetric])
 qed
 
 text \<open>The target context uses exactly the substitution already checked

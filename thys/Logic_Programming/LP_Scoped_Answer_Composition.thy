@@ -4,11 +4,20 @@ begin
 
 text \<open>The prefix proof covers every answer, not merely its termination.
 The continuation receives the exact saved substitution for each covered answer.\<close>
-theorem lp_scoped_answer_contract_compose:
+definition lp_actual_answer where
+  "lp_actual_answer T ss eta = (\<exists>us vs.
+    (ss,us)\<in>(lp_answer_steps T)\<^sup>* \<and> T us (Some eta) vs)"
+
+lemma lp_actual_answer_covered:
+  "lp_answer_contract T ss R t ret \<Longrightarrow> lp_actual_answer T ss eta \<Longrightarrow>
+    (t,ret eta)\<in>R\<^sup>*"
+  by (auto simp: lp_answer_contract_def lp_answers_covered_def lp_actual_answer_def)
+
+theorem lp_scoped_answer_contract_compose_actual:
   assumes prefix: "lp_answer_contract T ss R t ret"
     and valid: "list_all (\<lambda>x. lpc_clause_nonempty (fst x)) ss"
     and separated: "lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (map fst ss)) = {}"
-    and continuation: "\<And>eta. (t,ret eta)\<in>R\<^sup>* \<Longrightarrow>
+    and continuation: "\<And>eta. lp_actual_answer T ss eta \<Longrightarrow>
       lp_answer_contract T
         [(LPCGoals (map (lp_cut_map (\<lambda>x. lp_ieval x eta)) rest),eta)] R (ret eta) final"
     and valid_step: "\<And>us ev vs. T us ev vs \<Longrightarrow>
@@ -94,7 +103,8 @@ proof -
           using prefix path event by (auto simp: lp_answer_contract_def lp_answers_covered_def)
         let ?gs = "map (lp_cut_map (\<lambda>x. lp_ieval x eta)) rest"
         have first: "lp_answer_contract ?T [(LPCGoals ?gs,eta)] R t final"
-          by (rule lp_answer_contract_start[OF reached continuation[OF reached]])
+          by (rule lp_answer_contract_start[OF reached continuation])
+            (use path event in \<open>auto simp: lp_actual_answer_def\<close>)
         have owns: "lpc_owned_stack ?E (map fst [(LPCGoals ?gs,eta)])"
           using lpc_owned_external_goals[of rest ?E "[]"] by (simp add: lpc_owned_goals_map)
         have separated_tail: "?E\<inter>set (lpc_barrier_ids (map fst (lpc_attach_answers rest vs))) = {}"
@@ -106,6 +116,38 @@ proof -
     qed
   qed
   show ?thesis using all[OF sn] valid separated by simp
+qed
+
+theorem lp_scoped_answer_contract_compose:
+  assumes prefix: "lp_answer_contract T ss R t ret"
+    and valid: "list_all (\<lambda>x. lpc_clause_nonempty (fst x)) ss"
+    and separated: "lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (map fst ss)) = {}"
+    and continuation: "\<And>eta. (t,ret eta)\<in>R\<^sup>* \<Longrightarrow>
+      lp_answer_contract T
+        [(LPCGoals (map (lp_cut_map (\<lambda>x. lp_ieval x eta)) rest),eta)] R (ret eta) final"
+    and valid_step: "\<And>us ev vs. T us ev vs \<Longrightarrow>
+      list_all (\<lambda>x. lpc_clause_nonempty (fst x)) us \<Longrightarrow>
+      list_all (\<lambda>x. lpc_clause_nonempty (fst x)) vs"
+    and reflect: "\<And>us ev result. lpc_prefix_active us \<Longrightarrow>
+      T (lpc_attach_answers rest us) ev result \<Longrightarrow>
+      ev = None \<and> (\<exists>vs. T us None vs \<and> result = lpc_attach_answers rest vs)"
+    and separate_step: "\<And>us ev vs. lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (map fst us)) = {} \<Longrightarrow>
+      T (lpc_attach_answers rest us) ev (lpc_attach_answers rest vs) \<Longrightarrow>
+      lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (map fst vs)) = {}"
+    and empty: "\<And>ev vs. \<not>T [] ev vs"
+    and success: "\<And>eta vs. T ((LPCGoals [],eta)#vs) (Some eta) vs"
+    and append: "\<And>us vs. lpc_owned_stack (lpc_rest_scopes rest) (map fst us) \<Longrightarrow>
+      lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (map fst vs)) = {} \<Longrightarrow>
+      lp_answer_contract T us R t final \<Longrightarrow>
+      lp_answer_contract T vs R t final \<Longrightarrow>
+      lp_answer_contract T (us@vs) R t final"
+  shows "lp_answer_contract T (lpc_attach_answers rest ss) R t final"
+proof (rule lp_scoped_answer_contract_compose_actual[OF prefix valid separated _
+    valid_step reflect separate_step empty success append])
+  fix eta assume actual: "lp_actual_answer T ss eta"
+  show "lp_answer_contract T
+      [(LPCGoals (map (lp_cut_map (\<lambda>x. lp_ieval x eta)) rest),eta)] R (ret eta) final"
+    by (rule continuation[OF lp_actual_answer_covered[OF prefix actual]])
 qed
 
 end
