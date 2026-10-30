@@ -112,7 +112,7 @@ text \<open>These contracts describe only successful answers. They do not
 assert termination of a helper or authorize omitting later answers.\<close>
 definition lp_return_shape_contract where
   "lp_return_shape_contract G inputs outputs a =
-    (length inputs=length (snd a) \<and> length outputs=length (snd a) \<and>
+    (length inputs=length (snd a) \<longrightarrow> length outputs=length (snd a) \<and>
       (list_all2 (lp_return_shape_holds G) inputs (snd a) \<longrightarrow>
        list_all2 (lp_return_shape_holds G) outputs (snd a)))"
 
