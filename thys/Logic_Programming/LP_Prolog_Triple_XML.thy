@@ -51,8 +51,26 @@ definition lpp_established_split_parser where
     split\<leftarrow>lpc_triple_split_parser;
     xml_return (None,LPPTSplit A split)}"
 
+definition lpp_source_integer_receipt_parser where
+  "lpp_source_integer_receipt_parser = XMLdo (STR ''sourceIntegerReturn'') {
+    model\<leftarrow>XMLdo (STR ''sourceReturnModel'') {
+      F\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
+      transfer\<leftarrow>lpp_transfer_contract_parser;
+      xml_return (F,transfer)};
+    facts\<leftarrow>xml_many (STR ''facts'') lpp_transfer_fact_parser id;
+    K\<leftarrow>xml_many (STR ''integers'') (xml_text (STR ''var'')) id;
+    xml_return (case model of (F,(summaries,SP,proofs)) \<Rightarrow>
+      \<lparr>lppsir_predicates = F,lppsir_summaries = summaries,lppsir_program = SP,
+        lppsir_proofs = proofs,lppsir_facts = facts,lppsir_integers = K\<rparr>)}"
+
+definition lpp_established_integer_split_parser where
+  "lpp_established_integer_split_parser = XMLdo (STR ''prologTripleIntegerSplit'') {
+    split\<leftarrow>lpc_triple_split_parser;
+    evidence\<leftarrow>lpp_source_integer_receipt_parser;
+    xml_return (None,LPPTIntegerSplit split evidence)}"
+
 definition lpp_established_component_parser where
-  "lpp_established_component_parser = lpp_established_region_parser XMLor lpp_established_split_parser"
+  "lpp_established_component_parser = lpp_established_region_parser XMLor lpp_established_split_parser XMLor lpp_established_integer_split_parser"
 
 fun lpp_established_component_header where
   "lpp_established_component_header P fuel transfer (None,component) = True"

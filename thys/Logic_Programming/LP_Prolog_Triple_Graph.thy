@@ -1,17 +1,20 @@
 theory LP_Prolog_Triple_Graph
-  imports LP_Prolog_Triple_Split_Check LP_Prolog_Triple_Region LP_Dependency_Triple_Roles
+  imports LP_Prolog_Triple_Split_Check LP_Prolog_Triple_Integer_Return LP_Prolog_Triple_Region LP_Dependency_Triple_Roles
 begin
 
 hide_const (open) Tree_Automata_Containment.entry
 
 datatype lpp_triple_component =
   LPPTRegion lpp_triple_region | LPPTSplit "(string * nat) list" "string lpc_triple_split"
+  | LPPTIntegerSplit "string lpc_triple_split" lpp_source_integer_receipt
 
 fun lpp_triple_check_component where
   "lpp_triple_check_component fuel P D Q T roots contexts incoming_context entry (LPPTRegion region) =
     lpp_triple_check_region fuel P D Q T roots contexts incoming_context entry region"
 | "lpp_triple_check_component fuel P D Q T roots contexts incoming_context entry (LPPTSplit A receipt) =
     lpp_triple_check_split fuel P D Q roots contexts incoming_context A entry receipt"
+| "lpp_triple_check_component fuel P D Q T roots contexts incoming_context entry (LPPTIntegerSplit receipt evidence) =
+    lpp_triple_check_integer_split fuel P D Q roots contexts incoming_context entry receipt evidence"
 
 definition lpp_triple_check_graph where
   "lpp_triple_check_graph fuel P D Q T (roots::string lpc_triple_root list) contexts blocks q modes chain_pred =
@@ -38,7 +41,8 @@ theorem lpp_triple_component_checked_lower:
     (lp_atom_eval (lpctr_output entry))"
   using checked by (cases component)
     (auto intro: lpp_triple_region_checked_lower[OF _ program transfer observed known free lower]
-      lpp_triple_split_checked_lower[OF _ program known observed free lower])
+      lpp_triple_split_checked_lower[OF _ program known observed free lower]
+      lpp_triple_integer_split_checked_lower[OF _ program known observed free lower])
 
 theorem lpp_triple_graph_contract:
   fixes SP :: "string lpp_success_clause list"
