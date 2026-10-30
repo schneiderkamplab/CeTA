@@ -95,4 +95,17 @@ corollary lpp_checked_expression_finishes:
    \<exists>n. lpp_integer_evaluation (lp_ieval (lpp_expression_term e) eta) n"
   using lpp_integer_known_environment lpp_expression_evaluation by blast
 
+
+lemma lpp_integer_value_subst[simp]:
+  "lp_isubst (lpp_integer_value n) sigma = lpp_integer_value n"
+  by (simp add: lpp_integer_value_def)
+
+lemma lpp_integer_evaluation_subst:
+  "lpp_integer_evaluation a n \<Longrightarrow> lp_isubst a sigma=a"
+  by (induction rule: lpp_integer_evaluation.induct) simp_all
+
+lemma lpp_integer_known_subst:
+  "lpp_integer_known K eta \<Longrightarrow> lpp_integer_known K (\<lambda>x. lp_isubst (eta x) sigma)"
+  by (unfold lpp_integer_known_def) (metis lpp_integer_value_subst)
+
 end

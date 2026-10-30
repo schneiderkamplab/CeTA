@@ -239,3 +239,43 @@ records are in its `docs/data/prolog-integer-checkpoint-20261029.tar.gz`.
 General arithmetic source reconstruction, integer-fact certification, rational
 projections and mixed cycles remain open. This is a development checkpoint,
 not a production release.
+
+## 2026-10-30 Arithmetic rows and source actions
+
+The guarded backend components now include complete source-bound numeric rows
+and a proved construction of fresh auxiliary post-state values. Checked rows
+map to the actual integer ITS transition semantics. Input and output endpoint
+terms must denote integers directly; structural arithmetic syntax is not
+implicitly evaluated at a call boundary. Auxiliary coordinates cannot alias
+recursive-call output coordinates.
+
+`LP_Prolog_Operation_Context` connects checked successful helper summaries and
+already-observed guards to the integer premises of source actions.
+`LP_Prolog_Integer_Return_Actions` checks arithmetic primitives using the shared
+return table, links and equality machinery. `LP_Prolog_Context_Link` transports
+helper, type and numeric observations through the exact substitution of a
+checked shared return link. Unsupported builtin states are protected by the
+domain envelope; absence of an evaluation rule is never accepted as a source
+termination argument.
+
+The combined replay/export is retained in
+`target/prolog-extended/guarded-backends-16.log` and
+`target/prolog-extended/guarded-backends-export-16/`. Generated checks pass 18
+source-action cases and 15 complete-row cases; see
+`target/prolog-extended/integer-node-tests-16/results.log` and
+`target/prolog-extended/numeric-path-mutations-16/results.json`. Hashes are in
+`target/prolog-extended/guarded-backends-16-sha256.txt`. These are component
+executables used for regression testing, not production category checkers.
+
+Root source assembly, every context/return/boundary obligation, backend child
+checking and unified-dispatch integration remain required before source
+certification. The installed unified checker and production oracle are
+unchanged. No source verdict is inferred from the component tests.
+
+A fresh replay from the committed integer heap also passes:
+`target/prolog-extended/guarded-backends-clean-18.log`. Its generated Haskell
+matches export 16 byte for byte (SHA-256
+`33faaae67a86caebe8e72db162389b175139d52607f28e4a8237b764752f9ce1`).
+`guarded-backends-20.log` additionally verifies that the existing variable and
+identity-test actions remain sound under the integer-extended operation relation
+(`LP_Prolog_Integer_Legacy`); their proof machinery is reused.
