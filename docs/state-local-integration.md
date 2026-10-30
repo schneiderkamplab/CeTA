@@ -138,3 +138,29 @@ There is no additional benchmark gain in this checker-only integration. Finite
 evaluation foundations at `877bdc0` and subsequent contextual transport proofs
 remain separate development; they are not exported in this checker. The milestone
 still requires 16 more YES roots, and protected-category promotion remains gated.
+
+## Established finite evaluation milestone, 2026-10-30
+
+Source commit `5f4e343f43d7cce1997a594705ff01eb4a5f2d5b` checks finite-ground arithmetic and conditional actual
+helper returns within the established Prolog SEG. It reuses the shared
+LP-with-cut answer semantics, retains failure/error alternatives and complete
+nested module dependencies, and keeps groundness separate from integer facts.
+The new XML constructor is `prologEstablishedFiniteSEGDependencyTriplesProof`;
+legacy constructors remain supported by the same unified executable.
+
+Isabelle verification 246 and export 247 pass. Unified `make ceta` build 249
+has SHA-256 `88d8e3f093ac8d9e14b82b67ec8e212640053075cbb1f710bf2564f6ea20f220`. Export commit `5fba3d458c5385a1dae150c148442fd6c201599d` pins
+`tests/unified/exports/lp-source-finite-observed-evaluation.tar.gz`; generated
+checking logic was not edited manually. The persistent tree is
+`/work/dfm/festschrift/CeTA-prolog-source`, branch `codex/prolog-source`.
+
+Ferrum `3181c5cbda4e6278163bb917a30e4c504235b84e` strictly replays all 221 roots to **48 YES + 3 NO**,
+31 additional YESs over the milestone baseline, and preserves **84 YES +
+nine NO** on all 112 cut roots with this same checker. Every retained result
+has original-source audits, two checks and authorized complete receipts.
+Validation includes 467 shared tests, 43 final cohort cases, 33 legacy cases,
+five further negative controls, 701 mutation-suite checks and 66 strict replay
+controls. [Pinned audit metadata](../../ferrum-prolog-shared/docs/data/prolog-finite-milestone-20261030.json)
+and its archive retain exact identities and all attempts. The requested
+30-gain development milestone is complete; protected-category production
+promotion and a fresh matched AProVE comparison remain separate gates.
