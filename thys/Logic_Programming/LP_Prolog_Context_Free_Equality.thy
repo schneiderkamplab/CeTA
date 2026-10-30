@@ -1,5 +1,5 @@
 theory LP_Prolog_Context_Free_Equality
-  imports LP_Cut_Rational_Free_Equality LP_Prolog_Context_Refresh LP_Prolog_Context_Free_Link
+  imports LP_Cut_MGU_Unify_Free LP_Cut_Rational_Free_Equality LP_Prolog_Context_Refresh LP_Prolog_Context_Free_Link
 begin
 
 definition lpp_check_context_free_equality_node where
@@ -12,7 +12,7 @@ definition lpp_check_context_free_equality_node where
          active (concat (map snd saved)) outputs \<and>
        lpp_check_context_free_link fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved) (lpcn_ground nd)
          (lpcn_guards nd@lpc_negative_guards k (set (lpcn_ground nd)) (lpcn_guards nd)@[LPCEqGuard a b True])
-         [(a\<cdot>lp_cut_refresh k (set (lpcn_ground nd)),b\<cdot>lp_cut_refresh k (set (lpcn_ground nd))) ] [] (lpp_source_context_subst source_context (lp_cut_refresh k (set (lpcn_ground nd)))) yes) \<and>
+         [(a\<cdot>lp_cut_refresh k (set (lpcn_ground nd)),b\<cdot>lp_cut_refresh k (set (lpcn_ground nd))) ] (lpc_unify_untouched_free F (lpcn_ground nd) a b gs k) (lpp_source_context_subst source_context (lp_cut_refresh k (set (lpcn_ground nd)))) yes) \<and>
      (mode\<noteq>LPCAlwaysSuccess \<longrightarrow>
        lpp_check_context_free_link fuel Q nds states contexts Fs nd saved (lpcn_ground nd)
          (lpcn_guards nd@[LPCEqGuard a b False]) [] F source_context no))"
@@ -42,21 +42,23 @@ proof -
     using base by (simp add: lpc_check_free_equality_node_def)
   have st: "lpc_answer_transition P ((LPCGoals (LPCUnify ?a ?b#?gs),?ret)#?saved) event tt"
     using step by (simp add: lpc_return_eval_def)
-  have cases: "(\<exists>sigma. lp_isubst ?a sigma = lp_isubst ?b sigma \<and> event=None \<and>
+  have cases: "(\<exists>sigma. lpc_mgu_unify ?a ?b ?gs sigma \<and> event=None \<and>
       tt=(LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ?gs),
         (\<lambda>n. lp_isubst (?ret n) sigma))#?saved) \<or>
     (event=None \<and> tt=?saved \<and>
       \<not>(\<exists>sigma::string\<Rightarrow>(string lp_cut_symbol,string) lp_iterm.
         lp_isubst ?a sigma = lp_isubst ?b sigma))"
-    using st by (cases rule: lpc_answer_transition.cases) (auto simp: lpc_mgu_unify_def)
+    using st by (cases rule: lpc_answer_transition.cases) auto
   from cases show ?thesis
   proof
-    assume "\<exists>sigma. lp_isubst ?a sigma = lp_isubst ?b sigma \<and> event=None \<and>
+    assume "\<exists>sigma. lpc_mgu_unify ?a ?b ?gs sigma \<and> event=None \<and>
       tt=(LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ?gs),
         (\<lambda>n. lp_isubst (?ret n) sigma))#?saved"
-    then obtain sigma where eq: "lp_isubst ?a sigma = lp_isubst ?b sigma"
+    then obtain sigma where mgu: "lpc_mgu_unify ?a ?b ?gs sigma"
       and event: "event=None" and result: "tt=(LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ?gs),
         (\<lambda>n. lp_isubst (?ret n) sigma))#?saved" by blast
+    have eq: "lp_isubst ?a sigma = lp_isubst ?b sigma"
+      using mgu by (simp add: lpc_mgu_unify_def)
     have possible: "mode\<noteq>LPCAlwaysFailure"
       using lpc_free_equality_failure coverage eq by blast
     have unify: "lp_cut_check_unify fuel k l ?G ?K a b gs (map fst saved) next"
@@ -65,7 +67,7 @@ proof -
     have payload: "lpc_check_return_values fuel k ?G ?eqs active (concat (map snd saved)) outputs"
       and short: "lpc_return_short k saved"
       and link: "lpp_check_context_free_link fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved) ?G
-        (?K@lpc_negative_guards k (set ?G) ?K@[LPCEqGuard a b True]) ?eqs [] (lpp_source_context_subst source_context (lp_cut_refresh k (set ?G))) yes"
+        (?K@lpc_negative_guards k (set ?G) ?K@[LPCEqGuard a b True]) ?eqs (lpc_unify_untouched_free F ?G a b gs k) (lpp_source_context_subst source_context (lp_cut_refresh k (set ?G))) yes"
       using checked possible by (auto simp: lpp_check_context_free_equality_node_def)
     let ?env = "lp_cut_resolution_env k l eta sigma eta"
     have same: "tt=lpc_return_eval ?env ((LPCGoals next,outputs)#saved)"
@@ -91,8 +93,9 @@ proof -
     have facts: "lpp_source_context_holds SP
       (lpp_source_context_subst source_context (lp_cut_refresh k (set ?G))) ?env"
       by (rule lpp_context_refresh_sound[OF observed context_short bounds ground])
-    have forgotten: "lpc_free_knowledge (set []) ?env" by (simp add: lpc_free_knowledge_def)
-    show ?thesis using lpp_context_free_link_sound[OF link equations old knowledge forgotten facts] event same by simp
+    have preserved: "lpc_free_knowledge (set (lpc_unify_untouched_free F ?G a b gs k)) ?env"
+      by (rule lpc_unify_untouched_free_sound[OF mgu ground free bounds])
+    show ?thesis using lpp_context_free_link_sound[OF link equations old knowledge preserved facts] event same by simp
   next
     assume failure: "event=None \<and> tt=?saved \<and>
       \<not>(\<exists>sigma::string\<Rightarrow>(string lp_cut_symbol,string) lp_iterm.
