@@ -49,7 +49,19 @@ definition lpp_context_source_action_parser where
       active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
       result_var\<leftarrow>xml_text (STR ''resultVariable''); middle\<leftarrow>lpc_link_parser;
       action\<leftarrow>lpc_return_action_parser;
-      xml_return (LPPCSStagedIs K evidence a e gs active saved result_var middle action)})"
+      xml_return (LPPCSStagedIs K evidence a e gs active saved result_var middle action)}) XMLor
+    (XMLdo (STR ''constantIntegerEvaluation'') {
+      evidence\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      middle\<leftarrow>lpc_link_parser; action\<leftarrow>lpc_return_action_parser;
+      xml_return (LPPCSConstantIs evidence a e gs active saved middle action)}) XMLor
+    (XMLdo (STR ''identityTest'') {
+      f\<leftarrow>xml_text (STR ''predicate''); a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      yes\<leftarrow>lpc_link_parser; no\<leftarrow>lpc_link_parser;
+      xml_return (LPPCSIdentity f a b gs active saved yes no)})"
 
 text \<open>The table parser is shared by the source envelope. Checking a table
 alone is diagnostic: residual termination and the queried source remain

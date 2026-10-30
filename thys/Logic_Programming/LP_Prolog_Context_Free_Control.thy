@@ -1,5 +1,5 @@
 theory LP_Prolog_Context_Free_Control
- imports LP_Prolog_Context_Free_Source LP_Prolog_Context_Observed_Control
+ imports LP_Prolog_Context_Free_Is_Constant_Normalized LP_Prolog_Context_Free_Source LP_Prolog_Context_Observed_Control
 begin
 
 definition lpp_context_free_module_rep where
@@ -22,6 +22,11 @@ fun lpp_check_context_free_module_action where
 | "lpp_check_context_free_module_action fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPCMFiniteComparison evidence) =
     lpp_check_free_finite_comparison_receipt fuel Q nds states contexts Fs nd F ss source_context evidence"
 
+| "lpp_check_context_free_module_action fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPCMNormalizeIs K evidence a e gs active saved result_var middle) =
+    lpp_check_context_free_is_normalized fuel P Q nds states contexts Fs nd F ss source_context K evidence a e gs active saved result_var middle"
+| "lpp_check_context_free_module_action fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPCMNormalizeConstantIs evidence a e gs active saved middle) =
+    lpp_check_context_free_is_constant_normalized fuel P Q nds states contexts Fs nd F ss source_context evidence a e gs active saved middle"
+
 definition lpp_check_context_free_control where
   "lpp_check_context_free_control fuel P Q nds states contexts Fs T typings returned arity actions =
     (length nds=length Fs \<and> length nds=length states \<and> length nds=length contexts \<and> length nds=length typings \<and> length nds=length actions \<and>
@@ -39,12 +44,68 @@ theorem lpp_context_free_observed_control_action:
     and integers: "lpp_integer_known (lpp_context_module_types action) eta"
     and invariant: "J (lpc_return_eval eta ss)"
     and stable: "\<And>xs ev ys. lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain xs ev ys \<Longrightarrow> J xs \<Longrightarrow> J ys"
+    and frames: "\<And>xs ys. map snd xs=map snd ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
     and subset: "\<And>xs ys. set xs\<subseteq> set ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
     and lower: "\<And>vs v. ([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
       lpp_context_free_module_rep SP nds states contexts Fs vs v \<Longrightarrow> J vs \<Longrightarrow> lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) vs R t ret"
     and emit: "\<And>rho tt. lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain (lpc_return_eval eta ss) (Some rho) tt \<Longrightarrow> (t,ret rho)\<in>R\<^sup>*"
   shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) (lpc_return_eval eta ss) R t ret"
 proof (cases action)
+  case (LPPCMNormalizeIs K evidence a e gs active saved result_var middle)
+  have check: "lpp_check_context_free_is_normalized fuel P Q nds states contexts Fs nd F ss source_context K evidence a e gs active saved result_var middle"
+    using checked LPPCMNormalizeIs by simp
+  have typed: "lpp_integer_known K eta" using integers LPPCMNormalizeIs by simp
+  have bounds: "lpcl_target middle<length nds \<and> lpcl_target middle<length states \<and>
+    lpcl_target middle<length contexts \<and> lpcl_target middle<length Fs"
+    using check by (auto simp: lpp_check_context_free_is_normalized_def lpp_check_context_free_link_def
+      lpp_check_context_table_link_def lpc_check_return_table_link_def lpc_check_return_link_def lpc_check_link_def)
+  show ?thesis
+  proof (rule lpp_context_free_is_normalized_contract[where J=J, OF check known free observed typed invariant frames])
+    fix rho
+    assume edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
+      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+"
+      and knowledge: "lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho"
+      and child_free: "lpc_free_knowledge (set (Fs!lpcl_target middle)) rho"
+      and child_context: "lpp_source_context_holds SP (contexts!lpcl_target middle) rho"
+      and inv: "J (lpc_return_eval rho (states!lpcl_target middle))"
+    have represented: "lpp_context_free_module_rep SP nds states contexts Fs
+      (lpc_return_eval rho (states!lpcl_target middle))
+      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))]"
+      unfolding lpp_context_free_module_rep_def lpp_context_free_rep_def
+      by (rule exI[of _ "[]"], rule exI[of _ "lpcl_target middle"], rule exI[of _ rho])
+        (use bounds knowledge child_free child_context in auto)
+    show "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain)
+      (lpc_return_eval rho (states!lpcl_target middle)) R t ret"
+      by (rule lower[OF edge represented inv])
+  qed
+next
+  case (LPPCMNormalizeConstantIs evidence a e gs active saved middle)
+  have check: "lpp_check_context_free_is_constant_normalized fuel P Q nds states contexts Fs nd F ss source_context evidence a e gs active saved middle"
+    using checked LPPCMNormalizeConstantIs by simp
+  have bounds: "lpcl_target middle<length nds \<and> lpcl_target middle<length states \<and>
+    lpcl_target middle<length contexts \<and> lpcl_target middle<length Fs"
+    using check by (auto simp: lpp_check_context_free_is_constant_normalized_def lpp_check_context_free_link_def
+      lpp_check_context_table_link_def lpc_check_return_table_link_def lpc_check_return_link_def lpc_check_link_def)
+  show ?thesis
+  proof (rule lpp_context_free_is_constant_normalized_contract[where J=J, OF check known free observed invariant frames])
+    fix rho
+    assume edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
+      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+"
+      and knowledge: "lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho"
+      and child_free: "lpc_free_knowledge (set (Fs!lpcl_target middle)) rho"
+      and child_context: "lpp_source_context_holds SP (contexts!lpcl_target middle) rho"
+      and inv: "J (lpc_return_eval rho (states!lpcl_target middle))"
+    have represented: "lpp_context_free_module_rep SP nds states contexts Fs
+      (lpc_return_eval rho (states!lpcl_target middle))
+      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))]"
+      unfolding lpp_context_free_module_rep_def lpp_context_free_rep_def
+      by (rule exI[of _ "[]"], rule exI[of _ "lpcl_target middle"], rule exI[of _ rho])
+        (use bounds knowledge child_free child_context in auto)
+    show "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain)
+      (lpc_return_eval rho (states!lpcl_target middle)) R t ret"
+      by (rule lower[OF edge represented inv])
+  qed
+next
   case (LPPCMPrimitive primitive)
   have check: "lpp_check_context_free_source fuel P Q nds states contexts Fs nd F ss source_context returned arity primitive"
     using checked LPPCMPrimitive by simp
@@ -138,6 +199,7 @@ theorem lpp_context_free_observed_control_contract:
     and program: "lp_cut_source_program P"
     and invariant: "J ss"
     and stable: "\<And>xs ev ys. lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain xs ev ys \<Longrightarrow> J xs \<Longrightarrow> J ys"
+    and frames: "\<And>xs ys. map snd xs=map snd ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
     and subset: "\<And>xs ys. set xs\<subseteq> set ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
     and scopes: "\<And>swaps xs. J (lpc_return_scope_word swaps xs)=J xs"
     and represented: "lpp_context_free_module_rep SP nds states contexts Fs ss a"
@@ -188,7 +250,7 @@ proof -
       have typed: "lpp_integer_known (lpp_context_module_types action) eta"
         by (rule lpp_context_typing_sound[OF transfer typing observed])
       show ?thesis
-      proof (rule lpp_context_free_observed_control_action[where J=J, OF check known free observed typed current stable subset])
+      proof (rule lpp_context_free_observed_control_action[where J=J, OF check known free observed typed current stable frames subset])
         fix vs c assume edge: "([(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))],c)\<in>(lp_ild Q)\<^sup>+"
           and child: "lpp_context_free_module_rep SP nds states contexts Fs vs c"
           and inv_child: "J vs"

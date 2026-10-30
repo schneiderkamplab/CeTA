@@ -7,12 +7,17 @@ datatype lpp_context_module_action = LPPCMPrimitive lpp_context_source_action
   | LPPCMParallel "string lpc_link list"
   | LPPCMRefuted nat nat "(string * string lpc_term) list"
   | LPPCMFiniteComparison lpp_finite_comparison_receipt
+  | LPPCMNormalizeIs "string list" "string lpp_integer_expression" "string lpc_term" "string lpc_term"
+      "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state" string "string lpc_link"
+  | LPPCMNormalizeConstantIs "string lpp_integer_expression" "string lpc_term" "string lpc_term"
+      "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state" "string lpc_link"
 
 definition lpp_context_module_rep where
   "lpp_context_module_rep SP nds states contexts ss t =
     (\<exists>swaps. lpp_context_return_rep SP nds states contexts (lpc_return_scope_word swaps ss) t)"
 fun lpp_context_module_types where
   "lpp_context_module_types (LPPCMPrimitive action) = lpp_context_source_types action"
+| "lpp_context_module_types (LPPCMNormalizeIs K evidence a e gs active saved result_var middle) = K"
 | "lpp_context_module_types _ = []"
 
 fun lpp_check_context_module_action where
@@ -32,6 +37,9 @@ fun lpp_check_context_module_action where
 | "lpp_check_context_module_action fuel P Q nds states contexts nd ss source_context returned arity (LPPCMFiniteComparison evidence) =
     lpp_check_finite_comparison_receipt fuel Q nds states contexts nd ss source_context evidence"
 
+| "lpp_check_context_module_action fuel P Q nds states contexts nd ss source_context returned arity (LPPCMNormalizeIs K evidence a e gs active saved result_var middle) = False"
+| "lpp_check_context_module_action fuel P Q nds states contexts nd ss source_context returned arity (LPPCMNormalizeConstantIs evidence a e gs active saved middle) = False"
+
 theorem lpp_context_module_action_sound:
   fixes SP :: "string lpp_success_clause list"
   assumes checked: "lpp_check_context_module_action fuel P Q nds states contexts nd ss source_context returned arity action"
@@ -46,6 +54,12 @@ theorem lpp_context_module_action_sound:
     (lpc_return_eval eta ss) (lp_ild Q)
     [(lpcn_pred nd,map eta (lpcn_vars nd))] (\<lambda>rho. [(returned,map rho [0..<arity])])"
 proof (cases action)
+  case (LPPCMNormalizeIs K evidence a e gs active saved result_var middle)
+  then show ?thesis using checked by simp
+next
+  case (LPPCMNormalizeConstantIs evidence a e gs active saved middle)
+  then show ?thesis using checked by simp
+next
   case (LPPCMPrimitive primitive)
   have check: "lpp_check_context_source_action fuel P Q nds states contexts nd ss source_context returned arity primitive"
     using checked LPPCMPrimitive by simp

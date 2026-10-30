@@ -2,6 +2,17 @@ theory LP_Prolog_Triple_Free_Observed
  imports LP_Prolog_Context_Free_Control LP_Prolog_Triple_Observed
 begin
 
+lemma lpp_triple_instance_frames:
+  "map snd xs=map snd ys \<Longrightarrow> lpc_triple_instance_invariant a inp ys \<Longrightarrow>
+    lpc_triple_instance_invariant a inp xs"
+proof -
+  assume equal: "map snd xs=map snd ys" and inv: "lpc_triple_instance_invariant a inp ys"
+  have "list_all (\<lambda>eta. \<exists>sigma. lp_iatom_subst a sigma=lp_atom_eval inp eta) (map snd xs)"
+    using inv by (simp add: equal lpc_triple_instance_invariant_def list_all_iff)
+  then show "lpc_triple_instance_invariant a inp xs"
+    by (simp add: lpc_triple_instance_invariant_def list_all_iff)
+qed
+
 theorem lpp_triple_free_observed_control:
   fixes SP :: "string lpp_success_clause list"
     and a :: "(string lp_cut_symbol,string) lp_iatom"
@@ -24,7 +35,7 @@ theorem lpp_triple_free_observed_control:
   unfolding lpp_triple_answer_contract_return_contract
 proof (rule lpp_context_free_observed_control_contract[where J="lpc_triple_instance_invariant a inp",
     OF checked ranked transfer program invariant lpp_domain_triple_instance_stable
-      lpc_triple_instance_subset lpc_triple_instance_scopes represented])
+      lpp_triple_instance_frames lpc_triple_instance_subset lpc_triple_instance_scopes represented])
   fix i eta assume index: "i<length nds" and boundary_node: "actions!i=None"
     and known: "lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta"
     and observed: "lpp_source_context_holds SP (contexts!i) eta"

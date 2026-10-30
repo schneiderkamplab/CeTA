@@ -16,6 +16,20 @@ definition lpp_finite_comparison_parser where
 
 definition lpp_context_module_action_parser where
   "lpp_context_module_action_parser =
+    (XMLdo (STR ''normalizedIntegerEvaluation'') {
+      K\<leftarrow>xml_many (STR ''known'') (xml_text (STR ''var'')) id;
+      evidence\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      result_var\<leftarrow>xml_text (STR ''resultVariable'');
+      middle\<leftarrow>lpc_link_parser;
+      xml_return (LPPCMNormalizeIs K evidence a e gs active saved result_var middle)}) XMLor
+    (XMLdo (STR ''normalizedConstantIntegerEvaluation'') {
+      evidence\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      middle\<leftarrow>lpc_link_parser;
+      xml_return (LPPCMNormalizeConstantIs evidence a e gs active saved middle)}) XMLor
     (xml_change lpp_finite_comparison_parser (xml_return o LPPCMFiniteComparison)) XMLor
     (xml_change lpp_context_source_action_parser (xml_return o LPPCMPrimitive)) XMLor
     (XMLdo (STR ''trimBarriers'') {successor\<leftarrow>lpc_return_state_parser;

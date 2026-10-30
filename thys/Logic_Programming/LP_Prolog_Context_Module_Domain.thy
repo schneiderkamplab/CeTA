@@ -16,6 +16,12 @@ theorem lpp_context_module_action_domain_contract:
     (lpc_return_eval eta ss) (lp_ild Q)
     [(lpcn_pred nd,map eta (lpcn_vars nd))] (\<lambda>rho. [(returned,map rho [0..<arity])])"
 proof (cases action)
+  case (LPPCMNormalizeIs K evidence a e gs active saved result_var middle)
+  then show ?thesis using checked by simp
+next
+  case (LPPCMNormalizeConstantIs evidence a e gs active saved middle)
+  then show ?thesis using checked by simp
+next
   case (LPPCMPrimitive primitive)
   have check: "lpp_check_context_source_action fuel P Q nds states contexts nd ss source_context returned arity primitive"
     using checked LPPCMPrimitive by simp

@@ -16,6 +16,12 @@ theorem lpp_context_observed_control_action:
     and emit: "\<And>rho tt. lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain (lpc_return_eval eta ss) (Some rho) tt \<Longrightarrow> (t,ret rho)\<in>R\<^sup>*"
   shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_integer_source_builtin lpp_integer_source_domain) (lpc_return_eval eta ss) R t ret"
 proof (cases action)
+  case (LPPCMNormalizeIs K evidence a e gs active saved result_var middle)
+  then show ?thesis using checked by simp
+next
+  case (LPPCMNormalizeConstantIs evidence a e gs active saved middle)
+  then show ?thesis using checked by simp
+next
   case (LPPCMPrimitive primitive)
   have check: "lpp_check_context_source_action fuel P Q nds states contexts nd ss source_context returned arity primitive"
     using checked LPPCMPrimitive by simp
