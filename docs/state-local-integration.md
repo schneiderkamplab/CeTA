@@ -74,3 +74,25 @@ controls pass. Evidence is pinned in Ferrum's
 `docs/data/prolog-source-returns-frontier-20261030.json` and accompanying archive.
 The requested 30-gain milestone has achieved three gains and remains active;
 protected-category promotion is still gated.
+
+## Established finite-ground returns, 2026-10-30
+
+Commit `df37ebf0b913f2f5803d19a51a41ef0b4bc72157` checks actual successful
+finite-ground returns across nested established SEG Splits and all three finite
+comparison outcomes. It preserves shared operational semantics and separates
+return properties from termination. Checked source contexts transport groundness
+without treating ground values as integers. Generated checking logic is unchanged
+by hand; `tests/unified/exports/lp-source-ground-returns.tar.gz` comes from the
+verified export in `target/prolog-ground-export-133`.
+
+The unified `make ceta` build at `target/prolog-ground-unified-135/ceta` has
+SHA-256 `692c9aa4f713aff1a0e1697b06364a0eadae11373ec701b94b986c8b4c292376`.
+Ferrum `50ebaceae51b5dfdcf68a22f7026334603b906e2` strictly certifies 30 YESs
+and three NOs on all 221 Prolog roots and preserves 84 YESs and nine NOs on all
+112 LP-with-cut roots with this checker. Every retained result is source-audited,
+checked twice and reconstructed from authorized witness-free guidance.
+[Persistent audit evidence](../../ferrum-prolog-shared/docs/data/prolog-ground-returns-frontier-20261030.json)
+records the full validation and remaining obligations. The requested 30-gain
+milestone still needs 17 additional YES roots. Protected-category promotion is
+not claimed. Arithmetic normalization theories under development are not part
+of this pinned checker.
