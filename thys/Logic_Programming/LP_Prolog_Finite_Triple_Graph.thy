@@ -8,6 +8,7 @@ datatype lpp_finite_triple_component =
   LPPFTRegion lpp_finite_triple_region | LPPFTSplit lpp_link_types lpp_link_types "string lpc_triple_split"
   | LPPFTIntegerSplit lpp_link_types lpp_link_types "string lpc_triple_split" lpp_source_integer_receipt
   | LPPFTGroundSplit lpp_link_types lpp_link_types "string lpc_triple_split" lpp_source_ground_receipt
+  | LPPFTShapeSplit lpp_link_types lpp_link_types "string lpc_triple_split" lpp_source_shape_receipt
 
 fun lpp_finite_triple_check_component where
   "lpp_finite_triple_check_component fuel P D Q T roots contexts incoming_context entry (LPPFTRegion region) =
@@ -19,6 +20,9 @@ fun lpp_finite_triple_check_component where
 
 | "lpp_finite_triple_check_component fuel P D Q T roots contexts incoming_context entry (LPPFTGroundSplit first_types second_types receipt evidence) =
     lpp_finite_triple_check_ground_split T first_types second_types fuel P D Q roots contexts incoming_context entry receipt evidence"
+
+| "lpp_finite_triple_check_component fuel P D Q T roots contexts incoming_context entry (LPPFTShapeSplit first_types second_types receipt evidence) =
+    lpp_finite_triple_check_shape_split T first_types second_types fuel P D Q roots contexts incoming_context entry receipt evidence"
 
 definition lpp_finite_triple_check_graph where
   "lpp_finite_triple_check_graph fuel P D Q T (roots::string lpc_triple_root list) contexts blocks q modes chain_pred =
@@ -47,7 +51,8 @@ theorem lpp_finite_triple_component_checked_lower:
     (auto intro: lpp_finite_triple_region_checked_lower[OF _ program transfer observed known free lower]
       lpp_finite_triple_preserved_split_checked_lower[OF transfer _ program known observed free lower]
       lpp_finite_triple_integer_split_checked_lower[OF transfer _ program known observed free lower]
-      lpp_finite_triple_ground_split_checked_lower[OF transfer _ program known observed free lower])
+      lpp_finite_triple_ground_split_checked_lower[OF transfer _ program known observed free lower]
+      lpp_finite_triple_shape_split_checked_lower[OF transfer _ program known observed free lower])
 
 theorem lpp_finite_triple_graph_contract:
   fixes SP :: "string lpp_success_clause list"

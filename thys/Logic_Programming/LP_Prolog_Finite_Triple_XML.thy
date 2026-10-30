@@ -96,8 +96,39 @@ definition lpp_established_finite_ground_split_parser where
     second_types\<leftarrow>lpp_evaluation_types_parser (STR ''secondTypes'');
     xml_return (None,LPPFTGroundSplit first_types second_types split evidence)}"
 
+definition lpp_shape_fact_parser where
+  "lpp_shape_fact_parser = XMLdo (STR ''shapeFact'') {
+    shape\<leftarrow>xml_singleton (STR ''shape'') lpp_return_shape_parser id;
+    x\<leftarrow>xml_text (STR ''var''); xml_return (shape,x)}"
+
+definition lpp_finite_shape_receipt_parser where
+  "lpp_finite_shape_receipt_parser = XMLdo (STR ''sourceShapeReturn'') {
+    base\<leftarrow>lpp_finite_ground_receipt_parser;
+    facts\<leftarrow>xml_many (STR ''integerFacts'') lpp_transfer_fact_parser id;
+    integers\<leftarrow>xml_many (STR ''integers'') (xml_text (STR ''var'')) id;
+    fuel\<leftarrow>xml_nat (STR ''shapeFuel'');
+    grammar\<leftarrow>lpp_return_grammar_parser;
+    modes\<leftarrow>xml_many (STR ''shapeContracts'') (XMLdo (STR ''shapeContract'') {
+      f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
+      inputs\<leftarrow>xml_many (STR ''inputs'') lpp_return_shape_parser id;
+      outputs\<leftarrow>xml_many (STR ''outputs'') lpp_return_shape_parser id;
+      xml_return (f,inputs,outputs)}) id;
+    seeds\<leftarrow>xml_many (STR ''seeds'') lpp_shape_fact_parser id;
+    outputs\<leftarrow>xml_many (STR ''outputs'') lpp_shape_fact_parser id;
+    xml_return \<lparr>lppssr_ground = base\<lparr>lppsgr_model :=
+        (lppsgr_model base)\<lparr>lppsir_facts := facts,lppsir_integers := integers\<rparr>\<rparr>,
+      lppssr_fuel = fuel,lppssr_grammar = grammar,lppssr_modes = modes,lppssr_seeds = seeds,lppssr_outputs = outputs\<rparr>}"
+
+definition lpp_established_finite_shape_split_parser where
+  "lpp_established_finite_shape_split_parser = XMLdo (STR ''prologTripleShapeSplit'') {
+    split\<leftarrow>lpc_triple_split_parser;
+    evidence\<leftarrow>lpp_finite_shape_receipt_parser;
+    first_types\<leftarrow>lpp_evaluation_types_parser (STR ''firstTypes'');
+    second_types\<leftarrow>lpp_evaluation_types_parser (STR ''secondTypes'');
+    xml_return (None,LPPFTShapeSplit first_types second_types split evidence)}"
+
 definition lpp_established_finite_component_parser where
-  "lpp_established_finite_component_parser = lpp_established_finite_region_parser XMLor lpp_established_finite_split_parser XMLor lpp_established_finite_integer_split_parser XMLor lpp_established_finite_ground_split_parser"
+  "lpp_established_finite_component_parser = lpp_established_finite_region_parser XMLor lpp_established_finite_split_parser XMLor lpp_established_finite_integer_split_parser XMLor lpp_established_finite_ground_split_parser XMLor lpp_established_finite_shape_split_parser"
 
 fun lpp_established_finite_component_header where
   "lpp_established_finite_component_header P fuel transfer (None,component) = True"

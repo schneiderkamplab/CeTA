@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Triple_Returns
- imports LP_Prolog_Finite_Triple_Split_Interface LP_Prolog_Finite_Integer_Receipt LP_Prolog_Finite_Ground_Receipt
+ imports LP_Prolog_Finite_Triple_Split_Interface LP_Prolog_Finite_Integer_Receipt LP_Prolog_Finite_Ground_Receipt LP_Prolog_Finite_Shape_Receipt
 begin
 hide_const (open) Tree_Automata_Containment.entry
 
@@ -63,6 +63,38 @@ proof -
     using checked by (auto simp: lpp_finite_triple_check_ground_split_def)
   show ?thesis by (rule lpp_finite_triple_split_interface_lower[OF transfer interface program known observed free
     lpp_finite_ground_receipt_return[OF returns known observed] lower])
+qed
+
+
+definition lpp_finite_triple_check_shape_split where
+  "lpp_finite_triple_check_shape_split T first_types second_types fuel P D Q roots contexts incoming_context entry receipt evidence =
+    (lpp_finite_triple_check_split_interface T first_types second_types fuel D Q roots contexts incoming_context
+       (lpp_shape_receipt_context incoming_context evidence) entry receipt \<and>
+     lpp_finite_shape_receipt_check P incoming_context (lpcts_pre receipt)
+       (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence)"
+
+theorem lpp_finite_triple_shape_split_checked_lower:
+  fixes P :: "(string,string) lp_cut_program"
+    and SP :: "string lpp_success_clause list"
+    and eta :: "string \<Rightarrow> (string lp_cut_symbol,string) lp_iterm"
+  assumes transfer: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_finite_triple_check_shape_split T first_types second_types fuel P D Q roots contexts incoming_context entry receipt evidence"
+    and program: "lp_cut_source_program P"
+    and known: "lp_cut_knowledge (set (lpcn_ground (lpctr_node entry))) (lpcn_guards (lpctr_node entry)) eta"
+    and observed: "lpp_evaluation_context_holds lpp_finite_evaluation_result SP incoming_context eta"
+    and free: "lpc_free_knowledge (set (lpctr_free entry)) eta"
+    and lower: "\<And>us b ret. (lp_atom_eval (lpctr_input entry) eta,b)\<in>lp_triple_calls (set D) Q \<Longrightarrow>
+      lpp_finite_triple_root_rep SP contexts roots us b ret \<Longrightarrow> lpp_finite_triple_answer_contract P us Q ret"
+  shows "lpp_finite_triple_answer_contract P (lpc_return_eval eta (lpc_triple_root_state entry)) Q
+    (lp_atom_eval (lpctr_output entry))"
+proof -
+  have interface: "lpp_finite_triple_check_split_interface T first_types second_types fuel D Q roots contexts incoming_context
+    (lpp_shape_receipt_context incoming_context evidence) entry receipt"
+    and returns: "lpp_finite_shape_receipt_check P incoming_context (lpcts_pre receipt)
+      (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence"
+    using checked by (auto simp: lpp_finite_triple_check_shape_split_def)
+  show ?thesis by (rule lpp_finite_triple_split_interface_lower[OF transfer interface program known observed free
+    lpp_finite_shape_receipt_return[OF returns known observed] lower])
 qed
 
 
