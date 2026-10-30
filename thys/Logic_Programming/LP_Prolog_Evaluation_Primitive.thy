@@ -22,7 +22,7 @@ datatype lpp_evaluation_primitive =
 
 fun lpp_check_evaluation_primitive where
   "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEOrdinary action yes_facts no_facts) =
-    (lpp_no_builtin_frame ss \<and>
+    ((lpp_no_builtin_frame ss \<or> action=LPCRInconsistent) \<and>
       lpp_check_evaluation_cut_action T yes_facts no_facts fuel P Q nds states contexts Fs nd F ss source_context returned arity action)"
 | "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
     (LPPEIntegerTest a gs active saved yes no yes_facts no_facts) =
@@ -57,12 +57,20 @@ theorem lpp_evaluation_primitive_sound:
       ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(returned,map rho [0..<arity])])\<in>(lp_ild Q)\<^sup>*)"
 proof (cases action)
   case (LPPEOrdinary primitive yes_facts no_facts)
-  have clear: "lpp_no_builtin_frame ss" and check:
-    "lpp_check_evaluation_cut_action T yes_facts no_facts fuel P Q nds states contexts Fs nd F ss source_context returned arity primitive"
-    using checked LPPEOrdinary by auto
-  show ?thesis by (rule lpp_evaluation_cut_action_sound[OF lpp_finite_evaluation_integer_contract
-    lpp_finite_evaluation_ground lpp_finite_evaluation_subst program check known free observed
-    lpp_finite_source_nonbuiltin_base[OF clear step]])
+  show ?thesis
+  proof (cases "primitive=LPCRInconsistent")
+    case True
+    have "lp_cut_check_inconsistent (lpcn_guards nd)" using checked LPPEOrdinary True by simp
+    then show ?thesis using lp_cut_checked_inconsistent known by blast
+  next
+    case False
+    have clear: "lpp_no_builtin_frame ss" and check:
+      "lpp_check_evaluation_cut_action T yes_facts no_facts fuel P Q nds states contexts Fs nd F ss source_context returned arity primitive"
+      using checked LPPEOrdinary False by auto
+    show ?thesis by (rule lpp_evaluation_cut_action_sound[OF lpp_finite_evaluation_integer_contract
+      lpp_finite_evaluation_ground lpp_finite_evaluation_subst program check known free observed
+      lpp_finite_source_nonbuiltin_base[OF clear step]])
+  qed
 next
   case (LPPEIntegerTest a gs active saved yes no yes_facts no_facts)
   have check: "lpp_check_evaluation_integer_test T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context a gs active saved yes no"
@@ -107,7 +115,16 @@ lemma lpp_evaluation_primitive_domain:
   shows "\<not>lpp_builtin_domain_bad lpp_builtin_signature lpp_finite_source_domain (map fst (lpc_return_eval eta ss))"
 proof (cases action)
   case (LPPEOrdinary primitive yes_facts no_facts)
-  then show ?thesis using checked by (auto dest: lpp_no_builtin_frame_sound lpp_no_builtin_domain_bad)
+  show ?thesis
+  proof (cases "primitive=LPCRInconsistent")
+    case True
+    have "lp_cut_check_inconsistent (lpcn_guards nd)" using checked LPPEOrdinary True by simp
+    then show ?thesis using lp_cut_checked_inconsistent known by blast
+  next
+    case False
+    show ?thesis using checked LPPEOrdinary False
+      by (auto dest: lpp_no_builtin_frame_sound lpp_no_builtin_domain_bad)
+  qed
 next
   case (LPPEIntegerTest a gs active saved yes no yes_facts no_facts)
   then show ?thesis using checked by (simp add: lpp_check_evaluation_integer_test_def lpc_return_eval_def lpp_finite_source_domain_def)

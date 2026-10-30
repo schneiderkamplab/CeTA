@@ -45,4 +45,28 @@ proof -
   show ?thesis using edge rep by blast
 qed
 
+
+definition lpp_check_evaluation_link_free_choices where
+  "lpp_check_evaluation_link_free_choices T fs fuel Q nds states contexts Fs nd ss G K eqs F H source_context e =
+    (lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e \<or>
+     lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs H source_context e)"
+
+lemma lpp_evaluation_link_free_choices_sound:
+  fixes SP :: "string lpp_success_clause list"
+  assumes contract: "lpp_eval_integer_contract TYPE(string) E"
+    and evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
+    and program: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_evaluation_link_free_choices T fs fuel Q nds states contexts Fs nd ss G K eqs F H source_context e"
+    and equations: "lp_equations eqs eta'"
+    and old: "map eta' (lpcn_vars nd)=map eta (lpcn_vars nd)"
+    and known: "lp_cut_knowledge (set G) K eta'"
+    and free: "lpc_free_knowledge (set F) eta'"
+    and saved_free: "lpc_free_knowledge (set H) eta'"
+    and observed: "lpp_evaluation_context_holds E SP source_context eta'"
+  shows "\<exists>u swaps. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
+    lpp_evaluation_rep E SP nds states contexts Fs (lpc_return_scope_word swaps (lpc_return_eval eta' ss)) u"
+  using checked lpp_evaluation_link_sound[OF contract evaluation program _ equations old known free observed]
+    lpp_evaluation_link_sound[OF contract evaluation program _ equations old known saved_free observed]
+  unfolding lpp_check_evaluation_link_free_choices_def by blast
+
 end

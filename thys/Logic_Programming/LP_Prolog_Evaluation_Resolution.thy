@@ -10,11 +10,11 @@ definition lpp_check_evaluation_resolution_node where
        lpc_check_return_values fuel k (lpcn_ground nd)
          (lp_cut_resolution_equations k l (lpcn_ground nd) a (fst (P!c)))
          active (concat (map snd saved)) outputs \<and>
-       lpp_check_evaluation_link T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved)
+       lpp_check_evaluation_link_free_choices T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved)
          (lpcn_ground nd@sorted_list_of_set (lp_cut_anchor_vars anchors))
          (lpcn_guards nd@lpc_negative_guards k (set (lpcn_ground nd)) (lpcn_guards nd)@[LPCHeadGuard a (fst (P!c)) True])
          (lp_cut_resolution_equations k l (lpcn_ground nd) a (fst (P!c)))
-         (lpc_return_resolution_free fuel F (lpcn_ground nd) a gs (fst (P!c)) (snd (P!c)) k l) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes) \<and>
+         (lpc_return_resolution_free fuel F (lpcn_ground nd) a gs (fst (P!c)) (snd (P!c)) k l) (lpp_saved_free k F) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes) \<and>
      (mode\<noteq>LPCAlwaysSuccess \<longrightarrow>
        lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved (lpcn_ground nd)
          (lpcn_guards nd@[LPCHeadGuard a (fst (P!c)) False]) [] F source_context no))"
@@ -76,11 +76,11 @@ proof -
     have payload: "lpc_check_return_values fuel k ?G (lp_cut_resolution_equations k l ?G a (fst (P!c)))
       active (concat (map snd saved)) outputs"
       and short: "lpc_return_short k saved"
-      and link: "lpp_check_evaluation_link T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved)
+      and link: "lpp_check_evaluation_link_free_choices T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals next,outputs)#saved)
         (?G@sorted_list_of_set (lp_cut_anchor_vars anchors))
         (?K@lpc_negative_guards k (set ?G) ?K@[LPCHeadGuard a (fst (P!c)) True])
         (lp_cut_resolution_equations k l ?G a (fst (P!c)))
-        (lpc_return_resolution_free fuel F ?G a gs (fst (P!c)) (snd (P!c)) k l) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes"
+        (lpc_return_resolution_free fuel F ?G a gs (fst (P!c)) (snd (P!c)) k l) (lpp_saved_free k F) (lpp_evaluation_fork_context source_context k (set (lpcn_ground nd))) yes"
       using checked possible by (auto simp: lpp_check_evaluation_resolution_node_def)
     let ?env = "lp_cut_resolution_env k l eta sigma rho"
     have same: "tt=lpc_return_eval ?env ((LPCGoals next,outputs)#saved)"
@@ -111,7 +111,9 @@ proof -
     have facts: "lpp_evaluation_context_holds E SP
       (lpp_evaluation_fork_context source_context k (set ?G)) ?env"
       by (rule lpp_evaluation_context_fork_sound[OF stable observed context_short bounds ground])
-    show ?thesis using lpp_evaluation_link_sound[OF contract evaluation program link equations old knowledge body_free facts] event same by simp
+    have saved_free: "lpc_free_knowledge (set (lpp_saved_free k F)) ?env"
+      by (rule lpp_saved_free_sound[OF free]) (use bounds in arith)
+    show ?thesis using lpp_evaluation_link_free_choices_sound[OF contract evaluation program link equations old knowledge body_free saved_free facts] event same by simp
   next
     assume failure: "event=None \<and> tt=?saved \<and>
       \<not>(\<exists>sigma::string\<Rightarrow>(string lp_cut_symbol,string) lp_iterm. \<exists>rho.

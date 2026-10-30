@@ -101,6 +101,19 @@ proof -
     by (simp add: lpp_evaluation_fork_context_def lpp_evaluation_join_context)
 qed
 
+definition lpp_saved_free where
+  "lpp_saved_free k F = filter (\<lambda>x. length x<k) F"
+
+lemma lpp_saved_free_sound:
+  assumes free: "lpc_free_knowledge (set F) eta" and bounds: "k\<le>l"
+  shows "lpc_free_knowledge (set (lpp_saved_free k F)) (lp_cut_resolution_env k l eta sigma rho)"
+proof -
+  have same: "lp_cut_resolution_env k l eta sigma rho x=eta x" if "length x<k" for x
+    using bounds that by (auto simp: lp_cut_resolution_env_def)
+  show ?thesis using free same
+    by (auto simp: lpp_saved_free_def lpc_free_knowledge_def inj_on_def)
+qed
+
 lemma lpp_evaluation_context_fresh_eval:
   "lpp_context_fresh x source_context \<Longrightarrow>
     lpp_evaluation_context_holds E P source_context (eta(x:=v))=lpp_evaluation_context_holds E P source_context eta"
@@ -112,7 +125,7 @@ lemma lpp_add_evaluation_context_holds:
   by (cases source_context) (auto simp: lpp_evaluation_context_holds_def)
 
 ML \<open>
-val checked = [@{thm lpp_evaluation_context_fork_sound}, @{thm lpp_evaluation_context_refresh_sound}, @{thm lpp_evaluation_context_fresh_eval}];
+val checked = [@{thm lpp_saved_free_sound}, @{thm lpp_evaluation_context_fork_sound}, @{thm lpp_evaluation_context_refresh_sound}, @{thm lpp_evaluation_context_fresh_eval}];
 val oracles = map (fst o fst) o Thm_Deps.all_oracles;
 val inherited = oracles [@{thm check_trs_termination_proof}];
 val _ = if Thm_Deps.has_skip_proof checked orelse
