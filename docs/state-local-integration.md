@@ -315,3 +315,20 @@ pins verified export 161 and unified checker 163. Strict Prolog replay preserves
 There are no new benchmark gains. Non-LP library identities and the unified
 main are unchanged from checker 153; this comparison is not a protected-category
 production replay. Failed intermediate proof attempts remain in the audit archive.
+
+## General rational disequality: one benchmark recovery (2026-10-31)
+
+Source `f7af9f2` extends the same interpreted builtin relation to rational
+disequality. Success means absence of a rational unifier and performs no
+substitution; its non-unifiability guard is carried only on the success
+continuation. The existing finite-ground constructor remains replayable.
+The new `rationalDisequality` constructor checks both outcomes and every link.
+
+[Verified integration](data/prolog-rational-disequality-integration-20261031.json)
+pins full export 171 and unified checker 173. Ferrum `5cc245d` recovers
+`AProVE_10_prolog/nounify.pl`, including strict replay: **55 YES + 3 NO / 221**.
+All 58 source receipts are authorized; 24 mutations and 15 strict controls pass.
+All 84 YES + 9 NO retained cut certificates pass twice with the same executable.
+Non-LP library identities and the unified main are unchanged from checker 163;
+protected-category production replay remains pending. Earlier rejected proof
+attempts are retained in the archive, without proof admissions.

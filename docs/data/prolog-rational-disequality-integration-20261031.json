@@ -1,0 +1,66 @@
+{
+  "source_commit": "f7af9f2",
+  "native_source_commit": "5cc245d",
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-rational-disequality-173/ceta",
+  "checker_sha256": "6992a33662123b1235c884a3fbb4063f09f54f40987421a5a067ed14b6cfa8d2",
+  "verification": "Verified rational disequality source rule 170; complete verified export 171; unified build 173",
+  "non_lp_comparison": {
+    "main_unchanged": true,
+    "libraries": {
+      "cpf": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "cycle": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "conditional": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "conditional-erasure": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "higher-order": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "higher-order-delegation": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "its": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      }
+    }
+  },
+  "frontier": {
+    "yes": 55,
+    "no": 3,
+    "unknown": 163,
+    "new_gains": 1,
+    "new_root": "AProVE_10_prolog/nounify.pl"
+  },
+  "strict_replay": 401,
+  "authorization": 402,
+  "cut_recheck": {
+    "attempt": 403,
+    "yes": 84,
+    "no": 9,
+    "checks": 186
+  },
+  "mutation_checks": 24,
+  "strict_controls": 15,
+  "archive_sha256": "4cdff3f18825235098e5c2c5ec092f1ef24ca7098b6c58da26ff53f1c0f2d6d8",
+  "production_promotion": false
+}
