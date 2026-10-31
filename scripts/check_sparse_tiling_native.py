@@ -22,11 +22,12 @@ def signature(node):
     return (node.tag, (node.text or '').strip(), tuple(signature(c) for c in node))
 
 
-def fixtures(empty_path, residual_path):
+def fixtures(empty_path, residual_path, family="tiling"):
+    tag = "sparseTiling" if family == "tiling" else "sparseRuleRemoval"
     empty = ET.parse(empty_path).getroot()
     residual = ET.parse(residual_path).getroot()
-    assert empty.find('.//sparseTiling') is not None
-    assert residual.find('.//sparseTiling/tiledRules/tiledRule') is not None
+    assert empty.find(f'.//{tag}') is not None
+    assert residual.find(f'.//{tag}/tiledRules/tiledRule') is not None
     cases = [('empty-positive', True, empty), ('residual-positive', True, residual)]
 
     def mutate(name, base, change):
@@ -35,7 +36,7 @@ def fixtures(empty_path, residual_path):
         cases.append((name, False, tree))
 
     def remove_tiles(tree):
-        tree.find('.//sparseTiling/tiles').clear()
+        tree.find(f'.//{tag}/tiles').clear()
     mutate('missing-closure-tiles', empty, remove_tiles)
 
     def mismatch_variable(tree):
@@ -54,27 +55,34 @@ def fixtures(empty_path, residual_path):
     mutate('empty-source-left-side', empty, empty_lhs)
 
     def remove_required_rule(tree):
-        rules = tree.find('.//sparseTiling/tiledRules')
+        rules = tree.find(f'.//{tag}/tiledRules')
         rules.remove(list(rules)[0])
     mutate('missing-tiled-rule', residual, remove_required_rule)
 
     def remove_used_mapping(tree):
-        sparse = tree.find('.//sparseTiling')
+        sparse = tree.find(f'.//{tag}')
         used = signature(sparse.find('./tiledRules/tiledRule/lhs/tile'))
         table = sparse.find('./tileEncoding')
         entry = next(e for e in table if signature(e.find('./tile')) == used)
         table.remove(entry)
-    mutate('missing-used-encoding', residual, remove_used_mapping)
+    if family == 'tiling':
+        mutate('missing-used-encoding', residual, remove_used_mapping)
+    else:
+        def change_retained_symbol(tree):
+            symbol = tree.find(f'.//{tag}/trs/rules/rule/funapp/name')
+            assert symbol is not None
+            symbol.text = (symbol.text or '') + '_outside_original_rules'
+        mutate('retained-rule-outside-source', residual, change_retained_symbol)
 
     def empty_child(tree):
-        child = tree.find('.//sparseTiling/trsTerminationProof')
+        child = tree.find(f'.//{tag}/trsTerminationProof')
         child.clear(); ET.SubElement(child, 'rIsEmpty')
     mutate('false-empty-child', residual, empty_child)
 
     def erase_residual(tree):
-        tree.find('.//sparseTiling/trs/rules').clear()
+        tree.find(f'.//{tag}/trs/rules').clear()
         empty_child(tree)
-    mutate('missing-encoded-residual', residual, erase_residual)
+    mutate('missing-encoded-residual' if family == 'tiling' else 'missing-live-residual', residual, erase_residual)
     return cases
 
 
@@ -83,6 +91,7 @@ def main():
     p.add_argument('--empty-certificate', type=Path, required=True)
     p.add_argument('--residual-certificate', type=Path, required=True)
     p.add_argument('--checker', type=Path)
+    p.add_argument('--family', choices=['tiling', 'removal'], default='tiling')
     p.add_argument('--prepare-only', action='store_true')
     p.add_argument('--out', type=Path, required=True)
     a = p.parse_args()
@@ -91,14 +100,14 @@ def main():
     a.out.mkdir(parents=True, exist_ok=False)
     ET.register_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
     cases = []
-    for name, expected, tree in fixtures(a.empty_certificate, a.residual_certificate):
+    for name, expected, tree in fixtures(a.empty_certificate, a.residual_certificate, a.family):
         path = a.out / (name + '.xml')
         ET.indent(tree)
         ET.ElementTree(tree).write(path, encoding='utf-8', xml_declaration=True)
         cases.append(dict(name=name, expected_acceptance=expected, path=str(path.resolve()), sha256=digest(path)))
     manifest = dict(inputs={str(path.resolve()): digest(path) for path in
                             [a.empty_certificate, a.residual_certificate]},
-                    cases=cases, checked=False)
+                    family=a.family, cases=cases, checked=False)
     def save():
         (a.out/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     save()

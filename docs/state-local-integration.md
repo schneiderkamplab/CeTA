@@ -348,3 +348,12 @@ The full `Certificate_Performance_CPF_Export` build is running in
 in `target/sparse-removal-cpf-export-dependencies.json`. This integration and
 export are not yet verified; no generated production archive or executable has
 been replaced. The earlier frozen sparse-tiling checker remains unchanged.
+
+The native mutation harness now accepts `--family removal`. It prepares two
+new native positives and seven mutations, including removal of a live residual
+rule and alteration of a retained rule outside the source system. Preparation
+passes in `target/sparse-family-removal-prepare-2`; attempt one preserves a
+fixture XPath mismatch and ran no checker. The default tiling family's nine
+certificate hashes are unchanged (`sparse-family-tiling-prepare-1`). Native
+rule-removal acceptance/rejection checks remain pending the regenerated unified
+executable; fixture preparation is not certification.
