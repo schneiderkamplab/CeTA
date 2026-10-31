@@ -101,3 +101,15 @@ This proves the path-level simulation component, not the complete sparse-tiling
 processor. Language closure from finite checks, RFC coverage, term/source
 correspondence, certificate parsing and executable dispatch are still missing.
 Generated checking code and the pinned executable remain unchanged.
+
+`Sparse_Tiling_Language` now verifies the accepted-language component. Its
+explicit tile condition implies closure under source rewriting and simulation
+of each bordered source step; termination of the tiled system then implies
+local termination on that accepted language. The gate passes in
+`target/sparse-tiling-build-11.log`, with attempt ten's failed obligations
+preserved. Nonempty source left sides and equal border/state lengths are
+explicit assumptions.
+
+This result still assumes the tile condition rather than proving an executable
+finite check for it. Initial/RFC coverage, source-term correspondence and
+certificate integration remain unfinished. No checker executable changed.
