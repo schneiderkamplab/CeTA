@@ -144,3 +144,17 @@ windows of a bordered word and the shift paths used in the simulation.
 The global RFC termination criterion for this string closure and its connection
 to CeTA source terms remain unproved here. Certificate parsing and unified
 dispatch also remain pending. No production checker executable changed.
+
+`Sparse_Tiling_Termination` closes the global string-level soundness gap. It
+proves termination of the rewrite/suffix order restricted to terminating
+strings, decomposes rewrites across concatenation, proves termination of an RFC
+prefix followed by a terminating suffix, and derives global termination from
+termination on the explicit string RFC. Consequently
+`sparse_check_termination_sound` proves that the executable coverage check and
+termination of its tiled residual imply termination of the entire source
+string system. No proof admissions or additional unverified criterion are used.
+
+Gate: `target/sparse-tiling-build-34.log`, including the end-to-end seven-tile
+example with an empty residual. Builds 29–33 preserve intermediate proofs and
+failures. CeTA term/source correspondence, certificate parsing and unified
+production dispatch remain unfinished; no production executable changed.
