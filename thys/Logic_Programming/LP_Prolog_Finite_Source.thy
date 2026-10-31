@@ -15,14 +15,14 @@ relation or a replacement evaluation graph.\<close>
 definition lpp_finite_source_builtin where
   "lpp_finite_source_builtin f ts outcome =
     (if f=''2:is'' then length ts=2 \<and> lpp_finite_is_outcome (ts!0) (ts!1) outcome
-     else if f=lpp_disequality_predicate then length ts=2 \<and> lpp_ground_disequality_outcome (ts!0) (ts!1) outcome
+     else if f=lpp_disequality_predicate then length ts=2 \<and> lpp_rational_disequality_outcome (ts!0) (ts!1) outcome
      else if f=''2:length'' then length ts=2 \<and> lpp_finite_length_outcome (ts!0) (ts!1) outcome
      else lpp_integer_source_builtin f ts outcome)"
 
 definition lpp_finite_source_domain where
   "lpp_finite_source_domain f ts =
     (if f=''2:is'' then length ts=2 \<and> lp_seg_ground (ts!1)
-     else if f=lpp_disequality_predicate then length ts=2 \<and> lp_seg_ground (ts!0) \<and> lp_seg_ground (ts!1)
+     else if f=lpp_disequality_predicate then length ts=2
      else if f=''2:length'' then length ts=2 \<and> lp_seg_ground (ts!0)
      else lpp_integer_source_domain f ts)"
 
@@ -118,7 +118,7 @@ next
     case True
     show ?thesis using domain
       by (auto simp: lpp_finite_source_domain_def lpp_finite_source_builtin_def
-        lpp_ground_disequality_outcome_def True)
+        lpp_rational_disequality_outcome_def True)
   next
     case different: False
     show ?thesis

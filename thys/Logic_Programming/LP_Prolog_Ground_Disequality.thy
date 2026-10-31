@@ -60,4 +60,24 @@ lemma lpp_ground_disequality_total:
     \<exists>outcome. lpp_ground_disequality_outcome a b outcome"
   by (auto simp: lpp_ground_disequality_outcome_def)
 
+
+text \<open>General rational disequality is a test for absence of a unifier.
+It neither substitutes its operands nor turns rational graphs into finite
+measures. The finite-ground interpretation is preserved exactly.\<close>
+
+definition lpp_rational_disequality_outcome ::
+  "('f lp_cut_symbol,'v) lp_iterm \<Rightarrow> ('f lp_cut_symbol,'v) lp_iterm \<Rightarrow> ('f,'v) lpp_builtin_result \<Rightarrow> bool" where
+  "lpp_rational_disequality_outcome a b outcome =
+    (outcome=(if \<exists>sigma :: 'v \<Rightarrow> ('f lp_cut_symbol,'v) lp_iterm. lp_isubst a sigma=lp_isubst b sigma
+      then LPPBuiltinFailure else LPPBuiltinSuccess LPIVar))"
+
+lemma lpp_rational_disequality_ground[simp]:
+  "lp_seg_ground a \<Longrightarrow> lp_seg_ground b \<Longrightarrow>
+    lpp_rational_disequality_outcome a b outcome = lpp_ground_disequality_outcome a b outcome"
+  by (simp add: lpp_rational_disequality_outcome_def lpp_ground_disequality_exact)
+
+lemma lpp_rational_disequality_total:
+  "\<exists>outcome. lpp_rational_disequality_outcome a b outcome"
+  by (simp add: lpp_rational_disequality_outcome_def)
+
 end
