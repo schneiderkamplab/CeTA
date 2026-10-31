@@ -198,3 +198,17 @@ and eight preserve intermediate proof failures; no admissions are used.
 The residual's mathematical symbols are still tile lists. A verified finite
 encoding into CPF function symbols, certificate parsing, and unified dispatch
 remain pending. The production checker executable is unchanged.
+
+`Sparse_Tiling_Encoding` now proves a finite tile-symbol encoding sound. Every
+required tiled rule must encode to a rule present in the supplied residual,
+and missing symbol mappings are rejected. The composed
+`sparse_check_encoded_tiling_sound` theorem consumes ordinary first-order
+source and residual rules, removing the earlier requirement that the residual
+checker directly use list-valued function symbols. A homomorphic simulation
+justifies the encoding; termination of the encoded residual is still required.
+
+Gate: `target/sparse-source-build-13.log`, including SML compilation, a
+positive encoded term example, missing-symbol/wrong-residual rejections and
+deterministic handling of duplicate table entries. Attempts 11–12 preserve
+proof/type failures. CPF parsing and unified processor dispatch are the next
+integration steps. No production checker executable changed.

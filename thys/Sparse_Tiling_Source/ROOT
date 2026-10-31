@@ -1,4 +1,4 @@
 session Sparse_Tiling_Source = First_Order_Rewriting +
   options [document = false, threads = 2]
   sessions Sparse_Tiling_Construction
-  theories Sparse_Tiling_Source Sparse_Tiling_Extraction
+  theories Sparse_Tiling_Source Sparse_Tiling_Extraction Sparse_Tiling_Encoding
