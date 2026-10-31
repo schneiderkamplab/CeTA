@@ -212,3 +212,36 @@ positive encoded term example, missing-symbol/wrong-residual rejections and
 deterministic handling of duplicate table entries. Attempts 11–12 preserve
 proof/type failures. CPF parsing and unified processor dispatch are the next
 integration steps. No production checker executable changed.
+
+Unified sparse-tiling integration is in progress. The proposed `Sparse_Tiling`
+termination-proof constructor contains finite closure data and one explicit
+ordinary-TRS child proof. The processor requires empty Q and no weak rules;
+it checks extraction, closure and tile-symbol encoding before returning the
+residual. Its soundness case is part of the ordinary termination-proof checker,
+not a standalone acceptance path. The current proof-base build has not yet
+passed (`target/sparse-proof-base-build-2.log`); these changes are not release
+checker evidence.
+
+The proposed CPF extension `sparseTiling` contains, in order, `leftBorder` and
+`rightBorder` symbol lists; `tiles` containing `tile` symbol lists;
+`tiledRules` containing `tiledRule` entries whose `lhs` and `rhs` contain tile
+lists; `tileEncoding` entries pairing a tile with an ordinary function symbol;
+the residual `trs`; and its `trsTerminationProof`. All symbols use the existing
+symbol parser. Missing encodings, insufficient residual rules and failed child
+proofs must be rejected. This grammar is an implementation candidate, not a
+claim of an upstream CPF standard revision. Parser/export and end-to-end
+mutation gates remain pending. No generated production checking logic changed.
+
+Native CPF integration fixtures are prepared by
+`scripts/check_sparse_tiling_native.py`. The current preparation produces two
+positive native artifacts (empty and nonempty residual) and seven semantic
+mutations: missing closure tiles, mismatched source tails, an empty source left
+side, a missing tiled rule, a missing used encoding, a false empty child proof,
+and removal of required encoded residual rules. Preparation evidence is
+`target/sparse-native-mutations-1/manifest.json`; **no checker was run**.
+
+Once regenerated, the same unified checker must accept both positives and
+reject every mutation twice. The script records certificate/checker hashes and
+keeps `checked: false` until all checks pass. It requires unified category
+dispatch including ITS, and has no standalone checker fallback. This gate
+remains pending while the proof-base and parser builds are incomplete.
