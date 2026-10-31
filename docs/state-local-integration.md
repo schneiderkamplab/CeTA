@@ -264,3 +264,19 @@ changed to `sparse_rewrite`, including the two local uses; the mathematical
 statement and existing CSR proof are unchanged. The repeat gate is running in
 `target/sparse-parser-build-2.log`. This is an integration defect, not a checker
 rejection of a certificate. No executable export has been replaced.
+
+The full `Proof_Checker` parser dependency gate now passes in
+`target/sparse-parser-build-2.log` (23m36s including rebuilt dependencies;
+Proof_Checker 5m50s). `CPF_Proof_Parser` verifies with the new `sparseTiling`
+constructor, and the existing CSR theories pass after the RFC constructor
+rename. This verifies parsing and formal checker integration together, not an
+executable artifact acceptance claim.
+
+The next gate regenerates `Certificate_Performance_CPF_Export` using the
+unchanged production export interface and optimization theory. Catalog dry run
+one selected a stale local AFP duplicate with a missing document file; its log
+is retained. Dry run two resolves AFP duplicates to the pinned AFP tree while
+retaining local checker sessions and reports the target dependency closure
+(`target/sparse-cpf-export-dry-run-2.log`). Its nonzero dry-run status reports
+unbuilt sessions, not a completed export. Generated production logic and the
+unified executable remain unchanged until export and native mutation gates pass.

@@ -1392,6 +1392,32 @@ where
       c \<leftarrow> xml2trs_termination_proof;
       xml_return (Rfc_Native_Matchbox_Relative_Bounds a ts b c)
     }
+    XMLor XMLdo (STR ''sparseTiling'') {
+      q \<leftarrow> symbols_no_arity xml2name (STR ''leftBorder'');
+      z \<leftarrow> symbols_no_arity xml2name (STR ''rightBorder'');
+      tiles \<leftarrow> XMLdo (STR ''tiles'') {
+        ts \<leftarrow>* symbols_no_arity xml2name (STR ''tile''); xml_return ts
+      };
+      tiled_rules \<leftarrow> XMLdo (STR ''tiledRules'') {
+        rs \<leftarrow>* XMLdo (STR ''tiledRule'') {
+          l \<leftarrow> XMLdo (STR ''lhs'') {
+            ts \<leftarrow>* symbols_no_arity xml2name (STR ''tile''); xml_return ts
+          };
+          r \<leftarrow> XMLdo (STR ''rhs'') {
+            ts \<leftarrow>* symbols_no_arity xml2name (STR ''tile''); xml_return ts
+          };
+          xml_return (l,r)
+        }; xml_return rs
+      };
+      table \<leftarrow> XMLdo (STR ''tileEncoding'') {
+        es \<leftarrow>* xml_pair (STR ''entry'')
+          (symbols_no_arity xml2name (STR ''tile'')) xml2name Pair;
+        xml_return es
+      };
+      residual \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2trs_termination_proof;
+      xml_return (Sparse_Tiling (Sparse_Tiling_Info q z tiles tiled_rules table residual) prf)
+    }
     XMLor XMLdo (STR ''ruleStrengthening'') {
       stronger \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2trs_termination_proof;
