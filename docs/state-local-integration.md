@@ -166,3 +166,21 @@ with native Ferrum construction on 84 small tilings and rejects 108 mutations
 `target/sparse-tiling-export-35/crosscheck.json` and `native-crosscheck.log`.
 This diagnostic export does not change the production checker executable or
 complete CPF integration.
+
+The separate `Sparse_Tiling_Source` session now connects the string theorem to
+AFP's genuine first-order terms and rewriting relation. It proves that every
+rewrite using unary rules with the same variable tail on both sides decreases
+a multiset of branch strings, including arbitrary term contexts. Consequently
+string termination implies termination of those term rules. The reverse
+transfer, from an embedded term-system proof to word-system termination, also
+passes. These proofs allow separate variables per rule and do not assume that
+substitution instances or surrounding terms are unary.
+
+Gate: `target/sparse-source-build-6.log`; the source is
+`thys/Sparse_Tiling_Source/Sparse_Tiling_Source.thy`. A private session build
+uses an explicit 29-directory AFP dependency closure, recorded in
+`target/sparse-source-dependencies.json`. Attempt one missed a sibling session
+dependency; attempts three and five preserve proof/syntax failures. The final
+session has no admissions. Executable source-rule extraction, certificate
+parsing and unified production dispatch remain pending. No production checker
+executable changed.
