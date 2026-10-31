@@ -184,3 +184,17 @@ dependency; attempts three and five preserve proof/syntax failures. The final
 session has no admissions. Executable source-rule extraction, certificate
 parsing and unified production dispatch remain pending. No production checker
 executable changed.
+
+`Sparse_Tiling_Extraction` now verifies executable extraction of unary terms
+and rule lists, preserving a common variable tail within each rule. It proves
+the composed `sparse_check_term_tiling_sound` theorem: finite tiling checks
+against extracted source/residual rules and termination of the residual term
+system imply termination of the source term system. Gate:
+`target/sparse-source-build-10.log`, including SML compilation, rejection of
+mismatched variable tails, branching and constants, and an end-to-end term
+example using different variables in its two source rules. Attempts seven
+and eight preserve intermediate proof failures; no admissions are used.
+
+The residual's mathematical symbols are still tile lists. A verified finite
+encoding into CPF function symbols, certificate parsing, and unified dispatch
+remain pending. The production checker executable is unchanged.
