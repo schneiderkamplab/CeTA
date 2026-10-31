@@ -1,0 +1,26 @@
+{
+  "schema": "ceta.prolog-finite-length-foundation.v1",
+  "source_base": "cfdec73867c32b5d366f1fdaca2a6b25cb269a37",
+  "theory_sha256": "f2553074a27b12c541e9abd38d18ae59d626da8fe2e4b3cf15cc390494387212",
+  "verified_attempt": 140,
+  "failed_attempts": [
+    135,
+    136,
+    137,
+    138,
+    139
+  ],
+  "verified_heap": "target/prolog-length-140.heap",
+  "parent_heap": "target/prolog-equation-export-132.heap",
+  "archive_sha256": "4d2f2aa0b7a5114279360743424f1ef453971a6f655e856ab1d6d80544d26f2f",
+  "production_checker_changed": false,
+  "source_action_integrated": false,
+  "benchmark_gains": 0,
+  "scope": [
+    "finite observed spine count uniqueness",
+    "substitution preserves finite spine count",
+    "cyclic spine rejection",
+    "successful return is the actual nonnegative integer count",
+    "no new admitted proofs or oracles"
+  ]
+}

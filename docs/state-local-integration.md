@@ -250,3 +250,21 @@ non-LP libraries. Its SHA-256 is
 the proof and archive hashes. Ferrum source certification and full-frontier
 validation are being recorded separately. No generated
 checker code was edited and no benchmark gain is claimed from these components.
+
+
+## Prolog finite-length return foundation
+
+`LP_Prolog_Finite_Length` proves uniqueness and substitution stability of a
+finite observed list-spine count, rejects a cyclic spine, and proves that a
+successful scalar unification returns its actual nonnegative integer count.
+List elements remain arbitrary infinitary terms. The error outcome remains
+explicit; this relation does not certify termination of an open-list generator.
+The theory is registered in `Prolog_Arithmetic_Bridge`.
+
+Isabelle attempt 140 verifies all lemmas and the dependency audit from the
+verified equation-export heap 132. Attempts 135–139 retain interrupted proof
+search and rejected proof steps. [Metadata](data/prolog-finite-length-20261031.json)
+and [source/log archive](data/prolog-finite-length-20261031.tar.gz) pin the result.
+No generated code, unified executable or accepted source-proof constructor has
+changed. Source-action coverage and actual-return model integration remain
+required before benchmark certificates or gains can be claimed.
