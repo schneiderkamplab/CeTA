@@ -280,3 +280,18 @@ retaining local checker sessions and reports the target dependency closure
 (`target/sparse-cpf-export-dry-run-2.log`). Its nonzero dry-run status reports
 unbuilt sessions, not a completed export. Generated production logic and the
 unified executable remain unchanged until export and native mutation gates pass.
+
+The complete `Certificate_Performance_CPF_Export` build now passes in
+`target/sparse-cpf-export-build-1.log` (31m09s including dependencies). The
+unchanged Isabelle export mechanism extracted the generated Haskell into
+`target/sparse-cpf-export/`; extraction passed and its public API matches the
+existing production boundary. The new deterministic snapshot is
+`tests/unified/exports/cpf-sparse-tiling.tar.gz`, SHA-256
+`0eb29f891a70b2fffc9895cd53aa05fdfadbdbcd2be0bca74acced41f1e19919`.
+Only the CPF entry in the unified export manifest changes. The source snapshot
+is `04e8417`; no generated checking logic was edited.
+
+The unified O2 executable build is running in `target/unified-sparse-tiling-1`
+with a persistent temporary directory and four library workers. The native
+artifact/mutation gate is queued after a successful build receipt; neither
+executable acceptance nor a production release is claimed yet.
