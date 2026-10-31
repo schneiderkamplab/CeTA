@@ -9,6 +9,7 @@ finite groundness, not integer typing.\<close>
 
 fun lpp_evaluation_observation_holds where
   "lpp_evaluation_observation_holds E eta (LPPOGround t) = lp_seg_ground (lp_ieval t eta)"
+| "lpp_evaluation_observation_holds E eta (LPPOEquation a b) = (lp_ieval a eta=lp_ieval b eta)"
 | "lpp_evaluation_observation_holds E eta (LPPOShape G shape t) = lp_return_shape_holds G shape (lp_ieval t eta)"
 | "lpp_evaluation_observation_holds E eta (LPPOInteger t) = lpp_is_integer (lp_ieval t eta)"
 | "lpp_evaluation_observation_holds E eta (LPPOEvaluation e t) = E (lp_ieval e eta) (lp_ieval t eta)"
@@ -138,9 +139,15 @@ lemma lpp_evaluation_observations_shape_facts:
   using lpp_evaluation_observation_shape_facts
   by (fastforce simp: lpp_observations_shape_facts_def lp_return_shape_known_def list_all_iff)
 
+lemma lpp_evaluation_observation_equations:
+  "lpp_evaluation_observation_holds E eta observation \<Longrightarrow>
+    \<forall>(a,b)\<in>set (lpp_observation_equations observation). lp_ieval a eta=lp_ieval b eta"
+  by (cases observation) auto
+
 fun lpp_evaluation_observation_check where
   "lpp_evaluation_observation_check K guards observations (LPPOGround t) =
-    (vars_term t \<subseteq> lpp_observations_ground observations)"
+    (vars_term t \<subseteq> lpp_observations_equation_ground observations)"
+| "lpp_evaluation_observation_check K guards observations (LPPOEquation a b) = (a=b \<or> LPPOEquation a b\<in>set observations)"
 | "lpp_evaluation_observation_check K guards observations (LPPOShape G shape t) =
     (LPPOShape G shape t\<in>set observations \<or>
       lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t)"
@@ -165,10 +172,15 @@ proof -
   have ground: "\<forall>x\<in>lpp_observations_ground observations. lp_seg_ground (eta x)"
     using lpp_evaluation_observation_ground[OF evaluation] observations
     by (auto simp: lpp_observations_ground_def list_all_iff)
+  have equations: "\<forall>(a,b)\<in>set (concat (map lpp_observation_equations observations)). lp_ieval a eta=lp_ieval b eta"
+    using observations by (fastforce simp: list_all_iff dest: lpp_evaluation_observation_equations)
+  have closure: "\<forall>x\<in>lpp_observations_equation_ground observations. lp_seg_ground (eta x)"
+    unfolding lpp_observations_equation_ground_def
+    by (rule lp_ground_equation_closure_sound[OF equations ground])
   have shapes: "lp_return_shape_holds G shape (lp_ieval t eta)"
     if "lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t" for G shape t
     by (rule lp_return_shape_check_sound[OF that lpp_evaluation_observations_shape_facts[OF observations]])
-  show ?thesis using checked known guards observations ground
+  show ?thesis using checked known guards observations closure
     by (cases observation) (auto simp: lp_seg_ground_eval list_all_iff intro: shapes lpp_context_integer_from_sound)
 qed
 

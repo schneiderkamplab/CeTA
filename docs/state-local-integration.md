@@ -223,3 +223,23 @@ controls. [Pinned audit metadata](../../ferrum-prolog-shared/docs/data/prolog-fi
 and its archive retain exact identities and all attempts. The requested
 30-gain development milestone is complete; protected-category production
 promotion and a fresh matched AProVE comparison remain separate gates.
+
+
+## Prolog sharing equations (source integration in progress)
+
+`LP_Ground_Equations` proves bounded finite-groundness propagation through
+actual term equations and preservation under runtime substitution. Equation
+observations reuse the existing source contexts and saved-frame transport.
+They are not integer evidence. The checked context can initialize an equation
+only from an existing equation or reflexive instantiated terms.
+
+Verification logs `target/prolog-ground-equations-126.log`,
+`target/prolog-equation-context-128.log` and
+`target/prolog-equation-ground-130.log` pass, including shared-field groundness,
+missing-equation rejection, cyclic-equation rejection and initialization controls.
+Failed attempts 125, 127 and 129 remain preserved; 127 exposed the required
+explicit rejection of equations in the numeric-guard checker. Full source
+pipeline 131 is running. Automatic Ferrum interface inference and complete
+source certificates remain pending. No generated checker code was edited,
+no new export or unified executable has been installed, and no benchmark gain
+is claimed from these components.

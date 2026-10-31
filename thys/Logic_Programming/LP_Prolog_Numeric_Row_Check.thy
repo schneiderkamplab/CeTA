@@ -9,6 +9,7 @@ facts separately and cannot be substituted for an arbitrary numeric guard.\<clos
 
 fun lpp_check_numeric_observation where
   "lpp_check_numeric_observation K (LPPOGround t) numeric_test = False"
+| "lpp_check_numeric_observation K (LPPOEquation a b) numeric_test = False"
 | "lpp_check_numeric_observation K (LPPOShape G shape t) numeric_test = False"
 | "lpp_check_numeric_observation K (LPPOInteger t) numeric_test = False"
 | "lpp_check_numeric_observation K (LPPOEvaluation e t) (comparison,a,b) =
@@ -29,6 +30,8 @@ proof -
   show ?thesis
   proof (cases observation)
     case (LPPOShape G shape t) then show ?thesis using checked by simp
+  next
+    case (LPPOEquation a b) then show ?thesis using checked by simp
   next
     case (LPPOGround t)
     then show ?thesis using checked by simp

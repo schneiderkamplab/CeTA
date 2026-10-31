@@ -62,6 +62,7 @@ fun lpp_context_guard_check where
 
 fun lpp_observation_ground_vars where
   "lpp_observation_ground_vars (LPPOGround t) = vars_term t"
+| "lpp_observation_ground_vars (LPPOEquation a b) = {}"
 | "lpp_observation_ground_vars (LPPOShape G shape t) = lp_return_shape_ground_vars 16 G shape t"
 | "lpp_observation_ground_vars (LPPOInteger t) = vars_term t"
 | "lpp_observation_ground_vars (LPPOEvaluation e t) = vars_term e \<union> vars_term t"
@@ -104,6 +105,31 @@ lemma lpp_observations_ground_sound:
   "list_all (lpp_numeric_observation_holds eta) observations \<Longrightarrow>
     \<forall>x\<in>lpp_observations_ground observations. lp_seg_ground (eta x)"
   using lpp_observation_ground_vars_sound by (auto simp: lpp_observations_ground_def list_all_iff)
+
+fun lpp_observation_equations where
+  "lpp_observation_equations (LPPOEquation a b) = [(a,b)]"
+| "lpp_observation_equations observation = []"
+
+definition lpp_observations_equation_ground where
+  "lpp_observations_equation_ground observations =
+    lp_ground_equation_closure 16 (concat (map lpp_observation_equations observations))
+      (lpp_observations_ground observations)"
+
+lemma lpp_observation_equations_sound:
+  "lpp_numeric_observation_holds eta observation \<Longrightarrow>
+    \<forall>(a,b)\<in>set (lpp_observation_equations observation). lp_ieval a eta=lp_ieval b eta"
+  by (cases observation) auto
+
+lemma lpp_observations_equation_ground_sound:
+  assumes known: "list_all (lpp_numeric_observation_holds eta) observations"
+  shows "\<forall>x\<in>lpp_observations_equation_ground observations. lp_seg_ground (eta x)"
+  unfolding lpp_observations_equation_ground_def
+proof (rule lp_ground_equation_closure_sound)
+  show "\<forall>(a,b)\<in>set (concat (map lpp_observation_equations observations)). lp_ieval a eta=lp_ieval b eta"
+    using known by (fastforce simp: list_all_iff dest: lpp_observation_equations_sound)
+  show "\<forall>x\<in>lpp_observations_ground observations. lp_seg_ground (eta x)"
+    by (rule lpp_observations_ground_sound[OF known])
+qed
 
 fun lpp_observation_shape_facts where
   "lpp_observation_shape_facts G (LPPOShape H shape t) =
@@ -149,7 +175,8 @@ lemma lpp_observations_shape_facts_sound:
 
 fun lpp_context_observation_check where
   "lpp_context_observation_check guards observations (LPPOGround t) =
-    (vars_term t \<subseteq> lpp_observations_ground observations)"
+    (vars_term t \<subseteq> lpp_observations_equation_ground observations)"
+| "lpp_context_observation_check guards observations (LPPOEquation a b) = (a=b \<or> LPPOEquation a b\<in>set observations)"
 | "lpp_context_observation_check guards observations (LPPOShape G shape t) =
     (LPPOShape G shape t\<in>set observations \<or>
       lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t)"
@@ -173,7 +200,7 @@ proof -
     by (rule lp_return_shape_check_sound[OF that lpp_observations_shape_facts_sound[OF observations]])
   show ?thesis using checked guards observations
     by (cases observation) (auto simp: list_all_iff lpp_is_integer_def
-      lp_seg_ground_eval intro: shapes dest: lpp_context_integer_sound lpp_observations_ground_sound[unfolded list_all_iff])
+      lp_seg_ground_eval intro: shapes dest: lpp_context_integer_sound lpp_observations_equation_ground_sound[unfolded list_all_iff])
 qed
 
 definition lpp_check_context_transport where

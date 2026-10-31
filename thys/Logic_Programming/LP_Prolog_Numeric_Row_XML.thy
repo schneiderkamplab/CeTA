@@ -50,6 +50,7 @@ definition lpp_shape_observation_parser where
 
 definition lpp_numeric_observation_parser where
   "lpp_numeric_observation_parser = lpp_shape_observation_parser XMLor
+    (XMLdo (STR ''sourceEquation'') {a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; xml_return (LPPOEquation a b)}) XMLor
     (xml_singleton (STR ''groundGuard'') lpc_term_parser LPPOGround) XMLor
     (XMLdo (STR ''evaluationGuard'') {e\<leftarrow>lpc_term_parser; t\<leftarrow>lpc_term_parser; xml_return (LPPOEvaluation e t)}) XMLor
     (xml_change (xml_singleton (STR ''comparisonGuard'') lpc_term_parser id)

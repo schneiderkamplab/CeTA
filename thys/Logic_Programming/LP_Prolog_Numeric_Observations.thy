@@ -1,5 +1,5 @@
 theory LP_Prolog_Numeric_Observations
-  imports LP_Return_Shape_Facts LP_Prolog_Finite_Comparison LP_Prolog_Numeric_Guards LP_Prolog_Integer_Test_Check LP_Cut_SEG_Triple_Prefix
+  imports LP_Ground_Equations LP_Return_Shape_Facts LP_Prolog_Finite_Comparison LP_Prolog_Numeric_Guards LP_Prolog_Integer_Test_Check LP_Cut_SEG_Triple_Prefix
 begin
 
 text \<open>Numeric observations travel with the shared active return frame.
@@ -9,6 +9,7 @@ closure permits ordinary shared unification and helper return transport.\<close>
 
 datatype 'v lpp_numeric_observation =
     LPPOGround "(string lp_cut_symbol,'v) term"
+  | LPPOEquation "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPOShape "string lp_cut_symbol lp_return_grammar" lp_return_shape "(string lp_cut_symbol,'v) term"
   | LPPOInteger "(string lp_cut_symbol,'v) term"
   | LPPOEvaluation "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
@@ -16,6 +17,7 @@ datatype 'v lpp_numeric_observation =
 
 fun lpp_numeric_observation_holds where
   "lpp_numeric_observation_holds eta (LPPOGround t) = lp_seg_ground (lp_ieval t eta)"
+| "lpp_numeric_observation_holds eta (LPPOEquation a b) = (lp_ieval a eta=lp_ieval b eta)"
 | "lpp_numeric_observation_holds eta (LPPOShape G shape t) = lp_return_shape_holds G shape (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOInteger t) = lpp_is_integer (lp_ieval t eta)"
 | "lpp_numeric_observation_holds eta (LPPOEvaluation e t) = lpp_integer_result (lp_ieval e eta) (lp_ieval t eta)"
