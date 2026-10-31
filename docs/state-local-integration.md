@@ -69,3 +69,23 @@ executable are preserved. Fresh native/strict replay and the full-frontier gate
 remain pending. See Ferrum's
 [composition contract](../../ferrum-state-local/docs/csr-proof-composition.md)
 for state identity and runtime integration gates.
+
+## Sparse tiling: local simulation infrastructure
+
+The isolated `codex/policy-sparse-tiling` worktree starts from checker source
+`0a3cca39bf93b0b43b44d89c95d439e93279d603`. Session
+`Sparse_Tiling_Construction` now checks the string-step context lemma, closure
+of chains inside an invariant language, and transfer of local termination
+through a step simulation. The gate passes in `target/sparse-tiling-build-4.log`
+with Isabelle2025-2 and AFP snapshot `/work/dfm/afp-2026-07-21`.
+The source is `thys/Sparse_Tiling/Sparse_Tiling_Simulation.thy`.
+
+The first attempt was stopped during broad AFP metadata discovery; attempts two
+and three contain failed proof obligations, preserved alongside the successful
+fourth attempt. The proof contains no admissions. Builds use a private Isabelle
+home and persistent temporary directory under this worktree's `target/`.
+
+This is proof infrastructure only. Instantiation for the concrete shift algebra,
+RFC coverage, executable certificate checks, parsing, and unified dispatch are
+unfinished. No generated checker logic, library export, or CeTA executable has
+changed. Ferrum's learned-policy campaigns continue with their pinned checker.
