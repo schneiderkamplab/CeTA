@@ -245,3 +245,13 @@ reject every mutation twice. The script records certificate/checker hashes and
 keeps `checked: false` until all checks pass. It requires unified category
 dispatch including ITS, and has no standalone checker fallback. This gate
 remains pending while the proof-base and parser builds are incomplete.
+
+The unified **Proof_Checker_Base gate now passes** in
+`target/sparse-proof-base-build-2.log`: the new processor wrapper, the
+`Sparse_Tiling` proof constructor, residual recursion, assumption traversal and
+the full termination-checker soundness proof are verified together. The build
+completed in 41m16s including uncached dependencies; the proof-base session itself
+took 3m09s. Attempt one remains preserved as a duplicate-session metadata failure.
+This proves source-level integration into the common termination checker.
+CPF parser compilation, regenerated exports and the native artifact/mutation
+gate are still pending, so no production checker acceptance is claimed.
