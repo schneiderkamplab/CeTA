@@ -5,3 +5,5 @@ session Sparse_Tiling_Construction = "Abstract-Rewriting" +
     Sparse_Tiling_Paths
     Sparse_Tiling_Language
     Sparse_Tiling_Check
+    Sparse_Tiling_Coverage
+    Sparse_Tiling_Windows
