@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Context_Length
-  imports LP_Prolog_Evaluation_Refresh LP_Prolog_Finite_Length_Normalization
+  imports LP_Prolog_Evaluation_Comparison LP_Prolog_Evaluation_Refresh LP_Prolog_Finite_Length_Normalization
 begin
 
 text \<open>A finite-input length operation uses shared scalar unification. The
@@ -8,7 +8,7 @@ failure alternative. Actual-return integer facts have their separate theorem.\<c
 definition lpp_check_finite_context_length where
   "lpp_check_finite_context_length T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle =
     (ss=(LPCGoals (LPCAtom (Fun (LPCUser ''2:length'') [e,a])#gs),active)#saved \<and>
-     vars_term e \<subseteq> set (lpcn_ground nd) \<and>
+     vars_term e \<subseteq> set (lpcn_ground nd) \<union> lpp_source_context_ground source_context \<and>
      lpp_fresh_return result_var ss \<and> lpp_context_fresh result_var source_context \<and>
      result_var\<notin>set F \<and> result_var\<notin>set (lpcn_vars nd) \<and> list_all (lpp_fresh_guard result_var) (lpcn_guards nd) \<and>
      lpcl_swaps middle=[] \<and>
@@ -38,7 +38,7 @@ theorem lpp_finite_context_length_contract:
     (lpc_return_eval eta ss) R t ret"
 proof -
   have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser ''2:length'') [e,a])#gs),active)#saved"
-    and expr_ground: "vars_term e \<subseteq> set (lpcn_ground nd)"
+    and expr_ground: "vars_term e \<subseteq> set (lpcn_ground nd) \<union> lpp_source_context_ground source_context"
     and result_var: "lpp_fresh_return result_var ss"
     and context_fresh: "lpp_context_fresh result_var source_context"
     and free_fresh: "result_var\<notin>set F"
@@ -51,7 +51,8 @@ proof -
       source_context middle"
     using checked by (auto simp: lpp_check_finite_context_length_def)
   have ground: "lp_seg_ground (lp_ieval e eta)"
-    using known expr_ground by (auto simp: lp_cut_knowledge_def lp_seg_ground_eval)
+    using known expr_ground lpp_evaluation_context_ground_sound[OF lpp_finite_evaluation_ground observed]
+    by (auto simp: lp_cut_knowledge_def lp_seg_ground_eval)
   have contracts: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain)
     ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
       lpc_return_env active eta)#lpc_return_eval eta saved) R t ret"
