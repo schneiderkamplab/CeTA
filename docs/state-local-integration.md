@@ -239,7 +239,14 @@ Verification logs `target/prolog-ground-equations-126.log`,
 missing-equation rejection, cyclic-equation rejection and initialization controls.
 Failed attempts 125, 127 and 129 remain preserved; 127 exposed the required
 explicit rejection of equations in the numeric-guard checker. Full source
-pipeline 131 is running. Automatic Ferrum interface inference and complete
-source certificates remain pending. No generated checker code was edited,
-no new export or unified executable has been installed, and no benchmark gain
-is claimed from these components.
+pipeline 131 and six-function export 132 pass their dependency audits. Ferrum
+`96f01a2` implements bounded equation-interface discovery over the established
+graph, with every incoming edge retained for independent context checking.
+Its 491 shared tests pass, including a shared-field source-assembly regression.
+The unified `make ceta` build 134 passed from the verified export, with unchanged
+non-LP libraries. Its SHA-256 is
+`c7972d18a9a092a5312286a76849784d34e4acef76db0300cbfaaa878165c7eb`.
+[Export and build identities](data/prolog-equation-export-20261031.json) retain
+the proof and archive hashes. Ferrum source certification and full-frontier
+validation are being recorded separately. No generated
+checker code was edited and no benchmark gain is claimed from these components.
