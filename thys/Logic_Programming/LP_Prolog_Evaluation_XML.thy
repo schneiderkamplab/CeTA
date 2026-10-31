@@ -56,6 +56,13 @@ definition lpp_evaluation_action_parser where
       result_var\<leftarrow>xml_text (STR ''resultVariable''); middle\<leftarrow>lpc_link_parser;
       fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
       xml_return (LPPEFiniteIs a e gs active saved result_var middle fs)}) XMLor
+    (XMLdo (STR ''normalizedFiniteLength'') {
+      a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      result_var\<leftarrow>xml_text (STR ''resultVariable''); middle\<leftarrow>lpc_link_parser;
+      fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
+      xml_return (LPPEFiniteLength a e gs active saved result_var middle fs)}) XMLor
     (XMLdo (STR ''normalizedConstantEvaluation'') {
       evidence\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
       gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;

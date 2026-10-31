@@ -12,12 +12,12 @@ lemma lpp_finite_source_nonbuiltin_base:
     (auto simp: lpp_builtin_active_def dest: lpp_finite_source_selected)
 
 lemma lpp_finite_source_nonis_step:
-  assumes different: "f\<noteq>''2:is''" and non_disequality: "f\<noteq>lpp_disequality_predicate" and selected: "(f,length ts)\<in>lpp_builtin_signature"
+  assumes different: "f\<noteq>''2:is''" and non_disequality: "f\<noteq>lpp_disequality_predicate" and nonlength: "f\<noteq>''2:length''" and selected: "(f,length ts)\<in>lpp_builtin_signature"
   shows "lpp_answer_transition P lpp_builtin_signature lpp_finite_source_builtin
       ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#saved) event tt =
     lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin
       ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#saved) event tt"
-  by (rule lpp_selected_builtin_cong[OF selected]) (rule lpp_finite_source_legacy[OF different non_disequality])
+  by (rule lpp_selected_builtin_cong[OF selected]) (rule lpp_finite_source_legacy[OF different non_disequality nonlength])
 
 lemma lpp_finite_identity_step:
   assumes name: "lpp_identity_name f"
@@ -28,9 +28,10 @@ lemma lpp_finite_identity_step:
 proof -
   have ne: "f\<noteq>''2:is''" using name by (auto simp: lpp_identity_name_def)
   have nd: "f\<noteq>lpp_disequality_predicate" using name by auto
+  have nl: "f\<noteq>''2:length''" using name by (auto simp: lpp_identity_name_def)
   have selected: "(f,length [a,b])\<in>lpp_builtin_signature"
     using lpp_identity_selected[OF name] by (simp add: numeral_2_eq_2)
-  show ?thesis by (simp only: lpp_finite_source_nonis_step[OF ne nd selected] lpp_integer_identity_step[OF name])
+  show ?thesis by (simp only: lpp_finite_source_nonis_step[OF ne nd nl selected] lpp_integer_identity_step[OF name])
 qed
 
 lemma lpp_finite_source_comparison_step:
@@ -50,11 +51,12 @@ proof -
     assume "f=lpp_disequality_predicate"
     with comparison show False by (simp only: lpp_disequality_names option.distinct)
   qed
+  have nl: "f\<noteq>''2:length''" using comparison by auto
   have selected: "(f,length [a,b])\<in>lpp_builtin_signature"
     using lpp_comparison_selected[OF descriptor] by (simp add: numeral_2_eq_2)
   have old: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin
       ((LPCGoals (LPCAtom (LPIFun (LPCUser f) [a,b])#gs),eta)#saved) event tt"
-    using step by (simp only: lpp_finite_source_nonis_step[OF ne nd selected])
+    using step by (simp only: lpp_finite_source_nonis_step[OF ne nd nl selected])
   show ?thesis by (rule lpp_finite_comparison_step[OF descriptor old])
 qed
 
