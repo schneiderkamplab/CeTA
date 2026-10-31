@@ -295,3 +295,18 @@ The unified O2 executable build is running in `target/unified-sparse-tiling-1`
 with a persistent temporary directory and four library workers. The native
 artifact/mutation gate is queued after a successful build receipt; neither
 executable acceptance nor a production release is claimed yet.
+
+The unified O2 build and native artifact gate now pass. Executable
+`target/unified-sparse-tiling-1/ceta` has SHA-256
+`291c79920562c4aaf5aaaa00eecc193876e3c4e60bed4e9689f4bb40bafc1259`.
+`target/sparse-native-checked-1/manifest.json` records all 18 successful checks:
+two native positive certificates accepted twice each, and seven semantic
+mutations rejected twice each. This is one unified executable with all eight
+category dispatch entries, including ITS; no fallback checker was used.
+
+Existing dispatch, CSR removal/GM composition, GM04 source-map and retained CPF
+semantic-negative gates also pass with the same hash. Commands, outcomes and
+timings are in `target/sparse-existing-paths-1/results.json`. These focused
+integration gates clear native sparse-tiling strategy activation in Ferrum.
+They do not establish full-frontier retention or authorize promotion as an
+already validated production release.
