@@ -1,0 +1,62 @@
+{
+  "source_commit": "4e5ab1e",
+  "native_commit": "9db2b53",
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-free-comparison-163/ceta",
+  "checker_sha256": "4dde20c235563568edbea2c88fca0b5135ae63d037878b2fd2edc6c5a47980fd",
+  "verification": "Full verified export 161; unified build 163; earlier failed proof attempts preserved",
+  "non_lp_comparison": {
+    "main_unchanged": true,
+    "libraries": {
+      "cpf": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "cycle": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "conditional": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "conditional-erasure": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "higher-order": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "higher-order-delegation": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      },
+      "its": {
+        "identity": true,
+        "unit": true,
+        "archive_sha256": true
+      }
+    }
+  },
+  "strict_replay": 351,
+  "frontier": {
+    "yes": 54,
+    "no": 3,
+    "unknown": 164,
+    "new_gains": 0
+  },
+  "cut_recheck": {
+    "attempt": 353,
+    "yes": 84,
+    "no": 9,
+    "checks": 186
+  },
+  "archive_sha256": "8b377fb7e289bfcc65a52c603853127782e8c00f836c940e5e4977c9a040c86a",
+  "production_promotion": false
+}

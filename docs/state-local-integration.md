@@ -300,3 +300,18 @@ and [proof audit](data/prolog-library-expansion-contract-20261031.tar.gz) retain
 the successful check with no skipped proofs or oracle dependencies. Concrete
 `length_count` coverage, including saved alternatives, is still unproved; the
 installed checker and certified frontier are unchanged.
+
+## Prolog finite comparison errors (2026-10-31)
+
+Source commit `4e5ab1e` checks uncaught comparison errors when a root operand
+is proved free and the other operand is finite ground or proved free. Query
+mode `f` alone supplies no such fact. The source transition terminates the
+entire stack, including saved alternatives; cyclic other operands remain
+unsupported. Successful comparison observations retain their existing rules.
+
+[Verification evidence](data/prolog-free-comparison-integration-20261031.json)
+pins verified export 161 and unified checker 163. Strict Prolog replay preserves
+54 YES + 3 NO, and all 84 YES + 9 NO retained cut certificates pass twice.
+There are no new benchmark gains. Non-LP library identities and the unified
+main are unchanged from checker 153; this comparison is not a protected-category
+production replay. Failed intermediate proof attempts remain in the audit archive.
