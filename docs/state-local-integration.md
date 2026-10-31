@@ -268,3 +268,24 @@ and [source/log archive](data/prolog-finite-length-20261031.tar.gz) pin the resu
 No generated code, unified executable or accepted source-proof constructor has
 changed. Source-action coverage and actual-return model integration remain
 required before benchmark certificates or gains can be claimed.
+
+
+## Checked finite length and helper return integration
+
+Source commits `a5adef5` and `8f45239` add finite-input length normalization,
+explicit failure/error outcomes, fresh result checking and conditional integer
+return facts. Groundness may come from the checked incoming context. Existing
+empty return summaries remain replayable. Full Isabelle exports 148 and 151
+pass; generated checking logic was not edited.
+
+[Integration metadata](data/prolog-length-integration-20261031.json) and
+[attempt logs](data/prolog-length-integration-20261031.tar.gz) pin unified checker
+153. Ferrum strict replay 328 preserves 54 YES + 3 NO; cut replay 331 checks all
+84 YES + 9 NO certificates twice with that same checker. Three length fixtures
+certify, nine strict controls and fifty mutations pass. No benchmark gain is
+claimed. Non-LP library identities and dispatcher source match checker 134;
+this comparison is not a protected-category production replay or promotion.
+
+The established library expansion through `length_count` remains an explicit
+source-assembly obligation. Direct scalar normalization does not replace that
+graph, omit its helper dependencies or certify an open-list generator.

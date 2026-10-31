@@ -1,0 +1,28 @@
+{
+  "source_commits": [
+    "a5adef5",
+    "8f45239"
+  ],
+  "native_commit": "e6738e4",
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-length-observed-153/ceta",
+  "checker_sha256": "2c46fe5df9c3448685a003d07db63fcd447d4b25ae4854322278152c91ef2890",
+  "non_lp_identity_comparison": {
+    "cpf": true,
+    "cycle": true,
+    "conditional": true,
+    "conditional-erasure": true,
+    "higher-order": true,
+    "higher-order-delegation": true,
+    "its": true
+  },
+  "main_unchanged": true,
+  "archive_sha256": "e8baf11b9f127324126febe57ca8cf01d9657b6afc8b8e818e4726154e318784",
+  "verification": "Full verified exports 148 and 151; final unified build 153",
+  "frontier": {
+    "yes": 54,
+    "no": 3,
+    "unknown": 164,
+    "new_gains": 0
+  },
+  "production_promotion": false
+}
