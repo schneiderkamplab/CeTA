@@ -113,3 +113,18 @@ explicit assumptions.
 This result still assumes the tile condition rather than proving an executable
 finite check for it. Initial/RFC coverage, source-term correspondence and
 certificate integration remain unfinished. No checker executable changed.
+
+`Sparse_Tiling_Check` now proves finite path-context enumeration complete and
+proves that its list-based closure/residual check implies the tile condition.
+The resulting executable predicate transfers termination of the tiled system
+to local termination on the accepted source language. Gate:
+`target/sparse-tiling-build-20.log`, including SML code-generation compilation,
+a positive deletion example, a missing-residual rejection, and an empty-left
+rejection. No admissions are used. Attempts 12–19 preserve syntax/proof
+failures, interrupted automation diagnostics, and the earlier successful proof
+and code-generation checks.
+
+Initial/RFC coverage, source-term correspondence, certificate parsing and
+unified dispatch remain unfinished. No generated production export or checker
+executable changed. This isolated source is on `codex/policy-sparse-tiling` in
+`CeTA-policy-eval`; campaign checker identities remain unchanged.

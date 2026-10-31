@@ -4,3 +4,4 @@ session Sparse_Tiling_Construction = "Abstract-Rewriting" +
     Sparse_Tiling_Simulation
     Sparse_Tiling_Paths
     Sparse_Tiling_Language
+    Sparse_Tiling_Check
