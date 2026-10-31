@@ -43,6 +43,12 @@ definition lpp_evaluation_action_parser where
       yf\<leftarrow>lpp_evaluation_types_parser (STR ''yesTypes'');
       nf\<leftarrow>lpp_evaluation_types_parser (STR ''noTypes'');
       xml_return (LPPEPrimitive (LPPEIdentity f a b gs active saved yes no yf nf))}) XMLor
+    (XMLdo (STR ''finiteComparisonError'') {
+      f\<leftarrow>xml_text (STR ''predicate''); comparison\<leftarrow>lpp_numeric_comparison_parser;
+      reversed\<leftarrow>xml_bool (STR ''reversed''); a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      xml_return (LPPEComparisonError f comparison reversed a b gs active saved)}) XMLor
     (XMLdo (STR ''checkedFiniteComparison'') {
       evidence\<leftarrow>lpp_finite_comparison_parser;
       yf\<leftarrow>lpp_evaluation_types_parser (STR ''yesTypes'');

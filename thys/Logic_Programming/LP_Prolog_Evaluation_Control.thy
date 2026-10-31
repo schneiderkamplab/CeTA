@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Control
- imports LP_Prolog_Finite_Context_Length LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
+ imports LP_Prolog_Finite_Comparison_Error LP_Prolog_Finite_Context_Length LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
 begin
 
 datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
@@ -10,6 +10,8 @@ datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
       "string lpc_term list" "string lpc_return_state" string "string lpc_link" lpp_link_types
   | LPPEFiniteLength "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
       "string lpc_term list" "string lpc_return_state" string "string lpc_link" lpp_link_types
+  | LPPEComparisonError string lpp_integer_comparison bool "string lpc_term" "string lpc_term"
+      "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state"
   | LPPEConstantIs "string lpp_integer_expression" "string lpc_term" "string lpc_term"
       "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state" "string lpc_link" lpp_link_types
 
@@ -32,6 +34,8 @@ fun lpp_check_evaluation_module_action where
     lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEFiniteLength a e gs active saved result_var middle fs) =
     lpp_check_finite_context_length T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+| "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEComparisonError f comparison reversed a b gs active saved) =
+    lpp_check_finite_comparison_error nd F ss source_context f comparison reversed a b gs active saved"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEConstantIs evidence a e gs active saved middle fs) =
     lpp_check_finite_context_constant T fs fuel P Q nds states contexts Fs nd F ss source_context evidence a e gs active saved middle"
 
@@ -58,6 +62,11 @@ theorem lpp_evaluation_control_action:
     and emit: "\<And>rho tt. lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain (lpc_return_eval eta ss) (Some rho) tt \<Longrightarrow> (t,ret rho)\<in>R\<^sup>*"
   shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) (lpc_return_eval eta ss) R t ret"
 proof (cases action)
+  case (LPPEComparisonError f comparison reversed a b gs active saved)
+  have check: "lpp_check_finite_comparison_error nd F ss source_context f comparison reversed a b gs active saved"
+    using checked LPPEComparisonError by simp
+  show ?thesis by (rule lpp_finite_comparison_error_contract[OF check known free observed])
+next
   case (LPPEFiniteIs a e gs active saved result_var middle fs)
   have check: "lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
     using checked LPPEFiniteIs by simp

@@ -38,7 +38,7 @@ fun lpp_integer_source_domain where
      else if f=''2:is'' then (length ts=2 \<and> (\<exists>n. lpp_integer_evaluation (ts!1) n))
      else (case lpp_source_comparison f of
        Some pair \<Rightarrow> (length ts=2 \<and>
-         lp_seg_ground (ts!0) \<and> lp_seg_ground (ts!1))
+         ((lp_seg_ground (ts!0) \<and> lp_seg_ground (ts!1)) \<or> lpp_finite_compare_error (ts!0) (ts!1)))
        | None \<Rightarrow> ((lpp_var_name f \<and> length ts=1) \<or> (lpp_identity_name f \<and> length ts=2))))"
 
 lemma lpp_integer_source_test[simp]:
@@ -138,12 +138,20 @@ next
     next
       case (Some pair)
       obtain comparison reversed where pair: "pair=(comparison,reversed)" by (cases pair) auto
-      have len: "length ts=2" and left: "lp_seg_ground (ts!0)" and right: "lp_seg_ground (ts!1)"
+      have len: "length ts=2" and finite:
+        "(lp_seg_ground (ts!0) \<and> lp_seg_ground (ts!1)) \<or> lpp_finite_compare_error (ts!0) (ts!1)"
         using domain by (simp only: lpp_integer_source_domain.simps ni ne if_False Some option.case; blast)+
       have ev: "\<exists>outcome. lpp_finite_compare_outcome comparison
         (if reversed then ts!1 else ts!0) (if reversed then ts!0 else ts!1) outcome"
-        by (cases reversed) (use lpp_finite_comparison_total[OF left right]
-          lpp_finite_comparison_total[OF right left] in simp_all)
+      proof (cases "lp_seg_ground (ts!0) \<and> lp_seg_ground (ts!1)")
+        case True
+        then show ?thesis by (cases reversed) (auto intro: lpp_finite_comparison_total)
+      next
+        case False
+        have error: "lpp_finite_compare_error (ts!0) (ts!1)" using finite False by blast
+        show ?thesis by (rule exI[of _ LPPBuiltinError])
+          (use error in \<open>cases reversed; auto simp: lpp_finite_compare_outcome_def lpp_finite_compare_error_def\<close>)
+      qed
       show ?thesis using ev by (simp only: lpp_integer_source_builtin.simps ni ne if_False Some pair option.case prod.case len HOL.simp_thms)
     qed
   qed

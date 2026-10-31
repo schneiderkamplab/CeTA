@@ -13,12 +13,22 @@ lemma lpp_integer_evaluation_ground:
   by (induct rule: lpp_integer_evaluation.induct)
     (auto simp: lpp_integer_value_def intro: lp_seg_ground.intros)
 
+definition lpp_finite_compare_error where
+  "lpp_finite_compare_error a b =
+    (((\<exists>x. a=LPIVar x) \<and> (lp_seg_ground b \<or> (\<exists>y. b=LPIVar y))) \<or>
+     ((\<exists>y. b=LPIVar y) \<and> lp_seg_ground a))"
+
+lemma lpp_finite_compare_error_ground[simp]:
+  "lp_seg_ground a \<Longrightarrow> lp_seg_ground b \<Longrightarrow> \<not>lpp_finite_compare_error a b"
+  by (auto simp: lpp_finite_compare_error_def elim: lp_seg_ground.cases)
+
 definition lpp_finite_compare_outcome where
   "lpp_finite_compare_outcome comparison a b outcome =
-    (lp_seg_ground a \<and> lp_seg_ground b \<and>
+    ((lpp_finite_compare_error a b \<and> outcome=LPPBuiltinError) \<or>
+     (lp_seg_ground a \<and> lp_seg_ground b \<and>
       (if (\<exists>n. lpp_integer_evaluation a n) \<and> (\<exists>m. lpp_integer_evaluation b m)
        then lpp_integer_compare_outcome comparison a b outcome
-       else outcome=LPPBuiltinSuccess LPIVar \<or> outcome=LPPBuiltinFailure \<or> outcome=LPPBuiltinError))"
+       else outcome=LPPBuiltinSuccess LPIVar \<or> outcome=LPPBuiltinFailure \<or> outcome=LPPBuiltinError)))"
 
 lemma lpp_finite_comparison_integer:
   assumes left: "lpp_integer_evaluation a n" and right: "lpp_integer_evaluation b m"
@@ -40,9 +50,9 @@ next
 qed
 
 lemma lpp_finite_comparison_subst:
-  assumes "lpp_finite_compare_outcome comparison a b outcome"
+  assumes "lpp_finite_compare_outcome comparison a b outcome" "outcome\<noteq>LPPBuiltinError"
   shows "lpp_finite_compare_outcome comparison (lp_isubst a sigma) (lp_isubst b sigma) outcome"
-  using assms by (auto simp: lpp_finite_compare_outcome_def lp_seg_ground_subst)
+  using assms by (auto simp: lpp_finite_compare_outcome_def lp_seg_ground_subst split: if_splits)
 
 lemma lpp_integer_comparison_finite:
   assumes "lpp_integer_compare_outcome comparison a b outcome"
