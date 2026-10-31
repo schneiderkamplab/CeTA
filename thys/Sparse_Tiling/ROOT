@@ -2,3 +2,4 @@ session Sparse_Tiling_Construction = "Abstract-Rewriting" +
   options [document = false, threads = 2]
   theories
     Sparse_Tiling_Simulation
+    Sparse_Tiling_Paths

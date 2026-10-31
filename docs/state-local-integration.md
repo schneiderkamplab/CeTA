@@ -89,3 +89,15 @@ This is proof infrastructure only. Instantiation for the concrete shift algebra,
 RFC coverage, executable certificate checks, parsing, and unified dispatch are
 unfinished. No generated checker logic, library export, or CeTA executable has
 changed. Ferrum's learned-policy campaigns continue with their pinned checker.
+
+The concrete `Sparse_Tiling_Paths` theory now passes the same isolated session
+in `target/sparse-tiling-build-9.log`. It defines shift runs and tile paths and
+proves their append laws, preservation of state length, the explicit suffix
+formula, synchronization, and contextual simulation of a source rewrite by a
+supplied tiled rule. Attempts five through eight retain intermediate proof
+failures; the final session checks both theories without admissions.
+
+This proves the path-level simulation component, not the complete sparse-tiling
+processor. Language closure from finite checks, RFC coverage, term/source
+correspondence, certificate parsing and executable dispatch are still missing.
+Generated checking code and the pinned executable remain unchanged.
