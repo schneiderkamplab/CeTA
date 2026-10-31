@@ -255,3 +255,12 @@ took 3m09s. Attempt one remains preserved as a duplicate-session metadata failur
 This proves source-level integration into the common termination checker.
 CPF parser compilation, regenerated exports and the native artifact/mutation
 gate are still pending, so no production checker acceptance is claimed.
+
+The first full parser dependency build fails before parser compilation:
+`target/sparse-parser-build-1.log` identifies an imported-name collision in
+`CSR_Minimal_CSDP_Proofs.csrewrite_complete`. The new RFC constructor's short
+name `rewrite` shadows the existing executable rewriting theorem. Its name is
+changed to `sparse_rewrite`, including the two local uses; the mathematical
+statement and existing CSR proof are unchanged. The repeat gate is running in
+`target/sparse-parser-build-2.log`. This is an integration defect, not a checker
+rejection of a certificate. No executable export has been replaced.

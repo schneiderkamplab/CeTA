@@ -4,7 +4,7 @@ begin
 
 inductive_set sparse_rfc :: "('a list \<times> 'a list) set \<Rightarrow> 'a list set" for R where
   rhs: "(l,r) \<in> R \<Longrightarrow> r \<in> sparse_rfc R"
-| rewrite: "w \<in> sparse_rfc R \<Longrightarrow> (w,v) \<in> sparse_word_step R \<Longrightarrow> v \<in> sparse_rfc R"
+| sparse_rewrite: "w \<in> sparse_rfc R \<Longrightarrow> (w,v) \<in> sparse_word_step R \<Longrightarrow> v \<in> sparse_rfc R"
 | overlap: "u @ a \<in> sparse_rfc R \<Longrightarrow> (a @ b,r) \<in> R \<Longrightarrow>
     a \<noteq> [] \<Longrightarrow> b \<noteq> [] \<Longrightarrow> u @ r \<in> sparse_rfc R"
 
@@ -41,10 +41,10 @@ proof induction
   case (rhs l r)
   then show ?case by (rule initial)
 next
-  case (rewrite w v)
+  case (sparse_rewrite w v)
   have result: "sparse_accept T q (v @ z) \<and>
     (sparse_path q (w @ z), sparse_path q (v @ z)) \<in> sparse_word_step S"
-    by (rule sparse_bordered_step[OF normal _ border rewrite.hyps(2) rewrite.IH]) (meson proper)
+    by (rule sparse_bordered_step[OF normal _ border sparse_rewrite.hyps(2) sparse_rewrite.IH]) (meson proper)
   then show ?case by blast
 next
   case (overlap u a b r)

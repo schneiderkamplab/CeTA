@@ -149,7 +149,7 @@ proof -
             proof (rule sparse_step_append_cases[OF step])
               fix w
               assume left: "(u,w) \<in> ?R" "t = w @ v"
-              have "w \<in> sparse_rfc R" by (rule sparse_rfc.rewrite[OF member left(1)])
+              have "w \<in> sparse_rfc R" by (rule sparse_rfc.sparse_rewrite[OF member left(1)])
               then show ?thesis using inner[OF left(1)] left(2) by simp
             next
               fix w
