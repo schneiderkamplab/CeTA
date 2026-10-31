@@ -158,3 +158,11 @@ Gate: `target/sparse-tiling-build-34.log`, including the end-to-end seven-tile
 example with an empty residual. Builds 29–33 preserve intermediate proofs and
 failures. CeTA term/source correspondence, certificate parsing and unified
 production dispatch remain unfinished; no production executable changed.
+
+The predicate is now exported directly by Isabelle to a diagnostic SML module
+(gate `target/sparse-tiling-build-35.log`). Its unmodified generated code agrees
+with native Ferrum construction on 84 small tilings and rejects 108 mutations
+(192 checks total). Evidence and artifact hashes are recorded in
+`target/sparse-tiling-export-35/crosscheck.json` and `native-crosscheck.log`.
+This diagnostic export does not change the production checker executable or
+complete CPF integration.

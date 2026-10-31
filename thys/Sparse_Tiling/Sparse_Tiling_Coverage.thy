@@ -158,5 +158,6 @@ lemma sparse_coverage_missing_initial_tile:
   by eval
 
 export_code sparse_check_coverage checking SML
+export_code sparse_check_coverage in SML module_name Sparse_Tiling file_prefix sparse_tiling
 
 end
