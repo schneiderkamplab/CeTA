@@ -1,0 +1,4 @@
+session Sparse_Tiling_Removal_Source = Sparse_Tiling_Source +
+  options [document = false, threads = 2]
+  sessions Sparse_Tiling_Removal
+  theories Sparse_Tiling_Removal_Source

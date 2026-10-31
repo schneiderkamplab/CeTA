@@ -1418,6 +1418,27 @@ where
       prf \<leftarrow> xml2trs_termination_proof;
       xml_return (Sparse_Tiling (Sparse_Tiling_Info q z tiles tiled_rules table residual) prf)
     }
+    XMLor XMLdo (STR ''sparseRuleRemoval'') {
+      q \<leftarrow> symbols_no_arity xml2name (STR ''leftBorder'');
+      z \<leftarrow> symbols_no_arity xml2name (STR ''rightBorder'');
+      tiles \<leftarrow> XMLdo (STR ''tiles'') {
+        ts \<leftarrow>* symbols_no_arity xml2name (STR ''tile''); xml_return ts
+      };
+      tiled_rules \<leftarrow> XMLdo (STR ''tiledRules'') {
+        rs \<leftarrow>* XMLdo (STR ''tiledRule'') {
+          l \<leftarrow> XMLdo (STR ''lhs'') {
+            ts \<leftarrow>* symbols_no_arity xml2name (STR ''tile''); xml_return ts
+          };
+          r \<leftarrow> XMLdo (STR ''rhs'') {
+            ts \<leftarrow>* symbols_no_arity xml2name (STR ''tile''); xml_return ts
+          };
+          xml_return (l,r)
+        }; xml_return rs
+      };
+      residual \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
+      prf \<leftarrow> xml2trs_termination_proof;
+      xml_return (Sparse_Rule_Removal (Sparse_Removal_Info q z tiles tiled_rules residual) prf)
+    }
     XMLor XMLdo (STR ''ruleStrengthening'') {
       stronger \<leftarrow> xml_singleton (STR ''trs'') (rules xml2name termIndexMap ruleMap) id;
       prf \<leftarrow> xml2trs_termination_proof;

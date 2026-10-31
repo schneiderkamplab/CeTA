@@ -350,6 +350,7 @@ and ('f, 'l, 'v) trs_termination_proof =
     "('f, 'l, 'v) trs_termination_proof"
 | Rule_Strengthening "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Sparse_Tiling "(('f,'l) lab,'v) sparse_tiling_info" "('f,'l,'v) trs_termination_proof"
+| Sparse_Rule_Removal "(('f,'l) lab,'v) sparse_removal_info" "('f,'l,'v) trs_termination_proof"
 and ('f, 'l, 'v) unknown_proof =
   Assume_Unknown unknown_info "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 and ('f, 'l, 'v) fptrs_termination_proof =
@@ -394,6 +395,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (String_Reversal p) = sn_assms a p"
 | "sn_assms a (Rule_Strengthening _ p) = sn_assms a p"
 | "sn_assms a (Sparse_Tiling _ p) = sn_assms a p"
+| "sn_assms a (Sparse_Rule_Removal _ p) = sn_assms a p"
 | "sn_assms a (Constant_String _ p) = sn_assms a p"
 | "sn_assms a (Bounds _) = []"
 | "sn_assms a (Relative_Bounds _ _ p) = sn_assms a p"
@@ -1049,6 +1051,10 @@ where
     })"
 | "check_trs_termination_proof i tp (Sparse_Tiling info prf) = debug i (STR ''Sparse Tiling'') (do {
       tp' \<leftarrow> sparse_tiling_tt J info tp;
+      check_trs_termination_proof (add_index i 1) tp' prf
+    })"
+| "check_trs_termination_proof i tp (Sparse_Rule_Removal info prf) = debug i (STR ''Sparse Rule Removal'') (do {
+      tp' \<leftarrow> sparse_removal_tt J info tp;
       check_trs_termination_proof (add_index i 1) tp' prf
     })"
   by pat_completeness auto
@@ -2276,6 +2282,19 @@ next
   from IH(3) have fin: "?Q prof" by simp
   show ?case
     apply (rule sound_tt_impl[OF sparse_tiling_tt_sound tt])
+    apply (rule IH(1)[OF _ rec fin])
+    using tt by simp
+next
+  case (56 i tp info prof)
+  note IH = this
+  interpret tp_spec J by fact
+  from IH(2) obtain tp' where
+    tt: "sparse_removal_tt J info tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof (add_index i 1) tp' prof)"
+    by auto
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule sound_tt_impl[OF sparse_removal_tt_sound tt])
     apply (rule IH(1)[OF _ rec fin])
     using tt by simp
 qed

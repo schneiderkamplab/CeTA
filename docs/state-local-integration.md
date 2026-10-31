@@ -328,3 +328,23 @@ failures, and attempt 4 verifies the intermediate mathematical and live-rule
 checking layer. No admissions are used. Term/source extraction, CPF constructor
 and parser integration, generated export and unified native mutation tests for
 this new variant remain pending. The frozen `291c799...` checker has not changed.
+
+The isolated term/source gate for sparse rule removal now passes:
+`target/sparse-removal-source-build-2.log`. The new
+`Sparse_Tiling_Removal_Source` session composes checked unary source extraction,
+word-level closure/removal soundness and transfer back to unrestricted ordinary
+term rewriting. Its SML checks cover empty and nonempty retained systems,
+changed source variable tails, an empty left side and a false empty residual.
+Attempt one preserves ambiguous test-variable types; the theorem itself was
+not weakened.
+
+Common-checker integration is now proposed through `Sparse_Removal_Info`,
+`sparse_removal_tt` and the `Sparse_Rule_Removal` proof constructor. It requires
+empty Q and no weak rules, preserves assumption traversal and reconstructs one
+ordinary termination child. CPF `sparseRuleRemoval` contains left/right borders,
+closure tiles, tiled rules, the retained `trs` and its `trsTerminationProof`.
+The full `Certificate_Performance_CPF_Export` build is running in
+`target/sparse-removal-cpf-export-build-1.log`. Its dependency closure is pinned
+in `target/sparse-removal-cpf-export-dependencies.json`. This integration and
+export are not yet verified; no generated production archive or executable has
+been replaced. The earlier frozen sparse-tiling checker remains unchanged.
