@@ -1,0 +1,8 @@
+{
+  "attempt": 154,
+  "verified": true,
+  "archive_sha256": "f7f99086768461f043eb1aa92e79507d6ef6a0e231f8c10804052ecb3e3eee47",
+  "dependency_audit": "No skip proofs or oracles",
+  "installed_checker": false,
+  "remaining": "Concrete length_count successor coverage including saved alternatives"
+}

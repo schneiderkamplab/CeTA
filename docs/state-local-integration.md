@@ -289,3 +289,14 @@ this comparison is not a protected-category production replay or promotion.
 The established library expansion through `length_count` remains an explicit
 source-assembly obligation. Direct scalar normalization does not replace that
 graph, omit its helper dependencies or certify an open-list generator.
+
+
+Shared library-expansion contract attempt 154 verifies reachability inheritance
+and silent initial expansion in `LP_Answer_Initial_Refinement`. The rule requires
+the complete expanded-state contract and coverage of every primitive successor
+in the same annotated transition system. Return facts alone cannot discharge
+these premises. [Metadata](data/prolog-library-expansion-contract-20261031.json)
+and [proof audit](data/prolog-library-expansion-contract-20261031.tar.gz) retain
+the successful check with no skipped proofs or oracle dependencies. Concrete
+`length_count` coverage, including saved alternatives, is still unproved; the
+installed checker and certified frontier are unchanged.
