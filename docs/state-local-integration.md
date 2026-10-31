@@ -310,3 +310,21 @@ timings are in `target/sparse-existing-paths-1/results.json`. These focused
 integration gates clear native sparse-tiling strategy activation in Ferrum.
 They do not establish full-frontier retention or authorize promotion as an
 already validated production release.
+
+An isolated `Sparse_Tiling_Removal` session now verifies the word-level sparse
+rule-removal variant from [Geser, Hofbauer and Waldmann, FSCD 2019, Algorithm
+5.4](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.FSCD.2019.21).
+The original rules supply forward-closure coverage; the retained subset must
+contain every rule admitting an accepted redex. The proof transfers each
+reachable rewrite to the retained system and then uses the already verified
+RFC termination criterion. It does not assume global absence of the removed
+left sides.
+
+`thys/Sparse_Tiling_Removal/Sparse_Tiling_Removal.thy` includes the executable
+`sparse_check_removal` and its soundness theorem, SML compilation, an empty
+residual example, and rejection of a false empty residual with a live rule.
+Gate `target/sparse-removal-build-5.log` passes; attempts 1–3 preserve proof/type
+failures, and attempt 4 verifies the intermediate mathematical and live-rule
+checking layer. No admissions are used. Term/source extraction, CPF constructor
+and parser integration, generated export and unified native mutation tests for
+this new variant remain pending. The frozen `291c799...` checker has not changed.

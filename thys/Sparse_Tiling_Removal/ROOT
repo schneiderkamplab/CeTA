@@ -1,0 +1,3 @@
+session Sparse_Tiling_Removal = Sparse_Tiling_Construction +
+  options [document = false, threads = 2]
+  theories Sparse_Tiling_Removal
