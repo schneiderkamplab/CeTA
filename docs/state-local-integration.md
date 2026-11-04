@@ -357,3 +357,26 @@ fixture XPath mismatch and ran no checker. The default tiling family's nine
 certificate hashes are unchanged (`sparse-family-tiling-prepare-1`). Native
 rule-removal acceptance/rejection checks remain pending the regenerated unified
 executable; fixture preparation is not certification.
+
+## 2026-11-04 sparse rule-removal verified export
+
+The restored `Certificate_Performance_CPF_Export` build finished successfully
+on October 31 in `target/sparse-removal-cpf-export-build-2.log` (42m13s).
+The first attempt remains preserved as an invalid storage-interruption run:
+its `SQLITE_READONLY_DBMOVED` failures followed detachment of `/work/dfm`.
+
+The verified common-checker and CPF integration is now exported without editing
+generated Haskell. The source revision is
+`96ce519d198a0f0d66a615417821ce50b293d11f` on `codex/policy-sparse-tiling`
+in `CeTA-policy-eval`; the formal implementation was introduced in `0071826`.
+The public generated-module API check passes. The deterministic source archive
+`tests/unified/exports/cpf-sparse-removal.tar.gz` has SHA-256
+`ec94cbbd3a548c2542561462993dfd80c4fd5108e5fe8227e0eb908f7bad92c7`.
+The unified export manifest changes only the CPF source/archive provenance.
+Extraction and source hashes are recorded in
+`target/sparse-removal-export-package.json`.
+
+The unified O2 executable is building in `target/unified-sparse-removal-1`.
+Native positive/mutation checks for both sparse families and existing checker
+regressions remain pending. This verified export alone is not a production
+release or a full-frontier checker compatibility claim.
