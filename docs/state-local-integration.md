@@ -455,3 +455,20 @@ Fourteen semantic mutations of the new source proofs are rejected; renamed
 positives and divergent/cyclic negative controls pass. The [Ferrum evidence](../../ferrum-prolog-release/docs/data/prolog-rational-gains-20261104.json)
 retains the complete attempts and guidance controls. Protected-category
 production promotion and the broader superiority comparison remain open.
+
+## 2026-11-04 Constructor transport for dependency-triple returns
+
+Source commit `c7c382b` proves data erasure for actual SEG answer steps, finite
+successful prefixes and dependency-triple calls. The constructor-success
+machine theorem additionally transports the saved continuation bindings with
+the actual helper return. It reuses the existing LP operational semantics and
+constructor rewrite relation, retaining infinite constructor values. It does
+not infer finite spines or termination from a successful return.
+
+[Verified sources and attempts](data/prolog-triple-constructor-success-20261104.json)
+include the initial proof failure, final checked theories, proof-oracle audit
+and immutable child-heap identity. The theories are registered in the standard
+Logic_Programming session. This is a prerequisite for the constructor-triples
+source bridge, not an accepting checker extension. Strict-call simulation,
+constructor-chain assembly and source checking remain open. No Haskell export
+or unified checker changed; retained executable 274 is still authoritative.

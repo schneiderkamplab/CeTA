@@ -1,0 +1,41 @@
+{
+  "schema": "ceta.prolog-source-theorem-evidence.v1",
+  "source_commit": "c7c382b",
+  "proofs": [
+    "lp_data_answer_step",
+    "lp_data_answer_steps",
+    "lp_data_triple_call",
+    "lp_translation.lp_triple_data_success_capture"
+  ],
+  "proof_oracles": [],
+  "verified_heap": "target/prolog-triple-constructor-success-283.heap",
+  "verified_heap_sha256": "d5a5098f7b7451e847ce74bf4547326c971e7beceea9340e8f10b0197d12ac39",
+  "export_changed": false,
+  "unified_checker_changed": false,
+  "unified_checker_sha256": "e603074c5b87bc9415162bd744ace909af48bd9397f4478fe03a80f57c553fc5",
+  "remaining": "Constructor strict-call simulation, chain theorem, checked source constructor and complete original-source replay.",
+  "archive_sha256": "81281a26584c28d96d6dfc1ff23e11ac37e4e1df9c97d9d71bec1f051f6fee1c",
+  "files": {
+    "target/check-triple-constructor-success-279.py": "8de2426fa64b0517a941125b08452e14bdd4da39ed31032216f2cd1f217bd551",
+    "target/check-triple-constructor-success-280.py": "887791f8e3f06ded66590685d2e3c6bd2aa4fcfb50c6e53f971b20b9006beffb",
+    "target/check-triple-constructor-success-281.py": "885cb07c6ae0b84b7e09e8c87442f6fc1ada92d18fbdef6f041514b389349ad0",
+    "target/check-triple-constructor-success-282.py": "fa627398bad72d6e45485a87a7cf24570e6f413c54f4660a8fdae1fa86f9dba4",
+    "target/check-triple-constructor-success-283.py": "e08903dfbe68c6ecce60a5b953b712568915cb05b2eb45abd10e24d5ceed4f60",
+    "target/check-triple-data-276.py": "6b42fb339e2e627657b97958cdf941976b4200ed59702ed81e6495e8968ccc7c",
+    "target/check-triple-data-277.py": "4c224830f6930c8ea5757fba29bd9afa25132de417c75d19ba0db7ad3763b6ae",
+    "target/check-triple-data-278.py": "b760cb27ec17517ebe985545a0fabc305fc1d2d345507947459db549ea44a836",
+    "target/extend-triple-constructor-success-280.py": "2dfa97d87eb8e2451271fdcfc92a74ca2cf0916c5ac5c78949e5912498c11687",
+    "target/pin-triple-constructor-success-284.py": "5ed2d1f43cebc99fd32b2d365b7ede48a3e4c93cf3b638113607bbf25edb8826",
+    "target/prolog-triple-constructor-success-279.log": "04e7d2327041ad56c32b63f2f974aa91231908d1f2597da7486e3cb1a83aba0d",
+    "target/prolog-triple-constructor-success-280.log": "f7dea270981ae2db9cf836bbdaecb82479cbde9e366595a4647416611936f3d4",
+    "target/prolog-triple-constructor-success-281.log": "b35f71ffe2a608dbb7f8d46205e89946ff47bb01d94167c7832ac0ac84bab44d",
+    "target/prolog-triple-constructor-success-282.log": "558abfd714144bd7f519b367a7926c35e8a77943324a2743c04d5384d4485889",
+    "target/prolog-triple-constructor-success-283.log": "7b50f6149312cd05b236dda083b0cf92b2d5aa0a3927d1f609f98a17282adc95",
+    "target/prolog-triple-data-276.log": "986611deae5bf9e960fe6fdeb4544bdb4941c6a08dcad92f1d4e1adcc8b3a55e",
+    "target/prolog-triple-data-277.log": "7f56101b4c35b58439ebc270e671617dce682d55c8b6332406bbfc0c88398186",
+    "target/prolog-triple-data-278.log": "ffa0eafbf9085f2df654d3c97c4a9833fdcf2525f187f375973ee18de726fc17",
+    "thys/Logic_Programming/LP_Dependency_Triple_Constructor_Success.thy": "d8b48db3e911860c615058c3823b56b7d2d478feb9ad95660115dfe6dab5656f",
+    "thys/Logic_Programming/LP_Dependency_Triple_Data.thy": "3a11ee85f2ebf88ab8dc2b4f2861c2f81585df5405ae5f1ddc594b9cc3be08a8",
+    "thys/Logic_Programming/ROOT": "91530c9217d6f1418ba12d3d7df047bd5b4b421a7d15f1c5b41e563d757a2e37"
+  }
+}
