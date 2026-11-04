@@ -472,3 +472,24 @@ Logic_Programming session. This is a prerequisite for the constructor-triples
 source bridge, not an accepting checker extension. Strict-call simulation,
 constructor-chain assembly and source checking remain open. No Haskell export
 or unified checker changed; retained executable 274 is still authoritative.
+
+
+## Rational Prolog source nontermination
+
+Integration `c68ffa9` adds an independently generated rational-NO module to the
+unified LP/Prolog adapter. All 18 previous generated modules remain byte-identical.
+The original source semantics and previous constructors are unchanged. The new
+source theorem checks a principal cyclic binding, exact rational pattern matches,
+finite observations proving failed unification, and complete ordered traces with
+saved alternatives. It reuses the shared MGU source and pending-stack pumping
+theorem; a cyclic graph is not a finite structural measure.
+
+Isabelle verifies the source theorem and executable equations with no skipped
+proofs or oracle dependencies. `make ceta` builds the O2 unified executable at
+`target/unified-rational-no-349/ceta`, SHA-256
+`0e32d5a6cf49a5c86bccbfe6de6dbfca5087595c8f5ca45e65a61b0865e772a8`.
+The real `nonterm.pl` and three generalized fixtures pass native and strict
+Ferrum replay with two checks each; all 17 mutated certificates reject twice.
+[Proof, export and mutation evidence](data/prolog-rational-no-20261104.json)
+pins every attempt. Full frontier preservation and production promotion remain
+pending: the user requested a break once `nonterm.pl` was proven NO.
