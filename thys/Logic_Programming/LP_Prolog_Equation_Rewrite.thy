@@ -1,5 +1,5 @@
 theory LP_Prolog_Equation_Rewrite
- imports LP_Prolog_Evaluation_Representation LP_Rational_Graph_Equations
+ imports LP_Prolog_Evaluation_Representation LP_Rational_Graph_Equations LP_Prolog_Equation_Congruence
 begin
 
 text \<open>A representation-only unfolding uses an initialized equation in
@@ -8,15 +8,14 @@ identical. The existing checked link still supplies a strict residual edge.\<clo
 
 definition lpp_check_equation_rewrite where
   "lpp_check_equation_rewrite context a b =
-    (a=b \<or> LPPOEquation a b\<in>set (snd (snd context)))"
+    lpp_check_context_equation_rewrite context a b"
 
 lemma lpp_equation_rewrite_equal:
   assumes "lpp_check_equation_rewrite context a b"
     "lpp_evaluation_context_holds E SP context eta"
   shows "lp_ieval a eta=lp_ieval b eta"
-  using assms
-  by (cases "context") (auto simp: lpp_check_equation_rewrite_def
-      lpp_evaluation_context_holds_def list_all_iff)
+  by (rule lpp_context_equation_rewrite_sound[OF _ assms(2)])
+    (use assms(1) in \<open>simp add: lpp_check_equation_rewrite_def\<close>)
 
 lemma lpp_equation_rewrite_frame:
   assumes "lpp_check_equation_rewrite context a b"
@@ -52,6 +51,6 @@ qed
 
 lemma lpp_equation_rewrite_missing_context:
   "a\<noteq>b \<Longrightarrow> \<not>lpp_check_equation_rewrite (facts,guards,[]) a b"
-  by (simp add: lpp_check_equation_rewrite_def)
+  by (simp add: lpp_check_equation_rewrite_def lpp_check_context_equation_rewrite_def)
 
 end
