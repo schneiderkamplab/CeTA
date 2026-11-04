@@ -352,3 +352,25 @@ main retain their identities. Protected-category production replay is pending.
 [Integration evidence](../../ferrum-prolog-release/docs/data/prolog-reachable-returns-integration-20261104.json)
 includes the proof attempts, source hashes, generated export identity,
 checker build, failed initial replay and successful fresh guidance migration.
+
+## Finite instantiation errors (2026-11-04)
+
+Source `c3d204a` proves finite arithmetic instantiation errors using a genuinely
+free expression variable and finite other operands. It extends the existing
+source-control contract to prove that the uncaught error discards the entire
+stack. Unknown and cyclic other operands do not satisfy the new check.
+Verified export 242 and unified build 244 yield checker
+`8f3896730bc920d8534bdf9d79ffca64fdfe8bb6719ff82548d4da368a0d850c`.
+
+Ferrum source `28b109f` strictly replays **57 YES + 3 NO / 221**, with all
+60 complete receipts authorized and two checks per retained verdict.
+The same checker accepts all 93 retained LP-with-cut certificates twice
+(84 YES and 9 NO). Validation includes 65 mutations, 33 strict controls,
+and 499 shared tests with five ignored. A positive finite-error example with
+a divergent later alternative remains UNKNOWN: eliminating the unreachable
+alternative still needs checked assembly evidence.
+
+[Complete integration evidence](../../ferrum-prolog-release/docs/data/prolog-finite-instantiation-integration-20261104.json)
+pins source identities, proof attempts, export and build identities, the full
+strict replay, and witness-free guidance. Protected-category production replay
+and matched AProVE comparison remain open; this is not production promotion.
