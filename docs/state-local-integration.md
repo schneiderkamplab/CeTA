@@ -389,3 +389,26 @@ Fresh theory verification from heap 242 passes in
 available, including failed proof attempts. The source-envelope connection and
 unified export remain open. These theorems do not add a certified Prolog root
 or change the released checker identity.
+
+## Initialized rational equations: unreleased integration
+
+Full XML verification 260 (`target/prolog-equation-congruence-control-260.log`)
+passes for successful-unification equation initialization and constructor
+congruence in the equation-rewrite action (commit `1a5b656`). Verification 261
+proves the independent `LP_Equation_Congruence` checker and its soundness lemma
+(commit `066f60c`). Neither is included in released unified checker 244.
+
+The follow-up context-observation transport change is still under verification.
+Attempt 266 exposed incompatible older builtin definitions in its dependency
+heap; attempt 267 lacked the named arithmetic-session preload. Both failures
+are retained. Attempt 268 rebuilds the affected theories from the newer heap,
+with stale context and finite-evaluation theories explicitly removed before
+preloading and finishing dependencies. Full XML and equation regression check
+269 is conditional on successful completion of 268. These pending checks do
+not establish a source certificate or a new benchmark verdict.
+
+Ferrum `52a3a06` passes 504 shared tests (five ignored); complete strict replay
+525 preserves 57 YES and three NO with unchanged unified checker 244, and all
+60 receipts are authorized. The two targeted rational roots remain UNKNOWN
+at graph-wrapped callable source assembly. [Pinned preservation evidence](../../ferrum-prolog-release/docs/data/prolog-rational-transport-preservation-20261104.json)
+separates that result from the unreleased checker work.
