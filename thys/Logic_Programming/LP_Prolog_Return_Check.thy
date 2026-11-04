@@ -41,6 +41,29 @@ next
 next
   case error
   then show ?thesis by (auto intro: lpp_answer_transition.error)
+next
+  case (probe f ts a keep m gs es n eta)
+  have fm: "lp_cut_fresh (r m)
+    (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#map (lp_cut_scope_goal r) gs)#
+      map fst (lpc_return_scope r es))"
+    using lp_cut_scope_fresh[OF injective, of m
+      "LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es"] probe(5)
+    by (simp add: lpc_return_scope_erases)
+  have fn: "lp_cut_fresh (r n)
+    (LPCBarrier (r m)#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#map (lp_cut_scope_goal r) gs)#
+      map fst (lpc_return_scope r es))"
+    using lp_cut_scope_fresh[OF injective, of n
+      "LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es"] probe(6)
+    by (simp add: lpc_return_scope_erases)
+  have scoped: "lpp_answer_transition P B U
+    ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#map (lp_cut_scope_goal r) gs),eta)#lpc_return_scope r es)
+    None ((LPCGoals (lpp_probe_goals a keep (r m) (map (lp_cut_scope_goal r) gs)),eta)#
+      (LPCBarrier (r n),eta)#(LPCGoals (lpp_probe_else keep (map (lp_cut_scope_goal r) gs)),eta)#
+      (LPCBarrier (r m),eta)#lpc_return_scope r es)"
+    by (rule lpp_answer_transition.probe) (rule probe(4), rule fm, rule fn)
+  show ?thesis using scoped
+    by (cases keep) (simp_all add: probe(1-3) lpp_probe_goals_def lpp_probe_else_def)
+
 qed
 
 lemma lpp_answer_transition_scope_word:

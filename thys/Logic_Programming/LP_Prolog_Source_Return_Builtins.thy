@@ -1,5 +1,5 @@
 theory LP_Prolog_Source_Return_Builtins
- imports LP_Prolog_Source_Return_Model
+ imports LP_Prolog_Source_Return_Model LP_Prolog_Probe_Return_Domain
 begin
 
 text \<open>The return model includes every successful builtin outcome. Only

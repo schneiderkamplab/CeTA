@@ -57,8 +57,11 @@ proof -
     using name by (cases comparison; cases reversed; auto)+
   have descriptor: "lpp_source_comparison f=Some (comparison,reversed)"
     using name lpp_source_comparison_descriptor by blast
-  show ?thesis using finite name
-    by (cases comparison; cases reversed; simp add: shape lpc_return_eval_def lpp_finite_source_domain_def)
+  have old_domain: "lpp_integer_source_domain f [lp_ieval a eta,lp_ieval b eta]"
+    using finite by (simp only: lpp_integer_source_domain.simps ni ne descriptor if_False option.case; simp)
+  have domain: "lpp_finite_source_domain f [lp_ieval a eta,lp_ieval b eta]"
+    by (rule lpp_finite_source_domain_extends[OF old_domain])
+  show ?thesis using domain by (simp add: shape lpc_return_eval_def)
 qed
 
 theorem lpp_evaluation_comparison_sound:

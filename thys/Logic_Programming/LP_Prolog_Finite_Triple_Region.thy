@@ -31,7 +31,7 @@ definition lpp_finite_triple_check_region where
         (lppftr_actions region!i=None \<longrightarrow>
           lpp_finite_triple_check_connection T (lppftr_typings region!i) fuel D Q roots root_contexts (contexts!i) (nds!i) (Fs!i) (states!i) inp
             (lpctr_output root) (lppftr_connections region!i)) \<and>
-        lpc_triple_check_emit Q (lpctr_output root) (states!i)
+        lpp_finite_triple_check_emit fuel (nds!i) (lppftr_actions region!i) Q (lpctr_output root) (states!i)
           (fst (lppftr_emits region!i)) (snd (lppftr_emits region!i))) [0..<length nds])"
 
 definition lpp_finite_triple_check_region_contexts where
@@ -52,7 +52,7 @@ definition lpp_finite_triple_check_region_contexts where
         (lppftr_actions region!i=None \<longrightarrow>
           lpp_finite_triple_check_connection T (lppftr_typings region!i) fuel D Q roots root_contexts (contexts!i) (nds!i) (Fs!i) (states!i) inp
             (lpctr_output root) (lppftr_connections region!i)) \<and>
-        lpc_triple_check_emit Q (lpctr_output root) (states!i)
+        lpp_finite_triple_check_emit fuel (nds!i) (lppftr_actions region!i) Q (lpctr_output root) (states!i)
           (fst (lppftr_emits region!i)) (snd (lppftr_emits region!i))) [0..<length nds])"
 
 theorem lpp_finite_triple_region_contexts_checked_lower:
@@ -117,7 +117,7 @@ proof -
       by (rule lpp_finite_triple_connection_checked_lower[OF transfer connection program known' observed' free' inv' lower])
   next
     fix i assume "i<length ?nds"
-    then show "lpc_triple_check_emit Q (lpctr_output root) (?states!i)
+    then show "lpp_finite_triple_check_emit fuel (?nds!i) (lppftr_actions region!i) Q (lpctr_output root) (?states!i)
         (fst (lppftr_emits region!i)) (snd (lppftr_emits region!i))"
       using checked by (auto simp: lpp_finite_triple_check_region_contexts_def Let_def list_all_iff)
   qed

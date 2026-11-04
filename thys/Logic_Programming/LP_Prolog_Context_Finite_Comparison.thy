@@ -1,5 +1,5 @@
 theory LP_Prolog_Context_Finite_Comparison
- imports LP_Prolog_Context_Free_Link LP_Prolog_Context_Comparison
+ imports LP_Prolog_Context_Free_Link LP_Prolog_Context_Comparison LP_Prolog_Probe_Return_Domain
 begin
 
 lemma lpp_finite_comparison_outcome_kind:
@@ -32,7 +32,7 @@ proof -
     using identity outcomes by metis
   show ?thesis using step selected
     by (cases rule: lpp_answer_transition.cases)
-      (auto simp: lpp_builtin_active_def simp del: lpp_integer_source_builtin.simps
+      (auto simp: lpp_builtin_active_def lpp_integer_source_no_probe simp del: lpp_integer_source_builtin.simps
         dest!: success)
 qed
 

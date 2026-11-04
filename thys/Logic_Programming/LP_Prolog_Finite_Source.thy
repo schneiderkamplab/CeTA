@@ -1,6 +1,25 @@
 theory LP_Prolog_Finite_Source
- imports LP_Prolog_Finite_Length LP_Prolog_Ground_Disequality
+ imports LP_Prolog_Finite_Length LP_Prolog_Ground_Disequality LP_Prolog_Probe_Builtin
 begin
+
+lemma lpp_nonprobe_names [simp]:
+  "lpp_probe_name ''2:is'' = False"
+  "lpp_probe_name ''2:length'' = False"
+  "lpp_probe_name ''1:integer'' = False"
+  "lpp_probe_name ''1:var'' = False"
+  "lpp_probe_name ''1:nonvar'' = False"
+  "lpp_probe_name ''1:compound'' = False"
+  "lpp_probe_name ''1:atomic'' = False"
+  "lpp_probe_name ''2:=='' = False"
+  "lpp_probe_name (map char_of_nat [50,58,92,61,61]) = False"
+  "lpp_probe_name ''2:<'' = False"
+  "lpp_probe_name ''2:>'' = False"
+  "lpp_probe_name ''2:=<'' = False"
+  "lpp_probe_name ''2:>='' = False"
+  "lpp_probe_name ''2:=:='' = False"
+  "lpp_probe_name (map char_of_nat [50,58,61,92,61]) = False"
+  "lpp_probe_name lpp_disequality_predicate = False"
+  by code_simp+
 
 lemma lpp_length_disequality_names[simp]:
   "''2:length''\<noteq>lpp_disequality_predicate"
@@ -14,14 +33,16 @@ relation or a replacement evaluation graph.\<close>
 
 definition lpp_finite_source_builtin where
   "lpp_finite_source_builtin f ts outcome =
-    (if f=''2:is'' then length ts=2 \<and> lpp_finite_is_outcome (ts!0) (ts!1) outcome
+    (if lpp_probe_name f then lpp_probe_outcome f ts outcome
+     else if f=''2:is'' then length ts=2 \<and> lpp_finite_is_outcome (ts!0) (ts!1) outcome
      else if f=lpp_disequality_predicate then length ts=2 \<and> lpp_rational_disequality_outcome (ts!0) (ts!1) outcome
      else if f=''2:length'' then length ts=2 \<and> lpp_finite_length_outcome (ts!0) (ts!1) outcome
      else lpp_integer_source_builtin f ts outcome)"
 
 definition lpp_finite_source_domain where
   "lpp_finite_source_domain f ts =
-    (if f=''2:is'' then length ts=2 \<and> lp_seg_ground (ts!1)
+    (if lpp_probe_name f then lpp_probe_domain f ts
+     else if f=''2:is'' then length ts=2 \<and> lp_seg_ground (ts!1)
      else if f=lpp_disequality_predicate then length ts=2
      else if f=''2:length'' then length ts=2 \<and> lp_seg_ground (ts!0)
      else lpp_integer_source_domain f ts)"
@@ -37,8 +58,12 @@ lemma lpp_finite_length_source_success:
       rule lpp_finite_length_success_integer)
 
 lemma lpp_finite_source_legacy:
-  "f\<noteq>''2:is'' \<Longrightarrow> f\<noteq>lpp_disequality_predicate \<Longrightarrow> f\<noteq>''2:length'' \<Longrightarrow> lpp_finite_source_builtin f ts outcome=lpp_integer_source_builtin f ts outcome"
+  "f\<noteq>''2:is'' \<Longrightarrow> f\<noteq>lpp_disequality_predicate \<Longrightarrow> f\<noteq>''2:length'' \<Longrightarrow> \<not>lpp_probe_name f \<Longrightarrow> lpp_finite_source_builtin f ts outcome=lpp_integer_source_builtin f ts outcome"
   by (simp add: lpp_finite_source_builtin_def)
+
+lemma lpp_probe_legacy_domain [simp]:
+  "lpp_integer_source_domain f ts \<Longrightarrow> \<not>lpp_probe_name f"
+  using lpp_probe_not_integer_domain by blast
 
 lemma lpp_finite_source_integer_domain:
   assumes domain: "lpp_integer_source_domain f ts"
@@ -49,12 +74,12 @@ proof (cases "f=''2:is''")
     using domain by (auto simp: True)
   have exact: "lpp_finite_is_outcome (ts!0) (ts!1) outcome = lpp_integer_is_outcome (ts!0) (ts!1) outcome"
     by (rule lpp_finite_is_integer[OF evaluated])
-  show ?thesis by (simp only: lpp_finite_source_builtin_def True if_True exact; simp add: length)
+  show ?thesis by (simp only: lpp_finite_source_builtin_def lpp_probe_legacy_domain[OF domain] if_False True if_True exact; simp add: length)
 next
   case False
   have different: "f\<noteq>lpp_disequality_predicate" using domain lpp_disequality_outside_legacy_domain[of ts] by blast
   have nonlength: "f\<noteq>''2:length''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
-  show ?thesis by (rule lpp_finite_source_legacy[OF False different nonlength])
+  show ?thesis by (rule lpp_finite_source_legacy[OF False different nonlength lpp_probe_legacy_domain[OF domain]])
 qed
 
 lemma lpp_finite_source_domain_extends:
@@ -66,16 +91,24 @@ proof -
   have nonlength: "f\<noteq>''2:length''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
   show ?thesis using domain
     by (cases "f=''2:is''")
-      (auto simp: lpp_finite_source_domain_def different nonlength dest: lpp_integer_evaluation_ground)
+      (auto simp: lpp_finite_source_domain_def different nonlength lpp_probe_legacy_domain[OF domain] dest: lpp_integer_evaluation_ground)
 qed
 
 lemma lpp_finite_source_selected:
   assumes outcome: "lpp_finite_source_builtin f ts outcome"
   shows "(f,length ts)\<in>lpp_builtin_signature"
-proof (cases "f=''2:is''")
+proof (cases "lpp_probe_name f")
+  case True
+  then have "lpp_probe_domain f ts" using outcome
+    by (simp add: lpp_finite_source_builtin_def lpp_probe_outcome_def)
+  then show ?thesis by (rule lpp_probe_selected)
+next
+  case nonprobe: False
+  show ?thesis
+  proof (cases "f=''2:is''")
   case True
   have "length ts=2" using outcome
-    by (simp only: lpp_finite_source_builtin_def True if_True; blast)
+    by (auto simp: lpp_finite_source_builtin_def nonprobe True)
   then show ?thesis by (simp add: True lpp_builtin_signature_def)
 next
   case False
@@ -83,7 +116,7 @@ next
   proof (cases "f=lpp_disequality_predicate")
     case True
     have "length ts=2" using outcome
-      by (simp add: lpp_finite_source_builtin_def True)
+      by (simp add: lpp_finite_source_builtin_def nonprobe True)
     then show ?thesis by (simp add: True)
   next
     case different: False
@@ -91,33 +124,41 @@ next
     proof (cases "f=''2:length''")
       case True
       have "length ts=2" using outcome
-        by (simp add: lpp_finite_source_builtin_def True)
+        by (simp add: lpp_finite_source_builtin_def nonprobe True)
       then show ?thesis by (simp add: True lpp_builtin_signature_def)
     next
       case nonlength: False
       have "lpp_integer_source_builtin f ts outcome"
-        using outcome by (simp only: lpp_finite_source_legacy[OF False different nonlength])
+        using outcome by (simp only: lpp_finite_source_legacy[OF False different nonlength nonprobe])
       then show ?thesis by (rule lpp_integer_source_selected)
     qed
   qed
+qed
 qed
 
 lemma lpp_finite_source_total_on_domain:
   assumes domain: "lpp_finite_source_domain f ts"
   shows "\<exists>outcome. lpp_finite_source_builtin f ts outcome"
-proof (cases "f=''2:is''")
+proof (cases "lpp_probe_name f")
+  case True
+  then show ?thesis using domain lpp_probe_total[of f ts]
+    by (simp add: lpp_finite_source_domain_def lpp_finite_source_builtin_def)
+next
+  case nonprobe: False
+  show ?thesis
+  proof (cases "f=''2:is''")
   case True
   have length: "length ts=2" and ground: "lp_seg_ground (ts!1)"
-    using domain by (auto simp: True lpp_finite_source_domain_def)
+    using domain by (auto simp: True lpp_finite_source_domain_def nonprobe)
   show ?thesis using lpp_finite_is_total[OF ground, of "ts!0"]
-    by (simp add: lpp_finite_source_builtin_def True length)
+    by (simp add: lpp_finite_source_builtin_def nonprobe True length)
 next
   case False
   show ?thesis
   proof (cases "f=lpp_disequality_predicate")
     case True
     show ?thesis using domain
-      by (auto simp: lpp_finite_source_domain_def lpp_finite_source_builtin_def
+      by (auto simp: lpp_finite_source_domain_def nonprobe lpp_finite_source_builtin_def nonprobe
         lpp_rational_disequality_outcome_def True)
   next
     case different: False
@@ -125,17 +166,18 @@ next
     proof (cases "f=''2:length''")
       case True
       have arity: "length ts=2" using domain
-        by (simp add: lpp_finite_source_domain_def True)
+        by (simp add: lpp_finite_source_domain_def nonprobe True)
       show ?thesis by (rule exI[of _ LPPBuiltinError])
-        (simp add: lpp_finite_source_builtin_def True arity lpp_finite_length_outcome_def)
+        (simp add: lpp_finite_source_builtin_def nonprobe True arity lpp_finite_length_outcome_def)
     next
       case nonlength: False
       have old: "lpp_integer_source_domain f ts"
-        using domain by (simp add: lpp_finite_source_domain_def False different nonlength)
+        using domain by (simp add: lpp_finite_source_domain_def nonprobe False different nonlength)
       show ?thesis using lpp_integer_source_total_on_domain[OF old]
-        by (simp add: lpp_finite_source_builtin_def False different nonlength)
+        by (simp add: lpp_finite_source_builtin_def nonprobe False different nonlength)
     qed
   qed
+qed
 qed
 
 lemma lpp_finite_source_checked_step:

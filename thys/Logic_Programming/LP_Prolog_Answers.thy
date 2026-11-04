@@ -14,6 +14,20 @@ finishes nor covers enumerating builtins with their own choice points.\<close>
 datatype ('f,'w) lpp_builtin_result =
     LPPBuiltinSuccess "'w \<Rightarrow> ('f lp_cut_symbol,'w) lp_iterm"
   | LPPBuiltinFailure | LPPBuiltinError
+  | LPPBuiltinProbe "('f lp_cut_symbol,'w) lp_iterm" bool
+
+
+text \<open>An opaque first-answer probe invokes a single callable atom using
+fresh commit and local cut scopes. Its failure alternative retains the original
+environment. This extends the existing annotated cut stack; helper termination
+and all later source steps remain obligations of the same graph.\<close>
+
+definition lpp_probe_goals where
+  "lpp_probe_goals a keep m gs = LPCAtom a # LPCCut m # (if keep then LPCTrue else LPCFail) # gs"
+
+definition lpp_probe_else where
+  "lpp_probe_else keep gs = (if keep then LPCFail else LPCTrue) # gs"
+
 
 inductive_set lpp_atomic_source ::
   "('f,string) lp_cut_program \<Rightarrow> ('f \<times> nat) set \<Rightarrow>
@@ -33,6 +47,13 @@ inductive_set lpp_atomic_source ::
 | error: "U f ts LPPBuiltinError \<Longrightarrow>
     (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es,[])
        \<in>lpp_atomic_source P B U"
+
+| probe: "U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
+    lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es) \<Longrightarrow>
+    lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es) \<Longrightarrow>
+    (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es,
+      LPCGoals (lpp_probe_goals a keep m gs)#LPCBarrier n#
+      LPCGoals (lpp_probe_else keep gs)#LPCBarrier m#es) \<in>lpp_atomic_source P B U"
 
 inductive lpp_answer_transition ::
   "('f,string) lp_cut_program \<Rightarrow> ('f \<times> nat) set \<Rightarrow>
@@ -57,6 +78,13 @@ inductive lpp_answer_transition ::
 | error: "U f ts LPPBuiltinError \<Longrightarrow>
     lpp_answer_transition P B U ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#es)
       None []"
+
+| probe: "U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
+    lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es) \<Longrightarrow>
+    lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es) \<Longrightarrow>
+    lpp_answer_transition P B U ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#es)
+      None ((LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#es)"
 
 lemma lpp_answer_transition_erases:
   "lpp_answer_transition P B U ss event tt \<Longrightarrow>

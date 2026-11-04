@@ -10,6 +10,9 @@ theorem lpp_model_answer_preserved:
   assumes program: "lpc_model_program P M"
     and builtin: "\<And>f ts sigma. U f ts (LPPBuiltinSuccess sigma) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and probe_model: "\<And>f ts a keep sigma. U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
+      (\<not>keep \<or> M (lp_isubst a sigma)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_answer_transition P B U ss event tt"
     and known: "list_all (lpc_model_frame M K) ss"
@@ -28,17 +31,29 @@ next
     (\<lambda>x. lp_isubst (eta x) sigma)"
     by (rule lpc_model_builtin[OF before model stable])
   show ?thesis using success known continued by simp
+next
+  case (probe f ts a keep m gs es n eta)
+  have before: "lpc_model_goals M K (LPCAtom (LPIFun (LPCUser f) ts)#gs) eta"
+    using probe known by simp
+  have models: "\<And>sigma. (\<not>keep \<or> M (lp_isubst a sigma)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    by (rule probe_model[OF probe(4)])
+  show ?thesis using probe known before models
+    by (cases keep) (auto simp: lpp_probe_goals_def lpp_probe_else_def lpc_model_goals_def)
 qed (use known in auto)
 
 lemma lpp_model_domain_answer_preserved:
   assumes program: "lpc_model_program P M"
     and builtin: "\<And>f ts sigma. U f ts (LPPBuiltinSuccess sigma) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and probe_model: "\<And>f ts a keep sigma. U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
+      (\<not>keep \<or> M (lp_isubst a sigma)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_domain_answers P B U D ss event tt"
     and known: "list_all (lpc_model_frame M K) ss"
   shows "list_all (lpc_model_frame M K) tt"
-  using step known lpp_model_answer_preserved[OF program builtin stable]
+  using step known lpp_model_answer_preserved[OF program builtin probe_model stable]
   by (auto simp: lpp_domain_answers_def)
 
 theorem lpp_model_actual_return:
@@ -46,6 +61,9 @@ theorem lpp_model_actual_return:
     and ss :: "(('f lp_cut_symbol,string) lp_iterm lp_cut_entry * ('v \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm)) list"
   assumes program: "lpc_model_program P M"
     and builtin: "\<And>f ts sigma. U f ts (LPPBuiltinSuccess sigma) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and probe_model: "\<And>f ts a keep sigma. U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
+      (\<not>keep \<or> M (lp_isubst a sigma)) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and known: "list_all (lpc_model_frame M K) ss"
@@ -62,7 +80,7 @@ proof -
     case (step us vs)
     then obtain ev where transition: "lpp_domain_answers P B U D us ev vs"
       by (auto simp: lp_answer_steps_def)
-    show ?case by (rule lpp_model_domain_answer_preserved[OF program builtin stable transition step.hyps(3)])
+    show ?case by (rule lpp_model_domain_answer_preserved[OF program builtin probe_model stable transition step.hyps(3)])
   qed
   have transition: "lpp_answer_transition P B U us (Some rho) tail"
     using event by (simp add: lpp_domain_answers_def)

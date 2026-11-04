@@ -248,6 +248,7 @@ theorem lpp_evaluation_control_contract_contexts:
       lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) (lpc_return_eval eta (states!i)) R t ret"
     and emit: "\<And>i eta rho tt. i<length nds \<Longrightarrow>
       J (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
       lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain (lpc_return_eval eta (states!i)) (Some rho) tt \<Longrightarrow>
       (t,ret rho)\<in>R\<^sup>*"
   shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) ss R t ret"
@@ -293,7 +294,7 @@ proof -
         show "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) vs R t ret" using ih[OF bc] ac child inv_child by blast
       next
         fix rho tt assume event: "lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain (lpc_return_eval eta (states!i)) (Some rho) tt"
-        show "(t,ret rho)\<in>R\<^sup>*" by (rule emit[OF index current event])
+        show "(t,ret rho)\<in>R\<^sup>*" by (rule emit[OF index current known event])
       qed
     qed
     have restored: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) (lpc_return_scope_word (rev swaps) (lpc_return_eval eta (states!i))) R t ret"
@@ -329,9 +330,15 @@ theorem lpp_evaluation_control_contract:
 proof -
   have control: "lpp_check_evaluation_control_contexts fuel P Q nds states contexts contexts Fs T returned arity actions"
     using checked by (simp add: lpp_check_evaluation_control_contexts_identity)
+  have guarded_emit: "\<And>i eta rho tt. i<length nds \<Longrightarrow>
+      J (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain
+        (lpc_return_eval eta (states!i)) (Some rho) tt \<Longrightarrow> (t,ret rho)\<in>R\<^sup>*"
+    by (rule emit) assumption+
   show ?thesis
     by (rule lpp_evaluation_control_contract_contexts[OF control _ ranked transfer program invariant
-      stable frames subset scopes represented boundary emit]) assumption
+      stable frames subset scopes represented boundary guarded_emit]) assumption
 qed
 
 ML \<open>

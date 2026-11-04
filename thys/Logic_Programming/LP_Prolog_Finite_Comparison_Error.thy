@@ -29,18 +29,25 @@ proof -
     using name by (simp only: lpp_source_comparison_descriptor)
   have nd: "f\<noteq>lpp_disequality_predicate"
     using descriptor by (auto simp only: lpp_disequality_names)
+  have np: "\<not>lpp_probe_name f"
+  proof
+    assume name: "lpp_probe_name f"
+    have none: "lpp_source_comparison f=None"
+      using name by (auto simp only: lpp_probe_name_def lpp_probe_legacy_flags(3,8,13))
+    with descriptor show False by simp
+  qed
   have selected: "(f,length [a,b])\<in>lpp_builtin_signature"
     using lpp_comparison_selected[OF name] by (simp add: numeral_2_eq_2)
   have domain: "lpp_finite_source_domain f [a,b]"
     using error
-    by (simp only: lpp_finite_source_domain_def ne nl nd if_False
+    by (simp only: lpp_finite_source_domain_def np ne nl nd if_False
         lpp_integer_source_domain.simps ni descriptor option.case; simp)
   have actual: "lpp_answer_transition P lpp_builtin_signature lpp_finite_source_builtin
       ((LPCGoals (LPCAtom (LPIFun (LPCUser f) [a,b])#gs),eta)#saved) event tt"
     using step domain by (auto simp: lpp_domain_answers_def)
   have outcome: "\<And>out. lpp_finite_source_builtin f [a,b] out \<longleftrightarrow> out=LPPBuiltinError"
     using error lpp_finite_comparison_error_symmetric[of a b]
-    by (simp only: lpp_finite_source_legacy[OF ne nd nl]
+    by (simp only: lpp_finite_source_legacy[OF ne nd nl np]
         lpp_integer_source_finite_comparison[OF name]; cases reversed;
         simp add: lpp_finite_comparison_error_exact)
   show ?thesis using actual selected

@@ -120,8 +120,8 @@ proof -
   qed
   have frames: "list_all (lpc_scoped_model_frame F ?M ?property) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
-  show ?thesis by (rule lpp_scoped_model_actual_return[OF modeled
-    lpp_inline_builtin_model[OF builtins] lpp_inline_return_model_subst[where E=lpp_finite_evaluation_result, OF lpp_finite_evaluation_subst] frames actual])
+  show ?thesis by (rule lpp_scoped_model_actual_return_without_probe[OF modeled
+    lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins] lpp_inline_return_model_subst[where E=lpp_finite_evaluation_result, OF lpp_finite_evaluation_subst] frames actual])
 qed
 
 ML \<open>

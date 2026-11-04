@@ -16,7 +16,7 @@ proof (cases rule: lpp_answer_transition.cases)
   case base
   show ?thesis
     by (rule lpc_owned_source_preserved[OF program owned lpc_answer_transition_erases[OF base(2)]])
-qed (use owned in \<open>auto simp: lpc_owned_goals_map\<close>)
+qed (use owned in \<open>auto simp: lpc_owned_goals_map lpp_probe_goals_def lpp_probe_else_def lp_cut_fresh_def lpc_owned_fresh_barrier split: if_splits\<close>)
 
 lemma lpp_owned_answer_append:
   assumes nonempty: "ss\<noteq>[]"
@@ -45,6 +45,23 @@ proof -
   next
     case error then show ?thesis using ss
       by (auto intro: lpp_answer_transition.error)
+  next
+    case (probe f ts a keep m gs saved n rho)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      "rho=eta" "saved=tail@es"
+      using probe(1) ss by auto
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst tail)"
+      using probe(5) shape by (auto simp: lp_cut_fresh_def)
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst tail)"
+      using probe(6) shape by (auto simp: lp_cut_fresh_def)
+    have local: "lpp_answer_transition P B U
+      ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#tail) None
+      ((LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#tail)"
+      by (rule lpp_answer_transition.probe) (rule probe(4), rule fm, rule fn)
+    show ?thesis using local probe(2,3) shape ss
+      by (intro exI[of _ "(LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#tail"]) simp
   qed
 qed
 
@@ -124,6 +141,28 @@ proof -
     have local: "lpp_answer_transition P B U ss None []"
       unfolding ss shape by (rule lpp_answer_transition.error) (use error in auto)
     show ?thesis using error local by (auto simp: lpc_attach_answers_def)
+  next
+    case (probe f ts a keep m gs saved n rho)
+    obtain prefix where shape: "e = LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)"
+      and gs: "gs = prefix @ map (lp_cut_map (\<lambda>t. lp_ieval t eta)) rest"
+      and saved: "saved = lpc_attach_answers rest es" and rho: "rho = eta"
+      using goals_shape probe by blast
+    have fm0: "lp_cut_fresh m (map fst ss)"
+      by (rule lpc_attach_fresh[where rest=rest])
+        (use probe in \<open>simp add: lpc_attach_answers_erases[symmetric]\<close>)
+    have fn0: "lp_cut_fresh n (map fst ((LPCBarrier m,eta)#ss))"
+      by (rule lpc_attach_fresh[where rest=rest])
+        (use probe in \<open>simp add: lpc_attach_answers_erases[symmetric]\<close>)
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)#map fst es)"
+      using fm0 by (simp add: ss shape)
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)#map fst es)"
+      using fn0 by (simp add: ss shape)
+    have local: "lpp_answer_transition P B U ss None
+      ((LPCGoals (lpp_probe_goals a keep m prefix),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (lpp_probe_else keep prefix),eta)#(LPCBarrier m,eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.probe) (rule probe(4), rule fm, rule fn)
+    show ?thesis using probe local gs saved rho
+      by (auto simp: lpc_attach_answers_def lpp_probe_goals_def lpp_probe_else_def split: if_splits)
   qed
 qed
 
@@ -136,7 +175,19 @@ lemma lpp_attach_barriers_preserved:
 proof (cases rule: lpp_atomic_source.cases)
   case base
   show ?thesis by (rule lpc_attach_barriers_preserved[OF separated base(2)])
-qed (use separated in \<open>auto simp: lpc_attach_barriers lpc_barrier_ids_Cons split: lp_cut_entry.splits\<close>)
+next
+  case (probe f ts a keep m gs es n)
+  have fm: "lp_cut_fresh m (lpc_attach rest ss)" using probe by simp
+  have fn: "lp_cut_fresh n (lpc_attach rest ss)"
+    using probe by (auto simp: lp_cut_fresh_def)
+  have m: "m\<notin>lpc_rest_scopes rest"
+    by (rule lpc_attach_fresh_goals[OF fm]) (use probe in simp)
+  have n: "n\<notin>lpc_rest_scopes rest"
+    by (rule lpc_attach_fresh_goals[OF fn]) (use probe in simp)
+  have before: "lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (lpc_attach rest ss)) = {}"
+    using separated by (simp add: lpc_attach_barriers)
+  show ?thesis using before probe m n by simp
+qed (use separated in \<open>auto simp: lpc_attach_barriers lpc_barrier_ids_Cons lp_cut_fresh_def lpp_probe_goals_def lpp_probe_else_def split: lp_cut_entry.splits\<close>)
 
 lemma lpp_answer_contract_owned_append:
   assumes program: "lp_cut_source_program P"

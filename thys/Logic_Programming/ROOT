@@ -160,6 +160,8 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
   theories
     LP_Prolog_Finite_Context_Length
     LP_Prolog_Finite_Comparison_Error
+    LP_Prolog_Opaque_Probe LP_Prolog_Probe_Builtin LP_Prolog_Finite_Probe LP_Prolog_Probe_Return_Domain
+    LP_Prolog_Evaluation_Probe
     LP_Prolog_Evaluation_Rational_Disequality
     LP_Prolog_Return_Shape_Context LP_Prolog_Shape_Observations_Test
     LP_Prolog_Arithmetic_ITS LP_Prolog_Guarded_Backends

@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Primitive
-  imports LP_Prolog_Evaluation_Rational_Disequality LP_Prolog_Evaluation_Cut_Actions
+  imports LP_Prolog_Evaluation_Probe LP_Prolog_Evaluation_Rational_Disequality LP_Prolog_Evaluation_Cut_Actions
 begin
 
 type_synonym lpp_link_types = "string lpp_transfer_fact list"
@@ -18,6 +18,8 @@ datatype lpp_evaluation_primitive =
   | LPPERationalDisequality "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
       "string lpc_term list" "string lpc_return_state" "string lpc_link" "string lpc_link"
       lpp_link_types lpp_link_types
+  | LPPEProbe string string "string lpc_term list" nat nat "string lpc_term lp_cut_goal list"
+      "string lpc_term list" "string lpc_return_state" "string lpc_link" lpp_link_types
   | LPPEIdentity string "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
       "string lpc_term list" "string lpc_return_state" "string lpc_link" "string lpc_link"
       lpp_link_types lpp_link_types
@@ -39,6 +41,9 @@ fun lpp_check_evaluation_primitive where
 | "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
     (LPPERationalDisequality a b gs active saved yes no yes_facts no_facts) =
       lpp_check_evaluation_rational_disequality T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context a b gs active saved yes no"
+| "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
+    (LPPEProbe f g argv m n gs active saved e fs) =
+      lpp_check_evaluation_probe T fs fuel Q nds states contexts Fs nd F ss source_context f g argv m n gs active saved e"
 | "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
     (LPPEIdentity f a b gs active saved yes no yes_facts no_facts) =
       lpp_check_evaluation_identity T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context f a b gs active saved yes no"
@@ -102,6 +107,12 @@ next
   show ?thesis using lpp_evaluation_rational_disequality_sound[OF lpp_finite_evaluation_integer_contract
     lpp_finite_evaluation_ground program check known free observed step] by auto
 next
+  case (LPPEProbe f g argv m n gs active saved e fs)
+  have check: "lpp_check_evaluation_probe T fs fuel Q nds states contexts Fs nd F ss source_context f g argv m n gs active saved e"
+    using checked LPPEProbe by simp
+  show ?thesis using lpp_evaluation_probe_sound[OF lpp_finite_evaluation_integer_contract
+    lpp_finite_evaluation_ground program check known free observed step] by auto
+next
   case (LPPEIdentity f a b gs active saved yes no yes_facts no_facts)
   have check: "lpp_check_evaluation_identity T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context f a b gs active saved yes no"
     using checked LPPEIdentity by simp
@@ -155,6 +166,11 @@ next
   have check: "lpp_check_evaluation_rational_disequality T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context a b gs active saved yes no"
     using checked LPPERationalDisequality by simp
   show ?thesis by (rule lpp_evaluation_rational_disequality_domain[OF check])
+next
+  case (LPPEProbe f g argv m n gs active saved e fs)
+  have check: "lpp_check_evaluation_probe T fs fuel Q nds states contexts Fs nd F ss source_context f g argv m n gs active saved e"
+    using checked LPPEProbe by simp
+  show ?thesis by (rule lpp_evaluation_probe_domain[OF check])
 next
   case (LPPEIdentity f a b gs active saved yes no yes_facts no_facts)
   have name: "lpp_identity_name f" and shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs),active)#saved"

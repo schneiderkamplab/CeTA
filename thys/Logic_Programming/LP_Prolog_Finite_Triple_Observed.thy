@@ -2,6 +2,35 @@ theory LP_Prolog_Finite_Triple_Observed
  imports LP_Prolog_Evaluation_Control LP_Prolog_Triple_Free_Observed LP_Prolog_Finite_Triple_Interface
 begin
 
+text \<open>A checked contradictory entry context has no actual successful
+return. Its empty-goal syntax alone must not add a helper result to the residual.
+The ordinary structural emission obligation remains available for old receipts.\<close>
+
+fun lpp_refuted_return_context where
+  "lpp_refuted_return_context fuel guards (Some (LPPERefuted i k bindings)) =
+    lp_cut_check_refuted_guard fuel guards i k bindings"
+| "lpp_refuted_return_context fuel guards action = False"
+
+lemma lpp_refuted_return_context_sound:
+  "lpp_refuted_return_context fuel guards action \<Longrightarrow>
+    lp_cut_knowledge G guards eta \<Longrightarrow> False"
+  by (cases action; simp_all; rename_tac a; case_tac a)
+    (auto dest: lp_cut_checked_refuted_guard)
+
+definition lpp_finite_triple_check_emit where
+  "lpp_finite_triple_check_emit fuel nd action Q out ss c bindings =
+    (lpp_refuted_return_context fuel (lpcn_guards nd) action \<or>
+      lpc_triple_check_emit Q out ss c bindings)"
+
+lemma lpp_finite_triple_checked_emit:
+  assumes checked: "lpp_finite_triple_check_emit fuel nd action Q out ss c bindings"
+    and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
+    and event: "lpp_domain_answers P B U D (lpc_return_eval eta ss) (Some rho) tt"
+  shows "lp_answer_model Q (lp_atom_eval out rho)"
+  using checked lpp_refuted_return_context_sound[OF _ known]
+    lpp_triple_checked_emit[OF _ event]
+  unfolding lpp_finite_triple_check_emit_def by blast
+
 theorem lpp_finite_triple_observed_control_contexts:
   fixes SP :: "string lpp_success_clause list"
     and a :: "(string lp_cut_symbol,string) lp_iatom"
@@ -23,7 +52,7 @@ theorem lpp_finite_triple_observed_control_contexts:
       lpc_triple_instance_invariant a inp (lpc_return_eval eta (states!i)) \<Longrightarrow>
       lpp_finite_triple_answer_contract P (lpc_return_eval eta (states!i)) Q (lp_atom_eval out)"
     and emits: "\<And>i. i<length nds \<Longrightarrow>
-      lpc_triple_check_emit Q out (states!i) (fst (emissions!i)) (snd (emissions!i))"
+      lpp_finite_triple_check_emit fuel (nds!i) (actions!i) Q out (states!i) (fst (emissions!i)) (snd (emissions!i))"
   shows "lpp_finite_triple_answer_contract P ss Q (lp_atom_eval out)"
   unfolding lpp_finite_triple_answer_contract_return_contract
 proof (rule lpp_evaluation_control_contract_contexts[where J="lpc_triple_instance_invariant a inp",
@@ -41,10 +70,11 @@ proof (rule lpp_evaluation_control_contract_contexts[where J="lpc_triple_instanc
 next
   fix i eta rho tt assume index: "i<length nds"
     and inv: "lpc_triple_instance_invariant a inp (lpc_return_eval eta (states!i))"
+    and known: "lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta"
     and event: "lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain
       (lpc_return_eval eta (states!i)) (Some rho) tt"
   show "(False,\<not>lp_answer_model Q (lp_atom_eval out rho))\<in>({} :: bool rel)\<^sup>*"
-    using lpp_triple_checked_emit[OF emits[OF index] event] by simp
+    using lpp_finite_triple_checked_emit[OF emits[OF index] known event] by simp
 qed
 
 theorem lpp_finite_triple_observed_control:
@@ -64,7 +94,7 @@ theorem lpp_finite_triple_observed_control:
       lpc_triple_instance_invariant a inp (lpc_return_eval eta (states!i)) \<Longrightarrow>
       lpp_finite_triple_answer_contract P (lpc_return_eval eta (states!i)) Q (lp_atom_eval out)"
     and emits: "\<And>i. i<length nds \<Longrightarrow>
-      lpc_triple_check_emit Q out (states!i) (fst (emissions!i)) (snd (emissions!i))"
+      lpp_finite_triple_check_emit fuel (nds!i) (actions!i) Q out (states!i) (fst (emissions!i)) (snd (emissions!i))"
   shows "lpp_finite_triple_answer_contract P ss Q (lp_atom_eval out)"
 proof -
   have control: "lpp_check_evaluation_control_contexts fuel P C nds states contexts contexts Fs T returned arity actions"

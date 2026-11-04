@@ -3,11 +3,28 @@ theory LP_Prolog_Inline_Return_Builtins
 begin
 
 definition lpp_inline_builtin_check where
-  "lpp_inline_builtin_check F SP = (\<forall>(f,n)\<in>lpp_builtin_signature.
+  "lpp_inline_builtin_check F SP = ((\<forall>f\<in>F. \<not>lpp_probe_name f) \<and> (\<forall>(f,n)\<in>lpp_builtin_signature.
     f\<in>F \<and> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<longrightarrow>
       (((f,lpp_return_builtin_args n),[],[])\<in>set SP \<or>
        (f=''2:length'' \<and> n=2 \<and>
-        ((f,lpp_return_builtin_args 2),[],[LPPSInteger (Var ''xx'')])\<in>set SP)))"
+        ((f,lpp_return_builtin_args 2),[],[LPPSInteger (Var ''xx'')])\<in>set SP))))"
+
+text \<open>The current finite return-summary checker has no certificate for
+an opaque helper's call closure. Such summaries must explicitly exclude probe
+predicates from their reachable set. Source termination still checks the actual
+probe graph; this condition concerns only successful-return summaries.\<close>
+
+lemma lpp_inline_no_probe:
+  assumes checked: "lpp_inline_builtin_check F SP" and member: "f\<in>F"
+  shows "\<not>lpp_finite_source_builtin f ts (LPPBuiltinProbe a keep)"
+proof
+  assume outcome: "lpp_finite_source_builtin f ts (LPPBuiltinProbe a keep)"
+  have name: "lpp_probe_name f" by (rule lpp_finite_source_probe_name[OF outcome])
+  have excluded: "\<forall>f\<in>F. \<not>lpp_probe_name f"
+    using checked unfolding lpp_inline_builtin_check_def by (rule conjunct1)
+  from excluded member have "\<not>lpp_probe_name f" by (rule bspec)
+  with name show False by contradiction
+qed
 
 lemma lpp_inline_builtin_model:
   assumes checked: "lpp_inline_builtin_check F SP"
@@ -82,7 +99,7 @@ theorem lpp_inline_finite_integer_return:
       [(LPCGoals [LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)],eta)] rho"
   shows "lpp_integer_known K rho"
   by (rule lpp_inline_integer_actual_return[where E=lpp_finite_evaluation_result,
-      OF program lpp_inline_builtin_model[OF builtins]
+      OF program lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins]
       lpp_finite_evaluation_subst lpp_finite_evaluation_integer_contract selected ordinary transfer typing guards actual])
 
 ML \<open>

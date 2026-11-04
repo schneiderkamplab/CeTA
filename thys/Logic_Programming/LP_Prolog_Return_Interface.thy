@@ -12,7 +12,7 @@ proof (cases rule: lpp_answer_transition.cases)
   case base
   show ?thesis by (rule lpp_answer_transition.base)
     (use base lpc_reinterface_forward[where F=F, OF commute base(2)] in auto)
-qed (auto simp: lpc_reinterface_def commute intro: lpp_answer_transition.intros)
+qed (auto simp: lpc_reinterface_def commute map_map o_def case_prod_unfold intro: lpp_answer_transition.intros)
 
 lemma lpp_reinterface_reflect:
   assumes commute: "\<And>eta sigma. F (\<lambda>x. lp_isubst (eta x) sigma) =
@@ -50,6 +50,20 @@ proof -
     case error
     then show ?thesis using ss
       by (auto simp: lpc_reinterface_def intro: lpp_answer_transition.error)
+  next
+    case (probe f ts a keep m gs tail n rho)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      and rho: "rho=F eta" and tail: "tail=lpc_reinterface F es"
+      using probe ss by (auto simp: lpc_reinterface_def)
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es)"
+      using probe(5) tail by simp
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es)"
+      using probe(6) tail by simp
+    have local: "lpp_answer_transition P B U ss None
+      ((LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.probe) (rule probe(4), rule fm, rule fn)
+    show ?thesis using probe local rho tail by (auto simp: lpc_reinterface_def)
   qed
 qed
 

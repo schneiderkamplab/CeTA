@@ -57,6 +57,19 @@ proof -
       case error
       show ?thesis by (rule exI[of _ "[]"])
         (use error builtin(2) in \<open>auto simp: lp_prolog_source_def lpp_builtin_active_def intro: lpp_atomic_source.error\<close>)
+    next
+      case (probe f ts a keep m gs es n)
+      have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#(es@bs))"
+        using probe fresh by (auto simp: lp_cut_fresh_def)
+      have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#(es@bs))"
+        using probe fresh by (auto simp: lp_cut_fresh_def)
+      have raw: "(LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#(es@bs),
+        LPCGoals (lpp_probe_goals a keep m gs)#LPCBarrier n#
+        LPCGoals (lpp_probe_else keep gs)#LPCBarrier m#(es@bs))
+          \<in>lpp_atomic_source P lpp_builtin_signature U"
+        by (rule lpp_atomic_source.probe) (rule probe(3), rule fm, rule fn)
+      show ?thesis by (rule exI[of _ bs])
+        (use raw probe builtin(2) barriers gates in \<open>auto simp: lp_prolog_source_def\<close>)
     qed
   next
     case error
@@ -90,17 +103,17 @@ proof -
     case builtin
     have atomic: "(map (lp_cut_scope_entry r) s,map (lp_cut_scope_entry r) t)\<in>lpp_atomic_source P lpp_builtin_signature U"
     proof -
-      from builtin(1) show ?thesis
-      proof (cases rule: lpp_atomic_source.cases)
-        case base then show ?thesis using builtin(2) by blast
-      next
-        case (success f ts sigma gs es)
-        have raw: "(LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#map (lp_cut_scope_goal r) gs)#map (lp_cut_scope_entry r) es,
-          LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (map (lp_cut_scope_goal r) gs))#map (lp_cut_scope_entry r) es)
-          \<in>lpp_atomic_source P lpp_builtin_signature U"
-          by (rule lpp_atomic_source.success) (rule success(3))
-        show ?thesis using raw by (simp add: success(1,2) map_map o_def lp_cut_scope_goal_map)
-      qed (auto intro: lpp_atomic_source.intros)
+      let ?ss = "map (\<lambda>e. (e,\<lambda>x::string. LPIVar x)) s"
+      have original: "(map fst ?ss,t)\<in>lpp_atomic_source P lpp_builtin_signature U"
+        using builtin(1) by (simp add: o_def)
+      obtain event tt where lifted: "lpp_answer_transition P lpp_builtin_signature U ?ss event tt"
+        and erased: "map fst tt=t"
+        using lpp_answer_source_lifts[OF original] by blast
+      have scoped: "lpp_answer_transition P lpp_builtin_signature U
+          (lpc_return_scope r ?ss) event (lpc_return_scope r tt)"
+        by (rule lpp_answer_transition_scope[OF lifted injective program])
+      show ?thesis using lpp_answer_transition_erases[OF scoped]
+        by (simp only: lpc_return_scope_erases erased; simp add: o_def)
     qed
     show ?thesis using atomic builtin(2)
       by (auto simp: lp_prolog_source_def lpp_dispatch_scope)
