@@ -412,3 +412,12 @@ Ferrum `52a3a06` passes 504 shared tests (five ignored); complete strict replay
 60 receipts are authorized. The two targeted rational roots remain UNKNOWN
 at graph-wrapped callable source assembly. [Pinned preservation evidence](../../ferrum-prolog-release/docs/data/prolog-rational-transport-preservation-20261104.json)
 separates that result from the unreleased checker work.
+
+Verification 268 has now passed for equation congruence in context observation
+transport. Full XML integration 269 also passes, including the rotated-cycle
+positive case, missing-initialization rejection and cyclic-groundness negative
+control. Commit `615eb6d` contains the tested context change and refactoring;
+[immutable verification records](data/prolog-equation-transport-20261104.json)
+pin the source manifest, successful logs and failed rebuild attempts 266/267.
+The unified executable has not been regenerated from this work. Complete
+rational source assembly and benchmark gains remain open.

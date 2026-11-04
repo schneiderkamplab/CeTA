@@ -1,0 +1,34 @@
+{
+  "schema": "ceta.prolog-formal-integration.v1",
+  "commit": "615eb6d",
+  "verification": [
+    260,
+    261,
+    268,
+    269
+  ],
+  "retained_failed_rebuilds": [
+    266,
+    267
+  ],
+  "unified_checker_regenerated": false,
+  "new_benchmark_gains": 0,
+  "archive_sha256": "5a4e44c1da9e79de7e21ba4f280f5e30b15fb75d3c3355192051e0b500b18e1d",
+  "files": {
+    "target/check-equation-congruence-control-260.py": "14549a55588d467bf060aea119e33f46dcebeb5da37d42ff72fadf3d37707ac8",
+    "target/prolog-equation-congruence-control-260.log": "74d6cd177a1adce97887d566af286eae79f10246366bf6d924fdfdca7b55d582",
+    "target/check-equation-transport-261.py": "87a158c0512ac0ad6c21e0b2acfd04f55e504935b1451fe6c469921bf4df9b6a",
+    "target/prolog-equation-transport-261.log": "069097f720d0ac995383fa875df3c5a8a8603d3c686dae971cd8be2336837e68",
+    "target/check-equation-context-266.py": "e09534e5bc6aec96085d646362ba8f97b145160140ea6191e2230594a2ac8b0b",
+    "target/prolog-equation-context-266.log": "3bcd945160d9731139fe4f9abb6e293b7d66fdc91f67f32c0a72f27dea2ce30f",
+    "target/check-equation-context-267.py": "e09534e5bc6aec96085d646362ba8f97b145160140ea6191e2230594a2ac8b0b",
+    "target/prolog-equation-context-267.log": "46baebff8865b5cd5426941d25e2ca70a89650469abb47213372c16f20e7525b",
+    "target/check-equation-context-268.py": "6198f1dc69bf09f52945a3904b0f992e4f14ab219800143886c678daf0f90d8c",
+    "target/prolog-equation-context-268.log": "6451a036a1c4aeea407bfcf95e72139a9c443ad35b6e5379973d171086d16b4f",
+    "target/check-equation-transport-control-269.py": "f4dc597c3f0d74a87a3480eb443e798802c9211b352a664637fd9d09af204eb3",
+    "target/continue-equation-transport-269.py": "99c62888999908414e39a9b819eeee6a852df4392df456db770704cab8a62afe",
+    "target/prolog-equation-transport-control-269.log": "6d1d7f80a04cacd07c8ba4bda48cd0490db302884068e70d0fffb7f8538f7fd7",
+    "target/prolog-equation-transport-control-269.source.json": "246830e182f7c8e3531e584c25aae681a65b0e3137d7c1aae9eddc38b2754adc",
+    "target/prolog-equation-transport-control-269.commit.json": "e88a355ef1aa74650c749bfe848788e04d1f13277a101b0fae4a3dce3a0a611b"
+  }
+}
