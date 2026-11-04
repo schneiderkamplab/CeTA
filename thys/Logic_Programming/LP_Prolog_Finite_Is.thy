@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Is
- imports LP_Prolog_Finite_Evaluation
+ imports LP_Prolog_Finite_Instantiation_Error
 begin
 
 text \<open>Scalar unification uses the same most-general unifier contract as
@@ -43,7 +43,8 @@ qed
 
 definition lpp_finite_is_outcome where
   "lpp_finite_is_outcome a e outcome =
-    (if \<exists>n. lpp_integer_evaluation e n then lpp_integer_is_outcome a e outcome
+    (if lpp_finite_instantiation_error e then outcome=LPPBuiltinError
+     else if \<exists>n. lpp_integer_evaluation e n then lpp_integer_is_outcome a e outcome
      else lp_seg_ground e \<and> (outcome=LPPBuiltinError \<or>
        (\<exists>f. outcome=(case lpp_scalar_unifier a f of None \<Rightarrow> LPPBuiltinFailure
           | Some mu \<Rightarrow> LPPBuiltinSuccess mu))))"
@@ -51,7 +52,13 @@ definition lpp_finite_is_outcome where
 lemma lpp_finite_is_integer:
   "lpp_integer_evaluation e n \<Longrightarrow>
     lpp_finite_is_outcome a e outcome = lpp_integer_is_outcome a e outcome"
-  by (auto simp: lpp_finite_is_outcome_def)
+  by (auto simp: lpp_finite_is_outcome_def lpp_finite_instantiation_error_def
+    dest: lpp_integer_evaluation_ground)
+
+lemma lpp_finite_is_instantiation_error:
+  "lpp_finite_instantiation_error e \<Longrightarrow>
+    lpp_finite_is_outcome a e outcome = (outcome=LPPBuiltinError)"
+  by (simp add: lpp_finite_is_outcome_def)
 
 lemma lpp_finite_is_total:
   "lp_seg_ground e \<Longrightarrow> \<exists>outcome. lpp_finite_is_outcome a e outcome"
@@ -68,7 +75,7 @@ proof -
   next
     case False
     have "lpp_finite_is_outcome a e LPPBuiltinError"
-      by (simp add: lpp_finite_is_outcome_def False ground)
+      by (simp add: lpp_finite_is_outcome_def lpp_finite_instantiation_error_def False ground)
     then show ?thesis by blast
   qed
 qed
@@ -87,7 +94,7 @@ proof (cases "\<exists>n. lpp_integer_evaluation e n")
 next
   case False
   obtain f where ground: "lp_seg_ground e" and chosen: "lpp_scalar_unifier a f=Some mu"
-    using outcome False by (auto simp: lpp_finite_is_outcome_def split: option.splits)
+    using outcome False by (auto simp: lpp_finite_is_outcome_def split: if_splits option.splits)
   show ?thesis using lpp_scalar_unifier_sound[OF chosen]
     by (simp add: lpp_finite_evaluation_result_def False lp_seg_ground_subst[OF ground] ground)
 qed

@@ -42,7 +42,8 @@ definition lpp_finite_source_builtin where
 definition lpp_finite_source_domain where
   "lpp_finite_source_domain f ts =
     (if lpp_probe_name f then lpp_probe_domain f ts
-     else if f=''2:is'' then length ts=2 \<and> lp_seg_ground (ts!1)
+     else if f=''2:is'' then length ts=2 \<and>
+       (lp_seg_ground (ts!1) \<or> lpp_finite_instantiation_error (ts!1))
      else if f=lpp_disequality_predicate then length ts=2
      else if f=''2:length'' then length ts=2 \<and> lp_seg_ground (ts!0)
      else lpp_integer_source_domain f ts)"
@@ -148,10 +149,12 @@ next
   show ?thesis
   proof (cases "f=''2:is''")
   case True
-  have length: "length ts=2" and ground: "lp_seg_ground (ts!1)"
+  have length: "length ts=2" and cases: "lp_seg_ground (ts!1) \<or> lpp_finite_instantiation_error (ts!1)"
     using domain by (auto simp: True lpp_finite_source_domain_def nonprobe)
-  show ?thesis using lpp_finite_is_total[OF ground, of "ts!0"]
-    by (simp add: lpp_finite_source_builtin_def nonprobe True length)
+  have "\<exists>outcome. lpp_finite_is_outcome (ts!0) (ts!1) outcome"
+    using cases lpp_finite_is_total[of "ts!1" "ts!0"]
+      lpp_finite_is_instantiation_error[of "ts!1" "ts!0"] by blast
+  then show ?thesis by (simp add: lpp_finite_source_builtin_def nonprobe True length)
 next
   case False
   show ?thesis

@@ -29,7 +29,7 @@ proof (cases "\<exists>n. lpp_integer_evaluation e n")
 next
   case False
   show ?thesis using outcome False
-    by (auto simp: lpp_finite_is_outcome_def lpp_finite_evaluation_result_def)
+    by (auto simp: lpp_finite_is_outcome_def lpp_finite_evaluation_result_def split: if_splits)
 qed
 
 lemma lpp_finite_is_uses_shared_equality:
