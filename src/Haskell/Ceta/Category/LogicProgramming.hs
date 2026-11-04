@@ -102,6 +102,8 @@ runProlog [path] = do
 #ifdef LP_PROLOG_CONTEXT_ITS
       PCI.check_lpp_context_its_xml (cachedCharacters PCI.explode input) ||
 #endif
+      PC.check_lpp_established_finite_constructor_triples_xml (cachedCharacters PC.explode input) ||
+      PC.check_lpp_established_constructor_triples_xml (cachedCharacters PC.explode input) ||
       PC.check_lpp_established_finite_triples_xml (cachedCharacters PC.explode input) ||
       PC.check_lpp_established_triples_xml (cachedCharacters PC.explode input) ||
       PC.check_lpp_context_composed_certificate_xml (cachedCharacters PC.explode input) ||
