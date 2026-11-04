@@ -58,4 +58,34 @@ lemma lpsh_wrong_grammar_transport_rejected:
     (LPPOShape [[]] (LPReturnShape 0) (Var ''tail''))"
   by (simp add: lpp_observations_shape_facts_def lpsh_keys_def eval_nat_numeral)
 
+
+text \<open>Ground observations justify ground constructor fields, but do not
+turn an unconstrained ground value into a finite constructor spine.\<close>
+
+definition lpsh_cell :: "string lp_cut_symbol lp_return_grammar" where
+  "lpsh_cell = [[(LPCUser ''nil'',[]),
+    (LPCUser ''cell'',[LPReturnGround,LPReturnAny])]]"
+
+lemma lpsh_ground_field_transport:
+  "lpp_evaluation_observation_check [] [] [LPPOGround (Var ''head'')]
+    (LPPOShape lpsh_cell (LPReturnShape 0)
+      (Fun (LPCUser ''cell'') [Var ''head'',Var ''tail'']))"
+  by (simp add: lpp_observations_shape_facts_def lpsh_cell_def eval_nat_numeral)
+
+lemma lpsh_missing_ground_field_rejected:
+  "\<not>lpp_evaluation_observation_check [] [] []
+    (LPPOShape lpsh_cell (LPReturnShape 0)
+      (Fun (LPCUser ''cell'') [Var ''head'',Var ''tail'']))"
+  by (simp add: lpp_observations_shape_facts_def lpsh_cell_def eval_nat_numeral)
+
+lemma lpsh_ground_does_not_prove_spine:
+  "\<not>lpp_evaluation_observation_check [] [] [LPPOGround (Var ''tail'')]
+    (LPPOShape lpsh_cell (LPReturnShape 0) (Var ''tail''))"
+  by (simp add: lpp_observations_shape_facts_def lpsh_cell_def eval_nat_numeral)
+
+lemma lpsh_ground_does_not_prove_integer:
+  "\<not>lpp_evaluation_observation_check [] [] [LPPOGround (Var ''head'')]
+    (LPPOInteger (Var ''head''))"
+  by (simp add: lpp_context_integer_from_def lpp_integer_term_def)
+
 end

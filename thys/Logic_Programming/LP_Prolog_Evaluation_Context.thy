@@ -144,13 +144,23 @@ lemma lpp_evaluation_observation_equations:
     \<forall>(a,b)\<in>set (lpp_observation_equations observation). lp_ieval a eta=lp_ieval b eta"
   by (cases observation) auto
 
+fun lpp_evaluation_ground_shape_facts where
+  "lpp_evaluation_ground_shape_facts (LPPOGround t) = map (Pair LPReturnGround) (vars_term_list t)"
+| "lpp_evaluation_ground_shape_facts _ = []"
+
+lemma lpp_evaluation_ground_shape_facts_sound:
+  "lpp_evaluation_observation_holds E eta observation \<Longrightarrow>
+    lp_return_shape_known G (lpp_evaluation_ground_shape_facts observation) eta"
+  by (cases observation)
+    (auto simp: lp_return_shape_known_def lp_return_ground_exact lp_seg_ground_eval)
+
 fun lpp_evaluation_observation_check where
   "lpp_evaluation_observation_check K guards observations (LPPOGround t) =
     (vars_term t \<subseteq> lpp_observations_equation_ground observations)"
 | "lpp_evaluation_observation_check K guards observations (LPPOEquation a b) = lp_check_equation_congruence (concat (map lpp_observation_equations observations)) a b"
 | "lpp_evaluation_observation_check K guards observations (LPPOShape G shape t) =
     (LPPOShape G shape t\<in>set observations \<or>
-      lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t)"
+      lp_return_shape_check 16 G (lpp_observations_shape_facts G observations @ concat (map lpp_evaluation_ground_shape_facts observations)) shape t)"
 | "lpp_evaluation_observation_check K guards observations (LPPOInteger t) = lpp_context_integer_from K guards t"
 | "lpp_evaluation_observation_check K guards observations observation = (observation\<in>set observations)"
 
@@ -181,8 +191,11 @@ proof -
     unfolding lpp_observations_equation_ground_def
     by (rule lp_ground_equation_closure_sound[OF equations ground])
   have shapes: "lp_return_shape_holds G shape (lp_ieval t eta)"
-    if "lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t" for G shape t
-    by (rule lp_return_shape_check_sound[OF that lpp_evaluation_observations_shape_facts[OF observations]])
+    if "lp_return_shape_check 16 G (lpp_observations_shape_facts G observations @ concat (map lpp_evaluation_ground_shape_facts observations)) shape t" for G shape t
+    by (rule lp_return_shape_check_sound[OF that])
+      (use lpp_evaluation_observations_shape_facts[OF observations]
+        lpp_evaluation_ground_shape_facts_sound observations in
+        \<open>fastforce simp: lp_return_shape_known_def list_all_iff\<close>)
   show ?thesis using checked known guards observations closure
     by (cases observation) (auto simp: lp_seg_ground_eval list_all_iff intro: congruence shapes lpp_context_integer_from_sound)
 qed
