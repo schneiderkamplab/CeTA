@@ -380,3 +380,13 @@ The unified O2 executable is building in `target/unified-sparse-removal-1`.
 Native positive/mutation checks for both sparse families and existing checker
 regressions remain pending. This verified export alone is not a production
 release or a full-frontier checker compatibility claim.
+
+The unified O2 executable now builds successfully. Its immutable SHA-256 is
+`ded2b82106725b442498cd050f15257a72975e115140c25625d928415bbb53f7`.
+Both sparse families pass their two positive and seven semantic mutation cases,
+each checked twice (36 total checks), with this same executable. The dispatch,
+CSR composition, GM04 source-map and retained semantic-negative regressions also
+pass. Evidence: `target/sparse-removal-checked-{tiling,removal}-1/manifest.json`
+and `target/sparse-removal-existing-paths-1/results.json`. Generated logic remains
+unchanged from Isabelle export. These gates establish native checker integration;
+the complete protected frontier still requires its release replay.
