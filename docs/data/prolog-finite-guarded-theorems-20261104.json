@@ -1,0 +1,26 @@
+{
+  "schema": "ceta.prolog-finite-guarded-theorems.v1",
+  "proof_commit": "d753ac1c400c3893334bcf0c8fdf3dc7047629b4",
+  "isabelle": "Isabelle2025-2",
+  "verification_log": "target/prolog-guarded-composition-367.log",
+  "verification_log_sha256": "0b367c203c1858a642e6faf08035dcd67706bd0581545a0ffefde3b1e6e1ceed",
+  "source_files": {
+    "scripts/verify_prolog_finite_guarded.py": "bd78128e5de2d17ea715eadabb20aae83e55708bb810dd597e5fc12098ed8857",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Child.thy": "4d19f216882517ef6a44fc7fee34018f0ff00815903579c0010433566722ec56",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Composition.thy": "8fbc65bb9f7afcfbf8902575d336ff0dad0a37ea2a5f3df1eff8e8ea66cd6cc6",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Connection.thy": "b14d16b59fcfb9462f2d23fec8f58cf3686651e2304f92464e178c2f45d8eb98",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Region.thy": "5a067025676e42947ef212f3d78e7659ed96110c7520a3fb288a6d0c0766b351",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Split.thy": "68355756e135876790979b0737e75312de5f1bd7d8c9569f349f8275dfe4d226",
+    "thys/Logic_Programming/LP_Prolog_Finite_Numeric_Calls.thy": "dafe33a88a24783140e6572e12d6f50b6e46c2ef000a82b68cacb844cde45db2",
+    "thys/Logic_Programming/LP_Prolog_Finite_Observed_Calls.thy": "d6a439a8c3c738d8b01130e7128ad2e30652691378422450a641d3c7ac4e5989",
+    "thys/Logic_Programming/LP_Prolog_Finite_Relational_Return.thy": "7d4b6f9b35b8837708b7f53d9d333490c68325be72df84a7e49a928dee7a4d84",
+    "thys/Logic_Programming/ROOT": "b440954b88e74f71b2d51a37ace5aec00d2c674776597f240462ac939528711b"
+  },
+  "checker_changed": false,
+  "production_export_changed": false,
+  "numeric_source_constructor_integrated": false,
+  "source_validation": "../ferrum-prolog-release/docs/data/prolog-arithmetic-return-20261104.json",
+  "archive": "../ferrum-prolog-release/docs/data/prolog-arithmetic-return-20261104.tar.gz",
+  "archive_sha256": "5429f1810ae1d8a9ed1bbe53f152fa58d48b474f02438b77658cc89b5adf01a8",
+  "production_promotion": false
+}

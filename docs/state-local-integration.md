@@ -493,3 +493,21 @@ Ferrum replay with two checks each; all 17 mutated certificates reject twice.
 [Proof, export and mutation evidence](data/prolog-rational-no-20261104.json)
 pins every attempt. Full frontier preservation and production promotion remain
 pending: the user requested a break once `nonterm.pl` was proven NO.
+
+## Finite guarded source composition lemmas
+
+Proof revision `d753ac1` adds finite guarded descent for the existing region,
+child and nested Split contracts, a context theorem for actual successful
+helper returns, and a finite-evaluation simulation into the existing checked
+integer ITS component. Isabelle verification and the dependency audit pass in
+`target/prolog-guarded-composition-367.log`; the reproducible entry point is
+`scripts/verify_prolog_finite_guarded.py`, also included in the
+`Prolog_Arithmetic_Bridge` session. [Pinned source identities and verification](data/prolog-finite-guarded-theorems-20261104.json).
+
+These are composition interfaces, not an executable numeric source-proof
+constructor. Complete source/module coverage, checked projections and uncovered
+non-integer branches remain obligations. The checker export and unified
+executable are unchanged. Separately, Ferrum `a07828b` uses the existing checker
+for arithmetic-return proof parameters and combined integer/ground Split
+receipts, preserving 59 YES + 4 NO Prolog and 84 YES + 9 NO LP-with-cut in fresh
+strict replay. It establishes no new benchmark gain or production promotion.
