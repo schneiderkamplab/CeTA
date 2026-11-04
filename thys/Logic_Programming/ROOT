@@ -19,6 +19,7 @@ session Logic_Programming = Proof_Checker +
     LP_SEG_Residual_XML
     LP_Constructor_XML
     LP_Dependency_Triple_Data LP_Dependency_Triple_Constructor_Success
+    LP_Dependency_Triple_Constructor_XML
     LP_Cut_Source LP_Cut_Graph LP_Cut_Guards LP_Cut_Guards_Test
     LP_Cut_Refresh LP_Cut_Normalize LP_Cut_Meta
     LP_Cut_State LP_Cut_Resolve LP_Cut_Failure LP_Cut_Knowledge
@@ -177,4 +178,4 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
     LP_Prolog_Numeric_Component_XML LP_Prolog_Numeric_Calls_Regression
     LP_Prolog_Context_Composed_Certificate
     LP_Prolog_Context_References_Certificate
-    LP_Prolog_Triple_XML
+    LP_Prolog_Triple_XML LP_Prolog_Finite_Constructor_Triple_XML
