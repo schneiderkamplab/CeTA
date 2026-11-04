@@ -2,16 +2,6 @@ theory LP_Prolog_Equation_Congruence
  imports LP_Prolog_Evaluation_Context
 begin
 
-fun lp_equation_replace where
-  "lp_equation_replace s t (Var x) = (if Var x=s then t else Var x)"
-| "lp_equation_replace s t (Fun f xs) =
-    (if Fun f xs=s then t else Fun f (map (lp_equation_replace s t) xs))"
-
-lemma lp_equation_replace_eval:
-  assumes "lp_ieval s eta=lp_ieval t eta"
-  shows "lp_ieval (lp_equation_replace s t a) eta=lp_ieval a eta"
-  using assms by (induction a) (auto simp: map_map intro!: map_cong)
-
 definition lpp_check_context_equation_rewrite where
   "lpp_check_context_equation_rewrite context a b =
     (a=b \<or> (\<exists>observation\<in>set (snd (snd context)). case observation of

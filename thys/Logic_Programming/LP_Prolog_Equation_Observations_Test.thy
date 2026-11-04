@@ -20,10 +20,24 @@ lemma cyclic_equation_is_not_finite:
 
 lemma equation_requires_initialization:
   "\<not>lpp_evaluation_observation_check [] [] [] (LPPOEquation (Var ''whole'') (Var ''field''))"
-  by simp
+  by (simp add: lp_check_equation_congruence_def)
 
 lemma reflexive_equation_initializes:
   "lpp_evaluation_observation_check [] [] [] (LPPOEquation t t)"
-  by simp
+  by (simp add: lp_check_equation_congruence_def)
+
+lemma rotated_cycle_equation_transport:
+  "lpp_evaluation_observation_check [] []
+    [LPPOEquation (Var ''parent'')
+      (Fun (LPCUser ''a'') [Fun (LPCUser ''b'') [Var ''parent'']])]
+    (LPPOEquation (Fun (LPCUser ''b'') [Var ''parent''])
+      (Fun (LPCUser ''b'') [Fun (LPCUser ''a'') [Fun (LPCUser ''b'') [Var ''parent'']]]))"
+  by (simp add: lp_check_equation_congruence_def)
+
+lemma rotated_cycle_missing_initialization:
+  "\<not>lpp_evaluation_observation_check [] [] []
+    (LPPOEquation (Fun (LPCUser ''b'') [Var ''parent''])
+      (Fun (LPCUser ''b'') [Fun (LPCUser ''a'') [Fun (LPCUser ''b'') [Var ''parent'']]]))"
+  by (simp add: lp_check_equation_congruence_def)
 
 end

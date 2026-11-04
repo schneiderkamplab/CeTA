@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Context
-  imports LP_Prolog_Guarded_Ground_Return LP_Prolog_Context_Free_Link
+  imports LP_Prolog_Guarded_Ground_Return LP_Prolog_Context_Free_Link LP_Equation_Congruence
 begin
 
 text \<open>The existing context representation can be interpreted with an
@@ -147,7 +147,7 @@ lemma lpp_evaluation_observation_equations:
 fun lpp_evaluation_observation_check where
   "lpp_evaluation_observation_check K guards observations (LPPOGround t) =
     (vars_term t \<subseteq> lpp_observations_equation_ground observations)"
-| "lpp_evaluation_observation_check K guards observations (LPPOEquation a b) = (a=b \<or> LPPOEquation a b\<in>set observations)"
+| "lpp_evaluation_observation_check K guards observations (LPPOEquation a b) = lp_check_equation_congruence (concat (map lpp_observation_equations observations)) a b"
 | "lpp_evaluation_observation_check K guards observations (LPPOShape G shape t) =
     (LPPOShape G shape t\<in>set observations \<or>
       lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t)"
@@ -174,6 +174,9 @@ proof -
     by (auto simp: lpp_observations_ground_def list_all_iff)
   have equations: "\<forall>(a,b)\<in>set (concat (map lpp_observation_equations observations)). lp_ieval a eta=lp_ieval b eta"
     using observations by (fastforce simp: list_all_iff dest: lpp_evaluation_observation_equations)
+  have congruence: "lp_ieval a eta=lp_ieval b eta"
+    if "lp_check_equation_congruence (concat (map lpp_observation_equations observations)) a b" for a b
+    by (rule lp_check_equation_congruence_sound[OF that equations])
   have closure: "\<forall>x\<in>lpp_observations_equation_ground observations. lp_seg_ground (eta x)"
     unfolding lpp_observations_equation_ground_def
     by (rule lp_ground_equation_closure_sound[OF equations ground])
@@ -181,7 +184,7 @@ proof -
     if "lp_return_shape_check 16 G (lpp_observations_shape_facts G observations) shape t" for G shape t
     by (rule lp_return_shape_check_sound[OF that lpp_evaluation_observations_shape_facts[OF observations]])
   show ?thesis using checked known guards observations closure
-    by (cases observation) (auto simp: lp_seg_ground_eval list_all_iff intro: shapes lpp_context_integer_from_sound)
+    by (cases observation) (auto simp: lp_seg_ground_eval list_all_iff intro: congruence shapes lpp_context_integer_from_sound)
 qed
 
 definition lpp_check_evaluation_context_transport where
