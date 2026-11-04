@@ -104,3 +104,27 @@ accepted the source graph and child separately while rejecting the incomplete
 connection. The accepting checker was not weakened. Mutations now cover that
 missing encoding and altered unification evidence as well as finite-error
 builtin exclusion. All 408 protected semantic negatives still reject.
+
+## 2026-11-04 Ground constructor fields in return contexts
+
+Proof commit `b056904` lets the existing evaluation-context checker use explicit
+ground observations when checking a constructor field's return shape. The proof
+reuses `LP_Return_Shapes` and the same source execution relation. Groundness alone
+does not establish a spine or an integer value; positive transport, missing
+facts, unjustified shape and integer controls verify in Isabelle.
+
+Integration `8f59b74` regenerates the eight-function export and builds unified
+CeTA 312, SHA-256
+`ee6dbcdaf7a8f41e605c7f52316493f99f2c1c92e7831e492d7ef94264d3da02`.
+[Pinned proof and export evidence](data/prolog-ground-shape-20261104.json) retains
+all attempts. Attempt 306 reused a finished theory and is explicitly excluded
+as validation; 307 and 308 failed. The changed theorem verifies in 309, followed
+by all updated controls and source dependencies in 310. Generated checking logic
+was not edited.
+
+The fix repairs three rejected graph connections in two already-retained
+benchmarks. Fresh source and strict checks also accept a renamed fixture, while
+removing required groundness or demanding a recursive spine rejects. Ferrum's
+complete replay retains 59 YES and 3 NO on 221 Prolog inputs and 84 YES and 9 NO
+on 112 LP-with-cut inputs, with two checks by this same executable. These are
+preservation results, not new benchmark gains or a production promotion.
