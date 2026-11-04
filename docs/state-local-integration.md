@@ -421,3 +421,16 @@ control. Commit `615eb6d` contains the tested context change and refactoring;
 pin the source manifest, successful logs and failed rebuild attempts 266/267.
 The unified executable has not been regenerated from this work. Complete
 rational source assembly and benchmark gains remain open.
+
+### Selected-clause equation observations (2026-11-04)
+
+Source `355fa92` on `codex/prolog-production-integration` adds
+`LPPEClauseEquationRewrite` beside the existing goal-frame rewrite. An
+initialized equation can expose constructors in a selected clause's call;
+the clause index, cut scope, continuation, saved alternatives and return rows
+stay identical. The existing checked link must provide a strict residual edge.
+The full evaluation control theorem and XML parser verify in run 270.
+[Pinned source identity and verification](data/prolog-clause-equation-rewrite-20261104.json)
+record the unreleased change under `thys/Logic_Programming/` in the persistent
+`CeTA-prolog-release` tree. No generated checking logic was edited, no new
+checker was released, and no benchmark gain or production promotion is claimed.

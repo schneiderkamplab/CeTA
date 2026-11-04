@@ -1,0 +1,19 @@
+{
+  "schema": "ceta.prolog-source-validation.v1",
+  "source_commit": "355fa92d8b04df9dc457af391511d3e8cca59d9e",
+  "branch": "codex/prolog-production-integration",
+  "tree": "/work/dfm/festschrift/CeTA-prolog-release",
+  "verification": "Full LP_Prolog_Evaluation_XML and dependency proofs passed",
+  "exported": false,
+  "released_checker_changed": false,
+  "new_benchmark_gains": 0,
+  "archive_sha256": "3fa108e8f9c6cc04268fe17e10b0ee4ad5cabcb693fc9449ed62eb5d88332331",
+  "files": {
+    "target/check-clause-equation-rewrite-270.py": "e1efb99b334309c24f8198a7fdb883e3689727a608c164b1f62c1c74794006b2",
+    "target/prolog-clause-equation-rewrite-270.log": "60498d33a9c718ccbc38684727c77a0910b1de974ceafc613113c64d1d7ee52d",
+    "target/prolog-clause-equation-rewrite-270.wrapper.log": "f69fd5b9c271631097840e02dc64d97fcb19a52dded6bd99d42767defc0f4fee",
+    "target/prolog-clause-equation-rewrite-270.source.json": "372ecfd025594b2943ba704f8b012de9b08a3d3ee8413dabb61e0d9c9071ce58",
+    "target/prolog-clause-equation-rewrite-270.commit.json": "9ef6225bb9f7cfa154ff9bc8a3d4b7d0195d72fe5d67d82107d2d8dc09333033",
+    "target/pin-clause-equation-rewrite-271.py": "058dcce180f23461e7c4e2200886748fb48ec6e586c84d57336265c8bf0a06aa"
+  }
+}
