@@ -374,3 +374,18 @@ alternative still needs checked assembly evidence.
 pins source identities, proof attempts, export and build identities, the full
 strict replay, and witness-free guidance. Protected-category production replay
 and matched AProVE comparison remain open; this is not production promotion.
+
+## Rational graph equation bridge under development (2026-11-04)
+
+`LP_Rational_Graph_Equations` describes cyclic runtime values using the existing
+infinitary terms. It proves a graph denotation, uniqueness under checked
+reference bounds, substitution transport, and equivalence between the graph
+model and finite equation receipts. A one-node self-cycle is proved not to be
+finite ground; a dangling reference fails validity. The final dependency audit
+rejects every oracle and skipped proof.
+
+Fresh theory verification from heap 242 passes in
+`target/prolog-rational-graph-equations-251.log`; attempts 245 through 250 remain
+available, including failed proof attempts. The source-envelope connection and
+unified export remain open. These theorems do not add a certified Prolog root
+or change the released checker identity.
