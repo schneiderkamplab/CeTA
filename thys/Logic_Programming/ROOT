@@ -156,6 +156,10 @@ session Prolog_Static_Code = Logic_Programming +
   options [document = false, timeout = 900]
   theories LP_Prolog_Static_Code
 
+session Prolog_Rational_NO_Code = Prolog_Static_Code +
+  options [document = false, timeout = 900]
+  theories LP_Prolog_Rational_NO_Code
+
 session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
   options [document = false, timeout = 900]
   sessions ITS_Arithmetic ITS_Ext

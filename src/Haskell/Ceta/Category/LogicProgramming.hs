@@ -22,6 +22,9 @@ import qualified Prolog_Context_Generated as PC
 #ifdef LP_PROLOG_CONTEXT_ITS
 import qualified Prolog_Context_ITS_Generated as PCI
 #endif
+#ifdef LP_PROLOG_RATIONAL_NO
+import qualified Prolog_Rational_NO_Generated as PR
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -112,7 +115,11 @@ runProlog [path] = do
       PS.check_lpp_return_triples_xml (cachedCharacters PS.explode input) ||
       PS.check_lpp_module_triples_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG"
-    else if PS.check_lpp_test_no_xml (cachedCharacters PS.explode input) ||
+    else if
+#ifdef LP_PROLOG_RATIONAL_NO
+      PR.check_lpp_rational_no_xml (cachedCharacters PR.explode input) ||
+#endif
+      PS.check_lpp_test_no_xml (cachedCharacters PS.explode input) ||
       PS.check_lpp_integer_no_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG NO"
     else if PS.check_lpp_static_no_xml (cachedCharacters PS.explode input) ||

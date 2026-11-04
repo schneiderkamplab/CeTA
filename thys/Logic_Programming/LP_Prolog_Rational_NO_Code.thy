@@ -1,0 +1,5 @@
+theory LP_Prolog_Rational_NO_Code
+  imports LP_Prolog_Rational_NO_Executable
+begin
+export_code check_lpp_rational_no_xml in Haskell module_name Prolog_Rational_NO_Generated
+end

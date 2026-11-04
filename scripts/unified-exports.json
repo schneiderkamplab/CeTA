@@ -90,7 +90,8 @@
       "-DLP_SEG_PROJECTED",
       "-DLP_PROLOG_STATIC",
       "-DLP_PROLOG_CONTEXT",
-      "-DLP_PROLOG_CONTEXT_ITS"
+      "-DLP_PROLOG_CONTEXT_ITS",
+      "-DLP_PROLOG_RATIONAL_NO"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -106,6 +107,7 @@
       "LP_Triples_Generated.hs": "6ed7bd4fe79bac44d8c9e81ff1cad93e550ed6e4e8e5b817d0aafe6af4228328",
       "Prolog_Context_Generated.hs": "363c66f10e9c6fe1d45d4ba1b2f849ad18262009f2c2c378f113fbb7bc8ee85c",
       "Prolog_Context_ITS_Generated.hs": "d51edaaa265b4c8925a766b6e0aa6cf82d30accccc2431f42290e173d7a6827c",
+      "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -113,8 +115,8 @@
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-ground-shape.tar.gz",
-    "archive_sha256": "d0b803e20ff115ce154404895a0eb967004d9f8b84f9d373b3f737bf08d3a7fa",
+    "archive": "tests/unified/exports/lp-source-rational-no.tar.gz",
+    "archive_sha256": "09d2394b8a26d4e4ed3142d48b8f6bb88092f062e09ce8f0fd382a208ded05d8",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -586,6 +588,49 @@
       "added_module": "LP_Finite_Generated.hs",
       "added_module_sha256": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d",
       "generated_source_edits": false
+    },
+    "prolog_rational_no": {
+      "export": "target/prolog-rational-no-export-348",
+      "verification_log": "target/prolog-rational-no-export-348.log",
+      "base_verification_log": "target/prolog-rational-no-export-347.log",
+      "unchanged_previous_modules": {
+        "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+        "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+        "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+        "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+        "LP_Cut_NO_Generated.hs": "efd5d7801493ae026c9e44471f534baf8f58a2734f8697c2616ef0d29501ad68",
+        "LP_Cut_Projected_Generated.hs": "5300ded3b07b22ed70a6ca0c22117776cbb59257c8026b3730725cea736d2af2",
+        "LP_Finite_Generated.hs": "04a5e1e17a5e3da4f53180428b4b79e8020b7ee7fc3bfde910e04054b7e9ac9d",
+        "LP_Return_Module_Generated.hs": "1087a80f44d8d954f7ae38b1e81e82f009657b58530d67c3264a67fadfa55c41",
+        "LP_SEG_Certificate_Generated.hs": "5d505823a4a9e36731d8ccd0dbc83aeff5515a71b424b911b8608ee98464869a",
+        "LP_SEG_Projected_Generated.hs": "7aca74b8e87f96073d2548d0bd8d2eb5dcb241449552ff85b6344f959f8a9654",
+        "LP_Triples_Generated.hs": "6ed7bd4fe79bac44d8c9e81ff1cad93e550ed6e4e8e5b817d0aafe6af4228328",
+        "Prolog_Context_Generated.hs": "363c66f10e9c6fe1d45d4ba1b2f849ad18262009f2c2c378f113fbb7bc8ee85c",
+        "Prolog_Context_ITS_Generated.hs": "d51edaaa265b4c8925a766b6e0aa6cf82d30accccc2431f42290e173d7a6827c",
+        "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
+        "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+        "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+        "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+        "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+      },
+      "theory_sha256": {
+        "thys/Logic_Programming/LP_Cut_Rational_Closed_Match.thy": "dd16e9d342ea83daa5ff6aaa50bd2f97becac684ae965745ac8f3866e6c8534c",
+        "thys/Logic_Programming/LP_Cut_Rational_Free_Equality.thy": "00eff97fb4d8932d89ccccc175a317db229f7bebf35393c4142a9ea63573c78f",
+        "thys/Logic_Programming/LP_Cut_Rational_Free_MGU.thy": "2c7163a887b6bd5e87b91f015978cca55ec01e030f46f776424c47e3fa5ec13f",
+        "thys/Logic_Programming/LP_Cut_Rational_Goals.thy": "5fa373953c77d1606939bc2257480fd8895abf3fc0ed28430240edcfa7365bab",
+        "thys/Logic_Programming/LP_Cut_Rational_Graph_MGU.thy": "7b89d97231baca30db74135f14964e4eff55a630bcf2fa1959f17ec6c360a494",
+        "thys/Logic_Programming/LP_Cut_Rational_NO_Binding.thy": "dc67cce75ab1c3e0c1a4280e1039afaae2106f06f53726762dfcc681b46564f3",
+        "thys/Logic_Programming/LP_Cut_Rational_NO_Control.thy": "f167464367e6d20a0674230ad5b11759bbbea3b5510177b7c88f08423966f05f",
+        "thys/Logic_Programming/LP_Cut_Rational_NO_Steps.thy": "9bbd4a0fb1c3164eb1f3fc6a92e235a7a0520602fc43bb1d74fe14041f24388e",
+        "thys/Logic_Programming/LP_Cut_Rational_NO_Trace.thy": "61d303ae01a0fcee57fe6bc6217bc2ccf0d8cfff6f967c6100e25524507d9ff2",
+        "thys/Logic_Programming/LP_Prolog_Rational_NO_Code.thy": "4266c36a671c766b2338a0308568dff2790c84e0970c76927a250e80145d6402",
+        "thys/Logic_Programming/LP_Prolog_Rational_NO_Executable.thy": "f1ad7a3513c6b9badb82f39efaca6709d2f554e47cd1019652164c0d66c9a598",
+        "thys/Logic_Programming/LP_Prolog_Rational_NO_XML.thy": "0659d4fb8a15c52514893d88f2e3d9ee7aed82abf1f75138df7347e08c240306",
+        "thys/Logic_Programming/LP_Rational_Closed_Graph.thy": "e6bf752029cd33f12418e630d1881cfbcd40aedec970ecc0923a093ee1a83c46",
+        "thys/Logic_Programming/LP_Rational_Graph_Clash.thy": "d63a2cf87e9d3125eea83e8fea28486b1d275c5d892db8fccc07c2034ed0a7cf",
+        "thys/Logic_Programming/LP_Rational_Graph_Equations.thy": "9dec134346dbc8f0b160c9727155019409b341fdc54e31a7ce619f2625a6f24f",
+        "thys/Logic_Programming/LP_Rational_Graph_Match.thy": "2b9f455184fded42a7003747a12f3bc6834367900d387724df5dc5c95c50e5d2"
+      }
     }
   },
   "higher-order": {
