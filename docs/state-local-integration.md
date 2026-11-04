@@ -434,3 +434,24 @@ The full evaluation control theorem and XML parser verify in run 270.
 record the unreleased change under `thys/Logic_Programming/` in the persistent
 `CeTA-prolog-release` tree. No generated checking logic was edited, no new
 checker was released, and no benchmark gain or production promotion is claimed.
+
+## Certified rational source observations, 2026-11-04
+
+Commit `61b8fb7` integrates the verified rational equation initialization,
+congruence and selected-clause rewrite rules into the six-function Prolog
+context export. Source proof commit `355fa92` and export run 272 pass the
+Isabelle theorem/dependency audit. No generated checker logic was edited.
+[Pinned export, source and build evidence](data/prolog-rational-equation-export-20261104.json)
+records `make ceta` unified build 274, hash
+`e603074c5b87bc9415162bd744ace909af48bd9397f4478fe03a80f57c553fc5`.
+The diagnostic category option always exits unsuccessfully and cannot authorize
+a verdict, even when every diagnostic item is true.
+
+Ferrum `3a1ea6c` strictly replays all 221 Prolog roots at **59 YES + 3 NO**,
+including two new rational source gains. Every retained result receives source
+audits, two checks with this executable and receipt authorization. The same
+executable accepts all 93 retained LP-with-cut certificates in 186 checks.
+Fourteen semantic mutations of the new source proofs are rejected; renamed
+positives and divergent/cyclic negative controls pass. The [Ferrum evidence](../../ferrum-prolog-release/docs/data/prolog-rational-gains-20261104.json)
+retains the complete attempts and guidance controls. Protected-category
+production promotion and the broader superiority comparison remain open.
