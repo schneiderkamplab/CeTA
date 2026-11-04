@@ -1,8 +1,11 @@
 theory LP_Prolog_Evaluation_Control
- imports LP_Prolog_Finite_Evaluation_Error LP_Prolog_Finite_Comparison_Error LP_Prolog_Finite_Context_Length LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
+ imports LP_Prolog_Equation_Rewrite LP_Prolog_Finite_Evaluation_Error LP_Prolog_Finite_Comparison_Error LP_Prolog_Finite_Context_Length LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
 begin
 
 datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
+  | LPPEEquationRewrite "string lpc_term" "string lpc_term"
+      "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state"
+      "string lpc_link" lpp_link_types
   | LPPETrim "string lpc_return_state" "string lpc_return_state" "string lpc_link" lpp_link_types
   | LPPEParallel "string lpc_link list" "lpp_link_types list"
   | LPPERefuted nat nat "(string * string lpc_term) list"
@@ -24,6 +27,11 @@ definition lpp_evaluation_module_rep where
 fun lpp_check_evaluation_module_action where
   "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEPrimitive action) =
     lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity action"
+| "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEEquationRewrite a b gs active saved e fs) =
+    (ss=(LPCGoals (LPCAtom a#gs),active)#saved \<and>
+     lpp_check_equation_rewrite source_context a b \<and>
+     lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
+       ((LPCGoals (LPCAtom b#gs),active)#saved) (lpcn_ground nd) (lpcn_guards nd) [] F source_context e)"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPETrim successor barriers e fs) =
     (ss=successor@barriers \<and> lp_cut_barriers (map fst barriers) \<and>
       lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd successor (lpcn_ground nd) (lpcn_guards nd) [] F source_context e)"
@@ -66,6 +74,21 @@ theorem lpp_evaluation_control_action:
     and emit: "\<And>rho tt. lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain (lpc_return_eval eta ss) (Some rho) tt \<Longrightarrow> (t,ret rho)\<in>R\<^sup>*"
   shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain) (lpc_return_eval eta ss) R t ret"
 proof (cases action)
+  case (LPPEEquationRewrite a b gs active saved e fs)
+  have shape: "ss=(LPCGoals (LPCAtom a#gs),active)#saved"
+    and rewrite: "lpp_check_equation_rewrite source_context a b"
+    and link: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
+      ((LPCGoals (LPCAtom b#gs),active)#saved) (lpcn_ground nd) (lpcn_guards nd) [] F source_context e"
+    using checked LPPEEquationRewrite by auto
+  obtain v swaps where strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+"
+    and rep: "lpp_evaluation_rep lpp_finite_evaluation_result SP nds states contexts Fs
+      (lpc_return_scope_word swaps (lpc_return_eval eta ss)) v"
+    using lpp_equation_rewrite_link_sound[OF lpp_finite_evaluation_integer_contract
+      lpp_finite_evaluation_ground transfer rewrite link known free observed]
+    by (auto simp only: shape)
+  show ?thesis by (rule lower[OF strict _ invariant])
+    (use rep in \<open>auto simp: lpp_evaluation_module_rep_def\<close>)
+next
   case (LPPEEvaluationError a e gs active saved)
   have check: "lpp_check_finite_evaluation_error nd F ss source_context a e gs active saved"
     using checked LPPEEvaluationError by simp

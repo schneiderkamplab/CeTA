@@ -158,7 +158,7 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
   options [document = false, timeout = 900]
   sessions ITS_Arithmetic ITS_Ext
   theories
-    LP_Rational_Graph_Equations
+    LP_Rational_Graph_Equations LP_Prolog_Equation_Rewrite
     LP_Prolog_Finite_Context_Length
     LP_Prolog_Finite_Comparison_Error
     LP_Prolog_Finite_Instantiation_Error

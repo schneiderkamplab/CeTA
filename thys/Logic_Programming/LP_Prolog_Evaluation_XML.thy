@@ -59,6 +59,12 @@ definition lpp_evaluation_action_parser where
       yf\<leftarrow>lpp_evaluation_types_parser (STR ''yesTypes'');
       nf\<leftarrow>lpp_evaluation_types_parser (STR ''noTypes'');
       xml_return (LPPEPrimitive (LPPEIdentity f a b gs active saved yes no yf nf))}) XMLor
+    (XMLdo (STR ''equationRewrite'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      e\<leftarrow>lpc_link_parser; fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
+      xml_return (LPPEEquationRewrite a b gs active saved e fs)}) XMLor
     (XMLdo (STR ''finiteEvaluationError'') {
       a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
       gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
