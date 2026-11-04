@@ -65,6 +65,13 @@ definition lpp_evaluation_action_parser where
       active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
       e\<leftarrow>lpc_link_parser; fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
       xml_return (LPPEEquationRewrite a b gs active saved e fs)}) XMLor
+    (XMLdo (STR ''clauseEquationRewrite'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      c\<leftarrow>xml_nat (STR ''index''); m\<leftarrow>xml_nat (STR ''scope'');
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      e\<leftarrow>lpc_link_parser; fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
+      xml_return (LPPEClauseEquationRewrite a b gs c m active saved e fs)}) XMLor
     (XMLdo (STR ''finiteEvaluationError'') {
       a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
       gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;

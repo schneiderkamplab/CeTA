@@ -6,6 +6,9 @@ datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
   | LPPEEquationRewrite "string lpc_term" "string lpc_term"
       "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state"
       "string lpc_link" lpp_link_types
+  | LPPEClauseEquationRewrite "string lpc_term" "string lpc_term"
+      "string lpc_term lp_cut_goal list" nat nat "string lpc_term list" "string lpc_return_state"
+      "string lpc_link" lpp_link_types
   | LPPETrim "string lpc_return_state" "string lpc_return_state" "string lpc_link" lpp_link_types
   | LPPEParallel "string lpc_link list" "lpp_link_types list"
   | LPPERefuted nat nat "(string * string lpc_term) list"
@@ -32,6 +35,11 @@ fun lpp_check_evaluation_module_action where
      lpp_check_equation_rewrite source_context a b \<and>
      lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
        ((LPCGoals (LPCAtom b#gs),active)#saved) (lpcn_ground nd) (lpcn_guards nd) [] F source_context e)"
+| "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEClauseEquationRewrite a b gs c m active saved e fs) =
+    (ss=(LPCClause (LPCAtom a#gs) c m,active)#saved \<and>
+     lpp_check_equation_rewrite source_context a b \<and>
+     lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
+       ((LPCClause (LPCAtom b#gs) c m,active)#saved) (lpcn_ground nd) (lpcn_guards nd) [] F source_context e)"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPETrim successor barriers e fs) =
     (ss=successor@barriers \<and> lp_cut_barriers (map fst barriers) \<and>
       lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd successor (lpcn_ground nd) (lpcn_guards nd) [] F source_context e)"
@@ -84,6 +92,21 @@ proof (cases action)
     and rep: "lpp_evaluation_rep lpp_finite_evaluation_result SP nds states contexts Fs
       (lpc_return_scope_word swaps (lpc_return_eval eta ss)) v"
     using lpp_equation_rewrite_link_sound[OF lpp_finite_evaluation_integer_contract
+      lpp_finite_evaluation_ground transfer rewrite link known free observed]
+    by (auto simp only: shape)
+  show ?thesis by (rule lower[OF strict _ invariant])
+    (use rep in \<open>auto simp: lpp_evaluation_module_rep_def\<close>)
+next
+  case (LPPEClauseEquationRewrite a b gs c m active saved e fs)
+  have shape: "ss=(LPCClause (LPCAtom a#gs) c m,active)#saved"
+    and rewrite: "lpp_check_equation_rewrite source_context a b"
+    and link: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
+      ((LPCClause (LPCAtom b#gs) c m,active)#saved) (lpcn_ground nd) (lpcn_guards nd) [] F source_context e"
+    using checked LPPEClauseEquationRewrite by auto
+  obtain v swaps where strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+"
+    and rep: "lpp_evaluation_rep lpp_finite_evaluation_result SP nds states contexts Fs
+      (lpc_return_scope_word swaps (lpc_return_eval eta ss)) v"
+    using lpp_clause_equation_rewrite_link_sound[OF lpp_finite_evaluation_integer_contract
       lpp_finite_evaluation_ground transfer rewrite link known free observed]
     by (auto simp only: shape)
   show ?thesis by (rule lower[OF strict _ invariant])
