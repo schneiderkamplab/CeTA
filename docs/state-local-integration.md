@@ -332,3 +332,23 @@ All 84 YES + 9 NO retained cut certificates pass twice with the same executable.
 Non-LP library identities and the unified main are unchanged from checker 163;
 protected-category production replay remains pending. Earlier rejected proof
 attempts are retained in the archive, without proof admissions.
+
+## Literal probes and checked helper returns (2026-11-04)
+
+Source `5a928df` adds literal `once` and negation probe steps to the existing
+Prolog semantics and checks their fresh scopes, saved alternatives and bindings.
+The finite triples return contract now receives the node's established knowledge:
+a checked contradictory guard can exclude an impossible successful return.
+Ordinary structural emission receipts remain accepted. Referenced helper modules
+and their termination obligations remain present.
+
+Verified export 229 and unified build 231 yield checker
+`9d40ec078008931560ded8ab06176a822613eac3ed3a22fcd569dd28e96b1b0d`.
+Ferrum source `8c9ba3c` strictly replays **56 YES + 3 NO / 221**, including the
+new `addneg.pl` result, with all 59 receipts authorized. All 84 YES + 9 NO
+retained LP-with-cut certificates pass twice with the same executable;
+40 mutations and 24 strict controls pass. The non-LP libraries and unified
+main retain their identities. Protected-category production replay is pending.
+[Integration evidence](../../ferrum-prolog-release/docs/data/prolog-reachable-returns-integration-20261104.json)
+includes the proof attempts, source hashes, generated export identity,
+checker build, failed initial replay and successful fresh guidance migration.
