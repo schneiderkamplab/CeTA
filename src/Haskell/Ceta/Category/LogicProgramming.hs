@@ -82,6 +82,15 @@ run args = withArgs args main
 
 -- Prolog has an explicit source bridge; an LP child alone is insufficient.
 runProlog :: [String] -> IO ()
+#ifdef LP_PROLOG_CONTEXT
+-- Diagnostics are deliberately non-accepting, even when every item is True.
+-- Only the ordinary category path can authorize a source verdict.
+runProlog ["--diagnostics", path] = do
+  input <- readFile path
+  putStrLn "PROLOG SOURCE DIAGNOSTICS (NOT A VERDICT)"
+  print (PC.lpp_established_finite_triples_diagnostics_xml (cachedCharacters PC.explode input))
+  exitFailure
+#endif
 runProlog [path] = do
   input <- readFile path
 #ifdef LP_PROLOG_STATIC
