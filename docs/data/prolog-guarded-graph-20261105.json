@@ -1,0 +1,34 @@
+{
+  "schema": "ceta.prolog-guarded-source-graph.v1",
+  "branch": "codex/prolog-production-integration",
+  "tree": "/work/dfm/festschrift/CeTA-prolog-release",
+  "integration_parent": "498745b",
+  "verified_log": "target/prolog-guarded-xml-387.log",
+  "verified_marker": "PROLOG_FINITE_GUARDED_VERIFIED",
+  "source_sha256": {
+    "scripts/verify_prolog_finite_guarded.py": "e10db62e3938f75838b072878c18172969cfa2afe150f8d641210b1b35186b4c",
+    "thys/Logic_Programming/ROOT": "6d647b1ffde18427c96e9b42217b397b4f0cbb2081a931e77cbb0c2574c59f4a",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Child.thy": "4d19f216882517ef6a44fc7fee34018f0ff00815903579c0010433566722ec56",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Composition.thy": "220c986953c1c6f2627799478eab9b8caa964c882df94791dd1381850155215e",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Connection.thy": "b14d16b59fcfb9462f2d23fec8f58cf3686651e2304f92464e178c2f45d8eb98",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Descent.thy": "d19fa5fe80f48ef272981f2b3817f7ed111a17a0eb7c84b96c304a70ea1411a8",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Graph.thy": "e23dca335b10e45cdedea46dcd62a5598532cc2f9539669e8279bddf371156bc",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Region.thy": "5a067025676e42947ef212f3d78e7659ed96110c7520a3fb288a6d0c0766b351",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Region_Descent.thy": "5fdacc9ffcab7a7d2d281f9524a2235c2463a486a236bef6f3dae1667c514c13",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Returns.thy": "7476cee5ee3f10f256e0fc2d315e48f51c07f8e86a717bfbe1b6ea026a53ad93",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Split.thy": "68355756e135876790979b0737e75312de5f1bd7d8c9569f349f8275dfe4d226",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_Split_Descent.thy": "444ae4345686d11c97d0cdbf685606a6af6b85994e72a8e5630731af3f3acc5e",
+    "thys/Logic_Programming/LP_Prolog_Finite_Guarded_XML.thy": "90abcf7d2045831ba4bf8fda6f04d58257404de0ce8c1d31b92d48a625504c4a",
+    "thys/Logic_Programming/LP_Prolog_Finite_Numeric_Projection.thy": "943862badc086b6c4051d2afab2ff2890078cb67a09013d2a0e8778fd099937a",
+    "thys/Logic_Programming/LP_Prolog_Finite_Numeric_Projection_Regression.thy": "59bb25c87316e7d1db4824b61a9ced5e88c0983b396cb95f0edb68e08cd76ea6"
+  },
+  "inherited_oracles": [
+    "Regexp_Method.check_eqv",
+    "Types_To_Sets.cancel_type_definition"
+  ],
+  "exported": false,
+  "native_source_assembly": false,
+  "additional_certified_roots": 0,
+  "archive_sha256": "dab19b54ba06547dd425add07e42bdcce8f3b5b64f20cca1dc4c7693eba0c9bb",
+  "attempts_note": "Retains proof failures: type-variable mismatch, reserved names, explicit boundary-context instantiation, and abandoned broad proof automation. Final graph/XML theorem and projection regression checks pass."
+}

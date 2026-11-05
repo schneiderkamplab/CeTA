@@ -21,8 +21,11 @@ os.environ.setdefault('ML_HOME', str(poly.parent))
 os.environ.setdefault('ML_PLATFORM', 'x86_64-linux')
 load = ('fun chain p = (case PolyML.SaveState.showParent p of NONE => [] | SOME q => chain q) @ [p]; '
         'PolyML.SaveState.loadHierarchy (chain ' + json.dumps(str(args.heap.resolve())) + ');')
-theory = root / 'thys/Logic_Programming/LP_Prolog_Finite_Guarded_Composition'
-command = ('((Thy_Info.use_thy_legacy ' + json.dumps(str(theory)) +
+theories = [root / 'thys/Logic_Programming' / name for name in (
+    'LP_Prolog_Finite_Guarded_Composition',
+    'LP_Prolog_Finite_Numeric_Projection_Regression')]
+command = ('((' + '; '.join('Thy_Info.use_thy_legacy ' + json.dumps(str(theory))
+                           for theory in theories) +
            '; writeln "PROLOG_FINITE_GUARDED_VERIFIED"; OS.Process.exit OS.Process.success) '
            'handle exn => (writeln (Runtime.exn_message exn); OS.Process.exit OS.Process.failure));\n')
 args.log.parent.mkdir(parents=True, exist_ok=True)

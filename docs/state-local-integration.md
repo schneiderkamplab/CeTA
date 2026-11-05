@@ -845,3 +845,27 @@ audit, two checks with this executable and receipt authorization. Ferrum
 adjacent archive. No generated checker logic was edited. The guarded composition
 lemmas remain unexported; no arithmetic benchmark gain or production promotion
 is claimed by this merge.
+
+## Checked guarded source graph, 2026-11-05
+
+`LP_Prolog_Finite_Guarded_Graph` and `LP_Prolog_Finite_Guarded_XML` compose
+the established finite regions and nested Splits with checked guarded call
+descent and an integer child. The graph checks all referenced modules, retains
+the original structural call/success receipts, and adds separate guarded
+dependency receipts. Helper-return facts come from existing actual-source
+integer, ground and combined shape receipts. Continuation descent uses actual
+successful substitution, not arbitrary abstract residual answers.
+
+Argument projection preserves every call edge and all guards/helper premises.
+Duplicate and out-of-range positions are rejected. Six regression lemmas cover
+selection order, malformed positions, retained guards/helpers and self-calls.
+The numeric child is bound to exactly the projected observed relation; its
+transfer table must match the source graph's. Original profile/query and source
+program fields remain explicit. No new operational semantics or SEG is added.
+
+The full dependency audit and XML soundness theorem pass in
+`target/prolog-guarded-xml-387.log`, with only the two inherited checker oracles.
+[Sources and all verification attempts](data/prolog-guarded-graph-20261105.json)
+are pinned. This is not yet exported into the unified executable or assembled by
+Ferrum; it certifies no additional benchmark root. Native assembly, fresh
+positive certificates, mutations and replay remain required.
