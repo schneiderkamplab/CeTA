@@ -885,3 +885,21 @@ controls, four semantic negatives and 55 mutation checks. Fresh replay retains
 59 YES + 4 NO Prolog and 84 YES + 9 NO LP-with-cut using this same checker.
 This establishes integration and preservation, not a new benchmark gain or
 protected-category production promotion.
+
+## Exact arithmetic NO simulation foundations, 2026-11-05
+
+The shared recurrent simulation contract now requires positive source progress
+and preserves complete saved stacks. Ground first-clause resolution supports
+fresh body variables. Interpreted integer assignments and guards compose in
+source order; dispatch requires an ordinary defined predicate. The complete
+iteration and nontermination consequence verify in
+`target/prolog-recurrent-simulation-415.log`, without admissions or oracle
+dependencies. This uses the existing LP-with-cut and interpreted Prolog source
+relations, not a second operational semantics.
+
+No new checker constructor or export is installed. Exact integer-child binding,
+original source/profile/query checking and executable reconstruction remain
+pending. Ferrum's native diagnostic child passes two unified checks and strict
+controls, but adds no source verdict. The frontier remains 61 YES + 4 NO.
+[Source snapshots, all verification attempts and child evidence](../../ferrum-prolog-release/docs/data/prolog-integer-recurrence-development-20261105.json)
+are pinned with their archive. The unified checker remains `63439dfcaa4f474083c65b6c4127bc217732bb314837362f5fcf7b21b1888986`.
