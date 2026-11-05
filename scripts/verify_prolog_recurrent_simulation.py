@@ -14,6 +14,7 @@ parser.add_argument('--heap', type=Path, required=True)
 parser.add_argument('--log', type=Path, required=True)
 parser.add_argument('--save-heap', type=Path)
 parser.add_argument('--export-directory', type=Path)
+parser.add_argument('--extra-theory', type=Path, action='append', default=[])
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 if args.save_heap:
@@ -26,6 +27,7 @@ os.environ.setdefault('ML_PLATFORM', 'x86_64-linux')
 load = ('fun chain p = (case PolyML.SaveState.showParent p of NONE => [] | SOME q => chain q) @ [p]; '
         'PolyML.SaveState.loadHierarchy (chain ' + json.dumps(str(args.heap.resolve())) + ');')
 theories = [root / 'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_XML']
+theories.extend(p.resolve().with_suffix('') for p in args.extra_theory)
 if args.export_directory:
     export = args.export_directory.resolve()
     export.mkdir(parents=True, exist_ok=False)
