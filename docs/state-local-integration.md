@@ -831,3 +831,17 @@ pass. Evidence: `target/sparse-removal-checked-{tiling,removal}-1/manifest.json`
 and `target/sparse-removal-existing-paths-1/results.json`. Generated logic remains
 unchanged from Isabelle export. These gates establish native checker integration;
 the complete protected frontier still requires its release replay.
+
+## Main merge and Prolog preservation, 2026-11-05
+
+Merge `b8b15c5` integrates main `76aaf02` into
+`codex/prolog-production-integration` in `CeTA-prolog-release`. The isolated
+`make ceta` build `target/unified-main-371/ceta` has SHA-256
+`c93d34b487807b2f9c2ea25cc3b8a60933aebfce783d8bcdd1199ab24dba288e`.
+With Ferrum `ef9e8b5`, complete strict replays retain 59 Prolog YESs and four
+NOs, plus 84 cut YESs and nine NOs. Each retained proof passes original-source
+audit, two checks with this executable and receipt authorization. Ferrum
+`e777a7a` pins evidence in `docs/data/prolog-main-merge-20261105.json` and its
+adjacent archive. No generated checker logic was edited. The guarded composition
+lemmas remain unexported; no arithmetic benchmark gain or production promotion
+is claimed by this merge.
