@@ -2,6 +2,8 @@
 
 ## 2026-11-05
 
+- [Reconciled learned-only evidence](learned-only-validation-20261105.md): 6,570 certified inputs, all 6,565 required learned successes retained, two checks per acceptance by the same unified O2 binary. No checking logic or generated export changed during reconciliation. Main and the deferred independent two-checker release remain unchanged.
+
 - Added an explicit absolute-RFC constructor to common recursive checking and
   its Isabelle soundness proof. The common checker/parser and legacy wrapper
   sessions pass; the integrated export and executable gates are pending.

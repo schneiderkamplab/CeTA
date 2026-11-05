@@ -24,3 +24,5 @@ okf_version: "0.2"
 
 - [Recursive RFC residual checking](rfc-recursive-residuals.md) — Verified recursive absolute/relative constructors and regenerated unified checker.
 - [Full-frontier release](state-local-release-20261029.md) — Unified CeTA validates all 6,526 roots.
+
+- [Reconciled learned-only validation](learned-only-validation-20261105.md) — One immutable unified CeTA checks every accepted category twice.
