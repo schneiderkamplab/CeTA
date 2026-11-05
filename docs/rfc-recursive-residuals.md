@@ -38,8 +38,24 @@ syntactic nesting does not waive applicability conditions.
 
 - The updated common soundness proof and parser pass `Proof_Checker_Base` and
   `Proof_Checker`; the legacy wrapper also passes `RFC_Absolute_Ext`.
-- The complete integrated export is still rebuilding. Evidence is retained in
-  `target/rfc-recursive-build-1.log` in the isolated `CeTA-policy-eval` checkout.
-- Regenerated unified executable, repeated nested positive certificates,
-  semantic mutations, historical compatibility and category replay are
-  pending. This page does not claim those gates have passed.
+- The complete `Certificate_Performance_CPF_Export` build passes in
+  `target/rfc-recursive-build-1.log` (48m08s including dependencies).
+- The unified O2 executable has SHA-256
+  `9dfd140cac92e7f47646b7d620848533c64beff7cbb2d7881cfe2df1298a1fdb`.
+  Its generated CPF archive comes from source `3172b10`; other category
+  archive identities remain unchanged. No generated logic was edited.
+- `tests/unified/check_rfc_recursive.py` accepts the nested positive twice
+  and rejects missing initial language, missing removal, invalid bound and
+  changed-input self-loop mutations. The native source correspondence audit
+  also passes in Ferrum's `target/policy-v37/nesting-control/checks.json`.
+- Existing sparse tiling/removal positives and mutations, unified dispatch,
+  CSR composition, GM04 source-map and retained semantic-negative gates pass
+  in `target/rfc-recursive-existing-paths-1/results.json`.
+- Ferrum's 34 focused RFC tests pass with this checker, including the updated
+  reconstruction/serialization test. One unrelated bound-expectation test
+  remains excluded after its failure was reproduced on the prior baseline.
+- Fresh category replay and full-frontier release validation remain pending.
+
+The [recorded gate identities](data/rfc-recursive-20261105.json) bind the
+source, generated export and executable to these focused checks. This is a
+verified integration candidate, not a promotion of the production checker.

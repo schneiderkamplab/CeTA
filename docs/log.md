@@ -1,5 +1,12 @@
 # Update log
 
+## 2026-11-05
+
+- Added an explicit absolute-RFC constructor to common recursive checking and
+  its Isabelle soundness proof. The common checker/parser and legacy wrapper
+  sessions pass; the integrated export and executable gates are pending.
+  See [recursive residual checking](rfc-recursive-residuals.md).
+
 ## 2026-10-29
 
 - Proved agreement-based transport between the fixed GM04 source map and an explicit source-proof map. Regenerated the unified O2 checker; 21 source-map checks, 220 retained CSR checks and the retained mutation fixture pass. Full-frontier preservation remains pending. [Contract](gm04-source-proof-map.md).
@@ -20,10 +27,3 @@
 - Integrated the existing verified finite-LP export into the isolated unified checker (`54a99ee`). Existing generated sources and other category libraries are unchanged. The new candidate passes 346 positive/81 negative checks, all 91 retained cut artifacts, and finite/dispatch regressions; main is unchanged.
 
 - Scope correction: Prolog is deferred, including LeTA. The unfinished Prolog reconciliation is preserved separately at `19b6cbe` on `codex/deferred-prolog-reconciliation`; active work resumes on `codex/state-local-lp-cut` from the verified pre-Prolog snapshot. Only LP and LP with cut are in this migration scope. No Prolog candidate is promoted.
-
-## 2026-11-05
-
-- Added an explicit absolute-RFC constructor to common recursive checking and
-  its Isabelle soundness proof. The common checker/parser and legacy wrapper
-  sessions pass; the integrated export and executable gates are pending.
-  See [recursive residual checking](rfc-recursive-residuals.md).
