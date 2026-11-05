@@ -59,3 +59,23 @@ syntactic nesting does not waive applicability conditions.
 The [recorded gate identities](data/rfc-recursive-20261105.json) bind the
 source, generated export and executable to these focused checks. This is a
 verified integration candidate, not a promotion of the production checker.
+
+
+## Exact duplicate-tail refinement
+
+The final-state list may repeat the same state for distinct initial words.
+The universal right-extension condition depends only on its set of states.
+`rfc_right_distinct_tails_code` in `Certificate_Performance_CPF_Export` proves
+that deduplicating this list preserves the executable result exactly. It does
+not deduplicate the paired initial-language records or skip their checks.
+The theorem is kernel checked, with an explicit no-oracles/admissions audit.
+
+The complete export passes in `target/rfc-distinct-build-2.log` (6m20s).
+Attempt one retains a fixed-variable name collision, corrected before proof
+checking. Source `39f3374` generates the unified O2 checker
+`d19704667ae17f6f6154d8b729e800a0ee15cfac416d26779534779c26062113`.
+All focused nested, sparse, CSR, dispatch and negative regression gates pass.
+[Export and gate evidence](data/rfc-distinct-tails-20261105.json).
+Large-certificate timing tests and the full SRS replay remain in Ferrum's
+`target/policy-v37`; this refinement alone is not a claim that every certificate
+fits the competition checker deadline.

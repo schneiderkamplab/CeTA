@@ -6,7 +6,7 @@
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
       "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
-      "Ceta_Relative.hs": "e9ffdb8cd004030a581881a11e1845d0eae1a0c6485a2013f55eab8c74248d1b",
+      "Ceta_Relative.hs": "61c867ab3df12c3dd7b043d3bc74b3e73bf5aeaecfa29680310e6d84adcad2b4",
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
       "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
@@ -14,9 +14,9 @@
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "origin": "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-export/Certificate_Performance_CPF_Export.Certificate_Performance_CPF_Export/code/export1",
-    "archive": "tests/unified/exports/cpf-rfc-recursive.tar.gz",
-    "archive_sha256": "a4016c31f61d53fd77d784ea4c496ecb5e213785cf2ec1bb30461cd23babc04f",
+    "origin": "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-distinct-export/Certificate_Performance_CPF_Export.Certificate_Performance_CPF_Export/code/export1",
+    "archive": "tests/unified/exports/cpf-rfc-distinct.tar.gz",
+    "archive_sha256": "2638b1cb35cf7cc3078afcc1f5a7130635e8d573006b978dae51e002b7a00fed",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "public_api": {
@@ -37,9 +37,9 @@
         "certify_proof_integrated"
       ]
     },
-    "source_commit": "3172b10db3dccd0e102a673320fbdab6b3faa777",
+    "source_commit": "39f3374b8499dd03e7bd3d05cce92ebb19f88f4a",
     "verified_session": "Certificate_Performance_CPF_Export",
-    "verification_log": "target/rfc-recursive-build-1.log"
+    "verification_log": "target/rfc-distinct-build-2.log"
   },
   "cycle": {
     "module": "Ceta.Category.Cycle",
