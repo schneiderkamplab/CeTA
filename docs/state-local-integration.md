@@ -924,3 +924,31 @@ not source YESs; binary64 stagnation candidates remain separate obligations.
 The source-to-child coordinate map, original source/profile/query binding,
 executable parent constructor, XML and export remain pending. No generated
 checker or unified executable changes, and no new source result, are claimed.
+
+## Source integer recurrence NO, 2026-11-06
+
+CeTA `be3ba51` in `CeTA-prolog-release`, branch
+`codex/prolog-production-integration`, adds the verified
+`prologIntegerRecurrenceProof` constructor. It checks first-clause selection,
+ordered assignments/guards, exact recursive outputs and coordinate transport,
+then invokes the existing common ITS NO checker on the exact relation.
+The source simulation uses the shared operational semantics and preserves
+saved alternatives. It does not use termination overapproximations for NO.
+
+XML verification 448 and corrected export 451 pass their dependency audits.
+The unified O2 build `target/unified-recurrence-453/ceta` has SHA-256
+`3db3147cdfdeae982fc924fb2b8134bfe4a342521f05842fb55e9f9ed64ea751`.
+Failed build 450 exposed an array code-printing import collision; the new code
+setup restores the existing CeTA mapping before regeneration. No generated
+checking logic was edited, and all previous LP modules/helpers retain their
+bytes. Shared ITS changes qualify the solver default and separate standalone
+export from parser import without changing the checking rules.
+
+Ferrum `3bf839d` passes three native/strict positives, 15 semantic/advice
+controls and 30 certificate checks. Complete strict Prolog replay retains
+61 YES + 5 NO on 221 roots, gaining one source NO, and cut replay preserves
+84 YES + 9 NO on 112 roots using this same executable. Every retained result
+has an original-source audit, two checks and an authorized complete receipt.
+[All attempts and integration evidence](../../ferrum-prolog-release/docs/data/prolog-integer-recurrence-integration-20261106.json)
+pin sources, exports and checker build receipts. The protected-category
+production promotion gate remains separate and open.
