@@ -94,7 +94,8 @@
       "-DLP_PROLOG_STATIC",
       "-DLP_PROLOG_CONTEXT",
       "-DLP_PROLOG_CONTEXT_ITS",
-      "-DLP_PROLOG_RATIONAL_NO"
+      "-DLP_PROLOG_RATIONAL_NO",
+      "-DLP_PROLOG_GUARDED"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -110,6 +111,7 @@
       "LP_Triples_Generated.hs": "6ed7bd4fe79bac44d8c9e81ff1cad93e550ed6e4e8e5b817d0aafe6af4228328",
       "Prolog_Context_Generated.hs": "363c66f10e9c6fe1d45d4ba1b2f849ad18262009f2c2c378f113fbb7bc8ee85c",
       "Prolog_Context_ITS_Generated.hs": "d51edaaa265b4c8925a766b6e0aa6cf82d30accccc2431f42290e173d7a6827c",
+      "Prolog_Guarded_Generated.hs": "f9b3307278cb326cb8c4d17a068deac94e77b91578d94730424b6bedfbffa33b",
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
@@ -118,8 +120,8 @@
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-rational-no.tar.gz",
-    "archive_sha256": "09d2394b8a26d4e4ed3142d48b8f6bb88092f062e09ce8f0fd382a208ded05d8",
+    "archive": "tests/unified/exports/lp-source-guarded.tar.gz",
+    "archive_sha256": "d2c7d63e1c5095aa287c4fdca39dbbeda777040a7067eae41879091286ab68a6",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",

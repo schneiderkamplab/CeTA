@@ -1,0 +1,14 @@
+{
+  "formal_commit": "5904ea1",
+  "checker_sha256": "63439dfcaa4f474083c65b6c4127bc217732bb314837362f5fcf7b21b1888986",
+  "archive_sha256": "16da82d58ede7a4ecc0035abb74db446d3be94ae99aa138636b2e118bcdd735c",
+  "inputs": {
+    "target/prolog-guarded-export-388.log": "63598101ff86fdf6124a089990dc678d76430da4c0bea8138f1d0e8606611ef6",
+    "target/prolog-guarded-unified-389.log": "cd55b0a65465106c095e0d5e287b7ecaf7042a39eb9b5370d6e2c15b325046a9",
+    "target/prolog-guarded-export-388/Prolog_Finite_Guarded_Export.thy": "aee1091a9c745e24be86b636027441417ae38c93365ff5edb9e4beaff10918c9",
+    "scripts/unified-exports.json": "344a3cc2a68f10771611d012b661a8184e0255442d0bdd1aaf657fe7e44f4584"
+  },
+  "generated_archive_sha256": "d2c7d63e1c5095aa287c4fdca39dbbeda777040a7067eae41879091286ab68a6",
+  "benchmark_gains": 0,
+  "production_release": false
+}

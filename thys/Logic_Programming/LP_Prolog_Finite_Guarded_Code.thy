@@ -1,0 +1,5 @@
+theory LP_Prolog_Finite_Guarded_Code
+ imports LP_Prolog_Finite_Guarded_Composition
+begin
+export_code check_lpp_established_finite_guarded_xml in Haskell module_name Prolog_Guarded_Generated
+end

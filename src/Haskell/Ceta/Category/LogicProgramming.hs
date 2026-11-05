@@ -25,6 +25,9 @@ import qualified Prolog_Context_ITS_Generated as PCI
 #ifdef LP_PROLOG_RATIONAL_NO
 import qualified Prolog_Rational_NO_Generated as PR
 #endif
+#ifdef LP_PROLOG_GUARDED
+import qualified Prolog_Guarded_Generated as PG
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -104,6 +107,9 @@ runProlog [path] = do
 #ifdef LP_PROLOG_CONTEXT
 #ifdef LP_PROLOG_CONTEXT_ITS
       PCI.check_lpp_context_its_xml (cachedCharacters PCI.explode input) ||
+#endif
+#ifdef LP_PROLOG_GUARDED
+      PG.check_lpp_established_finite_guarded_xml (cachedCharacters PG.explode input) ||
 #endif
       PC.check_lpp_established_finite_constructor_triples_xml (cachedCharacters PC.explode input) ||
       PC.check_lpp_established_constructor_triples_xml (cachedCharacters PC.explode input) ||

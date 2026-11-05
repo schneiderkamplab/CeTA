@@ -869,3 +869,19 @@ The full dependency audit and XML soundness theorem pass in
 are pinned. This is not yet exported into the unified executable or assembled by
 Ferrum; it certifies no additional benchmark root. Native assembly, fresh
 positive certificates, mutations and replay remain required.
+
+## Guarded Prolog export and unified validation
+
+The verified guarded checker is now exported by Isabelle and registered in the
+unified LP adapter. Generated shared helper modules are byte-identical to the
+previous archive; no generated checking logic was edited. The isolated unified
+checker at `target/unified-guarded-389/ceta` has SHA-256
+`63439dfcaa4f474083c65b6c4127bc217732bb314837362f5fcf7b21b1888986`.
+[Export and build evidence](data/prolog-guarded-export-20261105.json).
+
+Ferrum validates three native fixtures including actual helper returns across a
+Split, with strict state-local replay and missing-child/conflicting-advice
+controls, four semantic negatives and 55 mutation checks. Fresh replay retains
+59 YES + 4 NO Prolog and 84 YES + 9 NO LP-with-cut using this same checker.
+This establishes integration and preservation, not a new benchmark gain or
+protected-category production promotion.
