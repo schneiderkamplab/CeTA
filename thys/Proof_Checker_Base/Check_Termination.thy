@@ -4,7 +4,7 @@ Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2013-2015)
 License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Termination
-  imports Check_Termination_Common RFC_Checker_Ext.RFC_Matchbounds_Ext
+  imports Check_Termination_Common RFC_Checker_Ext.RFC_Absolute_Residual_Core
     AAECC_Innermost_Switch QDP_To_SRS_Zantema Rule_Strengthening Sparse_Tiling_Processor
 begin
 
@@ -351,6 +351,7 @@ and ('f, 'l, 'v) trs_termination_proof =
 | Rule_Strengthening "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 | Sparse_Tiling "(('f,'l) lab,'v) sparse_tiling_info" "('f,'l,'v) trs_termination_proof"
 | Sparse_Rule_Removal "(('f,'l) lab,'v) sparse_removal_info" "('f,'l,'v) trs_termination_proof"
+| Rfc_Matchbox_Absolute_Bounds "(('f, 'l) lab, 'v) bounds_info" "(('f, 'l) lab, 'v) term list" "('f, 'l, 'v) trsLL" "('f, 'l, 'v) trs_termination_proof"
 and ('f, 'l, 'v) unknown_proof =
   Assume_Unknown unknown_info "('f,'l,'v,('f, 'l, 'v) trs_termination_proof,('f, 'l, 'v) dp_termination_proof,('f, 'l, 'v) fptrs_termination_proof,('f, 'l, 'v) unknown_proof) assm_proof list"
 and ('f, 'l, 'v) fptrs_termination_proof =
@@ -404,6 +405,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
 | "sn_assms a (Rfc_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Automaton_Closed_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
+| "sn_assms a (Rfc_Matchbox_Absolute_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (Rfc_Native_Matchbox_Relative_Bounds _ _ _ p) = sn_assms a p"
 | "sn_assms a (AAECC_Innermost _ _ _ _ p) = sn_assms a p"
 | "sn_assms a (Uncurry _ _ p) = sn_assms a p"
@@ -1055,6 +1057,10 @@ where
     })"
 | "check_trs_termination_proof i tp (Sparse_Rule_Removal info prf) = debug i (STR ''Sparse Rule Removal'') (do {
       tp' \<leftarrow> sparse_removal_tt J info tp;
+      check_trs_termination_proof (add_index i 1) tp' prf
+    })"
+| "check_trs_termination_proof i tp (Rfc_Matchbox_Absolute_Bounds info initial_terms Rr prf) = debug i (STR ''RFC Matchbox Absolute Bounds'') (do {
+      tp' \<leftarrow> rfc_matchbox_absolute_bounds_tt J info initial_terms Rr tp;
       check_trs_termination_proof (add_index i 1) tp' prf
     })"
   by pat_completeness auto
@@ -2295,6 +2301,18 @@ next
   from IH(3) have fin: "?Q prof" by simp
   show ?case
     apply (rule sound_tt_impl[OF sparse_removal_tt_sound tt])
+    apply (rule IH(1)[OF _ rec fin])
+    using tt by simp
+next
+  case (57 i tp info initial_terms Rr prof)
+  note IH = this
+  from IH(2) obtain tp' where
+    tt: "rfc_matchbox_absolute_bounds_tt J info initial_terms Rr tp = return tp'"
+    and rec: "isOK (check_trs_termination_proof (add_index i 1) tp' prof)"
+    by auto
+  from IH(3) have fin: "?Q prof" by simp
+  show ?case
+    apply (rule rfc_matchbox_absolute_bounds_tt_sound[OF J tt infinite_lab])
     apply (rule IH(1)[OF _ rec fin])
     using tt by simp
 qed
