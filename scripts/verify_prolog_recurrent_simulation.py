@@ -19,7 +19,7 @@ os.environ.setdefault('ML_HOME', str(poly.parent))
 os.environ.setdefault('ML_PLATFORM', 'x86_64-linux')
 load = ('fun chain p = (case PolyML.SaveState.showParent p of NONE => [] | SOME q => chain q) @ [p]; '
         'PolyML.SaveState.loadHierarchy (chain ' + json.dumps(str(args.heap.resolve())) + ');')
-theories = [root / 'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Iteration']
+theories = [root / 'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_LTS']
 command = ('((' + '; '.join('Thy_Info.use_thy_legacy ' + json.dumps(str(theory))
                            for theory in theories) +
            '; writeln "SOURCE_RECURRENT_SIMULATION_VERIFIED"; OS.Process.exit OS.Process.success) '

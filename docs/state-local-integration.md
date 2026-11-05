@@ -903,3 +903,24 @@ pending. Ferrum's native diagnostic child passes two unified checks and strict
 controls, but adds no source verdict. The frontier remains 61 YES + 4 NO.
 [Source snapshots, all verification attempts and child evidence](../../ferrum-prolog-release/docs/data/prolog-integer-recurrence-development-20261105.json)
 are pinned with their archive. The unified checker remains `63439dfcaa4f474083c65b6c4127bc217732bb314837362f5fcf7b21b1888986`.
+
+## Exact recurrence relation and LTS inverse, 2026-11-05
+
+The ordered source recurrence now has a symbolic integer relation with verified
+substitution, exact guards and exact recursive output values. The inverse
+requires complete output length and literal/known-variable endpoints, and
+transfers a child NO into actual source execution with saved alternatives.
+The shared ITS LTS bridge supports arbitrary well-typed valuations; unobserved
+Boolean coordinates are not required to be false.
+
+Verification and dependency audits pass in
+`target/prolog-recurrent-relation-435.log`, with no admissions or oracle
+dependencies. [Pinned source snapshots and all attempts](../../ferrum-prolog-release/docs/data/prolog-integer-recurrence-relation-20261105.json)
+include the stopped expanding-simplifier attempt 434 and native four-root
+cohort. The full 221-root applicability scan finds four candidates; only `et1`
+has an accepted integer NO child. The other three are integer-domain controls,
+not source YESs; binary64 stagnation candidates remain separate obligations.
+
+The source-to-child coordinate map, original source/profile/query binding,
+executable parent constructor, XML and export remain pending. No generated
+checker or unified executable changes, and no new source result, are claimed.
