@@ -95,7 +95,8 @@
       "-DLP_PROLOG_CONTEXT",
       "-DLP_PROLOG_CONTEXT_ITS",
       "-DLP_PROLOG_RATIONAL_NO",
-      "-DLP_PROLOG_GUARDED"
+      "-DLP_PROLOG_GUARDED",
+      "-DLP_PROLOG_RECURRENCE"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -113,6 +114,7 @@
       "Prolog_Context_ITS_Generated.hs": "d51edaaa265b4c8925a766b6e0aa6cf82d30accccc2431f42290e173d7a6827c",
       "Prolog_Guarded_Generated.hs": "f9b3307278cb326cb8c4d17a068deac94e77b91578d94730424b6bedfbffa33b",
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
+      "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -120,8 +122,8 @@
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-guarded.tar.gz",
-    "archive_sha256": "d2c7d63e1c5095aa287c4fdca39dbbeda777040a7067eae41879091286ab68a6",
+    "archive": "tests/unified/exports/lp-source-integer-recurrence-v2.tar.gz",
+    "archive_sha256": "49508e749a7af9a015e53c1557849ddc993736c5219600a6c606d2b53e95fa79",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -636,6 +638,30 @@
         "thys/Logic_Programming/LP_Rational_Graph_Equations.thy": "9dec134346dbc8f0b160c9727155019409b341fdc54e31a7ce619f2625a6f24f",
         "thys/Logic_Programming/LP_Rational_Graph_Match.thy": "2b9f455184fded42a7003747a12f3bc6834367900d387724df5dc5c95c50e5d2"
       }
+    },
+    "prolog_integer_recurrence": {
+      "verification_log": "target/prolog-recurrent-export-451.log",
+      "export_origin": "target/prolog-recurrent-export-451",
+      "source_theory_hashes": {
+        "thys/ITS_Ext/Integration/IA4_Recurrent.thy": "4bf10a042a88c89fccc4895d01f031921f59828f4b12a953d665501bd5af8953",
+        "thys/ITS_Ext/Integration/IA4_Recurrent_Cycle.thy": "58b2640ebce953e78b4553482d45f8c4a4b3332fcd1815d357103e628dabee5d",
+        "thys/ITS_Ext/Integration/ITS4_Code.thy": "fe23a6dfa8c3ff6ecb8a374bc90e8abd1c5a78dfc490e93b1414198009c92b03",
+        "thys/ITS_Ext/Integration/ITS4_Parser.thy": "b615773725f8621d1ef66b6fd9dac0f9e3cd11f5524807ece2cd0d515451176e",
+        "thys/Logic_Programming/LP_Cut_Ground_Recurrence.thy": "6e2edf62773c9432df7d8795f065c2bcf4f39828e31eb38b462744a9bd9bad6c",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Body.thy": "3c4c41874df356757e80bd854166d91d9fdc0df17cd00a1efa22a9ec2078a17c",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Check.thy": "50aeeec31525fb3b4d0fdfaaeb64df2b8bb1692c3bc93ef07ac4f8171a063e78",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code.thy": "e03c57593f63f0c2a70b02284294b24a240211c21876f8d36aa2621311978856",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Coordinates.thy": "cdfcc0f00c3a1720d7c107b153520bab2a09b4c4e32ef183f44832a6a8fe6659",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Inverse.thy": "46be2f9f96ddcc27ffc6b40ceaca69e8799b2434353fd2d8687a582e26b556e1",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Iteration.thy": "9743d0572eebd69afb6442f9da486f1232c2233608e514a5d5b713e9a201eb9c",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_LTS.thy": "a34d1d47d0721e36a716c268a8ccceec54045154a95389392fc924a0677cf4c8",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Relation.thy": "8c0ceb9cae5b43f99d336a8cf1e3712379521560a4fd555237994644374aabaa",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Steps.thy": "5569e9dca5f21926b82c5c7f61e7ce5f871df54f28c443ac0bc5ef6b0c9ed7db",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Valuation.thy": "164e474d6a6443a9adb24ce5fe7bb648bc6792abfd2286eaec984267c9d7c0ff",
+        "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_XML.thy": "c88b2df624fe107afd7dc66bb5bf34b989769fbd7307f3a2e95969c7a0d29c86",
+        "thys/Logic_Programming/LP_Source_Recurrent_Simulation.thy": "30610c4d31ad6113ff8cbfff4c222093468781bb291bad0e049ae2c3a4407066"
+      },
+      "shared_helpers_unchanged": true
     }
   },
   "higher-order": {

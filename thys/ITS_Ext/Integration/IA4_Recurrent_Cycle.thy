@@ -80,7 +80,7 @@ definition ia4_check_recurrent_cycle where
       (showsl_lit (STR ''invalid or empty recurrent cycle''));
     let obligation = Disjunction [form_not region, ia4_policy_path_wp P steps region];
     check (IA4.formula obligation) (showsl_lit (STR ''ill-typed recurrent cycle obligation''));
-    IA4Check.check_valid_formula default obligation
+    IA4Check.check_valid_formula default_class.default obligation
   }"
 
 lemma ia4_check_recurrent_cycle_sound:
@@ -94,7 +94,7 @@ proof -
   from ok obtain head where stem: "ia4_check_ground_seq P init stem = return head"
     by (auto simp: ia4_check_recurrent_cycle_def Let_def split: sum.splits)
   let ?ob = "Disjunction [form_not region,ia4_policy_path_wp P steps region]"
-  from ok stem have checked: "isOK (IA4Check.check_valid_formula default ?ob)"
+  from ok stem have checked: "isOK (IA4Check.check_valid_formula default_class.default ?ob)"
     and form: "IA4.formula ?ob"
     and region: "IA4.satisfies (ia4_ground_val (fst head)) region"
     and valid: "ia4_policy_path_valid P (snd head) steps"

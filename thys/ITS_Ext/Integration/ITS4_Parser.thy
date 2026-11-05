@@ -123,5 +123,4 @@ definition check_its4_string :: "string \<Rightarrow> string + unit" where
         Inl message \<Rightarrow> Inl (String.explode (message (STR '''')))
       | Inr () \<Rightarrow> Inr ()))"
 
-export_code check_its4_string Inl Inr char_of_integer integer_of_char in Haskell module_name ITS_Checker
 end

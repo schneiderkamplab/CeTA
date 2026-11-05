@@ -65,7 +65,7 @@ definition ia4_check_recurrent_policy where
       (showsl_lit (STR ''ill-typed recurrent region or successor policy''));
     let obligation = ia4_recurrent_obligation P l region (transition_formula (snd tau)) post local;
     check (IA4.formula obligation) (showsl_lit (STR ''ill-typed recurrent obligation''));
-    IA4Check.check_valid_formula default obligation
+    IA4Check.check_valid_formula default_class.default obligation
   }"
 
 lemma ia4_check_recurrent_policy:
@@ -80,7 +80,7 @@ proof -
     by (cases tau; cases "snd tau", auto)
   from ok have mem: "(lab,Transition l l transition_guard) \<in> set (transitions_impl P)"
     and typed: "ia4_policy_typed post" "ia4_policy_typed local"
-    and valid: "isOK (IA4Check.check_valid_formula default (ia4_recurrent_obligation P l region transition_guard post local))"
+    and valid: "isOK (IA4Check.check_valid_formula default_class.default (ia4_recurrent_obligation P l region transition_guard post local))"
     and form: "IA4.formula (ia4_recurrent_obligation P l region transition_guard post local)"
     by (auto simp: ia4_check_recurrent_policy_def tau Let_def)
   from state have ass: "IA4.assignment a" by auto
