@@ -1,5 +1,14 @@
 # Update log
 
+## 2026-11-05
+
+- [Reconciled learned-only evidence](learned-only-validation-20261105.md): 6,570 certified inputs, all 6,565 required learned successes retained, two checks per acceptance by the same unified O2 binary. No checking logic or generated export changed during reconciliation. Main and the deferred independent two-checker release remain unchanged.
+
+- Added an explicit absolute-RFC constructor to common recursive checking and
+  its Isabelle soundness proof. The common checker/parser and legacy wrapper
+  sessions pass; the integrated export and executable gates are pending.
+  See [recursive residual checking](rfc-recursive-residuals.md).
+
 ## 2026-10-29
 
 - Regenerated unified checker `0a3cca3` passes the complete 6,526-root / 15-category strict Ferrum frontier with repeated checks and original-input audits. [Release evidence](state-local-release-20261029.md).

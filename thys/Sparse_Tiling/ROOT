@@ -1,0 +1,10 @@
+session Sparse_Tiling_Construction = "Abstract-Rewriting" +
+  options [document = false, threads = 2]
+  theories
+    Sparse_Tiling_Simulation
+    Sparse_Tiling_Paths
+    Sparse_Tiling_Language
+    Sparse_Tiling_Check
+    Sparse_Tiling_Coverage
+    Sparse_Tiling_Windows
+    Sparse_Tiling_Termination

@@ -1,0 +1,180 @@
+{
+  "source_commit": "3172b10db3dccd0e102a673320fbdab6b3faa777",
+  "branch": "codex/policy-sparse-tiling",
+  "tree": "/work/dfm/festschrift/CeTA-policy-eval",
+  "checker_sha256": "9dfd140cac92e7f47646b7d620848533c64beff7cbb2d7881cfe2df1298a1fdb",
+  "export": {
+    "source_commit": "3172b10db3dccd0e102a673320fbdab6b3faa777",
+    "archive_sha256": "a4016c31f61d53fd77d784ea4c496ecb5e213785cf2ec1bb30461cd23babc04f",
+    "verification_log_sha256": "84d4e36d9c40023ef83e513c69a473894efda1eea6954424b7b4e884651f1d2d",
+    "unmodified_generated_sources": {
+      "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+      "Ceta_Relative.hs": "e9ffdb8cd004030a581881a11e1845d0eae1a0c6485a2013f55eab8c74248d1b",
+      "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+      "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+    }
+  },
+  "nesting": {
+    "checker_sha256": "9dfd140cac92e7f47646b7d620848533c64beff7cbb2d7881cfe2df1298a1fdb",
+    "checks": [
+      {
+        "name": "positive",
+        "expected_acceptance": true,
+        "accepted": true,
+        "code": 0,
+        "stdout": "CERTIFIED\n",
+        "stderr": "",
+        "seconds": 0.01133756700437516,
+        "artifact_sha256": "ec1369c2c5b1df57f4b4d0d5f2b7c8e43c9289ae7393989165d66640de5a2c04"
+      },
+      {
+        "name": "positive-repeat",
+        "expected_acceptance": true,
+        "accepted": true,
+        "code": 0,
+        "stdout": "CERTIFIED\n",
+        "stderr": "",
+        "seconds": 0.011125438963063061,
+        "artifact_sha256": "ec1369c2c5b1df57f4b4d0d5f2b7c8e43c9289ae7393989165d66640de5a2c04"
+      },
+      {
+        "name": "missing-initial-language",
+        "expected_acceptance": false,
+        "accepted": false,
+        "code": 1,
+        "stdout": "REJECTED\n",
+        "stderr": "1: error below the string reversal technique\nRFC Matchbox-relative initial language does not cover all right-hand sides\n",
+        "seconds": 0.01095926994457841,
+        "artifact_sha256": "60cf7ab14984d14b9ba0bfc7e61256adf41f258477c06665bf236b125e4d16cf"
+      },
+      {
+        "name": "missing-removal",
+        "expected_acceptance": false,
+        "accepted": false,
+        "code": 1,
+        "stdout": "REJECTED\n",
+        "stderr": "1: error below the string reversal technique\n1.1.1: error below the string reversal technique\nRFC Matchbox-relative initial language does not cover all right-hand sides\n",
+        "seconds": 0.010886981035582721,
+        "artifact_sha256": "d046d44adc7a05210ef3fdcb49b6b8dd8dd60f58740a9a8997e09017ed68ea40"
+      },
+      {
+        "name": "invalid-bound",
+        "expected_acceptance": false,
+        "accepted": false,
+        "code": 1,
+        "stdout": "REJECTED\n",
+        "stderr": "1: error below the string reversal technique\nproblem during checking RFC-relative local bounds conditions of automaton\nrenaming information: the states in the certificate have been numbered as follows:\n\n0: s15_rfc_common_tail\n1: s9_rfc_0_0_0\n2: s9_rfc_0_1_0\n3: s9_rfc_0_2_0\n4: s9_rfc_0_0_1\n5: s9_rfc_0_1_1\n6: s9_rfc_1_1_0\n7: s9_rfc_1_1_1\n8: s9_rfc_1_2_0\n9: s9_rfc_1_2_1\n10: s9_rfc_0_2_1\n\n\nerror:\n(d, 1) is symbol in TA with height larger than c = 0\n",
+        "seconds": 0.010846129967831075,
+        "artifact_sha256": "a6d1dfef79b895e1908394049c6d933c62fb37983ef2ab2fc4308e69b729aa46"
+      },
+      {
+        "name": "changed-input-self-loop",
+        "expected_acceptance": false,
+        "accepted": false,
+        "code": 1,
+        "stdout": "REJECTED\n",
+        "stderr": "1: error below the string reversal technique\ncould not find removed rule a(x) -> b(x) among current strict rules\n",
+        "seconds": 0.010853830026462674,
+        "artifact_sha256": "86d77fa8773a51917adddd37db508f01b2b9751caf08eeccb6c13106ca9dc568"
+      }
+    ],
+    "passed": true
+  },
+  "regressions": {
+    "checker_sha256": "9dfd140cac92e7f47646b7d620848533c64beff7cbb2d7881cfe2df1298a1fdb",
+    "checks": [
+      {
+        "name": "tiling",
+        "command": [
+          "python3",
+          "scripts/check_sparse_tiling_native.py",
+          "--family",
+          "tiling",
+          "--empty-certificate",
+          "/work/dfm/festschrift/ferrum-policy-eval/target/policy-v25/native-sparse-tiling.xml",
+          "--residual-certificate",
+          "/work/dfm/festschrift/ferrum-policy-eval/target/policy-v25/native-sparse-tiling.residual.xml",
+          "--checker",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-bin/ceta",
+          "--out",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-checked-tiling-1"
+        ],
+        "returncode": 0,
+        "seconds": 0.4716160389361903
+      },
+      {
+        "name": "removal",
+        "command": [
+          "python3",
+          "scripts/check_sparse_tiling_native.py",
+          "--family",
+          "removal",
+          "--empty-certificate",
+          "/work/dfm/festschrift/ferrum-policy-eval/target/policy-v30/native-removal/empty.xml",
+          "--residual-certificate",
+          "/work/dfm/festschrift/ferrum-policy-eval/target/policy-v30/native-removal/residual.xml",
+          "--checker",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-bin/ceta",
+          "--out",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-checked-removal-1"
+        ],
+        "returncode": 0,
+        "seconds": 0.47573750908486545
+      },
+      {
+        "name": "dispatch",
+        "command": [
+          "python3",
+          "tests/unified/check_dispatch.py",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-bin/ceta"
+        ],
+        "returncode": 0,
+        "seconds": 0.20084860199131072
+      },
+      {
+        "name": "csr-composition",
+        "command": [
+          "python3",
+          "tests/unified/check_csr_gm_composition.py",
+          "--checker",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-bin/ceta",
+          "--output",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-existing-paths-1/csr"
+        ],
+        "returncode": 0,
+        "seconds": 2.6707118320045993
+      },
+      {
+        "name": "gm04-map",
+        "command": [
+          "python3",
+          "tests/unified/check_gm04_source_map.py",
+          "--checker",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-bin/ceta",
+          "--output",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-existing-paths-1/gm04"
+        ],
+        "returncode": 0,
+        "seconds": 1.7273211450083181
+      },
+      {
+        "name": "semantic-negatives",
+        "command": [
+          "python3",
+          "tests/unified/check_negatives.py",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-bin/ceta",
+          "--output",
+          "/work/dfm/festschrift/CeTA-policy-eval/target/rfc-recursive-existing-paths-1/negatives.json.gz"
+        ],
+        "returncode": 0,
+        "seconds": 0.9729780571069568
+      }
+    ]
+  },
+  "full_frontier_release": false
+}

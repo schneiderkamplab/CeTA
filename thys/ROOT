@@ -295,6 +295,8 @@ session Proof_Checker_Base in Proof_Checker_Base = IsaFoR_2 +
     CTRS
     LTS
     RFC_Checker_Ext
+    Sparse_Tiling_Source
+    Sparse_Tiling_Removal_Source
   directories
     "../CSR_Checker/AAECC"
   theories
@@ -443,6 +445,7 @@ session RFC_Checker_Ext in RFC_Checker_Ext = IsaFoR_2 +
   options [document = false]
   theories
     RFC_Matchbounds_Ext
+    RFC_Absolute_Residual_Core
 
 (* session for paper *)
 session RFC_Core_Matrix in "Session_Dirs/RFC_Core_Matrix" = "HOL-AFP" +

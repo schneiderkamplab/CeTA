@@ -1,0 +1,24 @@
+{
+  "origin": "/work/dfm/festschrift/ferrum-policy-eval/target/policy-v37/nesting-control",
+  "ferrum_source_base": "9d67484",
+  "ferrum_source_patch": "/work/dfm/festschrift/ferrum-policy-eval/target/policy-v37/build/source.patch",
+  "ferrum_binary_sha256": "96e226dfe84590a275886d636c0b432d0a7c8ccf7525880600ee91abc0036a3b",
+  "native_synthesis": true,
+  "artifacts": {
+    "input.ari": "ae52743efbbabb6299d8e01742ee7eb692ba130810a30da988d52495d9201553",
+    "positive.cpf.xml": "ec1369c2c5b1df57f4b4d0d5f2b7c8e43c9289ae7393989165d66640de5a2c04"
+  },
+  "original_source_audit": {
+    "rule_multiset_equal": true,
+    "strategy_equal": true,
+    "strategy": "full",
+    "answer": "yes",
+    "rules": 3,
+    "rule_symbols": 4,
+    "weak_rules": 0,
+    "relative_partition_equal": true,
+    "nonvariable_lhs_and_no_extra_variables": true,
+    "symbol_spelling_aliases": {},
+    "unused_benchmark_declarations": []
+  }
+}
