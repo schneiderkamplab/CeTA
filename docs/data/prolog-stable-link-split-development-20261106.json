@@ -1,0 +1,38 @@
+{
+  "status": "verified source-integration development; no export or new root",
+  "parent_commit": "6c0aacf",
+  "verified_attempts": [
+    602
+  ],
+  "archive": "docs/data/prolog-stable-link-split-development-20261106.tar.gz",
+  "archive_sha256": "56a915f5f38155544bdec67f49963533becfe8943a328d051d46044359b8c118",
+  "files": {
+    "target/prolog-stable-link-599.log": "207dd841217c6bb508937709834eba56561dacd0dc8791461532bb1f5074dc99",
+    "target/prolog-stable-link-600.log": "8d9a3b7495fbe35c4786a26870e3b932a0e6c42e294e11a09e04c938ab9f3914",
+    "target/prolog-stable-link-601.log": "cb463b7a5b366342bdc9cb893da682798b312da402adb4570add198cb836c7f0",
+    "target/prolog-stable-link-driver-599.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-link-driver-600.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-link-driver-601.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-split-602.log": "bc18bb18a7dd4f52f3d7e8117ab73d94af39207391255ac6e120763e2de9f2ee",
+    "target/prolog-stable-split-driver-602.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-transport-597.log": "5529bc4e711fbe8ce30f0715d567d7c1d90d196235349e784ce8ceae4446109d",
+    "target/prolog-stable-transport-598.log": "c7e39c543208be849633ec45016c976eee183e18458ab4d7f985e0ac5a33b437",
+    "target/prolog-stable-transport-driver-597.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-transport-driver-598.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "thys/Logic_Programming/LP_Prolog_Stable_Transport.thy": "00cf14b2ea85c37d46f7f340518f7e783241a76f143e6df202299ac54a810c23",
+    "thys/Logic_Programming/LP_Prolog_Stable_Link.thy": "1ef3178be87d0da14b20584afde572d02db1cfd0808c928ad88b5188211b3874",
+    "thys/Logic_Programming/LP_Prolog_Stable_Split_Contract.thy": "98e633e18227684df8871663660a294f7f83114208e3bdce2106fe655865fab6"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "arithmetic-node checks under stable builtin interpretation",
+    "complete referenced-module graph assembly",
+    "original-profile correspondence",
+    "native bound coordinates and common residual solving",
+    "semantic mutations and strict complete replay"
+  ]
+}

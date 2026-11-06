@@ -1236,3 +1236,30 @@ module source proof must use the stable builtin interpretation, with the origina
 source profile covered and all failure/error paths retained. Native bound
 coordinates then enter the common ITS residual under these checked receipts.
 Existing guidance atoms, checker executable and benchmark counts are unchanged.
+
+## Stable observations on existing return links and Splits
+
+Gate 602 verifies that the existing evaluation-context transport receipts suffice
+for stable arithmetic comparisons. The apparent additional comparison check is
+proved equivalent to the existing transport checker: it already requires the
+substituted comparison to occur in the source observations. Thus this extension
+does not discard context or narrow accepted transport receipts.
+
+The stable return-link theorem retains the existing link checker, normalized
+equations, free knowledge, scope swaps, target context and descent interface.
+The Split theorem instantiates shared actual-answer composition, preserving scope
+separation and initialization on every incoming saved frame. Prefix termination
+does not supply return facts. No second operational semantics or SEG was added.
+
+[Development evidence](data/prolog-stable-link-split-development-20261106.json)
+pins all attempts 597–602 and the verified theories. Earlier attempts record a
+substitution normalization failure, explicit transport-premise assembly, the
+required shared variable type for summaries and contexts, and conjunction
+elimination in a groundness proof. Gate 602 has no skipped proofs or oracle
+dependencies. Native code, exported checker and the 61 YES + 8 NO frontier are
+unchanged.
+
+Next is arithmetic-node checking under the stable builtin interpretation within
+the existing referenced-module graph. Complete source/profile coverage and native
+bound-coordinate projection remain necessary before residual discharge and fresh
+mutation/full replay gates can count any benchmark gain.
