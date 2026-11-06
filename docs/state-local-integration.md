@@ -1468,3 +1468,35 @@ operand equalities and has no skipped proofs or oracle dependencies. Complete
 row assembly, finite valuation extension, transition simulation, original-
 profile/native integration and strict replay remain outstanding. No checker
 binary, guidance or certified count changed: 61 YES + 8 NO.
+
+## Complete stable numeric rows and graph-root composition
+
+Gates 670–673 verify complete path formulas, finite valuation bindings,
+source-ground endpoint tuples, call-row typing, one-step ITS simulation,
+termination of the entire stable observed-call relation, and composition back
+to the established graph root. Every row binds input and output terms, coordinate
+modes, source observations, transition locations and the actual child formula.
+The valuation extension preserves all input coordinates and prevents auxiliary
+bindings from overwriting recursive-call outputs. Ground endpoint evidence
+comes from checked integer facts or source observations, not from an unsupported
+integer interpretation of arbitrary ground values.
+
+The existing ITS checker supplies the child termination theorem. All source
+regions, Split dependencies and actual helper-return contracts remain checked
+by the established graph assembly. Argument projection preserves call edges.
+The new graph checker does not take an arithmetic-operation table from the
+certificate: soundness is quantified over fixed compatible interpretations.
+Binding this result to the original source profile is still an explicit next
+obligation; the theorem alone does not establish native-profile coverage.
+
+[Pinned numeric graph evidence](data/prolog-stable-numeric-graph-development-20261106.json)
+retains attempts 661–673 and final theories. Failed attempts record proof
+instantiation, finite key coverage, formula typing and notation errors. All
+successful audits reject skipped proofs; local simulation rejects all oracle
+dependencies, and the component/graph audits admit only dependencies already
+inherited from the existing TRS termination checker.
+
+Original-profile binding, XML/code export, native row generation, semantic
+mutations, real residual discharge and complete strict replay remain unfinished.
+No checker executable or guidance changed; the certified frontier remains
+61 YES + 8 NO. Matched superiority and protected-category promotion remain open.

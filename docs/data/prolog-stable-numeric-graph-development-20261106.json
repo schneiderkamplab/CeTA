@@ -1,0 +1,72 @@
+{
+  "status": "verified complete stable numeric row simulation and graph-root composition; no exported certificate or benchmark gain",
+  "parent_commit": "b9632699cfeb831db1ab603bc54f89e655959cd6",
+  "verified_attempts": [
+    670,
+    671,
+    672,
+    673
+  ],
+  "failed_attempts": {
+    "661": "ambiguous endpoint theorem instantiation",
+    "662": "unfinished finite key inclusion proof",
+    "663": "undischarged identity premises after explicit key proof",
+    "664": "missing condition formula typing fact",
+    "665": "key global constant collision",
+    "666": "positional theorem instantiation selected wrong variable",
+    "667": "incorrect parameter name introduced while making instantiation explicit",
+    "668": "unfinished output freshness elimination",
+    "669": "unspaced equality parsed as asymptotic notation"
+  },
+  "archive": "docs/data/prolog-stable-numeric-graph-development-20261106.tar.gz",
+  "archive_sha256": "d37af89a08643563ec84e21e0a97d3ad08372ccb9258fb952ad705c02921cb54",
+  "files": {
+    "target/prolog-stable-path-661.log": "39ecd98336ab92c426415c7ee625a580a4fc2dd24177a9ad6ddea0af7c2ab76c",
+    "target/prolog-stable-path-driver-661.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-path-662.log": "44dfbbf5cd7dcdb2b74d7ee12ae9b54e213eabe25b3bac78202496082c8eee0d",
+    "target/prolog-stable-path-driver-662.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-path-663.log": "f350b8769c99049b4fde1282cee6f87c89318ccbdf71967c52013844624444fc",
+    "target/prolog-stable-path-driver-663.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-path-664.log": "1cfb060c6c261a2deda9aca4ef1e369ada7ca806f41664328aeda10baf0a2814",
+    "target/prolog-stable-path-driver-664.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-valuation-665.log": "a4a95e7ada9a6ff9e9b6bc8cc0bc095b18fff93e4ba928faa472a6a65152bd68",
+    "target/prolog-stable-valuation-driver-665.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-valuation-666.log": "80a3f4a10578a1338aaa63fb613e888d08cabc5d028f8e5124c6e4f624bde0ca",
+    "target/prolog-stable-valuation-driver-666.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-valuation-667.log": "6ca89b79bdd94ec9da95259307ecd33ebbfb36ab3cd4f6ecab7e34164c90bcbd",
+    "target/prolog-stable-valuation-driver-667.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-valuation-668.log": "7bfd6d79e7c16df093356032f9bbdc9bb67c8d7ae2ad752786370f3b6bac562f",
+    "target/prolog-stable-valuation-driver-668.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-valuation-669.log": "236bf4fde8c03adcf485a21a0c1935a8fb630f60f6b3fb97826e981c3a5107f0",
+    "target/prolog-stable-valuation-driver-669.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-valuation-670.log": "bc905a152a45d0059e3bc4a2f7fc80d9e8e4969fda54e0e45de95f60e66f3a5c",
+    "target/prolog-stable-valuation-driver-670.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-call-step-671.log": "c3988f61d84f3ff706dd7c32b902e6c5db181d3c23b15204539bf0845ec13e5f",
+    "target/prolog-stable-call-step-driver-671.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-calls-672.log": "59e36566d722c9c8be852620567b9b47b600d1528b3bbbe8a92c99124ccd6996",
+    "target/prolog-stable-calls-driver-672.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-numeric-graph-673.log": "e7ddd49f078ec4c0b306ec5a3c84d3b87871f7e29b2fa93f3d9c4b73677428b4",
+    "target/prolog-stable-numeric-graph-driver-673.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Path.thy": "4848d49a86f5f1fe22c94eccb1b462227c1581111cb1ed8cb85bc03c155a7cde",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Valuation.thy": "0f706030cef1da25378a4e9eac85f1e71db9e3230dc0395eef2eb349ee42c57d",
+    "thys/Logic_Programming/LP_Prolog_Stable_Endpoint_Tuples.thy": "6d37dc9db4acb46a27dd93a3ab54065f4011ed1b4cf69345fc36ecbb63a1919b",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Rows.thy": "f069e7c8ca7d77516f6980c9d68f12801710fa0087a895520da8ba6e11995377",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Call_Step.thy": "14573ddfdf6a4da8e4deaf6158c97a51c7453c0302468036bd47be1fab4e17dd",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Calls.thy": "1dd55ad0b3852f144306be92fa9bc0f2ab181d72f6b3aa33bb11381d91628ca1",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Component.thy": "c5dccbc3b17dd7b7f178d2cd181d0f79e8bc29d7a3704a5706f783a9bcae1782",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Graph.thy": "ea30d29b99d8bfcd0b3f0e252b70cf71d44163598927eed8f115996689ef3d47"
+  },
+  "dependency_audit": "No skipped proofs; local simulation lemmas reject all oracle dependencies; ITS component and graph checks allow only dependencies already inherited from check_trs_termination_proof.",
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "original-profile correspondence for the fixed compatible arithmetic interpretation",
+    "XML/code export and native bound-coordinate row generation from established SEG",
+    "semantic mutation controls and real residual proofs",
+    "complete strict source replay and protected-category same-checker gate",
+    "fresh matched AProVE comparison"
+  ]
+}
