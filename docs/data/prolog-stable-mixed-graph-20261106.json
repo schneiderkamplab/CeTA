@@ -1,0 +1,30 @@
+{
+  "scope": "Checked structural/PiDP or numeric/ITS children, exact finite rank-row routing, and source-root composition; no unified export or benchmark gain",
+  "verified_attempts": [
+    760,
+    761,
+    762
+  ],
+  "failed_attempts": {
+    "759": "Structural fallback symbol needed explicit concrete label type"
+  },
+  "verified_heap": "target/prolog-stable-mixed-graph-762.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Backends.thy": "479e7eb079711c523700a56a0ab5231c57be59ea3e2b60267b338cec284c62f5",
+    "thys/Logic_Programming/LP_Prolog_Stable_Backend_Routing.thy": "6887e1487f04552e62f2121ffc49f607ff42c832227de7f95f29245dfa72a7f1",
+    "thys/Logic_Programming/LP_Prolog_Stable_Mixed_Graph.thy": "985a801b30473f2422351df38aaf8b3cfe7b1460982e65f77fe66fb529deb44f",
+    "target/prolog-stable-backends-759.log": "455077a6853ba4d9a6baf4f562a169eda76ecbe24bcd2bca42ce4660076e781f",
+    "target/prolog-stable-backends-759-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-backends-760.log": "9c0998d2c26ec6483dca2495b7a421e4524a973d2a68603e25bbb66958957de9",
+    "target/prolog-stable-backends-760-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-backend-routing-761.log": "9d9018479b30f333427dab9954965376c81e82446a83b965580ae4642e5f5c40",
+    "target/prolog-stable-backend-routing-761-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-mixed-graph-762.log": "d5f3431b7ff38fb346c616e2c27003b283d1d1f2d9d4d62e29d37610407ee1cf",
+    "target/prolog-stable-mixed-graph-762-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Native synthesis and scheduler child assembly",
+    "XML/profile binding and unified export",
+    "Semantic mutation controls and strict benchmark replay"
+  ]
+}

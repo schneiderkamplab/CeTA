@@ -1736,3 +1736,19 @@ including the interrupted automated proof and explicit type/index fixes.
 Native synthesis, mixed-backend assembly, unified export, semantic mutations
 and strict benchmark replay remain open. No certified gain or changed unified
 executable is claimed.
+
+## Checked structural/numeric source composition (2026-11-06)
+
+A backend selector checks structural components through the shared PiDP bridge
+and numeric components through the existing projected ITS checker. Finite
+routing filters each component's exact same-rank row list and requires one
+accepted child per rank; cross-rank descent remains checked. The source
+constructor combines this table with relational Split assembly and transfer
+contracts, and now has a verified source-root termination theorem.
+
+Attempts 760–762 pass verification and dependency audits; attempt 759's missing
+concrete label type is retained in the [evidence](data/prolog-stable-mixed-graph-20261106.json).
+This supports separate structural and numeric SCCs, not inseparable mixed
+recursion. Native synthesis, scheduler integration, XML/profile binding, export,
+controls and strict benchmark replay remain open. No benchmark gain or unified
+executable change is claimed.
