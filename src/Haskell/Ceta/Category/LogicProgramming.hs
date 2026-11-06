@@ -25,6 +25,9 @@ import qualified Prolog_Context_ITS_Generated as PCI
 #ifdef LP_PROLOG_RATIONAL_NO
 import qualified Prolog_Rational_NO_Generated as PR
 #endif
+#ifdef LP_PROLOG_STABLE_GUARDED
+import qualified Prolog_Stable_Guarded_Generated as PSG
+#endif
 #ifdef LP_PROLOG_GUARDED
 import qualified Prolog_Guarded_Generated as PG
 #endif
@@ -119,6 +122,9 @@ runProlog [path] = do
 #ifdef LP_PROLOG_CONTEXT
 #ifdef LP_PROLOG_CONTEXT_ITS
       PCI.check_lpp_context_its_xml (cachedCharacters PCI.explode input) ||
+#endif
+#ifdef LP_PROLOG_STABLE_GUARDED
+      PSG.check_lpp_established_stable_guarded_xml (cachedCharacters PSG.explode input) ||
 #endif
 #ifdef LP_PROLOG_GUARDED
       PG.check_lpp_established_finite_guarded_xml (cachedCharacters PG.explode input) ||

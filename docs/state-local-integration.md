@@ -1540,3 +1540,28 @@ failure 684, and the container-instance export failure 686. Generated checking
 logic was not edited. Unified dispatch, native stable-row synthesis, executable
 mutation controls, original-profile auditing, and new certified root replay
 remain open. No installed checker, guidance, or certified verdict changed.
+
+## Unified stable graph checker candidate (2026-11-06)
+
+`make ceta` builds the stable graph source constructor into the existing unified
+Prolog dispatcher in isolated output `target/unified-stable-guarded-689`.
+The executable SHA-256 is
+`7305f8885688d6e737cf0e5449009342962420672afd1ab7470122ec99733b99`.
+Every previous LP generated module and every non-LP library archive is unchanged.
+The generated checking logic is exactly the verified export from `6dff126`.
+
+The counter and Split source fixtures pass under the new constructor; 22
+mutations reject missing child proofs, rows, type facts, descents, projections,
+components, contexts, roots, child triples, wrong profiles and conflicting
+coordinate roles. All 69 retained Prolog and 93 LP-with-cut certificates pass
+two checks each using this same executable. The recheck validates frozen source
+and certificate hashes, with four workers, two solver threads and 30-second
+checker limits. This is certificate preservation, not a fresh native strict
+replay or protected-category production gate.
+
+[Pinned integration evidence](data/prolog-stable-unified-development-20261106.json)
+retains build 689, fixture controls 690/693/694/695, successful recheck 692 and
+the initial retention-harness schema error 691. Ferrum `1f1f8e2` separately adds
+native stable condition receipts with three passing focused tests. Complete
+native row generation, scheduler integration, stable-bound source audits and
+benchmark gains remain open. No production promotion or new frontier is claimed.
