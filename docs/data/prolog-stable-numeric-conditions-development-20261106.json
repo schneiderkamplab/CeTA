@@ -1,0 +1,31 @@
+{
+  "status": "verified shared integer and upper-bound condition translation; no complete row simulation or benchmark gain",
+  "parent_commit": "247ec64fef1a134177801ac6b955d0f63887adb0",
+  "verified_attempts": [
+    660
+  ],
+  "interrupted_attempts": {
+    "659": "Conditional higher-order expression congruence used as a simplifier rule caused expensive proof search at line 65; explicitly interrupted the identified PolyML process and replaced by direct operand equalities."
+  },
+  "archive": "docs/data/prolog-stable-numeric-conditions-development-20261106.tar.gz",
+  "archive_sha256": "fd0f892ede5c751f6755d575647302be24f7bfde09fde642ca781ab287c874e5",
+  "files": {
+    "target/prolog-stable-conditions-659.log": "32f5b3d124ecc6c96832d2591e44c5804452e383b1d22784cbfcb6027b737da7",
+    "target/prolog-stable-conditions-driver-659.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-conditions-660.log": "58be220eb8ba5aee09baec80369b2c605b0a5830fb09cfceb12dc535f64e2c9c",
+    "target/prolog-stable-conditions-driver-660.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Conditions.thy": "2bd37bfc5afd47773dc359bd8450af7bd7650cb109e085f466fd37967fd193b8"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "complete path formula and admissible finite valuation bindings",
+    "numeric-call transition simulation and ITS child integration",
+    "source-profile binding and native export",
+    "mutations and complete strict replay",
+    "matched superiority and protected-category release"
+  ]
+}

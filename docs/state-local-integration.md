@@ -1450,3 +1450,21 @@ checked transition rows, valuation-extension proofs and the numeric-call
 simulation. Original-profile binding, native export, residual discharge and
 mutation/strict replay are also pending. The checker binary and guidance are
 unchanged; the certified frontier remains 61 YES + 8 NO.
+
+## Combined stable numeric conditions
+
+Gate 660 verifies one checked condition interface for existing integer
+evaluation/comparison receipts and new stable upper-bound comparisons. Both
+produce formulas over the same distinct integer/bound keys. Integer operations
+reuse the established numeric observation theorem through a proved stable-to-
+finite observation refinement; groundness never supplies an integer premise.
+The formula proof requires assignments only for keys actually used in the
+condition.
+
+[Pinned condition evidence](data/prolog-stable-numeric-conditions-development-20261106.json)
+retains the successful audit and attempt 659, explicitly interrupted after
+identifying expensive higher-order simplifier search. Gate 660 uses direct
+operand equalities and has no skipped proofs or oracle dependencies. Complete
+row assembly, finite valuation extension, transition simulation, original-
+profile/native integration and strict replay remain outstanding. No checker
+binary, guidance or certified count changed: 61 YES + 8 NO.

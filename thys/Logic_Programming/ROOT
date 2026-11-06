@@ -211,6 +211,7 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
     LP_Prolog_Stable_Call_Projection
     LP_Prolog_Stable_Coordinate_Tuples
     LP_Prolog_Stable_Endpoints
+    LP_Prolog_Stable_Numeric_Conditions
     LP_Prolog_Context_Composed_Certificate
     LP_Prolog_Context_References_Certificate
     LP_Prolog_Triple_XML LP_Prolog_Finite_Constructor_Triple_XML
