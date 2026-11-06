@@ -1,0 +1,25 @@
+{
+  "scope": "Verified relational Split composition including returned groundness; no exported checker or benchmark gain",
+  "verified_attempts": [
+    728,
+    729,
+    730
+  ],
+  "base_heap": "target/prolog-stable-relational-return-727.heap",
+  "verified_heap": "target/prolog-stable-relational-split-730.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_Split.thy": "30943f30f600662b5919bf1764eddc330f3c6d9048f11359c76faea83519e7a6",
+    "target/prolog-stable-relational-split-728.log": "903353098c65ca6a1264ce29a1c6054c440da96682780318259a543d7c56d596",
+    "target/prolog-stable-relational-split-728-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-relational-split-729.log": "038effebb82ac726f36f1628a935b499ba2b17d34767901b36d18680f9ef82a9",
+    "target/prolog-stable-relational-split-729-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-relational-split-730.log": "2691bd538d0e6db7c871e82134a6dfbbb81a3ce5ff91fb7200736034b855e9e6",
+    "target/prolog-stable-relational-split-730-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Executable constructor and model coverage",
+    "Native assembly and mixed children",
+    "Unified export and mutation controls",
+    "Strict benchmark replay"
+  ]
+}

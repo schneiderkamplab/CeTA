@@ -1648,3 +1648,18 @@ Attempts 725 and 727 pass verification and dependency audits; failed attempt
 726 is retained in the [evidence](data/prolog-stable-relational-return-20261106.json).
 The Split interface, native assembly and exported checker still need to consume
 this theorem. There is no new benchmark gain or changed unified executable.
+
+## Relational Split composition (2026-11-06)
+
+The checked stable Split interface now has relational-return composition
+theorems for preserved groundness and newly returned groundness. The combined
+receipt establishes both facts in the same actual helper-return environment.
+Its helper success model must equal the parent model; local termination alone
+cannot establish the relation. Both helper and continuation descent obligations
+and the existing context/instance transport checks remain required.
+
+Attempts 728–730 pass verification and dependency audits.
+[Pinned evidence](data/prolog-stable-relational-split-20261106.json) records all
+three runs. Executable constructor integration, native global model coverage,
+mixed residual children, mutation controls and benchmark replay remain open.
+No unified executable changed and no benchmark gain is claimed.
