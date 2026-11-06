@@ -1142,3 +1142,27 @@ new Euler Fibonacci NO, and complete strict replay retains 61 YES + 8 NO with
 51 certificate checks pass. [Full source, mutation and replay evidence](../../ferrum-prolog-release/docs/data/prolog-helper-calls-integration-20261106.json)
 pins checker integration `55f0e17`. Protected-category production promotion and
 matched superiority remain separate open gates.
+
+## Fixed numeric bounds without integer-type assumptions
+
+The verified scalar-observation development separates a fixed numeric bound
+from the type of a loop counter. Exact rational cross multiplication matches
+Ferrum's mixed integer/binary64 comparison. Fraction floor/ceiling lemmas supply
+integer bounds and a descending integer-counter rank. Binary64 source names
+are injective within 64 bits, distinct from integer names, and substitution
+preserves their values. Scalar fractions are unique; their floor observations
+survive substitution without establishing an integer type for a float.
+
+Verification 571, 572, 575 and 576 passes without skipped proofs or oracle
+dependencies. The final control formally demonstrates that the existing finite
+evaluation envelope permits distinct scalar results for one float. Consequently
+it cannot justify a stable bound on its own. This is lost precision in the
+existing overapproximation, not a claim that its earlier proofs are unsound.
+A source bridge must retain successful evaluation, a stable result for the
+original bound expression, comparison correspondence and actual Split returns.
+Ground query arguments can be compound arithmetic expressions, not only scalar
+literals. No floating update is assumed to advance.
+
+The unified checker and certified frontier are unchanged. These theories are
+not exported into a source-proof constructor yet. [Pinned development evidence](../../ferrum-prolog-release/docs/data/prolog-scalar-bound-development-20261106.json)
+includes native threshold/stagnation tests and unsuccessful formal attempts.
