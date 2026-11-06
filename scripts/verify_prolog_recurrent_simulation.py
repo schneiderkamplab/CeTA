@@ -14,6 +14,8 @@ parser.add_argument('--heap', type=Path, required=True)
 parser.add_argument('--log', type=Path, required=True)
 parser.add_argument('--save-heap', type=Path)
 parser.add_argument('--export-directory', type=Path)
+parser.add_argument('--export-call-rows', action='store_true',
+                    help='Export the exact multi-location arithmetic call checker')
 parser.add_argument('--extra-theory', type=Path, action='append', default=[])
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
@@ -32,12 +34,18 @@ if args.export_directory:
     export = args.export_directory.resolve()
     export.mkdir(parents=True, exist_ok=False)
     driver = export / 'Prolog_Integer_Recurrence_Export.thy'
+    export_theory = (root / 'thys/Logic_Programming/LP_Prolog_Integer_Call_XML'
+                     if args.export_call_rows else theories[0])
+    export_constant = ('check_lpp_integer_calls_xml' if args.export_call_rows
+                       else 'check_lpp_integer_recurrence_xml')
+    export_module = ('Prolog_Integer_Calls_Generated' if args.export_call_rows
+                     else 'Prolog_Recurrence_Generated')
     driver.write_text(
-        'theory Prolog_Integer_Recurrence_Export\n imports ' + json.dumps(str(theories[0])) + ' ' +
+        'theory Prolog_Integer_Recurrence_Export\n imports ' + json.dumps(str(export_theory)) + ' ' +
         json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code')) +
         '\nbegin\nML \\<open>\n' +
         'val (modules, _) = Code_Target.produce_code @{context} true\n' +
-        '  [@{const_name check_lpp_integer_recurrence_xml}] "Haskell" "Prolog_Recurrence_Generated" NONE [];\n' +
+        '  [@{const_name ' + export_constant + '}] "Haskell" "' + export_module + '" NONE [];\n' +
         'val root = Path.explode ' + json.dumps(str(export)) + ';\n' +
         'val _ = List.app (fn (names, bytes) => Bytes.write (root + Path.make names) bytes) modules;\n' +
         '\\<close>\nend\n')
