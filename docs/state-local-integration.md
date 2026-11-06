@@ -1426,3 +1426,27 @@ Passing gates have no skipped proofs or oracle dependencies. The checked
 ITS-row translation, source-profile binding, native assembly/export, residual
 discharge and mutation/strict replay remain open. No checker binary or guidance
 changed, and the certified frontier remains 61 YES + 8 NO.
+
+## Checked upper-bound guards and source endpoints
+
+Gate 658 verifies source-bound translation of successful less-than and
+less-or-equal comparisons into an integer upper-bound condition and a typed
+ITS formula. Counter expressions require established integer inputs. Bound
+expressions retain their original source syntax and stable evaluation; they
+are not retyped as integers. Distinct key constructors separate integer values
+from bound observations even when both refer to the same source variable.
+
+The endpoint checker separately binds each coordinate to its source term.
+Integer endpoints retain the existing literal/variable restriction. Bound
+endpoints require checked finite ground inputs. Formula soundness requires
+assignments only for the finitely many keys used by that endpoint, allowing
+the eventual row valuation to be constructed from finite bindings.
+
+[Pinned bound-row evidence](data/prolog-stable-bound-row-development-20261106.json)
+retains attempts 652–658, including naming collisions and unfinished proof
+normalization steps. The successful dependency audit has no skipped proofs or
+oracle dependencies. These guards and endpoints still need assembly into full
+checked transition rows, valuation-extension proofs and the numeric-call
+simulation. Original-profile binding, native export, residual discharge and
+mutation/strict replay are also pending. The checker binary and guidance are
+unchanged; the certified frontier remains 61 YES + 8 NO.

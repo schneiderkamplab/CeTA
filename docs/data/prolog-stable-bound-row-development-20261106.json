@@ -1,0 +1,47 @@
+{
+  "status": "verified bound guard and endpoint formulas; no complete numeric-row simulation or benchmark gain",
+  "parent_commit": "c4d1de8d479755eae561a5f1e72a71a660ff4305",
+  "verified_attempts": [
+    658
+  ],
+  "failed_attempts": {
+    "652": "bound constant collision",
+    "653": "unfinished ITS evaluation normalization",
+    "654": "unfinished formula typing proof",
+    "655": "datatype/function theorem name collision",
+    "656": "ground expression equality not rewritten",
+    "657": "name constant collision in endpoint pattern"
+  },
+  "archive": "docs/data/prolog-stable-bound-row-development-20261106.tar.gz",
+  "archive_sha256": "42c58a6b838a8f6173b8a003931f9e29be2c49e53bb9be6b9144c9a6d2ba91fd",
+  "files": {
+    "target/prolog-stable-bound-row-652.log": "8806b18929ba177ea89e067725551bf0650159202dc687415acfe00a99d16ce7",
+    "target/prolog-stable-bound-row-driver-652.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-bound-row-653.log": "e7546c763b17fc4bb1ae7adcdd282468fa2bb2a1fe313ab45b07ef27f4888aee",
+    "target/prolog-stable-bound-row-driver-653.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-bound-row-654.log": "debbfb759e2f749a9084824b005fd969c3600dd39d21b32385de768f3f5ce946",
+    "target/prolog-stable-bound-row-driver-654.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-endpoints-655.log": "a3780b537772c6d64e04afcc675b3c7752f8b57e54bd023219eff930ac713d6a",
+    "target/prolog-stable-endpoints-driver-655.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-endpoints-656.log": "a49e592923a10442b5c35db655f1bccb27639c608de52f5d781755ac52cb4856",
+    "target/prolog-stable-endpoints-driver-656.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-endpoints-657.log": "bfd87a11bf85fb5165395992191dd00b4082e8c6652ed331a9d07c2281318583",
+    "target/prolog-stable-endpoints-driver-657.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-endpoints-658.log": "61909fa68b7db8c552a58ebf8a31f26443131183400e57a8323a56ec1d04cf5c",
+    "target/prolog-stable-endpoints-driver-658.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Bound_Row.thy": "9649a745be2e94b28e25b86b4ae8c50582173c98e59269203924153dfb3a1ecb",
+    "thys/Logic_Programming/LP_Prolog_Stable_Endpoints.thy": "134d7176eb96715d56151ac914afba3907e6a23bb5b08238dda81bb499fb9d41"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "combine integer and bound conditions into complete checked rows with finite valuation bindings",
+    "numeric-call transition simulation and common ITS discharge",
+    "original-profile binding, native implementation and export",
+    "mutations and full strict replay",
+    "matched AProVE comparison and protected-category release"
+  ]
+}
