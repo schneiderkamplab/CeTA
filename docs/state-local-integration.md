@@ -1599,3 +1599,20 @@ unfolding and two rejected attempts against a finished, stale imported theory.
 [Pinned evidence](data/prolog-stable-ground-link-20261106.json) records the
 verified sources and logs. Full source export, unified checks, semantic controls
 and strict replay remain pending. No benchmark gain is claimed.
+
+## Native stable-bound unified acceptance (2026-11-06)
+
+Export 706 checks the complete changed source theorem and generates the stable
+module. Unified build 707 has SHA-256
+`8fab618f3bd0f300b4d09cef1a05a6832b3b3a5594a314e17eee80cc17b4ee91`.
+All previous LP generated modules and non-LP library archives remain unchanged.
+The native bounded-loop certificate passes twice and 14 mutations reject.
+Recheck 710 preserves all 69 Prolog and 93 LP-with-cut certificates with two
+checks each, original source/certificate hashes and the same executable.
+
+Ferrum attempt 1061 additionally certifies two renamed fixtures by fresh native
+search and strict authorized replay, with nine semantic/advice controls. The
+four-root benchmark cohort 1062 reaches residual solving but remains UNKNOWN
+on all four roots. This is no new benchmark gain, complete frontier replay or
+production promotion. [Pinned evidence](data/prolog-stable-ground-integration-20261106.json)
+includes the diagnostic wrapper, full export log, build and certificate checks.

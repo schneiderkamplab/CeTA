@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the new source constructor using a retained integer-only fixture.
+"""Exercise native stable-bound certificates or adapt retained integer fixtures.
 
 This adapts test evidence, not development guidance or native search. Acceptance
 is not a new benchmark gain. A real bound-coordinate cohort remains required.
@@ -18,61 +18,63 @@ p.add_argument('--output', type=Path, required=True)
 a = p.parse_args()
 a.output.mkdir(parents=True, exist_ok=False)
 r = ET.parse(a.baseline).getroot()
-assert r.tag == 'prologEstablishedFiniteSEGGuardedProof'
-r.tag = 'prologEstablishedStableSEGGuardedProof'
-c = r.find('prologNumericComponent')
-assert c is not None
-c.tag = 'prologStableNumericComponent'
-modes = ET.Element('coordinateModes')
-for entry in c.find('coordinates'):
-    out = ET.SubElement(modes, 'entry')
-    out.append(copy.deepcopy(entry.find('predicate')))
-    ms = ET.SubElement(out, 'modes')
-    for _ in entry.find('names'):
-        ET.SubElement(ms, 'integerCoordinate')
-c.insert(list(c).index(c.find('locations')), modes)
-replacements = {}
-for row in c.find('rows'):
-    path = row.find('prologNumericPath')
-    old_formula = ET.tostring(path.find('formula'))
-    bindings = {b[0].text: copy.deepcopy(b[1]) for b in path.find('bindings')}
-    equalities = []
-    for endpoint in path.find('inputs'):
-        equality = ET.Element('eq')
-        ET.SubElement(equality, 'variableId').text = endpoint[0].text
-        expression = endpoint[2]
-        if expression.tag == 'var':
-            equality.append(copy.deepcopy(bindings[expression.text]))
-        else:
-            assert expression.tag == 'integer'
-            ET.SubElement(equality, 'constant').text = expression.text
-        equalities.append(equality)
-    conjunction = path.find('formula/conjunction')
-    assert conjunction is not None
-    for index, equality in enumerate(equalities):
-        conjunction.insert(index, equality)
-    replacements[old_formula] = copy.deepcopy(path.find('formula'))
-    for direction in ['inputs', 'outputs']:
-        for endpoint in path.find(direction):
+native = r.tag == 'prologEstablishedStableSEGGuardedProof'
+if not native:
+    assert r.tag == 'prologEstablishedFiniteSEGGuardedProof'
+    r.tag = 'prologEstablishedStableSEGGuardedProof'
+    c = r.find('prologNumericComponent')
+    assert c is not None
+    c.tag = 'prologStableNumericComponent'
+    modes = ET.Element('coordinateModes')
+    for entry in c.find('coordinates'):
+        out = ET.SubElement(modes, 'entry')
+        out.append(copy.deepcopy(entry.find('predicate')))
+        ms = ET.SubElement(out, 'modes')
+        for _ in entry.find('names'):
+            ET.SubElement(ms, 'integerCoordinate')
+    c.insert(list(c).index(c.find('locations')), modes)
+    replacements = {}
+    for row in c.find('rows'):
+        path = row.find('prologNumericPath')
+        old_formula = ET.tostring(path.find('formula'))
+        bindings = {b[0].text: copy.deepcopy(b[1]) for b in path.find('bindings')}
+        equalities = []
+        for endpoint in path.find('inputs'):
+            equality = ET.Element('eq')
+            ET.SubElement(equality, 'variableId').text = endpoint[0].text
             expression = endpoint[2]
-            endpoint.remove(expression)
-            ET.SubElement(endpoint, 'integerEndpoint').append(expression)
-    for test in path.find('tests'):
-        test.tag = 'integerCondition'
-    for binding in path.find('bindings'):
-        assert binding[0].tag == 'var'
-        binding[0].tag = 'integerKey'
-    row.remove(path)
-    ET.SubElement(row, 'ground')
-    for field in ['inputs', 'outputs', 'tests', 'bindings', 'formula']:
-        row.append(path.find(field))
-for transition in c.findall('lts/transition'):
-    old = transition.find('formula')
-    replacement = replacements[ET.tostring(old)]
-    transition.remove(old)
-    transition.append(copy.deepcopy(replacement))
+            if expression.tag == 'var':
+                equality.append(copy.deepcopy(bindings[expression.text]))
+            else:
+                assert expression.tag == 'integer'
+                ET.SubElement(equality, 'constant').text = expression.text
+            equalities.append(equality)
+        conjunction = path.find('formula/conjunction')
+        assert conjunction is not None
+        for index, equality in enumerate(equalities):
+            conjunction.insert(index, equality)
+        replacements[old_formula] = copy.deepcopy(path.find('formula'))
+        for direction in ['inputs', 'outputs']:
+            for endpoint in path.find(direction):
+                expression = endpoint[2]
+                endpoint.remove(expression)
+                ET.SubElement(endpoint, 'integerEndpoint').append(expression)
+        for test in path.find('tests'):
+            test.tag = 'integerCondition'
+        for binding in path.find('bindings'):
+            assert binding[0].tag == 'var'
+            binding[0].tag = 'integerKey'
+        row.remove(path)
+        ET.SubElement(row, 'ground')
+        for field in ['inputs', 'outputs', 'tests', 'bindings', 'formula']:
+            row.append(path.find(field))
+    for transition in c.findall('lts/transition'):
+        old = transition.find('formula')
+        replacement = replacements[ET.tostring(old)]
+        transition.remove(old)
+        transition.append(copy.deepcopy(replacement))
 
-cases = [('positive', r, True)]
+cases = [('positive-1', r, True), ('positive-2', r, True)]
 for label, xpath in [
     ('missing-component', 'components/*'),
     ('missing-context', 'contexts/*'),
@@ -90,8 +92,21 @@ for label, xpath in [
     parent = next(n for n in changed.iter() if target in list(n))
     parent.remove(target)
     cases.append((label, changed, False))
+if native:
+    for label, xpath in [
+        ('missing-bound-ground', 'prologStableNumericComponent/rows/row/ground/var'),
+        ('missing-upper-condition', 'prologStableNumericComponent/rows/row/tests/upperCondition'),
+        ('missing-bound-binding', 'prologStableNumericComponent/rows/row/bindings/binding/boundKey'),
+    ]:
+        changed = copy.deepcopy(r)
+        target = changed.find(xpath)
+        assert target is not None, label
+        parent = next(n for n in changed.iter() if target in list(n))
+        parent.remove(target)
+        cases.append((label, changed, False))
 changed = copy.deepcopy(r)
-changed.find('prologStableNumericComponent/coordinateModes/entry/modes/*').tag = 'upperBoundCoordinate'
+role = changed.find('prologStableNumericComponent/coordinateModes/entry/modes/*')
+role.tag = 'integerCoordinate' if role.tag == 'upperBoundCoordinate' else 'upperBoundCoordinate'
 cases.append(('conflicting-coordinate-role', changed, False))
 changed = copy.deepcopy(r)
 changed.find('profile').text = 'unsupported-profile'

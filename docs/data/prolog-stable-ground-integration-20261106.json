@@ -1,0 +1,163 @@
+{
+  "status": "Native stable-bound fixture certification and strict replay pass; representative four-root cohort has no gains. Full production replay and superiority remain open.",
+  "formal_commit": "2af5e08",
+  "export_attempt": 706,
+  "build_attempt": 707,
+  "checker_sha256": "8fab618f3bd0f300b4d09cef1a05a6832b3b3a5594a314e17eee80cc17b4ee91",
+  "certificate_controls": [
+    {
+      "case": "positive-1",
+      "expected": true,
+      "accepted": true,
+      "exit_code": 0
+    },
+    {
+      "case": "positive-2",
+      "expected": true,
+      "accepted": true,
+      "exit_code": 0
+    },
+    {
+      "case": "missing-component",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-context",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-root",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-child-triple",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-child",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-row",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-type-fact",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-descent",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-projection",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-bound-ground",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-upper-condition",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "missing-bound-binding",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "conflicting-coordinate-role",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    },
+    {
+      "case": "wrong-profile",
+      "expected": false,
+      "accepted": false,
+      "exit_code": 1
+    }
+  ],
+  "retention": {
+    "checker_sha256": "8fab618f3bd0f300b4d09cef1a05a6832b3b3a5594a314e17eee80cc17b4ee91",
+    "prolog": 69,
+    "lp_cut": 93,
+    "checks": 324,
+    "workers": 4,
+    "checker_seconds_limit": 30,
+    "scope": "Retained certificate rechecking only; not new native strict replay"
+  },
+  "unchanged_libraries": "All non-LP library archives; all previous LP generated modules unchanged.",
+  "native_evidence": "../ferrum-prolog-release/target/prolog-stable-strict-1061/manifest.json",
+  "evidence": {
+    "target/prolog-stable-ground-export-706.log": "f06de2884219062ea3c0d09158b03623a0bc6d2e27d5e1901bd3c9e996b8b429",
+    "target/prolog-stable-ground-export-706-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-ground-build-707.log": "13fab0f7a255caf82c0ce6c2e89b0689310e017915c7e53889d5770495c224df",
+    "target/unified-stable-ground-707/build.json": "5ae4d06cf0f4811f7b11fa4cdd8c1d3c338435555f329019eb094a6bf4199692",
+    "target/prolog-stable-retention-710.py": "301b528f83e2c588ba6422f6a6825d8f82640fa281b3a656461e65224aac3454",
+    "target/prolog-stable-retention-710.log": "e8fc469f569765bca6c8534a5ac5c368e8686b434c0163bf4fba0bcaeeacdc65",
+    "target/prolog-stable-ground-controls-709/conflicting-coordinate-role.xml": "bc78cb0e1c0985a85c471e3fd3541b20d537bee7394c2ed735eb210f455c909b",
+    "target/prolog-stable-ground-controls-709/conflicting-coordinate-role.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/positive-1.log": "8a8be69b0d2da5dc25c6f8d878eaede47cdc574703921a052fc3a5e57597aafe",
+    "target/prolog-stable-ground-controls-709/missing-bound-ground.xml": "c8cea835514817bf5cfbe93da1e5967874a3161cb26dc0d009c41e52e074be3a",
+    "target/prolog-stable-ground-controls-709/missing-projection.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-root.xml": "98504847c3b829f1d9fdb15785af2d019b2574013b6fdad84e7f873c0e0f0a71",
+    "target/prolog-stable-ground-controls-709/missing-descent.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/positive-2.xml": "fe473546f95e1bcd213527674f7773c6f1be180c80576b4f4cf4799bd0b11eb0",
+    "target/prolog-stable-ground-controls-709/missing-context.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/wrong-profile.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-descent.xml": "96767f786360e5da41e146e94683179cc0041fd6d70e2a8d46dd24c939024700",
+    "target/prolog-stable-ground-controls-709/missing-type-fact.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-row.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-component.xml": "e024b51e2c0cc93bd53ad3cc61aa370d6a54a6d0727b819f988d7160e903c9cb",
+    "target/prolog-stable-ground-controls-709/missing-component.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/wrong-profile.xml": "9f1f38c5476804fd08a970cd47aa1e3e447baf83531754839f09f1212f4db166",
+    "target/prolog-stable-ground-controls-709/positive-1.xml": "fe473546f95e1bcd213527674f7773c6f1be180c80576b4f4cf4799bd0b11eb0",
+    "target/prolog-stable-ground-controls-709/missing-child-triple.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-bound-ground.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-child.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-row.xml": "b34bb68a668755a504bec401a9f946ea17aeb94ca066d7fa049c17d080dc3ba6",
+    "target/prolog-stable-ground-controls-709/missing-context.xml": "6600b4cc75eba6ac8fab4d15de90b680c517dea15154d0da9811943db8daca4b",
+    "target/prolog-stable-ground-controls-709/results.json": "d564bbf17fc3085748e86edb6bd5431ebde884f409dc2aed03874c0834f23b82",
+    "target/prolog-stable-ground-controls-709/missing-type-fact.xml": "f131adde7b3faaa1fcd629be263204c5d1c2f5d7b934db2d3d4f92b55e4a85c7",
+    "target/prolog-stable-ground-controls-709/missing-projection.xml": "1d63fe7e90cf0879fd36e8b3399f1f831d508929dc41ae56f76aac0fa36ea974",
+    "target/prolog-stable-ground-controls-709/missing-upper-condition.xml": "b44f7126627d4752e1da14c173e3ef2ff9b754f1b998d8c680b3cbf318b78fbd",
+    "target/prolog-stable-ground-controls-709/missing-bound-binding.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-child.xml": "b7ae5dcaacc3f868b01ba4fa07d6ea5ef96904d677c263ffb59d0f2e18838f05",
+    "target/prolog-stable-ground-controls-709/missing-root.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/positive-2.log": "8a8be69b0d2da5dc25c6f8d878eaede47cdc574703921a052fc3a5e57597aafe",
+    "target/prolog-stable-ground-controls-709/missing-child-triple.xml": "5846ec12d074f5b6121ee22649d6d267e40760abd90c2bd06266d7ddb3052485",
+    "target/prolog-stable-ground-controls-709/missing-upper-condition.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-stable-ground-controls-709/missing-bound-binding.xml": "322eb83a5ffe60a45123496cf58dab52b0af3b98ad9094d41e86a7536f215f20",
+    "target/prolog-stable-retention-710/summary.json": "b9f1abee7cb909b63407931eae6bfe5641a010bb7200383b1aa0651b54d4d177",
+    "target/prolog-stable-retention-710/checks.jsonl": "8a60d349dee313c8851c21ea8e54b70f33681c14b26ffd797ca835867c92ac12",
+    "target/prolog-stable-ground-diagnostic-708/build.log": "70fb25542528363237fd2c0add684c41d96ac9b2b5705bdd3438c20634cc32fb",
+    "target/prolog-stable-ground-diagnostic-708/Main.hs": "b56b0c05e561758ab3f91717ba735d719c581a1cc6d95ec66fc4d1d433148e77",
+    "target/prolog-stable-ground-diagnostic-708/result.txt": "9335909ffd3b141e7e33a55b8d6186d5a0dea01bf2120601a054f9f92912f935"
+  },
+  "archive_sha256": "d0cfd25fdd692dbb7c85f079729e5099501cf30b9888632b2494365f46c6eda8"
+}
