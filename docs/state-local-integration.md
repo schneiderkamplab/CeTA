@@ -1166,3 +1166,33 @@ literals. No floating update is assumed to advance.
 The unified checker and certified frontier are unchanged. These theories are
 not exported into a source-proof constructor yet. [Pinned development evidence](../../ferrum-prolog-release/docs/data/prolog-scalar-bound-development-20261106.json)
 includes native threshold/stagnation tests and unsuccessful formal attempts.
+
+## Stable arithmetic evaluation and actual returned values
+
+The stable arithmetic development extends exact scalar observations to compound
+expressions under one fixed partial operation interpretation. Successful results
+are unique, finite ground and substitution invariant. The interpretation agrees
+with the existing checked integer arithmetic fragment. It is a semantic parameter,
+not a table accepted from a certificate; connecting the original profile to that
+interpretation remains a source-bridge obligation.
+
+Verification 585 checks comparison outcomes, integer compatibility, retained
+errors and bounds derived from successful comparisons. Verification 587 checks
+`is/2` successful substitutions using the existing scalar unifier, plus refinement
+of the existing parameterized source execution relation. Neither introduces a
+replacement SEG or execution relation. These checks have no skipped proofs or
+oracle dependencies. Attempts 584 and 586 retain the failed propositional proof
+and missing import, respectively. The earlier 583 attempt was interrupted after
+identifying expensive proof automation and replaced with explicit witnesses.
+
+No checker export or native source-proof constructor has changed. The certified
+frontier remains 61 YES + 8 NO; actual context initialization, Split contracts,
+source-profile correspondence, residual assembly and replay still gate gains.
+
+Verification 589 additionally checks substitution and source-expression transport
+for strengthened comparisons in the existing observation datatype. It retains
+every previous observation and does not initialize or transfer saved alternatives.
+Attempt 588 records a corrected theorem-argument type mismatch.
+[Pinned development evidence](data/prolog-stable-arithmetic-development-20261106.json)
+archives the theory snapshots and all retained attempts 577–589. The remaining
+source and Split obligations above are unchanged.

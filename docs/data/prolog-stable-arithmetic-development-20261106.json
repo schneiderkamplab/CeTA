@@ -1,0 +1,57 @@
+{
+  "status": "verified development; no exported constructor or benchmark gain",
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "verified_attempts": [
+    579,
+    585,
+    587,
+    589
+  ],
+  "latest_marker": "SOURCE_RECURRENT_SIMULATION_VERIFIED",
+  "archive": "docs/data/prolog-stable-arithmetic-development-20261106.tar.gz",
+  "archive_sha256": "0242151a1f9dc2ae7600e3e509b41194fc4baf384070e89dded30b460393009f",
+  "files": {
+    "target/prolog-stable-comparison-581.log": "14522ab114a6876e7748f970ddf5233655c5be858809716260c01dd803c15044",
+    "target/prolog-stable-comparison-582.log": "f309a403303a9d0155912c530c116191c4ce2d6bf704ef220b3e90935ffd7aec",
+    "target/prolog-stable-comparison-583.log": "b21dc2a1d496642fab7e8191b8a11c678e4449070c9fee578f446284f30eb6ed",
+    "target/prolog-stable-comparison-584.log": "7fba3b9c87df07c48745f5ba660128e234a78ab1de59ba95c83f37b7f733ccd4",
+    "target/prolog-stable-comparison-585.log": "64c0beeb9be71723033314940326f5a58d5828fd22bd7f3e773a5500e8fcd05a",
+    "target/prolog-stable-comparison-driver-581.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-driver-582.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-driver-583.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-driver-584.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-driver-585.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-context-588.log": "f0bbfcb659eec0406d9abcbbf3aeeacc01c6b03fe03687ea513c47238546b4b1",
+    "target/prolog-stable-context-589.log": "61b5506b4521fe919a1a6c2e76615205a91c078b7f37a2108aa06840b50fab2d",
+    "target/prolog-stable-context-driver-588.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-context-driver-589.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-integer-compatibility-580.log": "8eb918e7d7faf17a35918203895ddbe9166917c89ec22c8eba95b334b595c1cb",
+    "target/prolog-stable-integer-compatibility-driver-580.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-is-586.log": "1ea2b5cd404078099bb7d90e995781070a448d464bdfe1f05784405f692f9daf",
+    "target/prolog-stable-is-driver-586.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-scalar-evaluation-577.log": "ed66b680c1150a633de4a2244eb973ed96c40f64609ee8519f2bcb815c453ace",
+    "target/prolog-stable-scalar-evaluation-578.log": "d4b9a60a0c5c744123f3c7004eb9c3385ef65beb7bab2a5b353a31e3194a359c",
+    "target/prolog-stable-scalar-evaluation-579.log": "decf8ad3f3a1a9dcaa7230c01c8f5771bd86acc12383ec4e0bb8fc440e2746fd",
+    "target/prolog-stable-scalar-evaluation-driver-577.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-scalar-evaluation-driver-578.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-scalar-evaluation-driver-579.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-source-587.log": "2debf876a9710aca563eba7f6a04189352c018e1561e6321b53a6d4f3743c11b",
+    "target/prolog-stable-source-driver-587.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Comparison.thy": "8743b685c79eb7384fced9bcf6dbfcba5b271f1211eaf46f95f1acf229cb5c5c",
+    "thys/Logic_Programming/LP_Prolog_Stable_Context.thy": "67f2e7e171ee3af59d705ca550714bdcbc876a1c96488268c9d6f8713b9b27d2",
+    "thys/Logic_Programming/LP_Prolog_Stable_Integer_Compatibility.thy": "d68cd6f165801d25c249427019dcc3356b6a6ee4a4b8978fbe700cf217419995",
+    "thys/Logic_Programming/LP_Prolog_Stable_Is.thy": "969764e565e0f7a040de53f9cbd190fb08b728e7c06e4f4b261f1109e33369e1",
+    "thys/Logic_Programming/LP_Prolog_Stable_Scalar_Evaluation.thy": "8bdd24e3147957a96a96d1d7b57e03afecd40d1390aceec86cfd3d270fd81657",
+    "thys/Logic_Programming/LP_Prolog_Stable_Source.thy": "49a6448fb423db66f5ca4ade789ddc67b890ebe37d9522ea627f5499f44675da"
+  },
+  "remaining": [
+    "source-profile correspondence",
+    "context initialization and actual Split return contracts",
+    "native assembly and common residual discharge",
+    "mutations and complete strict replay"
+  ]
+}
