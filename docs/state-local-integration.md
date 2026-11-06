@@ -1053,3 +1053,18 @@ verified recipe check. No standalone verdict or checker dispatch was added.
 Gate 535 records a lexical error caused by adjacent `=ops`; gate 536 verifies
 the corrected parser. Native discovery and serialization use the same field
 order. This is not yet a complete parent certificate or an export update.
+
+## Actual helper call interface, 2026-11-06
+
+`LP_Prolog_Helper_Call_Interface` binds the source recipe to actual arguments
+through the existing partial-call interface. Its checked positions must cover
+exactly the recipe's integer input variables, with a distinct head and a valid
+output position. Observations concern actual integer values, not source terms
+that might evaluate to integers. An actual variable at the output position and
+successful guards yield a checked source return on the whole caller
+continuation. Gate 537 passes the theorem and dependency audit.
+
+This theorem preserves the fresh caller renaming introduced by resolution.
+Source-row composition must transport that renaming and the returned binding;
+replacing a helper call with flattened arithmetic instructions is insufficient.
+The existing unified executable and certified root count are unchanged.
