@@ -1295,3 +1295,28 @@ archives every attempt 603–610 and the final theory snapshots. The next `is/2`
 assembly target is `LP_Prolog_Finite_Observed_Is` and its shared equality
 normalization; stable evaluation evidence must survive the fresh-result and
 actual-unifier interface there.
+
+## Actual `is/2` results, resolution and equality with stable contexts
+
+Gates 611–615 pass the next source-node integration batch without skipped proofs
+or oracle dependencies. Stable `is/2` normalization uses the existing scalar MGU
+and shared equality transition, retaining unification failure and uncaught error.
+The established observed-`is/2` receipt introduces a fresh result variable, carries
+its actual stable evaluation, and checks the middle equality link before using
+its child contract. No intermediate equality state is treated as an already
+completed Prolog operation.
+
+Fresh-variable environment congruence, resolution refresh and the existing forked
+context operation preserve both active and old bindings. The resolution and
+equality theorems reuse their existing receipts, including free-variable rational
+unification coverage, success/failure specialization modes, scope separation,
+actual return values, newly established equations and untouched free variables.
+The failed branch retains its original context and saved alternatives.
+
+[Pinned development evidence](data/prolog-stable-is-resolution-development-20261106.json)
+archives every gate 611–615 and the verified theory snapshots. This remains
+source-proof development: the remaining node rules, complete referenced-module
+contract, original-profile correspondence and native bound projection are not yet
+integrated. No export, guidance atom or production checker changed; the certified
+frontier remains 61 YES + 8 NO. Full semantic mutation and strict replay gates must
+precede counting any new benchmark result.

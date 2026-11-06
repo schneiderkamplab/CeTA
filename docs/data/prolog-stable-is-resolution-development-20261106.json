@@ -1,0 +1,42 @@
+{
+  "status": "verified source-node integration development; no export or benchmark gain",
+  "parent_commit": "acf99e5",
+  "verified_attempts": [
+    611,
+    612,
+    613,
+    614,
+    615
+  ],
+  "archive": "docs/data/prolog-stable-is-resolution-development-20261106.tar.gz",
+  "archive_sha256": "8621ae7345df0eb3ef8acad0b2630ce534805e9f741ddb00127fe931ce76825e",
+  "files": {
+    "target/prolog-stable-equality-615.log": "8d383773b586b0ef5e09bb42b39763aacf3ae94eccf18cdbde2b80bbf6811d3c",
+    "target/prolog-stable-equality-driver-615.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-normalization-611.log": "a9a58a605b2cb869add1e528cb11a3f714a8c9f21528104dc10d9871a1648132",
+    "target/prolog-stable-normalization-driver-611.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-observed-is-612.log": "b142fc002a64d1cf2d24b9b646067d5df772cf5654b899077213d2d2947435d6",
+    "target/prolog-stable-observed-is-driver-612.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-refresh-613.log": "27f92d6f7e92f6618c3517daf0aa320fdf4a2557388f1650c271914579fbdf9f",
+    "target/prolog-stable-refresh-driver-613.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-resolution-614.log": "20dc9ef8cf6c2b0ff334e1eb7ec361261d176f85e5a394f72edc5e012b3d17b8",
+    "target/prolog-stable-resolution-driver-614.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Normalization.thy": "a278f995fb88e87a2f6fb89bb0db32fecc6d4bbdc7d69a9821278a8657ce0ba4",
+    "thys/Logic_Programming/LP_Prolog_Stable_Fresh_Context.thy": "f5f25f504cfe513eeb3f809113fc8fe74e73cff573715af2e4dd7bc4820b6154",
+    "thys/Logic_Programming/LP_Prolog_Stable_Observed_Is.thy": "040ae9e0daeb03737b12cb34b45571494cc221882319d5d6c4c77b86d11b3649",
+    "thys/Logic_Programming/LP_Prolog_Stable_Refresh.thy": "5c1e91d2ebb10023c9761fc39af9f089bf9714cb67dbabd2a6cc047ddb05af9e",
+    "thys/Logic_Programming/LP_Prolog_Stable_Resolution.thy": "084cc82b9bd0156c6f543691408a537b50e31a6a7ff843913db4c9c16dac02f7",
+    "thys/Logic_Programming/LP_Prolog_Stable_Equality.thy": "6618381436477580b3309952a4a37312f5774cd8dd42f393bccf2328ee0889ac"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "remaining node rules and complete referenced-module graph contract",
+    "source-profile correspondence",
+    "native bound-coordinate projection and common residual solving",
+    "mutation controls and complete strict replay"
+  ]
+}
