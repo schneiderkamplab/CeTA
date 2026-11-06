@@ -1,0 +1,57 @@
+{
+  "status": "verified stable graph root and coordinate/projection development; no exported source certificate or benchmark gain",
+  "parent_commit": "00889f4c1afd89a0d1c5601f3926cf46cca1ddb6",
+  "verified_attempts": [
+    644,
+    645,
+    646,
+    647,
+    649,
+    651
+  ],
+  "failed_attempts": {
+    "648": "unfinished elimination of groundness conclusion in negative control",
+    "650": "reserved value token used as a fact label"
+  },
+  "archive": "docs/data/prolog-stable-graph-projection-development-20261106.tar.gz",
+  "archive_sha256": "9ee00008d90e754a2612d99a2549cb78ca96aa3698b143b71612f6577b9f2c4f",
+  "files": {
+    "target/prolog-stable-observed-calls-644.log": "385e8441bfc0299e1ac0281c84049ac3b9b2e11210c542ff483c0a9bf4a4a740",
+    "target/prolog-stable-observed-calls-driver-644.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-descent-645.log": "de3bcdb6320d961e282f69a701b0cc6bc873e98cd3d06273eb402c35dbe95422",
+    "target/prolog-stable-descent-driver-645.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-graph-646.log": "77b12e26844ba25c72990539981f171cda0fbb222bff29b51d85be8a12703dd3",
+    "target/prolog-stable-graph-driver-646.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-coordinates-647.log": "db015979d4e080465f85a596a864e758edd0a6be37f758ff0de6e8751955f309",
+    "target/prolog-stable-coordinates-driver-647.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-coordinate-controls-648.log": "fb1890770e5af1c5db91d0060ec45361e77a9bb416f1dbe91c82b0bbfb7c80bb",
+    "target/prolog-stable-coordinate-controls-driver-648.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-coordinate-controls-649.log": "8f82d0a86bd3c0ce7cdf9453740c8212a308dfe16779c5a890fe30813e80001f",
+    "target/prolog-stable-coordinate-controls-driver-649.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-coordinate-tuples-650.log": "94d4bb4dd3dc1b05f684abb21915636d5166e7f781e4f74f0505bbae5461294e",
+    "target/prolog-stable-coordinate-tuples-driver-650.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-projection-651.log": "4071e34794987df218188cbb4e405b268b97fe27f60c32b145228c0b573d556e",
+    "target/prolog-stable-projection-driver-651.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Observed_Calls.thy": "641aa35fba6095a4cf72629adfc3d1b6e120788a9d55f9d71b78bec04e6fc98c",
+    "thys/Logic_Programming/LP_Prolog_Stable_Guarded_Descent.thy": "177e1cf519e4b1f91dc1ffe310a0615567d927a9e0080da78a5d538e9d34804e",
+    "thys/Logic_Programming/LP_Prolog_Stable_Guarded_Region_Descent.thy": "650778542deb0bea5da1f11288212a3dd99cfe54d2f918624ad04d1823e1af6a",
+    "thys/Logic_Programming/LP_Prolog_Stable_Guarded_Split_Descent.thy": "30fce7fa73590c93555c529c35961ff1296f9c6e9392540d586dbcbbfc674a81",
+    "thys/Logic_Programming/LP_Prolog_Stable_Guarded_Graph.thy": "bd2211f58d801b03738c966294fe8d258b99de4d2e681bfffd9f69a91ef54deb",
+    "thys/Logic_Programming/LP_Prolog_Stable_Coordinates.thy": "67b7bf73246aa21454bb145c61c4a079cb78e66b6f841b213fe2754a4b1a5a93",
+    "thys/Logic_Programming/LP_Prolog_Stable_Coordinate_Controls.thy": "4b3d20a48985d65037e8c53aa3d69bb8541f93a6f6a37ea824629f568d7b104a",
+    "thys/Logic_Programming/LP_Prolog_Stable_Coordinate_Tuples.thy": "f97d35f7610cbf16cfc23647b3d74a2ba8edf028f9f0b613beaa377384e38b74",
+    "thys/Logic_Programming/LP_Prolog_Stable_Call_Projection.thy": "a941c44c69709935ea748fab9fb861c48cfe8f8dbc8e46adc0e0ced97ba6a0c8"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "checked stable numeric rows and ITS simulation",
+    "original source-profile coverage",
+    "native assembly, common residual discharge and export",
+    "semantic mutation controls, complete strict replay and protected-category release",
+    "fresh semantically matched AProVE comparison"
+  ]
+}

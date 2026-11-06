@@ -1400,3 +1400,29 @@ bound projection, original-profile coverage, native assembly and export remain
 unfinished. No checker binary or guidance changed. The certified frontier
 remains 61 YES + 8 NO; mutation controls and complete strict replay are required
 before counting any gain.
+
+## Stable graph-root descent and bound-coordinate projection
+
+Gates 644–646 connect the existing observed-call receipts to stable contexts,
+region and Split descent, every component of the referenced graph, and the
+source query root. The same established graph checker and receipts are reused.
+The theorem concludes termination under the fixed compatible arithmetic
+interpretation only after the complete stable call relation is proved terminating.
+It does not supply that residual proof or original-profile correspondence.
+
+Gates 647, 649 and 651 verify separate integer and upper-bound coordinates,
+substitution and instance matching, coordinate valuation existence, and
+argument projection preserving every call edge. Empty projections do not erase
+recursive edges. Bound coordinates require ground source expressions and observe
+the floor of their stable value; they do not assert that a float or compound
+expression is an integer. Successful comparison remains required to constrain
+the counter. Controls reject float counters and uninitialized bounds, and prove
+that removing groundness permits a bound to change after substitution.
+
+[Pinned graph/projection evidence](data/prolog-stable-graph-projection-development-20261106.json)
+archives attempts 644–651 and theory snapshots. Two proof-development failures
+are retained: unfinished groundness elimination and a reserved fact label.
+Passing gates have no skipped proofs or oracle dependencies. The checked
+ITS-row translation, source-profile binding, native assembly/export, residual
+discharge and mutation/strict replay remain open. No checker binary or guidance
+changed, and the certified frontier remains 61 YES + 8 NO.
