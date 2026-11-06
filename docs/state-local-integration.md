@@ -1020,3 +1020,27 @@ passes the complete theorem and admission/oracle audit from heap 525. The
 verified child heap is `target/prolog-guarded-return-527.heap`. This theorem has
 not yet been exported into an executable source constructor. The unified
 checker and certified benchmark frontier are unchanged.
+
+## Exact helper recipe and continuation composition, 2026-11-06
+
+`LP_Prolog_Helper_Return_Recipe` supplies an executable Boolean check binding a
+finite arithmetic helper recipe to its complete unique source clause, signature,
+head variables, input requirements, prefix and final output expression. Its
+soundness theorem constructs the actual source return with arbitrary pending
+goals and saved alternatives. Integer observations, fresh caller output and
+successful prefix guards remain state premises. This is an exact-call proof
+component, not a universal return summary or a graph termination certificate.
+
+`LP_Prolog_Helper_Return_Continuation` composes the returned binding with a
+successful or failed caller comparison. Success retains every helper
+alternative. The failure rule requires that only the helper barrier remains
+above the caller's saved stack; it cannot skip later helper answers. The final
+state is the original saved stack without the helper's successful bindings.
+
+Gate 528 verifies continuation composition. Gates 529–531 record a recipe
+parsing failure; diagnostic 532 records an incorrect relative import, and 533
+isolates missing whitespace after the subset symbol. Gate 534 verifies the
+recipe theorem and five controls: a positive renamed helper and rejection of
+an extra clause, missing integer input, bound output and missing body. All
+admission/oracle audits pass. Executable source-row integration, export and
+benchmark certification remain outstanding; unified checker 521 is unchanged.
