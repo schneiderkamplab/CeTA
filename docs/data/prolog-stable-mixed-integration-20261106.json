@@ -1,0 +1,214 @@
+{
+  "scope": "Unified mixed source constructor integration; no native mixed replay or benchmark gain",
+  "checker_sha256": "f52287d5a0e4d1028d9901743cb51cf00897e2a07e398268fbab2d813ca258f6",
+  "build": "target/unified-stable-mixed-778",
+  "controls": {
+    "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-stable-mixed-778/ceta",
+    "checker_sha256": "f52287d5a0e4d1028d9901743cb51cf00897e2a07e398268fbab2d813ca258f6",
+    "results": [
+      {
+        "case": "positive",
+        "repeat": 0,
+        "expected": true,
+        "accepted": true,
+        "exit_code": 0,
+        "artifact_sha256": "a331c28c51a09170ebb72c0318f8293ae4543c393887cd8332c44c6a2fe4244e"
+      },
+      {
+        "case": "positive",
+        "repeat": 1,
+        "expected": true,
+        "accepted": true,
+        "exit_code": 0,
+        "artifact_sha256": "a331c28c51a09170ebb72c0318f8293ae4543c393887cd8332c44c6a2fe4244e"
+      },
+      {
+        "case": "missing-backend",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "4267068446c7c592ba29c532fc9a8f17561901f3e2c173759ea71e1b6e91c5c6"
+      },
+      {
+        "case": "missing-backend",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "4267068446c7c592ba29c532fc9a8f17561901f3e2c173759ea71e1b6e91c5c6"
+      },
+      {
+        "case": "missing-routing",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "fd05c5d7bc2976f86ba55174092a2a21697482d98aa9c83e0662e9eb4c69ccd5"
+      },
+      {
+        "case": "missing-routing",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "fd05c5d7bc2976f86ba55174092a2a21697482d98aa9c83e0662e9eb4c69ccd5"
+      },
+      {
+        "case": "missing-component",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "29e6571ed0535016c5347662ee099c67333ef71c910b730ed6fe2be8cba55658"
+      },
+      {
+        "case": "missing-component",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "29e6571ed0535016c5347662ee099c67333ef71c910b730ed6fe2be8cba55658"
+      },
+      {
+        "case": "missing-root",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "3b3970e722afe84d4583807bb5f8056f0178b016be7764df076e99c7b7f10ddd"
+      },
+      {
+        "case": "missing-root",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "3b3970e722afe84d4583807bb5f8056f0178b016be7764df076e99c7b7f10ddd"
+      },
+      {
+        "case": "missing-child",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "12a17c664b4dc121bee183bd4d19bf0b55287be8430774bccb370797261c1e41"
+      },
+      {
+        "case": "missing-child",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "12a17c664b4dc121bee183bd4d19bf0b55287be8430774bccb370797261c1e41"
+      },
+      {
+        "case": "missing-descent",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "a95821b50cc481b96f7d4448b39c7cd506cba1a1013d2505eb7b8c8157f37f62"
+      },
+      {
+        "case": "missing-descent",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "a95821b50cc481b96f7d4448b39c7cd506cba1a1013d2505eb7b8c8157f37f62"
+      },
+      {
+        "case": "missing-observed-row",
+        "repeat": 0,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "e8bf4c18141d15062d67e93906e9306f4bbdc9faa0561694392aceb6a0890ba3"
+      },
+      {
+        "case": "missing-observed-row",
+        "repeat": 1,
+        "expected": false,
+        "accepted": false,
+        "exit_code": 1,
+        "artifact_sha256": "e8bf4c18141d15062d67e93906e9306f4bbdc9faa0561694392aceb6a0890ba3"
+      }
+    ]
+  },
+  "retention": {
+    "checker_sha256": "f52287d5a0e4d1028d9901743cb51cf00897e2a07e398268fbab2d813ca258f6",
+    "prolog": 69,
+    "lp_cut": 93,
+    "checks": 324,
+    "workers": 4,
+    "checker_seconds_limit": 30,
+    "scope": "Retained certificate rechecking only; not new native strict replay"
+  },
+  "archive_sha256": "a401ca90f84625b1e286bfe6f68ff4893789b7d6666c6737311219759beaf0cc",
+  "files": {
+    "target/prolog-mixed-build-778.log": "263a19b30dfa770d44d593a214bb06b0c6602364780a573172f57fb40f66c75e",
+    "target/prolog-mixed-code-775-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-mixed-code-775.log": "72c6e553770e643267d7385a3edc3e13118c5bc057aab5138ee3e3ecd5ab93d5",
+    "target/prolog-mixed-controls-779/manifest.json": "45553045b4681ece6a5b78145653d187360c86edd19810b187f35c7194276b6c",
+    "target/prolog-mixed-controls-779/missing-backend-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-backend-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-backend.xml": "4267068446c7c592ba29c532fc9a8f17561901f3e2c173759ea71e1b6e91c5c6",
+    "target/prolog-mixed-controls-779/missing-child-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-child-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-child.xml": "12a17c664b4dc121bee183bd4d19bf0b55287be8430774bccb370797261c1e41",
+    "target/prolog-mixed-controls-779/missing-component-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-component-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-component.xml": "29e6571ed0535016c5347662ee099c67333ef71c910b730ed6fe2be8cba55658",
+    "target/prolog-mixed-controls-779/missing-descent-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-descent-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-descent.xml": "a95821b50cc481b96f7d4448b39c7cd506cba1a1013d2505eb7b8c8157f37f62",
+    "target/prolog-mixed-controls-779/missing-observed-row-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-observed-row-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-observed-row.xml": "e8bf4c18141d15062d67e93906e9306f4bbdc9faa0561694392aceb6a0890ba3",
+    "target/prolog-mixed-controls-779/missing-root-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-root-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-root.xml": "3b3970e722afe84d4583807bb5f8056f0178b016be7764df076e99c7b7f10ddd",
+    "target/prolog-mixed-controls-779/missing-routing-0.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-routing-1.log": "08970ac3e4ce2f247d9596b812bf8433646bab5435a8d0a97b1932f90a3cbdee",
+    "target/prolog-mixed-controls-779/missing-routing.xml": "fd05c5d7bc2976f86ba55174092a2a21697482d98aa9c83e0662e9eb4c69ccd5",
+    "target/prolog-mixed-controls-779/positive-0.log": "8a8be69b0d2da5dc25c6f8d878eaede47cdc574703921a052fc3a5e57597aafe",
+    "target/prolog-mixed-controls-779/positive-1.log": "8a8be69b0d2da5dc25c6f8d878eaede47cdc574703921a052fc3a5e57597aafe",
+    "target/prolog-mixed-controls-779/positive.xml": "a331c28c51a09170ebb72c0318f8293ae4543c393887cd8332c44c6a2fe4244e",
+    "target/prolog-mixed-controls-779/results.json": "1d5cb1ab959eab857e57958a9b21e29faace8c4fd6685acdb647e17214f69d6e",
+    "target/prolog-mixed-export-770-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-mixed-export-770.log": "2540ae8ceab7809883e3bcc009dc4062b40be17802f124faa71fef68a0009eb1",
+    "target/prolog-mixed-export-771-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-mixed-export-771.log": "5a463b5c54814cdbce4a106f41715fb2bc18c307662560689e22a6bc4225fb07",
+    "target/prolog-mixed-export-772-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-mixed-export-772.log": "9622c5ce71ba447e7a14b41ecd91abc19e1c270865c314395ef7d0bb00099c50",
+    "target/prolog-mixed-export-773-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-mixed-export-773.log": "056cd34c6c13f4f15d46606c0d5cb286be1fa6e92aafea9b91d1c42eebf9a163",
+    "target/prolog-mixed-export-776-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-mixed-export-776.log": "1998699b1586153850f41eed7666d60e50ac48d209b36795d37ed81bd054f5a7",
+    "target/prolog-mixed-retention-780/checks.jsonl": "3cb819a6484eae6ac13e9270d8e1e966e31fb0f45bf024cbe4e97c4d78acc22d",
+    "target/prolog-mixed-retention-780/summary.json": "6e4bfddfa461bfc33547ea2efd72864583807c1724a9cddd65093846e86e8d03",
+    "target/prolog-mixed-retention-780.log": "e8fc469f569765bca6c8534a5ac5c368e8686b434c0163bf4fba0bcaeeacdc65",
+    "target/prolog-mixed-retention-780.py": "2ffe2e3f7fd0253cac3c783da5ea52a8f6115e7e87f8bb4f1272e8a0a3099a55",
+    "target/prolog-mixed-root-769-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-mixed-root-769.log": "87599b3a1c8c195151fdf7b6f43ba421546c5456150c0691ca645c5d25a1499a",
+    "target/prolog-mixed-typecheck-777.log": "585d49afd274effe21314c8d0fb2a6dde05f465f165802d4a6c5f3f532e7263f",
+    "target/unified-stable-mixed-778/build.json": "82426cc159c28f10f7ac3d227cf4975ca117d4d9251c77a68833b62175b6a1e8",
+    "target/unified-stable-mixed-778/ceta-lp-1.0-abaa8a71684fcb93/build.log": "e6f122876f0d8e70f97980d69ec95ca5c701294f94f86edcd01ce7d0d103c976",
+    "target/unified-stable-mixed-778/link.log": "c83baf142226786443158d39d5f4cd08245a9badedb16e1bb5fa08ec484f34fd"
+  },
+  "source_files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Mixed_XML.thy": "184e47e12c81a747dfad0e7d8e85301c23be41b7ff09268b7dc1a35652d4b56f",
+    "thys/Logic_Programming/LP_Prolog_Stable_Mixed_Code_Setup.thy": "54d19bc016ba79a4cfe29f084500426fe786f9f50295eb0deda7c3024df969ad",
+    "tests/unified/exports/lp-source-stable-mixed.tar.gz": "c37c2cff1c41e8fc6988557ce6d4179df41fba72d191492585cfc1daf4373032",
+    "tests/unified/check_prolog_stable_mixed.py": "5c345b55cff28647797e05be6dc5e00137c0e1824f5f71da2d27d63e17982b9b"
+  },
+  "open_gates": [
+    "Native relational Split synthesis and context transport",
+    "Native independently scheduled structural/numeric children",
+    "Relational and structural semantic mutation controls",
+    "Fresh strict benchmark replay",
+    "Protected-category same-checker replay",
+    "Fresh matched AProVE superiority comparison"
+  ]
+}

@@ -100,7 +100,8 @@
       "-DLP_PROLOG_INTEGER_CALLS",
       "-DLP_PROLOG_PARTIAL_INTEGER_CALLS",
       "-DLP_PROLOG_HELPER_INTEGER_CALLS",
-      "-DLP_PROLOG_STABLE_GUARDED"
+      "-DLP_PROLOG_STABLE_GUARDED",
+      "-DLP_PROLOG_STABLE_MIXED"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -127,11 +128,12 @@
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
-      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+      "Prolog_Stable_Mixed_Generated.hs": "9abac24c23c380824f403c3813fa1a72e2289705c1926368e72e160d70d79142"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-stable-ground.tar.gz",
-    "archive_sha256": "71556868f8af26f41294423955052f3f9244f6dba6da6720dc8d0e14b1663ba1",
+    "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
+    "archive_sha256": "c37c2cff1c41e8fc6988557ce6d4179df41fba72d191492585cfc1daf4373032",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -825,6 +827,13 @@
         "thys/Logic_Programming/LP_Prolog_Stable_Triple_Prefix.thy": "7be20434fe96ceea2fc89dbdc3baf7eef406d4fc4e7284d8736ab667475e77a3",
         "thys/Logic_Programming/LP_Prolog_Stable_Type_Identity.thy": "dfcaf53db6cdf992bde132fd79d93ebad21f070752d29d63e385715489557953"
       }
+    },
+    "stable_mixed_export": {
+      "origin": "target/prolog-mixed-export-776",
+      "verification_log": "target/prolog-mixed-export-776.log",
+      "typecheck_log": "target/prolog-mixed-typecheck-777.log",
+      "status": "Verified export, GHC typecheck, unified build, 16 numeric compatibility controls and 324 retained certificate checks; native mixed and protected-category replay pending",
+      "integration_evidence": "docs/data/prolog-stable-mixed-integration-20261106.json"
     }
   },
   "higher-order": {

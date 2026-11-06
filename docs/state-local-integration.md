@@ -1767,3 +1767,27 @@ Attempts 764 and 768 validate these definitions and the profile theorem.
 failures 763 and 765–767. Root XML assembly, export, native integration, mutation
 controls and benchmark replay remain open. No unified executable or frontier
 changed.
+
+## Unified mixed source constructor (2026-11-06)
+
+The verified root XML constructor binds the original source/profile, transfer
+program, relational component graph, observed rows, rank routing and all backend
+children. A verified list-erasure code equation permits executable generation
+without equality on function-valued backend evidence. Generated checking logic
+was not edited. Attempts 769–776 retain the XML/export development failures and
+successful verification; generated Haskell typechecking passes in attempt 777.
+
+Unified build 778 completes with executable SHA-256
+`f52287d5a0e4d1028d9901743cb51cf00897e2a07e398268fbab2d813ca258f6`.
+The numeric compatibility wrapper passes twice, and seven missing-obligation
+mutations are rejected twice (779). All 69 retained Prolog and 93 LP-with-cut
+certificates pass twice with this executable (780). This is retained-certificate
+rechecking, not fresh native strict replay. The controls exercise the numeric
+compatibility path, not structural children or relational Split returns.
+
+[Pinned integration evidence](data/prolog-stable-mixed-integration-20261106.json)
+records hashes, logs and the remaining gates. Native shared helper-model
+assembly, continuation relation transport, independently scheduled mixed
+children, broader semantic controls and strict benchmark replay remain open.
+The frontier remains 61 YES + 8 NO; no new benchmark gain or superiority is
+claimed. Protected-category production promotion remains gated.

@@ -22,10 +22,12 @@ parser.add_argument('--export-helper-call-rows', action='store_true',
                     help='Export source call rows with checked finite helper prefixes')
 parser.add_argument('--export-stable-guarded', action='store_true',
                     help='Export established graph assembly with stable numeric bounds')
+parser.add_argument('--export-stable-mixed', action='store_true',
+                    help='Export relational graph assembly with structural and numeric SCC children')
 parser.add_argument('--extra-theory', type=Path, action='append', default=[])
 args = parser.parse_args()
 if sum((args.export_call_rows, args.export_partial_call_rows,
-        args.export_helper_call_rows, args.export_stable_guarded)) > 1:
+        args.export_helper_call_rows, args.export_stable_guarded, args.export_stable_mixed)) > 1:
     parser.error('select at most one export route')
 root = Path(__file__).resolve().parents[1]
 if args.save_heap:
@@ -61,6 +63,10 @@ if args.export_directory:
         export_theory = root / 'thys/Logic_Programming/LP_Prolog_Stable_Guarded_XML'
         export_constant = 'check_lpp_established_stable_guarded_xml'
         export_module = 'Prolog_Stable_Guarded_Generated'
+    if args.export_stable_mixed:
+        export_theory = root / 'thys/Logic_Programming/LP_Prolog_Stable_Mixed_XML'
+        export_constant = 'check_lpp_established_stable_mixed_xml'
+        export_module = 'Prolog_Stable_Mixed_Generated'
     driver.write_text(
         'theory Prolog_Integer_Recurrence_Export\n imports ' + json.dumps(str(export_theory)) + ' ' +
         json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code')) +
