@@ -1,0 +1,31 @@
+{
+  "status": "Shared evaluation and stable link soundness verified; full export, unified integration and replay pending; no new certified gains.",
+  "verified_attempts": [
+    704,
+    705
+  ],
+  "failed_attempts": {
+    "701": "Missing unfolding for stable-context ground enrichment.",
+    "702": "Finished imported shared link definition was reused from the heap; changed stable proof rejected.",
+    "703": "Explicit use_thy_legacy still reused the finished shared theory; changed stable proof rejected."
+  },
+  "heap_choice": "704 starts from pre-link heap309; 705 starts from704, rebuilding dependencies. Logs confirm changed Evaluation_Link and Stable_Link were loaded.",
+  "evidence": {
+    "target/prolog-stable-link-ground-701.log": "f57ead3a01f6ae18712a3317a0fd8c2dd8e523024635bf0f84df99b8a36870de",
+    "target/prolog-stable-link-ground-701-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-link-ground-702-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-link-ground-702.log": "ba327eed04d580e2d9a58ba2883dc5f2c7ead3766256c53f6064634df5f4ea90",
+    "target/prolog-stable-link-ground-703-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-link-ground-703.log": "97ba852c078d3db030495089eab87d595f10d7139d16ffca38b9039730a8c559",
+    "target/prolog-stable-link-ground-704-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-link-ground-704.log": "c53defef70e5f821af6083f58e681e227a1136786df3b9e34574210002a3d971",
+    "target/prolog-stable-link-ground-705-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-link-ground-705.log": "8592adddc6006decd1e94496de64be44fc4f1eedcb1a901b02c101686242dd7c",
+    "target/verify-stable-link-704.py": "3a804cb44b87e48dee415c3f1d995da01f5b842d3631e89169f38e2478718a31"
+  },
+  "source_files": {
+    "thys/Logic_Programming/LP_Prolog_Evaluation_Link.thy": "4c1efa83021ae83c3de14645dbdaaa82573fd2a7fca5c177a47fab8c56b5633a",
+    "thys/Logic_Programming/LP_Prolog_Stable_Link.thy": "91fec2fb47cb050074ef8e64e82a50cd5fde91ac369193b33415fc7abb7edf8b"
+  },
+  "archive_sha256": "ad593272faded72c7e425d710520cbce935fa5ab59da5e13cce1aa4491d65b33"
+}

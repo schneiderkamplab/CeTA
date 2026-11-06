@@ -42,9 +42,12 @@ proof -
       lpc_check_link_def lp_cut_check_interface_def)
   have unchanged: "lp_ieval (?norm x) eta'=eta' x" for x
     by (rule lp_cut_normalized_interface_valuation[OF equations norm])
-  have normalized: "lpp_stable_context_holds operation SP (lpp_source_context_subst source_context ?norm) eta'"
-    using observed by (simp add: lpp_stable_context_substitute unchanged)
-  have transport: "lpp_evaluation_context_transport T fs (lpp_source_context_subst source_context ?norm)
+  have enriched: "lpp_stable_context_holds operation SP (lpp_context_add_ground source_context G) eta'"
+    using observed known by (cases source_context)
+      (auto simp: lpp_stable_context_holds_def lpp_evaluation_context_holds_def lp_cut_knowledge_def list_all_iff)
+  have normalized: "lpp_stable_context_holds operation SP (lpp_source_context_subst (lpp_context_add_ground source_context G) ?norm) eta'"
+    using enriched by (simp add: lpp_stable_context_substitute unchanged)
+  have transport: "lpp_evaluation_context_transport T fs (lpp_source_context_subst (lpp_context_add_ground source_context G) ?norm)
       (contexts!?j) (lpcl_bindings e)"
     and context_bound: "?j<length contexts"
     using checked by (auto simp: lpp_check_evaluation_link_def)

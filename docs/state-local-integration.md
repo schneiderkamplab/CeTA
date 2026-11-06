@@ -1584,3 +1584,18 @@ frontier or installed executable changed.
 
 [Diagnostic and proof evidence](data/prolog-stable-row-diagnosis-20261106.json)
 preserves the diagnostic wrappers, build failures and results.
+
+## Checked ground knowledge across source links (2026-11-06)
+
+The shared evaluation link now adds its already checked ground knowledge to
+its source context before normalization and destination substitution. Both
+the evaluation and stable link witness theorems prove the resulting context
+from the existing knowledge premise. No integer, finite-spine or helper-return
+fact is inferred from groundness. The original root context remains empty.
+
+Attempts 704 and 705 verify the changed definitions from a pre-link heap and
+rebuild the dependent stable proof. Attempts 701–703 preserve a missing
+unfolding and two rejected attempts against a finished, stale imported theory.
+[Pinned evidence](data/prolog-stable-ground-link-20261106.json) records the
+verified sources and logs. Full source export, unified checks, semantic controls
+and strict replay remain pending. No benchmark gain is claimed.
