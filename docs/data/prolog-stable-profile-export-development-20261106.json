@@ -1,0 +1,69 @@
+{
+  "status": "Verified fixed integer profile, graph-root/XML soundness, Isabelle Haskell export, and GHC typecheck; not integrated into unified executable or native search; no benchmark gain",
+  "parent_commit": "1f5d67484c8ce234e8ad80be34f761d5a87ea2de",
+  "verified_attempts": [
+    682,
+    683,
+    685,
+    687
+  ],
+  "failed_attempts": {
+    "684": "unspaced output record equality parsed as asymptotic notation",
+    "686": "missing executable container instances for stable numeric keys"
+  },
+  "ghc_typecheck": {
+    "attempt": 688,
+    "exit_code": 0,
+    "scope": "Generated module and dependencies, no optimization or linking; redundant generated pattern warnings retained"
+  },
+  "common_export_files_unchanged": {
+    "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+    "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+    "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+    "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+    "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+    "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+    "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+  },
+  "new_export_sha256": "c05937725f830dd80543eb76191f020a18dc3a1c81e0ce2ee33fd497d6b5a2d9",
+  "archive": "docs/data/prolog-stable-profile-export-development-20261106.tar.gz",
+  "archive_sha256": "2692e1b170c1d3d073fbf5604be122dd4e6875a08c2530e14e114bbf8162535d",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Guarded_XML.thy": "4018e61bda7a906bbdef83dedd3eee1a7e7ffa71e3e83d369c77a36a4bca4e4e",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy": "e241c2dbc1b3b1c6fc0d9a073892911d3ca70100d1478c192470a7df9b1a33ae",
+    "thys/Logic_Programming/LP_Prolog_Stable_Profile_Operations.thy": "fc3b96ec4a3dc347d907b7dbf72a71adbff483496fe4704231f4687a934c1090",
+    "thys/Logic_Programming/LP_Prolog_Stable_Profile_Graph.thy": "3f05c0e748a53927deeae04b503f8b3ad7c5670dde44992bb67acc58c87e73d3",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Code_Setup.thy": "77041448a4acb80f075119368012296b8e6de21ad9cb239b98c2d9fb7da46684",
+    "target/prolog-stable-profile-682-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-profile-682.log": "01ed8af152c5b4bc6bda1e9f1db4d607bcf02d5171551454cf18e18bf8a9c624",
+    "target/prolog-stable-profile-graph-683-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-profile-graph-683.log": "0749078ebe3ede30a4c89944e1e5fb2dd51f0f8b41572221aeefa112680060e7",
+    "target/prolog-stable-xml-684-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-xml-684.log": "31c0862fdfde58dabdf4713e2ae9ba200b502ebe4a485cfda6c8db732ddfe18d",
+    "target/prolog-stable-xml-685-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-xml-685.log": "45aa4f4c932501210c0df9ec02544ea29e5254f338e5e94eefff2f86fa6025b9",
+    "target/prolog-stable-export-686-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-export-686.log": "2e1f00858046bbd538fb337dd2dd4d746ab32d86a036d75754e615ec4dbdbbd1",
+    "target/prolog-stable-export-687-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-export-687.log": "a7f1d509c500cf78876e902a6ddf28353a01163719455dd112d6a88151bb2128",
+    "target/prolog-stable-typecheck-688.log": "2ff9d16ea51039436ae434588c4ad04987af6de325ff28856d5a32c9f472ee9b",
+    "target/prolog-stable-export-687/Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+    "target/prolog-stable-export-687/Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+    "target/prolog-stable-export-687/Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+    "target/prolog-stable-export-687/Prolog_Stable_Guarded_Generated.hs": "c05937725f830dd80543eb76191f020a18dc3a1c81e0ce2ee33fd497d6b5a2d9",
+    "target/prolog-stable-export-687/Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+    "target/prolog-stable-export-687/Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+    "target/prolog-stable-export-687/Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+    "target/prolog-stable-export-687/Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+    "scripts/verify_prolog_recurrent_simulation.py": "5bd46b8f03c924a4ad5d740438ef605423f9500d15e1194f06a02a8a971d5d1d",
+    "thys/Logic_Programming/ROOT": "f29b0ae791d36c325ad700fcebe2cbaa3dd7ee3ac51e3c6bd0ae1c98074fecd6",
+    "target/prolog-stable-export-687/Prolog_Integer_Recurrence_Export.thy": "07a45bf2f381506cda5ddaba621f5f76db68adf7569ff727be2f5de8c45dffe9"
+  },
+  "remaining": [
+    "Original-source/profile audit including binary64 and resource-limited native operations",
+    "Unified checker integration and executable certificate controls",
+    "Native stable-row generation and common scheduler child integration",
+    "Real candidate gains, complete receipts and strict replay",
+    "Matched superiority comparison and protected-category release gate"
+  ]
+}

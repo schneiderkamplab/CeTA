@@ -1516,3 +1516,27 @@ preserves attempts 674–681. This is a semantic evaluator with a fixed operatio
 parameter, not a correspondence proof for the Rust implementation. Original
 binary64/profile binding, source coverage, export, and native integration remain
 open. No checker binary, guidance, or certified frontier changed (61 YES + 8 NO).
+
+## Stable arithmetic profile and source XML export (2026-11-06)
+
+The stable graph now has a fixed integer operation specification covering the
+existing exact unary and binary integer fragment. The graph theorem requires
+no certificate-supplied integer compatibility assumption. Operations outside
+that fragment retain one fixed partial interpretation; binary64 terms cannot
+be decoded as integers, and integer zero divisors produce no successful value.
+This is not yet an audited correspondence proof for the native source profile.
+
+`prologEstablishedStableSEGGuardedProof` binds the original graph assembly,
+transfer contracts, contexts, referenced Split components, projected observations,
+coordinate roles, complete numeric row receipts, and the common ITS child.
+Its parser contains no operation-table witness. Old source constructors remain
+unchanged. Isabelle verifies the source XML theorem and its dependency audit.
+The generated `Prolog_Stable_Guarded_Generated.hs` passes GHC type checking;
+shared generated support modules are byte-identical to the current LP manifest.
+
+[Development evidence](data/prolog-stable-profile-export-development-20261106.json)
+pins successful attempts 682, 683, 685, and 687, typecheck 688, the parser syntax
+failure 684, and the container-instance export failure 686. Generated checking
+logic was not edited. Unified dispatch, native stable-row synthesis, executable
+mutation controls, original-profile auditing, and new certified root replay
+remain open. No installed checker, guidance, or certified verdict changed.
