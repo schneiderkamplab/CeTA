@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Comparison
-  imports LP_Prolog_Stable_Integer_Compatibility
+  imports LP_Prolog_Stable_Integer_Compatibility LP_Prolog_Comparison_Failure
 begin
 
 definition lpp_stable_compare_values where
@@ -15,6 +15,21 @@ definition lpp_stable_compare_outcome where
       (outcome=LPPBuiltinError \<or> (\<exists>truth.
         lpp_stable_compare_values operation comparison a b truth \<and>
         outcome=(if truth then LPPBuiltinSuccess LPIVar else LPPBuiltinFailure))))"
+
+lemma lpp_stable_comparison_failure_complement:
+  assumes failed: "lpp_stable_compare_outcome operation c a b LPPBuiltinFailure"
+  shows "lpp_stable_compare_outcome operation (lpp_comparison_complement c) b a (LPPBuiltinSuccess LPIVar)"
+proof -
+  have finite: "lpp_finite_compare_outcome (lpp_comparison_complement c) b a (LPPBuiltinSuccess LPIVar)"
+    using failed lpp_finite_comparison_failure_complement
+    by (auto simp: lpp_stable_compare_outcome_def)
+  have truth: "lpp_stable_compare_values operation c a b False"
+    using failed by (auto simp: lpp_stable_compare_outcome_def split: if_splits)
+  have complement: "lpp_stable_compare_values operation (lpp_comparison_complement c) b a True"
+    using truth unfolding lpp_stable_compare_values_def
+    by (metis lpp_comparison_complement_truth)
+  show ?thesis using finite complement by (auto simp: lpp_stable_compare_outcome_def)
+qed
 
 lemma lpp_stable_compare_values_exact:
   assumes left: "lpp_stable_scalar_evaluation operation a v"

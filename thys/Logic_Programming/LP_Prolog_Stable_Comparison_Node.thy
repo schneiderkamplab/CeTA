@@ -16,6 +16,7 @@ theorem lpp_stable_comparison_node_sound:
     lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps tt) u)"
 proof -
   let ?observation = "LPPOComparison comparison (if reversed then b else a) (if reversed then a else b)"
+  let ?negative = "LPPOComparison (lpp_comparison_complement comparison) (if reversed then a else b) (if reversed then b else a)"
   have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs),active)#saved"
     and name: "lpp_comparison_descriptor f comparison reversed"
     using checked by (auto simp: lpp_check_evaluation_comparison_def)
@@ -25,14 +26,16 @@ proof -
     using step by (simp add: shape lpc_return_eval_def lpp_finite_source_domain_def)
   have actual: "event=None \<and>
     ((tt=lpc_return_eval eta ((LPCGoals gs,active)#saved) \<and> lpp_stable_observation_holds operation eta ?observation)
-      \<or> tt=lpc_return_eval eta saved \<or> tt=lpc_return_eval eta [])"
+      \<or> (tt=lpc_return_eval eta saved \<and> lpp_stable_observation_holds operation eta ?negative) \<or> tt=lpc_return_eval eta [])"
     using lpp_stable_comparison_step[OF name raw]
-    by (auto simp: shape lpc_return_eval_def split: if_splits)
+    by (auto simp: shape lpc_return_eval_def dest: lpp_stable_comparison_failure_complement split: if_splits)
   have equations: "lp_equations [] eta" by (simp add: lp_equations_def)
   have yes_link: "lpp_check_evaluation_link T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals gs,active)#saved)
     (lpcn_ground nd) (lpcn_guards nd) [] F (lpp_add_numeric_observation ?observation source_context) yes"
     and no_link: "lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved
-    (lpcn_ground nd) (lpcn_guards nd) [] F source_context no"
+    (lpcn_ground nd) (lpcn_guards nd) [] F source_context no \<or>
+    lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved
+    (lpcn_ground nd) (lpcn_guards nd) [] F (lpp_add_numeric_observation ?negative source_context) no"
     and error_link: "lpp_check_evaluation_link T error_facts fuel Q nds states contexts Fs nd []
     (lpcn_ground nd) (lpcn_guards nd) [] F source_context error_edge"
     using checked by (auto simp: lpp_check_evaluation_comparison_def)
@@ -41,7 +44,25 @@ proof -
       lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps (lpc_return_eval eta ((LPCGoals gs,active)#saved))) u"
     using lpp_stable_link_sound[OF compatible program yes_link equations refl known free]
       lpp_stable_context_add_observation[OF observed] by blast
-  show ?thesis using actual yes_step lpp_stable_link_sound[OF compatible program no_link equations refl known free observed]
+  have no_step: "lpp_stable_observation_holds operation eta ?negative \<Longrightarrow>
+    \<exists>u swaps. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
+      lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps (lpc_return_eval eta saved)) u"
+  proof -
+    assume negative: "lpp_stable_observation_holds operation eta ?negative"
+    have extended: "lpp_stable_context_holds operation SP (lpp_add_numeric_observation ?negative source_context) eta"
+      by (rule lpp_stable_context_add_observation[OF observed negative])
+    from no_link show ?thesis
+    proof
+      assume old: "lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved
+        (lpcn_ground nd) (lpcn_guards nd) [] F source_context no"
+      show ?thesis by (rule lpp_stable_link_sound[OF compatible program old equations refl known free observed])
+    next
+      assume refined: "lpp_check_evaluation_link T no_facts fuel Q nds states contexts Fs nd saved
+        (lpcn_ground nd) (lpcn_guards nd) [] F (lpp_add_numeric_observation ?negative source_context) no"
+      show ?thesis by (rule lpp_stable_link_sound[OF compatible program refined equations refl known free extended])
+    qed
+  qed
+  show ?thesis using actual yes_step no_step
     lpp_stable_link_sound[OF compatible program error_link equations refl known free observed] by blast
 qed
 

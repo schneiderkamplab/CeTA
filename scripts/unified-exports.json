@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "876c88b84d3abd4f6d5398f9d935ac05f26511c48616065bc95c9177b0078165",
+      "Prolog_Stable_Mixed_Generated.hs": "08e830569a46e89e871066ed50963e6a9e92b5f5961fb47bfa63fc758135d331",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "db262aa693ee4b1482b07b682cc36d3ff6255a93465e6559d4573c1b1aa7fe91",
+    "archive_sha256": "e04343c2bfd6af24c44c3f470b118d237a1567912f12d54231b55169399e246d",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -842,6 +842,17 @@
       "theories": {
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Conditions.thy": "fc530457b41351776cb9fff35f9d3be7ccfdcd2cd52fad8fc4baa781e7f9eb46",
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy": "995c9f561d857c7af88a5fdc2b5f29206a93f5f89623129ba8d32946c1d24a77"
+      }
+    },
+    "prolog_comparison_failure_integration": {
+      "verification": "target/prolog-failure-check-827.log",
+      "export": "target/prolog-failure-export-828",
+      "generated_sha256": "08e830569a46e89e871066ed50963e6a9e92b5f5961fb47bfa63fc758135d331",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Comparison_Failure.thy": "ccb722c9f2aa811271bfe7f007094a3efd71655fc692f07d3bef75ee67b7356c",
+        "thys/Logic_Programming/LP_Prolog_Evaluation_Comparison.thy": "e0aaff0a3a6ab0b5a8f0d441a5700ea5e4f8c5714762533ea8f6281e8780d989",
+        "thys/Logic_Programming/LP_Prolog_Stable_Comparison.thy": "49fe9ecb2d686fb9539ad2fa46253352b5fe572b4ab4b9b36f13823b1d375de1",
+        "thys/Logic_Programming/LP_Prolog_Stable_Comparison_Node.thy": "b3a86fba353ea83276352f5570a0a25ac6cafcba14686b6613764000d623ecd1"
       }
     }
   },

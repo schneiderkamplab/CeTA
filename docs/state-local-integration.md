@@ -1847,3 +1847,35 @@ certificate rechecking, not a fresh protected-category production replay.
 Unified checker SHA-256:
 `d111fb4b857ddd04619aa237c84f9facab52b73f72e60232d134ef55376ccf91`.
 [Pinned verification, export and integration evidence](data/prolog-selective-numeric-20261106.json).
+
+## Checked comparison failure on ordered Prolog alternatives (2026-11-06)
+
+The existing finite and stable comparison semantics now prove that a failed
+comparison justifies its complementary comparison with reversed operands.
+The evaluation comparison checker accepts either its legacy failure link or
+a link checked with that additional observation. Stable source soundness
+uses the actual failure outcome, preserving scalar behavior and uncaught
+errors. No integer type follows merely from groundness or comparison failure.
+Other source primitives and return-contract checkers remain shared.
+
+Verification 827 checks the full mixed source XML dependency graph without
+admissions. Export 828 regenerates `Prolog_Stable_Mixed_Generated.hs`, SHA-256
+`08e830569a46e89e871066ed50963e6a9e92b5f5961fb47bfa63fc758135d331`.
+Unified build 829, LP unit `ceta-lp-1.0-8c01b3149dc9e04d`, has checker SHA-256
+`15bc36b5dc974a7f2871c28e87735e25d093a009dafe122c92b378bc4c0d5a20`.
+Only verified exported code was installed; generated logic was not edited.
+
+`svcomp-java-break-c.pl` and a renamed bound-7 fixture pass native search and
+fresh strict replay, with source audits, two checks and complete authorized
+receipts. All 13 semantic/advice controls and 24 certificate checks pass,
+including removed failure branches, missing complementary observations,
+incorrect strict complements, stale backtracking facts and floating counter
+stagnation. Retention 830 rechecks all previous 67 YES + 8 NO Prolog proofs and
+84 YES + 9 NO LP-with-cut proofs twice using this same checker: 336 checks pass.
+This retention gate is certificate checking, not fresh protected-category
+native replay or production promotion.
+
+[The pinned evidence](data/prolog-comparison-failure-20261106.json) includes
+failed verification attempts, the successful formal export, native/strict
+receipts, rejection controls and retention logs. Ferrum's full-population replay
+and final frontier are recorded separately in its state-of-the-art report.
