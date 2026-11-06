@@ -1068,3 +1068,25 @@ This theorem preserves the fresh caller renaming introduced by resolution.
 Source-row composition must transport that renaming and the returned binding;
 replacing a helper call with flattened arithmetic instructions is insufficient.
 The existing unified executable and certified root count are unchanged.
+
+## Caller environment transport after helper returns, 2026-11-06
+
+`LP_Prolog_Helper_Caller_Environment` composes the actual helper return with
+the caller's remaining source body and external pending goals. Its environment
+includes both the fresh caller renaming and the output substitution. Saved
+alternatives remain outside that transformation.
+
+`LP_Prolog_Helper_Caller_Context` supplies a shared invariant for numeric
+observations and unused local names. It initializes from the established
+partial-call environment, preserves known integers through assignments and
+helper returns, and retains distinct fresh names for later local assignments.
+Unobserved head arguments remain arbitrary actual terms. The accompanying
+primitive lemmas justify source comparisons and assignments in the updated
+environment using the existing source rules.
+
+Gate 544 verifies all three theories and their dependency audits. Attempts
+538–543 retain missing extensional normalization, a global `args` collision,
+bound-goal normalization, reserved fact-label errors and an ambiguous theorem
+instantiation. No unchecked assumption, alternative source relation or checker
+export was introduced. The next assembly step is the checked sequence of
+arithmetic operations and helper calls, using these invariants.
