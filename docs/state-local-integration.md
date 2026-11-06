@@ -1116,3 +1116,21 @@ the helper source step; failures 545 and 547–549 record a reserved label,
 over-expansion by simplification and an unavailable list lemma. Source-clause
 selection/failure receipts and executable call-row assembly remain outstanding.
 The unified executable and certified root count are unchanged.
+
+## Exact source calls with finite arithmetic helper returns
+
+The new `prologHelperIntegerCallsProof` constructor composes checked finite
+helper returns with original clause selection, ordered failure alternatives,
+partial integer interfaces and pending continuations. Its numeric child is
+checked by the existing ITS checker. The soundness proof uses the existing
+Prolog execution relation and does not infer nontermination from a termination
+overapproximation. Helper success premises remain explicit in the transition.
+
+Formal verification, XML export and Haskell type checking pass; isolated unified
+build 563 has SHA-256
+`2ee69961d5c63cb7d64547608bc017df6acc44234cb565519ca6a5088d5fbb6a`.
+All existing generated modules and shared support files are preserved. The
+[pinned checker evidence](data/prolog-helper-call-checker-20261106.json) retains
+failed proof attempts as well as successful verification. Native benchmark,
+mutation and complete preservation replay gates remain pending at this point;
+this record claims no additional certified root or production promotion.

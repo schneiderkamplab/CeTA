@@ -98,7 +98,8 @@
       "-DLP_PROLOG_GUARDED",
       "-DLP_PROLOG_RECURRENCE",
       "-DLP_PROLOG_INTEGER_CALLS",
-      "-DLP_PROLOG_PARTIAL_INTEGER_CALLS"
+      "-DLP_PROLOG_PARTIAL_INTEGER_CALLS",
+      "-DLP_PROLOG_HELPER_INTEGER_CALLS"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -123,11 +124,12 @@
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
-      "Prolog_Partial_Integer_Calls_Generated.hs": "8516fa222b7dc00d7ddc227825120426afe03ec1af443cf9f7152a82e4123f12"
+      "Prolog_Partial_Integer_Calls_Generated.hs": "8516fa222b7dc00d7ddc227825120426afe03ec1af443cf9f7152a82e4123f12",
+      "Prolog_Helper_Integer_Calls_Generated.hs": "15d2d267419016e941cda379b8c3c905a586acf475047bb7d8906576fcaeb1a5"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-partial-integer-calls.tar.gz",
-    "archive_sha256": "695197c2656def69b39bedd33b0fff25c9282c6fb0e8fdd19115d9f6294c0cc2",
+    "archive": "tests/unified/exports/lp-source-helper-integer-calls.tar.gz",
+    "archive_sha256": "4a06a1f83651a9661d75299ca42c7eff647aadd7619aefd271d5bb0c4ab3dc42",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -706,6 +708,39 @@
         "thys/Logic_Programming/LP_Prolog_Partial_Integer_Prefix.thy": "bc148453f4537d1f16059b7237d5317d64c326fdf0db4f0851fc0b73e1524515",
         "thys/Logic_Programming/LP_Cut_Fresh_Head_Resolution.thy": "1af2ae6e5348c882cf72d0fd9038d5143ed24034a491303ca8a5ec38aedd4522",
         "thys/Logic_Programming/LP_Cut_Fresh_Head_Controls.thy": "be0a79641c5a0f4a39a0c3d6353a1e2b3d78c7d391b9c34fc34dbcc2338f9e25"
+      }
+    },
+    "prolog_helper_integer_calls": {
+      "verification_log": "target/prolog-helper-call-export-561.log",
+      "export_origin": "target/prolog-helper-call-export-561",
+      "shared_helpers_unchanged": true,
+      "source_theory_hashes": {
+        "thys/Logic_Programming/LP_Prolog_Helper_Return_Recipe_XML.thy": "524801af859b30a2df482cd55c9ab9542fc9cc1ab552edac6ec958c0af29d29a",
+        "thys/Logic_Programming/LP_Prolog_Helper_Symbolic.thy": "bb379d40965435c9ffb721f606b243a5dceceea9df00ddf11fbc8101bda71a9a",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_Relation.thy": "5c47c525ff1e388f5df80e8bc054efd67675f56270f4366f4138ff7616eab13e",
+        "thys/Logic_Programming/LP_Prolog_Helper_Caller_Environment.thy": "d03da2515f9e009c36726ba16fc9cc72363099f2d9d89d12b4a1f9ff01ae5b59",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_Interface.thy": "563bf4a44a806a82325133b7d028c6fbd77cd4dba37a951a6c06e6a04a1d685f",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_LTS.thy": "3d64c283a9e33cc080c9b20139f545fe03eae6cbd3eadd0c2cb7604b5c6ad94b",
+        "thys/Logic_Programming/LP_Prolog_Helper_Prefix_Sequence.thy": "efd2b127b71429a77a74f5fa111eced46759ab43eda6166d478b6684101cb35c",
+        "thys/Logic_Programming/LP_Prolog_Helper_Failure_Receipt.thy": "c864524247f6440c4830a151ca954a3db2e51399a96e9888c5cfd0a8bf67e965",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_Check.thy": "a615052e8c9cef1d4acdada67ffabf32a65768430667d13077ad6678149f5a34",
+        "thys/Logic_Programming/LP_Prolog_Helper_Clause_Selection.thy": "4611188f7aa3572c80e66e5d8d06555f29779fb3c784f0ad319fe55e76222fae",
+        "thys/Logic_Programming/LP_Prolog_Helper_Return_Recipe_Controls.thy": "2fa0ba9e2e3fc96e6c48a36ce887bab856ca10c7333bbe52ae01fbe898eba561",
+        "thys/Logic_Programming/LP_Prolog_Helper_Caller_Context.thy": "e585a2e19f1d203851129a2f6a6b90d2e747e8b79871767da7bf096ab39f64fd",
+        "thys/Logic_Programming/LP_Prolog_Helper_Prefix_Failure.thy": "ad7a8e9f4d43311b99d9ac8d492d3e1e93d15ec5bd2cfb353fbae5d91b4085a2",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_Row.thy": "11da261fca647ce8de038c61a9539b2bb553d50994c77f609f7e5daeffe60e03",
+        "thys/Logic_Programming/LP_Prolog_Helper_Return_Recipe.thy": "84f9e7f39f9304d1f7546b6fc88805bd2a0f6578d0e41aea64beaeb3a646c783",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_XML.thy": "e97a6876be47bc6635ff0d3f61685110b11cdfe5bebcad4be8ab1a98d9d05cd5",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_Query.thy": "1663840e1c7ff30f002c9c591b7d682dfa7ddac10495cca1a8c667bdb6b2c5f8",
+        "thys/Logic_Programming/LP_Prolog_Helper_Prefix_Check.thy": "e17be672940eea29a2ba4de7b219f6fdd7f12034375156fc08864298854c455c",
+        "thys/Logic_Programming/LP_Prolog_Helper_Prefix_Steps.thy": "34048ed10db09a270e3f653ea1939f46470453d5ed40e9a36f603557a58f0694",
+        "thys/Logic_Programming/LP_Prolog_Helper_Call_Formula.thy": "11cb64c88384ed50614abdb511c20f82ed476e453a2701674185b4ce9814facf",
+        "thys/Logic_Programming/LP_Prolog_Helper_Return_Continuation.thy": "9621e1a8b8df5920682b2c5e1a5a562543ee29928d8450fdef5e01470cd1ac58",
+        "thys/Logic_Programming/LP_Prolog_Helper_Caller_Primitives.thy": "fb88ee520ce3037074680cbd58784263d364e4d43daad9f0131d86a5de53829c",
+        "thys/Logic_Programming/LP_Prolog_Helper_Clause_Iteration.thy": "d0ea358b00a314449b8fbadbbd64dc6c5a04e5dbed5883b77ccc4c23316c023c",
+        "thys/Logic_Programming/LP_Prolog_Guarded_Helper_Return.thy": "877802bb863d5295cf70ba7e06d6a365cf81418ccb235b53a24ea0e12e46f4ea",
+        "thys/Logic_Programming/LP_Prolog_Integer_Helper_Return.thy": "4a247456c5f3f956dbbc628f2185bf63ce7e778cb8e312a66c6df47f0579015b",
+        "thys/Logic_Programming/LP_Prolog_Integer_Return_Assignment.thy": "6fc99baa72c9eaf919a6f7c583446c7f6e1f83880ae990942ba21e73233499f2"
       }
     }
   },
