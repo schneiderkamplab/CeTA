@@ -1616,3 +1616,21 @@ four-root benchmark cohort 1062 reaches residual solving but remains UNKNOWN
 on all four roots. This is no new benchmark gain, complete frontier replay or
 production promotion. [Pinned evidence](data/prolog-stable-ground-integration-20261106.json)
 includes the diagnostic wrapper, full export log, build and certificate checks.
+
+## Stable structural/numeric routing development (2026-11-06)
+
+The same observed call relation can now be partitioned by a checked natural
+rank. Same-rank rows remain mandatory component obligations; cross-rank calls
+must decrease. A finite coverage theorem bounds every row's source rank by the
+component proof-table size. The structural bridge separately requires checked
+finite-ground target arguments and child termination on those admissible calls;
+it does not assume termination on arbitrary rational terms or infer return
+contracts from termination. Ground output receipts use the existing path-type
+and observation rules.
+
+Attempts 717 and 724 verify these theorems and their dependency audits.
+[Evidence](data/prolog-stable-routing-development-20261106.json) preserves every
+failed proof attempt. This is a formal composition interface, not an exported
+checker constructor or a benchmark gain. Native mixed-child assembly, actual
+successful helper relation transport across Splits, XML integration, controls
+and strict benchmark replay remain open.

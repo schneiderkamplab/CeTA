@@ -1,0 +1,44 @@
+{
+  "status": "Routing, typed structural bridge and finite component coverage verified; native child assembly, XML export and benchmark discharge remain open. No checker binary or certified frontier changed.",
+  "verified_attempts": [
+    717,
+    724
+  ],
+  "source_hashes": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Routed_Calls.thy": "bb9287ff3560e3b38cb2ff2b72f6d2392c65012e97f8c769d31eddec4144cfb2",
+    "thys/Logic_Programming/LP_Prolog_Stable_Structural_Components.thy": "c1b7d7c5717eee1644cfd8c4ecc722360b2ca222fc3abc5f967833c75c484781",
+    "thys/Logic_Programming/LP_Prolog_Stable_Routing_Coverage.thy": "1ebb85ea95047ed26c40967177f0c43f62461e453de5827c94e08b39ac8d5874"
+  },
+  "evidence": {
+    "target/prolog-stable-routing-711-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-711.log": "53b5e84ca166888f2bbe8bc050b6177de44adf0c33d5d1d71a92891af174a057",
+    "target/prolog-stable-routing-712-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-712.log": "b315b273647c7c33415691b224bae0847c25d64bb2b2e08d134f5026cf51ccca",
+    "target/prolog-stable-routing-713.log": "66d8f79ec8c4660bc00ff11c3aeddcef44cba3e47b52fc586299c5ce55f033e5",
+    "target/prolog-stable-routing-713-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-714-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-714.log": "7fd6d503f3a6662c80b4d28ab4d783f62b3b5d058d086f577e7ea8e355cb403d",
+    "target/prolog-stable-routing-715.log": "b068c3addbae61fecc42d06e72d107bccb4a03ab6a38d5d4dd5438acf22ae3ac",
+    "target/prolog-stable-routing-715-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-716.log": "68c2bcabed36aca0c224a76921b625b5970d40ab7728d1703ebc8c7625b5fad4",
+    "target/prolog-stable-routing-716-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-717-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-routing-717.log": "330f18e0b589281097aea62a49e061c2253d9ca09439bb5824257c9a328880d3",
+    "target/prolog-stable-structural-718.log": "ccd8d7156f9d9e907c3826f9f3253b1c9e367ace939959249a13709373b5f307",
+    "target/prolog-stable-structural-718-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-structural-719-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-structural-719.log": "4cfdd21bb4b4cf4e0ef09e2265e2d37972105e7be7886ca581129a33222242c5",
+    "target/prolog-stable-structural-720.log": "6ebd084a7c2d1e6d4cb1ae1274724261ebc851b8fc2b9c8a58469c7092780d5d",
+    "target/prolog-stable-structural-720-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-coverage-721-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-coverage-721.log": "bfb72ab8d0aaac0f5ed42a2f537de7bb080619e51e14b120b2f3c2f0d1c32a1d",
+    "target/prolog-stable-routing-coverage-722.log": "7792e07f8d9a3ad847cdc425b24efb2f924b5931ecc147dcf53549e335ab7bf7",
+    "target/prolog-stable-routing-coverage-722-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-coverage-723-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-routing-coverage-723.log": "c9c78e19b2b3d1567212a1a205bc51982779e59d3b6bb952b27422fd55b7496e",
+    "target/prolog-stable-routing-coverage-724.log": "d6bf2ef34ce024b20697d7d2859d630f69ac4f4f5266c0ad59415e09c08c7fad",
+    "target/prolog-stable-routing-coverage-724-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "archive_sha256": "17423762a035ff80dd30e198b4ec673f9ac1c2f32d324e6aab312bbd28be22ef",
+  "failed_attempts": "711-716: existential witness construction, shared row/program variable type, reserved rank identifier, and same-rank row witness. 718-723: higher-order evaluation premise, shared type binding and structural simulation witness. No failed attempt is validation."
+}
