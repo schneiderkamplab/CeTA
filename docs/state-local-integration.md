@@ -1347,3 +1347,29 @@ rewrites), full referenced-module assembly, original-profile coverage and native
 bound projection remain outstanding. No checker export or guidance changed, and
 no benchmark gain is claimed: the frontier remains 61 YES + 8 NO. Semantic mutation
 controls and complete strict replay remain required before any gain counts.
+
+## Stable module actions, control contracts and observed triples
+
+Gates 625–626 verify constant `is/2` and length normalization using existing
+receipts and shared equality. Length keeps its existing finite-result semantics;
+this development does not assign a structural measure to a cyclic spine.
+Gate 628 checks the remaining module-action cases: equation and clause rewrites,
+finite comparison/evaluation errors, trimming, parallel saved alternatives,
+refuted contexts, evaluation and length. Finite-error contracts transfer through
+an explicitly proved transition refinement that preserves termination and every
+actual answer. Gate 627 retains the unfinished automated path-coverage proof;
+628 uses explicit inclusion of paths and emitted answers.
+
+Gate 629 verifies complete local control contracts, including separately checked
+local context strengthening, all boundary obligations, invariants, scopes and
+emissions. Gate 630 connects these contracts to observed triples and actual-return
+model obligations. The existing control tables, checks and receipts are reused.
+The stable triple contract instantiates the shared answer contract with the
+stable builtin interpretation; it does not define another operational semantics.
+
+[Pinned control-development evidence](data/prolog-stable-control-development-20261106.json)
+archives every attempt 625–630 and the final theories. Successful gates have no
+skipped proofs or oracle dependencies. Referenced-module region and Split parent
+contracts, original-profile coverage, native bound projection, residual discharge
+and mutation/strict replay remain outstanding. No export or guidance changed;
+the certified frontier remains 61 YES + 8 NO.

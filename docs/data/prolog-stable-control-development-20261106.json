@@ -1,0 +1,45 @@
+{
+  "status": "verified module-control and observed-triple development; no exported source certificate or benchmark gain",
+  "parent_commit": "1c91983",
+  "verified_attempts": [
+    625,
+    626,
+    628,
+    629,
+    630
+  ],
+  "archive": "docs/data/prolog-stable-control-development-20261106.tar.gz",
+  "archive_sha256": "1e178f6868b8e407db713983a2cb823e82febe0fd87792a419296e7d038710a5",
+  "files": {
+    "target/prolog-stable-constant-625.log": "a80050a69a903f6afc44e512317c7f1266da25d87e2a90f3189c60d773131bed",
+    "target/prolog-stable-constant-driver-625.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-contract-refinement-627.log": "1fdc29cfaead4b4eb1840cc428c4c50b3870b5962fe77013a2e4ca906c389c7d",
+    "target/prolog-stable-contract-refinement-driver-627.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-control-629.log": "819fab8e86a6c52409898be789443df25386412e295f0774f349c05fb06b3e70",
+    "target/prolog-stable-control-driver-629.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-length-626.log": "7aa58920804c01dd91924318ab3c27707c60b9e343c87223e6235481bbbcc450",
+    "target/prolog-stable-length-driver-626.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-module-action-628.log": "a9731f7c21c3bf8b0b7bfed21899a103c783fa151da7caccbd9e5560026f1cf9",
+    "target/prolog-stable-module-action-driver-628.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-triple-observed-630.log": "ad9b40ff88438d7eb8bf1703ce53377b542731e9b51bf1edec4ddfd375a99f00",
+    "target/prolog-stable-triple-observed-driver-630.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Constant.thy": "d854ee7c49dac524392a63cca0ae04929fc4af680846b41e2c29a35cac49f213",
+    "thys/Logic_Programming/LP_Prolog_Stable_Length.thy": "bad303d14a6d064206412486b34799d5faff7f091255a33c763f15e73f777131",
+    "thys/Logic_Programming/LP_Prolog_Stable_Contract_Refinement.thy": "26a4ed223b81f8d90972fadaf846382beb00a683178d1cd3fdd6bf392d9270a9",
+    "thys/Logic_Programming/LP_Prolog_Stable_Equation_Rewrite.thy": "cb0ac40fc99f29d80e24c1ab7e871ed5e3a334ceb341108ef7df39245e4a42a8",
+    "thys/Logic_Programming/LP_Prolog_Stable_Module_Action.thy": "3457f175d1d4cbf544ab97bdb05481f63e38dc19e34e42b77c0c186db9cac7f3",
+    "thys/Logic_Programming/LP_Prolog_Stable_Control.thy": "374c195456532372ab851f7ef93f27cec0eed84285b479f8ab959a99f7d1744e",
+    "thys/Logic_Programming/LP_Prolog_Stable_Triple_Observed.thy": "aa66335a4648483b0d4be7a4f8e1969bf5e0606ebad58b9151ffa7029c5501a9"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "referenced-module region and Split parent contracts",
+    "original source-profile coverage",
+    "native bound-coordinate projection and common residual discharge",
+    "mutation controls and complete strict replay"
+  ]
+}
