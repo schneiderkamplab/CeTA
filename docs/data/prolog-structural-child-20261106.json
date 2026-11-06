@@ -1,0 +1,54 @@
+{
+  "scope": "Complete row-to-entry coverage and shared PiDP child binding; no unified export or benchmark gain",
+  "verified_attempts": [
+    758
+  ],
+  "failed_attempts": [
+    748,
+    749,
+    750,
+    751,
+    752,
+    753,
+    754,
+    755,
+    756,
+    757
+  ],
+  "interrupted_attempts": {
+    "750": "Stopped automated conjunction proof search after about one minute; replaced with direct theorem applications"
+  },
+  "failure_resolution": "Explicit variable types, entry conjunction, indexed receipt lookup and runtime term types",
+  "verified_heap": "target/prolog-structural-child-758.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Structural_Coverage.thy": "00a28b38709dcaaebf359013e912bfe756a3e83c2696aef7c51d68b9a361ec0f",
+    "thys/Logic_Programming/LP_Prolog_Stable_Structural_Child.thy": "472cf52f1836224f91c2cebd1415faa0965986e71b2b155b9695dbc533b6cfdb",
+    "target/prolog-structural-coverage-748.log": "773e82a194f993f07312fbd320ac14b0d9ed33247749743db69869859706bb59",
+    "target/prolog-structural-coverage-748-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-coverage-749.log": "96685eab95cca4f8d4b8e9ecdfebfd1aa71cfaf857a775c3d04d2e482440b36c",
+    "target/prolog-structural-coverage-749-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-750.log": "e28a28c006aef403f718c7bb7eaa948bf8180551b5bd1a8bc9ef909ca86a003e",
+    "target/prolog-structural-child-750-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-751.log": "d215118c8aacbe0976102b89096449cf8c36e975f01265118e7623f9884ef24c",
+    "target/prolog-structural-child-751-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-752.log": "43ec511f725379cd246f2edca7ece1795032f1adb412b5d1b75bf9604cb87297",
+    "target/prolog-structural-child-752-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-753.log": "8e89aee284ff803a5f2cdebb6acdf1112d36b47b84b9cec017b517aca5dfe21e",
+    "target/prolog-structural-child-753-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-754.log": "2c7fb10fac03cf5bc8bb6ecffb569b44b1908220983c69f5855e220b1b89c844",
+    "target/prolog-structural-child-754-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-755.log": "538639af8c0e7672900bff369dbd25ce7f29e99696a7b6d081329edd4690587e",
+    "target/prolog-structural-child-755-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-756.log": "a5b50f8a200a9ea6cce545ca9c19609464bc53b8c5afe38c600c2ee2a405987e",
+    "target/prolog-structural-child-756-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-757.log": "339f10e232e8c21b98f0839dabbdfcaab423f7bb227f3f3d5f766eafd5cb83c0",
+    "target/prolog-structural-child-757-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-child-758.log": "f2685529fd8e9ae64f05cc0aec7c566b1b761d6e6cf74312ed6cc7da171f3d0a",
+    "target/prolog-structural-child-758-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Native synthesis and mixed-backend assembly",
+    "Unified export and semantic mutations",
+    "Strict benchmark replay"
+  ]
+}

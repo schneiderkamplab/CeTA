@@ -1721,3 +1721,18 @@ explicit runtime-type/pair reconstruction fixes.
 Executable row-to-entry coverage and child-certificate binding remain open,
 as do native assembly, export, controls and benchmark replay. No certified
 frontier or unified executable changed.
+
+## Structural coverage and PiDP child binding (2026-11-06)
+
+The structural component bridge now checks an entry slot and transfer evidence
+for every row. Receipt length, slot bounds, target predicate/arity and selected
+finite-ground positions are mandatory. The child binding requires exact erased
+component triples, retained success clauses and a shared PiDP check for every
+entry. Its soundness theorem discharges the stable observed component relation.
+
+Attempt 758 passes both theories and dependency audits.
+[Evidence](data/prolog-structural-child-20261106.json) retains attempts 748–758,
+including the interrupted automated proof and explicit type/index fixes.
+Native synthesis, mixed-backend assembly, unified export, semantic mutations
+and strict benchmark replay remain open. No certified gain or changed unified
+executable is claimed.
