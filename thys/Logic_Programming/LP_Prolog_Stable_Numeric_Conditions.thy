@@ -3,7 +3,8 @@ theory LP_Prolog_Stable_Numeric_Conditions
 begin
 
 datatype 'v lpp_stable_condition_receipt =
-    LPPStableIntegerCondition "'v lpp_numeric_condition"
+    LPPStableIgnoredCondition
+  | LPPStableIntegerCondition "'v lpp_numeric_condition"
   | LPPStableUpperCondition "'v lpp_integer_expression" "(string lp_cut_symbol,'v) term"
 
 fun lpp_check_stable_numeric_observation where
@@ -11,12 +12,14 @@ fun lpp_check_stable_numeric_observation where
     lpp_check_numeric_observation K observation test"
 | "lpp_check_stable_numeric_observation K observation (LPPStableUpperCondition expression bound_term) =
     lpp_check_stable_upper_observation K observation expression bound_term"
+| "lpp_check_stable_numeric_observation K observation LPPStableIgnoredCondition = True"
 
 fun lpp_stable_numeric_condition where
   "lpp_stable_numeric_condition (LPPStableIntegerCondition test) =
     lpp_rename_numeric_condition LPPIntegerKey test"
 | "lpp_stable_numeric_condition (LPPStableUpperCondition expression bound_term) =
     lpp_stable_upper_condition expression bound_term"
+| "lpp_stable_numeric_condition LPPStableIgnoredCondition = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 
 lemma lpp_stable_observation_finite_envelope:
   assumes compatible: "lpp_stable_integer_operations operation"
@@ -33,6 +36,9 @@ theorem lpp_checked_stable_numeric_condition:
   shows "lpp_numeric_condition_holds (lpp_stable_key_value operation eta source_values)
     (lpp_stable_numeric_condition receipt)"
 proof (cases receipt)
+  case LPPStableIgnoredCondition
+  then show ?thesis by simp
+next
   case (LPPStableIntegerCondition test)
   have check: "lpp_check_numeric_observation K observation test"
     using checked by (simp add: LPPStableIntegerCondition)

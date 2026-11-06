@@ -18,6 +18,7 @@ definition lpp_stable_endpoint_parser where
 
 definition lpp_stable_condition_parser where
   "lpp_stable_condition_parser =
+    (XMLdo (STR ''ignoredCondition'') {xml_return LPPStableIgnoredCondition}) XMLor
     (XMLdo (STR ''integerCondition'') {
       comparison\<leftarrow>lpp_numeric_comparison_parser;
       a\<leftarrow>lpp_integer_expression_parser; b\<leftarrow>lpp_integer_expression_parser;

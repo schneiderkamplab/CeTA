@@ -1824,3 +1824,26 @@ certificates pass twice (808); this rechecking is not fresh full-frontier replay
 failed attempts and corrected harnesses. The 151-root remaining-gap experiment,
 full-frontier guidance replay, superiority comparison and protected-category
 production promotion are still pending at this checkpoint.
+
+## Selective numeric observations, 2026-11-06
+
+The stable numeric condition checker admits an explicit ignored-observation
+receipt whose numeric consequence is only `0 = 0`. The original source
+observation, row, endpoints, bindings, source operations and dependencies remain
+checked. The receipt supplies neither integer typing nor any nontrivial numeric
+fact. This lets an arithmetic backend retain supported constraints instead of
+forcing the whole component through structural erasure.
+
+Verification 813 reloads the affected theory and its dependents from the current
+verified heap 804; export 814 and unified `make ceta` build 815 pass. Attempt 812
+used an older heap with incompatible cached upstream context theories and is
+retained as a failed attempt. Generated Haskell was not edited.
+
+The same checker accepts three native/strict positives, including the real
+`svcomp-twisted-c.pl` root and a renamed modulus-3 fixture, with 11 semantic/advice
+controls and 20 certificate mutation checks. All 74 previously retained Prolog
+and 93 LP-with-cut certificates pass twice (334 checks). Cut retention is
+certificate rechecking, not a fresh protected-category production replay.
+Unified checker SHA-256:
+`d111fb4b857ddd04619aa237c84f9facab52b73f72e60232d134ef55376ccf91`.
+[Pinned verification, export and integration evidence](data/prolog-selective-numeric-20261106.json).
