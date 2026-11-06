@@ -1,0 +1,22 @@
+{
+  "scope": "Boolean relational Split check and compatible component wrapper; not exported to unified checker",
+  "verified_attempts": [
+    731,
+    732
+  ],
+  "verified_heap": "target/prolog-stable-relational-component-732.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_Check.thy": "2ac0e0ee55467af6dae39c76ec83224246109188a7d8f01a1406a409e4827388",
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_Component.thy": "4a7ff9fec753d45f19914265395229f5b9009de968ea7d135b4293ffd9def7b6",
+    "target/prolog-stable-relational-check-731.log": "caffb3f0c87a683631f77b4d9e0ea78176b5b831cebcd303185a3e7907e2e4cd",
+    "target/prolog-stable-relational-check-731-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-relational-component-732.log": "50a7e96e8796aad21d2768c84e601133e79db4ca8d25f4e0ee3b8dccdfa30274",
+    "target/prolog-stable-relational-component-732-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Whole graph constructor and export",
+    "Native model and context assembly",
+    "Mixed residual children",
+    "Mutation controls and strict benchmark replay"
+  ]
+}

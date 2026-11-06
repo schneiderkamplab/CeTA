@@ -1663,3 +1663,16 @@ Attempts 728–730 pass verification and dependency audits.
 three runs. Executable constructor integration, native global model coverage,
 mixed residual children, mutation controls and benchmark replay remain open.
 No unified executable changed and no benchmark gain is claimed.
+
+## Relational Split check and component wrapper (2026-11-06)
+
+A Boolean check now binds the helper atom, success-model identity, ground return
+receipt, continuation interface and both observed-call descent receipts. Its
+soundness theorem discharges the relational Split composition obligations. A
+new component wrapper supports that check alongside every existing finite
+component/descent pair, reusing their stable soundness theorem.
+
+Attempts 731 and 732 pass verification and dependency audits.
+[Evidence](data/prolog-stable-relational-check-20261106.json) pins both theories
+and logs. The whole-graph constructor, code export, native assembly and benchmark
+validation remain open. No unified executable or certified frontier changed.
