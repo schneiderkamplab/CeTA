@@ -2,6 +2,15 @@ theory LP_Prolog_Stable_Numeric_Rows
  imports LP_Prolog_Stable_Endpoint_Tuples
 begin
 
+text \<open>Ground, equation and shape observations remain available for checked
+context and endpoint evidence. Only evaluations and comparisons contribute
+arithmetic constraints to the projected transition.\<close>
+
+fun lpp_stable_constraint_observation where
+  "lpp_stable_constraint_observation (LPPOEvaluation e r) = True"
+| "lpp_stable_constraint_observation (LPPOComparison c a b) = True"
+| "lpp_stable_constraint_observation _ = False"
+
 record 'v lpp_stable_numeric_call_receipt =
   lppsnc_facts :: "'v lpp_transfer_fact list"
   lppsnc_ground :: "'v list"
@@ -21,7 +30,7 @@ definition lpp_check_stable_numeric_call_row where
       in lpp_check_path_types T ps gs (lppsnc_facts receipt) \<and>
         set G \<subseteq> set K \<union> lpp_observations_ground os \<and>
         lpp_check_stable_numeric_path K G inputs outputs
-          (filter lpp_numeric_constraint_observation os) (lppsnc_tests receipt) bindings formula \<and>
+          (filter lpp_stable_constraint_observation os) (lppsnc_tests receipt) bindings formula \<and>
         lpp_check_stable_numeric_bindings inputs outputs bindings \<and>
         map fst inputs=coordinates (fst h) \<and>
         map (lpp_stable_endpoint_mode o snd o snd) inputs=modes (fst h) \<and>

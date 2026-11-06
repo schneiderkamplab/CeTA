@@ -1565,3 +1565,22 @@ the initial retention-harness schema error 691. Ferrum `1f1f8e2` separately adds
 native stable condition receipts with three passing focused tests. Complete
 native row generation, scheduler integration, stable-bound source audits and
 benchmark gains remain open. No production promotion or new frontier is claimed.
+
+## Stable source row diagnosis (2026-11-06)
+
+Native bounded-loop certificates 1059/1060 remain rejected by unified checker
+689. Diagnostic attempts 696–700 isolate two independent failures: numeric
+observation coverage and the entry region's evaluation-context transport.
+The ITS proof, transfer contracts, headers, endpoint roles, bindings and exact
+transition formula checks pass. Diagnostics are not certificate verdicts.
+
+The stable numeric row now selects evaluations and comparisons for arithmetic
+condition receipts. Ground, equation and shape observations remain in the
+source row and continue to justify checked context and endpoint evidence.
+Attempt 699 reloads the changed row theory and verifies the call-step soundness
+theorem with its dependency audit. Shared ground-link transport, regeneration,
+unified checking, controls and fresh strict replay remain open. No certified
+frontier or installed executable changed.
+
+[Diagnostic and proof evidence](data/prolog-stable-row-diagnosis-20261106.json)
+preserves the diagnostic wrappers, build failures and results.

@@ -1,0 +1,29 @@
+{
+  "status": "Numeric row soundness correction verified; shared ground-link proof and rebuilt unified checking remain open. No new certified gains.",
+  "diagnosis": "Ground/equation/shape observations were incorrectly required to have arithmetic condition receipts; retain them for context and endpoint evidence, filter only evaluation/comparison for numeric tests.",
+  "verified_attempt": 699,
+  "source_files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Rows.thy": "25156afe23965cac43a9a8a1a825d9ec65dbfa9ea18f43e17170ee93a538341d",
+    "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Call_Step.thy": "cb140ea354b6fd87cdc83a9101867c020063578f92ed3819b46551c76bfe89e9"
+  },
+  "evidence": {
+    "target/prolog-stable-constraint-filter-699.log": "3cef1972d4bb2d5df623e6bea1109844ce90e8a8c3106fc4a4739534a34d213f",
+    "target/prolog-stable-constraint-filter-699-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-diagnostic-696/result.txt": "7557de4d7a8c35cb095834b046c44b37dee5366dc8bedcab894cbae56646b104",
+    "target/prolog-stable-diagnostic-696/build-detail.log": "a651f827948791e09e1227283eee0e2fbbb8fad3b6f6337ce7cfd9061601a4dd",
+    "target/prolog-stable-diagnostic-696/build-retry.log": "a9a2d5e359211138a8bb5e07c0e4223d664b0c32ac9b1be6b0903f4a6fd6175e",
+    "target/prolog-stable-diagnostic-696/build.log": "9a665bc9f451c2f36b957a06937b89804d90a28fac9fd2ae7afa4d90df479d2b",
+    "target/prolog-stable-diagnostic-696/Main.hs": "b56b0c05e561758ab3f91717ba735d719c581a1cc6d95ec66fc4d1d433148e77",
+    "target/prolog-stable-diagnostic-697/build.log": "f63eed76601e05fc1ef3de73709310c170671562011ad2c46ed24a00b2adc1c5",
+    "target/prolog-stable-diagnostic-697/Main.hs": "363e343216b9796b477d424a3a4f33c5b8c27c1397e7c4afcd122bfdfa662979",
+    "target/prolog-stable-diagnostic-697/result.txt": "7d5f6e6fc72aeb1260f378670eb81d743ebedc2e74a96d88e3e19a7fa1f00c7f",
+    "target/prolog-stable-diagnostic-698/build.log": "d46205cbe47d977a63d9e213114422c5c8c2a0f473a03af49300e437caa46615",
+    "target/prolog-stable-diagnostic-698/result.txt": "b695615de098d7fb698064566f8b539ad8ab8fa3a4c941e42223037aad4d1999",
+    "target/prolog-stable-diagnostic-698/build-retry.log": "c78141c5f34e7bb66af97fe1b3a3b13795fb70e3e3e073d0905295a5475aaa00",
+    "target/prolog-stable-diagnostic-698/Main.hs": "46bd520152607337baa57dea1e21d2dcd47577b80e88bef7bda41864c1a59b7b",
+    "target/prolog-stable-diagnostic-700/Main.hs": "505a726caec91b173bb1a538612878d041e35cc7a3a447c95888a154769945fc",
+    "target/prolog-stable-diagnostic-700/build.log": "456801228542e44642274aad4663bbf232113660622e00037a195a520e26c71b",
+    "target/prolog-stable-diagnostic-700/result.txt": "2cbee31cb050075cabd5c6d1d64a02aad2b84ab61c7623ce123eff37913d7ba3"
+  },
+  "archive_sha256": "e608c646c43e51cc58105bc9f6694ca979c45c43dce3edbdbf9884a4d60cff36"
+}
