@@ -1373,3 +1373,30 @@ skipped proofs or oracle dependencies. Referenced-module region and Split parent
 contracts, original-profile coverage, native bound projection, residual discharge
 and mutation/strict replay remain outstanding. No export or guidance changed;
 the certified frontier remains 61 YES + 8 NO.
+
+## Stable parent composition and checked helper returns
+
+Gates 631–633 and 635–638 verify actual-answer triple contracts, checked
+instance interfaces, guarded connections and regions, captured inputs, nested
+Split composition, finite referenced-module induction and preserved-context
+Splits. Existing graph tables, scopes, transport and return receipts are reused.
+Every represented module must supply its local contract; a residual termination
+proof cannot discharge helper returns or omit a dependency.
+
+Gates 641 and 643 verify transition refinement for actual answers and reuse
+existing integer, ground and shape return receipts. Strong arithmetic contexts
+are preserved from initialized inputs; returned facts are established by the
+existing analyses of actual successful execution. The finite envelope is used
+only to reuse those analyses, not to replace the stronger parent context.
+Combined return receipts now discharge the continuation-context premise of the
+corresponding guarded Split contracts.
+
+[Pinned parent and return evidence](data/prolog-stable-parent-returns-development-20261106.json)
+retains attempts 631–643, including a constant-name collision, two unfinished
+proof steps and a redundant copied proof corrected before the passing gate.
+Successful gates reject skipped proofs and oracle dependencies. These are
+source-proof development results: stable observed-call descent, checked numeric
+bound projection, original-profile coverage, native assembly and export remain
+unfinished. No checker binary or guidance changed. The certified frontier
+remains 61 YES + 8 NO; mutation controls and complete strict replay are required
+before counting any gain.
