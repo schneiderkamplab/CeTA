@@ -1634,3 +1634,17 @@ failed proof attempt. This is a formal composition interface, not an exported
 checker constructor or a benchmark gain. Native mixed-child assembly, actual
 successful helper relation transport across Splits, XML integration, controls
 and strict benchmark replay remain open.
+
+## Stable relational helper returns (2026-11-06)
+
+The stable source interpretation now instantiates the shared actual-return
+model theorem. A successful helper call can be retained in the caller context
+under checked source-program and builtin-model coverage. The saved-frame lemma
+recovers the actual helper environment before adding the relation and preserves
+incoming ground knowledge. It does not annotate failure alternatives or infer
+a successful return from a termination proof.
+
+Attempts 725 and 727 pass verification and dependency audits; failed attempt
+726 is retained in the [evidence](data/prolog-stable-relational-return-20261106.json).
+The Split interface, native assembly and exported checker still need to consume
+this theorem. There is no new benchmark gain or changed unified executable.

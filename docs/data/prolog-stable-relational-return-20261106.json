@@ -1,0 +1,27 @@
+{
+  "scope": "Verified stable actual successful helper relation and saved return frame transport; no exported checker or benchmark gain",
+  "verified_attempts": [
+    725,
+    727
+  ],
+  "failed_attempts": {
+    "726": "Reserved Isar keyword context used as fact name; renamed returned_context"
+  },
+  "base_heap": "target/prolog-stable-routing-coverage-724.heap",
+  "verified_heap": "target/prolog-stable-relational-return-727.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_Return.thy": "cdce0bf524a09c8eeb05de1a396d765d58a28ad56d9176c0a243df01900acafe",
+    "target/prolog-stable-relational-return-725.log": "d782dd923382345fc4861c1028fd763534f5ff6c979fdcc50dc5576170757e43",
+    "target/prolog-stable-relational-return-725-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-relational-return-726.log": "164ffba980eb8f9e4ae0c8ad945957bee8b61ec9dd8048cb3c5f3339b4aab701",
+    "target/prolog-stable-relational-return-726-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-relational-return-727.log": "8e562919e59ca4a395f0f3ff33369a27210aa714ed9b1afad2bda0ec8df440ec",
+    "target/prolog-stable-relational-return-727-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Split checker constructor and model coverage",
+    "Native assembly",
+    "Unified export and semantic mutation controls",
+    "Strict benchmark replay"
+  ]
+}
