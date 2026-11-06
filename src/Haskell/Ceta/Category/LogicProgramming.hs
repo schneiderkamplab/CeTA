@@ -31,6 +31,9 @@ import qualified Prolog_Guarded_Generated as PG
 #ifdef LP_PROLOG_RECURRENCE
 import qualified Prolog_Recurrence_Generated as PREC
 #endif
+#ifdef LP_PROLOG_PARTIAL_INTEGER_CALLS
+import qualified Prolog_Partial_Integer_Calls_Generated as PPIC
+#endif
 #ifdef LP_PROLOG_INTEGER_CALLS
 import qualified Prolog_Integer_Calls_Generated as PIC
 #endif
@@ -128,6 +131,9 @@ runProlog [path] = do
       PS.check_lpp_module_triples_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG"
     else if
+#ifdef LP_PROLOG_PARTIAL_INTEGER_CALLS
+      PPIC.check_lpp_partial_integer_calls_xml (cachedCharacters PPIC.explode input) ||
+#endif
 #ifdef LP_PROLOG_INTEGER_CALLS
       PIC.check_lpp_integer_calls_xml (cachedCharacters PIC.explode input) ||
 #endif

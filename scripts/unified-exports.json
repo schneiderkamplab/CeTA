@@ -97,7 +97,8 @@
       "-DLP_PROLOG_RATIONAL_NO",
       "-DLP_PROLOG_GUARDED",
       "-DLP_PROLOG_RECURRENCE",
-      "-DLP_PROLOG_INTEGER_CALLS"
+      "-DLP_PROLOG_INTEGER_CALLS",
+      "-DLP_PROLOG_PARTIAL_INTEGER_CALLS"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -121,11 +122,12 @@
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
-      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+      "Prolog_Partial_Integer_Calls_Generated.hs": "8516fa222b7dc00d7ddc227825120426afe03ec1af443cf9f7152a82e4123f12"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-integer-calls.tar.gz",
-    "archive_sha256": "8c35447edae10969b612316fbb31528722df5e6fc65d31cc5e9fb832e67bfa41",
+    "archive": "tests/unified/exports/lp-source-partial-integer-calls.tar.gz",
+    "archive_sha256": "695197c2656def69b39bedd33b0fff25c9282c6fb0e8fdd19115d9f6294c0cc2",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -683,6 +685,28 @@
         "thys/Logic_Programming/LP_Source_Recurrent_Simulation.thy": "30610c4d31ad6113ff8cbfff4c222093468781bb291bad0e049ae2c3a4407066"
       },
       "shared_helpers_unchanged": true
+    },
+    "prolog_partial_integer_calls": {
+      "verification_log": "target/prolog-partial-export-519.log",
+      "export_origin": "target/prolog-partial-export-519",
+      "shared_helpers_unchanged": true,
+      "source_theory_hashes": {
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Iteration.thy": "53f0a1424c1125a75726eacc1b33f5a32056ab89dd7e58609b62edc18577f64c",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Relation.thy": "e3b971c58285da6d363dfe976d528812ed9769766a9a1cc1ef115d67db6e28a1",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_XML.thy": "f4832e6e67404ee6e8c04c52a59243b34795f00abdf4aed9657df7194259e482",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Interface.thy": "6f915892c849f8e5e3d371240d0ccb22a4f02f73497bf4e9dc7d58c5b3b2b377",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Failure.thy": "3a847d4dbb37bf35a795e4f6cb238355e69b20234765fc5d03aedb3531458316",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Receipt.thy": "d72d7dc0c604821ad80b3317353ea69ee07a6acbaa33ef78177e3ab9b8f629f2",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Body.thy": "fca3d0285a18c533e36eb9c2f83bfb3ef79d3b6189d22413379f39418863611a",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_LTS.thy": "e7a05406d4f629037c816697c793ce0b04d42ba8c27a22f69e333fbae0535d46",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Check.thy": "97fff7a09481b2e6c251f8bcaa1d0b1821fb78175d380f1d0642ddcb5ca25ee8",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Query.thy": "dee8a5c37a0edeafa1eedc98f7793815c69e45f949fad968fe29b07e84a41ea0",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Selection.thy": "74f1127857e9599508384b89f7ca901a7643d654b49c37307945d17b09c295f0",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Row.thy": "1ffdc1f70cbf27ac81dbe5c0b5492dc88bb80cd6582ae16854c8281f1ff8e2fa",
+        "thys/Logic_Programming/LP_Prolog_Partial_Integer_Prefix.thy": "bc148453f4537d1f16059b7237d5317d64c326fdf0db4f0851fc0b73e1524515",
+        "thys/Logic_Programming/LP_Cut_Fresh_Head_Resolution.thy": "1af2ae6e5348c882cf72d0fd9038d5143ed24034a491303ca8a5ec38aedd4522",
+        "thys/Logic_Programming/LP_Cut_Fresh_Head_Controls.thy": "be0a79641c5a0f4a39a0c3d6353a1e2b3d78c7d391b9c34fc34dbcc2338f9e25"
+      }
     }
   },
   "higher-order": {
