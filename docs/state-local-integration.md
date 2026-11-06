@@ -1263,3 +1263,35 @@ Next is arithmetic-node checking under the stable builtin interpretation within
 the existing referenced-module graph. Complete source/profile coverage and native
 bound-coordinate projection remain necessary before residual discharge and fresh
 mutation/full replay gates can count any benchmark gain.
+
+## Stable arithmetic source outcomes and comparison nodes
+
+Verification 603 connects the stable builtin interpretation to source `is/2` and
+all comparison descriptors, including reversed operands. Error outcomes are
+preserved exactly for these operations, and checked integer evaluation agrees
+with the existing integer `is/2` interpretation.
+
+Verification 609 covers actual arithmetic answer transitions and the established
+comparison-node checker. Success carries its stable observation through the
+existing success link. Failure resumes the saved alternative, and uncaught error
+clears the stack. The same three-link receipt, scope swaps, ground/free knowledge
+and graph tables are retained. The representation strengthens the interpretation
+of existing contexts; it does not construct a replacement graph.
+
+Attempts 604–607 retain outcome-normalization and identity-substitution proof
+failures. Attempt 608 was explicitly interrupted after identifying a proof rule
+that reapplied itself to the same success fact; a direct case proof passes in
+609. No semantic premise or source branch was removed to fix those scripts.
+The source comparison operation now has a checked stronger context path, but
+`is/2` node assembly, the remaining graph nodes, module contracts, original-profile
+coverage and native bound projection still gate benchmark gains. The exported
+checker and the 61 YES + 8 NO frontier are unchanged.
+
+Gate 610 rechecks the final arithmetic-step and comparison-node theories and adds
+the existing finite-domain obligation under the stable context interpretation.
+All successful gates have no skipped proofs or oracle dependencies.
+[Pinned arithmetic-node evidence](data/prolog-stable-comparison-node-development-20261106.json)
+archives every attempt 603–610 and the final theory snapshots. The next `is/2`
+assembly target is `LP_Prolog_Finite_Observed_Is` and its shared equality
+normalization; stable evaluation evidence must survive the fresh-result and
+actual-unifier interface there.

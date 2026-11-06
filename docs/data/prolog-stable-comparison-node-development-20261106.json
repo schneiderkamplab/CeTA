@@ -1,0 +1,49 @@
+{
+  "status": "verified source-node development; not exported or benchmark-certified",
+  "parent_commit": "ac2f13b",
+  "verified_attempts": [
+    603,
+    609,
+    610
+  ],
+  "interrupted_attempts": {
+    "608": "identified self-reapplying success proof rule; process explicitly interrupted before repair"
+  },
+  "archive": "docs/data/prolog-stable-comparison-node-development-20261106.tar.gz",
+  "archive_sha256": "c29a8437b2543fada9cc9203b00ee29b71b13da5247878df7e1b2ff26dabfc99",
+  "files": {
+    "target/prolog-stable-arithmetic-steps-604.log": "a0c2cf5b44331cf8c73d53b2f5f667c556a438b11ebb80592132c3036ea4a76d",
+    "target/prolog-stable-arithmetic-steps-605.log": "181fedb6514d04b2414fd296e0ff57d35c0e4e6e8240460eb091afdd0560b1ae",
+    "target/prolog-stable-arithmetic-steps-driver-604.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-arithmetic-steps-driver-605.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-node-606.log": "93fab27b6ffdac6983d3f630fc71b2825550aab04fe31730fb28f5abb2c60951",
+    "target/prolog-stable-comparison-node-607.log": "b2c79afaa320106f6e6ed066532d5920cbac5af702220bb2c549a2a67d1cbdf7",
+    "target/prolog-stable-comparison-node-608.log": "a7093da2275f4f6249ce34d46143c8d9fdae6b16e14370142227b352091a0f85",
+    "target/prolog-stable-comparison-node-609.log": "4063e04538e771ccec920a6b335a586af42621d070498ef91460191dd8287277",
+    "target/prolog-stable-comparison-node-610.log": "46af36a4e1f0f02286352eca6634f1a992e6df4f432c6fcd0d22e3404e83412f",
+    "target/prolog-stable-comparison-node-driver-606.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-node-driver-607.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-node-driver-608.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-comparison-node-driver-609.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-comparison-node-driver-610.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-source-arithmetic-603.log": "0bec78d6474839ebcfa556e90ff3cb14e635c3bca8549e54983768652483d7fa",
+    "target/prolog-stable-source-arithmetic-driver-603.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Source_Arithmetic.thy": "b440d3f60961c83d756feb1ea44c02128446b4a183e68f832ce892198ab77a6f",
+    "thys/Logic_Programming/LP_Prolog_Stable_Arithmetic_Steps.thy": "e766601ff9a60859304de03240b2a3e28213970e740448de4dae2c557bd8c063",
+    "thys/Logic_Programming/LP_Prolog_Stable_Representation.thy": "417f2d74c1793e7345a9856f5a201852cb8e1fa828a79fca1254b5cf1367d788",
+    "thys/Logic_Programming/LP_Prolog_Stable_Comparison_Node.thy": "d412a18f4f5feafd9e4ae739a5309c209d3f7b354c5154ca1f96c1bde8a4d042"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "is/2 normalized node assembly",
+    "stable context refresh and remaining node rules",
+    "complete referenced-module graph source contract",
+    "original source-profile correspondence",
+    "native bound projection and common residual solving",
+    "mutation controls and complete strict replay"
+  ]
+}
