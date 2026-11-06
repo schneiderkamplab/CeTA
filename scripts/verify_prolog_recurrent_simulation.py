@@ -16,6 +16,8 @@ parser.add_argument('--save-heap', type=Path)
 parser.add_argument('--export-directory', type=Path)
 parser.add_argument('--export-call-rows', action='store_true',
                     help='Export the exact multi-location arithmetic call checker')
+parser.add_argument('--export-partial-call-rows', action='store_true',
+                    help='Export partial arithmetic calls with pending continuations')
 parser.add_argument('--extra-theory', type=Path, action='append', default=[])
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
@@ -40,6 +42,10 @@ if args.export_directory:
                        else 'check_lpp_integer_recurrence_xml')
     export_module = ('Prolog_Integer_Calls_Generated' if args.export_call_rows
                      else 'Prolog_Recurrence_Generated')
+    if args.export_partial_call_rows:
+        export_theory = root / 'thys/Logic_Programming/LP_Prolog_Partial_Integer_XML'
+        export_constant = 'check_lpp_partial_integer_calls_xml'
+        export_module = 'Prolog_Partial_Integer_Calls_Generated'
     driver.write_text(
         'theory Prolog_Integer_Recurrence_Export\n imports ' + json.dumps(str(export_theory)) + ' ' +
         json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code')) +
