@@ -1,0 +1,42 @@
+{
+  "status": "verified development, not exported or benchmark-certified",
+  "parent_commit": "5a7704f",
+  "verified_attempts": [
+    591,
+    594,
+    596
+  ],
+  "archive": "docs/data/prolog-stable-return-bound-development-20261106.tar.gz",
+  "archive_sha256": "e4398675195cd2c353bd1c528b0a8423ecea1085c742992d6ddf05f057609d84",
+  "files": {
+    "target/prolog-stable-bound-projection-592.log": "3f80bff23bc285c068140b493c9f9ec4c04863af1d05ffeeecb5d328fae78c1b",
+    "target/prolog-stable-bound-projection-593.log": "686bde7a51941b679ca44644129f195713cd75afc7dea09a9d320821aa4851c8",
+    "target/prolog-stable-bound-projection-594.log": "16d5b9cb5273882d9b87968800526cb3c06a34ded0d2dcacb66128e5937dbc2e",
+    "target/prolog-stable-bound-projection-driver-592.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-bound-projection-driver-593.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-bound-projection-driver-594.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-initialization-595.log": "9ce2724ef4577be541a2910406f8cceb6837272d98b09b9f3b432ac66cabf85c",
+    "target/prolog-stable-initialization-596.log": "5894ece60512f300d35441285c19a211e72d4f01771b0143d2d4df4b1d061ac5",
+    "target/prolog-stable-initialization-driver-595.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-initialization-driver-596.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-return-context-590.log": "288338d9a5819e643cb3bc35230057b223899581b1aa9851c90c79f14c6c76dd",
+    "target/prolog-stable-return-context-591.log": "af468da072639f37f766d70d4a631c5aa30f1f8b8d9711b4d62b1441e012ba12",
+    "target/prolog-stable-return-context-driver-590.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-return-context-driver-591.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Return_Context.thy": "e845bd75c62544d1f38021bfc52680ea3fbbf0176c424453aa0d0787b124d88d",
+    "thys/Logic_Programming/LP_Prolog_Stable_Bound_Projection.thy": "f8dcabe52b2c8a64365c4ef14a7bd2f73c84189445ae033581dac689732135d0",
+    "thys/Logic_Programming/LP_Prolog_Stable_Context_Initialization.thy": "8424c3f9077b73c8003cc8c589527eed77af792fb675e517cdddc9e909167972"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "checked transport of strengthened comparisons through existing links",
+    "stable builtin interpretation in referenced-module source proof",
+    "original-profile correspondence",
+    "native bound coordinates and common ITS assembly",
+    "mutation controls and strict full replay"
+  ]
+}

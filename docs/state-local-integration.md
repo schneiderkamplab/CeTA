@@ -1196,3 +1196,43 @@ Attempt 588 records a corrected theorem-argument type mismatch.
 [Pinned development evidence](data/prolog-stable-arithmetic-development-20261106.json)
 archives the theory snapshots and all retained attempts 577–589. The remaining
 source and Split obligations above are unchanged.
+
+## Stable context facts through actual helper answers
+
+Verification 591 proves substitution, context joining and preservation of stable
+context facts through the shared actual-answer relation. Every incoming saved
+frame must establish the context; helper termination alone is insufficient.
+A separate theorem preserves the floor of an actual successful evaluation across
+helper answers. The proof retains the existing context tuple and all its facts,
+guards and observations. Attempt 590 records a corrected context-normalization
+proof, not a changed semantic premise.
+
+The next assembly work must initialize these observations at successful source
+operations, check module interfaces and retain saved alternatives separately.
+The existing finite guarded graph still uses its previous context interpretation;
+these lemmas do not silently strengthen that graph's assumptions. No root gain,
+checker export or production promotion is claimed here.
+
+Verification 594 proves the projected expression bound is exact for successful
+evaluation, stable for a captured ground expression, and preserved through actual
+helper returns with initialization on every incoming frame. A successful ordered
+comparison yields an upper bound on an independently typed integer counter.
+The projection does not coerce the source expression to an integer. A fixed
+fallback coordinate for non-evaluable expressions yields no comparison fact.
+Attempts 592–593 retain a theorem-instantiation ambiguity and substitution rewrite
+orientation error, both corrected without weakening the statements.
+
+Verification 596 checks initialization from actual successful comparison and
+`is/2` outcomes, using the existing context-addition operation and unifier.
+The `is/2` theorem applies its actual substitution to the entire prior context
+before adding the evaluation observation. Attempt 595 records a reserved
+Isabelle fact-label error. All successful gates reject skipped proofs and oracle
+dependencies. [Pinned return/bound evidence](data/prolog-stable-return-bound-development-20261106.json)
+retains every attempt 590–596 and the checked theory snapshots.
+
+Next, checked link transport must retain the stronger comparison semantics;
+ordinary finite-comparison transport alone does not establish it. The referenced
+module source proof must use the stable builtin interpretation, with the original
+source profile covered and all failure/error paths retained. Native bound
+coordinates then enter the common ITS residual under these checked receipts.
+Existing guidance atoms, checker executable and benchmark counts are unchanged.
