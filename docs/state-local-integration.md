@@ -1320,3 +1320,30 @@ contract, original-profile correspondence and native bound projection are not ye
 integrated. No export, guidance atom or production checker changed; the certified
 frontier remains 61 YES + 8 NO. Full semantic mutation and strict replay gates must
 precede counting any new benchmark result.
+
+## Established primitive-action integration with stable contexts
+
+Gates 616–620 verify administrative transitions, clause allocation, meta-calls,
+ordinary cut actions, integer tests, identity, term tests, both disequality rules,
+and probe operations. The combined theorem uses the existing primitive-action
+checker and receipts. Source transitions refine the previous builtin envelope;
+no new source execution relation or graph constructor was introduced. Successful
+integer tests add integer facts; groundness alone still does not establish them.
+
+Gate 624 proves that stable contexts imply the legacy finite context, by induction
+over actual finite helper-success derivations and their guards. This implication
+reuses the existing primitive-domain checker while the new source proof retains
+its stronger context representation. It is not a context reset. The combined
+primitive soundness and domain obligations are now verified.
+
+[Pinned primitive evidence](data/prolog-stable-primitive-development-20261106.json)
+retains all attempts 616–624. Attempt 621 records a variable-name collision, 622
+an unfinished guard-transfer proof, and 623 was interrupted after identifying
+expensive proof automation. The explicit induction in 624 passes. All successful
+gates reject skipped proofs and oracle dependencies.
+
+Specialized module actions (including length, constant evaluation and equation
+rewrites), full referenced-module assembly, original-profile coverage and native
+bound projection remain outstanding. No checker export or guidance changed, and
+no benchmark gain is claimed: the frontier remains 61 YES + 8 NO. Semantic mutation
+controls and complete strict replay remain required before any gain counts.

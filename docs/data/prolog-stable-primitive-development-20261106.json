@@ -1,0 +1,56 @@
+{
+  "status": "verified primitive source integration; no exported checker or new benchmark result",
+  "parent_commit": "e176b02",
+  "verified_attempts": [
+    616,
+    617,
+    618,
+    619,
+    620,
+    624
+  ],
+  "interrupted_attempts": {
+    "623": "explicitly interrupted expensive helper-monotonicity automation; replaced with direct induction"
+  },
+  "archive": "docs/data/prolog-stable-primitive-development-20261106.tar.gz",
+  "archive_sha256": "321f5df751c55b29d135c0c0a64e0a73fcf3ddea4de219e2a411fbc23dada400",
+  "files": {
+    "target/prolog-stable-admin-616.log": "2fd342691226ca1ffaa98047538e1dc875339201b3e15d9070da1568161b8312",
+    "target/prolog-stable-admin-driver-616.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-builtins-619.log": "214b3fe2fe4761fa805a2a2a66a8fa5997a2e1036f2341749ebeb0899d3156db",
+    "target/prolog-stable-builtins-driver-619.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-cut-actions-617.log": "90019f4eac4e18519d8b649b4a5980e16baae62b949dda63a6d1e538e8f8532f",
+    "target/prolog-stable-cut-actions-driver-617.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-legacy-context-621.log": "2c410aaccc5c19d9ecb9a6a9f888b3084c8b0b2cafe490310f70fa87085cb84f",
+    "target/prolog-stable-legacy-context-622.log": "3ca8d4224616188ad6773b2d70c7be33a42225664cd25a1d823f0ec00296a314",
+    "target/prolog-stable-legacy-context-driver-621.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-legacy-context-driver-622.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-primitive-620.log": "2c50eabd6835dc69b8e3497855ab491c4031a3be5ae9cfa76837b25f408c9a77",
+    "target/prolog-stable-primitive-domain-623.log": "b5d80df75d52d83c937a131f9199f6d5aa3c11a3f32e68c8f9d70df5a694bc16",
+    "target/prolog-stable-primitive-domain-624.log": "b20c18be494249e0333824fb29d1c0ae097d990404b749d054346e1349eafe01",
+    "target/prolog-stable-primitive-domain-driver-623.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-primitive-domain-driver-624.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-primitive-driver-620.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-type-identity-618.log": "22930b1c4de1e53973a9658089ecff8cf8ed515733fab78bb2713e50195a1c56",
+    "target/prolog-stable-type-identity-driver-618.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "thys/Logic_Programming/LP_Prolog_Stable_Admin.thy": "204b72681eda5e51ea4f654cf9e9f6879eed3938d5c2de9e18e2cc7b07d57c80",
+    "thys/Logic_Programming/LP_Prolog_Stable_Cut_Actions.thy": "cd59ea1dce39ade656fe059d996957006eee31bf0d6b3389a9fb4bd94b95e17d",
+    "thys/Logic_Programming/LP_Prolog_Stable_Type_Identity.thy": "dfcaf53db6cdf992bde132fd79d93ebad21f070752d29d63e385715489557953",
+    "thys/Logic_Programming/LP_Prolog_Stable_Builtins.thy": "d9f27cbc40ee34cb2c0c38d508f216b06c2d19a00e357247c9d3058335a445dc",
+    "thys/Logic_Programming/LP_Prolog_Stable_Primitive.thy": "b4270cbbba452823ab744ffa4a9bd11fb71b1291834e1bda800865920a44d3aa",
+    "thys/Logic_Programming/LP_Prolog_Stable_Legacy_Context.thy": "c858f01eea14e25f6d13681d4a0b7ff053459c1e2002251bf6f7bffd63241717",
+    "thys/Logic_Programming/LP_Prolog_Stable_Primitive_Domain.thy": "98962f3addcbeecbbe5b195c178cc768ca6f29a4202e8460c53b5d8a670b1b1c"
+  },
+  "frontier": {
+    "yes": 61,
+    "no": 8,
+    "population": 221
+  },
+  "remaining": [
+    "specialized module actions: length, constant evaluation, equation rewrites, errors and control assembly",
+    "complete referenced-module graph contract",
+    "original source-profile coverage",
+    "native bound-coordinate projection and residual discharge",
+    "semantic mutation and full strict replay"
+  ]
+}
