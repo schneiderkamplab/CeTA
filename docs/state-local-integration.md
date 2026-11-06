@@ -1134,3 +1134,11 @@ All existing generated modules and shared support files are preserved. The
 failed proof attempts as well as successful verification. Native benchmark,
 mutation and complete preservation replay gates remain pending at this point;
 this record claims no additional certified root or production promotion.
+
+The subsequent native integration gate passes: Ferrum `2ce74b2` certifies the
+new Euler Fibonacci NO, and complete strict replay retains 61 YES + 8 NO with
+69 authorized receipts. Cut replay preserves 84 YES + 9 NO with the same unified
+563 executable. Four native/strict positives, 29 semantic/advice controls and
+51 certificate checks pass. [Full source, mutation and replay evidence](../../ferrum-prolog-release/docs/data/prolog-helper-calls-integration-20261106.json)
+pins checker integration `55f0e17`. Protected-category production promotion and
+matched superiority remain separate open gates.
