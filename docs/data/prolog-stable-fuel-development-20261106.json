@@ -1,0 +1,38 @@
+{
+  "status": "Verified shared-budget successful evaluation refinement; not a native-profile correspondence proof, export, or benchmark gain",
+  "parent_commit": "6e8bb63e0811884bf4f7ea91c69a5560d10f9326",
+  "verified_attempts": [
+    681
+  ],
+  "failed_attempts": {
+    "674": "unconstrained scalar-recognition type variable",
+    "675": "nullary scalar recognition still had a phantom type variable",
+    "676": "automatic second-operand induction instantiation failed",
+    "677": "blast did not discharge second-operand induction",
+    "678": "metis did not discharge second-operand induction",
+    "679": "numeric induction case fact names required quoting",
+    "680": "soundness passed; automatic budget proof failed"
+  },
+  "archive": "docs/data/prolog-stable-fuel-development-20261106.tar.gz",
+  "archive_sha256": "a6fe01a0501bb4bb19891b491d16a625e4c531deb125e5f669419189c33a7787",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Fuel_Evaluation.thy": "107f18caa3eb7701fcebbc223bad94feae71160974f4b6d17270aea6eec7645a",
+    "target/prolog-stable-fuel-674-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-674.log": "36023e761a5c0444b6df0537951ae2ef77b303cdd73fdbbf42ba97673f5c2f48",
+    "target/prolog-stable-fuel-675-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-675.log": "263b2a2f222e64de0ddc5793a708577eb62fa029de541983402e5c078f92a8c8",
+    "target/prolog-stable-fuel-676-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-676.log": "14ea3513591a16bb28038ad96e712f5193ca560b664e6d90ca3aa862e8556c08",
+    "target/prolog-stable-fuel-677-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-677.log": "602c90a8acc71941f7a01da415e3c96da4ffd62114ecabf69e95d9383818a14c",
+    "target/prolog-stable-fuel-678-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-678.log": "0973fc435d77fe1a32641a704fc839e0945065223134500a7729ff17961044aa",
+    "target/prolog-stable-fuel-679-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-679.log": "221946fb2451476637c937922b3151d44125d49c3758125735b52a48d4ea5568",
+    "target/prolog-stable-fuel-680-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-stable-fuel-680.log": "b573165c7b25aeb51a9a1b7309dc8366a598df865d9bb7a57780d71231a82e8e",
+    "target/prolog-stable-fuel-681-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-fuel-681.log": "e137b5d238993ac329e44d86c94137658834e181050b063dccc2638442dd66f5"
+  },
+  "remaining": "Bind fixed operations to original numeric profile, including binary64 and resource-limited operations; complete source coverage, export/native integration and certified root replay."
+}

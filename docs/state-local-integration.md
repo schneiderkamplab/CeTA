@@ -1500,3 +1500,19 @@ Original-profile binding, XML/code export, native row generation, semantic
 mutations, real residual discharge and complete strict replay remain unfinished.
 No checker executable or guidance changed; the certified frontier remains
 61 YES + 8 NO. Matched superiority and protected-category promotion remain open.
+
+## Shared-budget stable evaluation development (2026-11-06)
+
+`LP_Prolog_Stable_Fuel_Evaluation` checks successful recursive scalar
+observations using one shared fuel budget across operands. Successful results
+refine the stable scalar relation, consume budget, and agree across different
+successful budgets. Budget exhaustion returns no observation and does not
+establish finite source failure. The second-operand budget guard follows from
+the proved strict consumption property of a successful first operand.
+
+Attempt 681 passed with proof and oracle checks from the verified 673 heap;
+[development evidence](data/prolog-stable-fuel-development-20261106.json)
+preserves attempts 674–681. This is a semantic evaluator with a fixed operation
+parameter, not a correspondence proof for the Rust implementation. Original
+binary64/profile binding, source coverage, export, and native integration remain
+open. No checker binary, guidance, or certified frontier changed (61 YES + 8 NO).
