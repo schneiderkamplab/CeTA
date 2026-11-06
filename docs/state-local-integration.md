@@ -1752,3 +1752,18 @@ This supports separate structural and numeric SCCs, not inseparable mixed
 recursion. Native synthesis, scheduler integration, XML/profile binding, export,
 controls and strict benchmark replay remain open. No benchmark gain or unified
 executable change is claimed.
+
+## Mixed source profile and XML building blocks (2026-11-06)
+
+The mixed constructor is instantiated with the same fixed source arithmetic
+profile. XML building blocks retain existing component headers and parse new
+relational ground-return Splits with both descent receipts. Structural backend
+decoding checks the encoded child triples, success program and query metadata;
+numeric decoding checks transfer identity, projections and the projected subject.
+Only the verified backend checker can establish termination.
+
+Attempts 764 and 768 validate these definitions and the profile theorem.
+[Evidence](data/prolog-mixed-xml-development-20261106.json) retains parser/type/name
+failures 763 and 765–767. Root XML assembly, export, native integration, mutation
+controls and benchmark replay remain open. No unified executable or frontier
+changed.

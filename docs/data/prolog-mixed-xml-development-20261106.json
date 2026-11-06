@@ -1,0 +1,36 @@
+{
+  "scope": "Verified fixed-profile instantiation and validated component/backend parser definitions; no root XML checker or export yet",
+  "verified_attempts": [
+    764,
+    768
+  ],
+  "failed_attempts": {
+    "763": "Wrong parser for clause descent receipt",
+    "765": "rows collided with matrix constant",
+    "766": "Unspaced equality parsed as existing notation",
+    "767": "proof collided with CPF parser constant"
+  },
+  "verified_heap": "target/prolog-backend-xml-768.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Mixed_Profile.thy": "b91d4455e11a9f4d3f9128989d74c7941ca18ce4b4342d88c965d9ccaf12d181",
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_XML.thy": "54e6f1547b6bb427d27197e1497056298a29bb620ec63621aa02e7e65c880b5d",
+    "thys/Logic_Programming/LP_Prolog_Stable_Backend_XML.thy": "2e2d9b835ee04b0a976cb61abab660dcca98de4b3146c1bd63648e10259ee2d4",
+    "target/prolog-mixed-xml-763.log": "490b4aec12d4b99a92761cc686592e17ca7a5fb5e2a51b06c9112ce6983a9ce1",
+    "target/prolog-mixed-xml-763-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-mixed-xml-764.log": "b8dd15f8c6c8da13aae1e0018989ebe3c7c77c8a737561de5ad9fbf0205b63db",
+    "target/prolog-mixed-xml-764-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-backend-xml-765.log": "50caf7fedc5a0d9b3d9bd22b75c6d47292ad2498ca9e062e411457d1f769ce08",
+    "target/prolog-backend-xml-765-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-backend-xml-766.log": "39253be65581dfc970fed4bc45e0d174076e18b2eaa7fc982dc3b7600f7260b7",
+    "target/prolog-backend-xml-766-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-backend-xml-767.log": "212519bfa04f729e4431fffca459067192825317be4e96c5d3220d44b9b32898",
+    "target/prolog-backend-xml-767-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-backend-xml-768.log": "f9619ef52f9922c851fe4a5f21d9ff665e0fdfab8740cd57b781da594d74ca6f",
+    "target/prolog-backend-xml-768-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Root XML assembly and theorem",
+    "Native assembly and scheduler integration",
+    "Unified export, controls and strict benchmark replay"
+  ]
+}
