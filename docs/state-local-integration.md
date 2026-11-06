@@ -972,3 +972,17 @@ All retained results have source audits, two checks and authorized receipts.
 [Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-integer-calls-integration-20261106.json)
 includes the rejected raw-predicate reconstruction and its native encoding
 repair. Matched superiority and protected-category promotion remain open.
+
+## Partial arithmetic source steps, 2026-11-06
+
+Formal development `a5a56d5` verifies fresh head resolution for arbitrary actual
+arguments and pending goals, partial integer prefixes, failed-clause restoration
+and ordered recursive-call progress. A negative theorem rules out capturing
+caller variables in fresh clause locals. Verification 510 and its dependency
+audit pass without admissions or oracles. The prior failures and incremental
+checks are [pinned with source snapshots](../../ferrum-prolog-release/docs/data/prolog-partial-source-steps-20261106.json).
+
+No generated checker or unified executable changed. Executable partial call
+interfaces, original-query binding and native assembly remain pending. The
+certified frontier stays 61 YES + 6 NO; this formal step claims no new root and
+does not complete the superiority or protected-category promotion gates.
