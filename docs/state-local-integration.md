@@ -1004,3 +1004,19 @@ retained result has source audit, two checks and an authorized receipt.
 [Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-partial-calls-integration-20261106.json)
 includes failed attempts and the shared cycle test assertion issue. Matched
 superiority and protected-category production promotion remain open.
+
+## Guarded arithmetic helper returns, 2026-11-06
+
+`LP_Prolog_Guarded_Helper_Return` extends the actual helper return theorem with
+a checked prefix of arithmetic guards and fresh local assignments. The final
+assignment can bind a caller output. Its substitution reaches every active
+continuation alias, while saved alternatives keep their original terms.
+Original clause matching, ordered earlier-clause failures, observed integer
+inputs, successful guards and an unassigned caller output are explicit
+premises. This uses the existing source semantics and partial-prefix theorem.
+
+Gate 526 exposed a missing normalization of bound arithmetic goals; gate 527
+passes the complete theorem and admission/oracle audit from heap 525. The
+verified child heap is `target/prolog-guarded-return-527.heap`. This theorem has
+not yet been exported into an executable source constructor. The unified
+checker and certified benchmark frontier are unchanged.
