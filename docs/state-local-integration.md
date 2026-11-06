@@ -986,3 +986,21 @@ No generated checker or unified executable changed. Executable partial call
 interfaces, original-query binding and native assembly remain pending. The
 certified frontier stays 61 YES + 6 NO; this formal step claims no new root and
 does not complete the superiority or protected-category promotion gates.
+
+## Partial integer calls integrated and replayed, 2026-11-06
+
+Formal commit `fce3fc0` and integration `f1ec3a4` add the checked partial-call
+XML constructor, preserving actual unobserved arguments, fresh clause variables,
+pending goals and every ordered alternative. XML verification 518, export 519
+and Haskell typechecking 520 pass. Unified O2 build 521 has SHA-256
+`493dfec3896b7e71aa0819927e42b580d20de32ce7401c631647ad577858eab3`.
+All prior LP modules and shared helpers retain their bytes.
+
+Ferrum `8f00d3e` integrates native reconstruction and shared recurrent-region
+alternatives. Four native/strict positives, 21 semantic/advice controls and 40
+certificate checks pass. Full replay retains 61 YES + 7 NO, adding rec-counter;
+cut preservation retains 84 YES + 9 NO with the same immutable checker. Every
+retained result has source audit, two checks and an authorized receipt.
+[Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-partial-calls-integration-20261106.json)
+includes failed attempts and the shared cycle test assertion issue. Matched
+superiority and protected-category production promotion remain open.
