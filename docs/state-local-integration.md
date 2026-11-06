@@ -952,3 +952,23 @@ has an original-source audit, two checks and an authorized complete receipt.
 [All attempts and integration evidence](../../ferrum-prolog-release/docs/data/prolog-integer-recurrence-integration-20261106.json)
 pin sources, exports and checker build receipts. The protected-category
 production promotion gate remains separate and open.
+
+## Original-query arithmetic call NO integration, 2026-11-06
+
+CeTA `5798b9b` in `CeTA-prolog-release`, branch
+`codex/prolog-production-integration`, integrates the verified
+`prologIntegerCallsProof` constructor. Formal development `4a165ed` binds exact
+integer call rows, ordered earlier-clause failures, variable interfaces and
+original-query entry reachability to the existing shared ITS NO checker.
+The source simulation uses the established Prolog semantics and saved stacks.
+
+Export 491 and typecheck 492 pass; unified O2 build 494 has SHA-256
+`b649c1db9911948f07bbdb6bbd4f2d6c9f87c1352c73a890073628b7d4e5a3b8`.
+All previous LP modules and helpers retain their bytes. Ferrum `3a953d9` passes
+three native/strict positives, 18 semantic/advice controls and 31 certificate
+checks. Complete strict replay retains 61 YES + 6 NO on 221 roots and cut
+preservation retains 84 YES + 9 NO on 112 roots using this same executable.
+All retained results have source audits, two checks and authorized receipts.
+[Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-integer-calls-integration-20261106.json)
+includes the rejected raw-predicate reconstruction and its native encoding
+repair. Matched superiority and protected-category promotion remain open.
