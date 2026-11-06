@@ -187,6 +187,7 @@ session Prolog_Arithmetic_Bridge = Prolog_Static_Code +
     LP_Prolog_Integer_Recurrence_Backtracking
     LP_Prolog_Integer_Call_Relation
     LP_Prolog_Integer_Call_XML
+    LP_Prolog_Partial_Integer_Iteration
     LP_Prolog_Context_Composed_Certificate
     LP_Prolog_Context_References_Certificate
     LP_Prolog_Triple_XML LP_Prolog_Finite_Constructor_Triple_XML
