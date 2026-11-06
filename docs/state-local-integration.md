@@ -1791,3 +1791,36 @@ assembly, continuation relation transport, independently scheduled mixed
 children, broader semantic controls and strict benchmark replay remain open.
 The frontier remains 61 YES + 8 NO; no new benchmark gain or superiority is
 claimed. Protected-category production promotion remains gated.
+
+## Probe-aware mixed helper returns (2026-11-06)
+
+An open return model asserts the checked relation for selected predicates and
+makes no claim for other ordinary predicates. The program-lifting theorem
+connects this model to the existing actual-answer semantics. Successful probe
+returns require an explicit success clause; this models returned substitutions
+without asserting that the probed computation terminates. Helper termination
+remains an independently checked graph/backend obligation. The new ground
+receipt checks clause safety, user heads, source coverage, builtin coverage,
+transfer, ground modes and the actual helper prefix. The mixed Split checker
+accepts either the previous receipt or this proved extension.
+
+Verification 804 and export 805 pass with dependency audits. The existential
+head condition initially failed executable generation; an equivalent constructor
+test fixes it without changing the logical condition. No generated checker code
+was edited. Unified build 806 has SHA-256
+`942d356409ade97f18d56e9a275909c49367e378a6895d8b85c2417ea439a07f`.
+
+Fresh native and strict runs 1095 certify `prolog_mixed/primes.pl`, a renamed
+changed-constant regression and the copied-list regression. Each run has two
+checks by this executable, original-source audits and authorized reconstruction
+receipts. Eleven advice/semantic controls pass, including divergent negated
+helpers and divergent later answers. Certificate controls 810 pass 22 checks.
+Attempt 807 showed that removing an optional type list is valid weakening; the
+corrected control removes the required continuation input instead. Shared native
+LP tests pass 562 tests with 10 ignored. All 69 retained Prolog and 93 LP-with-cut
+certificates pass twice (808); this rechecking is not fresh full-frontier replay.
+
+[Pinned evidence](data/prolog-probe-return-integration-20261106.json) includes
+failed attempts and corrected harnesses. The 151-root remaining-gap experiment,
+full-frontier guidance replay, superiority comparison and protected-category
+production promotion are still pending at this checkpoint.

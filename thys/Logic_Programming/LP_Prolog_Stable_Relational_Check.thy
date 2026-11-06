@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Relational_Check
- imports LP_Prolog_Stable_Relational_Split LP_Prolog_Stable_Guarded_Split_Descent
+ imports LP_Prolog_Open_Relational_Split LP_Prolog_Stable_Guarded_Split_Descent
 begin
 hide_const (open) Tree_Automata_Containment.entry
 
@@ -8,7 +8,7 @@ definition lpp_check_stable_relational_split where
       incoming entry receipt evidence atom OD first_call second_call =
     (lpcts_pre receipt=[LPCAtom (Fun (LPCUser (fst atom)) (snd atom))] \<and>
      lppsir_program (lppsgr_model evidence)=SP \<and>
-     lpp_finite_ground_receipt_check P incoming (lpcts_pre receipt)
+     lpp_mixed_ground_receipt_check P incoming (lpcts_pre receipt)
        (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence \<and>
      lpp_finite_triple_check_split_interface T first_types second_types fuel D Q roots contexts incoming
        (lpp_context_add_success (lpp_context_add_ground incoming (lppsgr_ground evidence)) atom) entry receipt \<and>
@@ -33,7 +33,7 @@ theorem lpp_checked_stable_relational_split_sound:
   shows "lpp_stable_triple_answer_contract operation P (lpc_return_eval eta (lpc_triple_root_state entry)) Q
     (lp_atom_eval (lpctr_output entry))"
 proof -
-  have ground_checked: "lpp_finite_ground_receipt_check P incoming_context
+  have ground_checked: "lpp_mixed_ground_receipt_check P incoming_context
       (lpcts_pre receipt) (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt)
       (lpcn_vars (lpctr_node entry)) evidence"
     and identity: "lppsir_program (lppsgr_model evidence)=SP"
@@ -48,7 +48,7 @@ proof -
       \<in>inv_image (lpp_stable_observed_calls operation (set OD) SP) lpp_unlift_atom"
     by (rule lpp_stable_guarded_split_first_descent[OF descent observed])
   show ?thesis
-    by (rule lpp_stable_guarded_relational_ground_split_checked_lower[OF compatible transfer
+    by (rule lpp_mixed_guarded_relational_ground_split_checked_lower[OF compatible transfer
       ground_checked identity pre interface program known observed free first _ lower])
       (use lpp_stable_guarded_split_return_descent[OF descent] in blast)
 qed
