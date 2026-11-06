@@ -1090,3 +1090,29 @@ bound-goal normalization, reserved fact-label errors and an ambiguous theorem
 instantiation. No unchecked assumption, alternative source relation or checker
 export was introduced. The next assembly step is the checked sequence of
 arithmetic operations and helper calls, using these invariants.
+
+## Checked arithmetic/helper prefix sequences, 2026-11-06
+
+`LP_Prolog_Helper_Prefix_Check` defines a source-bound helper call site and
+prefix operations that distinguish actual helper calls from primitive arithmetic.
+Observed numeric inputs must be endpoint values matching the actual call terms;
+output position, freshness, input types, recipe and interface remain checked.
+The observation theorem connects these checks to the caller's actual values.
+
+`LP_Prolog_Helper_Prefix_Steps` and `LP_Prolog_Helper_Prefix_Sequence` prove
+execution of arbitrary finite checked prefixes in the existing source relation.
+Each step transports the numeric context and pending goals. The proof retains
+all introduced helper barriers above the original saved stack. It does not
+flatten helper calls into replacement source instructions.
+
+`LP_Prolog_Helper_Prefix_Failure` proves that a checked failed comparison after
+such a prefix restores the original saved stack: successful substitutions do
+not leak into resumed alternatives. Only the recorded helper barriers are
+removed, using existing administrative source steps. The unique-helper recipe
+check prevents skipping later helper clauses.
+
+Gate 550 passes all four theories and dependency audits. Gate 546 first passed
+the helper source step; failures 545 and 547–549 record a reserved label,
+over-expansion by simplification and an unavailable list lemma. Source-clause
+selection/failure receipts and executable call-row assembly remain outstanding.
+The unified executable and certified root count are unchanged.
