@@ -31,6 +31,9 @@ import qualified Prolog_Guarded_Generated as PG
 #ifdef LP_PROLOG_RECURRENCE
 import qualified Prolog_Recurrence_Generated as PREC
 #endif
+#ifdef LP_PROLOG_INTEGER_CALLS
+import qualified Prolog_Integer_Calls_Generated as PIC
+#endif
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 
@@ -125,6 +128,9 @@ runProlog [path] = do
       PS.check_lpp_module_triples_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG"
     else if
+#ifdef LP_PROLOG_INTEGER_CALLS
+      PIC.check_lpp_integer_calls_xml (cachedCharacters PIC.explode input) ||
+#endif
 #ifdef LP_PROLOG_RECURRENCE
       PREC.check_lpp_integer_recurrence_xml (cachedCharacters PREC.explode input) ||
 #endif

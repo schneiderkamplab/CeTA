@@ -96,7 +96,8 @@
       "-DLP_PROLOG_CONTEXT_ITS",
       "-DLP_PROLOG_RATIONAL_NO",
       "-DLP_PROLOG_GUARDED",
-      "-DLP_PROLOG_RECURRENCE"
+      "-DLP_PROLOG_RECURRENCE",
+      "-DLP_PROLOG_INTEGER_CALLS"
     ],
     "sources": {
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
@@ -113,6 +114,7 @@
       "Prolog_Context_Generated.hs": "363c66f10e9c6fe1d45d4ba1b2f849ad18262009f2c2c378f113fbb7bc8ee85c",
       "Prolog_Context_ITS_Generated.hs": "d51edaaa265b4c8925a766b6e0aa6cf82d30accccc2431f42290e173d7a6827c",
       "Prolog_Guarded_Generated.hs": "f9b3307278cb326cb8c4d17a068deac94e77b91578d94730424b6bedfbffa33b",
+      "Prolog_Integer_Calls_Generated.hs": "ced941f2feae403ceaf1b0d1ca0218898e5f8c3a866502eb3d123731952bb2b1",
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
@@ -122,8 +124,8 @@
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
-    "archive": "tests/unified/exports/lp-source-integer-recurrence-v2.tar.gz",
-    "archive_sha256": "49508e749a7af9a015e53c1557849ddc993736c5219600a6c606d2b53e95fa79",
+    "archive": "tests/unified/exports/lp-source-integer-calls.tar.gz",
+    "archive_sha256": "8c35447edae10969b612316fbb31528722df5e6fc65d31cc5e9fb832e67bfa41",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -659,6 +661,25 @@
         "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Steps.thy": "5569e9dca5f21926b82c5c7f61e7ce5f871df54f28c443ac0bc5ef6b0c9ed7db",
         "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Valuation.thy": "164e474d6a6443a9adb24ce5fe7bb648bc6792abfd2286eaec984267c9d7c0ff",
         "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_XML.thy": "c88b2df624fe107afd7dc66bb5bf34b989769fbd7307f3a2e95969c7a0d29c86",
+        "thys/Logic_Programming/LP_Source_Recurrent_Simulation.thy": "30610c4d31ad6113ff8cbfff4c222093468781bb291bad0e049ae2c3a4407066"
+      },
+      "shared_helpers_unchanged": true
+    },
+    "prolog_integer_calls": {
+      "verification_log": "target/prolog-integer-call-export-491.log",
+      "export_origin": "target/prolog-integer-call-export-491",
+      "source_theory_hashes": {
+        "thys/ITS_Ext/Integration/IA4_Recurrent.thy": "4bf10a042a88c89fccc4895d01f031921f59828f4b12a953d665501bd5af8953",
+        "thys/ITS_Ext/Integration/IA4_Recurrent_Cycle.thy": "58b2640ebce953e78b4553482d45f8c4a4b3332fcd1815d357103e628dabee5d",
+        "thys/ITS_Ext/Integration/ITS4_Code.thy": "fe23a6dfa8c3ff6ecb8a374bc90e8abd1c5a78dfc490e93b1414198009c92b03",
+        "thys/ITS_Ext/Integration/ITS4_Parser.thy": "b615773725f8621d1ef66b6fd9dac0f9e3cd11f5524807ece2cd0d515451176e",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_Check.thy": "1a33abb2b94876f54db2c1bd0027c0e1b79250b77f76126e4255a7d8ba6ecec0",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_Formula.thy": "d340cb0ed364b450d64aac61d5dc7c47567997bbab5ee351aeedfb790c54623f",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_LTS.thy": "5cd01d147a7384b00a079715b932dad0eb37e47e29ad8e489a6b212addeeede9",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_Query.thy": "29120a9bdc7895a7bf7827cd6992edd83abd57382f604e5446274c76ccd9f894",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_Relation.thy": "882075355a4cee3f5c76869f859760a3a0946c152a80f3b7d59dc4d0d19ab7e4",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_Row.thy": "3e2a67163de58b74cc9ee04725a2aff38e948e5bf446240d9066e8e56579eac7",
+        "thys/Logic_Programming/LP_Prolog_Integer_Call_XML.thy": "cc5f25117b50cea4246227430112d0ec7899fe9d94030ad87f1c8aa70e2d0dad",
         "thys/Logic_Programming/LP_Source_Recurrent_Simulation.thy": "30610c4d31ad6113ff8cbfff4c222093468781bb291bad0e049ae2c3a4407066"
       },
       "shared_helpers_unchanged": true
