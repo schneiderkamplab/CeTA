@@ -1,0 +1,31 @@
+{
+  "scope": "Selected-position row groundness and finite entry-table composition; child checker binding remains open",
+  "verified_attempts": [
+    747
+  ],
+  "failed_attempts": {
+    "743": "Explicit selected argument index bounds needed",
+    "744": "Automated proof search interrupted after over one minute; replaced by explicit entry proof",
+    "745": "Runtime variable type needed explicit sharing",
+    "746": "Explicit pair reconstruction needed"
+  },
+  "verified_heap": "target/prolog-structural-entries-747.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Structural_Entries.thy": "1b5d8c2c20df3834245cbe18826a5d5e1504e72d04a4ece9f2d9a06ff9382fa4",
+    "target/prolog-structural-entries-743.log": "82c3e96298d308ad43800d07eae1910fddf8395040170c8b9d5f60019622887f",
+    "target/prolog-structural-entries-743-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-entries-744.log": "33cd3eb2da31decdd6e4d451e416c5c5f4e38febc706121de6c47b37dd4831a4",
+    "target/prolog-structural-entries-744-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-entries-745.log": "eda329f0f73cf6daa790accc247b0a545147181883526a57dcdd0f718feca8cc",
+    "target/prolog-structural-entries-745-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-entries-746.log": "b95012a895f382e4deed36c080ea64ef61a38f8f3d255553dd924713f61c5639",
+    "target/prolog-structural-entries-746-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-structural-entries-747.log": "77cb4e427c3820dc3482272676404189734dfccb461ee853c78c75891b8e50bf",
+    "target/prolog-structural-entries-747-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Executable row-to-entry coverage and per-entry child binding",
+    "Native global model/context assembly",
+    "Export, controls and strict benchmark replay"
+  ]
+}

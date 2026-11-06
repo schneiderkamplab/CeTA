@@ -1706,3 +1706,18 @@ projection; all are retained in the [evidence](data/prolog-observed-triple-query
 Component entry coverage and ground receipts still need binding to these child
 checks. Native assembly, export, controls and benchmark replay remain open.
 No unified executable or certified frontier changed.
+
+## Structural component entry interfaces (2026-11-06)
+
+A selected-position row check derives finite-ground evidence from existing
+transfer facts and observations. The component theorem uses a finite entry
+table of predicate, arity and selected positions, with a child obligation for
+each admitted entry. Unselected arguments remain unrestricted runtime terms.
+
+Attempt 747 verifies the row theorem and entry-table composition. Attempts
+743–746 are retained, including interrupted automated proof search and the
+explicit runtime-type/pair reconstruction fixes.
+[Evidence](data/prolog-structural-entries-20261106.json) records the exact scope.
+Executable row-to-entry coverage and child-certificate binding remain open,
+as do native assembly, export, controls and benchmark replay. No certified
+frontier or unified executable changed.
