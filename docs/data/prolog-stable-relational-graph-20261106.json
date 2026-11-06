@@ -1,0 +1,24 @@
+{
+  "scope": "Whole graph/root soundness, legacy compatibility and finite SCC routing composition; not an exported checker or benchmark gain",
+  "verified_attempts": [
+    733,
+    734,
+    735
+  ],
+  "verified_heap": "target/prolog-stable-relational-routing-735.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_Graph.thy": "957ceee7b91466065f641249d6aeb5158feb1a22eca458c3c22edcd14cbbb56d",
+    "thys/Logic_Programming/LP_Prolog_Stable_Relational_Routing.thy": "0f7288c428e07e77b373a74c6dd692938cbbabd052fc5ee1bb0e78b8ef29dfc6",
+    "target/prolog-stable-relational-graph-733.log": "faa5fcb6fca77f2308302b9670b4dab613354df8889b42ab6b2bddbad9911e86",
+    "target/prolog-stable-relational-graph-733-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-relational-graph-734.log": "ed32f0469c3a42b108b3631ad4ecfeff59115d758513746126d42ef7df194737",
+    "target/prolog-stable-relational-graph-734-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-stable-relational-routing-735.log": "462e1fb80139600c7699085ae45d00a78f76e0dd9d9cc89c173334db515b8faf",
+    "target/prolog-stable-relational-routing-735-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Backend child proof checks and code export",
+    "Native global model/context assembly",
+    "Mutation controls and strict benchmark replay"
+  ]
+}

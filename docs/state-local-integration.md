@@ -1676,3 +1676,18 @@ Attempts 731 and 732 pass verification and dependency audits.
 [Evidence](data/prolog-stable-relational-check-20261106.json) pins both theories
 and logs. The whole-graph constructor, code export, native assembly and benchmark
 validation remain open. No unified executable or certified frontier changed.
+
+## Relational whole-graph and routed source soundness (2026-11-06)
+
+The relational component table now has a whole-graph Boolean check and a
+source-root soundness theorem. Initial query modes, empty initial context,
+module coverage and context-table lengths retain their existing checks. A
+compatibility theorem maps every accepted legacy graph to the new wrapper.
+Finite SCC routing composes independently terminating component relations with
+checked decreasing cross-component ranks into the same source-root theorem.
+
+Attempts 733–735 pass verification and dependency audits.
+[Evidence](data/prolog-stable-relational-graph-20261106.json) pins the theories
+and logs. Backend-specific child certificate checks, native model/context
+assembly, export, mutation controls and strict benchmark replay remain open.
+No unified executable or certified frontier changed.
