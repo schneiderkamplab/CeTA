@@ -1044,3 +1044,12 @@ recipe theorem and five controls: a positive renamed helper and rejection of
 an extra clause, missing integer input, bound output and missing body. All
 admission/oracle audits pass. Executable source-row integration, export and
 benchmark certification remain outstanding; unified checker 521 is unchanged.
+
+## Helper recipe parent parser, 2026-11-06
+
+`LP_Prolog_Helper_Return_Recipe_XML` parses the source recipe fields for use
+inside a parent certificate. The original program remains a parameter of the
+verified recipe check. No standalone verdict or checker dispatch was added.
+Gate 535 records a lexical error caused by adjacent `=ops`; gate 536 verifies
+the corrected parser. Native discovery and serialization use the same field
+order. This is not yet a complete parent certificate or an export update.
