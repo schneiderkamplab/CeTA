@@ -1,0 +1,40 @@
+{
+  "scope": "Shared PiDP runtime-query and symbol-role bridges; no checker export or benchmark gain",
+  "verified_attempts": [
+    742
+  ],
+  "failed_attempts": [
+    736,
+    737,
+    738,
+    739,
+    740,
+    741
+  ],
+  "failure_resolution": "Explicit identity mapping equality for the runtime argument list before extracting the projection",
+  "verified_heap": "target/prolog-observed-triple-query-742.heap",
+  "files": {
+    "thys/Logic_Programming/LP_Dependency_Triple_Observed_Query.thy": "45b4ac854b7437426108537a0a4a7b8eb82f445c81bacf73f20f6e662b64b7b1",
+    "thys/Logic_Programming/LP_Dependency_Triple_Observed_Roles.thy": "81e22f08a776ff98ceb01030bc27dc7a67e3d380066eecd8f58e348b6809a65b",
+    "target/prolog-observed-triple-query-736.log": "2e82a797fff4f25f7b3e5c83e602e9402570fe27cadfbc514a810a576c11b261",
+    "target/prolog-observed-triple-query-736-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-observed-triple-query-737.log": "753a898180f3c689c93f31f45b300317867c66cece57b2f08b66a8662bb9e455",
+    "target/prolog-observed-triple-query-737-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-observed-triple-query-738.log": "2402de5c15b1514ab192a35ef4277f7f38a7905ddc62f153f79a260bd8ac60c6",
+    "target/prolog-observed-triple-query-738-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-observed-triple-query-739.log": "d2ea2a3c19cc13af3d369cfb1b66f7eebf39d0cf3eb3a30aecf2c5e07a0c1e2d",
+    "target/prolog-observed-triple-query-739-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-observed-triple-query-740.log": "647996f6cdec691342c1515f6b94826f28f81798febed9d0985bfd04c953cf21",
+    "target/prolog-observed-triple-query-740-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-observed-triple-query-741.log": "3ac09924da7d2ee93ca23f7a9f45dba5a47dbf36c31c454b7b9371f98594bd3f",
+    "target/prolog-observed-triple-query-741-driver.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/prolog-observed-triple-query-742.log": "e014b23fba75bd290c55a73ac022776be1c1c2aa1dce0182af025db10476ab72",
+    "target/prolog-observed-triple-query-742-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27"
+  },
+  "remaining": [
+    "Bind component entries and projected ground receipts to child checks",
+    "Native model/context assembly",
+    "Export and semantic controls",
+    "Strict benchmark replay"
+  ]
+}

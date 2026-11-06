@@ -1691,3 +1691,18 @@ Attempts 733–735 pass verification and dependency audits.
 and logs. Backend-specific child certificate checks, native model/context
 assembly, export, mutation controls and strict benchmark replay remain open.
 No unified executable or certified frontier changed.
+
+## Observed runtime queries for structural triple children (2026-11-06)
+
+The existing PiDP checker now has a soundness theorem for runtime terms with
+finite-ground evidence at selected query positions. Discarded arguments may
+remain infinite or rational. The proof reuses the shared infinite-query
+projection and PiDP chain theorem. A role-renaming bridge reflects the checked
+child result to the source alphabet, preserving the same selected positions.
+
+Attempt 742 verifies both bridges and dependency audits. Failed attempts
+736–741 concern the explicit identity-map equality needed when extracting the
+projection; all are retained in the [evidence](data/prolog-observed-triple-query-20261106.json).
+Component entry coverage and ground receipts still need binding to these child
+checks. Native assembly, export, controls and benchmark replay remain open.
+No unified executable or certified frontier changed.
