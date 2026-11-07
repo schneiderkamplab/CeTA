@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "7e93eb637e20758fc1e76149073b65aa04a4edd9a5069440871b11f312ed3e9e",
+      "Prolog_Stable_Mixed_Generated.hs": "a459c5f69d4888f71dad3e995fb333c00b8387f3cf9cd9a078d5c55546c555ae",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "01f78c3b516361b35c4130d69d73dfe4559394c8a37bae7bbc9cfb5968984749",
+    "archive_sha256": "451b53618837ce1073ff5c643365b674f65728b6d785db7d9711d86a13c6c6ae",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -880,6 +880,20 @@
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Conditions.thy": "2a9943065549cefda806e1b1b83d18c61a36d60acb1a571d16bc1868e4b1967a",
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Path.thy": "75728428a6e5a3ffe6a901fd40e6b72daac34e158ecd03e198b25a55b5349977",
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy": "55e8f47bdc9c267ef8dab21e04581094f9fc9a314fc5598cb258a8d5d3743096"
+      }
+    },
+    "prolog_quotient_bounds_integration": {
+      "verification": "target/prolog-quotient-magnitude-865.log",
+      "export": "target/prolog-quotient-bounds-export-865",
+      "generated_sha256": "a459c5f69d4888f71dad3e995fb333c00b8387f3cf9cd9a078d5c55546c555ae",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Stable_Integer_Compatibility.thy": "73d1ca558cece291ddfc20b33cd579279aad339a45b0bedbf988f6c43d2f476e",
+        "thys/Logic_Programming/LP_Prolog_Stable_Quotient.thy": "9a4d3711f61a0258fcc96b4f2c4d6f9e4692a8eee0e55bcf1a5ac048539d32ff",
+        "thys/Logic_Programming/LP_Prolog_Stable_Quotient_Descent.thy": "ee02e1bce4998e6f5b1e512b09899b3058c40f3bc3c0f0c2982b341fff962d8d",
+        "thys/Logic_Programming/LP_Prolog_Stable_Profile_Operations.thy": "f14f307136114ac6d88a363fdc8d927377dddb289140b1f862ee3459ba4d8628",
+        "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Conditions.thy": "ec32d938d0fef9397822803c45f334a64899e202c47a1004c58bf34311dcf36b",
+        "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Path.thy": "75728428a6e5a3ffe6a901fd40e6b72daac34e158ecd03e198b25a55b5349977",
+        "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy": "a3960c1556d0054037884ce5f374200f223627f9131610a4908845cf38bbcf2f"
       }
     }
   },

@@ -23,6 +23,12 @@ definition lpp_stable_condition_parser where
       comparison\<leftarrow>lpp_numeric_comparison_parser;
       a\<leftarrow>lpp_integer_expression_parser; b\<leftarrow>lpp_integer_expression_parser;
       xml_return (LPPStableIntegerCondition (comparison,a,b))}) XMLor
+    (XMLdo (STR ''quotientMagnitudeUpperCondition'') {
+      e\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableQuotientMagnitudeUpperCondition e a b)}) XMLor
+    (XMLdo (STR ''quotientUpperCondition'') {
+      e\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; d\<leftarrow>xml_int (STR ''divisor'');
+      xml_return (LPPStableQuotientUpperCondition e a d)}) XMLor
     (XMLdo (STR ''quotientDescentCondition'') {
       a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
       xml_return (LPPStableQuotientDescentCondition a b result)}) XMLor

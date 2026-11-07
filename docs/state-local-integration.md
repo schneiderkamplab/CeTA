@@ -1944,3 +1944,38 @@ twice (342 checks). Ferrum's complete 221-root strict replay 1266 establishes
 [Pinned evidence](data/prolog-quotient-descent-20261107.json) preserves verification
 attempts, the export/build, controls, retention and the corrected metadata-count
 assertion in pinning attempt 856.
+
+## Checked bounds from quotient comparisons (2026-11-07)
+
+Successful comparisons against unevaluated quotient expressions now retain
+checked numeric consequences. A positive literal divisor gives the exact
+truncating quotient relation. For a general divisor, a checked integer counter
+is bounded above by the absolute evaluated numerator. Successful comparison and
+quotient evaluation supply the required operand domains; no integer-literal or
+positive-divisor assumption is imposed on arbitrary ground arguments. Both
+numerator signs remain covered. Existing graph, branch, Split, actual-return
+and child-dependency checks are unchanged.
+
+Verification/export 865 checks the new lemmas and complete source XML bridge,
+then generates the mixed checker module without manually editing generated
+logic. Unified build 866 has SHA-256
+`72cb706bb4ebb85dda6abc2e58cbd0a915ded079394a220452720f4d3471b7b7`,
+LP unit `ceta-lp-1.0-2435cf522099b6fc`. Only the LP export archive changed.
+Unsuccessful proof-development attempts 857/858/860–864 are retained alongside
+the successful checks and export.
+
+The original `Euler_queensu-cs260/prime.pl` and three renamed/generalized fixtures
+pass fresh native and strict replay, with original-source audits, two checks by
+this unified executable and authorized reconstruction receipts. One fixture
+retains a recursive helper's returned count through its relational Split.
+All 14 advice/semantic controls and 54 certificate checks pass, covering missing
+observations, type facts, alternatives, bindings, routing, helper/continuation
+interfaces and children. Changing bounds, floating counter stagnation and later
+divergence do not acquire source proofs.
+
+Retention 867 accepts all previous 79 Prolog and all 84 YES + 9 NO LP-with-cut
+certificates twice (344 checks). Ferrum's complete 221-root strict replay 1288
+reaches 72 YES + 8 NO with no lost verdict. Retention is certificate rechecking,
+not fresh protected-category native replay or production promotion.
+[Pinned verification and integration evidence](data/prolog-quotient-bounds-20261107.json)
+includes every attempt and the unchanged other-category archive identities.
