@@ -2,9 +2,18 @@ theory LP_Prolog_Stable_Integer_Compatibility
   imports LP_Prolog_Stable_Scalar_Evaluation
 begin
 
+definition lpp_trunc_div :: "int \<Rightarrow> int \<Rightarrow> int" where
+  "lpp_trunc_div n d = (if n<0 then -1 else 1) * (if d<0 then -1 else 1) * (abs n div abs d)"
+
+definition lpp_stable_quotient_operation where
+  "lpp_stable_quotient_operation operation =
+    (\<forall>a b v. operation (LPCUser ''2:prolog_data_2f2f'') [a,b]=Some v \<longrightarrow>
+      (\<exists>n d. a=lpp_integer_value n \<and> b=lpp_integer_value d \<and> d\<noteq>0 \<and>
+        v=lpp_integer_value (lpp_trunc_div n d)))"
+
 definition lpp_stable_integer_operations where
   "lpp_stable_integer_operations operation =
-    ((\<forall>n. operation (LPCUser ''1:prolog_data_2b'') [lpp_integer_value n]=Some (lpp_integer_value n)) \<and>
+    (lpp_stable_quotient_operation operation \<and> (\<forall>n. operation (LPCUser ''1:prolog_data_2b'') [lpp_integer_value n]=Some (lpp_integer_value n)) \<and>
      (\<forall>n. operation (LPCUser ''1:prolog_data_2d'') [lpp_integer_value n]=Some (lpp_integer_value (-n))) \<and>
      (\<forall>n m. operation (LPCUser ''2:prolog_data_2b'') [lpp_integer_value n,lpp_integer_value m]=Some (lpp_integer_value (n+m))) \<and>
      (\<forall>n m. operation (LPCUser ''2:prolog_data_2d'') [lpp_integer_value n,lpp_integer_value m]=Some (lpp_integer_value (n-m))) \<and>

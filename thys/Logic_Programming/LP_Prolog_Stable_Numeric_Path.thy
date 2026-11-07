@@ -13,7 +13,7 @@ definition lpp_stable_numeric_path_formula where
   "lpp_stable_numeric_path_formula inputs outputs receipts bindings =
     (let rename=lpp_numeric_rename bindings in Conjunction
       (map (lpp_stable_endpoint_formula Pre rename) inputs @
-       map (lpp_numeric_condition_formula o lpp_rename_numeric_condition rename o lpp_stable_numeric_condition) receipts @
+       map (lpp_stable_receipt_formula rename) receipts @
        map (lpp_stable_endpoint_formula Post rename) outputs))"
 
 definition lpp_check_stable_numeric_path where
@@ -23,7 +23,7 @@ definition lpp_check_stable_numeric_path where
      distinct (map fst inputs) \<and> distinct (map fst outputs) \<and>
      distinct (map fst bindings) \<and>
      list_all (\<lambda>e. lpp_stable_endpoint_keys e \<subseteq> set (map fst bindings)) (inputs@outputs) \<and>
-     list_all (\<lambda>r. lpp_numeric_condition_keys (lpp_stable_numeric_condition r) \<subseteq> set (map fst bindings)) receipts \<and>
+     list_all (\<lambda>r. lpp_stable_receipt_keys r \<subseteq> set (map fst bindings)) receipts \<and>
      list_all2 (lpp_check_stable_numeric_observation K) observations receipts \<and>
      formula=lpp_stable_numeric_path_formula inputs outputs receipts bindings)"
 
@@ -54,7 +54,7 @@ proof -
   have ins: "list_all (\<lambda>(coordinate,t,e). lpp_check_stable_endpoint K G t e) inputs"
     and outs: "list_all (\<lambda>(coordinate,t,e). lpp_check_stable_endpoint K G t e) outputs"
     and endpoint_keys: "\<And>e. e\<in>set (inputs@outputs) \<Longrightarrow> lpp_stable_endpoint_keys e \<subseteq> set (map fst bindings)"
-    and condition_keys: "\<And>r. r\<in>set receipts \<Longrightarrow> lpp_numeric_condition_keys (lpp_stable_numeric_condition r) \<subseteq> set (map fst bindings)"
+    and condition_keys: "\<And>r. r\<in>set receipts \<Longrightarrow> lpp_stable_receipt_keys r \<subseteq> set (map fst bindings)"
     and tests: "list_all2 (lpp_check_stable_numeric_observation K) observations receipts"
     and formula: "formula=lpp_stable_numeric_path_formula inputs outputs receipts bindings"
     using checked by (auto simp: lpp_check_stable_numeric_path_def list_all_iff)
@@ -81,26 +81,26 @@ proof -
         (assumption | (rule assigned; erule subsetD[OF keys]))+
   qed
   have condition_formula: "list_all (\<lambda>r. IA4.satisfies (lpp_integer_assignment rho)
-      (lpp_numeric_condition_formula (lpp_rename_numeric_condition ?rename (lpp_stable_numeric_condition r)))) receipts"
+      (lpp_stable_receipt_formula ?rename r)) receipts"
     using tests observed condition_keys
   proof (induct rule: list_all2_induct)
     case Nil then show ?case by simp
   next
     case (Cons ob r obs rs)
     have current: "IA4.satisfies (lpp_integer_assignment rho)
-      (lpp_numeric_condition_formula (lpp_rename_numeric_condition ?rename (lpp_stable_numeric_condition r)))"
-      by (rule lpp_stable_numeric_condition_formula_sound[OF compatible Cons.hyps(1) _ typed])
+      (lpp_stable_receipt_formula ?rename r)"
+      by (rule lpp_stable_receipt_formula_sound[OF compatible Cons.hyps(1) _ typed])
         (use Cons.prems assigned in auto)
     show ?case using Cons current by auto
   qed
   show ?thesis using input_formula output_formula condition_formula
-    by (auto simp: formula lpp_stable_numeric_path_formula_def Let_def list_all_iff lpp_stable_condition_formula_typed)
+    by (auto simp: formula lpp_stable_numeric_path_formula_def Let_def list_all_iff lpp_stable_condition_formula_typed lpp_stable_receipt_formula_typed)
 qed
 
 lemma lpp_stable_numeric_path_formula_typed:
   "IA4.formula (lpp_stable_numeric_path_formula inputs outputs receipts bindings)"
   by (auto simp: lpp_stable_numeric_path_formula_def Let_def list_all_iff
-    lpp_comparison_its_type lpp_expression_its_type lpp_stable_condition_formula_typed less_Suc_eq split: prod.splits)
+    lpp_comparison_its_type lpp_expression_its_type lpp_stable_condition_formula_typed lpp_stable_receipt_formula_typed less_Suc_eq split: prod.splits)
 
 ML \<open>
 val checked = [@{thm lpp_check_stable_numeric_path_sound}, @{thm lpp_stable_numeric_path_formula_typed}];

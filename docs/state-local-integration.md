@@ -1879,3 +1879,33 @@ native replay or production promotion.
 failed verification attempts, the successful formal export, native/strict
 receipts, rejection controls and retention logs. Ferrum's full-population replay
 and final frontier are recorded separately in its state-of-the-art report.
+
+## Checked successful truncating quotients (2026-11-07)
+
+The stable arithmetic profile now fixes successful `//` evaluation to integer
+truncation towards zero. Floating operands and zero divisors return no arithmetic
+value. A checked positive-constant-divisor receipt preserves the exact quotient
+relation between evaluated numerator and result bounds, with separate sign cases.
+It does not assert that an unevaluated ground argument is an integer literal.
+The existing source graph, contexts, return contracts, routing and independently
+checked children remain required. Previous condition receipts remain replayable.
+
+Verification 843 passes the operation, quotient and path lemmas without admissions;
+export 844 checks the complete mixed source XML graph and regenerates its Haskell
+module. Generated checking logic was not edited. Unified build 845 has SHA-256
+`7b31687d90ff0b5a9394d076283dd26346d2b9f4b401657301b3272fe892da4a`,
+LP unit `ceta-lp-1.0-870fce68d486fb09`. Other category export archives are unchanged.
+
+Fresh native and strict runs certify `svcomp-java-log-built-in-c.pl`, a renamed
+divisor-3 fixture and a compound-input divisor-4 fixture, each with original-source
+audits, two checks by this executable and authorized reconstruction receipts.
+Fourteen advice/semantic controls and 34 certificate checks pass. Formal controls
+also establish negative truncation and rejection of zero/floating operands.
+Source-level error fixtures remain UNKNOWN; these operation lemmas alone do not
+certify their source graphs.
+
+Retention 847 accepts all previous 77 Prolog and 93 LP-with-cut certificates twice
+(340 checks). This is retained-certificate checking, not fresh protected-category
+replay or production promotion. Ferrum records the complete 221-root replay
+separately. [Pinned verification and integration evidence](data/prolog-quotient-integration-20261107.json)
+retains unsuccessful verification attempts, successful export, controls and logs.

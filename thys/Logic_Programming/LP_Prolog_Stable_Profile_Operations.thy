@@ -47,17 +47,20 @@ fun lpp_stable_profile_operation where
          if f = LPCUser ''2:prolog_data_2b'' then Some (lpp_integer_value (n+m))
          else if f = LPCUser ''2:prolog_data_2d'' then Some (lpp_integer_value (n-m))
          else if f = LPCUser ''2:prolog_data_2a'' then Some (lpp_integer_value (n*m))
+         else if f = LPCUser ''2:prolog_data_2f2f'' then
+           (if m = 0 then None else Some (lpp_integer_value (lpp_trunc_div n m)))
          else if f = LPCUser ''2:prolog_data_646976'' then
            (if m = 0 then None else Some (lpp_integer_value (n div m)))
          else if f = LPCUser ''2:prolog_data_6d6f64'' then
            (if m = 0 then None else Some (lpp_integer_value (n mod m)))
          else fallback f [x,y]
-     | _ \<Rightarrow> fallback f [x,y])"
+     | _ \<Rightarrow> if f = LPCUser ''2:prolog_data_2f2f'' then None else fallback f [x,y])"
 | "lpp_stable_profile_operation fallback f xs = fallback f xs"
 
 lemma lpp_stable_profile_integer_compatible:
   "lpp_stable_integer_operations (lpp_stable_profile_operation fallback)"
-  by (simp add: lpp_stable_integer_operations_def)
+  by (auto simp: lpp_stable_integer_operations_def lpp_stable_quotient_operation_def
+    lpp_stable_decode_integer_exact split: option.splits if_splits)
 
 lemma lpp_stable_profile_binary64_unary:
   "lpp_stable_profile_operation fallback f [lpp_binary64_value bits] =
@@ -65,14 +68,31 @@ lemma lpp_stable_profile_binary64_unary:
   by simp
 
 lemma lpp_stable_profile_binary64_left:
-  "lpp_stable_profile_operation fallback f [lpp_binary64_value bits, y] =
+  "f\<noteq>LPCUser ''2:prolog_data_2f2f'' \<Longrightarrow> lpp_stable_profile_operation fallback f [lpp_binary64_value bits, y] =
     fallback f [lpp_binary64_value bits, y]"
   by simp
 
 lemma lpp_stable_profile_binary64_right:
-  "lpp_stable_profile_operation fallback f [x, lpp_binary64_value bits] =
+  "f\<noteq>LPCUser ''2:prolog_data_2f2f'' \<Longrightarrow> lpp_stable_profile_operation fallback f [x, lpp_binary64_value bits] =
     fallback f [x, lpp_binary64_value bits]"
   by (simp split: option.splits)
+
+lemma lpp_stable_profile_quotient_float_error:
+  "lpp_stable_profile_operation fallback (LPCUser ''2:prolog_data_2f2f'')
+    [lpp_binary64_value bits,y] = None"
+  "lpp_stable_profile_operation fallback (LPCUser ''2:prolog_data_2f2f'')
+    [x,lpp_binary64_value bits] = None"
+  by (simp_all split: option.splits)
+
+lemma lpp_stable_profile_quotient_zero_error:
+  "lpp_stable_profile_operation fallback (LPCUser ''2:prolog_data_2f2f'')
+    [lpp_integer_value n,lpp_integer_value 0] = None"
+  by simp
+
+lemma lpp_stable_profile_quotient_negative:
+  "lpp_stable_profile_operation fallback (LPCUser ''2:prolog_data_2f2f'')
+    [lpp_integer_value (-7),lpp_integer_value 3] = Some (lpp_integer_value (-2))"
+  by (simp add: lpp_trunc_div_def)
 
 lemma lpp_stable_profile_zero_divisor:
   "lpp_stable_profile_operation fallback (LPCUser ''2:prolog_data_646976'')
@@ -82,7 +102,7 @@ lemma lpp_stable_profile_zero_divisor:
   by simp_all
 
 ML \<open>
-val checked = [@{thm lpp_stable_decode_integer_exact},
+val checked = [@{thm lpp_stable_profile_quotient_float_error(1)}, @{thm lpp_stable_profile_quotient_float_error(2)}, @{thm lpp_stable_profile_quotient_zero_error}, @{thm lpp_stable_profile_quotient_negative}, @{thm lpp_stable_decode_integer_exact},
   @{thm lpp_stable_profile_integer_compatible},
   @{thm lpp_stable_profile_binary64_unary},
   @{thm lpp_stable_profile_binary64_left},
