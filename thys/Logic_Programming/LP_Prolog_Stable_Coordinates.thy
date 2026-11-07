@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Coordinates
- imports LP_Prolog_Stable_Bound_Projection LP_Prolog_Numeric_Calls
+ imports LP_Prolog_Stable_Scaled_Observation LP_Prolog_Numeric_Calls
 begin
 
 text \<open>Bound coordinates observe a fixed ground arithmetic expression.
@@ -7,12 +7,18 @@ They do not assert that its source term is an integer. Groundness is required
 at the representation boundary so later substitutions cannot change a bound.
 The arbitrary default for a non-evaluable ground term licenses no comparison.\<close>
 
-datatype lpp_stable_coordinate = LPPStableInteger | LPPStableUpperBound
+datatype lpp_stable_coordinate = LPPStableInteger | LPPStableUpperBound | LPPStableScaledBound | LPPStableMagnitudeBound
 
 fun lpp_stable_coordinate_value where
   "lpp_stable_coordinate_value operation LPPStableInteger t k = (t=lpp_integer_value k)"
 | "lpp_stable_coordinate_value operation LPPStableUpperBound t k =
     (lp_seg_ground t \<and> k=lpp_stable_expression_bound operation t)"
+
+| "lpp_stable_coordinate_value operation LPPStableScaledBound t k =
+    (lp_seg_ground t \<and> k=lpp_stable_scaled_bound operation t)"
+
+| "lpp_stable_coordinate_value operation LPPStableMagnitudeBound t k =
+    (lp_seg_ground t \<and> k=abs (lpp_stable_scaled_bound operation t))"
 
 lemma lpp_stable_coordinate_subst:
   "lpp_stable_coordinate_value operation mode t k \<Longrightarrow>

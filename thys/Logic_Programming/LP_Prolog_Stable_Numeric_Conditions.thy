@@ -1,9 +1,16 @@
 theory LP_Prolog_Stable_Numeric_Conditions
- imports LP_Prolog_Stable_Modulo
+ imports LP_Prolog_Stable_Magnitude_Conditions
 begin
 
 datatype 'v lpp_stable_condition_receipt =
-    LPPStableIgnoredCondition
+    LPPStableMagnitudeLiteralOrderCondition int bool "(string lp_cut_symbol,'v) term"
+  |     LPPStableMagnitudeOrderCondition bool "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableMagnitudeModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableMagnitudeQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableScaledQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableScaledOrderCondition bool "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableScaledModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableIgnoredCondition
   | LPPStableIntegerCondition "'v lpp_numeric_condition"
   | LPPStableUpperCondition "'v lpp_integer_expression" "(string lp_cut_symbol,'v) term"
 
@@ -18,7 +25,16 @@ datatype 'v lpp_stable_condition_receipt =
   | LPPStableQuotientDescentCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
 fun lpp_check_stable_numeric_observation where
-  "lpp_check_stable_numeric_observation K observation (LPPStableIntegerCondition test) =
+  "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeLiteralOrderCondition n is_strict b) =
+    (0\<le>n \<and> observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) (lpp_integer_term n) b)"
+|   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeOrderCondition is_strict a b) = False"
+|   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeModuloCondition a b result) = False"
+|   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeQuotientModuloCondition a n d result) = False"
+|   "lpp_check_stable_numeric_observation K observation (LPPStableScaledQuotientModuloCondition a n d result) = False"
+|  "lpp_check_stable_numeric_observation K observation (LPPStableScaledOrderCondition is_strict a b) =
+    (observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) a b)"
+| "lpp_check_stable_numeric_observation K observation (LPPStableScaledModuloCondition a b result) = False"
+|  "lpp_check_stable_numeric_observation K observation (LPPStableIntegerCondition test) =
     lpp_check_numeric_observation K observation test"
 | "lpp_check_stable_numeric_observation K observation (LPPStableUpperCondition expression bound_term) =
     lpp_check_stable_upper_observation K observation expression bound_term"
@@ -35,7 +51,16 @@ fun lpp_check_stable_numeric_observation where
 | "lpp_check_stable_numeric_observation K observation LPPStableIgnoredCondition = True"
 
 fun lpp_stable_numeric_condition where
-  "lpp_stable_numeric_condition (LPPStableIntegerCondition test) =
+  "lpp_stable_numeric_condition (LPPStableMagnitudeLiteralOrderCondition n is_strict b) =
+    ((if is_strict then LPPIntLess else LPPIntLessEqual),LPPEConstant (n*lpp_scalar_scale),lpp_magnitude_expression b)"
+|   "lpp_stable_numeric_condition (LPPStableMagnitudeOrderCondition is_strict a b) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
+|   "lpp_stable_numeric_condition (LPPStableMagnitudeModuloCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
+|   "lpp_stable_numeric_condition (LPPStableMagnitudeQuotientModuloCondition a n d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
+|   "lpp_stable_numeric_condition (LPPStableScaledQuotientModuloCondition a n d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
+|  "lpp_stable_numeric_condition (LPPStableScaledOrderCondition is_strict a b) =
+    ((if is_strict then LPPIntLess else LPPIntLessEqual),lpp_scaled_expression a,lpp_scaled_expression b)"
+| "lpp_stable_numeric_condition (LPPStableScaledModuloCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
+|  "lpp_stable_numeric_condition (LPPStableIntegerCondition test) =
     lpp_rename_numeric_condition LPPIntegerKey test"
 | "lpp_stable_numeric_condition (LPPStableUpperCondition expression bound_term) =
     lpp_stable_upper_condition expression bound_term"
@@ -62,6 +87,41 @@ theorem lpp_checked_stable_numeric_condition:
   shows "lpp_numeric_condition_holds (lpp_stable_key_value operation eta source_values)
     (lpp_stable_numeric_condition receipt)"
 proof (cases receipt)
+  case (LPPStableMagnitudeLiteralOrderCondition n is_strict b)
+  have sign: "0\<le>n" and order: "lpp_stable_compare_outcome operation
+    (if is_strict then LPPIntLess else LPPIntLessEqual) (lpp_integer_value n) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked observed by (auto simp: LPPStableMagnitudeLiteralOrderCondition)
+  have nonnegative: "0\<le>lpp_stable_scaled_bound operation (lpp_integer_value n)"
+    using sign lpp_scalar_scale_positive by (simp add: lpp_stable_scaled_integer[OF lpp_stable_integer_literal])
+  have bound: "lpp_integer_compare (if is_strict then LPPIntLess else LPPIntLessEqual)
+    (abs (lpp_stable_scaled_bound operation (lpp_integer_value n)))
+    (abs (lpp_stable_scaled_bound operation (lp_ieval b eta)))"
+    by (rule lpp_stable_magnitude_order[OF order nonnegative])
+  show ?thesis using bound sign lpp_scalar_scale_positive
+    by (simp add: LPPStableMagnitudeLiteralOrderCondition lpp_stable_scaled_integer[OF lpp_stable_integer_literal] lpp_magnitude_expression_value abs_mult)
+next
+  case (LPPStableMagnitudeOrderCondition is_strict a b)
+  then show ?thesis by simp
+next
+  case (LPPStableMagnitudeModuloCondition a b result)
+  then show ?thesis by simp
+next
+  case (LPPStableMagnitudeQuotientModuloCondition a n d result)
+  then show ?thesis by simp
+next
+  case (LPPStableScaledQuotientModuloCondition a n d result)
+  then show ?thesis by simp
+next
+  case (LPPStableScaledOrderCondition is_strict a b)
+  have observed_order: "lpp_stable_compare_outcome operation (if is_strict then LPPIntLess else LPPIntLessEqual)
+      (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked observed by (simp add: LPPStableScaledOrderCondition)
+  show ?thesis using lpp_stable_scaled_comparison[OF observed_order]
+    by (simp add: LPPStableScaledOrderCondition lpp_scaled_expression_value)
+next
+  case (LPPStableScaledModuloCondition a b result)
+  then show ?thesis by simp
+next
   case (LPPStableQuotientMagnitudeUpperCondition expression a b)
   then show ?thesis by simp
 next
@@ -146,7 +206,12 @@ proof -
 qed
 
 fun lpp_stable_receipt_keys where
-  "lpp_stable_receipt_keys (LPPStableQuotientCondition a d result) = {LPPBoundKey a,LPPBoundKey result}"
+  "lpp_stable_receipt_keys (LPPStableMagnitudeOrderCondition is_strict a b) = set_lpp_integer_expression (lpp_magnitude_expression a) \<union> set_lpp_integer_expression (lpp_magnitude_expression b)"
+|   "lpp_stable_receipt_keys (LPPStableMagnitudeModuloCondition a b result) = {LPPMagnitudeKey b,LPPMagnitudeKey result}"
+|   "lpp_stable_receipt_keys (LPPStableMagnitudeQuotientModuloCondition a n d result) = {LPPMagnitudeKey n,LPPMagnitudeKey result,LPPMagnitudeKey (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d])}"
+|   "lpp_stable_receipt_keys (LPPStableScaledQuotientModuloCondition a n d result) = {LPPScaledKey n,LPPScaledKey result,LPPScaledKey (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d])}"
+|  "lpp_stable_receipt_keys (LPPStableScaledModuloCondition a b result) = {LPPScaledKey b,LPPScaledKey result}"
+|  "lpp_stable_receipt_keys (LPPStableQuotientCondition a d result) = {LPPBoundKey a,LPPBoundKey result}"
 | "lpp_stable_receipt_keys (LPPStableQuotientMagnitudeUpperCondition expression a b) =
     insert (LPPBoundKey a) (LPPIntegerKey ` set_lpp_integer_expression expression)"
 | "lpp_stable_receipt_keys (LPPStableQuotientUpperCondition expression a d) =
@@ -181,7 +246,12 @@ definition lpp_stable_quotient_magnitude_formula where
         lpp_numeric_condition_formula (LPPIntLessEqual,c,LPPENegate n)])"
 
 fun lpp_stable_receipt_formula where
-  "lpp_stable_receipt_formula rename (LPPStableQuotientCondition a d result) =
+  "lpp_stable_receipt_formula rename (LPPStableMagnitudeOrderCondition is_strict a b) = lpp_numeric_condition_formula (lpp_rename_numeric_condition rename ((if is_strict then LPPIntLess else LPPIntLessEqual),lpp_magnitude_expression a,lpp_magnitude_expression b))"
+|   "lpp_stable_receipt_formula rename (LPPStableMagnitudeModuloCondition a b result) = lpp_stable_magnitude_progress_formula rename b result"
+|   "lpp_stable_receipt_formula rename (LPPStableMagnitudeQuotientModuloCondition a n d result) = lpp_stable_magnitude_quotient_modulo_formula rename n d result"
+|   "lpp_stable_receipt_formula rename (LPPStableScaledQuotientModuloCondition a n d result) = lpp_stable_scaled_quotient_modulo_formula rename n d result"
+|  "lpp_stable_receipt_formula rename (LPPStableScaledModuloCondition a b result) = lpp_stable_scaled_modulo_formula rename b result"
+|  "lpp_stable_receipt_formula rename (LPPStableQuotientCondition a d result) =
     lpp_stable_quotient_formula rename a d result"
 | "lpp_stable_receipt_formula rename (LPPStableQuotientMagnitudeUpperCondition expression a b) =
     lpp_stable_quotient_magnitude_formula rename expression a"
@@ -202,7 +272,7 @@ lemma lpp_stable_numeric_test_formula_typed:
 
 lemma lpp_stable_receipt_formula_typed:
   "IA4.formula (lpp_stable_receipt_formula rename receipt)"
-  by (cases receipt) (auto simp: lpp_stable_quotient_formula_def lpp_stable_quotient_descent_formula_def lpp_stable_quotient_magnitude_formula_def Let_def
+  by (cases receipt) (auto simp: lpp_stable_magnitude_quotient_modulo_formula_def lpp_stable_magnitude_progress_formula_def lpp_stable_scaled_quotient_modulo_formula_def lpp_stable_scaled_modulo_formula_def lpp_stable_quotient_formula_def lpp_stable_quotient_descent_formula_def lpp_stable_quotient_magnitude_formula_def Let_def
     lpp_stable_numeric_test_formula_typed lpp_expression_its_type IA4.is_bool_def less_Suc_eq split: prod.splits)
 
 lemma lpp_trunc_div_magnitude_bound:
@@ -224,6 +294,24 @@ lemma lpp_stable_receipt_formula_sound:
       rho (rename key)=lpp_stable_key_value operation eta source_values key"
   shows "IA4.satisfies (lpp_integer_assignment rho) (lpp_stable_receipt_formula rename receipt)"
 proof (cases receipt)
+  case (LPPStableMagnitudeLiteralOrderCondition n is_strict b)
+  have keys: "lpp_stable_receipt_keys receipt=lpp_numeric_condition_keys (lpp_stable_numeric_condition receipt)"
+    by (simp only: LPPStableMagnitudeLiteralOrderCondition lpp_stable_receipt_keys.simps)
+  have truth: "IA4.satisfies (lpp_integer_assignment rho)
+    (lpp_numeric_condition_formula (lpp_rename_numeric_condition rename (lpp_stable_numeric_condition receipt)))"
+    by (rule lpp_stable_numeric_condition_formula_sound[where operation=operation and eta=eta and source_values=source_values and rho=rho and rename=rename and receipt=receipt and K=K and observation=observation,
+      OF compatible checked observed typed assigned[unfolded keys]])
+  show ?thesis using truth by (simp only: LPPStableMagnitudeLiteralOrderCondition lpp_stable_receipt_formula.simps)
+next
+  case (LPPStableScaledOrderCondition is_strict a b)
+  have keys: "lpp_stable_receipt_keys receipt=lpp_numeric_condition_keys (lpp_stable_numeric_condition receipt)"
+    by (simp only: LPPStableScaledOrderCondition lpp_stable_receipt_keys.simps)
+  have truth: "IA4.satisfies (lpp_integer_assignment rho)
+    (lpp_numeric_condition_formula (lpp_rename_numeric_condition rename (lpp_stable_numeric_condition receipt)))"
+    by (rule lpp_stable_numeric_condition_formula_sound[where operation=operation and eta=eta and source_values=source_values and rho=rho and rename=rename and receipt=receipt and K=K and observation=observation,
+      OF compatible checked observed typed assigned[unfolded keys]])
+  show ?thesis using truth by (simp only: LPPStableScaledOrderCondition lpp_stable_receipt_formula.simps)
+next
   case (LPPStableQuotientMagnitudeUpperCondition expression a b)
   let ?q = "Fun (LPCUser ''2:prolog_data_2f2f'') [a,b]"
   have check: "lpp_check_stable_upper_observation K observation expression ?q"
@@ -301,7 +389,14 @@ qed (use lpp_stable_numeric_condition_formula_sound[OF compatible checked observ
     assigned checked in auto)
 
 fun lpp_check_stable_path_observation where
-  "lpp_check_stable_path_observation K ambient observation (LPPStableModuloDescentCondition a b result) =
+  "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeOrderCondition is_strict a b) = (observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) a b \<and> (a=lpp_integer_term 0 \<or> LPPOComparison LPPIntLess (lpp_integer_term 0) a \<in>set ambient \<or> LPPOComparison LPPIntLessEqual (lpp_integer_term 0) a \<in>set ambient))"
+|   "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeModuloCondition a b result) = (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,b]) result \<and> LPPOComparison LPPIntLess (lpp_integer_term 0) b \<in>set ambient)"
+|   "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeQuotientModuloCondition a n d result) = (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]]) result \<and> LPPOComparison LPPIntLess (lpp_integer_term 0) (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]) \<in>set ambient)"
+|   "lpp_check_stable_path_observation K ambient observation (LPPStableScaledQuotientModuloCondition a n d result) = (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]]) result \<and> LPPOComparison LPPIntLess (lpp_integer_term 0) (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]) \<in>set ambient)"
+|  "lpp_check_stable_path_observation K ambient observation (LPPStableScaledModuloCondition a b result) =
+    (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,b]) result \<and>
+      LPPOComparison LPPIntLess (lpp_integer_term 0) b \<in>set ambient)"
+|  "lpp_check_stable_path_observation K ambient observation (LPPStableModuloDescentCondition a b result) =
     (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,b]) result \<and>
       LPPOComparison LPPIntLess (lpp_integer_term 0) b \<in>set ambient)"
 |  "lpp_check_stable_path_observation K ambient observation (LPPStableQuotientDescentCondition a b result) =
@@ -323,6 +418,110 @@ lemma lpp_stable_path_receipt_formula_sound:
       rho (rename key)=lpp_stable_key_value operation eta source_values key"
   shows "IA4.satisfies (lpp_integer_assignment rho) (lpp_stable_receipt_formula rename receipt)"
 proof (cases receipt)
+  case (LPPStableMagnitudeOrderCondition is_strict a b)
+  have order: "lpp_stable_compare_outcome operation (if is_strict then LPPIntLess else LPPIntLessEqual)
+      (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked observed by (simp add: LPPStableMagnitudeOrderCondition)
+  have sign: "lpp_stable_compare_outcome operation c (lpp_integer_value 0) (lp_ieval a eta)
+      (LPPBuiltinSuccess LPIVar)" if "LPPOComparison c (lpp_integer_term 0) a\<in>set ambient" for c
+  proof -
+    have "lpp_stable_observation_holds operation eta (LPPOComparison c (lpp_integer_term 0) a)"
+      using ambient that by (meson list_all_iff)
+    then show ?thesis by simp
+  qed
+  have sign_bound: "lpp_integer_compare c 0 (lpp_stable_scaled_bound operation (lp_ieval a eta))"
+      if "LPPOComparison c (lpp_integer_term 0) a\<in>set ambient" for c
+    using lpp_stable_scaled_comparison[OF sign[OF that]]
+    by (simp add: lpp_stable_scaled_integer[OF lpp_stable_integer_literal])
+  have nonnegative: "0\<le>lpp_stable_scaled_bound operation (lp_ieval a eta)"
+    using checked sign_bound[of LPPIntLess] sign_bound[of LPPIntLessEqual]
+    by (auto simp: LPPStableMagnitudeOrderCondition lpp_stable_scaled_integer[OF lpp_stable_integer_literal])
+  let ?values = "lpp_stable_key_value operation eta source_values"
+  have valuation: "lpp_expression_value (lpp_magnitude_expression t) (rho o rename)=
+      lpp_expression_value (lpp_magnitude_expression t) ?values" if "t=a \<or> t=b" for t
+    by (rule lpp_stable_expression_value_cong)
+      (use assigned that in \<open>auto simp: LPPStableMagnitudeOrderCondition\<close>)
+  have truth: "lpp_integer_compare (if is_strict then LPPIntLess else LPPIntLessEqual)
+      (abs (lpp_stable_scaled_bound operation (lp_ieval a eta)))
+      (abs (lpp_stable_scaled_bound operation (lp_ieval b eta)))"
+    by (rule lpp_stable_magnitude_order[OF order nonnegative])
+  show ?thesis using truth valuation[of a] valuation[of b]
+    by (cases is_strict) (auto simp: LPPStableMagnitudeOrderCondition lpp_comparison_typed_assignment
+      lpp_expression_typed_assignment lpp_expression_rename_value lpp_magnitude_expression_value)
+next
+  case (LPPStableScaledOrderCondition is_strict a b)
+  have check: "lpp_check_stable_numeric_observation K observation receipt"
+    using checked by (simp only: LPPStableScaledOrderCondition lpp_check_stable_path_observation.simps)
+  show ?thesis by (rule lpp_stable_receipt_formula_sound[where operation=operation and K=K and observation=observation and receipt=receipt and eta=eta and source_values=source_values and rho=rho and rename=rename, OF compatible check observed typed assigned])
+next
+  case (LPPStableMagnitudeModuloCondition a b result)
+  have evaluation: "lpp_stable_scalar_evaluation operation
+      (LPIFun (LPCUser ''2:prolog_data_6d6f64'') [lp_ieval a eta,lp_ieval b eta]) (lp_ieval result eta)"
+    using checked observed by (auto simp: LPPStableMagnitudeModuloCondition)
+  have denominator: "lpp_stable_compare_outcome operation LPPIntLess (lpp_integer_value 0) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked ambient by (auto simp: LPPStableMagnitudeModuloCondition list_all_iff)
+  have progress: "0\<le>abs (lpp_stable_scaled_bound operation (lp_ieval result eta)) \<and>
+    abs (lpp_stable_scaled_bound operation (lp_ieval result eta)) < abs (lpp_stable_scaled_bound operation (lp_ieval b eta))"
+    by (rule lpp_stable_magnitude_modulo_progress[OF compatible evaluation denominator])
+  have b: "rho (rename (LPPMagnitudeKey b))=abs (lpp_stable_scaled_bound operation (lp_ieval b eta))"
+    and result: "rho (rename (LPPMagnitudeKey result))=abs (lpp_stable_scaled_bound operation (lp_ieval result eta))"
+    using assigned by (auto simp: LPPStableMagnitudeModuloCondition)
+  show ?thesis using progress by (auto simp: LPPStableMagnitudeModuloCondition
+    lpp_stable_magnitude_progress_formula_def Let_def lpp_comparison_typed_assignment b result)
+next
+  case (LPPStableMagnitudeQuotientModuloCondition a n d result)
+  have evaluation: "lpp_stable_scalar_evaluation operation
+      (LPIFun (LPCUser ''2:prolog_data_6d6f64'') [lp_ieval a eta,LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta]]) (lp_ieval result eta)"
+    using checked observed by (auto simp: LPPStableMagnitudeQuotientModuloCondition)
+  have denominator: "lpp_stable_compare_outcome operation LPPIntLess (lpp_integer_value 0) (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta]) (LPPBuiltinSuccess LPIVar)"
+    using checked ambient by (auto simp: LPPStableMagnitudeQuotientModuloCondition list_all_iff)
+  have progress: "0\<le>abs (lpp_stable_scaled_bound operation (lp_ieval result eta)) \<and>
+    abs (lpp_stable_scaled_bound operation (lp_ieval result eta)) < abs (lpp_stable_scaled_bound operation (lp_ieval n eta))"
+    by (rule lpp_stable_magnitude_quotient_modulo_progress[OF compatible evaluation denominator])
+  have n: "rho (rename (LPPMagnitudeKey n))=abs (lpp_stable_scaled_bound operation (lp_ieval n eta))"
+    and result: "rho (rename (LPPMagnitudeKey result))=abs (lpp_stable_scaled_bound operation (lp_ieval result eta))"
+    using assigned by (auto simp: LPPStableMagnitudeQuotientModuloCondition)
+  have direct: "0\<le>abs (lpp_stable_scaled_bound operation (lp_ieval result eta)) \<and> abs (lpp_stable_scaled_bound operation (lp_ieval result eta)) < abs (lpp_stable_scaled_bound operation (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta]))"
+    by (rule lpp_stable_magnitude_modulo_progress[OF compatible evaluation denominator])
+  have quotient: "rho (rename (LPPMagnitudeKey (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d])))=abs (lpp_stable_scaled_bound operation (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta]))"
+    using assigned by (auto simp: LPPStableMagnitudeQuotientModuloCondition)
+  show ?thesis using progress direct by (auto simp: LPPStableMagnitudeQuotientModuloCondition
+    lpp_stable_magnitude_quotient_modulo_formula_def lpp_stable_magnitude_progress_formula_def Let_def lpp_comparison_typed_assignment n result quotient)
+next
+  case (LPPStableScaledQuotientModuloCondition a n d result)
+  have evaluation: "lpp_stable_scalar_evaluation operation
+      (LPIFun (LPCUser ''2:prolog_data_6d6f64'') [lp_ieval a eta,LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta]]) (lp_ieval result eta)"
+    using checked observed by (auto simp: LPPStableScaledQuotientModuloCondition)
+  have denominator: "lpp_stable_compare_outcome operation LPPIntLess (lpp_integer_value 0) (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta]) (LPPBuiltinSuccess LPIVar)"
+    using checked ambient by (auto simp: LPPStableScaledQuotientModuloCondition list_all_iff)
+  have progress: "0\<le>lpp_stable_scaled_bound operation (lp_ieval result eta) \<and>
+    lpp_stable_scaled_bound operation (lp_ieval result eta) < abs (lpp_stable_scaled_bound operation (lp_ieval n eta))"
+    by (rule lpp_stable_scaled_quotient_modulo_progress[OF compatible evaluation denominator])
+  have n: "rho (rename (LPPScaledKey n))=lpp_stable_scaled_bound operation (lp_ieval n eta)"
+    and result: "rho (rename (LPPScaledKey result))=lpp_stable_scaled_bound operation (lp_ieval result eta)"
+    using assigned by (auto simp: LPPStableScaledQuotientModuloCondition)
+  have direct: "0\<le>lpp_stable_scaled_bound operation (lp_ieval result eta) \<and> lpp_stable_scaled_bound operation (lp_ieval result eta) < lpp_stable_scaled_bound operation (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta])"
+    by (rule lpp_stable_scaled_modulo_progress[OF compatible evaluation denominator])
+  have quotient: "rho (rename (LPPScaledKey (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d])))=lpp_stable_scaled_bound operation (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval n eta,lp_ieval d eta])"
+    using assigned by (auto simp: LPPStableScaledQuotientModuloCondition)
+  show ?thesis using progress direct by (auto simp: LPPStableScaledQuotientModuloCondition
+    lpp_stable_scaled_quotient_modulo_formula_def lpp_stable_scaled_modulo_formula_def Let_def lpp_comparison_typed_assignment n result quotient abs_if split: if_splits)
+next
+  case (LPPStableScaledModuloCondition a b result)
+  have evaluation: "lpp_stable_scalar_evaluation operation
+      (LPIFun (LPCUser ''2:prolog_data_6d6f64'') [lp_ieval a eta,lp_ieval b eta]) (lp_ieval result eta)"
+    using checked observed by (auto simp: LPPStableScaledModuloCondition)
+  have denominator: "lpp_stable_compare_outcome operation LPPIntLess (lpp_integer_value 0) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked ambient by (auto simp: LPPStableScaledModuloCondition list_all_iff)
+  have progress: "0\<le>lpp_stable_scaled_bound operation (lp_ieval result eta) \<and>
+    lpp_stable_scaled_bound operation (lp_ieval result eta) < lpp_stable_scaled_bound operation (lp_ieval b eta)"
+    by (rule lpp_stable_scaled_modulo_progress[OF compatible evaluation denominator])
+  have b: "rho (rename (LPPScaledKey b))=lpp_stable_scaled_bound operation (lp_ieval b eta)"
+    and result: "rho (rename (LPPScaledKey result))=lpp_stable_scaled_bound operation (lp_ieval result eta)"
+    using assigned by (auto simp: LPPStableScaledModuloCondition)
+  show ?thesis using progress by (auto simp: LPPStableScaledModuloCondition
+    lpp_stable_scaled_modulo_formula_def Let_def lpp_comparison_typed_assignment b result)
+next
   case (LPPStableModuloDescentCondition a b result)
   have evaluation: "lpp_stable_scalar_evaluation operation
       (LPIFun (LPCUser ''2:prolog_data_6d6f64'') [lp_ieval a eta,lp_ieval b eta]) (lp_ieval result eta)"

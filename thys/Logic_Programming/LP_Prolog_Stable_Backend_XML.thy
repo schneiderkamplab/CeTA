@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Backend_XML
- imports LP_Prolog_Stable_Relational_XML LP_Dependency_Triple_XML
+ imports LP_Prolog_Stable_Relational_XML LP_Dependency_Triple_XML LP_Prolog_Stable_Return_XML
 begin
 
 definition lpp_structural_backend_parser where
@@ -26,8 +26,8 @@ definition lpp_decode_structural_backend where
       then Some (entries,coverage,source_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs)
       else None))"
 
-definition lpp_numeric_backend_parser where
-  "lpp_numeric_backend_parser = XMLdo (STR ''numericBackend'') {
+definition lpp_plain_numeric_backend_parser where
+  "lpp_plain_numeric_backend_parser = XMLdo (STR ''numericBackend'') {
     projections\<leftarrow>xml_many (STR ''argumentProjection'') (XMLdo (STR ''entry'') {
       p\<leftarrow>xml_text (STR ''predicate'');
       positions\<leftarrow>xml_many (STR ''positions'') (xml_nat (STR ''position'')) id;
@@ -35,19 +35,58 @@ definition lpp_numeric_backend_parser where
     child\<leftarrow>lpp_stable_numeric_component_parser;
     xml_return (projections,child)}"
 
-definition lpp_decode_numeric_backend where
-  "lpp_decode_numeric_backend transfer source_rows data = (case data of
-    (projections,(child_transfer,coordinates,coordinate_modes,locations,child_rows,row_data,system,child_proof)) \<Rightarrow>
-      (let positions=lpp_numeric_coordinate_lookup projections in
-        if child_transfer=transfer \<and>
+definition lpp_legacy_numeric_backend_parser where
+  "lpp_legacy_numeric_backend_parser =
+    (xml_change lpp_plain_numeric_backend_parser (\<lambda>x. xml_return ([],x))) XMLor
+    (XMLdo (STR ''computedNumericBackend'') {
+      expressions\<leftarrow>xml_many (STR ''argumentExpansion'') (XMLdo (STR ''entry'') {
+        p\<leftarrow>xml_text (STR ''predicate'');
+        es\<leftarrow>xml_many (STR ''expressions'') (XMLdo (STR ''expression'') {
+          f\<leftarrow>lpc_symbol_parser;
+          indices\<leftarrow>xml_many (STR ''positions'') (xml_nat (STR ''position'')) id;
+          xml_return (f,indices)}) id;
+        xml_return (p,es)}) id;
+      child\<leftarrow>lpp_plain_numeric_backend_parser;
+      xml_return (expressions,child)})"
+
+definition lpp_decode_legacy_numeric_backend where
+  "lpp_decode_legacy_numeric_backend transfer source_rows data = (case data of
+    (expressions,(projections,(child_transfer,coordinates,coordinate_modes,locations,child_rows,row_data,system,child_proof))) \<Rightarrow>
+      (let positions=lpp_numeric_coordinate_lookup projections;
+           expand=lpp_numeric_coordinate_lookup expressions in
+        if child_transfer=transfer \<and> distinct (map fst expressions) \<and>
           distinct (map fst projections) \<and> distinct (map fst coordinates) \<and>
           distinct (map fst coordinate_modes) \<and> distinct (map fst locations) \<and>
           list_all (\<lambda>((h,ps,b,gs),os). fst h\<in>set (map fst projections) \<and>
             fst b\<in>set (map fst projections)) source_rows \<and>
-          child_rows=map (lpp_project_observed_triple positions) source_rows
-        then Some (positions,lpp_numeric_coordinate_lookup coordinates,
+          child_rows=map (lpp_project_observed_triple positions o lpp_expand_observed_triple expand) source_rows
+        then Some (expand,positions,lpp_numeric_coordinate_lookup coordinates,
           lpp_numeric_coordinate_lookup coordinate_modes,lpp_numeric_location_lookup locations,system,row_data,child_proof)
         else None))"
+
+definition lpp_numeric_backend_parser where
+  "lpp_numeric_backend_parser =
+    (xml_change lpp_legacy_numeric_backend_parser (\<lambda>x. xml_return (Inl x))) XMLor
+    (XMLdo (STR ''returnNumericBackend'') {
+      contract\<leftarrow>lpp_magnitude_contract_parser;
+      weak_system\<leftarrow>xml_singleton (STR ''weakSystem'') ia4_lts_input_parser id;
+      extra_rows\<leftarrow>xml_many (STR ''returnRows'') lpp_return_row_parser id;
+      numeric\<leftarrow>lpp_legacy_numeric_backend_parser;
+      xml_return (Inr (contract,weak_system,extra_rows,numeric))})"
+
+fun lpp_decode_numeric_backend where
+  "lpp_decode_numeric_backend transfer source_rows (Inl data) =
+    map_option (\<lambda>(expressions,positions,coordinates,modes,locations,system,row_data,child).
+      (expressions,positions,coordinates,modes,locations,system,row_data,child,None))
+      (lpp_decode_legacy_numeric_backend transfer source_rows data)"
+| "lpp_decode_numeric_backend transfer source_rows (Inr ((summaries,P,return_receipts),weak_system,extra_rows,data)) =
+    (case lpp_decode_legacy_numeric_backend transfer source_rows data of
+      Some (expressions,positions,coordinates,modes,locations,system,row_data,child) \<Rightarrow>
+        if P=fst (snd transfer) \<and> distinct (map fst summaries) \<and> length extra_rows=length row_data
+        then Some (expressions,positions,coordinates,modes,locations,system,row_data,child,
+          Some (lpp_summary_lookup summaries,return_receipts,lts_of weak_system,extra_rows))
+        else None
+    | _ \<Rightarrow> None)"
 
 text \<open>Decoding checks the parsed child subject and metadata. Only the
 backend checker may establish termination, including all entry queries and

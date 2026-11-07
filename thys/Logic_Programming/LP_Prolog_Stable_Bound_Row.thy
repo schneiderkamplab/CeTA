@@ -5,6 +5,8 @@ begin
 datatype 'v lpp_stable_numeric_key =
     LPPIntegerKey 'v
   | LPPBoundKey "(string lp_cut_symbol,'v) term"
+  | LPPScaledKey "(string lp_cut_symbol,'v) term"
+  | LPPMagnitudeKey "(string lp_cut_symbol,'v) term"
 
 fun lpp_check_stable_upper_observation where
   "lpp_check_stable_upper_observation K (LPPOComparison c a b) expression bound_term =

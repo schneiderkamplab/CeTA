@@ -1,6 +1,6 @@
 theory LP_Prolog_Stable_Backends
- imports LP_Prolog_Stable_Structural_Child LP_Prolog_Stable_Numeric_Component
-   LP_Prolog_Stable_Relational_Routing
+ imports LP_Prolog_Stable_Structural_Child LP_Prolog_Stable_Computed_Projection
+   LP_Prolog_Stable_Relational_Routing LP_Prolog_Stable_Return_Component
 begin
 
 definition lpp_check_stable_backend where
@@ -12,8 +12,13 @@ definition lpp_check_stable_backend where
         lpp_check_structural_pidp_entries I J child_rows (lpp_erase_success P) entries
           (lpc_lookup fallback predicates) (lpc_lookup fallback constructors)
           outs (fallback :: (string,nat list) lab) dnames pnames marks filters labs proofs
-    | Inr (positions,coordinates,modes,locations,system,row_receipts,child) \<Rightarrow>
-        lpp_check_stable_projected_numeric_component T positions coordinates modes locations system D row_receipts child)"
+    | Inr (expressions,positions,coordinates,modes,locations,system,row_receipts,child,return_meta) \<Rightarrow>
+        (case return_meta of None \<Rightarrow>
+          lpp_check_stable_computed_numeric_component T expressions positions coordinates modes locations system D row_receipts child
+        | Some (summaries,return_receipts,weak_system,extra_rows) \<Rightarrow>
+          length extra_rows=length row_receipts \<and>
+          lpp_check_computed_return_component T P summaries return_receipts expressions positions coordinates modes locations
+            weak_system system D (zip row_receipts extra_rows) child))"
 
 theorem lpp_check_stable_backend_sound:
   fixes P :: "string lpp_success_clause list" and D :: "string lpp_observed_triple list"
@@ -36,12 +41,24 @@ proof (cases backend)
   show ?thesis by (rule lpp_checked_structural_pidp_component[OF I J compatible coverage transfer subject children])
 next
   case (Inr numeric)
-  obtain positions coordinates modes locations system row_receipts child
-    where shape: "numeric=(positions,coordinates,modes,locations,system,row_receipts,child)"
+  obtain expressions positions coordinates modes locations system row_receipts child return_meta
+    where shape: "numeric=(expressions,positions,coordinates,modes,locations,system,row_receipts,child,return_meta)"
     by (cases numeric) auto
-  have component: "lpp_check_stable_projected_numeric_component T positions coordinates modes locations system D row_receipts child"
-    using checked by (simp add: lpp_check_stable_backend_def Inr shape)
-  show ?thesis by (rule lpp_check_stable_projected_numeric_component_sound[OF compatible component transfer])
+  show ?thesis
+  proof (cases return_meta)
+    case None
+    have component: "lpp_check_stable_computed_numeric_component T expressions positions coordinates modes locations system D row_receipts child"
+      using checked by (simp add: lpp_check_stable_backend_def Inr shape None)
+    show ?thesis by (rule lpp_check_stable_computed_numeric_component_sound[OF compatible component transfer])
+  next
+    case (Some metadata)
+    obtain summaries return_receipts weak_system extra_rows where meta: "metadata=(summaries,return_receipts,weak_system,extra_rows)"
+      by (cases metadata) auto
+    have component: "lpp_check_computed_return_component T P summaries return_receipts expressions positions coordinates modes locations
+      weak_system system D (zip row_receipts extra_rows) child"
+      using checked by (simp add: lpp_check_stable_backend_def Inr shape Some meta)
+    show ?thesis by (rule lpp_check_computed_return_component_sound[OF compatible component transfer])
+  qed
 qed
 
 ML \<open>

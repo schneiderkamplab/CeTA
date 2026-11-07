@@ -5,14 +5,24 @@ begin
 datatype 'v lpp_stable_endpoint_expression =
     LPPStableEndpointInteger "'v lpp_integer_expression"
   | LPPStableEndpointBound "(string lp_cut_symbol,'v) term"
+  | LPPStableEndpointScaled "(string lp_cut_symbol,'v) term"
+  | LPPStableEndpointMagnitude "(string lp_cut_symbol,'v) term"
 
 fun lpp_stable_endpoint_mode where
   "lpp_stable_endpoint_mode (LPPStableEndpointInteger e) = LPPStableInteger"
 | "lpp_stable_endpoint_mode (LPPStableEndpointBound t) = LPPStableUpperBound"
 
+| "lpp_stable_endpoint_mode (LPPStableEndpointScaled t) = LPPStableScaledBound"
+
+| "lpp_stable_endpoint_mode (LPPStableEndpointMagnitude t) = LPPStableMagnitudeBound"
+
 fun lpp_stable_endpoint_numeric_expression where
   "lpp_stable_endpoint_numeric_expression (LPPStableEndpointInteger e) = map_lpp_integer_expression LPPIntegerKey e"
 | "lpp_stable_endpoint_numeric_expression (LPPStableEndpointBound t) = LPPEVariable (LPPBoundKey t)"
+
+| "lpp_stable_endpoint_numeric_expression (LPPStableEndpointScaled t) = LPPEVariable (LPPScaledKey t)"
+
+| "lpp_stable_endpoint_numeric_expression (LPPStableEndpointMagnitude t) = LPPEVariable (LPPMagnitudeKey t)"
 
 fun lpp_check_stable_endpoint where
   "lpp_check_stable_endpoint K G t (LPPStableEndpointInteger e) =
@@ -20,10 +30,22 @@ fun lpp_check_stable_endpoint where
 | "lpp_check_stable_endpoint K G t (LPPStableEndpointBound expression) =
     (t=expression \<and> vars_term t \<subseteq> set G)"
 
+| "lpp_check_stable_endpoint K G t (LPPStableEndpointScaled expression) =
+    (t=expression \<and> vars_term t \<subseteq> set G)"
+
+| "lpp_check_stable_endpoint K G t (LPPStableEndpointMagnitude expression) =
+    (t=expression \<and> vars_term t \<subseteq> set G)"
+
 fun lpp_stable_key_value where
   "lpp_stable_key_value operation eta rho (LPPIntegerKey x) = rho x"
 | "lpp_stable_key_value operation eta rho (LPPBoundKey t) =
     lpp_stable_expression_bound operation (lp_ieval t eta)"
+
+| "lpp_stable_key_value operation eta rho (LPPScaledKey t) =
+    lpp_stable_scaled_bound operation (lp_ieval t eta)"
+
+| "lpp_stable_key_value operation eta rho (LPPMagnitudeKey t) =
+    abs (lpp_stable_scaled_bound operation (lp_ieval t eta))"
 
 lemma lpp_checked_stable_endpoint:
   assumes checked: "lpp_check_stable_endpoint K G t endpoint"
@@ -42,7 +64,15 @@ next
   case (LPPStableEndpointBound expression)
   have equal: "t=expression" and finite: "lp_seg_ground (lp_ieval t eta)"
     using checked ground by (auto simp: LPPStableEndpointBound lp_seg_ground_eval)
-  show ?thesis using finite by (simp add: LPPStableEndpointBound equal)
+  show ?thesis using finite by (simp add: LPPStableEndpointBound equal)next
+  case (LPPStableEndpointScaled expression)
+  have equal: "t=expression" and finite: "lp_seg_ground (lp_ieval t eta)"
+    using checked ground by (auto simp: LPPStableEndpointScaled lp_seg_ground_eval)
+  show ?thesis using finite by (simp add: LPPStableEndpointScaled equal)next
+  case (LPPStableEndpointMagnitude expression)
+  have equal: "t=expression" and finite: "lp_seg_ground (lp_ieval t eta)"
+    using checked ground by (auto simp: LPPStableEndpointMagnitude lp_seg_ground_eval)
+  show ?thesis using finite by (simp add: LPPStableEndpointMagnitude equal)
 qed
 
 fun lpp_stable_endpoint_formula where

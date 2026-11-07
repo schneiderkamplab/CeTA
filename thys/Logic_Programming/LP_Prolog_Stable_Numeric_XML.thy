@@ -6,6 +6,8 @@ begin
 definition lpp_stable_coordinate_parser where
   "lpp_stable_coordinate_parser =
     (XMLdo (STR ''integerCoordinate'') {xml_return LPPStableInteger}) XMLor
+    (XMLdo (STR ''magnitudeBoundCoordinate'') {xml_return LPPStableMagnitudeBound}) XMLor
+    (XMLdo (STR ''scaledBoundCoordinate'') {xml_return LPPStableScaledBound}) XMLor
     (XMLdo (STR ''upperBoundCoordinate'') {xml_return LPPStableUpperBound})"
 
 definition lpp_stable_endpoint_parser where
@@ -13,11 +15,41 @@ definition lpp_stable_endpoint_parser where
     coordinate\<leftarrow>xml_text (STR ''coordinate'');
     t\<leftarrow>lpc_term_parser;
     e\<leftarrow>(xml_singleton (STR ''integerEndpoint'') lpp_integer_expression_parser LPPStableEndpointInteger)
+      XMLor (xml_singleton (STR ''magnitudeEndpoint'') lpc_term_parser LPPStableEndpointMagnitude)
+      XMLor (xml_singleton (STR ''scaledEndpoint'') lpc_term_parser LPPStableEndpointScaled)
       XMLor (xml_singleton (STR ''boundEndpoint'') lpc_term_parser LPPStableEndpointBound);
     xml_return (coordinate,t,e)}"
 
 definition lpp_stable_condition_parser where
   "lpp_stable_condition_parser =
+    (XMLdo (STR ''magnitudeLiteralLessCondition'') {n\<leftarrow>xml_int (STR ''integer''); b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeLiteralOrderCondition n True b)}) XMLor
+    (XMLdo (STR ''magnitudeLiteralLeqCondition'') {n\<leftarrow>xml_int (STR ''integer''); b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeLiteralOrderCondition n False b)}) XMLor
+    (XMLdo (STR ''magnitudeLessCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeOrderCondition True a b)}) XMLor
+    (XMLdo (STR ''magnitudeLeqCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeOrderCondition False a b)}) XMLor
+    (XMLdo (STR ''magnitudeModuloCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeModuloCondition a b result)}) XMLor
+    (XMLdo (STR ''magnitudeQuotientModuloCondition'') {
+      a\<leftarrow>lpc_term_parser; n\<leftarrow>lpc_term_parser; d\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeQuotientModuloCondition a n d result)}) XMLor
+    (XMLdo (STR ''scaledQuotientModuloCondition'') {
+      a\<leftarrow>lpc_term_parser; n\<leftarrow>lpc_term_parser; d\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableScaledQuotientModuloCondition a n d result)}) XMLor
+    (XMLdo (STR ''scaledLessCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableScaledOrderCondition True a b)}) XMLor
+    (XMLdo (STR ''scaledLeqCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableScaledOrderCondition False a b)}) XMLor
+    (XMLdo (STR ''scaledModuloCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableScaledModuloCondition a b result)}) XMLor
     (XMLdo (STR ''ignoredCondition'') {xml_return LPPStableIgnoredCondition}) XMLor
     (XMLdo (STR ''integerCondition'') {
       comparison\<leftarrow>lpp_numeric_comparison_parser;
@@ -45,6 +77,8 @@ definition lpp_stable_condition_parser where
 definition lpp_stable_numeric_key_parser where
   "lpp_stable_numeric_key_parser =
     (xml_change (xml_text (STR ''integerKey'')) (\<lambda>x. xml_return (LPPIntegerKey x))) XMLor
+    (xml_singleton (STR ''magnitudeKey'') lpc_term_parser LPPMagnitudeKey) XMLor
+    (xml_singleton (STR ''scaledKey'') lpc_term_parser LPPScaledKey) XMLor
     (xml_singleton (STR ''boundKey'') lpc_term_parser LPPBoundKey)"
 
 definition lpp_stable_numeric_receipt_parser where
