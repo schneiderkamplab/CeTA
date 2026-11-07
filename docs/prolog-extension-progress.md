@@ -357,3 +357,21 @@ strategy compatibility retains the old residual subjects. Failed parent and
 full-replay attempts are preserved in the
 [pinned audit](data/prolog-return-magnitude-20261107.json). No superiority or
 production promotion is claimed.
+
+## 2026-11-07 historical-graph arithmetic replay: 77 YES + 8 NO
+
+Ferrum `0a8b8a34` exposes existing modulo and return-magnitude checking over the
+historical established graph, preserving old strategy atoms. CeTA logic did not
+change: unified937 remains the same immutable executable from `268823b`.
+Full strict replay 1414 certifies **77 YES + 8 NO / 221**, adding `Hett/p2_09.pl`
+and preserving every previous verdict and source hash. All 85 complete receipts
+are authorized, with two unified checks and original-source audits per result.
+
+The fixed-limit comparison closes all eight historical graphs in 38–261 nodes,
+while their ordered numeric variants reach the node limit or timeout. The
+new route retains source branches and checked interfaces; closure itself is
+not counted as a proof. Positive native/strict validations, floating-domain
+negative controls, eighteen mutation checks and 583 shared LP tests pass.
+The remaining 136-gap probe adds no other YES. See the
+[pinned historical-routing audit](data/prolog-historical-modulo-20261107.json).
+Protected-category promotion and matched-semantics superiority remain open.
