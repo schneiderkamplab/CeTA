@@ -24,7 +24,7 @@ definition lpp_check_stable_numeric_path where
      distinct (map fst bindings) \<and>
      list_all (\<lambda>e. lpp_stable_endpoint_keys e \<subseteq> set (map fst bindings)) (inputs@outputs) \<and>
      list_all (\<lambda>r. lpp_stable_receipt_keys r \<subseteq> set (map fst bindings)) receipts \<and>
-     list_all2 (lpp_check_stable_numeric_observation K) observations receipts \<and>
+     list_all2 (lpp_check_stable_path_observation K observations) observations receipts \<and>
      formula=lpp_stable_numeric_path_formula inputs outputs receipts bindings)"
 
 text \<open>The complete formula contains both endpoints and every supplied
@@ -55,7 +55,7 @@ proof -
     and outs: "list_all (\<lambda>(coordinate,t,e). lpp_check_stable_endpoint K G t e) outputs"
     and endpoint_keys: "\<And>e. e\<in>set (inputs@outputs) \<Longrightarrow> lpp_stable_endpoint_keys e \<subseteq> set (map fst bindings)"
     and condition_keys: "\<And>r. r\<in>set receipts \<Longrightarrow> lpp_stable_receipt_keys r \<subseteq> set (map fst bindings)"
-    and tests: "list_all2 (lpp_check_stable_numeric_observation K) observations receipts"
+    and tests: "list_all2 (lpp_check_stable_path_observation K observations) observations receipts"
     and formula: "formula=lpp_stable_numeric_path_formula inputs outputs receipts bindings"
     using checked by (auto simp: lpp_check_stable_numeric_path_def list_all_iff)
   have input_formula: "IA4.satisfies (lpp_integer_assignment rho) (lpp_stable_endpoint_formula Pre ?rename endpoint)"
@@ -89,7 +89,7 @@ proof -
     case (Cons ob r obs rs)
     have current: "IA4.satisfies (lpp_integer_assignment rho)
       (lpp_stable_receipt_formula ?rename r)"
-      by (rule lpp_stable_receipt_formula_sound[OF compatible Cons.hyps(1) _ typed])
+      by (rule lpp_stable_path_receipt_formula_sound[OF compatible Cons.hyps(1) _ observed typed])
         (use Cons.prems assigned in auto)
     show ?case using Cons current by auto
   qed

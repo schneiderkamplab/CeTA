@@ -1,0 +1,69 @@
+{
+  "schema": "ceta.prolog-quotient-descent.v1",
+  "ceta_base_commit": "a3d4345",
+  "branch": "codex/prolog-production-integration",
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-quotient-descent-854/ceta",
+  "checker_sha256": "9a372491186a4162f3252397d4c516abaae6f96974891703a8660d55ae565c18",
+  "lp_unit": "ceta-lp-1.0-13ec7c525a52aeac",
+  "verification": "target/prolog-quotient-descent-852.log",
+  "export": "target/prolog-quotient-descent-export-853",
+  "generated_sha256": "7e93eb637e20758fc1e76149073b65aa04a4edd9a5069440871b11f312ed3e9e",
+  "theory_sha256": {
+    "LP_Prolog_Stable_Integer_Compatibility.thy": "73d1ca558cece291ddfc20b33cd579279aad339a45b0bedbf988f6c43d2f476e",
+    "LP_Prolog_Stable_Quotient.thy": "9a4d3711f61a0258fcc96b4f2c4d6f9e4692a8eee0e55bcf1a5ac048539d32ff",
+    "LP_Prolog_Stable_Quotient_Descent.thy": "ee02e1bce4998e6f5b1e512b09899b3058c40f3bc3c0f0c2982b341fff962d8d",
+    "LP_Prolog_Stable_Profile_Operations.thy": "f14f307136114ac6d88a363fdc8d927377dddb289140b1f862ee3459ba4d8628",
+    "LP_Prolog_Stable_Numeric_Conditions.thy": "2a9943065549cefda806e1b1b83d18c61a36d60acb1a571d16bc1868e4b1967a",
+    "LP_Prolog_Stable_Numeric_Path.thy": "75728428a6e5a3ffe6a901fd40e6b72daac34e158ecd03e198b25a55b5349977",
+    "LP_Prolog_Stable_Numeric_XML.thy": "55e8f47bdc9c267ef8dab21e04581094f9fc9a314fc5598cb258a8d5d3743096"
+  },
+  "native_strict": {
+    "roots": 3,
+    "controls": 15,
+    "manifest": "/work/dfm/festschrift/ferrum-prolog-release/target/prolog-quotient-descent-strict-1264/manifest.json",
+    "sha256": "b3b3a741d4382684082f3830bf6bbbe26c3f3f701a05673ac81f281469907f6f"
+  },
+  "certificate_controls": {
+    "checks": 42,
+    "manifest": "/work/dfm/festschrift/ferrum-prolog-release/target/prolog-quotient-descent-controls-1263/results.json",
+    "sha256": "c3a13d5a700f401a48bd1d90faf8e393f00fd76353f2b7f04c1312f52b93a3d2"
+  },
+  "retention": {
+    "checker_sha256": "9a372491186a4162f3252397d4c516abaae6f96974891703a8660d55ae565c18",
+    "prolog": 78,
+    "lp_cut": 93,
+    "checks": 342,
+    "workers": 4,
+    "checker_seconds_limit": 30,
+    "scope": "Retained certificate rechecking only; not new native strict replay"
+  },
+  "other_category_export_archives_unchanged": true,
+  "generated_logic_manually_edited": false,
+  "formal_lemmas": [
+    "successful quotient supplies integer evaluated operands",
+    "successful comparisons of those operands determine their order",
+    "positive numerator and divisor greater than one imply nonnegative strict descent"
+  ],
+  "scope": "Checked path-local variable-divisor descent observations on established Prolog graph; full population replay recorded separately by Ferrum. No production promotion.",
+  "archive_sha256": "0fddb07a754cf4d5921221cab215e8fc6a227d9442fe9b4918e14fa9c28a6b86",
+  "files": {
+    "target/add-quotient-descent-851.py": "707867a4b4a0dc96cdb78b137101cc68c746b15968b23c904b30e48c7facb0cf",
+    "target/install-quotient-descent-export-854.py": "5bf9115cfff2543ba1aec8b21e72b6496b808b728d9774e4e8a9560663cada0f",
+    "target/pin-quotient-descent-856.py": "9062f87051235aec8649a31eb512ee9517578c04b89d386c8c537ab1866e46c6",
+    "target/prolog-quotient-descent-850.log": "fd17832cb936f100cc06faaf881b7de9271904e3e17c7cbbe186e1d53b856f06",
+    "target/prolog-quotient-descent-851.log": "29f8420a74f6e2a86ca0755a110d92a533b8878686d384de0abbb228549c0ef8",
+    "target/prolog-quotient-descent-852.log": "426cffc60f7b30347ba38e104c8dab820b7bbd09e51b3c7d133b120fa572387a",
+    "target/prolog-quotient-descent-build-854.log": "4929f6f215b474e1b03b4aa23856a410e3c7f509268f2589ef36ce5ce575f325",
+    "target/prolog-quotient-descent-export-853/Prolog_Integer_Recurrence_Export.thy": "b24ae81f4e7c4ce01a7e5b4ddf1545112d8da3bfd5834a3169d9f1077790f94a",
+    "target/prolog-quotient-descent-export-853/Prolog_Stable_Mixed_Generated.hs": "7e93eb637e20758fc1e76149073b65aa04a4edd9a5069440871b11f312ed3e9e",
+    "target/prolog-quotient-descent-export-853.log": "a1b74ba169e305c1ed087e9123e5e1c713c83ebfe7ef4c421058c0042f724948",
+    "target/prolog-quotient-descent-pin-856-attempt1.log": "ed2051c50a15c4ef5b5c83e51f99e559ff78e928be812216b1a58b06be1653d1",
+    "target/prolog-quotient-descent-retention-855/checks.jsonl": "c068474ea3cd1a33f30ee56378caf0ee61380721eea9997d5af18aaf97abad03",
+    "target/prolog-quotient-descent-retention-855/summary.json": "1413ca088c12ae19f2ef3e5f900f3dace3a97b9d45c7efb803f2f215df6201a1",
+    "target/prolog-quotient-descent-retention-855.log": "5f51f3f67e689ae07246611ab896761000c404cbd62cb7fbf74a3fdbde7822e4",
+    "target/prolog-quotient-descent-retention-855.py": "3838176fc82e5bbfd0de55851437cf078fe105031fb0539ab7205d2819659c11",
+    "target/unified-quotient-descent-854/build.json": "629ec242f78666aec1605d9683e94346e89099ec952a5c1452f7a1bfeac4b472",
+    "target/verify-quotient-descent-850.py": "931f9b39e219379146fd81d9147e0a7fd310b9725c7dd4d961f4ed10f832053a",
+    "target/verify-quotient-descent-851.py": "7b7109538b9628969ece955c00de8af64a6c8dbaf43cc39d9f2304ab49c4d14e"
+  }
+}

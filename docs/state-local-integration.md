@@ -1909,3 +1909,38 @@ Retention 847 accepts all previous 77 Prolog and 93 LP-with-cut certificates twi
 replay or production promotion. Ferrum records the complete 221-root replay
 separately. [Pinned verification and integration evidence](data/prolog-quotient-integration-20261107.json)
 retains unsuccessful verification attempts, successful export, controls and logs.
+
+## Checked guarded variable-divisor descent (2026-11-07)
+
+A new row-local receipt combines successful `//` evaluation with the actual
+path comparisons establishing a divisor greater than one and a positive
+numerator. It checks either a direct positive-numerator comparison or the
+numerator's order relative to the divisor. Successful evaluation supplies
+integer evaluated operands, even when their source terms are compound
+expressions. The resulting numeric relation requires a nonnegative quotient
+strictly smaller than the evaluated numerator. No integer-literal assumption
+or success fact is exported to an unrelated or resumed alternative.
+
+Verification 850 proves the operation/domain and descent lemmas; 852 checks the
+receipt and complete stable path bridge without admissions. The checker binds
+the ambient observations to the same source row. Export 853 verifies the full
+mixed source XML graph and regenerates the module; no generated checking logic
+was edited. Unified build 854 has SHA-256
+`9a372491186a4162f3252397d4c516abaae6f96974891703a8660d55ae565c18`,
+LP unit `ceta-lp-1.0-13ec7c525a52aeac`. Other category export archives are unchanged.
+
+Native and strict runs certify `log-recursive-c-true.pl`, a renamed returned-count
+fixture and a compound-input fixture. The source proof retains the existing
+Split, actual successful-return contract, helper dependency and continuation
+interface. All 15 advice/semantic controls and 42 certificate checks pass,
+including missing guards, strictness, initialization, return interfaces,
+helper/continuation dependencies, stale alternative facts and a divergent
+floating helper before a quotient. Each positive has original-source audits,
+two checks by this executable and authorized complete reconstruction receipts.
+
+Retention 855 rechecks all previous 78 Prolog and 93 LP-with-cut certificates
+twice (342 checks). Ferrum's complete 221-root strict replay 1266 establishes
+71 YES + 8 NO separately. This is not protected-category production promotion.
+[Pinned evidence](data/prolog-quotient-descent-20261107.json) preserves verification
+attempts, the export/build, controls, retention and the corrected metadata-count
+assertion in pinning attempt 856.
