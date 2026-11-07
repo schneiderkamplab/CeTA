@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Numeric_Conditions
- imports LP_Prolog_Stable_Quotient_Descent
+ imports LP_Prolog_Stable_Modulo
 begin
 
 datatype 'v lpp_stable_condition_receipt =
@@ -12,6 +12,8 @@ datatype 'v lpp_stable_condition_receipt =
   | LPPStableQuotientMagnitudeUpperCondition "'v lpp_integer_expression" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
   | LPPStableQuotientUpperCondition "'v lpp_integer_expression" "(string lp_cut_symbol,'v) term" int
+
+  | LPPStableModuloDescentCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
   | LPPStableQuotientDescentCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
@@ -28,6 +30,7 @@ fun lpp_check_stable_numeric_observation where
 | "lpp_check_stable_numeric_observation K observation (LPPStableQuotientUpperCondition expression a d) =
     (0<d \<and> lpp_check_stable_upper_observation K observation expression
       (Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d]))"
+| "lpp_check_stable_numeric_observation K observation (LPPStableModuloDescentCondition a b result) = False"
 | "lpp_check_stable_numeric_observation K observation (LPPStableQuotientDescentCondition a b result) = False"
 | "lpp_check_stable_numeric_observation K observation LPPStableIgnoredCondition = True"
 
@@ -40,6 +43,7 @@ fun lpp_stable_numeric_condition where
 | "lpp_stable_numeric_condition (LPPStableQuotientMagnitudeUpperCondition expression a b) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 | "lpp_stable_numeric_condition (LPPStableQuotientUpperCondition expression a d) =
     lpp_stable_upper_condition expression (Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d])"
+| "lpp_stable_numeric_condition (LPPStableModuloDescentCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 | "lpp_stable_numeric_condition (LPPStableQuotientDescentCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 | "lpp_stable_numeric_condition LPPStableIgnoredCondition = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 
@@ -59,6 +63,9 @@ theorem lpp_checked_stable_numeric_condition:
     (lpp_stable_numeric_condition receipt)"
 proof (cases receipt)
   case (LPPStableQuotientMagnitudeUpperCondition expression a b)
+  then show ?thesis by simp
+next
+  case (LPPStableModuloDescentCondition a b result)
   then show ?thesis by simp
 next
   case (LPPStableQuotientDescentCondition a b result)
@@ -145,6 +152,7 @@ fun lpp_stable_receipt_keys where
 | "lpp_stable_receipt_keys (LPPStableQuotientUpperCondition expression a d) =
     insert (LPPBoundKey a) (lpp_numeric_condition_keys (lpp_stable_numeric_condition
       (LPPStableQuotientUpperCondition expression a d)))"
+| "lpp_stable_receipt_keys (LPPStableModuloDescentCondition a b result) = {LPPBoundKey b,LPPBoundKey result}"
 | "lpp_stable_receipt_keys (LPPStableQuotientDescentCondition a b result) = {LPPBoundKey a,LPPBoundKey result}"
 | "lpp_stable_receipt_keys receipt = lpp_numeric_condition_keys (lpp_stable_numeric_condition receipt)"
 
@@ -181,6 +189,8 @@ fun lpp_stable_receipt_formula where
     Conjunction [lpp_numeric_condition_formula (lpp_rename_numeric_condition rename
       (lpp_stable_numeric_condition (LPPStableQuotientUpperCondition expression a d))),
       lpp_stable_quotient_formula rename a d (Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d])]"
+| "lpp_stable_receipt_formula rename (LPPStableModuloDescentCondition a b result) =
+    lpp_stable_quotient_descent_formula rename b result"
 | "lpp_stable_receipt_formula rename (LPPStableQuotientDescentCondition a b result) =
     lpp_stable_quotient_descent_formula rename a result"
 | "lpp_stable_receipt_formula rename receipt =
@@ -291,7 +301,10 @@ qed (use lpp_stable_numeric_condition_formula_sound[OF compatible checked observ
     assigned checked in auto)
 
 fun lpp_check_stable_path_observation where
-  "lpp_check_stable_path_observation K ambient observation (LPPStableQuotientDescentCondition a b result) =
+  "lpp_check_stable_path_observation K ambient observation (LPPStableModuloDescentCondition a b result) =
+    (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,b]) result \<and>
+      LPPOComparison LPPIntLess (lpp_integer_term 0) b \<in>set ambient)"
+|  "lpp_check_stable_path_observation K ambient observation (LPPStableQuotientDescentCondition a b result) =
     (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_2f2f'') [a,b]) result \<and>
       LPPOComparison LPPIntLess (lpp_integer_term 1) b \<in>set ambient \<and>
       (LPPOComparison LPPIntLess (lpp_integer_term 0) a \<in>set ambient \<or>
@@ -310,6 +323,21 @@ lemma lpp_stable_path_receipt_formula_sound:
       rho (rename key)=lpp_stable_key_value operation eta source_values key"
   shows "IA4.satisfies (lpp_integer_assignment rho) (lpp_stable_receipt_formula rename receipt)"
 proof (cases receipt)
+  case (LPPStableModuloDescentCondition a b result)
+  have evaluation: "lpp_stable_scalar_evaluation operation
+      (LPIFun (LPCUser ''2:prolog_data_6d6f64'') [lp_ieval a eta,lp_ieval b eta]) (lp_ieval result eta)"
+    using checked observed by (auto simp: LPPStableModuloDescentCondition)
+  have denominator: "lpp_stable_compare_outcome operation LPPIntLess (lpp_integer_value 0) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked ambient by (auto simp: LPPStableModuloDescentCondition list_all_iff)
+  have progress: "0\<le>lpp_stable_expression_bound operation (lp_ieval result eta) \<and>
+    lpp_stable_expression_bound operation (lp_ieval result eta) < lpp_stable_expression_bound operation (lp_ieval b eta)"
+    by (rule lpp_stable_modulo_progress[OF compatible evaluation denominator])
+  have b: "rho (rename (LPPBoundKey b))=lpp_stable_expression_bound operation (lp_ieval b eta)"
+    and result: "rho (rename (LPPBoundKey result))=lpp_stable_expression_bound operation (lp_ieval result eta)"
+    using assigned by (auto simp: LPPStableModuloDescentCondition)
+  show ?thesis using progress by (auto simp: LPPStableModuloDescentCondition
+    lpp_stable_quotient_descent_formula_def Let_def lpp_comparison_typed_assignment b result)
+next
   case (LPPStableQuotientDescentCondition a b result)
   have evaluation: "lpp_stable_scalar_evaluation operation
       (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval a eta,lp_ieval b eta]) (lp_ieval result eta)"

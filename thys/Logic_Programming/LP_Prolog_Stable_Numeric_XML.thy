@@ -29,6 +29,9 @@ definition lpp_stable_condition_parser where
     (XMLdo (STR ''quotientUpperCondition'') {
       e\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; d\<leftarrow>xml_int (STR ''divisor'');
       xml_return (LPPStableQuotientUpperCondition e a d)}) XMLor
+    (XMLdo (STR ''moduloDescentCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableModuloDescentCondition a b result)}) XMLor
     (XMLdo (STR ''quotientDescentCondition'') {
       a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
       xml_return (LPPStableQuotientDescentCondition a b result)}) XMLor

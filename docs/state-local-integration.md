@@ -1979,3 +1979,39 @@ reaches 72 YES + 8 NO with no lost verdict. Retention is certificate rechecking,
 not fresh protected-category native replay or production promotion.
 [Pinned verification and integration evidence](data/prolog-quotient-bounds-20261107.json)
 includes every attempt and the unchanged other-category archive identities.
+
+## Checked positive-divisor modulo descent (2026-11-07)
+
+The established source graph now supports a checked modulo descent receipt.
+Actual successful evaluation of `A mod B`, together with the same path's
+comparison `B > 0`, yields a nonnegative remainder strictly below the evaluated
+divisor. Successful modulo evaluation establishes integer evaluated operands;
+groundness alone does not establish that domain. The source profile retains
+floor-modulo signs, zero-divisor errors and floating-operand errors. Existing
+contexts, failure alternatives, Split actual-return contracts and separately
+checked child dependencies remain required.
+
+Verification 869 proves the operation, progress, condition and path lemmas
+without admissions. Full source XML export 870 passes and regenerates the mixed
+module. Unified build 871 has SHA-256
+`c462141ca375232aaefc2ddb901d42f565aadd81354536a2154392142d743821`,
+LP unit `ceta-lp-1.0-f194b9292ec4a487`. Only the LP export archive changed;
+generated checking logic was not manually edited.
+
+Three original GCD benchmarks and two generalized fixtures pass native and
+strict replay, including a helper's returned result across a Split. All 15
+advice/semantic controls and 44 certificate checks pass. Mutations cover the
+modulo operands, actual positive guard, bounds, initialization, alternatives,
+routing, return interfaces, helper/continuation dependencies and child proofs.
+Divergent negative-divisor, later-answer, stale-guard and floating-helper controls
+remain unproved. Two initially misnamed finite negative-divisor fixtures were
+corrected before strict validation; original attempts and corrected controls
+are retained in Ferrum's family audit.
+
+Retention 872 accepts all previous 80 Prolog and 84 YES + 9 NO LP-with-cut
+certificates twice (346 checks). Two legacy quotient fixtures strictly replay
+with their previous guidance and this checker. Full 221-root replay is recorded
+separately by Ferrum. This retention check is not fresh protected-category native
+replay or production promotion.
+[Pinned verification and integration evidence](data/prolog-modulo-20261107.json)
+binds the export, checker, controls and retention checks.

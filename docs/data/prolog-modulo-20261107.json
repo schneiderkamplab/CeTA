@@ -1,0 +1,74 @@
+{
+  "schema": "ceta.prolog-modulo.v1",
+  "ceta_base_commit": "e577695",
+  "branch": "codex/prolog-production-integration",
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-modulo-871/ceta",
+  "checker_sha256": "c462141ca375232aaefc2ddb901d42f565aadd81354536a2154392142d743821",
+  "lp_unit": "ceta-lp-1.0-f194b9292ec4a487",
+  "verification": "target/prolog-modulo-869.log",
+  "export": "target/prolog-modulo-export-870",
+  "generated_sha256": "56e9a05b73d39bf7ad1b882d1cad543dae238321202240582c29c6ea5ff43593",
+  "theory_sha256": {
+    "LP_Prolog_Stable_Integer_Compatibility.thy": "9a0809b7a20b55823d4c25dc33a24ddbf8a4039679cad3201e0eac8192cd2f2f",
+    "LP_Prolog_Stable_Profile_Operations.thy": "fc50608c70cff2ac6c4df73de255b6d1726c73ea228adff14a90599706b1e8fe",
+    "LP_Prolog_Stable_Modulo.thy": "a26ad9b306f3166789523348e3cf31c679f4962ad31d46ac45676d47b8df3ccd",
+    "LP_Prolog_Stable_Numeric_Conditions.thy": "ee70c8b95510fe29524684977916640ed40fa3c67b4f23ce27b87ad338aeb43e",
+    "LP_Prolog_Stable_Numeric_XML.thy": "3f45176c1818374274aaeea5c9a0c0711ebab4582baeaf8be8e47a07072decc9"
+  },
+  "native_strict": {
+    "roots": 5,
+    "controls": 15,
+    "manifest": "/work/dfm/festschrift/ferrum-prolog-release/target/prolog-modulo-strict-1300/manifest.json",
+    "sha256": "02548f3cf8f1de45caf8988a66c254db2dc38f248a48ae4e29f3f41371c2498e"
+  },
+  "certificate_controls": {
+    "checks": 44,
+    "manifest": "/work/dfm/festschrift/ferrum-prolog-release/target/prolog-modulo-controls-1301/results.json",
+    "sha256": "1803f4830db162c64ff0c66a85d052c5ba67787f8e92e34913f2ba8a777ebe0b"
+  },
+  "retention": {
+    "checker_sha256": "c462141ca375232aaefc2ddb901d42f565aadd81354536a2154392142d743821",
+    "prolog": 80,
+    "lp_cut": 93,
+    "checks": 346,
+    "workers": 4,
+    "checker_seconds_limit": 30,
+    "scope": "Retained certificate rechecking only; not new native strict replay"
+  },
+  "other_category_export_archives_unchanged": true,
+  "generated_logic_manually_edited": false,
+  "formal_lemmas": [
+    "successful modulo evaluation has integer evaluated operands and a nonzero divisor",
+    "the actual positive-divisor comparison implies a nonnegative remainder strictly below the divisor",
+    "floating modulo operands fail; signed integer modulo keeps the divisor sign"
+  ],
+  "scope": "Checked modulo descent over established Prolog graphs and existing Split return interfaces. Full population replay recorded separately by Ferrum; no production promotion.",
+  "archive_sha256": "f03fd7196f41ff62ea4c0c2350a2613732d80c5f02872d755b7677693d9ce7aa",
+  "files": {
+    "target/implement-modulo-869.py": "30937a0c7c380f77de0d757143e7c9564fa1342ed3ed2d1eced44b180fd76bc6",
+    "target/install-modulo-export-871.py": "343877173ea82df4b9bbdb394828c267a15bdc961bb93bf98dc85c044213382f",
+    "target/pin-modulo-873.py": "a630fefa98f1f11a09c9a07ac2cc83f1c828ac58ef7860b62242c30cafe5733f",
+    "target/prolog-modulo-869-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-modulo-869.log": "763fa9becb595a4f2459f3530f220198951bcdb896964de697219396a988678f",
+    "target/prolog-modulo-build-871.log": "7d5263fe36f2ff58a078a0628826f69c4396aba27d99b57fc210cdfe5bc19daf",
+    "target/prolog-modulo-export-870/Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
+    "target/prolog-modulo-export-870/Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+    "target/prolog-modulo-export-870/Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
+    "target/prolog-modulo-export-870/IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+    "target/prolog-modulo-export-870/Prolog_Integer_Recurrence_Export.thy": "c4abf12bbc676becaa0ce2b77e1dd9644b676fab26801f59a95ea1bfe582594e",
+    "target/prolog-modulo-export-870/Prolog_Stable_Mixed_Generated.hs": "56e9a05b73d39bf7ad1b882d1cad543dae238321202240582c29c6ea5ff43593",
+    "target/prolog-modulo-export-870/Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+    "target/prolog-modulo-export-870/Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+    "target/prolog-modulo-export-870/Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+    "target/prolog-modulo-export-870/Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
+    "target/prolog-modulo-export-870-driver.log": "44da58a20bee5ad20874bcdaa397e63aa87370072c5f1bc4698f5108c02f3f27",
+    "target/prolog-modulo-export-870.log": "798a9379193599ab1960b2048c3e2f4074089247a882ccb5e090ba13e1e6947f",
+    "target/prolog-modulo-retention-872/checks.jsonl": "6e7877afe78299afe3475a531a159f9031021efadb0b3a499598a4d172f64bd0",
+    "target/prolog-modulo-retention-872/summary.json": "4e071b082094103c57d9111313191ad791dd4d2dbaaef242f7969386b7987323",
+    "target/prolog-modulo-retention-872.log": "a63d2fee7610fc1acf42d77eb782058e15355eaa0b726015eb3ac59be07000d6",
+    "target/prolog-modulo-retention-872.py": "d25ee4783b481dd7c11bc7ebca0c3f55f9b44149e265cea1b8dfb2314411db23",
+    "target/unified-modulo-871/build.json": "a45e9d850756b3b3227a5d63781a08c12da97ce582767f56d7f142a5762b6ac7",
+    "target/verify-modulo-869.py": "3f344c77bb84c4832b45022c221ff44dd3a188686e8a9ebb4a1ee387aebfa1f4",
+    "target/verify-quotient-834.py": "bf360bb01d78a791a79315ea66c7b0b8668299c5f5412b66c0b7242184fc0d55"
+  }
+}

@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "a459c5f69d4888f71dad3e995fb333c00b8387f3cf9cd9a078d5c55546c555ae",
+      "Prolog_Stable_Mixed_Generated.hs": "56e9a05b73d39bf7ad1b882d1cad543dae238321202240582c29c6ea5ff43593",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "451b53618837ce1073ff5c643365b674f65728b6d785db7d9711d86a13c6c6ae",
+    "archive_sha256": "ac2eb5ac3d322d8aac4113eb5d3fd92f30918183303c5802531eb638563b9e4f",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -894,6 +894,21 @@
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Conditions.thy": "ec32d938d0fef9397822803c45f334a64899e202c47a1004c58bf34311dcf36b",
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Path.thy": "75728428a6e5a3ffe6a901fd40e6b72daac34e158ecd03e198b25a55b5349977",
         "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy": "a3960c1556d0054037884ce5f374200f223627f9131610a4908845cf38bbcf2f"
+      }
+    },
+    "prolog_modulo_integration": {
+      "verification": "target/prolog-modulo-869.log",
+      "export": "target/prolog-modulo-export-870",
+      "generated_sha256": "56e9a05b73d39bf7ad1b882d1cad543dae238321202240582c29c6ea5ff43593",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Stable_Integer_Compatibility.thy": "9a0809b7a20b55823d4c25dc33a24ddbf8a4039679cad3201e0eac8192cd2f2f",
+        "thys/Logic_Programming/LP_Prolog_Stable_Quotient.thy": "9a4d3711f61a0258fcc96b4f2c4d6f9e4692a8eee0e55bcf1a5ac048539d32ff",
+        "thys/Logic_Programming/LP_Prolog_Stable_Quotient_Descent.thy": "ee02e1bce4998e6f5b1e512b09899b3058c40f3bc3c0f0c2982b341fff962d8d",
+        "thys/Logic_Programming/LP_Prolog_Stable_Modulo.thy": "a26ad9b306f3166789523348e3cf31c679f4962ad31d46ac45676d47b8df3ccd",
+        "thys/Logic_Programming/LP_Prolog_Stable_Profile_Operations.thy": "fc50608c70cff2ac6c4df73de255b6d1726c73ea228adff14a90599706b1e8fe",
+        "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Conditions.thy": "ee70c8b95510fe29524684977916640ed40fa3c67b4f23ce27b87ad338aeb43e",
+        "thys/Logic_Programming/LP_Prolog_Stable_Numeric_Path.thy": "75728428a6e5a3ffe6a901fd40e6b72daac34e158ecd03e198b25a55b5349977",
+        "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy": "3f45176c1818374274aaeea5c9a0c0711ebab4582baeaf8be8e47a07072decc9"
       }
     }
   },
