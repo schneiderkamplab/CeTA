@@ -333,3 +333,27 @@ Its generated module is byte-identical to export 25, SHA-256
 to the checked diagnostic table (13 checks). The source annotation came from
 `ferrum-prolog-shared/target/prolog-source-context-native-27/`; this remains a
 component interoperability test, not a source verdict.
+
+## 2026-11-07 successful-return magnitudes in established mixed graphs
+
+Commit `268823b` integrates checked complete-program magnitude contracts,
+computed observations and strengthened numeric rows with the existing mixed
+source parent. Source verification 935 and Isabelle export 936 pass without
+admissions or manual generated-code changes. Unified937 checker SHA-256 is
+`24826f5fd7c001fc08e075d22d32c2ea8f61ced0033924cd71b3b481c897160d`.
+
+Ferrum `4242a4f3` strict replay 1394 certifies **76 YES + 8 NO / 221**, adding
+`frac-reduce.pl` and preserving every previous verdict. All 84 retained results
+have original-source audits, two checks by this executable and authorized
+complete reconstruction receipts. Fixture replay 1395 passes four native and
+four strict positives plus fourteen controls; mutation validation 1384 passes
+sixteen checks. Retention 939 also checks all 84 YES + 9 NO LP-with-cut proofs
+twice. Protected-category fresh replay remains a production promotion gate.
+
+The initial new parent rejection came from missing saved-frame groundness in
+comparison-failure links, not from the 26 checked residual backends. Ferrum now
+preserves the complete saved histories for new profiles, while explicit legacy
+strategy compatibility retains the old residual subjects. Failed parent and
+full-replay attempts are preserved in the
+[pinned audit](data/prolog-return-magnitude-20261107.json). No superiority or
+production promotion is claimed.
