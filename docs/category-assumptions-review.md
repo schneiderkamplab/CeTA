@@ -23,7 +23,7 @@ Human review is pending; no entry below records user approval.
 | 6 | [SRS Relative](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; shared-tail encoding in both partitions supplies variable preservation. No extra signature or proof-family guard. See [review](srs-relative-trust-boundary.md). |
 | 7 | [SRS Cycle](srs-specifications.md) | Equivalence; three NO checks | Concrete NO checks and strict original-input binding reviewed; alphabet projection proved, no unchecked semantic guard or oracle dependencies. NO-only coverage; no YES API. See [review](srs-cycle-trust-boundary.md). |
 | 8 | [Higher-order rewriting](higher-order-trust-boundary.md) | Typed equivalence; sixteen concrete YES and four NO checks | No unchecked semantic or checker-module premises. Typed meta-substitution in union with beta; finite declared-sort equivalence proved, strict original-input and answer binding. NO states checked category validity; native parsing and executable trust remain. |
-| 9 | TRS Outermost | Not implemented | Category semantics and bridge obligations pending. |
+| 9 | [TRS Outermost](trs-outermost-trust-boundary.md) | Ranked equivalence; concrete and serialized YES/NO | No unchecked module or signature-extension premises. YES covers all concrete integrated proof families. NO accepts direct loops with checked source-signature witness closure; other NO families and variable-left-side loop certificates remain outside coverage. |
 | 10 | TRS Conditional | Not implemented | Category semantics and bridge obligations pending. |
 | 11 | TRS Equational | Not implemented | Category semantics and bridge obligations pending. |
 
@@ -193,3 +193,16 @@ Haskell parsing and dispatch remain in the explicit execution trust boundary;
 there is no serialized Isabelle parser theorem or Cycle YES checker API.
 Fresh strict replay preserves all 200 protected NO roots with unchanged CeTA
 and guidance. The earlier six-category replay is separate evidence.
+
+## 9. TRS Outermost: ranked review completed
+
+The [review](trs-outermost-trust-boundary.md) gives exact correspondence to
+signature-restricted Outermost steps. YES restricts the concrete terminating
+relation; NO proves signature closure of direct loop iteration from finite,
+runtime-checked witness data. No left-linearity, variable-preservation or
+constant-symbol hypothesis is imposed on category inputs. Concrete module
+contracts are discharged and certificate assumptions disabled. Strict binding
+checks source declarations, rules, explicit strategy, decision and NO witness
+symbols/arities. Fresh replay retains 207/207 (27 YES, 180 NO) with unchanged
+CeTA and oracle. Other NO proof families remain a coverage limit; native parsing,
+execution and inherited oracle mechanisms remain trusted. Next: TRS Conditional.

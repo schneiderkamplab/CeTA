@@ -74,3 +74,5 @@
 - Scope correction: Prolog is deferred, including LeTA. The unfinished Prolog reconciliation is preserved separately at `19b6cbe` on `codex/deferred-prolog-reconciliation`; active work resumes on `codex/state-local-lp-cut` from the verified pre-Prolog snapshot. Only LP and LP with cut are in this migration scope. No Prolog candidate is promoted.
 
 - 2026-11-08: Completed the checked CSR category review and full declared-map binding. Fresh four-category replay retains 1,890/1,890; [review and trust boundary](trs-context-sensitive-trust-boundary.md). No generated checker logic changed.
+
+- 2026-11-08: Added TRS Outermost specification, examples, equivalence and concrete/serialized YES and direct-loop NO bridges. [Review](trs-outermost-trust-boundary.md); no generated checker changes.

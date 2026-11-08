@@ -27,7 +27,7 @@ The authorized extension scope also includes TRS Relative, Outermost,
 Context-sensitive, Conditional and Equational; SRS Standard, Relative and Cycle;
 and Higher-order Rewriting. Relative, Context-sensitive and the three SRS correspondences are implemented
 with the coverage limits recorded in the review register. [Higher-order](higher-order-trust-boundary.md) now has a compiled typed equivalence
-and sixteen concrete YES and four NO checker corollaries. Outermost, Conditional
+and sixteen concrete YES and four NO checker corollaries. [Outermost](trs-outermost-trust-boundary.md) has ranked equivalence and concrete/serialized YES and direct-loop NO connections. Conditional
 and Equational are not yet implemented.
 Probabilistic, integer and complexity categories are outside this milestone.
 
@@ -93,3 +93,6 @@ binding, and explicit checked YES coverage for signatures larger than the rules.
 The Higher-order sessions build with `make isabelle-higher-order-integrated`.
 See the [review](higher-order-trust-boundary.md) for exact semantics and the
 original-input binding boundary.
+
+The Outermost sessions build with `make isabelle-outermost-integrated`. See the
+[Outermost review](trs-outermost-trust-boundary.md) for exact witness guards and proof coverage.
