@@ -1,6 +1,5 @@
 theory TRS_Relative_Integrated
-  imports Category_Specification_Bridges.TRS_Relative_Equivalence
-    Relative_ADP_Ceta_Dev.Relative_ADP_Ceta
+  imports TRS_Relative_Ranked_Loops
 begin
 
 text \<open>The finite declared signature is retained for the NO guard, including
@@ -28,11 +27,17 @@ proof -
   then show ?thesis by (rule ordinary_relative_implies_ranked)
 qed
 
-text \<open>The bound checker refuses a NO unless the guard succeeds. No
-unrestricted-to-ranked nontermination implication is assumed.\<close>
+definition relative_ranked_certificate where
+  "relative_ranked_certificate F certificate \<longleftrightarrow>
+    (\<exists>s loop_steps sigma C. certificate =
+      Inl (Relative_TRS_Nontermination_Proof (Rel_Loop (Rel_trs_loop_prf s loop_steps sigma C))) \<and>
+      ranked_relative_loop_guard (set F) s loop_steps sigma C)"
+
+text \<open>The bound checker validates either signature extension or a ranked
+loop witness. No unrestricted-to-ranked implication is assumed.\<close>
 definition relative_bound_accepts where
   "relative_bound_accepts F Rs Ss b certificate =
-    ((b \<or> relative_no_guard F Ss) \<and>
+    ((b \<or> relative_no_guard F Ss \<or> relative_ranked_certificate F certificate) \<and>
      certify_integrated_cert_problem False (Inn_TRS_input No_Strategy Rs Ss)
        Termination (Decision b) certificate = Certified)"
 
@@ -50,16 +55,31 @@ proof (cases b)
   from trs_relative_integrated_YES[OF strict weak this] True show ?thesis by simp
 next
   case False
-  with accepted have guard: "relative_no_guard F Ss"
+  with accepted have guard: "relative_no_guard F Ss \<or> relative_ranked_certificate F certificate"
     and checked: "certify_integrated_cert_problem False
       (Inn_TRS_input No_Strategy Rs Ss) Termination (Decision False) certificate = Certified"
     by (auto simp: relative_bound_accepts_def)
-  have extension: "relative_extension_condition A S"
-    by (rule relative_no_guard_sound[OF signature weak guard])
-  have "\<not> SN_rel (Trs.rstep (to_rules R)) (Trs.rstep (to_rules S))"
-    using certify_integrated_cert_problem_sound[OF checked]
-    by (simp add: desired_property_def default_nfs_flag_def SN_qrel_def strict weak)
-  with trs_relative_terminates_iff[OF problem extension] False show ?thesis by blast
+  show ?thesis
+  proof (cases "relative_no_guard F Ss")
+    case True
+    have extension: "relative_extension_condition A S"
+      by (rule relative_no_guard_sound[OF signature weak True])
+    have "\<not> SN_rel (Trs.rstep (to_rules R)) (Trs.rstep (to_rules S))"
+      using certify_integrated_cert_problem_sound[OF checked]
+      by (simp add: desired_property_def default_nfs_flag_def SN_qrel_def strict weak)
+    with trs_relative_terminates_iff[OF problem extension] False show ?thesis by blast
+  next
+    case no_extension: False
+    obtain s loop_steps sigma C where cert: "certificate =
+      Inl (Relative_TRS_Nontermination_Proof (Rel_Loop (Rel_trs_loop_prf s loop_steps sigma C)))"
+      and ranked: "ranked_relative_loop_guard (set F) s loop_steps sigma C"
+      using guard no_extension unfolding relative_ranked_certificate_def by blast
+    have "\<not> SN_rel (sig_step (set F) (Trs.rstep (set Rs)))
+      (sig_step (set F) (Trs.rstep (set Ss)))"
+      by (rule relative_integrated_ranked_loop[OF checked[unfolded cert] ranked])
+    then show ?thesis using False
+      by (simp add: signature strict weak trs_relative_terminates_iff_signature)
+  qed
 qed
 
 corollary trs_relative_bound_NO:
@@ -73,7 +93,7 @@ theorem trs_relative_serialized_decision:
   assumes problem: "relative_problem A R S"
     and signature: "set F = to_signature A"
     and strict: "set Rs = to_rules R" and weak: "set Ss = to_rules S"
-    and guard: "b \<or> relative_no_guard F Ss"
+    and guard: "b \<or> relative_no_guard F Ss \<or> relative_ranked_certificate F certificate"
     and parsed: "parse_combined_integrated_cert_problem None None None text =
       Right (Inn_TRS_input No_Strategy Rs Ss, Termination, Decision b, certificate)"
     and accepted: "certify_proof_integrated False None None None text = Certified"
@@ -85,7 +105,8 @@ proof -
 qed
 
 ML \<open>
-  val checked = @{thms relative_no_guard_sound trs_relative_integrated_YES
+  val checked = @{thms ranked_relative_loop_guard_finite relative_integrated_ranked_loop
+    relative_no_guard_sound trs_relative_integrated_YES
     trs_relative_bound_decision trs_relative_bound_NO trs_relative_serialized_decision}
   val _ = if Thm_Deps.has_skip_proof checked then error "Relative: admitted proof" else ()
   val names = Thm_Deps.all_oracles checked |> map (fn ((name, _), _) => name) |> distinct (op =)
