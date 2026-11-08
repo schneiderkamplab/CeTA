@@ -54,3 +54,5 @@ okf_version: "0.2"
 - [Higher-order specification and checker boundary](higher-order-trust-boundary.md)
 
 - [TRS Outermost](trs-outermost-trust-boundary.md) — Canonical ranked semantics, concrete checker connections and finite loop signature closure.
+
+- [Conditional specifications](trs-conditional-specifications.md) — Shared inference definitions, separate ordinary and operational properties, and outstanding bridge obligations.

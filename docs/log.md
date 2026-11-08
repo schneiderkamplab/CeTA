@@ -76,3 +76,5 @@
 - 2026-11-08: Completed the checked CSR category review and full declared-map binding. Fresh four-category replay retains 1,890/1,890; [review and trust boundary](trs-context-sensitive-trust-boundary.md). No generated checker logic changed.
 
 - 2026-11-08: Added TRS Outermost specification, examples, equivalence and concrete/serialized YES and direct-loop NO bridges. [Review](trs-outermost-trust-boundary.md); no generated checker changes.
+
+- 2026-11-08: Added separate ordinary and operational Conditional specifications over shared first-order terms, proved their strict distinction, and compiled concrete/serialized YES transfers with assumptions disabled. [Review status](trs-conditional-specifications.md). Canonical NO, full ranked equivalence, strict runtime binding and replay remain open.

@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-08",
+  "status": "Specifications and YES transfer verified; full category review incomplete",
+  "specification_commit": "9cbd69a",
+  "properties": [
+    "ordinary termination",
+    "operational termination"
+  ],
+  "shared_definitions": [
+    "TRS_Spec_Base",
+    "Rewriting_Sequences_Spec",
+    "TRS_Conditional_Spec_Base"
+  ],
+  "formal": {
+    "sessions": [
+      "Category_Specifications",
+      "Category_Conditional_Bridge",
+      "Category_Conditional_Integrated"
+    ],
+    "passed": true,
+    "admissions": false,
+    "new_axioms": false,
+    "oracle_dependencies": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ],
+    "ordinary_yes": [
+      "trs_conditional_integrated_ordinary_YES",
+      "trs_conditional_erasure_ordinary_YES",
+      "trs_conditional_serialized_ordinary_YES"
+    ],
+    "operational_yes": [
+      "trs_conditional_integrated_operational_YES",
+      "trs_conditional_serialized_operational_YES"
+    ],
+    "checker_assumptions_enabled": false,
+    "abstract_module_premises": false
+  },
+  "build_note": "integrated-8 records successful bridge and integrated sessions but failed new examples; integrated-9 fixes and verifies examples and succeeds for all three requested sessions, reusing unchanged successful bridge heaps. The independent console audit verifies the final YES theorem sources.",
+  "remaining": [
+    "ranked reflection and exact equivalences",
+    "canonical ordinary and operational NO bridges",
+    "strict native source/signature/property binding",
+    "parser and dispatch review completion",
+    "fresh protected replay"
+  ],
+  "sources": {
+    "Makefile": "9305beba725744090731c3055bdc4fa344a8fb4bcacfa4325ba97f8ee762ec66",
+    "thys/Category_Specifications/Conditional_Bridge/ROOT": "60aa338bd2741c4ecbd27c672a23b3a69e8f306bd88febdd7160c99ea8293c6b",
+    "thys/Category_Specifications/Conditional_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Embedding.thy": "5a1d6c7b571ae1308507aac713a51e58fed6b40d07bef4e8e1ce0d8c942c5052",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy": "7abe3e625b88863af9d41a15a776db538d5fea7977df9d1ef14c7abb95690fa0",
+    "thys/Category_Specifications/Conditional_Integrated/ROOT": "610ce25cc1c51009a7a00108996c57963084183fc3071899f63d724ac6170b3d",
+    "thys/Category_Specifications/Conditional_Integrated/ROOTS": "a6702fb7bad05a54ee6f69a0f83280728d71a6d0b8bc2051fd6d8c0780ad2355",
+    "thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy": "1f7a318011352cad89ef55a0176e8adfe6be6773558ca4f90bc9f8978fce595a",
+    "thys/Category_Specifications/ROOTS": "643af9ae07f6c261de5485e667c278d8aaed559118a55cdd7b1cab5353b05afb",
+    "thys/Category_Specifications/Spec/ROOT": "b971c980339aaec214c9e708a5b1ff845fcc1d3afd8a692f6ef193e652199722",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Examples.thy": "ea5eec569204a8aa37f708aeaf1f567a618a5be6117495e966839de114b5e545",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Operational_Spec.thy": "e2428a9cb5e151cde880303a68d1b7dfa7cf8930070259ac0543ee52426e4735",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Ordinary_Spec.thy": "00b87ff00eafe78d054e4f54f182bc1195443d8e3854f7c125a4a3271322ee92",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy": "8fa335eeda6ba3c4e048c20c9a312bbfcdc026d1726e1864bc0e33322e8bce78"
+  },
+  "evidence": {
+    "conditional-spec-build.log.gz": "9a2fcfb934005e46e15461069d231062803a3523137afc5e9b1e65773ddd1283",
+    "conditional-yes-audit.py.gz": "fab94878dbaac6c9e5a29b8d516e3b39ef7dc671bdb6b529cc8a0c7f5c13214d",
+    "conditional-yes-build.log.gz": "83ad2896ba72e0c6738b1b0dc670b0d247fa35a6f944e7b9914d972a1e169334",
+    "conditional-yes-oracle-audit.log.gz": "0a288867e62375b51f60f899526ed7f78bdefbb41b009f2657e11e8f5c36c57e"
+  },
+  "ceta_executable_changed": false,
+  "ferrum_changed": false,
+  "oracle_changed": false,
+  "replay_performed": false,
+  "yes_bridge_commit": "9a14eb39791931a3b45e1eace619ce3999dc6de2"
+}
