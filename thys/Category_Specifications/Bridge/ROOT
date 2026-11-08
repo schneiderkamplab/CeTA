@@ -1,0 +1,19 @@
+session Category_Specification_Bridges = Proof_Checker +
+  options [document = false]
+  sessions Category_Specifications Cycle_Checker
+  theories
+    TRS_Standard_Equivalence
+    TRS_Standard_Checker_Bridge
+    TRS_Innermost_Equivalence
+    TRS_Innermost_Checker_Bridge
+    Rewriting_Sequence_Equivalence
+    TRS_Relative_Equivalence
+    TRS_Relative_Checker_Bridge
+    SRS_Equivalence
+    SRS_Unary_Encoding
+    SRS_Checker_Bridge
+    SRS_Cycle_Equivalence
+    SRS_Cycle_Checker_Bridge
+    Category_Checker_Base
+    TRS_Context_Sensitive_Equivalence
+    TRS_Context_Sensitive_Checker_Bridge

@@ -81,6 +81,16 @@ clean:
 isabelle-proof-base:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) Proof_Checker_Base
 
+isabelle-trs-standard-spec: isabelle-category-specifications
+
+isabelle-category-specifications:
+	$(ISABELLE) build -D thys/Category_Specifications/Spec
+
+isabelle-trs-standard-bridge: isabelle-category-specification-bridges
+
+isabelle-category-specification-bridges:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/Bridge
+
 isabelle-csr-base:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) CSR_Checker_Base
 
@@ -97,4 +107,27 @@ isabelle-rfc-absolute:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/RFC_Absolute_Ext RFC_Absolute_Ext
 
 .PHONY: all clean haskell ceta ceta-ordinary ceta-relative-adp test-relative-adp test isabelle-proof-base isabelle-csr-base \
-	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker isabelle-rfc-absolute
+	isabelle-csr-core isabelle-csr-extensions isabelle-proof-checker isabelle-rfc-absolute \
+	isabelle-trs-standard-spec isabelle-trs-standard-bridge
+
+.PHONY: isabelle-category-specifications isabelle-category-specification-bridges
+
+.PHONY: isabelle-trs-standard-integrated
+isabelle-trs-standard-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/Integrated
+
+.PHONY: isabelle-trs-innermost-integrated
+isabelle-trs-innermost-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/Innermost_Integrated
+
+.PHONY: isabelle-trs-relative-integrated
+isabelle-trs-relative-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/Relative_Integrated
+
+.PHONY: isabelle-trs-context-sensitive-integrated
+isabelle-trs-context-sensitive-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/Context_Sensitive_Integrated
+
+.PHONY: isabelle-srs-standard-integrated
+isabelle-srs-standard-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/SRS_Integrated

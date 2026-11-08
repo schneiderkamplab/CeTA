@@ -26,3 +26,23 @@ okf_version: "0.2"
 - [Full-frontier release](state-local-release-20261029.md) — Unified CeTA validates all 6,526 roots.
 
 - [Reconciled learned-only validation](learned-only-validation-20261105.md) — One immutable unified CeTA checks every accepted category twice.
+
+- [Rewriting category specification package](category-specifications.md)
+- [SRS Standard, Relative and Cycle specifications](srs-specifications.md)
+- [Ranked TRS Relative specification](trs-relative-specification.md)
+- [Ranked TRS Innermost specification](trs-innermost-specification.md)
+- [Ranked TRS Standard specification](trs-standard-specification.md)
+
+- [Category bridge assumptions and ordered review](category-assumptions-review.md)
+
+- [TRS Standard: TPDB and input-path review](trs-standard-input-review.md)
+
+- [TRS Standard integrated checking and trust boundary](trs-standard-trust-boundary.md)
+
+- [trs-innermost-trust-boundary](trs-innermost-trust-boundary.md) — Strict Innermost review and remaining trust boundary.
+
+- [trs-relative-trust-boundary](trs-relative-trust-boundary.md) — Ranked Relative review, checked NO guard and remaining trust.
+
+- [Context-sensitive review](trs-context-sensitive-trust-boundary.md) — CSR canonical semantics, concrete checked bridge and trust boundary.
+
+- [SRS Standard concrete review](srs-standard-trust-boundary.md)

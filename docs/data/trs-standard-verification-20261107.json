@@ -1,0 +1,111 @@
+{
+  "date": "2026-11-07",
+  "base_revision": "76aaf0248d635a5c82ba62ed2af554716534d830",
+  "isabelle": "Isabelle2025-2",
+  "source_sha256": {
+    "thys/TRS_Standard/Bridge/ROOT": "99050389249a33b996a3a87e9e7eecab7fe8db9d6d0427e26557986a41712d90",
+    "thys/TRS_Standard/Bridge/ROOTS": "3ead7e46fbc0404d09b8a7b186ec27200bc8f5623c50bb0bbd9e99ea6fd02afc",
+    "thys/TRS_Standard/Bridge/TRS_Standard_Checker_Bridge.thy": "da3f30547b6c8fec8c6ac257769a06a730449cdd393a8b768b7744db45250c1f",
+    "thys/TRS_Standard/Bridge/TRS_Standard_Equivalence.thy": "9d5884382b0f98e79f971c82670aecf007cfdd9ba5222af689ae35b166b01996",
+    "thys/TRS_Standard/ROOTS": "15eeb09609b41f3c7ebafb3a1b17e6862c9b37dff27139e9e16f5a14641cb05d",
+    "thys/TRS_Standard/Spec/ROOT": "c1fcbc00470053d758755fd5eebcb2047b2cf01b9b19ad54c3ab1360b5159203",
+    "thys/TRS_Standard/Spec/TRS_Standard_Examples.thy": "0c4516df7a0a2b4bbd819e7007830bba3d6a7a7dc56f0d7702f0d306b9c90ba9",
+    "thys/TRS_Standard/Spec/TRS_Standard_Spec.thy": "2263d3bc38df23c68a9b1edda8d346dd8d6b62654d59937cc9e4340714a6b5ac"
+  },
+  "standalone_session": {
+    "name": "TRS_Standard_Spec",
+    "status": "passed",
+    "log": "target/trs-standard/spec-build.log"
+  },
+  "focused_bridge_check": {
+    "status": "passed",
+    "log": "target/trs-standard/bridge-check.log",
+    "marker": "TRS_STANDARD_BRIDGE_VERIFIED",
+    "quick_and_dirty": false,
+    "admission_audit": "Thm_Deps.has_skip_proof on equivalences and YES/NO corollaries returned false",
+    "inherited_oracles": [
+      "check_eqv",
+      "cancel_type_definition"
+    ],
+    "parent_source": "target/lp-cut-normalize-v1-20261022/user/.isabelle/lp_check",
+    "parent_heap_sha256": {
+      "CSR_Checker_Base": "a9c5692a520c9690fdc1a4b111e600cca1da346af11b582d32dbff811b468372",
+      "CSR_Checker_Core": "11226dc86d7422a3e43834bc0ee47fa9a25f0c7038db138745fa711ea16b2067",
+      "CSR_Checker_Extensions": "5263a7705c5bac06088239ffa9c7826b98eed58bc2f43ad2f23dc78cbfc23e5a",
+      "CSR_Guarded_List_Measure_Check": "005009419a9b6d6c80783085b6efa8dde38d5949e8e47b2802fc1748e8b52e84",
+      "CSR_Muterm_Ext": "7778784c600c60d65056bb9c468b21cb36d9a5c2eaa22945f167220da19443bd",
+      "CSR_Muterm_Typed_General_Redpair": "f3b4debe1f20a678b7994291edbc8a6a22d16f4173681c5d3d95ed113fc09c79",
+      "CSR_Muterm_Typed_Recursive_Redpair": "8093dfcff86692bdaab98261c4f309944d6245f1656095b74c55ec1b977ca577",
+      "HOL": "4dc67e6c5342541578576adc6be2aa3e0ab5aae825ed26d3ec3c0363c5786040",
+      "HOL-AFP": "589102460acad635f28cfa2e49111c48275b28be2e77e2599025afc534e2e8df",
+      "HOL-Lib": "15a68d16e56a58ea9974e305c24463ad4214fa1f6c8178dde6c5f221a573f9b5",
+      "HOL-Library": "79850ee7ddb7f755069c4859c7ed9c02bc9655f1911883c3c0b0aa2db7ec539a",
+      "IsaFoR_1": "278f81388447642d672d01ebbbcab33fbf7e3df42b424b10cac4f68badf3f0ba",
+      "IsaFoR_2": "d3778b67bc4a432b9753a46e353c7cab28e29917a38689dc81f2fd6b419b1a71",
+      "Proof_Checker": "2a1c2009090aac6234dd14dc94511f62c999f7959dc2635773ee7b9034adef11",
+      "Proof_Checker_Base": "c59f2cafa8f96c1048fa389096811bf1a5cd90807ac3a77c43707aa962ebb977",
+      "Pure": "b2b461526e106a5220b5d5752fe2177b4c1c32f6a5b89bfed095c1f6a88a0194"
+    }
+  },
+  "complete_bridge_session": {
+    "name": "TRS_Standard_Bridge",
+    "status": "passed",
+    "log": "target/trs-standard/build-3.log",
+    "command": "make isabelle-trs-standard-bridge ISABELLE=/work/dfm/festschrift/ferrum/.tools/Isabelle2025-2/bin/isabelle ISABELLE_JOBS=4 AFP=/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys",
+    "environment": {
+      "USER_HOME": "/work/dfm/festschrift/CeTA/target/trs-standard/user",
+      "ISABELLE_IDENTIFIER": "trs_standard"
+    },
+    "heap_output": "/tmp/trs-standard-output",
+    "sessions": {
+      "TRS_Standard_Spec": {
+        "return_code": 0,
+        "input_heaps": [
+          "f2f57fe376ffa2e3a18afa19aaf278ac4b0a5d77 Pure",
+          "6e2adfbd83627c075f344e43f4b1d8c4b1a0144e HOL"
+        ],
+        "timing": {
+          "threads": "8",
+          "elapsed": "1.214",
+          "cpu": "2.364",
+          "gc": "0.226"
+        }
+      },
+      "TRS_Standard_Bridge": {
+        "return_code": 0,
+        "input_heaps": [
+          "f2f57fe376ffa2e3a18afa19aaf278ac4b0a5d77 Pure",
+          "6e2adfbd83627c075f344e43f4b1d8c4b1a0144e HOL",
+          "c09864a6cb497c3271847fa5121211f2f33c6c7b HOL-Library",
+          "1018ff68c468be27f2eb059655fb80c7ba0842b8 HOL-Lib",
+          "efbd9170adeb908ecb6ad43d2a2bd8459d02e6af HOL-AFP",
+          "cad43afcc76e88db250e42e89816cbdbba9b2aa3 IsaFoR_1",
+          "4930b221406658cdd23f148f431c64ddd80270e5 IsaFoR_2",
+          "e05fe0f39ae41ab0788d604c45532b0224b8ac9b Proof_Checker_Base",
+          "3aebdbd50bf599e2ebf20e14816a59f209fbf432 CSR_Checker_Base",
+          "361f09823e17a1096b6ca692c59c2de19bc185b2 CSR_Checker_Core",
+          "2f7048a99fb64df3a9e75de795b326a971d406b3 CSR_Checker_Extensions",
+          "67b02d0cb9399ce30c62a62e21566d5a3bb81b06 CSR_Muterm_Ext",
+          "81a2ce4c59fa03efcf6a4cc074abd0f3461ea630 CSR_Muterm_Typed_General_Redpair",
+          "61082a28def81f68364c25e4577a9092190d0324 CSR_Muterm_Typed_Recursive_Redpair",
+          "74d834689c770069dc761a524e5be778565586c5 CSR_Guarded_List_Measure_Check",
+          "919dcea67ad3e37ce4f864c273309898faf75596 Proof_Checker"
+        ],
+        "timing": {
+          "threads": "8",
+          "elapsed": "16.988",
+          "cpu": "19.749",
+          "gc": "1.851"
+        }
+      }
+    },
+    "dependency_rebuild_log": "target/trs-standard/build-2.log",
+    "dependency_rebuild_note": "All dependencies passed. The first bridge invocation detected a source digest changed during the dependency rebuild. The final normal build used finalized sources and reused completed dependencies."
+  },
+  "new_source_admissions_or_axiomatizations": [],
+  "documentation_conformance": {
+    "command": "python3 scripts/check_okf.py docs",
+    "status": "passed"
+  },
+  "git_diff_check": "passed"
+}

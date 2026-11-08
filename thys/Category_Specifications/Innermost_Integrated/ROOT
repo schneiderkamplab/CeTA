@@ -1,0 +1,4 @@
+session Category_Innermost_Integrated = Relative_ADP_Ceta_Dev +
+  options [document = false, quick_and_dirty = false]
+  sessions Category_Specification_Bridges
+  theories TRS_Innermost_Integrated

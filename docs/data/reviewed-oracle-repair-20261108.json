@@ -1,0 +1,129 @@
+{
+  "checker_source": {
+    "tree": "/work/dfm/festschrift/CeTA",
+    "branch": "main",
+    "commit": "76aaf0248d635a5c82ba62ed2af554716534d830",
+    "export_manifest_sha256": "11bdd2df15be226d807d408f8bf7ffef5bf47380b8a16740939d75f5f8b2cc97",
+    "build_command": "make ceta CETA_UNIFIED_BUILD_DIR=target/reviewed-loss-repair-20261108 CETA_BIN_DIR=target/reviewed-loss-repair-20261108/dist CETA_BUILD_JOBS=4",
+    "installed_checker_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+    "formal_or_generated_checking_logic_changed": false,
+    "initial_build_note": "Compilation/link succeeded; final make copy failed because source and destination were identical. Repeated make with separate dist destination."
+  },
+  "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+  "validation": {
+    "status": "reviewed_three_category_retention_passed",
+    "roots": 1780,
+    "certified": 1780,
+    "unresolved": 0,
+    "categories": [
+      {
+        "category": "TRS_Standard",
+        "roots": 1356,
+        "attempted": 1356,
+        "certified": 1356,
+        "search_exit": 0,
+        "rechecks_exit": 0,
+        "source_audit_exit": 0,
+        "receipt_failures": [],
+        "wall_seconds": 311.31346103711985,
+        "passed": true,
+        "polarities": {
+          "yes": 1053,
+          "no": 303
+        }
+      },
+      {
+        "category": "TRS_Innermost",
+        "roots": 311,
+        "attempted": 311,
+        "certified": 311,
+        "search_exit": 0,
+        "rechecks_exit": 0,
+        "source_audit_exit": 0,
+        "receipt_failures": [],
+        "wall_seconds": 258.0082105018664,
+        "passed": true,
+        "polarities": {
+          "yes": 301,
+          "no": 10
+        }
+      },
+      {
+        "category": "TRS_Relative",
+        "roots": 113,
+        "attempted": 113,
+        "certified": 113,
+        "search_exit": 0,
+        "rechecks_exit": 0,
+        "source_audit_exit": 0,
+        "receipt_failures": [],
+        "wall_seconds": 28.52843366493471,
+        "passed": true,
+        "polarities": {
+          "yes": 97,
+          "no": 16
+        }
+      }
+    ],
+    "source_binding": true,
+    "repeated_unified_checker_checks": true,
+    "complete_guidance_receipt_audit": true,
+    "artifacts": "/work/dfm/festschrift/ferrum/target/reviewed-oracle-rekey-20261108/repair-final-replay",
+    "candidate_artifacts": "/work/dfm/festschrift/ferrum/target/reviewed-oracle-rekey-20261108/repair-replay",
+    "checker_regressions": {
+      "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+      "gates": [
+        {
+          "command": [
+            "python3",
+            "tests/unified/check_dispatch.py",
+            "/work/dfm/festschrift/CeTA/target/reviewed-loss-repair-20261108/ceta"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "python3",
+            "tests/unified/check_gm04_source_map.py",
+            "--checker",
+            "/work/dfm/festschrift/CeTA/target/reviewed-loss-repair-20261108/ceta",
+            "--output",
+            "/work/dfm/festschrift/CeTA/target/reviewed-loss-repair-gates-20261108-final/gm04"
+          ],
+          "exit": 0
+        },
+        {
+          "command": [
+            "python3",
+            "tests/unified/check_negatives.py",
+            "/work/dfm/festschrift/CeTA/target/reviewed-loss-repair-20261108/ceta",
+            "--output",
+            "/work/dfm/festschrift/CeTA/target/reviewed-loss-repair-gates-20261108-final/negatives.json.gz"
+          ],
+          "exit": 0
+        }
+      ],
+      "passed": true
+    },
+    "binding_regressions": {
+      "standard": {
+        "cases": 6,
+        "passed": true,
+        "artifact": "/work/dfm/festschrift/ferrum/target/reviewed-oracle-rekey-20261108/final-binding-standard/results.json",
+        "sha256": "6b9207fc970cde86f2bb185ea54a0fdb9f581dc94cf5b2e21dd8c9664696a04b"
+      },
+      "innermost": {
+        "cases": 11,
+        "passed": true,
+        "artifact": "/work/dfm/festschrift/ferrum/target/reviewed-oracle-rekey-20261108/final-binding-innermost/results.json",
+        "sha256": "b6074397ed7723cc236c3c47dc0d85e4363e0c107c74b6e606fd36d40d3e45e2"
+      },
+      "relative": {
+        "cases": 13,
+        "passed": true,
+        "artifact": "/work/dfm/festschrift/ferrum/target/reviewed-oracle-rekey-20261108/final-binding-relative/results.json",
+        "sha256": "04814b27b151d2bdf934ba837bc544f0e6c0000d04fb7f4aa4ae9b810a63961d"
+      }
+    }
+  }
+}

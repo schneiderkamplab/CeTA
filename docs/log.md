@@ -1,5 +1,41 @@
 # Update log
 
+## 2026-11-08
+
+- Completed SRS Standard concrete/serialized correspondence and strict input binding.
+  Five-category replay retains 3,610/3,610, including all 1,720 SRS Standard roots.
+  Generated checker logic, unified CeTA and guidance are unchanged.
+  [Verification receipt](data/srs-standard-review-20261108.json).
+
+- Recorded the [three-category follow-up replay](../../ferrum/docs/reviewed-categories-replay-20261108.md):
+  1,316/1,780 retained with the reviewed boundary; guidance compatibility remains open.
+
+- Reviewed [Relative original-input certification](trs-relative-trust-boundary.md), including the
+  signature-extension counterexample, explicit NO guard and partition checks.
+
+- Added the concrete and serialized Innermost bridge with fixed nfs=false,
+  no weak rules and certificate assumptions disabled. Concrete module contracts
+  are discharged; both YES/NO conclusions use the canonical property.
+  See the [review](trs-innermost-trust-boundary.md) for input binding, verification,
+  certificate coverage limits and remaining inherited trust mechanisms.
+
+- Added the [Standard integrated checker and trust-boundary review](trs-standard-trust-boundary.md),
+  including runtime original-input enforcement in Ferrum.
+
+- Reviewed [TPDB Standard conventions and parsing/dispatch](trs-standard-input-review.md);
+  recorded remaining input-binding obligations and passing focused tests.
+
+- Recorded [category bridge coverage and assumptions](category-assumptions-review.md),
+  with an ordered review beginning at TRS Standard. Human review remains pending.
+
+## 2026-11-07
+
+- Collected the category theories into the [shared specification package](category-specifications.md)
+  and added [TRS Innermost](trs-innermost-specification.md).
+- Added the [ranked TRS Standard specification](trs-standard-specification.md),
+  standalone examples, and separate semantic and checker bridge theories.
+  Verification details are recorded on the specification page.
+
 ## 2026-11-05
 
 - [Reconciled learned-only evidence](learned-only-validation-20261105.md): 6,570 certified inputs, all 6,565 required learned successes retained, two checks per acceptance by the same unified O2 binary. No checking logic or generated export changed during reconciliation. Main and the deferred independent two-checker release remain unchanged.
@@ -31,3 +67,5 @@
 - Integrated the existing verified finite-LP export into the isolated unified checker (`54a99ee`). Existing generated sources and other category libraries are unchanged. The new candidate passes 346 positive/81 negative checks, all 91 retained cut artifacts, and finite/dispatch regressions; main is unchanged.
 
 - Scope correction: Prolog is deferred, including LeTA. The unfinished Prolog reconciliation is preserved separately at `19b6cbe` on `codex/deferred-prolog-reconciliation`; active work resumes on `codex/state-local-lp-cut` from the verified pre-Prolog snapshot. Only LP and LP with cut are in this migration scope. No Prolog candidate is promoted.
+
+- 2026-11-08: Completed the checked CSR category review and full declared-map binding. Fresh four-category replay retains 1,890/1,890; [review and trust boundary](trs-context-sensitive-trust-boundary.md). No generated checker logic changed.

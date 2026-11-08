@@ -1,0 +1,20 @@
+session Category_Specifications = HOL +
+  options [document = false]
+  theories
+    Rewriting_Sequences_Spec
+    TRS_Context_Sensitive_Spec
+    TRS_Context_Sensitive_Examples
+    Higher_Order_Spec_Base
+    Higher_Order_Spec
+    TRS_Relative_Spec
+    TRS_Relative_Examples
+    SRS_Spec_Base
+    SRS_Standard_Spec
+    SRS_Relative_Spec
+    SRS_Cycle_Spec
+    SRS_Examples
+    TRS_Spec_Base
+    TRS_Standard_Spec
+    TRS_Standard_Examples
+    TRS_Innermost_Spec
+    TRS_Innermost_Examples

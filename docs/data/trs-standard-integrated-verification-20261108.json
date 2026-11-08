@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-08",
+  "scope": "Standard concrete integrated checker composition and tested original-ARI binding; no formal parser proof or production promotion",
+  "isabelle": "Isabelle2025-2",
+  "session": "Category_Standard_Integrated",
+  "session_passed": true,
+  "session_seconds": 51,
+  "final_build_seconds": 70,
+  "no_skip_proof_dependencies": true,
+  "inherited_oracles": [
+    "Regexp_Method.check_eqv",
+    "Types_To_Sets.cancel_type_definition"
+  ],
+  "tests": {
+    "rust_standard_filter": 15,
+    "python_correspondence": 18,
+    "python_replay_harness": 8,
+    "cli_gate": 6
+  },
+  "repository_heads": {
+    "CeTA": "76aaf0248d635a5c82ba62ed2af554716534d830",
+    "ferrum": "8fc7fc6ab3ee1af073cf6f382b2e384315dba251"
+  },
+  "source_hashes": {
+    "CeTA/thys/Category_Specifications/Integrated/TRS_Standard_Integrated.thy": "805a7232da54872bef90a22b8bdc53ff5edf7c73f41dd1c86e2099a4604ff42b",
+    "CeTA/thys/Category_Specifications/Integrated/TRS_Standard_Serialized.thy": "dfafaf9073ff32ff2e8d1fc7d09028d53c251644f3181e8be23d09a04ff4dad4",
+    "CeTA/thys/Category_Specifications/Bridge/TRS_Standard_Equivalence.thy": "ac0943a1f7060b595c0c311812406980b62c417a4365c9d8d1be60ff5ea191f2",
+    "CeTA/thys/Category_Specifications/Spec/TRS_Spec_Base.thy": "d9070c95c3cd51783366f82e563bb33ef224246c85297efe325f09d623b4855c",
+    "CeTA/thys/Category_Specifications/Spec/TRS_Standard_Spec.thy": "8e1f35f0a9a148e52003c7155e1ccb34254fe11df1fedfd4c9ac383586466bc6",
+    "CeTA/thys/Relative_ADP/Integration/Relative_ADP_Ceta.thy": "78b74926c2f3e5acc195787d9faaa329edfa313be7d0880161cfaf0df94ccb8a",
+    "ferrum/src/cert/standard_input.rs": "53460285dd6cde79f61c4bda04603e0072d7ce10a10c8bd9be7d1c41c90ea778",
+    "ferrum/src/cli/mod.rs": "e730cd86436ec2fc09fc8047a269f22262bed39851184a1a83c5aa534c12d5e0",
+    "ferrum/src/parsing/ari.rs": "cdc3bdf13daf20148c415057912b5d6fc00df6eed6c37c04686fde11492b49c8",
+    "ferrum/scripts/audit_trs_root_correspondence.py": "d147d540a91c205958fb9b99163016f4d3b42a6ba989010480ccc4729b841c0f",
+    "ferrum/scripts/termcomp_trs_compare.py": "a84379430ddede4a5197c2bd5c3d589c417ad4e150aac99ea6d076415cb92b2d",
+    "ferrum/scripts/test_audit_trs_root_correspondence.py": "f969e5ff4e4bcd991d1f04271f72c6aff20aa6465766d8c663e16c858f814627",
+    "ferrum/scripts/test_termcomp_trs_compare.py": "e9c131a8eddf8bb07f0715c3f633a7a45e15829f8dd1472cd5613779b83d2c82",
+    "ferrum/scripts/check_standard_binding_cli.py": "7509f20a6aebcf70ec41d8995531c74ce6d1701c4cb14fcaeb4ce1ea09604968",
+    "CeTA/thys/Category_Specifications/Integrated/ROOT": "2bbe9c8763dafdaeb2bc29b51cb160c3aa1fc17e3a1734cf2f86eaa7f23ee77e",
+    "CeTA/thys/Category_Specifications/Integrated/ROOTS": "e5dc14ae4534f71654dd58a9bf450a225b44147f8b8cba3f53356db5d3c2bfbb",
+    "CeTA/thys/Category_Specifications/ROOTS": "c8484ce8d7ed2f90b0710e821e90813b912655fe5ea3de41294fbc5f3c586ecc",
+    "CeTA/Makefile": "596675badf903691647ec31ec0df3ffb9009af68939469715ca99c7e0b7f2d2a",
+    "ferrum/src/cert/mod.rs": "771ba827636ead5732c3f19419d9d87f88ff4e619695e9d81d90999d087232e7"
+  },
+  "source_snapshot": "CeTA/target/trs-standard/integrated-source-snapshot",
+  "snapshot_scope": "Reviewed bridge and caller source files, not a complete release dependency snapshot",
+  "evidence": {
+    "CeTA/target/trs-standard/integrated-build.log": "852d990a4d7a91a7c547f6ed4e5a1cac642688f2e3674f69a727154ab51fa58c",
+    "CeTA/target/trs-standard/integrated-final-build.log": "ddc6fc5510f046721999c8bf5db2bf3928490c61f7a8b7592a3a3fa09e487f9f",
+    "CeTA/target/trs-standard/integrated-console-audit.txt": "b252cba623995707959ac4bd0c8a5cbda660ccffb1f9a494717ce0885e313e1b",
+    "ferrum/target/standard-final-tests.log": "75f8b62b242cef4673ec271080b08c2bb5405ee53c48334246b2baf2395a1bea",
+    "ferrum/target/standard-bound-cli-build.log": "8c132ddc6f7e8210687104dcc09b7223516a1135480303784ed26c48fc6abf2a",
+    "ferrum/target/standard-binding-gate-final-20261108/results.json": "2352cd745974ec68bed4b7b2f25ce642c0c0bb0cee495af74c2ffec2a5ea2578",
+    "ferrum/target/standard-binding-verification-20261108/test_audit_trs_root_correspondence.py.log": "aee3779356b96e82e266faec67d2853a3f3efd095094272cb26b7480c9795233",
+    "ferrum/target/standard-binding-verification-20261108/test_termcomp_trs_compare.py.log": "322e9bec5d6bbde47d6476008f309469c1e42048ed96320a3bae52af8811e27a"
+  },
+  "binaries": {
+    "CeTA/ceta": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+    "ferrum/target/debug/ferrum": "41d22d1747f06623c651c1d319d53030c5690780fd091ddce0292144162595db"
+  },
+  "installed_ceta_unchanged": true,
+  "production_promotion": false,
+  "full_frontier_replay": false
+}
