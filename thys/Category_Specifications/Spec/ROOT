@@ -6,6 +6,7 @@ session Category_Specifications = HOL +
     TRS_Context_Sensitive_Examples
     Higher_Order_Spec_Base
     Higher_Order_Spec
+    Higher_Order_Examples
     TRS_Relative_Spec
     TRS_Relative_Examples
     SRS_Spec_Base

@@ -50,3 +50,5 @@ okf_version: "0.2"
 - [SRS Relative concrete review](srs-relative-trust-boundary.md)
 
 - [SRS Cycle concrete NO review](srs-cycle-trust-boundary.md)
+
+- [Higher-order specification and checker boundary](higher-order-trust-boundary.md)

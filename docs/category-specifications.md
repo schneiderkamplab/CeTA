@@ -26,9 +26,9 @@ specification layer; shared IsaFoR translations belong in the bridge layer.
 The authorized extension scope also includes TRS Relative, Outermost,
 Context-sensitive, Conditional and Equational; SRS Standard, Relative and Cycle;
 and Higher-order Rewriting. Relative, Context-sensitive and the three SRS correspondences are implemented
-with the coverage limits recorded in the review register. Higher-order has a
-compiled specification but an unfinished bridge; Outermost, Conditional and
-Equational are not yet implemented.
+with the coverage limits recorded in the review register. [Higher-order](higher-order-trust-boundary.md) now has a compiled typed equivalence
+and sixteen concrete YES and four NO checker corollaries. Outermost, Conditional
+and Equational are not yet implemented.
 Probabilistic, integer and complexity categories are outside this milestone.
 
 ## Verification
@@ -89,3 +89,7 @@ The installed executable and full fifteen-category release remain separate.
 The [Context-sensitive concrete review](trs-context-sensitive-trust-boundary.md)
 adds session `Category_Context_Sensitive_Integrated`, complete declared-map
 binding, and explicit checked YES coverage for signatures larger than the rules.
+
+The Higher-order sessions build with `make isabelle-higher-order-integrated`.
+See the [review](higher-order-trust-boundary.md) for exact semantics and the
+original-input binding boundary.

@@ -134,3 +134,7 @@ isabelle-srs-standard-integrated:
 
 .PHONY: isabelle-srs-relative-integrated
 isabelle-srs-relative-integrated: isabelle-srs-standard-integrated
+
+.PHONY: isabelle-higher-order-integrated
+isabelle-higher-order-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/Category_Specifications/Higher_Order_Integrated Category_Specifications Category_Higher_Order_Bridge Category_Higher_Order_Integrated

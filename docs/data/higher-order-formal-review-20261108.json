@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-08",
+  "category": "Higher_Order_Rewriting",
+  "formal": {
+    "sessions": [
+      "Category_Specifications",
+      "Category_Higher_Order_Bridge",
+      "Category_Higher_Order_Integrated"
+    ],
+    "passed": true,
+    "admissions": false,
+    "new_axioms": false,
+    "oracle_dependencies": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ],
+    "yes_corollaries": 16,
+    "no_corollaries": 4,
+    "semantic_premises": []
+  },
+  "reference": {
+    "commit": "d41b97e833b11e1770afd43c73ed53ac9017742f",
+    "url": "https://raw.githubusercontent.com/TermCOMP/termcomp-reference/d41b97e833b11e1770afd43c73ed53ac9017742f/stcrs.tex",
+    "sha256": "a7bade09db139e537253e4c0096414fddc7592876ba919e1a3d4a5fcd2068161"
+  },
+  "sources": {
+    "Makefile": "c32d2b1388255ac6ef034045ad9b3062c1914a4e92579551b327b648c676b3c3",
+    "thys/Category_Specifications/ROOTS": "a58a9f66e5d7be3abd04d1fed5e7890bcf9c63c07d1e843fc602a9b30c676dec",
+    "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy": "2ee19244650b7d6c4ec4701f15a833a7069ac04810d8308fb9d66ff057a764b1",
+    "thys/Category_Specifications/Spec/Higher_Order_Examples.thy": "7278d9ca8280422d11e5830c315f44f8ffae24ef1b4022e9892d9bd7c9b836eb",
+    "thys/Category_Specifications/Spec/Higher_Order_Spec.thy": "3cbe016504e091d71c857d49f755be8333ceea66c7949c949309d1150d8e9701",
+    "thys/Category_Specifications/Spec/ROOT": "2492c9b1a960af550ccb4a8140fc04a924dd42987b450f4853c5c720bb54d4d9",
+    "thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Equivalence.thy": "43222feccc42c914ae614de6ca4fc7ab9f3cf2a3653dfd02b1d43d010a1cae96",
+    "thys/Category_Specifications/Higher_Order_Bridge/ROOTS": "8340b02b0ab79adcbd12c20cef137f6cdd7835dc3a36ade6fc170f8a5deefc0e",
+    "thys/Category_Specifications/Higher_Order_Bridge/ROOT": "5261c9b5cfec09fcfcf53998d1e3d18f9fad0f6b4ddbb4917df35127e59b8afe",
+    "thys/Category_Specifications/Higher_Order_Integrated/Higher_Order_Checker_Bridge.thy": "a796e3bad24c734a2c5aa4708dd80801ce802d462b7cfa4b794fab17766511db",
+    "thys/Category_Specifications/Higher_Order_Integrated/ROOT": "e4696fbbab41c77d8ebfd85a286a7c7ceda422d652106b7e8b392d2b5cfff95d",
+    "thys/Category_Specifications/Higher_Order_Integrated/ROOTS": "101e5f3fd931a6c7260a14023447a76b7f525c9c2bcecf98ed578ba866d086b1"
+  },
+  "logs": {
+    "docs/data/higher-order-integrated-3.log.gz": "77542ce73dd43a37dc5b9868075a4c310314423d91f964fb96bc2b9aeeeb8bad",
+    "docs/data/higher-order-integrated-final.log.gz": "fc0a5da323f317efdcf147c4407b25775bc983f0f6c2855bf9c2f1b177d5ebd8",
+    "docs/data/higher-order-console-final-audit-3.log.gz": "16e6a77f23aca7dde592209bae248e4e2927ca8caeb8cb3c5347e837db37a22c"
+  },
+  "trust_boundary": "Outer ARI/native parsing, executable binding, extraction/compiler/runtime and inherited oracle mechanisms; concrete delegated child CPF XML checking is formally connected."
+}

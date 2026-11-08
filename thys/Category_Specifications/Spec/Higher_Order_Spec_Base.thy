@@ -75,6 +75,43 @@ definition higher_rule_welltyped where
     case higher_typeof S G [] (higher_erase_pattern l) of None \<Rightarrow> False
       | Some A \<Rightarrow> higher_typeof S G [] (higher_erase_pattern u) = Some A)"
 
+text \<open>The category's rule syntax is beta-normal, has a constant head on
+the left, and uses each free meta-variable at a fixed arity there. Its left
+arguments are distinct bound variables; right occurrences have at least that
+arity, with extra ordinary arguments represented by application nodes.\<close>
+fun higher_pattern_head where
+  "higher_pattern_head (SpecPApp p q) = higher_pattern_head p"
+| "higher_pattern_head p = p"
+fun higher_pattern_metas where
+  "higher_pattern_metas (SpecPBound n) = {}"
+| "higher_pattern_metas (SpecPConst n) = {}"
+| "higher_pattern_metas (SpecPApp p q) = higher_pattern_metas p \<union> higher_pattern_metas q"
+| "higher_pattern_metas (SpecPAbs A p) = higher_pattern_metas p"
+| "higher_pattern_metas (SpecPMeta n ps) = insert n (\<Union>(higher_pattern_metas ` set ps))"
+fun higher_left_pattern where
+  "higher_left_pattern ar (SpecPBound n) = True"
+| "higher_left_pattern ar (SpecPConst n) = True"
+| "higher_left_pattern ar (SpecPAbs A p) = higher_left_pattern ar p"
+| "higher_left_pattern ar (SpecPApp p q) =
+    ((\<exists>n. higher_pattern_head p = SpecPConst n \<or> higher_pattern_head p = SpecPBound n) \<and>
+      higher_left_pattern ar p \<and> higher_left_pattern ar q)"
+| "higher_left_pattern ar (SpecPMeta n ps) =
+    (length ps = ar n \<and> distinct ps \<and> (\<forall>p\<in>set ps. \<exists>i. p = SpecPBound i))"
+fun higher_right_pattern where
+  "higher_right_pattern ar (SpecPBound n) = True"
+| "higher_right_pattern ar (SpecPConst n) = True"
+| "higher_right_pattern ar (SpecPAbs A p) = higher_right_pattern ar p"
+| "higher_right_pattern ar (SpecPApp p q) =
+    ((\<forall>A b. higher_pattern_head p \<noteq> SpecPAbs A b) \<and>
+      higher_right_pattern ar p \<and> higher_right_pattern ar q)"
+| "higher_right_pattern ar (SpecPMeta n ps) =
+    (length ps = ar n \<and> list_all (higher_right_pattern ar) ps)"
+definition higher_category_rule where
+  "higher_category_rule S rule \<longleftrightarrow> higher_rule_welltyped S rule \<and>
+    (case rule of (G,l,r) \<Rightarrow> (\<exists>c. higher_pattern_head l = SpecPConst c) \<and>
+      higher_pattern_metas r \<subseteq> higher_pattern_metas l \<and>
+      (\<exists>ar. higher_left_pattern ar l \<and> higher_right_pattern ar r))"
+
 definition higher_typed_subst where
   "higher_typed_subst S V B G s \<longleftrightarrow>
     (\<forall>n<length G. higher_typeof S V B (s n) = Some (G!n))"
