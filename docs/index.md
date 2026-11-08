@@ -46,3 +46,5 @@ okf_version: "0.2"
 - [Context-sensitive review](trs-context-sensitive-trust-boundary.md) — CSR canonical semantics, concrete checked bridge and trust boundary.
 
 - [SRS Standard concrete review](srs-standard-trust-boundary.md)
+
+- [SRS Relative concrete review](srs-relative-trust-boundary.md)

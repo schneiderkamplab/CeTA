@@ -131,3 +131,6 @@ isabelle-trs-context-sensitive-integrated:
 .PHONY: isabelle-srs-standard-integrated
 isabelle-srs-standard-integrated:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -D thys/Category_Specifications/SRS_Integrated
+
+.PHONY: isabelle-srs-relative-integrated
+isabelle-srs-relative-integrated: isabelle-srs-standard-integrated

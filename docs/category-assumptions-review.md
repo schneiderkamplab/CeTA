@@ -20,7 +20,7 @@ Human review is pending; no entry below records user approval.
 | 3 | [TRS Relative](trs-relative-specification.md) | Ranked equivalence; YES; conditional NO | Unrestricted equivalence and NO additionally require a symbol of arity at least two in the signature OR no new RHS variables in any weak rule. Full coverage without that condition is unresolved. Concrete guarded review below. |
 | 4 | [TRS Context-sensitive](trs-context-sensitive-trust-boundary.md) | Concrete and serialized bound YES/NO | No unchecked module contracts. NO covers containing signatures. YES covers the rule signature or the direct CSR proof language on larger declared signatures; the bound interface checks this guard. Full signature extension for other proof families remains open. |
 | 5 | [SRS Standard](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; per-rule shared-tail encoding and strict original-input binding checked. No extra signature or proof-family guard. See [review](srs-standard-trust-boundary.md). |
-| 6 | [SRS Relative](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Finite strict/weak rules and exact encoding. The encoding's variable condition is proved, not an extra input assumption. Review pending. |
+| 6 | [SRS Relative](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; shared-tail encoding in both partitions supplies variable preservation. No extra signature or proof-family guard. See [review](srs-relative-trust-boundary.md). |
 | 7 | [SRS Cycle](srs-specifications.md) | Equivalence; three NO checks | Acceptance of transport, embedding or morphism check on the same finite rule list. No YES bridge implemented. Review pending. |
 | 8 | Higher-order rewriting | Specification compiles; bridge unfinished | Typed semantics and translations still require review and completed correspondence proofs. |
 | 9 | TRS Outermost | Not implemented | Category semantics and bridge obligations pending. |
@@ -173,3 +173,12 @@ CPF obligation, with certificate assumptions disabled. Both answers have no
 extra semantic coverage guard. All 1,720 protected SRS roots and all 3,610
 five-category roots pass fresh strict replay and independent audits. The
 parser/execution and inherited-oracle trust boundary remains explicit.
+
+## 6. SRS Relative: concrete review completed
+
+The [review](srs-relative-trust-boundary.md) proves correspondence for both rule
+partitions with independently named shared tails and instantiates the concrete
+checker with certificate assumptions disabled. Weak-only loops remain allowed.
+Both answers need no extra semantic coverage guard. Strict original-input
+binding, 403-root focused replay and 4,013-root six-category replay pass.
+The parser/execution and inherited-oracle trust boundary remains explicit.

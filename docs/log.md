@@ -2,6 +2,11 @@
 
 ## 2026-11-08
 
+- Completed SRS Relative concrete/serialized correspondence and strict partition binding.
+  Six-category replay retains 4,013/4,013, including all 403 SRS Relative roots.
+  Checker logic, executable and guidance are unchanged.
+  [Verification receipt](data/srs-relative-review-20261108.json).
+
 - Completed SRS Standard concrete/serialized correspondence and strict input binding.
   Five-category replay retains 3,610/3,610, including all 1,720 SRS Standard roots.
   Generated checker logic, unified CeTA and guidance are unchanged.
