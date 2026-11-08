@@ -22,3 +22,6 @@ session Category_Specifications = HOL +
     TRS_Outermost_Examples
     TRS_Innermost_Spec
     TRS_Innermost_Examples
+    TRS_Conditional_Ordinary_Spec
+    TRS_Conditional_Operational_Spec
+    TRS_Conditional_Examples
