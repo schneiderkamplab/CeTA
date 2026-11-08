@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-08",
+  "category": "SRS_Cycle",
+  "status": "focused review verified",
+  "formal": {
+    "build": "Category_Specifications and Category_Specification_Bridges",
+    "admissions": false,
+    "new_axioms": false,
+    "oracle_dependencies": [],
+    "coverage": "three concrete NO checks; no YES API; Haskell serialized parsing remains trusted",
+    "alphabet_projection": "proved, including empty alphabet"
+  },
+  "validation": {
+    "passed": true,
+    "roots": 200,
+    "seconds": 106.04138936311938,
+    "binary_sha256": "b52f00e42fdc9800a8b10ff36242f03c6d16235716dbce89f39985aef1f1298a",
+    "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+    "oracle_sha256": "1610d2312ef7c7e8ef694e36a1e0181ccd423b7e4989e92b3d071c4c7cbfa12c"
+  },
+  "tests": {
+    "rust_parser": 22,
+    "cycle_python": 14,
+    "cycle_binding": 27,
+    "prior_category_binding": 82,
+    "preflight": 254
+  },
+  "repositories": {
+    "CeTA": "95a796949df1bf2ea1ea659405f7268242c78a33",
+    "ferrum": "a7174574f679dc6c1e04b25705dfb8d93147684f"
+  },
+  "working_tree_changes": true,
+  "source_hashes": {
+    "CeTA/thys/Category_Specifications/Spec/SRS_Cycle_Spec.thy": "accfb0bbc265b2c88ee64eb678c437be62fcdfc717c7899fe29fdfc45aa7f82d",
+    "CeTA/thys/Category_Specifications/Spec/SRS_Examples.thy": "e4345b3187f78bddcdc6cb6fb04a555c62e0cae84ce7f2ecd029ce64a50b8616",
+    "CeTA/thys/Category_Specifications/Bridge/SRS_Cycle_Equivalence.thy": "a089d082a6886d70db6798a7d2c6ccd4cce5a39b7a6325dcf27a52cf3125467d",
+    "CeTA/thys/Category_Specifications/Bridge/SRS_Cycle_Checker_Bridge.thy": "9e9b2b4d31a617944a2506da6305a5147c85f9d5ca2acb8ab5ccd9f6aa088748",
+    "CeTA/src/Haskell/Ceta/Category/Cycle.hs": "029d4a10c1ed81255ce6efae2c1795bad560c2457a9ae4f672763868ac027979",
+    "ferrum/src/cert/cycle_input.rs": "b35b1a836c63c10fc972ff2778a7bd7497b6afa2c9df7c74aa547b7fb394dfe6",
+    "ferrum/src/cert/rewriting_input.rs": "c4781bcf200b6c57bf156f49b14ac5d0f9908af3981dbe279b12f4e0d9cef6c0",
+    "ferrum/src/cli/mod.rs": "c7d319125dc1b164a74ce8660bd154bd58665196c4afdc98ba4a7fe40e0cc77e",
+    "ferrum/src/parsing/ari.rs": "9715081572cca01cbc2411a1fa7504048378e1b83a94d6d13a445d8df91db8e4",
+    "ferrum/scripts/certify_cycle_campaign.py": "74dbbde550ff16853ec58208c956ca5f18dca6adb00a4a365e78399ff11bdd32",
+    "ferrum/scripts/scout_cycle_closures.py": "b1521a99e0b87bf9b2dea3ffe42d1cef44e96476b1d4802e3adea773ec8b4c12",
+    "ferrum/scripts/check_cycle_binding_cli.py": "834c5f4df1fa396a84b6a81103805c8aa92bae32e3338e91a328e782053cd9c5",
+    "ferrum/scripts/test_cycle_certification.py": "2dc8931ddbf37aeda72624b9cc0e4476bed6965191d96a7d0c3ec3da58c9796d"
+  },
+  "evidence": {
+    "CeTA/target/srs-cycle-review/build-2.log": "718ffbfd0c7d66e358c79d7786ce23e33fb4e2ac092e317bc5665186a8c1f335",
+    "CeTA/target/srs-cycle-review/oracle-audit.log": "085b38ed7c3e447d140a8589edfcc82f4a68c35edb1a35d6319046b68bc8ff2e",
+    "ferrum/target/srs-cycle-review/release-2.log": "c1b60e695f33309188afe87d2a6dc25e98291dd1f87263b05d436fca65d35cd0",
+    "ferrum/target/srs-cycle-review/parser-tests-all.log": "594c1db4550f94e346bcaefb811198fff807898866bdbab473621d9768c36ec6",
+    "ferrum/target/srs-cycle-review/cycle-tests-final.log": "1ba2f40df51576cf08c94c7ede652c085fdd22f1a69a568d354382048e14976e",
+    "ferrum/target/srs-cycle-review/binding-2/results.json": "2611d41b1aad56ee4f182795a218a0236b2b785ff16b9adf588e6c2f4faeb1d7",
+    "ferrum/target/srs-cycle-review/regressions.json": "5d70598b9b41d2f3f476b77c6da25c0dc1e9d5a93d46c64a642346980aad3d43",
+    "ferrum/target/srs-cycle-review/preflight/results.json": "7a43f2ba379ec5967c25216cf048ce6ebfc2c4117a879d6ce867a23d8d481a9f",
+    "ferrum/target/srs-cycle-reviewed/validation.json": "ff630bd985c193ac15fa25b9f1ebb35b5457434a1e741743f6d2459d16c50616",
+    "ferrum/target/srs-cycle-reviewed/manifest.json": "1e2bf869535140df70977586c4a4e26f737ebec0749bf363a66e417e2f2ef6f1",
+    "ferrum/target/srs-cycle-reviewed/environment.json": "3a243dd9d6a16fa02fc51d030cacc01acf8449429d95b420dcd0e3868d68bc1d",
+    "ferrum/target/srs-cycle-reviewed/roots.json": "61314a02aad5c29911945fa1f612d4587d57d48ba002e9603cc0ab0a1fa90df3",
+    "ferrum/target/srs-cycle-reviewed/packaged/manifest.json": "e54e5590f98e284bf3bbff23fbaf4c0fd993a116f7dcdeb44921e405ed2ba4fc",
+    "ferrum/target/srs-cycle-reviewed/certified/results.json": "9ca6982c0a03c7208e5e85c02b759e2f7bcff87366a5edf475fcb53af0910e9a",
+    "ferrum/target/srs-cycle-review/replay.py": "882bd3e3337c04c5415bc22b1ed8be371fb81c35cbc94a7f761f49cf68e47c84",
+    "ferrum/target/srs-cycle-review/replay.log": "e54e5590f98e284bf3bbff23fbaf4c0fd993a116f7dcdeb44921e405ed2ba4fc",
+    "ferrum/target/srs-cycle-review/parser-tests-final.log": "fdff018b13d0afeca46b82f418415afbb6c0ae431b438cfad44f1f655d2c2796",
+    "ferrum/target/srs-cycle-review/okf.log": "3a5557d4a7ad669e80e09712d94ded43171a0a55835fc9f586db2c3be38364e2",
+    "CeTA/target/srs-cycle-review/okf.log": "3a5557d4a7ad669e80e09712d94ded43171a0a55835fc9f586db2c3be38364e2"
+  },
+  "combined_seven_category_replay": false,
+  "checker_changed": false,
+  "oracle_changed": false,
+  "production_promoted": false,
+  "verification_note": "The Cycle parser test was relocated to the general ARI test module after the O2 build; production code is unchanged and all 22 parser tests were rerun."
+}

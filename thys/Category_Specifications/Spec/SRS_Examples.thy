@@ -63,4 +63,12 @@ lemma rotation_cycle_nonterminates:
   "\<not> srs_cycle_terminates {([a,b],[b,a])}"
   unfolding srs_cycle_nontermination_iff
   by (intro exI[of _ "\<lambda>_. [a,b]"]) (simp add: rotation_after_replacement)
+
+text \<open>The empty alphabet is allowed. Its sole word can still have a
+real self-loop if the empty rule is present.\<close>
+lemma empty_word_cycle_step: "cycle_string_step {([],[])} [] []"
+  by (auto simp: cycle_string_step_def string_step_def)
+lemma empty_word_cycle_nonterminates: "\<not> srs_cycle_terminates {([],[])}"
+  unfolding srs_cycle_nontermination_iff
+  by (intro exI[of _ "\<lambda>_. []"]) (simp add: empty_word_cycle_step)
 end

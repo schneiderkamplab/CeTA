@@ -21,7 +21,7 @@ Human review is pending; no entry below records user approval.
 | 4 | [TRS Context-sensitive](trs-context-sensitive-trust-boundary.md) | Concrete and serialized bound YES/NO | No unchecked module contracts. NO covers containing signatures. YES covers the rule signature or the direct CSR proof language on larger declared signatures; the bound interface checks this guard. Full signature extension for other proof families remains open. |
 | 5 | [SRS Standard](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; per-rule shared-tail encoding and strict original-input binding checked. No extra signature or proof-family guard. See [review](srs-standard-trust-boundary.md). |
 | 6 | [SRS Relative](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; shared-tail encoding in both partitions supplies variable preservation. No extra signature or proof-family guard. See [review](srs-relative-trust-boundary.md). |
-| 7 | [SRS Cycle](srs-specifications.md) | Equivalence; three NO checks | Acceptance of transport, embedding or morphism check on the same finite rule list. No YES bridge implemented. Review pending. |
+| 7 | [SRS Cycle](srs-specifications.md) | Equivalence; three NO checks | Concrete NO checks and strict original-input binding reviewed; alphabet projection proved, no unchecked semantic guard or oracle dependencies. NO-only coverage; no YES API. See [review](srs-cycle-trust-boundary.md). |
 | 8 | Higher-order rewriting | Specification compiles; bridge unfinished | Typed semantics and translations still require review and completed correspondence proofs. |
 | 9 | TRS Outermost | Not implemented | Category semantics and bridge obligations pending. |
 | 10 | TRS Conditional | Not implemented | Category semantics and bridge obligations pending. |
@@ -182,3 +182,14 @@ checker with certificate assumptions disabled. Weak-only loops remain allowed.
 Both answers need no extra semantic coverage guard. Strict original-input
 binding, 403-root focused replay and 4,013-root six-category replay pass.
 The parser/execution and inherited-oracle trust boundary remains explicit.
+
+## 7. SRS Cycle: concrete NO review completed
+
+The [review](srs-cycle-trust-boundary.md) matches the published rotation semantics,
+proves alphabet projection including the empty alphabet, and binds all three
+concrete native NO checks to the original unary ARI input. No extra semantic
+assumptions, admissions or oracle dependencies remain in these theorems.
+Haskell parsing and dispatch remain in the explicit execution trust boundary;
+there is no serialized Isabelle parser theorem or Cycle YES checker API.
+Fresh strict replay preserves all 200 protected NO roots with unchanged CeTA
+and guidance. The earlier six-category replay is separate evidence.

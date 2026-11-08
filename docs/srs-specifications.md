@@ -79,4 +79,6 @@ parameterized Standard bridge status above; Relative and Cycle remain separate.
 The [Relative concrete review](srs-relative-trust-boundary.md) now supplies
 integrated and serialized YES/NO, strict partition binding and certified replay.
 The weak-rule variable condition follows from string shape; no extra input
-guard remains. Cycle is still a separate pending review.
+guard remains. The [Cycle review](srs-cycle-trust-boundary.md) now supplies strict native NO binding,
+alphabet projection, oracle/admission audits and a 200-root protected replay.
+Its NO-only coverage and unverified serialized parsing remain explicit.

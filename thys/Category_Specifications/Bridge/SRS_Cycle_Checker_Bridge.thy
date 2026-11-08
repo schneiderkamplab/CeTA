@@ -14,9 +14,13 @@ corollary srs_cycle_morphism_checker_NO:
   "check_cycle_morphism_direction R pivot A F T B mirrored \<Longrightarrow> \<not> srs_cycle_terminates (set R)"
   using check_cycle_morphism_direction_sound by (simp add: srs_cycle_terminates_iff)
 ML \<open>
-  val _ = if Thm_Deps.has_skip_proof @{thms cycle_string_step_iff
-    srs_cycle_terminates_iff srs_cycle_transport_checker_NO
+  val results = @{thms cycle_string_step_iff srs_cycle_terminates_iff
+    srs_cycle_nontermination_over_alphabet srs_cycle_transport_checker_NO
     srs_cycle_embedding_checker_NO srs_cycle_morphism_checker_NO}
+  val _ = if Thm_Deps.has_skip_proof results
     then error "SRS Cycle: admitted proof in dependencies" else ()
+  val names = Thm_Deps.all_oracles results
+    |> map (fn ((name, _), _) => name) |> distinct (op =)
+  val _ = writeln ("SRS Cycle oracle dependencies: " ^ commas names)
 \<close>
 end
