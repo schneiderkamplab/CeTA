@@ -1,4 +1,4 @@
 session Category_Context_Sensitive_Integrated = Relative_ADP_Ceta_Dev +
   options [document = false, quick_and_dirty = false]
   sessions Category_Specification_Bridges
-  theories TRS_Context_Sensitive_Integrated
+  theories CSR_Signature_Extension CSR_Global_Checker TRS_Context_Sensitive_Integrated
