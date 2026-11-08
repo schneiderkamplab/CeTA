@@ -24,8 +24,8 @@ Human review is pending; no entry below records user approval.
 | 7 | [SRS Cycle](srs-specifications.md) | Equivalence; three NO checks | Concrete NO checks and strict original-input binding reviewed; alphabet projection proved, no unchecked semantic guard or oracle dependencies. NO-only coverage; no YES API. See [review](srs-cycle-trust-boundary.md). |
 | 8 | [Higher-order rewriting](higher-order-trust-boundary.md) | Typed equivalence; sixteen concrete YES and four NO checks | No unchecked semantic or checker-module premises. Typed meta-substitution in union with beta; finite declared-sort equivalence proved, strict original-input and answer binding. NO states checked category validity; native parsing and executable trust remain. |
 | 9 | [TRS Outermost](trs-outermost-trust-boundary.md) | Ranked equivalence; concrete and serialized YES/NO | No unchecked module or signature-extension premises. YES covers all concrete integrated proof families. NO accepts direct loops with checked source-signature witness closure; other NO families and variable-left-side loop certificates remain outside coverage. |
-| 10a | [TRS Conditional: operational](trs-conditional-specifications.md) | Separate proof-attempt specification; concrete/serialized YES compiled | Reuses shared first-order terms. Ranked reflection, canonical NO, strict binding and replay remain open; not a completed category review. |
-| 10b | [TRS Conditional: ordinary](trs-conditional-specifications.md) | Separate completed-rewrite specification; concrete/serialized YES compiled | Operational termination implies ordinary termination, with a proved counterexample to the converse. Ranked reflection, canonical NO, strict binding and replay remain open. |
+| 10a | [TRS Conditional: operational](trs-conditional-specifications.md) | Ranked equivalence; concrete/serialized YES; native NO | Shared terms; no unchecked semantic/module premises. Quasi-reductive YES, rewrite-loop NO and call-cycle NO with checked signature guards. Call loops with nonempty substitutions are outside coverage. 122/122 retained. |
+| 10b | [TRS Conditional: ordinary](trs-conditional-specifications.md) | Ranked equivalence; concrete/serialized YES; native NO | Shared terms; no unchecked semantic/module premises. Ordinary erasure YES is separate from operational YES; NO uses checked ranked rewrite loops, including argument descent. 117/117 retained. |
 | 11 | TRS Equational | Not implemented | Category semantics and bridge obligations pending. |
 
 The compiled inventory is in [Spec/ROOT](../thys/Category_Specifications/Spec/ROOT)
@@ -207,3 +207,15 @@ checks source declarations, rules, explicit strategy, decision and NO witness
 symbols/arities. Fresh replay retains 207/207 (27 YES, 180 NO) with unchanged
 CeTA and oracle. Other NO proof families remain a coverage limit; native parsing,
 execution and inherited oracle mechanisms remain trusted. Next: TRS Conditional.
+
+
+## Conditional ordinary and operational review
+
+Both rows now have exact ranked preservation/reflection, concrete YES/NO
+connections, strict original-input binding and fresh replay. The
+[Conditional review](trs-conditional-specifications.md) states each theorem and
+finite guard. No failure-of-quasi-decreasingness assumption stands in for an
+infinite canonical evaluation. Call cycles are checked directly; nonempty
+substitution call loops remain outside the bound interface. The shared term
+language is reused throughout. Native parsing/execution and inherited Isabelle
+oracle mechanisms remain trusted. Next: TRS Equational.

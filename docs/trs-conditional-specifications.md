@@ -76,32 +76,109 @@ of unconditional rewriting.
 Build all three sessions with `make isabelle-conditional-integrated`.
 The specifications and examples compile independently in the lightweight
 `Category_Specifications` session. No human approval is implied by a build.
-The implementation is **not yet a completed Conditional category review**.
+The separate Conditional review now connects both properties to concrete YES
+and NO checking. Human approval of the mathematical specification remains
+separate from the machine-checked proof and replay gates.
 
-The [separate bridge](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Embedding.thy) reuses the existing term, substitution and context
-translations. Its additional translation preserves the order of conditions.
-`conditional_success_embedding` transfers successful finite derivations to
-IsaFoR conditional rewriting. `conditional_ordinary_termination_transfer`
-transfers ordinary termination in the sound direction. These are embeddings,
-not a claim of full ranked equivalence.
+## Exact representation and checker connections
 
-The [operational transfer](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy) connects a quasi-decreasing order to the actual
-proof-attempt definition using a lexicographic order on a goal's source term
-and its phase. The [concrete YES bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy) distinguishes common-checker ordinary
-termination, quasi-reductive operational termination, and ordinary-only
-condition erasure. Certificate assumptions are disabled and concrete module
-contracts are instantiated. Build and oracle evidence is recorded in the
-[receipt](data/conditional-specifications-20261108.json).
+[Ranked equivalence](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Ranked.thy)
+uses the existing term, substitution and context bijections. Conditional-rule
+translation preserves condition order. `conditional_inference_iff`,
+`conditional_success_iff`, `conditional_step_iff_ranked` and
+`conditional_evaluation_iff_ranked` prove preservation and reflection.
+The two exact termination statements are:
 
-Outstanding work includes reflection and exact ranked equivalences, both
-canonical NO connections, strict source/signature/property binding for both
-serialized formats, all native parser and dispatch checks, and fresh protected
-replay. In particular, an ordinary-only erasure proof must not be accepted for
-operational termination, and a condition-call loop must not establish ordinary
-nontermination. The existing native NO theorem's conclusion about
-quasi-decreasingness is not silently identified with the new operational spec.
+```
+trs_conditional_terminates A R =
+  SN (ranked_cstep (to_signature A) (to_conditional_rules R))
 
-Native ARI and certificate parsing, executable provenance, code generation,
-compiler/runtime and inherited Isabelle mechanisms remain outside the new
-specifications. No generated checker, certificate format, production binary
-or oracle changes are part of this specification milestone.
+trs_conditional_operationally_terminates A R =
+  SN (ranked_conditional_evaluation (to_signature A) (to_conditional_rules R))
+```
+
+Negating either equality gives the corresponding nontermination equivalence.
+The native ranked relations enforce the signature at every inference and
+substitution. They are not silently replaced by unrestricted library `cstep`.
+The [embedding](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Embedding.thy)
+proves that unrestricted ordinary termination suffices for the ranked ordinary
+property. The [operational transfer](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy)
+proves that a quasi-decreasing order excludes infinite canonical evaluation.
+Neither soundness argument needs an unproved signature-extension theorem.
+
+The [YES bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy)
+provides concrete and serialized ordinary and operational corollaries. Ordinary
+checking uses the existing integrated CTRS termination result, or the separate
+condition-erasure checker. Operational YES uses the actual quasi-reductive
+unraveling proof. Certificate assumptions are disabled; the concrete checker
+module contracts are proved. Erasure alone is rejected for operational YES.
+
+The [ordinary NO bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_NO_Bridge.thy)
+proves `conditional_checked_ordinary_NO`. Its premises are accepted native
+rewrite-loop checking, exact rules, finite signature guards, at least one
+rewrite, and signature-correct loop substitution images. Argument steps
+accumulate a context. Checked nested condition proofs are reflected into ranked
+successful derivations; the resulting contextual substitution loop supplies an
+infinite ranked rewrite sequence.
+
+The [operational NO bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Operational_NO.thy)
+provides `conditional_checked_rewrite_loop_operational_NO` and
+`conditional_checked_operational_call_cycle_NO`. The first uses the proved
+implication from operational to ordinary termination. The second translates a
+checked call cycle into a closed positive evaluation path. Earlier conditions
+must have checked successful proofs; the selected condition need not succeed.
+Argument contexts are accumulated and each call resets the evaluation target.
+The binder rotates a call cycle to end in a call and checks the rotated witness
+again. `evaluation_environment_last_call` proves closure by construction.
+This does not identify failure of quasi-decreasingness with operational
+nontermination by assumption, and does not require a determinism hypothesis
+for the direct cycle argument.
+
+## Strict input boundary and coverage
+
+[Ferrum's binding and replay review](../../ferrum/docs/conditional-certification-boundary.md)
+describes the two explicit CLI properties. Both use the TPDB Conditional corpus;
+ordinary versus operational is never inferred from its common source path.
+The ARI reader validates every declaration, arity, format and condition. It
+preserves unused declarations and permits empty systems and variable left sides.
+The binder checks original rules, condition order, shared variables, answer and
+proof family. Native rule indices, positions, substitution images and recursively
+nested condition witnesses must respect the declared signature. These finite
+checks discharge the NO theorem guards; they are not unproved semantic contracts.
+
+The reviewed NO families are rewrite-only cycles and substitution loops for
+both properties, plus condition-call cycles for operational termination.
+Call-containing loops with a nonempty substitution are rejected at this boundary.
+Such a limitation produces no accepted answer; it is a coverage restriction.
+It excludes none of the retained Conditional witnesses. The checker may impose
+additional checked applicability restrictions on a particular proof family,
+without adding them to the canonical category definition.
+
+Fresh strict replay and final packaging retain **122/122 operational roots
+(84 YES, 38 NO)** and **117/117 ordinary roots (92 YES, 25 NO)**. Both use the
+same immutable unified CeTA executable. Six additive guidance keys repair four
+roots with unused declarations and two innermost child-state serializations.
+The failed replay remains preserved. This is a focused two-property gate, not a
+new combined replay of all earlier categories or a completeness claim.
+
+## Remaining trust boundary
+
+There are no open semantic-equivalence, signature-extension or checker-module
+premises in these reviewed YES/NO paths. The input-domain conventions remain
+finite signature-correct rules and an infinite variable supply. Finite witness
+checks and proof-family coverage restrictions are explicit above.
+
+Trust still includes Isabelle/HOL and its kernel, the inherited
+`Regexp_Method.check_eqv` and `Types_To_Sets.cancel_type_definition` mechanisms
+in the existing YES dependency chain, code generation, the Haskell compiler and
+runtime, native ARI/CPF/Haskell parsing, the Rust correspondence/normalization
+code, and executable/artifact identity. Native parsing and dispatch are tested,
+not proved correct in HOL. Checking the human specification establishes the
+meaning of the soundness conclusions; it does not make the prover or checker
+complete. The ranked/NO theorem audit reports no oracle dependencies. No new axiom or admitted proof is introduced. Generated checking
+logic, certificate formats and the unified executable remain unchanged.
+
+Build, oracle-dependency and source-hash evidence is recorded in the
+[completed review receipt](data/conditional-review-20261108.json); the earlier
+[specification milestone](data/conditional-specifications-20261108.json) remains
+historical evidence. Next in the review order is TRS Equational.

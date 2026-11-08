@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-08",
+  "formal_commit": "6dc1eb84b801aec071680fcb05c7190bb94b8dc1",
+  "runtime_commit": "75d47300d6ba756660d84e8bcdc3d817f765f984",
+  "formal": {
+    "sessions": [
+      "Category_Specifications",
+      "Category_Conditional_Bridge",
+      "Category_Conditional_Integrated"
+    ],
+    "passed": true,
+    "admissions": false,
+    "new_axioms": false,
+    "unchecked_semantic_or_module_hypotheses": [],
+    "ranked_NO_oracle_dependencies": [],
+    "YES_oracle_dependencies": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ]
+  },
+  "sources": {
+    "thys/Category_Specifications/Conditional_Bridge/ROOT": "320e019eedf3bcbc4d1ad01ab2721680f8aab7a59bda1c758cd6df491bd54f9d",
+    "thys/Category_Specifications/Conditional_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Closure.thy": "890fb2bec351e7509a7840c46b17915913952f321a6f51f25d8f8a7e0347aade",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Embedding.thy": "5a1d6c7b571ae1308507aac713a51e58fed6b40d07bef4e8e1ce0d8c942c5052",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Loops.thy": "058cf61458e1596a315de805df4d6dcc029063ea6d8a0ef7cc3ef099c814ea59",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy": "7abe3e625b88863af9d41a15a776db538d5fea7977df9d1ef14c7abb95690fa0",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Ranked.thy": "6823b30cbc198ed31dc086574901afc786f2c754228a10e47bd670e4c451a47b",
+    "thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Witnesses.thy": "71a3e9e2b26b358b50d114aca3b49dc6180169182585b1f7eef9dc48d158dbd8",
+    "thys/Category_Specifications/Conditional_Integrated/ROOT": "c4884f7b79d7e76ebaae2e690a09d8c217178a661de833d0a6632a1acbe49394",
+    "thys/Category_Specifications/Conditional_Integrated/ROOTS": "9b556cc533e4df7c6d321befa2b9ea369a93911f062bc9d27e7ddaab59ee2506",
+    "thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy": "1f7a318011352cad89ef55a0176e8adfe6be6773558ca4f90bc9f8978fce595a",
+    "thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_NO_Bridge.thy": "2e3ea663ff2ca5ccbfec8d613952fc9ceddd039f46e3c103083a931358a21f1f",
+    "thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Operational_NO.thy": "36a7ac841a37a1eaef0a48c370b14c40a5fd1c33716125babad497115e3491f2",
+    "thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy": "e0bf2fdbda33086a6f44b1ed2447a4e85eb16728b2b4b2cbfcfd27369663d97c",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Examples.thy": "ea5eec569204a8aa37f708aeaf1f567a618a5be6117495e966839de114b5e545",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Operational_Spec.thy": "e2428a9cb5e151cde880303a68d1b7dfa7cf8930070259ac0543ee52426e4735",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Ordinary_Spec.thy": "00b87ff00eafe78d054e4f54f182bc1195443d8e3854f7c125a4a3271322ee92",
+    "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy": "8fa335eeda6ba3c4e048c20c9a312bbfcdc026d1726e1864bc0e33322e8bce78",
+    "thys/Category_Specifications/Spec/TRS_Spec_Base.thy": "d9070c95c3cd51783366f82e563bb33ef224246c85297efe325f09d623b4855c",
+    "thys/Conditional_Checker/Conditional_Nontermination.thy": "ad85f1ad6ba1e84a50686be551f04db71bccbdf8c50f18b4a666b1b8142fea85",
+    "thys/Conditional_Rewriting/Conditional_Rewriting_Impl.thy": "4d310f26fe96e6bd54db7ae237797e36de04104312d9d6065b1838040989fd19"
+  },
+  "evidence": {
+    "conditional-final-build.log.gz": "7a75c36f8885ee479ed241dd34086dc0abd2874d65e4dd95be61f0c7d3e6e0e8",
+    "conditional-final-audit.log.gz": "3b9f2e2dcb9d8c530a7993713cb236c06425a436f4e2bb10d25559d1ff954266",
+    "conditional-final-audit.py.gz": "f3bd2c381f79a39d7cfb8e7e5fe2c5c878376d3789d722f6a19b186356033e45",
+    "conditional-okf.log.gz": "8c5ba613a24d8d064a59b90916af787f56feb4e1427e30ba0d497848df741824"
+  },
+  "replay": {
+    "status": "focused Conditional ordinary and operational review passed",
+    "date": "2026-11-08",
+    "oracle_sha256": "d20a2834031e91be2acf354b4e986d4c6c76975c3edbdeb2962203ca6948f988",
+    "base_oracle_sha256": "1610d2312ef7c7e8ef694e36a1e0181ccd423b7e4989e92b3d071c4c7cbfa12c",
+    "states": 40065,
+    "new_states": 6,
+    "binary_sha256": "fc6d6a5a4ba1e34134df6e3c11d4052baf3a27b50bb51b24955cadb9da0c49b1",
+    "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+    "runtime_commit": "75d47300d6ba756660d84e8bcdc3d817f765f984",
+    "formal_commit": "6dc1eb84b801aec071680fcb05c7190bb94b8dc1",
+    "checker_executable_changed": false,
+    "generated_checker_changed": false,
+    "production_catalog_updated": false,
+    "roots": 239,
+    "certified": 239,
+    "unresolved": 0,
+    "categories": {
+      "TRS_Conditional": {
+        "yes": 84,
+        "no": 38
+      },
+      "TRS_Conditional_Termination": {
+        "yes": 92,
+        "no": 25
+      }
+    },
+    "artifact_root": "target/conditional-reviewed-2",
+    "scope": "Focused two-property replay; no combined earlier-category or independent two-checker release claim"
+  },
+  "checked_NO_premises": [
+    "exact original rules",
+    "recursive signature-correct finite cstep proofs and substitutions",
+    "valid native rule, condition, argument and position references",
+    "rewrite progress for ordinary loops",
+    "rotated/rechecked call cycle and signature-correct selected target for operational calls"
+  ],
+  "coverage_exclusion": "Call-containing loops with a nonempty substitution are rejected; no retained witness excluded",
+  "trust_boundary": "See trs-conditional-specifications.md",
+  "documentation_conformance": true,
+  "runtime_evidence_commit": "afd2fc8356ac249bba49011488130444aff7abb2"
+}
