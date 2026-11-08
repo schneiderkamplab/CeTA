@@ -17,8 +17,8 @@ Human review is pending; no entry below records user approval.
 | --- | --- | --- | --- |
 | 1 | [TRS Standard](trs-standard-specification.md) | Equivalence; YES and NO | Finite signature-correct rules, infinite variables; correct checker modules and exact Standard configuration. First review below. |
 | 2 | [TRS Innermost](trs-innermost-specification.md) | Equivalence; YES and NO | Same problem validity; unrestricted equivalence uses countable symbols and variables. Checker variables are strings. Concrete strict review completed below. |
-| 3 | [TRS Relative](trs-relative-specification.md) | Ranked equivalence; YES; conditional NO | Unrestricted equivalence and NO additionally require a symbol of arity at least two in the signature OR no new RHS variables in any weak rule. Full coverage without that condition is unresolved. Concrete guarded review below. |
-| 4 | [TRS Context-sensitive](trs-context-sensitive-trust-boundary.md) | Concrete and serialized bound YES/NO | No unchecked module contracts. NO covers containing signatures. YES covers the rule signature or the direct CSR proof language on larger declared signatures; the bound interface checks this guard. Full signature extension for other proof families remains open. |
+| 3 | [TRS Relative](trs-relative-specification.md) | Ranked equivalence; YES; checked NO | Unrestricted transfer remains conditional and is false in general. Direct ranked loops now bypass that condition using finite checked witness closure; other NO forms retain the extension guard. No unchecked semantic premise. |
+| 4 | [TRS Context-sensitive](trs-context-sensitive-trust-boundary.md) | Concrete and serialized bound YES/NO | All integrated YES families now have unrestricted soundness; the auxiliary extension conditions are discharged inside checker branches. Both answers cover containing declared signatures with no extra guard or unchecked module premise. |
 | 5 | [SRS Standard](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; per-rule shared-tail encoding and strict original-input binding checked. No extra signature or proof-family guard. See [review](srs-standard-trust-boundary.md). |
 | 6 | [SRS Relative](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; shared-tail encoding in both partitions supplies variable preservation. No extra signature or proof-family guard. See [review](srs-relative-trust-boundary.md). |
 | 7 | [SRS Cycle](srs-specifications.md) | Equivalence; three NO checks | Concrete NO checks and strict original-input binding reviewed; alphabet projection proved, no unchecked semantic guard or oracle dependencies. NO-only coverage; no YES API. See [review](srs-cycle-trust-boundary.md). |
@@ -144,11 +144,11 @@ promotion, full replay, or checker completeness is claimed.
 The [concrete review](trs-relative-trust-boundary.md) confirms that the extension
 condition cannot simply be removed: the library proves a counterexample, also
 reproduced against direct CeTA. YES has no extra restriction. The bound NO path
-checks a declared branching symbol or the weak-rule variable condition and
-rejects unsupported cases. Concrete module contracts are discharged, both
+checks either a declared branching symbol, the weak-rule variable condition,
+or a direct loop with finite ranked witness closure. Concrete module contracts are discharged, both
 partitions are bound to the original input, and certificate assumptions are
-disabled. Full ranked NO coverage remains open; the guarded interface does not
-claim an unconditional unrestricted equivalence. Parsing/comparison, execution,
+disabled. Other unrestricted NO proof forms retain the guard; the interface does not
+claim a false unconditional unrestricted equivalence or checker completeness. Parsing/comparison, execution,
 artifact provenance and inherited Isabelle mechanisms remain trusted.
 
 ## 4. TRS Context-sensitive: declared-signature review
@@ -157,10 +157,10 @@ The [concrete review](trs-context-sensitive-trust-boundary.md) preserves the
 canonical ranked specification and discharges the concrete checker modules.
 ARI declarations and all replacement maps, including unused symbols, are now
 validated and bound to the CPF. NO transfers to the complete declared signature.
-The direct CSR proof language has an instantiated unrestricted YES theorem;
-other YES proof families require a checked equality with the rule signature.
-There is no unchecked signature-extension assumption. That checked restriction
-is still a coverage limit and does not establish a general extension theorem.
+All integrated CSR YES proof families now have unrestricted soundness. The new
+signature-extension theorem's rule conditions follow from the relevant checker
+branches. The signature-equality/proof-family guard has been removed. There is
+no unchecked signature-extension assumption or open unused-declaration obligation.
 Normal builds and admission/oracle audits pass. The inherited trust mechanisms
 and parser/execution boundary are recorded explicitly. No human approval is
 recorded by this implementation update.

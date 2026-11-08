@@ -87,7 +87,11 @@ The installed executable and full fifteen-category release remain separate.
 
 The [Context-sensitive concrete review](trs-context-sensitive-trust-boundary.md)
 adds session `Category_Context_Sensitive_Integrated`, complete declared-map
-binding, and explicit checked YES coverage for signatures larger than the rules.
+binding, and now global soundness for every integrated YES family. Unused
+declarations need no extra proof-family guard. Relative direct ranked loops also
+now bypass signature extension through finite witness checks. The
+[follow-up receipt](data/coverage-closure-20261108.json) records both builds and
+223/223 affected-category retention.
 
 The Higher-order sessions build with `make isabelle-higher-order-integrated`.
 See the [review](higher-order-trust-boundary.md) for exact semantics and the

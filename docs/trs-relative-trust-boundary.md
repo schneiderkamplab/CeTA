@@ -36,9 +36,13 @@ instead computes a sufficient condition from the original input:
 - a declared symbol has arity at least two, including unused declarations; or
 - every weak rule's right-side variables occur on its left side.
 
-YES needs neither condition. NO is rejected if neither holds. This can reject
-valid ranked NO certificates as well; failure of the guard proves nothing about
-the answer. Full signature-aware NO certificate coverage remains open.
+YES needs neither condition. When neither holds, the bound interface now accepts
+a direct relative loop whose finite witness terms, substitution images and
+one-hole context all respect the original declared signature. CeTA must still
+check the loop, including an actual strict step. This closes the blanket input
+exclusion for ranked loops without asserting the false extension theorem.
+Other unrestricted NO proof forms still need the sufficient extension condition;
+a rejected certificate is not a YES result or a completeness claim.
 
 ## Concrete theorem statements
 
@@ -53,7 +57,13 @@ Termination (Decision True) certificate`. It concludes `trs_relative_terminates 
 without an extension premise.
 
 `relative_bound_accepts F Rs Ss b certificate` requires concrete checker acceptance
-with certificate assumptions disabled and also requires the guard when `b=False`.
+with certificate assumptions disabled and, for NO, either the extension guard
+or `relative_ranked_certificate F certificate`. The latter identifies a direct
+loop and checks `ranked_relative_loop_guard`. The finite witness requirements
+imply closure of every iterated context/substitution instance, proved in
+[`TRS_Relative_Ranked_Loops`](../thys/Category_Specifications/Relative_Integrated/TRS_Relative_Ranked_Loops.thy).
+`ranked_check_rel_loop_sound` proves ranked relative nontermination directly;
+`relative_integrated_ranked_loop` connects it to concrete checker acceptance.
 `trs_relative_bound_decision` assumes `relative_problem A R S`, exact representation
 of signature and both rule lists, and this bound acceptance. Its conclusion is
 `b` iff `trs_relative_terminates A R S`. `trs_relative_bound_NO` specializes NO.
@@ -78,8 +88,8 @@ modulo per-rule variable renaming and injective quoted-symbol spelling aliases,
 and requires full rewriting, the termination property and the requested decision.
 No strategy or custom Q restriction is accepted. An omitted empty weak partition
 is equivalent to an explicit empty partition. Variable left sides and extra
-right-side variables are valid input; only the NO acceptance guard examines
-weak-rule variables. Empty rule collections are supported.
+right-side variables are valid input; the extension branch of NO acceptance examines
+weak-rule variables, while direct ranked loops need no variable restriction. Empty rule collections are supported.
 
 TRS Relative now shares the strict ranked declaration validator with Standard
 and Innermost. Cost classification accepts arbitrary natural numerals without
@@ -89,15 +99,15 @@ other dispatch and uses the bound gate. Explicit `--rewrite-strategy full` agree
 with Relative; innermost/outermost choices are rejected. Category directory
 conflicts and unsupported declarations are rejected rather than ignored.
 
-The independent replay audit uses the same mathematical guard with its own
-parser, before invoking CeTA or crediting a result. It retains
+The independent replay audit uses both the extension guard and finite ranked-loop
+checks with its own parser, before invoking CeTA or crediting a result. It retains
 `relative-input-binding.json`. Both paths bind source, CPF and unified-checker
 hashes and reject observed changes during checking. Direct CeTA and `cert check`
 remain certificate-only checks and do not establish ranked original-input binding.
 Ordinary ARI and plain CPF root terms are supported; legacy text-TRS and indexed
 or marked roots are outside this gate.
 
-## Verification and remaining trust
+## Original review verification and remaining trust
 
 Build with `make isabelle-trs-relative-integrated ISABELLE=/path/to/isabelle
 AFP="$AFP"`. The normal `Category_Relative_Integrated` build passed in 48 seconds
@@ -135,3 +145,33 @@ The exact inherited oracle audit is recorded in the receipt.
 CeTA proof sources changed in `CeTA/main`; installed production binaries did not.
 A development Ferrum build exercises the revised paths. No full-frontier replay,
 production promotion, checker completeness, or full ranked NO coverage is claimed.
+
+## 2026-11-08 coverage follow-up
+
+[Verification receipt](data/coverage-closure-20261108.json) records both successful
+Isabelle session builds and the final strict replay: **Relative 113/113**
+(97 YES, 16 NO) and **CSR 110/110** (105 YES, five NO). Original-input audits,
+repeated unchanged-unified-CeTA checks and complete guidance authorization pass.
+No root is lost. The final binary passes five Rust binding tests, 36 independent
+Python audit tests and 77 native CLI cases, including unused declarations across
+all six CSR YES proof families present in the retained corpus. The 77 cases
+include 25 Outermost regressions for the shared witness scanner.
+
+CeTA formal commits are `437e04f` (CSR) and `e3146a7` (Relative); Ferrum runtime
+commit is `b91d7aec`. The final O2 Ferrum hash is
+`1fdc35718db4996d75c2ddda022e3fda3efd10883398db4d2ad3d9b7d80dcd37`.
+The unified CeTA remains
+`5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85`;
+the unchanged Equational-reviewed oracle remains
+`42ccbba8daea6a3cc152c7a76cd5bfcd08c1193de8df5493376037cf608591e9`.
+Artifacts are in Ferrum `target/coverage-closure-reviewed-2`; the first passing
+replay and intermediate failed proof/test attempts are preserved. Baseline
+solver settings, category workers and root/atom ceilings are retained.
+
+CSR has no remaining unused-declaration guard. Relative direct ranked loops
+need no extension condition; other unrestricted NO families still do, because
+unconditional transfer is false. No unchecked semantic or module premise is
+introduced. Native parsing/witness comparison, inherited Isabelle mechanisms,
+code generation, compilers, runtime and artifact provenance remain trusted.
+This is a focused retention gate, not checker completeness, production promotion
+or the independent two-checker release.

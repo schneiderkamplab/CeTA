@@ -65,6 +65,8 @@ Normal package integration also passed; see the
 
 The [ranked input and concrete checker review](trs-relative-trust-boundary.md)
 retains the conditional equivalence above and adds guarded bound acceptance.
-YES requires no extension condition; NO must pass a runtime signature-extension
-guard. No extra variable restriction is imposed on category validity. Full ranked
-NO coverage is still open, while accepted decisions use the canonical property.
+YES requires no extension condition. NO now passes either the runtime extension
+guard or a direct ranked-loop check, proved without signature extension.
+No extra variable restriction is imposed on category validity. Other unrestricted
+NO families still require the sufficient extension condition. Accepted decisions
+use the canonical property; this does not claim certificate completeness.
