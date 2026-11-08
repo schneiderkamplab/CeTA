@@ -146,3 +146,7 @@ isabelle-outermost-integrated:
 .PHONY: isabelle-conditional-integrated
 isabelle-conditional-integrated:
 	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/Category_Specifications/Conditional_Integrated Category_Specifications Category_Conditional_Bridge Category_Conditional_Integrated
+
+.PHONY: isabelle-equational-integrated
+isabelle-equational-integrated:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/Category_Specifications/Equational_Integrated Category_Specifications Category_Equational_Bridge Category_Equational_Integrated

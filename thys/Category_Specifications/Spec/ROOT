@@ -25,3 +25,5 @@ session Category_Specifications = HOL +
     TRS_Conditional_Ordinary_Spec
     TRS_Conditional_Operational_Spec
     TRS_Conditional_Examples
+    TRS_Equational_Spec
+    TRS_Equational_Examples
