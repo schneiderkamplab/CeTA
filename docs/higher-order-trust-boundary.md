@@ -11,7 +11,8 @@ in the [TermCOMP reference](https://github.com/TermCOMP/termcomp-reference/blob/
 This is not rewriting with arbitrary matching modulo beta or eta.
 
 Read [the shared typed definitions](../thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy),
-[the category property](../thys/Category_Specifications/Spec/Higher_Order_Spec.thy),
+[the ambient category property](../thys/Category_Specifications/Spec/Higher_Order_Spec.thy),
+[the declared-sort property](../thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy),
 [examples](../thys/Category_Specifications/Spec/Higher_Order_Examples.thy),
 [the equivalence](../thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Equivalence.thy),
 then [the concrete checker bridge](../thys/Category_Specifications/Higher_Order_Integrated/Higher_Order_Checker_Bridge.thy).
@@ -68,6 +69,37 @@ results, including the actual processor implementations and assumption-free
 checking. There are no open checker-module premises in these corollaries.
 This establishes soundness, not completeness of proof search or certificates.
 
+## Exact declared-sort correspondence
+
+For an ARI source declaring `N` sorts, the final property is
+`higher_order_terminates_over_sorts N S R`. Its terms, variable environments
+and result types use only sorts below `N`. The lemma
+`higher_order_declared_nontermination_iff` exposes the infinite sequence within
+that universe. `higher_order_declared_problem` states the finite typed category
+validity conditions, including declared sorts in every rule and constant type.
+With no sorts there are no typed rules.
+
+The [sort extension proof](../thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Sort_Extension.thy)
+projects every undeclared sort to a declared sort, preserving typing,
+substitution and every rewrite step. The integrated theorem
+`higher_order_declared_sorts_iff` proves, for a valid declared problem:
+
+```
+higher_order_terminates_over_sorts N S R <-> higher_order_terminates S R
+```
+
+It also handles zero sorts, using the empty-rule termination theorem. Thus no
+unproved sort-extension premise remains. Every checker corollary has a
+`_declared_sorts` version. YES needs only concrete checker acceptance; NO also
+states category validity for the same declared source. These are input validity
+conditions checked by the source parser, not open checker contracts. The outer
+parser-to-specification correspondence remains tested software.
+
+The bound ARI interface requires at least one declared sort and rejects a file
+with none; this is a parser coverage restriction, not a termination assumption.
+The mathematics covers the empty-sort case as well. A declared sort without
+constants is accepted, and open terms remain in scope.
+
 ## Original input and remaining trust boundary
 
 Ferrum's `cert check-higher-order` parses the original ARI file, compares the
@@ -91,7 +123,7 @@ additional evidence and does not prove parser correctness or search completeness
 
 The three named sessions pass normal Isabelle builds with `quick_and_dirty`
 disabled. The bridge explicitly audits all equivalences and all twenty concrete
-corollaries for skipped proofs. The dependency audit reports exactly
+corollaries and their declared-sort counterparts for skipped proofs. The dependency audit reports exactly
 `Regexp_Method.check_eqv` and `Types_To_Sets.cancel_type_definition`, inherited
 through the existing concrete checker proofs. No new axiom or oracle was added.
 These mechanisms are part of the proof trust boundary; “no open semantic
@@ -103,3 +135,8 @@ The retained official reference is revision
 
 The [formal verification receipt](data/higher-order-formal-review-20261108.json)
 pins the reviewed sources, build logs and dependency audit.
+
+The [declared-sort verification receipt](data/higher-order-sorts-review-20261108.json)
+adds the finite-sort equivalence, legal-substitution projection, all declared-sort
+corollaries and their final build/oracle audit. The fresh executable replay is
+recorded in the [Ferrum review](../../ferrum/docs/higher-order-certification-boundary.md).

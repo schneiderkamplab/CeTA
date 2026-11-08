@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-08",
+  "category": "Higher_Order_Rewriting",
+  "passed": true,
+  "canonical_declared_property": "higher_order_terminates_over_sorts N S R",
+  "equivalence": "higher_order_declared_sorts_iff",
+  "instance_projection": "hs_declared_instance",
+  "input_validity": "higher_order_declared_problem N S R; checked by the original source parser, whose implementation remains unverified",
+  "unchecked_semantic_or_module_premises": [],
+  "admissions": false,
+  "new_axioms": false,
+  "oracle_dependencies": [
+    "Regexp_Method.check_eqv",
+    "Types_To_Sets.cancel_type_definition"
+  ],
+  "yes_families": 16,
+  "no_families": 4,
+  "empty_sort_case": "proved; ARI interface requires at least one declared sort",
+  "sources": {
+    "thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Sort_Extension.thy": "7002af68b54a9f532eac9aa2bf7a41901d09b1da0febe16889562bb607f7dadd",
+    "thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Equivalence.thy": "43222feccc42c914ae614de6ca4fc7ab9f3cf2a3653dfd02b1d43d010a1cae96",
+    "thys/Category_Specifications/Higher_Order_Bridge/ROOTS": "8340b02b0ab79adcbd12c20cef137f6cdd7835dc3a36ade6fc170f8a5deefc0e",
+    "thys/Category_Specifications/Higher_Order_Bridge/ROOT": "d966117d2314fcc2280796a4e037c08b34d64cf9a6db14f360360e8181cfd931",
+    "thys/Category_Specifications/Higher_Order_Integrated/Higher_Order_Checker_Bridge.thy": "e7e4e64e66c9ae0df22273ba77412d6264211ac83e1ad5ace36d3a6fcd9b40e3",
+    "thys/Category_Specifications/Higher_Order_Integrated/ROOT": "e4696fbbab41c77d8ebfd85a286a7c7ceda422d652106b7e8b392d2b5cfff95d",
+    "thys/Category_Specifications/Higher_Order_Integrated/ROOTS": "101e5f3fd931a6c7260a14023447a76b7f525c9c2bcecf98ed578ba866d086b1",
+    "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy": "f0db477c13b4e79d25454478c64567ec805b50813a5392014492b8ce7f4e4d2f",
+    "thys/Category_Specifications/Spec/ROOT": "a4a4f15b1bf54c7a2de64c5518945e0c24031a0ab1b6e254bebd3ee62907d432"
+  },
+  "logs": {
+    "docs/data/higher-order-sorts-3.log.gz": "ede5d45ce80387c95c5af35a21fe0ef8fce10e7519c48d374ab8d502d1731f93",
+    "docs/data/higher-order-sorts-final.log.gz": "69bb1c877196d1e175646b3cfcad20e09e2d210dcc3fecb74b3f5503f42f51b6",
+    "docs/data/higher-order-sorts-final-2.log.gz": "48c826667225e0291975580001f8c7fd3a68555513e4ba97eae7b2c650bc8db3",
+    "docs/data/higher-order-console-sorts-final-audit-2.log.gz": "81b6a61d07fae6089b9b19418bce13dc60d92c00481e839098f6596943a54ab0"
+  }
+}
