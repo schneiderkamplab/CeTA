@@ -1,0 +1,3 @@
+session Category_Outermost_Bridge = Category_Specification_Bridges +
+  options [document = false, quick_and_dirty = false, timeout = 180]
+  theories TRS_Outermost_Equivalence TRS_Outermost_Loop_Bridge

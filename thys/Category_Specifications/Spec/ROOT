@@ -18,5 +18,7 @@ session Category_Specifications = HOL +
     TRS_Spec_Base
     TRS_Standard_Spec
     TRS_Standard_Examples
+    TRS_Outermost_Spec
+    TRS_Outermost_Examples
     TRS_Innermost_Spec
     TRS_Innermost_Examples
