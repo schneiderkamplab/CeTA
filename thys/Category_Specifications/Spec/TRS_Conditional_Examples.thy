@@ -81,4 +81,85 @@ lemma unary_conditional_loop:
 lemma arity_mismatch_not_a_conditional_step:
   "\<not> conditional_step unary R (SFun () []) t"
   using conditional_step_correct[of unary R "SFun () []" t] by (auto simp: unary_def)
+
+text \<open>A genuine condition can succeed without taking a step. The rewrite
+then occurs below the root with a nonground substitution, over the shared unary
+signature with no constants.\<close>
+abbreviation guarded_reduction :: "(unit,nat) conditional_rule set" where
+  "guarded_reduction \<equiv> {((SFun () [SVar 0],SVar 0),[(SVar 0,SVar 0)])}"
+lemma conditional_below_root_nonground:
+  "conditional_step unary guarded_reduction
+    (SFun () [SFun () [SVar 7]]) (SFun () [SVar 7])"
+proof -
+  have success: "conditional_success unary guarded_reduction (CReach (SVar 7) (SVar 7))"
+    by (rule conditional_success.derive[where gs="[]"];
+      (rule conditional_inference.reflexive; simp | simp))
+  have inf: "conditional_inference unary guarded_reduction
+    (CRewrite (SFun () [SFun () [SVar 7]]) (SFun () [SVar 7])) [CReach (SVar 7) (SVar 7)]"
+    using conditional_inference.rule[of "SFun () [SVar 0]" "SVar 0"
+      "[(SVar 0,SVar 0)]" guarded_reduction unary "SMore () [] SHole []" "\<lambda>_. SVar 7"]
+    by (simp add: unary_def correct_substitution_def)
+  show ?thesis unfolding conditional_step_def
+    by (rule conditional_success.derive[OF inf]) (simp add: success)
+qed
+lemma conditional_step_implies_erased_step:
+  assumes "conditional_step A R s t"
+  shows "standard_step A (fst ` R) s t"
+proof -
+  obtain gs where "conditional_inference A R (CRewrite s t) gs"
+    using assms unfolding conditional_step_def by (cases rule: conditional_success.cases) auto
+  then obtain l r cs C sigma where lr: "((l,r),cs) \<in> R"
+    and ctxt: "correct_context A C" and sub: "correct_substitution A sigma"
+    and wf: "arity_correct A s" "arity_correct A t"
+    and eq: "s=standard_plug C (standard_subst sigma l)"
+      "t=standard_plug C (standard_subst sigma r)"
+    by (cases rule: conditional_inference.cases) auto
+  have member: "(l,r) \<in> fst ` R" using imageI[OF lr, of fst] by simp
+  show ?thesis unfolding standard_step_def using member ctxt sub wf eq by blast
+qed
+lemma conditional_reduction_terminates:
+  "trs_conditional_terminates unary guarded_reduction"
+proof -
+  have transfer: "conditional_step unary guarded_reduction s t \<Longrightarrow>
+      standard_step unary {(SFun () [SVar (0::nat)],SVar 0)} s t" for s t
+    using conditional_step_implies_erased_step[of unary guarded_reduction s t] by simp
+  show ?thesis using reduction_terminates[of unary "()"] transfer
+    unfolding trs_conditional_terminates_def trs_standard_terminates_def no_infinite_steps_def by blast
+qed
+
+lemma empty_evaluation_shape:
+  assumes "conditional_evaluation_step A {} g h"
+  shows "\<exists>s t u. g=CReach s t \<and> h=CRewrite s u"
+proof -
+  obtain gs i where inf: "conditional_inference A {} g gs" and idx: "i < length gs"
+    and pre: "\<And>j. j<i \<Longrightarrow> conditional_success A {} (gs!j)" and h: "h=gs!i"
+    using assms by (auto simp: conditional_evaluation_step_def)
+  from inf show ?thesis
+  proof cases
+    case (reflexive s)
+    with idx show ?thesis by simp
+  next
+    case (transitive s u t)
+    have cases: "i=0 \<or> i=1" using idx transitive by auto
+    have "i \<noteq> 1"
+    proof
+      assume "i=1"
+      then have "conditional_success A {} (CRewrite s u)" using pre[of 0] transitive by simp
+      from empty_conditional_success[OF this] show False by simp
+    qed
+    with cases transitive h show ?thesis by auto
+  next
+    case (rule l r cs C sigma)
+    then show ?thesis by simp
+  qed
+qed
+lemma empty_operational_terminates:
+  "trs_conditional_operationally_terminates A ({} :: ('f,'v) conditional_rule set)"
+proof (rule ccontr)
+  assume "\<not> trs_conditional_operationally_terminates A ({} :: ('f,'v) conditional_rule set)"
+  then obtain gs :: "nat \<Rightarrow> ('f,'v) conditional_goal" where steps: "\<And>i. conditional_evaluation_step A {} (gs i) (gs (Suc i))"
+    by (auto simp: trs_conditional_operational_nontermination_iff)
+  from empty_evaluation_shape[OF steps[of 0]] empty_evaluation_shape[OF steps[of 1]]
+  show False by auto
+qed
 end

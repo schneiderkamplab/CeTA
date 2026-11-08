@@ -1,0 +1,5 @@
+session Category_Conditional_Bridge = Category_Specification_Bridges +
+  options [document = false, quick_and_dirty = false, timeout = 180]
+  sessions CTRS
+  theories TRS_Conditional_Embedding
+    TRS_Conditional_Operational_Transfer
