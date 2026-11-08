@@ -3,3 +3,7 @@ session Category_Conditional_Bridge = Category_Specification_Bridges +
   sessions CTRS
   theories TRS_Conditional_Embedding
     TRS_Conditional_Operational_Transfer
+    TRS_Conditional_Ranked
+    TRS_Conditional_Witnesses
+    TRS_Conditional_Closure
+    TRS_Conditional_Loops
