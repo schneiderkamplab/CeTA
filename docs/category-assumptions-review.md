@@ -26,7 +26,7 @@ Human review is pending; no entry below records user approval.
 | 9 | [TRS Outermost](trs-outermost-trust-boundary.md) | Ranked equivalence; concrete and serialized YES/NO | No unchecked module or signature-extension premises. YES covers all concrete integrated proof families. NO accepts direct loops with checked source-signature witness closure; other NO families and variable-left-side loop certificates remain outside coverage. |
 | 10a | [TRS Conditional: operational](trs-conditional-specifications.md) | Ranked equivalence; concrete/serialized YES; native NO | Shared terms; no unchecked semantic/module premises. Quasi-reductive YES, rewrite-loop NO and call-cycle NO with checked signature guards. Call loops with nonempty substitutions are outside coverage. 122/122 retained. |
 | 10b | [TRS Conditional: ordinary](trs-conditional-specifications.md) | Ranked equivalence; concrete/serialized YES; native NO | Shared terms; no unchecked semantic/module premises. Ordinary erasure YES is separate from operational YES; NO uses checked ranked rewrite loops, including argument descent. 117/117 retained. |
-| 11 | TRS Equational | Not implemented | Category semantics and bridge obligations pending. |
+| 11 | [TRS Equational](trs-equational-specification.md) | Ranked equivalence; concrete and serialized YES/NO | Shared terms and separate A/C declarations; no unchecked semantic/module premises. YES uses native modulo termination. Actual NO dispatch uses ordinary nontermination and proved Standard signature transfer. Strict binding and 71/71 retention; no arbitrary modulo-only NO coverage claim. |
 
 The compiled inventory is in [Spec/ROOT](../thys/Category_Specifications/Spec/ROOT)
 and [Bridge/ROOT](../thys/Category_Specifications/Bridge/ROOT).

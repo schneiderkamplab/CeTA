@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-08",
+  "status": "passed",
+  "formal_commit": "985dbe6f32812d8fdf876ede2b1a6da4ea3dcd26",
+  "sessions": [
+    "Category_Specifications",
+    "Category_Equational_Bridge",
+    "Category_Equational_Integrated"
+  ],
+  "quick_and_dirty": false,
+  "admitted_proofs": false,
+  "new_axioms": false,
+  "equivalence_oracles": [],
+  "checker_oracles": [
+    "Regexp_Method.check_eqv",
+    "Types_To_Sets.cancel_type_definition"
+  ],
+  "source_sha256": {
+    "thys/Category_Specifications/Equational_Bridge/ROOT": "031bf607d080f8f04fa29fb1dcfe876051cd97a46ebde6ce03b4ec1d9ac92d01",
+    "thys/Category_Specifications/Equational_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Specifications/Equational_Bridge/TRS_Equational_Equivalence.thy": "76a31ac3d24b0b3238a01da4ddc5600d52a137a40adedc7e558d9d55b7f07ba3",
+    "thys/Category_Specifications/Equational_Integrated/TRS_Equational_Checker_Bridge.thy": "a6fb0e2d4e566fbad19d4bfaabf7d87654080d79c9aadb8b559bbd677b5e6f4d",
+    "thys/Category_Specifications/Equational_Integrated/ROOTS": "a4d0fac0618fa260b48212a1b5072ad7f62c3012cffea68ca558962c623ce17b",
+    "thys/Category_Specifications/Equational_Integrated/ROOT": "9db0862ae5623ad40ac3a391ed8cd675b9d27e4f7ee18c7a6a24101f3dd6ef41",
+    "thys/Category_Specifications/Spec/TRS_Equational_Spec.thy": "4c3cad44c7689fc58747bd491b6d83699cd0ce270da678b2f1613501e89aff5a",
+    "thys/Category_Specifications/Spec/TRS_Equational_Examples.thy": "d8d4a210c4476433077a024a3916f72e0ce514227966bfdf1adbfa5463226a42",
+    "thys/Category_Specifications/Spec/TRS_Spec_Base.thy": "d9070c95c3cd51783366f82e563bb33ef224246c85297efe325f09d623b4855c",
+    "thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy": "e0bf2fdbda33086a6f44b1ed2447a4e85eb16728b2b4b2cbfcfd27369663d97c",
+    "thys/Category_Specifications/Spec/ROOT": "4072cc112a2fe682500777c12f55c60ec53083910ca0cca8a758d674a70e5aef",
+    "thys/Category_Specifications/ROOTS": "967d052a6000d21b479985b9e3331c773c4e1898f0bd143ffa863bf4d8be4d23",
+    "Makefile": "95a4557660d6bd392806d0b8634d490838ef53cdb1bac07f2a50355fde5a3b38"
+  },
+  "evidence": {
+    "equational-formal-build.log.gz": "576e05496250b6472cc4e13ea5bb4a468b9d65d20faffac51a6907c72998059c",
+    "equational-formal-audit.log.gz": "32a917fd1356faa6fe663aa1e7e92b1c0fcc1cf465d0ccf3bb0305790e227a84"
+  },
+  "checker_executable_changed": false,
+  "generated_checker_changed": false,
+  "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+  "command": "USER_HOME=$PWD/target/trs-standard/user ISABELLE_IDENTIFIER=trs_standard AFP=/work/dfm/festschrift/CeTA-consolidated/target/consolidation-build/afp-source/thys ../ferrum/.tools/Isabelle2025-2/bin/isabelle build -j4 -d ../CeTA-consolidated/target/consolidation-build/afp-source/thys -d thys -d thys/Category_Specifications/Equational_Integrated Category_Specifications Category_Equational_Bridge Category_Equational_Integrated",
+  "runtime_evidence": "../../ferrum/docs/data/equational-review-20261108.json",
+  "human_approval": false
+}
