@@ -1,4 +1,0 @@
-session Category_Relative_Integrated = Relative_ADP_Ceta_Dev +
-  options [document = false, quick_and_dirty = false]
-  sessions Category_Specification_Bridges
-  theories TRS_Relative_Ranked_Loops TRS_Relative_Integrated

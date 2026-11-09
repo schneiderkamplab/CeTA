@@ -3,20 +3,23 @@ type: Formal Specification
 title: "Ranked TRS Innermost: specification and semantic correspondence"
 status: draft
 ---
+
+The definition-only package is separate from [derived properties](../thys/Category_Properties/TRS_Innermost_Properties.thy)
+and examples. See the [current package guide](category-specifications.md) for the three-layer layout.
 # Ranked TRS Innermost
 
-Read the [shared base](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy),
-then [TRS_Innermost_Spec](../thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy),
-[examples](../thys/Category_Specifications/Spec/TRS_Innermost_Examples.thy),
-[equivalence](../thys/Category_Specifications/Bridge/TRS_Innermost_Equivalence.thy),
-and [checker bridge](../thys/Category_Specifications/Bridge/TRS_Innermost_Checker_Bridge.thy).
+Read the [shared base](../thys/Category_Specifications/TRS_Spec_Base.thy),
+then [TRS_Innermost_Spec](../thys/Category_Specifications/TRS_Innermost_Spec.thy),
+[examples](../thys/Category_Properties/TRS_Innermost_Examples.thy),
+[equivalence](../thys/Category_Bridges/Bridge/TRS_Innermost_Equivalence.thy),
+and [checker bridge](../thys/Category_Bridges/Bridge/TRS_Innermost_Checker_Bridge.thy).
 
 A step contracts a rule instance in an arbitrary context, provided every proper
 subterm of that instance is irreducible. Irreducibility means no instance of any
 left side occurs anywhere in the term. Other branches may contain redexes;
 there is no left-to-right strategy. Substitutions can be nonground.
 
-`standard_problem A R` requires infinitely many variables, finitely many rules
+`trs_problem A R` requires infinitely many variables, finitely many rules
 and signature-correct rule sides. Variable left sides and extra right variables
 are allowed. Signatures need not contain constants. `trs_innermost_terminates`
 is absence of an infinite sequence of these steps. Input validity is separate.
@@ -37,7 +40,7 @@ Its negation is exposed by `trs_innermost_nontermination_iff`.
   `SN (irstep False (to_rules R))`.
 - `trs_innermost_terminates_iff`: discharges that injection for countable
   symbols and countably infinite variables. The infinite-variable assumption
-  comes from `standard_problem`; no additional rule restrictions are imposed.
+  comes from `trs_problem`; no additional rule restrictions are imposed.
 - `trs_innermost_terminates_iff_on`: under those same assumptions, equivalence
   with `SN_on` on signature-correct initial terms.
 - `trs_innermost_nonterminates_iff`: the negated global equivalence.

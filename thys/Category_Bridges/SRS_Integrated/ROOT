@@ -1,0 +1,4 @@
+session Category_SRS_Integrated = Category_Integrated_Base +
+  options [document = false, quick_and_dirty = false]
+  sessions Category_Specification_Bridges
+  theories SRS_Standard_Integrated SRS_Relative_Integrated

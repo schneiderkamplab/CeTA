@@ -11,12 +11,12 @@ verification details are recorded below.
 
 ## Formal connection
 
-[TRS_Standard_Integrated](../thys/Category_Specifications/Integrated/TRS_Standard_Integrated.thy)
+[TRS_Standard_Integrated](../thys/Category_Bridges/Integrated/TRS_Standard_Integrated.thy)
 composes `certify_integrated_cert_problem_sound` with the canonical ranked
 Standard equivalence. The concrete integrated checker supplies its module
 correctness proofs. The resulting decision theorem has these premises:
 
-- `standard_problem A R`: finite, signature-correct rules and infinitely many variables;
+- `trs_problem A R`: finite, signature-correct rules and infinitely many variables;
 - the parsed rule list represents exactly `to_rules R`;
 - the integrated checker, with assumptions disabled, returns `Certified` for
   `Inn_TRS_input No_Strategy Rs []`, `Termination`, and `Decision b`.
@@ -25,7 +25,7 @@ The conclusion is `b` iff `trs_standard_terminates A R`. Separate YES and NO
 corollaries specialize it. There is no user-supplied processor-correctness
 hypothesis and no additional variable-rule restriction.
 
-[TRS_Standard_Serialized](../thys/Category_Specifications/Integrated/TRS_Standard_Serialized.thy)
+[TRS_Standard_Serialized](../thys/Category_Bridges/Integrated/TRS_Standard_Serialized.thy)
 adds the actual serialized entry point `certify_proof_integrated`, with no
 external input/property/answer overrides. Its explicit parser premise states
 that the production parser produces that exact Standard problem and answer.

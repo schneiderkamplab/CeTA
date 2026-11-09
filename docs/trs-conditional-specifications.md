@@ -3,6 +3,9 @@ type: Formal Specification
 title: "Conditional rewriting: ordinary and operational specifications"
 status: draft
 ---
+
+The definition-only package is separate from [derived properties](../thys/Category_Properties/TRS_Conditional_Operational_Properties.thy)
+and examples. See the [current package guide](category-specifications.md) for the three-layer layout.
 # Two Conditional properties
 
 Ordinary termination excludes infinite sequences of completed conditional
@@ -21,12 +24,12 @@ not treated as an Isabelle theorem or an extra axiom in this package.
 
 ## Reading order and shared objects
 
-1. [TRS_Spec_Base](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy) defines the existing finite terms, ranked signatures, substitutions, one-hole contexts and Standard rewrite relation.
-2. [Rewriting_Sequences_Spec](../thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy) supplies finite sequences and absence of infinite sequences.
-3. [TRS_Conditional_Spec_Base](../thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy) adds conditional rules and ordered inference goals, using those same terms and operations.
-4. [Ordinary specification](../thys/Category_Specifications/Spec/TRS_Conditional_Ordinary_Spec.thy) defines `trs_conditional_terminates`.
-5. [Operational specification](../thys/Category_Specifications/Spec/TRS_Conditional_Operational_Spec.thy) defines `trs_conditional_operationally_terminates`.
-6. [Examples](../thys/Category_Specifications/Spec/TRS_Conditional_Examples.thy) distinguish the properties and relate unconditional rules to Standard rewriting.
+1. [TRS_Spec_Base](../thys/Category_Specifications/TRS_Spec_Base.thy) defines the existing finite terms, ranked signatures, substitutions, one-hole contexts and Standard rewrite relation.
+2. [Rewriting_Sequences_Spec](../thys/Category_Specifications/Rewriting_Sequences_Spec.thy) supplies finite sequences and absence of infinite sequences.
+3. [TRS_Conditional_Spec_Base](../thys/Category_Specifications/TRS_Conditional_Spec_Base.thy) adds conditional rules and ordered inference goals, using those same terms and operations.
+4. [Ordinary specification](../thys/Category_Specifications/TRS_Conditional_Ordinary_Spec.thy) defines `trs_conditional_terminates`.
+5. [Operational specification](../thys/Category_Specifications/TRS_Conditional_Operational_Spec.thy) defines `trs_conditional_operationally_terminates`.
+6. [Examples](../thys/Category_Properties/TRS_Conditional_Examples.thy) distinguish the properties and relate unconditional rules to Standard rewriting.
 
 There is no duplicated first-order term or context datatype. The new
 `conditional_goal` datatype describes questions about the existing terms:
@@ -82,7 +85,7 @@ separate from the machine-checked proof and replay gates.
 
 ## Exact representation and checker connections
 
-[Ranked equivalence](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Ranked.thy)
+[Ranked equivalence](../thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Ranked.thy)
 uses the existing term, substitution and context bijections. Conditional-rule
 translation preserves condition order. `conditional_inference_iff`,
 `conditional_success_iff`, `conditional_step_iff_ranked` and
@@ -100,20 +103,20 @@ trs_conditional_operationally_terminates A R =
 Negating either equality gives the corresponding nontermination equivalence.
 The native ranked relations enforce the signature at every inference and
 substitution. They are not silently replaced by unrestricted library `cstep`.
-The [embedding](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Embedding.thy)
+The [embedding](../thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Embedding.thy)
 proves that unrestricted ordinary termination suffices for the ranked ordinary
-property. The [operational transfer](../thys/Category_Specifications/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy)
+property. The [operational transfer](../thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy)
 proves that a quasi-decreasing order excludes infinite canonical evaluation.
 Neither soundness argument needs an unproved signature-extension theorem.
 
-The [YES bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy)
+The [YES bridge](../thys/Category_Bridges/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy)
 provides concrete and serialized ordinary and operational corollaries. Ordinary
 checking uses the existing integrated CTRS termination result, or the separate
 condition-erasure checker. Operational YES uses the actual quasi-reductive
 unraveling proof. Certificate assumptions are disabled; the concrete checker
 module contracts are proved. Erasure alone is rejected for operational YES.
 
-The [ordinary NO bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_NO_Bridge.thy)
+The [ordinary NO bridge](../thys/Category_Bridges/Conditional_Integrated/TRS_Conditional_NO_Bridge.thy)
 proves `conditional_checked_ordinary_NO`. Its premises are accepted native
 rewrite-loop checking, exact rules, finite signature guards, at least one
 rewrite, and signature-correct loop substitution images. Argument steps
@@ -121,7 +124,7 @@ accumulate a context. Checked nested condition proofs are reflected into ranked
 successful derivations; the resulting contextual substitution loop supplies an
 infinite ranked rewrite sequence.
 
-The [operational NO bridge](../thys/Category_Specifications/Conditional_Integrated/TRS_Conditional_Operational_NO.thy)
+The [operational NO bridge](../thys/Category_Bridges/Conditional_Integrated/TRS_Conditional_Operational_NO.thy)
 provides `conditional_checked_rewrite_loop_operational_NO` and
 `conditional_checked_operational_call_cycle_NO`. The first uses the proved
 implication from operational to ordinary termination. The second translates a
@@ -181,4 +184,5 @@ logic, certificate formats and the unified executable remain unchanged.
 Build, oracle-dependency and source-hash evidence is recorded in the
 [completed review receipt](data/conditional-review-20261108.json); the earlier
 [specification milestone](data/conditional-specifications-20261108.json) remains
-historical evidence. Next in the review order is TRS Equational.
+historical evidence. See the [review register](category-assumptions-review.md)
+for the completed category reviews.

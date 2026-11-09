@@ -1,4 +1,0 @@
-session Category_Higher_Order_Bridge = Higher_Order_Checker +
-  options [document = false]
-  sessions Category_Specifications
-  theories Higher_Order_Equivalence Higher_Order_Sort_Extension

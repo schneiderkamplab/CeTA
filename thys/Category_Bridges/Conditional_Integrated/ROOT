@@ -1,0 +1,6 @@
+session Category_Conditional_Integrated = Category_Integrated_Base +
+  options [document = false, quick_and_dirty = false, timeout = 180]
+  sessions Category_Conditional_Bridge Conditional_Ordinary Conditional_Checker
+  theories TRS_Conditional_Checker_Bridge
+    TRS_Conditional_NO_Bridge
+    TRS_Conditional_Operational_NO

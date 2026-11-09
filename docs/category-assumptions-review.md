@@ -28,8 +28,8 @@ Human review is pending; no entry below records user approval.
 | 10b | [TRS Conditional: ordinary](trs-conditional-specifications.md) | Ranked equivalence; concrete/serialized YES; native NO | Shared terms; no unchecked semantic/module premises. Ordinary erasure YES is separate from operational YES; NO uses checked ranked rewrite loops, including argument descent. 117/117 retained. |
 | 11 | [TRS Equational](trs-equational-specification.md) | Ranked equivalence; concrete and serialized YES/NO | Shared terms and separate A/C declarations; no unchecked semantic/module premises. YES uses native modulo termination. Actual NO dispatch uses ordinary nontermination and proved Standard signature transfer. Strict binding and 71/71 retention; no arbitrary modulo-only NO coverage claim. |
 
-The compiled inventory is in [Spec/ROOT](../thys/Category_Specifications/Spec/ROOT)
-and [Bridge/ROOT](../thys/Category_Specifications/Bridge/ROOT).
+The compiled inventory is in [definition inventory](../thys/Category_Specifications/ROOT)
+and [bridge inventory](../thys/Category_Bridges/Bridge/ROOT).
 The integrated build including Context-sensitive passed: specifications 2 seconds,
 bridges 39 seconds, total 56 seconds. Its local log is
 `target/trs-innermost/package-csr-1.log`; this is a build observation, not a
@@ -54,7 +54,7 @@ change is implied by this register.
 
 ### Mathematical domain
 
-The [shared definition](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy)
+The [shared definition](../thys/Category_Specifications/TRS_Spec_Base.thy)
 uses finite first-order trees, an infinite variable supply and a partial function
 assigning each permitted symbol exactly one arity. Rules form a finite set and
 both sides respect that signature. The signature itself need not be finite or
@@ -72,7 +72,7 @@ need human review.
 
 `trs_standard_terminates_iff_signature` proves correspondence to signature-restricted
 ordinary rewriting without extra hypotheses. `trs_standard_terminates_iff` and
-`trs_standard_nonterminates_iff` assume only `standard_problem A R`: infinite
+`trs_standard_nonterminates_iff` assume only `trs_problem A R`: infinite
 variables, finite rules and signature-correct rule sides. The proof invokes the
 existing signature-extension theorem; it does not assume the equivalence it is
 meant to establish. There is no additional groundness, constant-symbol,
@@ -86,7 +86,7 @@ the stated ranked domain, not a completed audit of an external category format.
 
 Both `trs_standard_checker_YES` and `trs_standard_checker_NO` require:
 
-- `standard_problem A R` and correct operation modules `tp_spec I`, `dpp_spec J`;
+- `trs_problem A R` and correct operation modules `tp_spec I`, `dpp_spec J`;
 - `nfs = False`, empty `Q`, and no weak rules;
 - the strict checker rules equal the translated specification rules;
 - acceptance by the corresponding termination/nontermination checker with

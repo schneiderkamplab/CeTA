@@ -7,7 +7,7 @@ status: draft
 
 This review follows [Standard](trs-standard-trust-boundary.md). Read the
 [canonical definition and equivalences](trs-innermost-specification.md) first,
-then the [concrete checker composition](../thys/Category_Specifications/Innermost_Integrated/TRS_Innermost_Integrated.thy).
+then the [concrete checker composition](../thys/Category_Bridges/Innermost_Integrated/TRS_Innermost_Integrated.thy).
 Human approval is not recorded by a successful build.
 
 ## Category and exact configuration
@@ -34,7 +34,7 @@ Internal proof transformations remain subject to the existing checker proofs.
 `trs_innermost_integrated_decision` states:
 
 ```text
-standard_problem A R
+trs_problem A R
 set Rs = to_rules R
 certify_integrated_cert_problem False
   (Inn_TRS_input (Innermost False) Rs []) Termination (Decision b) certificate = Certified

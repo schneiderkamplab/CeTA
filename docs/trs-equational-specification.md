@@ -3,6 +3,9 @@ type: Formal Specification
 title: "TRS Equational: ranked specification and checker boundary"
 status: draft
 ---
+
+The definition-only package is separate from [derived properties](../thys/Category_Properties/TRS_Equational_Properties.thy)
+and examples. See the [current package guide](category-specifications.md) for the three-layer layout.
 # TRS Equational
 
 The [TPDB category definition](https://termination-portal.org/wiki/Term_Rewriting#TRS_Equational)
@@ -13,11 +16,11 @@ restriction. Costs and strategy declarations are not part of this category.
 
 ## Reading order
 
-1. [TRS_Spec_Base](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy) defines the shared finite terms, ranked signatures, substitutions, contexts and ordinary rewrite steps.
-2. [Rewriting_Sequences_Spec](../thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy) defines finite sequences and absence of infinite sequences.
-3. [TRS_Equational_Spec](../thys/Category_Specifications/Spec/TRS_Equational_Spec.thy) defines the category property using those same objects.
-4. [Examples](../thys/Category_Specifications/Spec/TRS_Equational_Examples.thy) cover empty rules, equation-only conversions, a decreasing rule, a modulo loop, below-root nonground rewriting, a constant-free signature and arity errors.
-5. [Equivalence](../thys/Category_Specifications/Equational_Bridge/TRS_Equational_Equivalence.thy) and [concrete checker bridge](../thys/Category_Specifications/Equational_Integrated/TRS_Equational_Checker_Bridge.thy) establish the machine-checked correspondence.
+1. [TRS_Spec_Base](../thys/Category_Specifications/TRS_Spec_Base.thy) defines the shared finite terms, ranked signatures, substitutions, contexts and ordinary rewrite steps.
+2. [Rewriting_Sequences_Spec](../thys/Category_Specifications/Rewriting_Sequences_Spec.thy) defines finite sequences and absence of infinite sequences.
+3. [TRS_Equational_Spec](../thys/Category_Specifications/TRS_Equational_Spec.thy) defines the category property using those same objects.
+4. [Examples](../thys/Category_Properties/TRS_Equational_Examples.thy) cover empty rules, equation-only conversions, a decreasing rule, a modulo loop, below-root nonground rewriting, a constant-free signature and arity errors.
+5. [Equivalence](../thys/Category_Bridges/Equational_Bridge/TRS_Equational_Equivalence.thy) and [concrete checker bridge](../thys/Category_Bridges/Equational_Integrated/TRS_Equational_Checker_Bridge.thy) establish the machine-checked correspondence.
 
 The lightweight specification imports no checker or IsaFoR rewriting theory.
 `equational_problem A R FA FC` requires finite signature-correct input rules,

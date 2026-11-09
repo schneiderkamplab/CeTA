@@ -11,10 +11,10 @@ infinite rewriting is permitted. Both components are finite string systems,
 represented by unary term rules with a shared tail variable on both sides.
 Different rules may use different tail variables.
 
-Read [SRS_Spec_Base](../thys/Category_Specifications/Spec/SRS_Spec_Base.thy),
-[SRS_Relative_Spec](../thys/Category_Specifications/Spec/SRS_Relative_Spec.thy),
-[SRS_Unary_Encoding](../thys/Category_Specifications/Bridge/SRS_Unary_Encoding.thy),
-then [SRS_Relative_Integrated](../thys/Category_Specifications/SRS_Integrated/SRS_Relative_Integrated.thy).
+Read [SRS_Spec_Base](../thys/Category_Specifications/SRS_Spec_Base.thy),
+[SRS_Relative_Spec](../thys/Category_Specifications/SRS_Relative_Spec.thy),
+[SRS_Unary_Encoding](../thys/Category_Bridges/Bridge/SRS_Unary_Encoding.thy),
+then [SRS_Relative_Integrated](../thys/Category_Bridges/SRS_Integrated/SRS_Relative_Integrated.thy).
 The canonical property excludes infinite sequences of blocks containing one
 strict replacement and finite weak prefixes/suffixes. This agrees with the
 published infinitely-many-strict-steps criterion. Empty words, empty left sides,

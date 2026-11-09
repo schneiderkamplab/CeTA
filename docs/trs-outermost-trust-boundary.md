@@ -3,6 +3,9 @@ type: Formal Specification
 title: "TRS Outermost: specification and checker boundary"
 status: draft
 ---
+
+The definition-only package is separate from [derived properties](../thys/Category_Properties/TRS_Outermost_Properties.thy)
+and examples. See the [current package guide](category-specifications.md) for the three-layer layout.
 # TRS Outermost review
 
 The [TPDB category definition](https://termination-portal.org/wiki/TRS_Outermost)
@@ -15,17 +18,17 @@ variables. Left-linearity is not a category requirement.
 
 ## Reading order and conventions
 
-Read the [shared terms and signatures](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy),
-[Outermost specification](../thys/Category_Specifications/Spec/TRS_Outermost_Spec.thy),
-[examples](../thys/Category_Specifications/Spec/TRS_Outermost_Examples.thy),
-[equivalence](../thys/Category_Specifications/Outermost_Bridge/TRS_Outermost_Equivalence.thy),
-[finite loop bridge](../thys/Category_Specifications/Outermost_Bridge/TRS_Outermost_Loop_Bridge.thy),
-then the [concrete and serialized checker bridge](../thys/Category_Specifications/Outermost_Integrated/TRS_Outermost_Integrated.thy).
+Read the [shared terms and signatures](../thys/Category_Specifications/TRS_Spec_Base.thy),
+[Outermost specification](../thys/Category_Specifications/TRS_Outermost_Spec.thy),
+[examples](../thys/Category_Properties/TRS_Outermost_Examples.thy),
+[equivalence](../thys/Category_Bridges/Outermost_Bridge/TRS_Outermost_Equivalence.thy),
+[finite loop bridge](../thys/Category_Bridges/Outermost_Bridge/TRS_Outermost_Loop_Bridge.thy),
+then the [concrete and serialized checker bridge](../thys/Category_Bridges/Outermost_Integrated/TRS_Outermost_Integrated.thy).
 The standalone specification imports only shared specifications and HOL.
 
 A ranked signature assigns each permitted symbol one arity. Terms are finite
 first-order trees; substitutions map variables to signature-correct terms.
-`standard_problem A R` requires finite signature-correct rule pairs and an
+`trs_problem A R` requires finite signature-correct rule pairs and an
 infinite variable supply. It does not require a constant symbol. Contexts have
 one hole. `outermost_above` checks each strict ancestor of that hole for absence
 of a matching rule left side. `outermost_step` contracts one rule instance in

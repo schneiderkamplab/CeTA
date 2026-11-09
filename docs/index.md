@@ -57,3 +57,5 @@ okf_version: "0.2"
 
 - [Conditional specifications](trs-conditional-specifications.md) — Shared inference definitions, separate ordinary and operational properties, and outstanding bridge obligations.
 - [TRS Equational](trs-equational-specification.md) — Shared ranked terms, modulo-A/C semantics, concrete YES/NO bridges and remaining trust.
+
+- [Rewriting specification verification history](category-specification-verification-history.md).

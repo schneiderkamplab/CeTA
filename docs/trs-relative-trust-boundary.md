@@ -6,7 +6,7 @@ status: draft
 # TRS Relative: ranked signature review and guarded checking
 
 Read the [canonical specification and equivalence statements](trs-relative-specification.md)
-and then [the concrete bridge](../thys/Category_Specifications/Relative_Integrated/TRS_Relative_Integrated.thy).
+and then [the concrete bridge](../thys/Category_Bridges/Relative_Integrated/TRS_Relative_Integrated.thy).
 This review preserves the ranked semantics. It does not add a variable condition
 to category validity or claim an unconditional signature-extension equivalence.
 
@@ -61,7 +61,7 @@ with certificate assumptions disabled and, for NO, either the extension guard
 or `relative_ranked_certificate F certificate`. The latter identifies a direct
 loop and checks `ranked_relative_loop_guard`. The finite witness requirements
 imply closure of every iterated context/substitution instance, proved in
-[`TRS_Relative_Ranked_Loops`](../thys/Category_Specifications/Relative_Integrated/TRS_Relative_Ranked_Loops.thy).
+[`TRS_Relative_Ranked_Loops`](../thys/Category_Bridges/Relative_Integrated/TRS_Relative_Ranked_Loops.thy).
 `ranked_check_rel_loop_sound` proves ranked relative nontermination directly;
 `relative_integrated_ranked_loop` connects it to concrete checker acceptance.
 `trs_relative_bound_decision` assumes `relative_problem A R S`, exact representation

@@ -13,10 +13,10 @@ with `r w`, agrees with replacement in arbitrary string context: rotate `u l v`
 to `l v u`, apply the rule, then rotate `r v u` to `u r v`.
 For example, `ab -> ba` terminates on ordinary strings but loops on cycles.
 
-Read [SRS_Spec_Base](../thys/Category_Specifications/Spec/SRS_Spec_Base.thy),
-[SRS_Cycle_Spec](../thys/Category_Specifications/Spec/SRS_Cycle_Spec.thy),
-[Cycle equivalence](../thys/Category_Specifications/Bridge/SRS_Cycle_Equivalence.thy),
-then [Cycle checker bridge](../thys/Category_Specifications/Bridge/SRS_Cycle_Checker_Bridge.thy).
+Read [SRS_Spec_Base](../thys/Category_Specifications/SRS_Spec_Base.thy),
+[SRS_Cycle_Spec](../thys/Category_Specifications/SRS_Cycle_Spec.thy),
+[Cycle equivalence](../thys/Category_Bridges/Bridge/SRS_Cycle_Equivalence.thy),
+then [Cycle checker bridge](../thys/Category_Bridges/Bridge/SRS_Cycle_Checker_Bridge.thy).
 The canonical property excludes infinite sequences of explicit cycle steps.
 Finite input lists supply finite rule sets. Empty words, empty left sides and
 an empty alphabet are allowed. The examples include the empty system, a rotation

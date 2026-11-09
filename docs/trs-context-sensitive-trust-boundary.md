@@ -3,6 +3,9 @@ type: Formal Specification
 title: "TRS Context-sensitive: specification, concrete checking and trust boundary"
 status: stable
 ---
+
+The definition-only package is separate from [derived properties](../thys/Category_Properties/TRS_Context_Sensitive_Properties.thy)
+and examples. See the [current package guide](category-specifications.md) for the three-layer layout.
 # Context-sensitive review
 
 The canonical property is absence of an infinite sequence of ranked,
@@ -14,11 +17,11 @@ Final combined strict replay retains **1,890/1,890** protected root/polarity pai
 
 ## Reading order and conventions
 
-1. [Shared terms and ranked signatures](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy).
-2. [Canonical CSR specification](../thys/Category_Specifications/Spec/TRS_Context_Sensitive_Spec.thy).
-3. [Examples](../thys/Category_Specifications/Spec/TRS_Context_Sensitive_Examples.thy).
-4. [Term, context and step correspondence](../thys/Category_Specifications/Bridge/TRS_Context_Sensitive_Equivalence.thy).
-5. [Concrete checker and serialized bridge](../thys/Category_Specifications/Context_Sensitive_Integrated/TRS_Context_Sensitive_Integrated.thy).
+1. [Shared terms and ranked signatures](../thys/Category_Specifications/TRS_Spec_Base.thy).
+2. [Canonical CSR specification](../thys/Category_Specifications/TRS_Context_Sensitive_Spec.thy).
+3. [Examples](../thys/Category_Properties/TRS_Context_Sensitive_Examples.thy).
+4. [Term, context and step correspondence](../thys/Category_Bridges/Bridge/TRS_Context_Sensitive_Equivalence.thy).
+5. [Concrete checker and serialized bridge](../thys/Category_Bridges/Context_Sensitive_Integrated/TRS_Context_Sensitive_Integrated.thy).
 
 The [TermCOMP category](https://termination-portal.org/wiki/TRS_Contextsensitive)
 asks for termination of every rewrite sequence respecting the replacement map.
@@ -47,7 +50,7 @@ explicit signature. The former bridge's equality premise was not automatically
 justified by parsing an ARI file. Ferrum previously dropped unused declarations
 from its operational map; that behavior is now removed.
 
-[`CSR_Signature_Extension`](../thys/Category_Specifications/Context_Sensitive_Integrated/CSR_Signature_Extension.thy)
+[`CSR_Signature_Extension`](../thys/Category_Bridges/Bridge/CSR_Signature_Extension.thy)
 proves `csr_signature_extension`: if `funas_trs R` is contained in `F`,
 `Trs.wf_trs R`, and `SN (sig_step F (csstep mu R))`, then
 `SN (csstep mu R)`. It replaces maximal foreign-root subterms by variables and
@@ -55,7 +58,7 @@ combines termination of the resulting terms with termination of those subterms.
 The rule condition means nonvariable left sides and no new right-side variables.
 It is a condition of this auxiliary theorem, not of the category.
 
-[`CSR_Global_Checker`](../thys/Category_Specifications/Context_Sensitive_Integrated/CSR_Global_Checker.thy)
+[`CSR_Global_Checker`](../thys/Category_Bridges/Context_Sensitive_Integrated/CSR_Global_Checker.thy)
 discharges that condition inside the checker branches that need extension.
 Other branches already prove unrestricted termination; GM rule-removal prefixes
 use extension on the checked residual before transferring termination back.
@@ -67,7 +70,7 @@ unrestricted `SN (csstep (mu_of mu) (set Rs))`.
 `trs_context_sensitive_bound_decision` now proves
 `b iff trs_context_sensitive_terminates A (mu_of mu) R` from only:
 
-- `standard_problem A R`;
+- `trs_problem A R`;
 - `set Rs = to_rules R`;
 - concrete integrated CSR checker acceptance with assumptions disabled.
 

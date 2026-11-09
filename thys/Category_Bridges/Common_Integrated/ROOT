@@ -1,0 +1,3 @@
+session Category_Integrated_Base = Relative_ADP_Ceta_Dev +
+  options [document = false, quick_and_dirty = false]
+  theories Category_Integrated_Base

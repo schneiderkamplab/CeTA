@@ -1,0 +1,28 @@
+session Category_Properties = Category_Specifications +
+  options [document = false, quick_and_dirty = false]
+  theories
+    Rewriting_Sequences_Properties
+    TRS_Properties
+    TRS_Standard_Properties
+    TRS_Innermost_Properties
+    TRS_Relative_Properties
+    TRS_Context_Sensitive_Properties
+    TRS_Outermost_Properties
+    TRS_Conditional_Properties_Base
+    TRS_Conditional_Ordinary_Properties
+    TRS_Conditional_Operational_Properties
+    TRS_Equational_Properties
+    SRS_Standard_Properties
+    SRS_Relative_Properties
+    SRS_Cycle_Properties
+    Higher_Order_Properties
+    Higher_Order_Sorts_Properties
+    Higher_Order_Examples
+    SRS_Examples
+    TRS_Conditional_Examples
+    TRS_Context_Sensitive_Examples
+    TRS_Equational_Examples
+    TRS_Innermost_Examples
+    TRS_Outermost_Examples
+    TRS_Relative_Examples
+    TRS_Standard_Examples

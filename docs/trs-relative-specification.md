@@ -3,13 +3,16 @@ type: Formal Specification
 title: "Ranked TRS Relative: specification and semantic correspondence"
 status: draft
 ---
+
+The definition-only package is separate from [derived properties](../thys/Category_Properties/TRS_Relative_Properties.thy)
+and examples. See the [current package guide](category-specifications.md) for the three-layer layout.
 # Ranked TRS Relative
 
 Read the [shared package](category-specifications.md), then the
-[specification](../thys/Category_Specifications/Spec/TRS_Relative_Spec.thy),
-[examples](../thys/Category_Specifications/Spec/TRS_Relative_Examples.thy),
-[equivalence](../thys/Category_Specifications/Bridge/TRS_Relative_Equivalence.thy)
-and [checker bridge](../thys/Category_Specifications/Bridge/TRS_Relative_Checker_Bridge.thy).
+[specification](../thys/Category_Specifications/TRS_Relative_Spec.thy),
+[examples](../thys/Category_Properties/TRS_Relative_Examples.thy),
+[equivalence](../thys/Category_Bridges/Bridge/TRS_Relative_Equivalence.thy)
+and [checker bridge](../thys/Category_Bridges/Bridge/TRS_Relative_Checker_Bridge.thy).
 
 A relative block consists of finitely many weak steps, one strict step and
 finitely many weak steps. `trs_relative_terminates A R S` excludes an infinite

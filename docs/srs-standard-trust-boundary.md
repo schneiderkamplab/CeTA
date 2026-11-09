@@ -15,11 +15,11 @@ TPDB category directories are checked for conflicts with that selection.
 
 ## Reading order and semantics
 
-Read [SRS_Spec_Base](../thys/Category_Specifications/Spec/SRS_Spec_Base.thy),
-[SRS_Standard_Spec](../thys/Category_Specifications/Spec/SRS_Standard_Spec.thy),
-[SRS_Equivalence](../thys/Category_Specifications/Bridge/SRS_Equivalence.thy),
-[SRS_Unary_Encoding](../thys/Category_Specifications/Bridge/SRS_Unary_Encoding.thy),
-then [SRS_Standard_Integrated](../thys/Category_Specifications/SRS_Integrated/SRS_Standard_Integrated.thy).
+Read [SRS_Spec_Base](../thys/Category_Specifications/SRS_Spec_Base.thy),
+[SRS_Standard_Spec](../thys/Category_Specifications/SRS_Standard_Spec.thy),
+[SRS_Equivalence](../thys/Category_Bridges/Bridge/SRS_Equivalence.thy),
+[SRS_Unary_Encoding](../thys/Category_Bridges/Bridge/SRS_Unary_Encoding.thy),
+then [SRS_Standard_Integrated](../thys/Category_Bridges/SRS_Integrated/SRS_Standard_Integrated.thy).
 The human-facing property excludes infinite sequences of contiguous word
 replacement, retaining the prefix and suffix. Empty words and empty left sides
 are allowed. In particular, the empty-word self-loop is nonterminating.

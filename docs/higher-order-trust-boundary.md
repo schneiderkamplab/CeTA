@@ -10,12 +10,13 @@ with arity-aware meta-substitution. The authoritative syntax and semantics are
 in the [TermCOMP reference](https://github.com/TermCOMP/termcomp-reference/blob/d41b97e833b11e1770afd43c73ed53ac9017742f/stcrs.tex).
 This is not rewriting with arbitrary matching modulo beta or eta.
 
-Read [the shared typed definitions](../thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy),
-[the ambient category property](../thys/Category_Specifications/Spec/Higher_Order_Spec.thy),
-[the declared-sort property](../thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy),
-[examples](../thys/Category_Specifications/Spec/Higher_Order_Examples.thy),
-[the equivalence](../thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Equivalence.thy),
-then [the concrete checker bridge](../thys/Category_Specifications/Higher_Order_Integrated/Higher_Order_Checker_Bridge.thy).
+Read [the shared typed definitions](../thys/Category_Specifications/Higher_Order_Spec_Base.thy),
+[typed contextual steps](../thys/Category_Specifications/Higher_Order_Spec.thy),
+[the declared-sort property](../thys/Category_Specifications/Higher_Order_Sorts_Spec.thy),
+[properties](../thys/Category_Properties/Higher_Order_Sorts_Properties.thy),
+[examples](../thys/Category_Properties/Higher_Order_Examples.thy),
+[the equivalence](../thys/Category_Bridges/Higher_Order_Bridge/Higher_Order_Equivalence.thy),
+then [the concrete checker bridge](../thys/Category_Bridges/Higher_Order_Integrated/Higher_Order_Checker_Bridge.thy).
 The standalone specification imports only the shared specification and HOL.
 The separate sessions are `Category_Specifications`,
 `Category_Higher_Order_Bridge` and `Category_Higher_Order_Integrated`.
@@ -36,10 +37,13 @@ Right occurrences supply the designated arguments and may have additional
 ordinary arguments. A finite list gives the constant signature and rule list.
 The source parser additionally binds every base sort to its declaration.
 
-`higher_order_terminates S R` excludes an infinite sequence at every result
+The canonical source property is `higher_order_terminates_over_sorts N S R`,
+described below. The auxiliary ambient predicate
+[`higher_order_terminates S R`](../thys/Category_Properties/Higher_Order_Properties.thy)
+is defined outside the specification package. It excludes an infinite sequence at every result
 type and every finite free-variable typing environment. It concerns arbitrary
 typed terms, including open terms and terms of functional type. It is not a
-ground-term property. Nontermination is its negation; the specification lemma
+ground-term property. Nontermination is its negation; the properties lemma
 `higher_order_nontermination_iff` exposes the infinite sequence.
 
 ## Exact connections
@@ -79,7 +83,7 @@ that universe. `higher_order_declared_problem` states the finite typed category
 validity conditions, including declared sorts in every rule and constant type.
 With no sorts there are no typed rules.
 
-The [sort extension proof](../thys/Category_Specifications/Higher_Order_Bridge/Higher_Order_Sort_Extension.thy)
+The [sort extension proof](../thys/Category_Bridges/Higher_Order_Bridge/Higher_Order_Sort_Extension.thy)
 projects every undeclared sort to a declared sort, preserving typing,
 substitution and every rewrite step. The integrated theorem
 `higher_order_declared_sorts_iff` proves, for a valid declared problem:

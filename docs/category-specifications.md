@@ -1,101 +1,56 @@
 ---
 type: Formal Specification
 title: "Rewriting category specification package"
-status: draft
+status: stable
 ---
-# Rewriting category specifications
+# Rewriting category specification package
 
-The package lives in [Category_Specifications](../thys/Category_Specifications/ROOTS).
-Isabelle theories are its modules; sessions are its build units. The lightweight
-`Category_Specifications` session depends on HOL. The separate
-`Category_Specification_Bridges` session depends on the existing proof checker.
-Definitions never import their equivalence proofs or checker connections.
+The [self-contained specification package](../thys/Category_Specifications/README.md)
+contains only mathematical definitions and their explanations. It depends on
+Isabelle/HOL, and can be copied and built without IsaFoR, CeTA, or either of the
+other packages below. The package's own reading guide covers every category,
+its validity predicate, and its final termination predicate.
 
-Read [TRS_Spec_Base](../thys/Category_Specifications/Spec/TRS_Spec_Base.thy)
-first for finite terms, ranked signatures, substitutions, contexts and ordinary
-steps. Then read each category definition, its examples, equivalence theory and
-checker bridge, in that order. Shared mathematical vocabulary belongs in the
-specification layer; shared IsaFoR translations belong in the bridge layer.
+| Package | Contents | Dependency direction |
+| --- | --- | --- |
+| [Category_Specifications](../thys/Category_Specifications/ROOT) | Shared vocabulary and category definitions | HOL only |
+| [Category_Properties](../thys/Category_Properties/ROOT) | Derived properties, nontermination characterizations and proved examples | Specifications only |
+| [Category_Bridges](../thys/Category_Bridges/ROOTS) | IsaFoR representations, equivalences, checker connections and audits | Specifications/properties and the existing libraries |
 
-- [Assumptions and category-by-category review](category-assumptions-review.md).
-- [TRS Standard](trs-standard-specification.md).
-- [TRS Innermost](trs-innermost-specification.md).
-- [TRS Relative](trs-relative-specification.md).
-- [SRS Standard, Relative and Cycle](srs-specifications.md).
+First-order categories share `fo_term`, `fo_subst`, `fo_context`, `fo_plug`,
+`trs_problem` and `fo_step`. SRS shares its word definitions; Higher-order shares
+its typed, binding-aware syntax. All categories use `no_infinite_steps`.
+Definitions do not import theorems or checker code. The former `standard_*`
+shared names were made category-neutral; the category-specific
+`trs_standard_terminates` name remains unchanged.
 
-The authorized extension scope also includes TRS Relative, Outermost,
-Context-sensitive, Conditional and Equational; SRS Standard, Relative and Cycle;
-and Higher-order Rewriting. Relative, Context-sensitive and the three SRS correspondences are implemented
-with the coverage limits recorded in the review register. [Higher-order](higher-order-trust-boundary.md) now has a compiled typed equivalence
-and sixteen concrete YES and four NO checker corollaries. [Outermost](trs-outermost-trust-boundary.md) has ranked equivalence and concrete/serialized YES and direct-loop NO connections. [Conditional](trs-conditional-specifications.md) has separate ordinary and operational specifications over a common inference layer, exact ranked equivalences, concrete YES/NO bridges and a strict 239/239 focused replay. [Equational](trs-equational-specification.md) has shared-term ranked semantics, exact ranked equivalence, concrete/serialized YES and ordinary-proof NO bridges, and a strict 71/71 focused replay.
-Probabilistic, integer and complexity categories are outside this milestone.
-
-## Verification
+Read the specification first. Then consult the corresponding properties and
+examples, followed by the [category review register](category-assumptions-review.md)
+for exact equivalence/checker statements, coverage and trust boundaries.
+[Earlier build and replay milestones](category-specification-verification-history.md)
+are preserved separately from this current reading guide.
 
 ```sh
 make isabelle-category-specifications ISABELLE=/path/to/isabelle
+make isabelle-category-properties ISABELLE=/path/to/isabelle
 make isabelle-category-specification-bridges ISABELLE=/path/to/isabelle AFP="$AFP"
+python3 scripts/check_category_package.py
 python3 scripts/check_okf.py docs
 ```
 
-The old Standard make targets remain aliases. The original Standard build
-receipt is retained as historical evidence. The Standard and Innermost package build passed on 2026-11-07: 2 seconds
-for specifications, 23 seconds for bridges, 39 seconds overall. Both checker
-bridges passed their inherited-admission audits. The
-[verification receipt](data/category-specifications-standard-innermost-20261107.json)
-records the checked source hashes and log. Later category additions are
-verified separately.
+The category-specific integrated make targets and existing checker session names
+remain available. Their theories now live under `Category_Bridges`, outside the
+specification package. Historical receipts retain their original source paths
+and hashes; they describe the revisions at which they were recorded.
 
-Reviewing these definitions and checking their correspondence proofs establishes
-what an accepted certificate means. It does not establish checker completeness,
-parser correctness or correspondence to a particular compiled executable.
-No certificate format, generated checking code or production binary is changed.
+Reviewing the definitions establishes the intended question. Equivalence and
+soundness proofs establish what accepted certificates mean. Neither establishes
+checker completeness, parser correctness, or compiled executable correspondence.
 
-The Relative and SRS additions passed their normal package build and
-admission audits. Their [verification receipt](data/category-specifications-relative-strings-20261107.json)
-records a retained source snapshot and the successful build log.
-
-The optional `Category_Standard_Integrated` session connects the canonical
-Standard property to the concrete integrated checker. It is separate from the
-lightweight specification and ordinary bridges; see the
-[trust-boundary review](trs-standard-trust-boundary.md) for its verification
-status and explicit serialized-input premise.
-
-The optional `Category_Innermost_Integrated` session provides the same concrete
-and serialized connection for strict Innermost (`nfs=false`); see its
-[review and trust boundary](trs-innermost-trust-boundary.md).
-
-`Category_Relative_Integrated` adds concrete YES and guarded NO soundness for
-the ranked Relative specification. See the [review](trs-relative-trust-boundary.md)
-for the necessary signature distinction and incomplete NO coverage.
-
-A subsequent [strict replay of the three reviewed categories](../../ferrum/docs/reviewed-categories-replay-20261108.md)
-completed on the protected 1,780-root baseline: 1,316 certified, 464 Unknown.
-All accepted proofs pass the follow-up audits. Innermost state-key changes
-explain 452 losses across Standard/Innermost; 12 Relative losses remain for
-separate diagnosis. This is not a production promotion or full-frontier replay.
-
-## Reviewed-category replay repair
-
-The [updated oracle and replay](../../ferrum/docs/reviewed-oracle-repair-20261108.md)
-now retains all 1,780 reviewed Standard, Innermost and Relative roots with source
-binding and repeated checks by one rebuilt unified CeTA executable. Main's
-verified export already supported the parser field rejected by the old installed
-binary; no formal or generated checking logic changed for this repair.
-[Checker identity and validation](data/reviewed-oracle-repair-20261108.json).
-The installed executable and full fifteen-category release remain separate.
-
-The [Context-sensitive concrete review](trs-context-sensitive-trust-boundary.md)
-adds session `Category_Context_Sensitive_Integrated`, complete declared-map
-binding, and now global soundness for every integrated YES family. Unused
-declarations need no extra proof-family guard. Relative direct ranked loops also
-now bypass signature extension through finite witness checks. The
-[follow-up receipt](data/coverage-closure-20261108.json) records both builds and
-223/223 affected-category retention.
-
-The Higher-order sessions build with `make isabelle-higher-order-integrated`.
-See the [review](higher-order-trust-boundary.md) for exact semantics and the
-original-input binding boundary.
-
-The Outermost sessions build with `make isabelle-outermost-integrated`. See the
-[Outermost review](trs-outermost-trust-boundary.md) for exact witness guards and proof coverage.
+The [package refactor verification receipt](data/specification-package-cleanup-20261109.json)
+records the source hashes and build evidence. A copied specification directory
+built in an isolated Isabelle user home without AFP or sibling-package paths;
+the properties and all bridge/checker sessions also built. A mechanical comparison
+covered all 78 original definitions, allowing only the shared-name changes and
+unfolding of the common sequence definition. No generated checker or runtime
+artifact changed.
