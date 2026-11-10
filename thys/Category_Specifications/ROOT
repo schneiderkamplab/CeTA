@@ -19,3 +19,13 @@ session Category_Specifications = HOL +
     Higher_Order_Spec_Base
     Higher_Order_Spec
     Higher_Order_Sorts_Spec
+    ITS_Spec
+    LP_Terms_Spec
+    LP_Spec_Base
+    LP_Finite_Spec
+    LP_Rational_Spec
+    LP_Cut_Spec_Base
+    LP_Cut_Finite_Spec
+    LP_Cut_Rational_Spec
+    LP_Infinite_Spec
+    LP_Cut_Infinite_Spec

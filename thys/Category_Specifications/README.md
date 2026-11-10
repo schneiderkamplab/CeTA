@@ -1,4 +1,4 @@
-# Rewriting category definitions
+# Termination category definitions
 
 This package defines the mathematical questions. It contains definitions and
 explanatory text only: no derived properties, examples, representation proofs,
@@ -78,3 +78,36 @@ In Isabelle notation, `∀` and `∃` quantify, `⟷` defines logical equivalenc
 `#` prepends to a list, `@` concatenates lists, and `!` selects a zero-based
 list entry. `None` denotes an absent signature/type lookup; `Some A` denotes a
 successful lookup. Premises of an inductive rule precede `⟹`; its conclusion follows.
+
+## Integer transition systems and logic programs
+
+[ITS_Spec.thy](ITS_Spec.thy) defines initial-state termination of a finite
+integer transition system. It keeps pre-state, post-state and local stores
+separate. Category validity requires one entrypoint; the underlying execution
+relation also admits multiple entries. Guards are mathematical relations,
+independent of any concrete arithmetic expression syntax.
+
+For logic programs, read [LP_Terms_Spec.thy](LP_Terms_Spec.thy), then
+[LP_Spec_Base.thy](LP_Spec_Base.thy). Program clauses and initial queries use
+`fo_term`; runtime trees distinguish finite trees from rational trees (finitely
+many distinct subtrees), and arbitrary infinite trees. Most-general resolution includes continuation and
+clause-body variables. Query modes mean ground or arbitrary finite arguments,
+including compound nonground arguments and shared variables.
+
+| Category variant | Definition | Final property |
+| --- | --- | --- |
+| ITS | [ITS_Spec.thy](ITS_Spec.thy) | `its_terminates` |
+| LP, finite terms | [LP_Finite_Spec.thy](LP_Finite_Spec.thy) | `lp_finite_terminates` |
+| LP, arbitrary infinite runtime trees | [LP_Infinite_Spec.thy](LP_Infinite_Spec.thy) | `lp_infinite_terminates` |
+| LP, rational runtime trees | [LP_Rational_Spec.thy](LP_Rational_Spec.thy) | `lp_rational_terminates` |
+| LP with cut, finite terms | [LP_Cut_Finite_Spec.thy](LP_Cut_Finite_Spec.thy) | `lp_cut_finite_terminates` |
+| LP with cut, arbitrary infinite runtime trees | [LP_Cut_Infinite_Spec.thy](LP_Cut_Infinite_Spec.thy) | `lp_cut_infinite_terminates` |
+| LP with cut, rational runtime trees | [LP_Cut_Rational_Spec.thy](LP_Cut_Rational_Spec.thy) | `lp_cut_rational_terminates` |
+
+[LP_Cut_Spec_Base.thy](LP_Cut_Spec_Base.thy) adds ordered alternatives, scoped
+cuts, unification and meta-call decoding. Successful goals resume alternatives;
+termination means exhaustion of the computation. Finite-term unification uses
+an occurs check; rational-tree unification admits cycles. They can produce
+different backtracking behavior and therefore different termination answers.
+The finite-term presentation is the primary reading; the rational-tree and arbitrary-infinite-tree variants
+are separate. The full Prolog category is outside this package's scope.

@@ -26,3 +26,8 @@ session Category_Properties = Category_Specifications +
     TRS_Outermost_Examples
     TRS_Relative_Examples
     TRS_Standard_Examples
+    ITS_Properties
+    LP_Properties
+    LP_Cut_Examples
+    LP_Cut_Execution_Properties
+    LP_Domain_Properties
