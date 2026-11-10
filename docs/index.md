@@ -59,3 +59,6 @@ okf_version: "0.2"
 - [TRS Equational](trs-equational-specification.md) — Shared ranked terms, modulo-A/C semantics, concrete YES/NO bridges and remaining trust.
 
 - [Rewriting specification verification history](category-specification-verification-history.md).
+
+- [ITS and logic-programming category specifications](its-lp-specifications.md) — Definitions and explicit bridge obligations.
+- [ITS and LP semantic correspondence completion](its-lp-completion.md) — Full remaining proof and runtime-boundary ledger.

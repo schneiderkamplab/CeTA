@@ -1,0 +1,449 @@
+{
+  "recorded_at_utc": "2026-11-10T19:39:51.420162+00:00",
+  "objective_status": "active; pure-LP NO and runtime semantics remain open",
+  "verified_session": "Category_LP_Cut_Triple_Segment_Bridge",
+  "cut_dispatch_inventory": [
+    {
+      "endpoint": "check_lpc_constructor_xml",
+      "theorems": [
+        "lp_cut_constructor_finite_yes",
+        "lp_cut_constructor_rational_yes",
+        "lp_cut_constructor_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Families/LP_Cut_Constructor_Category_Bridge.thy",
+        "thys/Category_Bridges/LP_Bridge/Families/LP_Cut_Constructor_Category_Bridge.thy",
+        "thys/Category_Bridges/LP_Bridge/Families/LP_Cut_Constructor_Category_Bridge.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_mgu_constructor_xml",
+      "theorems": [
+        "lp_cut_mgu_finite_yes",
+        "lp_cut_mgu_rational_yes",
+        "lp_cut_mgu_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_no_xml",
+      "theorems": [
+        "lp_cut_source_finite_no",
+        "lp_cut_source_rational_no",
+        "lp_cut_source_infinite_no"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_projected_xml",
+      "theorems": [
+        "lp_cut_projected_finite_yes",
+        "lp_cut_projected_rational_yes",
+        "lp_cut_projected_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_composed_constructor_xml",
+      "theorems": [
+        "lp_cut_return_composed_finite_yes",
+        "lp_cut_return_composed_rational_yes",
+        "lp_cut_return_composed_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_composed_triples_xml",
+      "theorems": [
+        "lp_cut_return_composed_triples_finite_yes",
+        "lp_cut_return_composed_triples_rational_yes",
+        "lp_cut_return_composed_triples_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Triples.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_constructor_xml",
+      "theorems": [
+        "lp_cut_return_finite_yes",
+        "lp_cut_return_rational_yes",
+        "lp_cut_return_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_module_constructor_xml",
+      "theorems": [
+        "lp_cut_return_module_finite_yes",
+        "lp_cut_return_module_rational_yes",
+        "lp_cut_return_module_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_module_triples_xml",
+      "theorems": [
+        "lp_cut_return_module_triples_finite_yes",
+        "lp_cut_return_module_triples_rational_yes",
+        "lp_cut_return_module_triples_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Triples.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_nested_constructor_xml",
+      "theorems": [
+        "lp_cut_return_nested_finite_yes",
+        "lp_cut_return_nested_rational_yes",
+        "lp_cut_return_nested_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_nested_triples_xml",
+      "theorems": [
+        "lp_cut_return_nested_triples_finite_yes",
+        "lp_cut_return_nested_triples_rational_yes",
+        "lp_cut_return_nested_triples_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Triples.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_return_triples_xml",
+      "theorems": [
+        "lp_cut_return_triples_finite_yes",
+        "lp_cut_return_triples_rational_yes",
+        "lp_cut_return_triples_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Triples.thy",
+        "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Triples.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_seg_certificate_xml",
+      "theorems": [
+        "lp_cut_seg_finite_yes",
+        "lp_cut_seg_rational_yes",
+        "lp_cut_seg_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_seg_free_certificate_xml",
+      "theorems": [
+        "lp_cut_seg_free_finite_yes",
+        "lp_cut_seg_free_rational_yes",
+        "lp_cut_seg_free_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_seg_projected_certificate_xml",
+      "theorems": [
+        "lp_cut_seg_projected_finite_yes",
+        "lp_cut_seg_projected_rational_yes",
+        "lp_cut_seg_projected_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_seg_triples_xml",
+      "theorems": [
+        "lp_cut_seg_triples_finite_yes",
+        "lp_cut_seg_triples_rational_yes",
+        "lp_cut_seg_triples_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Checker.thy"
+      ]
+    },
+    {
+      "endpoint": "check_lpc_xml",
+      "theorems": [
+        "lp_cut_table_finite_yes",
+        "lp_cut_table_rational_yes",
+        "lp_cut_table_infinite_yes"
+      ],
+      "theory_files": [
+        "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Checker.thy",
+        "thys/Category_Bridges/LP_Bridge/LP_Cut_Checker_Bridge.thy"
+      ]
+    }
+  ],
+  "premises": "Exact certificate parse and actual acceptance, for separately defined finite/rational/unrestricted semantics; no remaining domain, MGU or source-soundness premises.",
+  "no_admissions": "Combined Thm_Deps.has_skip_proof audit passed for all 51 corollaries.",
+  "oracle_audit": "Category_LP_Cut_Triple_Segment_Bridge.LP_Cut_All_Checkers_Audit\nCut dispatcher: audited 51 canonical corollaries; oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition\n\nCategory_LP_Cut_Triple_Segment_Bridge.LP_Cut_Domain_SEG_Triple_Checker\nCut seg_triples YES oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition\n\n",
+  "source_revision": "123e3aafd0def79d2f0ce7d60596b6175a4a2532",
+  "source_sha256": {
+    "Makefile": "67d6f3fbd4752f320dcb71e732fbefaab5ae208af713317dd4b5b8b82387fa8d",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "577024222764cac689d995cfa35c553872faed8750ed4e3ffe494eba720ceaa5",
+    "src/Haskell/Ceta/Category/LogicProgramming.hs": "f814df299c520be6fff5594d541657ccdd6473232930ef6a38f69fa682a677b3",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Answer_Split.thy": "6061a00c301867969ed327c1b9786f54ebbcaba63c8b071a08f9fa86edb5eeb1",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Answers.thy": "0a74b5bc95494ab07e87ebaa164fa8d9a29ba724dca0f6628d9d51511bf408fc",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Canonical.thy": "26c4947ad0ed80f807d8fad2782b0089b23c2a8342ebfc7ae80671ec16519342",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Checker.thy": "05e88a65556996aa9d2c4c06dcfccd321a639e28642755bdb484a88ac9c25c8e",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Control.thy": "1893105867d2ad8e31e28986807f665bed084a8cfe44be30c91a29e2a81de506",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Link.thy": "358070bc68a1da55b531cf58d5c750c2f2a237766792b111bc5447286cbd0e4b",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Nodes.thy": "64888908295108740b0d4080566f020251f5dff53da309da1520667fdb4c23b9",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Resolution.thy": "0ee5aef66680e92a4d0b471d8545462f991c5c307e4a3098a8dcdd626a53bf41",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Success.thy": "f5497cf9c171108922f652dd336e1b81a91ea7d978b72591b08080516489bfcd",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Table.thy": "c16f2e42e58477173c6ac64f7591d79563eb0b4c16790cdc60cf4c2d06ba665a",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Actual.thy": "0d9b6143c49a86f5ebe16f02e35b90092ca81b2e28b45575d141d46b922eca6b",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Answer_Control.thy": "ecd0eb7f4e1af46a122ce8f91b55602c4d2c5ed7a22d1627ffd55750403418d5",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Append.thy": "43cca411b7e8e058ad19db24646a59897f7e21c3024e5420a694a42dfd61a4ea",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Attached_Answers.thy": "03fdbf368d6060062933966a826948727ea7d6519a1d1b4d68036c4906076b38",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Attachment.thy": "fdcb55fc1a173247dd6e3d2bf49bcb8f9a5d2d01c18492a3e8d9d95eb5e5a416",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed.thy": "a07c17dfb813456eb0ed10e3c141405019c6024ef76457f51be04d5f2f68ddf6",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Certificate.thy": "4af1adc7c96edbfae4195e19b51fa06abdeebd2f5e70f2a0efee4a3f2c070afa",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Checker.thy": "abdfd23f2da020743f6a4e12fbdae991382ad5493528e6076f81252c1730d2f9",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Composed_Triples.thy": "b5689de37598d296f52b007743a25ad050a54684c2a0dd880e24d00ea5e3cf68",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Continuation.thy": "32333b867b448d2be9011692350dc09d65ac025a244f6eb7c0d8aa869541c940",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Domain_Compose.thy": "f3a3c5468aa2c572103dae901e9bf06940c59f8aa79fb900c24eac38d792ac09",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Entry_Certificate.thy": "ed93ca74c94565bca9ccd18051c8e4519161cc1dda36848f00b6faa3b36c3469",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Environments.thy": "0b979118a8027c337559ba69bdeb02c08aca3a4efecdcd4f61b95caa5e0c2508",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Ground_Continuation.thy": "7ce6412c85dd259d6b57a614c1c2fb8b94c2b6aea5b3e59b81a3e2a3bdcc4f0e",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Ground_Split_Check.thy": "bbcc4ec49599329383aaff94ce849ead415655317d8df8f835765aecfd3b6c3d",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Independent_Certificate.thy": "8e348b09f226966f5953d507ce86d7521ed679ab02e409f26143e774ab88edd7",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Independent_Split.thy": "1fd32feb9b4ac92de42280fd06196abaca05f9f53070573d9a622093514c7326",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Interface.thy": "03b285f3319727c65fdb321b15b5a07caf2857c39003c10efc11fb169aa1e51b",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Interface_Lift.thy": "445999b783320f9f7d90bb45febee3d89e0603ef193b0782e1a3084d023a0bbf",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Module_Link.thy": "247d655b9b95623fb4fd68ae0552a01cd31af2d54f4c0ef20a731191a17fdde6",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Output_Groundness.thy": "803b3e28fabc1aec713cd84c978692f53a45dff23a0081e8c9cb67bf7bc90057",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Overapproximation.thy": "3facd93f8663850c0d60f87e2452744d87a6828fde7e3317c2a14c2e777bb776",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Preserved_Ground.thy": "7d39d9827e85e78616c895e273f612d8ed39028b1a4c12ebfe40f72e1f0f63cb",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Residual_Query.thy": "5cb4b2013b427c5b974c79b0d26eb56b343dd2db676b3471f18e2b524c26ba48",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Source.thy": "474232af27b88c841c33c6564687c4e4e6a60e4d8d1bbd5f26558ca6ad353311",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Split_Check.thy": "a29511a386ff67c7f287960816c31d733b2d5c401ba50ee4c9d2ff107d39cb6c",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Return_Split_Shape.thy": "fbb3dbfdd5fb4ab6a682dcca8d5c8d3e99dc482bd24e7bedb9d5add46165b8d5",
+    "thys/Category_Bridges/LP_Bridge/Composition/LP_Cut_Domain_Scope_Ownership.thy": "7d3499546037f55ec264aa4dcf778c1bdcfbe030f357145ad010ebe5d7da761b",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Instances.thy": "bd338b468bbd4db00ea69193a21ed98cb903ca17cce6a7421210aa1b1335d206",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Knowledge.thy": "15fa0cfc51ce0cad38b6e2e8832e9550ebf4ca30e0e5f28d6301b7e0770a2556",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Source.thy": "4a8aea60525f2103ce144cca6f64c3905cc1622c431eb32d017b7bd894eafa76",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Structural.thy": "fd58961bc0432a4e47a7473c0547baffebcb896f2e441b33237353ff5a252a95",
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Cut_Constructor_Category_Bridge.thy": "9c2fae82ede023627a0642665da1bcfc926294b5b4b741fc8f7c61f0f8751724",
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Yes_Category_Bridges.thy": "66e14e90cd09d94b1b40a921fc447955ce700f777c57e24d9be39d1fdfbffbb4",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Free_Refutation.thy": "63d9f7cf23bee70e2bc30fc2b24937b23a4bbc2cfc25b860c48e851c0adf3cc9",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Joint_Free.thy": "a8aef4810ce2536d16c92cc5c0964be9ec3e324a5ef7eaa1629eadf2612c49ac",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Joint_Free_Check.thy": "0a68fb9425fa433d1654351a24b42f59c32f69f4541069c04678a59d77924e21",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Mixed_Free_Coverage.thy": "7669eacc04465e7ef53277e3d3f00c367f92b8b428065694c597da5b393c5598",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Return_Free_Allocate.thy": "179751b6fd00d4f9216a3542938ded52857e9e51ebb44151c2137c9ca92e0a97",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Return_Free_Check.thy": "9ccdb15ecfaa7058e7f62c23f9288b42a820392aa545d7e085f2e997f8aa4753",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Return_Free_Equality.thy": "eae76b9af292397a0eedbe565b28c794c575a23377a286433f752b849e11103b",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Return_Free_Link.thy": "903912e9677aeeec5379ea2bb0e5be0e41a54b7d2c3b7b050a958a2dea1b6813",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Return_Free_Resolution.thy": "47e9e9971d3dfda97cc4bf7311b0bfc012354cd598eb1964802cbf78473c7d42",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Certificate.thy": "59f3bcf72a8fde766bd2582ee1e1086de617bb929a60bb430a568e03f681be65",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Checker.thy": "f519f1338f0e0b98b5c2af764d168f33761bb7a357ae6eede5403dfa584bcb2e",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Child.thy": "a732d96165bb11bc60b75fd4bac8a32697d5795fb4c8ec50c1966615d9822fee",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Connection_Check.thy": "5ade26bab472961a31427fd4eb69a5fcc933809bcb7c128101c540c5bc88235f",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Context_Region.thy": "538ecc45d5330535e4ec0314dd92640da38d2403d9aa6dc212503cc5b2314456",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Control.thy": "64bc3927a37c37f0e810f1ddbeea4948954a4453413e611585f215d8a2579c49",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Graph.thy": "82029b2001f56be745901eb7e5661068b876e931ef8545cd4567f0309e83e6a9",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Region_Check.thy": "be571cbb0f99c978a08c4554ab31353b0bf7b06873a5c1fac922cf4b91497e2b",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Root_Representation.thy": "209e274928778bd4e1bde163c74bcd9ef76076c00c6200ca918bb7680b0bf44b",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_SEG_Free_Split_Check.thy": "cf4f9b4d438a4417dfc297e360c465eca35866f9bd2642ef04758d4e0f1bad56",
+    "thys/Category_Bridges/LP_Bridge/Free_Segments/LP_Cut_Domain_Uniform_Free.thy": "154810f15acda67f9baf3e8fa2c2ea6ca9d763ee17d245f4fcc359789a0a9ded",
+    "thys/Category_Bridges/LP_Bridge/LP_Checker_Bridge.thy": "db1403b4ed55d1ce3b2d9670e68adffbd4e50965da60cdba85d1c0929dbb35db",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Checker_Bridge.thy": "133276021c4e437213e088e28f17fd35bbe778452fb64777aa21219c906bfb25",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Domain_Guards.thy": "5fea653c970227762764a04b34eb5587321072c9d1d8bec3080e56ac5e93daa3",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Finite_Unification.thy": "7eafcab2ca3101a72bf2814d755965973cb849aafa57d703fbf746ced10795ad",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Representation.thy": "a15121ec3838a182a277a44dc74fb78fce248a836e9da17f150a101b9941dad9",
+    "thys/Category_Bridges/LP_Bridge/LP_Representation.thy": "616f9c5f1874a39002e9514519509d97f09e55b03bf7cba91048ac49ff3d8182",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Free_Coverage.thy": "6e58e6e85992f5e1b8b819b6190b9f88280f1552b3b8351b3a539357cb2eb503",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_MGU_Head.thy": "8b167166de60e1c611a291e223b1db6c9d2e1f25fe4880d635be58a7a89bcd1b",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_MGU_Properties.thy": "4701b018193757571b1d0cd3f7455c06f82943fbd4be77aceb4004937deb3bb0",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Answer_Split.thy": "37125907b668d315018943dcaeb5b9e0c4daa33717c849d92fec33b5e5c66d4d",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Canonical.thy": "aef55b42ed6428396ca92f3c69ec9b4cc89d008fb4c3014c545919bcb124a41f",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Certificate.thy": "5023f734bf6a4399cf275c8564ee3a4a537c512094553e2f99b0b2b6a9aa1296",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Checker.thy": "ad760d9fe73f8b6893c0b1282b69bb985b57ab408f71ba34be8066efd2e3ebd2",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Equality.thy": "7ab9572befd8d0b7f58767de5108a2ac1522ad6d231ca098cccf5460ee32d6bf",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Instance.thy": "e1d67d3f406b92e154777827562a086040c62dd608e55cc8537bd630b348a318",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Link.thy": "a8754f134bf071732a3679e135750fd627c43b8ac0ef11fc2bf6c9d9c373f2e1",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_MGU.thy": "cdbfa4c0bbb1ffa8977b6ca8aea27e2f8435a7f0468e369a171211d5edd2991e",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Resolution.thy": "61974fbf132074e9763721d009f96e076cea1ce8142b634c2fe15431c021ded3",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Source.thy": "de57fcde143b615e9e9544dab93adf89ded6acd7676aeb9eea09e177f0b5aec9",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Stack.thy": "0a737f6538be2471e18622741e4db6e7feb4793504c528bd559607a3fcd6d878",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Table.thy": "52b5b2c48785765b392825c72a42e783e622a1f8cf4a2b765789ae2e1a1d9253",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Back_Representation.thy": "d5c0744b8490681406d0092627d71b1065fddc4deae3a6baf4269bf537b10dc7",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_MGU.thy": "855d58f352dc5bfa9b633a8ef7d3e4b7844ecd1fa21ed5b1a911f0b14771d55a",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Barriers.thy": "89832f25b7c98af93012dda4b04da2101cb94bbd298255d228edcd42cc352fe9",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Canonical.thy": "1ece275791f112d43d9e4af3bd48e89192fee1918bd86316a8b4a8323b188894",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Certificate.thy": "23a3110607264e42221b68004ff07feec2e9edbfc5e644db4a189786d7406999",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy": "501942a1f5120470c08211998393a0ec41fcbc7b194f48f0d58638e28efa9857",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Examples.thy": "82f34d300ea92da857459d8f42e6e70b470e0203815ae9c31eab38294ca6eee7",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Pending.thy": "6057d812e5156d2b6cfcc18551ef330f8866c92781b7f03915a8273178169053",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Pumping.thy": "e79aec65103a2be5eb87d995cd5017ad6d9adb1adca4a484536c06caf28c93f8",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Renaming.thy": "2b4fec5ef282ce9d9336bbcdf33e8007330e295769cff3cf2f473069318d4b34",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Source.thy": "5bbd8640e10e0bac206457699c2230495ee24712a050feca337ecf4132875822",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Steps.thy": "3817550977890a2b820861e650f576efdf4f0073eaa204738f924f11fd83ea7a",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested.thy": "f796fa5cff374c65c8cb84f2927f8790d8327a806dcc0a59236bc277f65a0975",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Certificate.thy": "6bab6563432c92b23693c3152ccf7a2050abb751ee97866a148bb78da6310d48",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Checker.thy": "5787c3ec7d02b119a1a5350f2f2626b987ab8dd7f5454bd109de785a45446274",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Nested_Triples.thy": "8233b1cc2215f98ce65f94da01720a04b5f669ecef19f5a662826e4422cff9da",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Semantic_Ground_Split.thy": "c3f1249f108e281d6dfce943a66830262e4923a25175de3a541471456b45bbca",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Semantic_Link.thy": "19b7df18df223a01c609e366ebd58704c47d97528c6cc7e41b6c77c8a09cab7c",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Semantic_Module.thy": "5924f321be7218f8bd4fbacea2231e97109725312e92c113b38d2928a1e722ab",
+    "thys/Category_Bridges/LP_Bridge/Nested/LP_Cut_Domain_Return_Semantic_Split.thy": "ff7383b2ddb3bbdbff1d21aed08966c2b09999f061d293bcb33a997053eab95b",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Action.thy": "2cab774b3c0a9d4ae33762c5b49be6f1185e6038f57bc53de0be2c3776ec53ca",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Certificate.thy": "ae40c947aeb740794996dc32e6be61642111a7f8ddbd90e50fa60af5a582b3c2",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Checker.thy": "a7ef2623710686645b5755dc5b1717d173b6ebd491318834191afbc7a81631c6",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Equality.thy": "15589f54cf90788a2a48b177503d8156e61eb2295fa37054e520f1bdb55a435a",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Ground_Split.thy": "f78ffec5a2acd04e7ad5bc6e579e10d2ba2b44cf2b354cda02c587c7cbb53aaf",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Link.thy": "c818b9cc6817edc7733a3d594969781d02cb528f2121b5793c640a00c132c190",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Module.thy": "68ac31e600dd6b8d8095d0ed9a39887a1eb714b535fac4bc3ac514ae63e70056",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Nested.thy": "2af7c07ff4cea542cb9f4a66c3834238a2844a42ea5eeb2a0fc49ce0d5eb0764",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Plain.thy": "5d681a7f3de3298979fd3ada4dd89d3ba6d15e3bf234454e3201ffc8f72c62ed",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Residual.thy": "7ee0bfa4b6b545358130bf75cfed3b1e4684b292c6840fb4d703a4115b4ac1c0",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Resolution.thy": "e3422bcc7027a278d725c7e6c3bdadf07e598d6fee7df565cc49aea44d6ddde3",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Semantic.thy": "1bb954d0606fa5960296ee2f15fdcc4925971e72063068c549f58be89be9584f",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Split.thy": "314cda98f562f5c9dfc6b3de15cfb1d47b04fb76a49dbe3964c1d3d957ed2a72",
+    "thys/Category_Bridges/LP_Bridge/Projected/LP_Cut_Domain_Projected_Split_Shape.thy": "db6a9f0b2ec98ab884b964094ae37dafa7e377d8b005d34467db366cb566bd59",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Observed_Control.thy": "5102cb1ceb2a7106152b46639ec8d9931c4a6d72af693e3a34b3023b6a7b2e4e",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Observed_Invariant.thy": "1896c21675d79a94fb5a9508b83cda336a5876e88a2ae31658375bc1418fa5c4",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Observed_Region_Check.thy": "2ddc3fef87142579b643c3541fd9894b89b765cdbcc901446812baa2a43ac5aa",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Observed_Templates.thy": "ddb2e148c3e7080331d822a72fa7fd1adeb5eda94d74096433b07331b1a7483b",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Captured.thy": "4341bfa0c063f30c543433892c8ac96f7d2264de8408565ff7d55009da377288",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Certificate.thy": "d09e3b66a89af03e633fb1abdc0a545f7f67d65e4874bda26a54665420b47135",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Checker.thy": "da78789a667a20abb94265c575262c515319640adc1d24f89949efea1b95e4e0",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Child.thy": "52bff599d2c993894323b2c82bca94480688e2d5d642476f01a5dc664149b411",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Connection.thy": "574111c96ec0720bd7e51669334f7defa398b2e3ed342e27741b05a1a60de78f",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Connection_Check.thy": "db0fbeaec785be7f2b14adda76f1c7f635663daa44687e18121faacd2af90fd4",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Graph.thy": "edeb414e0492b9ca45f05d15419566a920288e659ee314f43f596b25c72f15a7",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Pending.thy": "7e6b06da3a9efdf7bd3c5d62c9841fe3ecf53059d3365dda7056510003ba675d",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Region.thy": "b8f444b882e181f8dd3b7b5bea2147c09a2aade130240d49a8aa66b5158614dc",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Region_Check.thy": "feb69209bff94c02e207e5991e156d5112eced79ab62c273b3b951e9b7be388c",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Relation.thy": "93c75ffb6b8b326087ae6b79071d42447f700c7cbb5e204ef7e9364ce2c4dbdd",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Return.thy": "a7caf72a28b8427a0b74a8fa8200f8a219716252ba842e05a6f080bb8cc6f23b",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Root.thy": "bf31665318eac8f87f00d5878bfd5ff85adbc118fa93cb99584b8089800d3b27",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Split_Check.thy": "395fe9f692054376c519c97ba34243593d73e96670b4c91528277a77355beb1a",
+    "thys/Category_Bridges/LP_Bridge/Projected_Segments/LP_Cut_Domain_SEG_Projected_Split_Composition.thy": "faf83d29767a8d9ff1183e5790685a6e099cd3e77a19da7cd1121d09226a92bd",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Allocate.thy": "73275b3bbf8052848f6b0b9bbc9b2999a9f93db45789cadcf2e68f2ca7373bf4",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Answers.thy": "880e2b2092b39bb02df2cbcd240c27702979d605adf85e0551e616889f4c154d",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Barriers.thy": "bbb1ebaa68614a4ea2538a6bbf85082f699fc744d83b741b748bc479dd160c03",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Certificate.thy": "f80a369e2899c9b5f3026791deb69bce3ad73f7d3c80acc080da5447ee366175",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Check.thy": "b27f6edca3efad0061ef3a96b33b1a58241f66a857c4553cf54b7bc011814a04",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Checker.thy": "9128310cd806ab8ef281c48992a053a5f4ef90b470047886ff4f684042e2bfd7",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Contracts.thy": "74a1a1e0cdbbcf14f965fb56de9f5ac9da681323ef195655c64278446b1f6c80",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Coverage.thy": "571107b001c272fd799226383d5cc9cd44b051bfd845d1fcef5d9ae1de816324",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Equality.thy": "0d046a35107cb272f81db451401a66eebb6832d2cc44311eb64b6d63bf34a5ac",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Link.thy": "6c8a4d54f2854c86d522bbbcac87a6a7c0aec81c363ff67233e584b809ea55fc",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Modular.thy": "16b1b831b993742ce73530b5d292c5549e8a86b3f0a39703716980c5331c8ee2",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module.thy": "28a1ef5d192e38badcb9d4f7d3d3a60f241e28bf8f88987d6128894d54bc74fa",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Certificate.thy": "9454132df9afe7545c2b98ce259f4e6903f190a3eba7917edeb4191691f5e9a1",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Checker.thy": "9e311f0c12be7432705b09cac4e53286c6afbbbdcde6d092531b063ba43c9c2f",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Triples.thy": "0a52fbc622fb437bbb74c42e03df50f8672afe1cef64a7e90751e0e71aa2c517",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Parallel.thy": "b0e934b49ba2f6466012855e7ee549e6e1b271da0281e9008661394cc2ba7a4c",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Resolution.thy": "3317de01d0a024bfb660ebdd06641d812575aab826b8829057f7e8e285b4779a",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Scope_Contracts.thy": "c3df300664782bef41c0ddd69bfbad515d913e66ad13be046fa0cd7cb0cebc53",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Scopes.thy": "b306663a4b814c702714d4ed338d04a2ec019c51efe255e1b0ea77573d80a378",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Sequence.thy": "f26b6077cda4b8b34c1fba253ab6bf19a122fad0866b11f66b1e7bf8627cff2e",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Steps.thy": "bfe6ba6cd240dca23de40a12bfa72196ccedc40f8d8009e05a8cd47a0ecb3a5c",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Symbolic.thy": "4aea77e70155d4887d926b79647355e275f5c212dd3f68e3ee56c3cac2c6e7f4",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Table.thy": "e29066d7fc01542ce1a5fbe5aabb212946c825e4ed1ecbed8b1883cff2462374",
+    "thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Triples.thy": "847e31a8af85f2e570b88ec3f39046342d66d957da0dce9f19d914cecbb428be",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_MGU_Context_Free.thy": "466a3d2555397274cefa6c6b014f018fc6d6b038e208c550811f13bbb7a36c55",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Captured.thy": "a94e0c65ff0111513b1dafe76e4e2698e96319d4668e46580e5bc2f147f17e90",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Certificate.thy": "7d6a94aac300159ad6bef18bf4358c472d1875b6523abdbb068f2adb1ff0a637",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Checker.thy": "0c3bdc44d156ac76eb6c6926c72ff13268d14115a4a0bcfa050d17829fb3defe",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Child.thy": "d75d6d98cf8eddc23d35c473840c442c847eab2cbf014a56860cfd5c0e022f8f",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Connection.thy": "f939fc0e26576aa8ff1f13971a43b3ea49addf08c81ba50f57d7d0ab78696f8d",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Connection_Check.thy": "30514631a53bfd74a16d37c07d9a2fc1807c2717126c4de109b3b478659b469a",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Context_Region.thy": "aab48c558dfc7aa136bb163fa9124c67d15503d555e17bb7670fccbc2ef30bfb",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Control.thy": "cfd715baccda8ae128f42f070cb31fec470cac86a513587f6b52e56932f91658",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Encoded_Emit.thy": "c14636ec2544ce2526c2011656599ec23b27f64572bc38cb642a5a0ea5688cfd",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Graph.thy": "0dba768e71b7dbcf4c2f17f725ee9b238bd5bf0001e900da16f73ee599575151",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Instance.thy": "f5e889a712eede66e4b23ce8e91600d5d7c118bb09116f49879a5f02711ef48b",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Interfaces.thy": "c625b36fae2cdb3d778485cc781b5a9ad49d7c2fa64db827925cf75df1bf4bc8",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Prefix.thy": "b62d72527f19f0bd3a3de1a0c68743f8ad47f197c0185400b9013c8df5e31580",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Region_Check.thy": "473e57125e89d5ebe49713eaa0f2829900347cca01c000935a29c43b30653ae5",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Regions.thy": "b9ac5acc0bdbff376246facd8243ef6f2a392fbb858a18f9d28af32044c96134",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Reinterface.thy": "968064a736957bc5bd5df0bb46b01d75212ea11ffc8497e23350fabc035789df",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Return_Bridge.thy": "90b29a3a4e2a776f2e7a2ec2ca937362c727f7c00c020bbb6ed14fe16c10e1c1",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Root_Representation.thy": "c12218bdcd4fd8476e173bde8c910e2c47b1a460479361a1e04c94f981cd7460",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Split_Bridge.thy": "b42a854fb25bd3b9286e24093e3ffaf3d095ad38f82e661697182d02e81ac67b",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Split_Check.thy": "151b2169474265d463b38b4a16a723c4647970bf382e1f15ae7f8e2b474e9c17",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Split_Composition.thy": "2995dc08f626d057db0d20d2b900f6955b743992f6c650543f575ea9539a480d",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_Split_Lower.thy": "09acce163bfc7d248a1594212c7053193755840a6d0bdc3d51bb6d707627e1c8",
+    "thys/Category_Bridges/LP_Bridge/Segments/LP_Cut_Domain_SEG_TRS_Returns.thy": "00b2c662d6c2c5a4ffe8588c87b5c5c12daea85e1e45e264d84dd679832c80df",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_All_Checkers_Audit.thy": "dd874ea65d1d0f35a6590faa453e8a74607eb7102c7673566f626fbae04b1b71",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Answers.thy": "08fc657d2b28164b2dcbf91b77ebd5ee35c904a6fa77ec92898d7619fb8b1f56",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Certificate.thy": "58db630943af219adb2304fa7154023a9498d3ce8b53c693b4aab9bb859b63db",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Checker.thy": "2fdc6b768519754e89dbf914fa2ba5692b76003bab456afd4ef8ad2fffe79372",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Child.thy": "5f05e89502edab6114eacbc41c7ba568aa887b9201441368646e0860af5830dc",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Connection.thy": "53356f86f0facffde55ecfaee53552413cd87c4f43847cd3b3ce21e6155595dd",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Contracts.thy": "b3a5d921b4097bc20775b538c9abb97a2cdda73aa8e523a41d20a947e5646e14",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Graph.thy": "46251365a3ad582315010cdc0b85c73a3764e975500c2d1dd184bf4c93d7a8a9",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Observed.thy": "25f3409653fb7df3b1889761f80e43a079b0ec3a2b7d5215f8d9711ecf5ce23c",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Prefix.thy": "23a194cf48f43c715b2bdfd02d2e75b6f08c13e0efd47bf256d089a00409e035",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Receipt.thy": "db4624c5cc6c6cc8570a624966cb3cc1f95c9d0c425e8392d1768021a1268a43",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Region.thy": "aade294d13be253a38d742b0b8afa44ad683e685c4f3b175d5be7fcbc799e042",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Split.thy": "b70f4eee8ab1a2dea312cfb36405834a9bb499bf9a5c334dbf8aa43719aa72c9",
+    "thys/Category_Bridges/LP_Bridge/Triple_Segments/LP_Cut_Domain_SEG_Triple_Split_Check.thy": "148f02abd719b0cf073eb4d12b11d0ee6b4301f6e31f9a25a11061c5cbf6e9f3"
+  },
+  "build_log": "target/its-lp-specifications/triple-segment-domain-8.log",
+  "build_log_sha256": "6c23ba5eef8a8ceefafe2a89c51da7ef42c2071681b0e0d4404c05c731d36fe6",
+  "build_log_scope": "Cut session passed. The independent, newly drafted pure-LP NO session failed in this combined run; no pure-LP NO result is claimed.",
+  "production_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "production_artifacts_changed": false,
+  "working_tree_changes_uncommitted": true,
+  "remaining": [
+    "pure-LP NO family bridges and their combined dispatcher audit",
+    "finite competition default and explicit separate runtime semantics",
+    "complete runtime semantic identity and source/certificate/domain binding",
+    "focused integration and final completion audit"
+  ]
+}

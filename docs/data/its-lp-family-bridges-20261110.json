@@ -1,0 +1,81 @@
+{
+  "recorded_at_utc": "2026-11-10T18:29:09.118304+00:00",
+  "objective": "finish all open parts",
+  "objective_status": "active; incomplete",
+  "previous_receipt": "lp-cut-domain-bridges-20261110.json",
+  "verified": {
+    "sessions": [
+      "Category_LP_Cut_Family_Bridges",
+      "Category_LP_Cut_MGU_Bridge"
+    ],
+    "cut_constructor_yes": [
+      "finite",
+      "rational",
+      "infinite"
+    ],
+    "additional_pure_lp_yes_endpoints": [
+      "check_lp_constructor_xml",
+      "check_lp_residual_constructor_xml",
+      "check_lp_pidp_xml",
+      "check_lp_pidp_mode_xml",
+      "check_lp_simplify_xml",
+      "check_lp_source_graph_xml",
+      "check_lp_seg_xml",
+      "check_lp_residual_xml",
+      "check_lp_initial_triples_xml",
+      "check_lp_finite_xml"
+    ],
+    "pure_lp_domains": [
+      "finite",
+      "rational",
+      "infinite"
+    ],
+    "finite_named_endpoint_reason": "Exact Boolean check agrees with the check covered by check_lp_tocl09_sound; no domain transfer assumed.",
+    "mgu_foundations": [
+      "domain-valued comparison substitutions",
+      "body-only free-variable knowledge",
+      "head free-block knowledge",
+      "distinct-variable call domain unifiability",
+      "domain-specific precise source subset and scope preservation"
+    ],
+    "no_admissions": "Final family theorem dependencies audited by Thm_Deps.has_skip_proof"
+  },
+  "remaining": [
+    "MGU cut table and canonical simulation",
+    "return/module/composed/nested and triple cut families",
+    "segment/free/projected/triple and projected cut families",
+    "pure-LP NO families",
+    "semantic selection, complete identity and source/certificate binding",
+    "ITS input-sort and zero-arity review",
+    "focused integration tests and final completion audit"
+  ],
+  "oracle_audit": [
+    {
+      "theory": "Category_LP_Cut_Family_Bridges.LP_Cut_Constructor_Category_Bridge",
+      "message": "Cut constructor YES oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition"
+    },
+    {
+      "theory": "Category_LP_Cut_Family_Bridges.LP_Yes_Category_Bridges",
+      "message": "Pure LP YES family oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition"
+    }
+  ],
+  "source_revision": "123e3aafd0def79d2f0ce7d60596b6175a4a2532",
+  "source_sha256": {
+    "Makefile": "9214878f962cdd8afb976cf4a2d21e2ddcd71a1ee998c7700f7be9f9f1ac3015",
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Cut_Constructor_Category_Bridge.thy": "9c2fae82ede023627a0642665da1bcfc926294b5b4b741fc8f7c61f0f8751724",
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Yes_Category_Bridges.thy": "66e14e90cd09d94b1b40a921fc447955ce700f777c57e24d9be39d1fdfbffbb4",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Free_Coverage.thy": "6e58e6e85992f5e1b8b819b6190b9f88280f1552b3b8351b3a539357cb2eb503",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_MGU_Head.thy": "8b167166de60e1c611a291e223b1db6c9d2e1f25fe4880d635be58a7a89bcd1b",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_MGU_Properties.thy": "4701b018193757571b1d0cd3f7455c06f82943fbd4be77aceb4004937deb3bb0",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Source.thy": "de57fcde143b615e9e9544dab93adf89ded6acd7676aeb9eea09e177f0b5aec9",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "ee9563c96692a08bca1d97c9e56effc7cbe30b409225720ee0a955bd4b53e308"
+  },
+  "logs_sha256": {
+    "target/its-lp-specifications/all-families-library-1.log": "f4b18367a1c55719cfaf15000fbccb7be749a265bb7f06501319a77f44aa0e2c",
+    "target/its-lp-specifications/family-bridges-1.log": "0ae6bddc2fec0ff9fa392e581443203e4c931839d32263068d5a743474d92b53",
+    "target/its-lp-specifications/family-bridges-3.log": "56030ad7f857037454c943e3cf89bf0ca307f284a1330b8163e8f6e552743bd9"
+  },
+  "ceta_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "production_artifacts_changed": false,
+  "working_tree_changes_uncommitted": true
+}

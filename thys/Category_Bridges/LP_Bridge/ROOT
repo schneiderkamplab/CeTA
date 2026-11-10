@@ -1,0 +1,233 @@
+session Category_LP_Library in Library = Proof_Checker +
+  options [document = false, quick_and_dirty = false, timeout = 600]
+  directories "../../../Logic_Programming"
+  theories LP_Cut_Table_XML LP_Cut_MGU_Normalize LP_Cut_NO_XML
+    LP_Cut_Constructor_XML LP_Cut_MGU_XML LP_Cut_Projected_XML
+    LP_Cut_SEG_Free_Certificate_XML LP_Cut_SEG_Projected_Certificate_XML
+    LP_Cut_Return_Nested_Triples_XML LP_Cut_Return_Composed_Triples_XML
+    LP_Cut_Return_Module_Triples_XML LP_Cut_Return_Triples_XML LP_Cut_SEG_Triple_XML
+    LP_Source_Unify_XML
+
+session Category_LP_Bridge = Category_LP_Library +
+  options [document = false, quick_and_dirty = false, timeout = 240]
+  sessions Category_Specification_Bridges
+  theories LP_Representation LP_Checker_Bridge LP_Cut_Representation
+    LP_Cut_Checker_Bridge LP_Cut_Finite_Unification LP_Cut_Domain_Guards
+
+session Category_LP_Cut_Domain_Bridge in Domain = Category_LP_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_Knowledge LP_Cut_Domain_Source LP_Cut_Domain_Instances LP_Cut_Domain_Structural
+
+session Category_LP_Cut_Checker_Bridge in Checker = Category_LP_Cut_Domain_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_Resolution LP_Cut_Domain_Success LP_Cut_Domain_Link
+    LP_Cut_Domain_Nodes LP_Cut_Domain_Control LP_Cut_Domain_Answers LP_Cut_Domain_Answer_Split LP_Cut_Domain_Table LP_Cut_Domain_Canonical LP_Cut_Domain_Checker
+
+session Category_LP_Cut_NO_Bridge in NO = Category_LP_Cut_Checker_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_MGU LP_Cut_Domain_NO_Source LP_Cut_Domain_NO_Renaming
+    LP_Cut_Domain_NO_Steps LP_Cut_Domain_NO_Barriers LP_Cut_Domain_NO_Pumping
+    LP_Cut_Domain_NO_Pending LP_Cut_Domain_NO_Certificate LP_Cut_Back_Representation
+    LP_Cut_Domain_NO_Canonical LP_Cut_Domain_NO_Checker LP_Cut_Domain_NO_Examples
+
+session Category_LP_Cut_Family_Bridges in Families = Category_LP_Cut_NO_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Constructor_Category_Bridge LP_Yes_Category_Bridges
+
+session Category_LP_Cut_MGU_Bridge in MGU = Category_LP_Cut_Family_Bridges +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_MGU_Properties LP_Cut_Domain_Precise_Source LP_Cut_Domain_MGU_Head LP_Cut_Domain_Free_Coverage
+    LP_Cut_Domain_Precise_Instance LP_Cut_Domain_Precise_Link
+    LP_Cut_Domain_Precise_Equality LP_Cut_Domain_Precise_Resolution
+    LP_Cut_Domain_Precise_Stack LP_Cut_Domain_Precise_Answer_Split
+    LP_Cut_Domain_Precise_Table LP_Cut_Domain_Precise_Certificate
+    LP_Cut_Domain_Precise_MGU
+    LP_Cut_Domain_Precise_Canonical LP_Cut_Domain_Precise_Checker
+
+session Category_LP_Cut_Return_Bridge in Returns = Category_LP_Cut_MGU_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_Return_Answers LP_Cut_Domain_Return_Contracts LP_Cut_Domain_Return_Sequence
+    LP_Cut_Domain_Return_Scopes LP_Cut_Domain_Return_Symbolic
+    LP_Cut_Domain_Return_Link
+    LP_Cut_Domain_Return_Steps
+    LP_Cut_Domain_Return_Table
+    LP_Cut_Domain_Return_Resolution
+    LP_Cut_Domain_Return_Equality
+    LP_Cut_Domain_Return_Allocate
+    LP_Cut_Domain_Return_Check
+    LP_Cut_Domain_Return_Certificate LP_Cut_Domain_Return_Checker
+    LP_Cut_Domain_Return_Triples
+    LP_Cut_Domain_Return_Coverage
+    LP_Cut_Domain_Return_Barriers
+    LP_Cut_Domain_Return_Parallel
+    LP_Cut_Domain_Return_Modular
+    LP_Cut_Domain_Return_Scope_Contracts
+    LP_Cut_Domain_Return_Module
+    LP_Cut_Domain_Return_Module_Certificate
+    LP_Cut_Domain_Return_Module_Checker
+    LP_Cut_Domain_Return_Module_Triples
+
+session Category_LP_Cut_Composition_Bridge in Composition = Category_LP_Cut_Return_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_Scope_Ownership
+    LP_Cut_Domain_Return_Attachment
+    LP_Cut_Domain_Return_Source
+    LP_Cut_Domain_Return_Append
+    LP_Cut_Domain_Return_Attached_Answers
+    LP_Cut_Domain_Return_Environments
+    LP_Cut_Domain_Return_Actual
+    LP_Cut_Domain_Return_Interface
+    LP_Cut_Domain_Return_Interface_Lift
+    LP_Cut_Domain_Return_Domain_Compose
+    LP_Cut_Domain_Return_Module_Link LP_Cut_Domain_Return_Continuation
+    LP_Cut_Domain_Return_Split_Shape LP_Cut_Domain_Return_Split_Check
+    LP_Cut_Domain_Return_Preserved_Ground
+    LP_Cut_Domain_Return_Answer_Control
+    LP_Cut_Domain_Return_Output_Groundness
+    LP_Cut_Domain_Return_Ground_Continuation
+    LP_Cut_Domain_Return_Ground_Split_Check
+    LP_Cut_Domain_Return_Residual_Query
+    LP_Cut_Domain_Return_Entry_Certificate
+    LP_Cut_Domain_Return_Independent_Split
+    LP_Cut_Domain_Return_Independent_Certificate
+    LP_Cut_Domain_Return_Overapproximation
+    LP_Cut_Domain_Return_Composed
+    LP_Cut_Domain_Return_Composed_Certificate LP_Cut_Domain_Return_Composed_Checker
+    LP_Cut_Domain_Return_Composed_Triples
+
+session Category_LP_Cut_Nested_Bridge in Nested = Category_LP_Cut_Composition_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories
+    LP_Cut_Domain_Return_Semantic_Module
+    LP_Cut_Domain_Return_Semantic_Link
+    LP_Cut_Domain_Return_Semantic_Split
+    LP_Cut_Domain_Return_Semantic_Ground_Split
+    LP_Cut_Domain_Return_Nested
+    LP_Cut_Domain_Return_Nested_Certificate LP_Cut_Domain_Return_Nested_Checker
+    LP_Cut_Domain_Return_Nested_Triples
+
+session Category_LP_Cut_Projected_Bridge in Projected = Category_LP_Cut_Nested_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories
+    LP_Cut_Domain_Projected_Residual
+    LP_Cut_Domain_Projected_Module
+    LP_Cut_Domain_Projected_Plain
+    LP_Cut_Domain_Projected_Link
+    LP_Cut_Domain_Projected_Resolution
+    LP_Cut_Domain_Projected_Equality
+    LP_Cut_Domain_Projected_Action
+    LP_Cut_Domain_Projected_Semantic
+    LP_Cut_Domain_Projected_Split_Shape
+    LP_Cut_Domain_Projected_Split
+    LP_Cut_Domain_Projected_Ground_Split
+    LP_Cut_Domain_Projected_Nested
+    LP_Cut_Domain_Projected_Certificate LP_Cut_Domain_Projected_Checker
+
+session Category_LP_Cut_Segment_Bridge in Segments = Category_LP_Cut_Projected_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories
+    LP_Cut_Domain_SEG_TRS_Returns
+    LP_Cut_Domain_SEG_Interfaces
+    LP_Cut_Domain_SEG_Reinterface
+    LP_Cut_Domain_SEG_Regions
+    LP_Cut_Domain_SEG_Control
+    LP_Cut_Domain_SEG_Instance
+    LP_Cut_Domain_SEG_Captured
+    LP_Cut_Domain_SEG_Return_Bridge
+    LP_Cut_Domain_SEG_Connection
+    LP_Cut_Domain_SEG_Encoded_Emit
+    LP_Cut_Domain_SEG_Context_Region
+    LP_Cut_Domain_SEG_Split_Lower
+    LP_Cut_Domain_SEG_Root_Representation
+    LP_Cut_Domain_SEG_Connection_Check
+    LP_Cut_Domain_SEG_Region_Check
+    LP_Cut_Domain_MGU_Context_Free
+    LP_Cut_Domain_SEG_Prefix
+    LP_Cut_Domain_SEG_Child
+    LP_Cut_Domain_SEG_Split_Bridge
+    LP_Cut_Domain_SEG_Split_Composition
+    LP_Cut_Domain_SEG_Split_Check
+    LP_Cut_Domain_SEG_Graph
+    LP_Cut_Domain_SEG_Certificate LP_Cut_Domain_SEG_Checker
+
+session Category_LP_Cut_Free_Segment_Bridge in Free_Segments = Category_LP_Cut_Segment_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Domain_Uniform_Free LP_Cut_Domain_Joint_Free
+    LP_Cut_Domain_Mixed_Free_Coverage
+    LP_Cut_Domain_Return_Free_Link
+    LP_Cut_Domain_Joint_Free_Check
+    LP_Cut_Domain_Return_Free_Resolution
+    LP_Cut_Domain_Return_Free_Allocate
+    LP_Cut_Domain_Return_Free_Equality
+    LP_Cut_Domain_Return_Free_Check
+    LP_Cut_Domain_Free_Refutation
+    LP_Cut_Domain_SEG_Free_Control
+    LP_Cut_Domain_SEG_Free_Root_Representation
+    LP_Cut_Domain_SEG_Free_Connection_Check
+    LP_Cut_Domain_SEG_Free_Context_Region
+    LP_Cut_Domain_SEG_Free_Region_Check
+    LP_Cut_Domain_SEG_Free_Child
+    LP_Cut_Domain_SEG_Free_Split_Check
+    LP_Cut_Domain_SEG_Free_Graph
+    LP_Cut_Domain_SEG_Free_Certificate
+    LP_Cut_Domain_SEG_Free_Checker
+
+session Category_LP_Cut_Projected_Segment_Bridge in Projected_Segments = Category_LP_Cut_Free_Segment_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories
+    LP_Cut_Domain_SEG_Projected_Captured
+    LP_Cut_Domain_SEG_Projected_Relation
+    LP_Cut_Domain_SEG_Projected_Return
+    LP_Cut_Domain_SEG_Projected_Connection
+    LP_Cut_Domain_SEG_Projected_Region
+    LP_Cut_Domain_SEG_Projected_Root
+    LP_Cut_Domain_SEG_Projected_Child
+    LP_Cut_Domain_SEG_Projected_Connection_Check
+    LP_Cut_Domain_SEG_Projected_Region_Check
+    LP_Cut_Domain_SEG_Projected_Pending
+    LP_Cut_Domain_SEG_Projected_Split_Composition
+    LP_Cut_Domain_SEG_Projected_Split_Check
+    LP_Cut_Domain_SEG_Observed_Invariant
+    LP_Cut_Domain_SEG_Observed_Control
+    LP_Cut_Domain_SEG_Observed_Templates
+    LP_Cut_Domain_SEG_Observed_Region_Check
+    LP_Cut_Domain_SEG_Projected_Graph
+    LP_Cut_Domain_SEG_Projected_Certificate
+    LP_Cut_Domain_SEG_Projected_Checker
+
+session Category_LP_Cut_Triple_Segment_Bridge in Triple_Segments = Category_LP_Cut_Projected_Segment_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories
+    LP_Cut_Domain_SEG_Triple_Contracts
+    LP_Cut_Domain_SEG_Triple_Answers
+    LP_Cut_Domain_SEG_Triple_Receipt
+    LP_Cut_Domain_SEG_Triple_Prefix
+    LP_Cut_Domain_SEG_Triple_Observed
+    LP_Cut_Domain_SEG_Triple_Connection
+    LP_Cut_Domain_SEG_Triple_Region
+    LP_Cut_Domain_SEG_Triple_Child
+    LP_Cut_Domain_SEG_Triple_Split
+    LP_Cut_Domain_SEG_Triple_Split_Check
+    LP_Cut_Domain_SEG_Triple_Graph
+    LP_Cut_Domain_SEG_Triple_Certificate
+    LP_Cut_Domain_SEG_Triple_Checker
+    LP_Cut_All_Checkers_Audit
+
+session Category_LP_NO_Bridge in Pure_NO = Category_LP_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Unification_Factorisation LP_Universal_MGU LP_Universal_MGU_Finite LP_Finite_MGU_Lifting LP_MGU_Canonical LP_Finite_NO_Canonical LP_Finite_Unify_Witness LP_Finite_Trace_Witness LP_Finite_Neutral_Witness LP_Finite_NO_Checkers
+
+session Category_LP_Advanced_NO_Bridge in Pure_Advanced_NO = Category_LP_NO_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories
+    LP_Finite_Recurrent_Pair
+    LP_Finite_Recurrent_Pair_Check
+    LP_Finite_Success_Pattern
+    LP_Finite_Success_Pattern_Check
+    LP_Finite_Success_Instance
+    LP_Finite_Pattern_Trace
+    LP_Finite_Pattern_Acceleration
+    LP_Finite_Affine_Words
+    LP_Finite_Affine_Success
+    LP_Finite_Affine_Loop
+    LP_Advanced_NO_Checkers

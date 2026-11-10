@@ -1,0 +1,42 @@
+{
+  "recorded_at_utc": "2026-11-10T20:07:36.888103+00:00",
+  "objective_status": "active; remaining NO families and runtime binding open",
+  "session": "Category_LP_NO_Bridge",
+  "verified_theorems": [
+    "lp_source_loop_category_no",
+    "lp_source_trace_category_no",
+    "lp_source_unify_category_no",
+    "lp_source_neutral_category_no"
+  ],
+  "conclusions": "Each theorem concludes the conjunction of canonical finite/rational/unrestricted-tree nontermination.",
+  "premises": "Actual parse result, actual checker acceptance, and exact declared query-mode/position correspondence.",
+  "proof_route": "Finite certificate witnesses -> finite all-unifier executions -> universal MGU lifting -> each canonical runtime domain. No unrestricted all-unifier nontermination transfer is assumed.",
+  "no_admissions": true,
+  "oracle_dependencies": [],
+  "oracle_audit": "Category_LP_NO_Bridge.LP_Finite_NO_Checkers\nPure LP loop/trace/unify/neutral NO oracle dependencies: \n\n",
+  "source_revision": "123e3aafd0def79d2f0ce7d60596b6175a4a2532",
+  "source_sha256": {
+    "Makefile": "085ab9bedae156a32f6564a8279f9de8177172a3a8f677c149952627832041d3",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "36f7c9a0a65ee162ae0256068ace9fffe10f4c3cb9b96884bfd85675709193a7",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_MGU_Lifting.thy": "bd5a322b425105a6f8aa8b9018cce874f48d97d6fba1f261a1c3d8a4f21b4eb3",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_NO_Canonical.thy": "c952af283536eeb8327fa89b3a6fa4ec33b48f501e86cb9a62a70250c98c45a3",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_NO_Checkers.thy": "80670200a96c258807d1a278153b94b053cb61bcf9f0fcf001dc410fedb21368",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_Neutral_Witness.thy": "ebdf75d149a8612052386dfa23a300166581394946f0f05d4a1e83e193e46cb5",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_Trace_Witness.thy": "bf4bf4761e1721ed1056251975de602bb4725c6c1ba0e7e4b47d821919d41e71",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_Unify_Witness.thy": "d8e9fc4c21e2427a048ef82b0eda9e548596f4e45598a239f37fd172f3dcd909",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_MGU_Canonical.thy": "26d1e22b304a72b620b3bbf1bbff93251a8f357ce3c9a4970d91d14dbed483b0",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Unification_Factorisation.thy": "6ad6e1dddcf4341295224f354f77aa3344226ff3d59f01290d2d7c9daf4c7d07",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Universal_MGU.thy": "d8c119e5093c01365ce95099ec7e5cea944158a53675252535caa91a065da367",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Universal_MGU_Finite.thy": "fac3eb1dba9d4e0023300a181f75f419105ef8dda14f4317b0da391f12aaee01"
+  },
+  "build_log": "target/its-lp-specifications/pure-no-factor-25.log",
+  "build_log_sha256": "e3ccb8c2b06bd0b349e4288ee20eeb0dfd2fad12759cb900d8d3c188fb6081ae",
+  "production_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "production_artifacts_changed": false,
+  "working_tree_changes_uncommitted": true,
+  "remaining": [
+    "recurrent-pair, pattern-loop (including acceleration), affine-loop NO endpoints",
+    "runtime semantic selection and complete identity",
+    "original-input/certificate/domain binding and focused integration gate"
+  ]
+}

@@ -154,3 +154,10 @@ isabelle-equational-integrated:
 .PHONY: isabelle-category-properties
 isabelle-category-properties:
 	$(ISABELLE) build -D thys/Category_Properties
+
+.PHONY: isabelle-its-category-bridge isabelle-lp-category-bridge
+isabelle-its-category-bridge:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/Category_Bridges/ITS_Bridge Category_ITS_Bridge
+
+isabelle-lp-category-bridge:
+	$(ISABELLE) build -j $(ISABELLE_JOBS) $(ISABELLE_DIRS) -d thys/Category_Bridges/LP_Bridge Category_LP_Cut_Triple_Segment_Bridge Category_LP_Advanced_NO_Bridge

@@ -19,10 +19,14 @@ its validity predicate, and its final termination predicate.
 
 First-order categories share `fo_term`, `fo_subst`, `fo_context`, `fo_plug`,
 `trs_problem` and `fo_step`. SRS shares its word definitions; Higher-order shares
-its typed, binding-aware syntax. All categories use `no_infinite_steps`.
+its typed, binding-aware syntax. All rewriting categories use `no_infinite_steps`.
 Definitions do not import theorems or checker code. The former `standard_*`
 shared names were made category-neutral; the category-specific
 `trs_standard_terminates` name remains unchanged.
+
+The [ITS and LP extension review](its-lp-specifications.md) records the newer
+definitions and their separately audited bridge coverage. That extension is
+still a draft: pure-LP NO and cut checker correspondence remain open.
 
 Read the specification first. Then consult the corresponding properties and
 examples, followed by the [category review register](category-assumptions-review.md)
