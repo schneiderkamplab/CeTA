@@ -2086,3 +2086,23 @@ arbitrary head. These theories are not connected to the exported backend parser
 yet. The next integration must retain every row's observations, bind the selected
 filter to its shape coverage and expose any filter restrictions in complete
 residual identities. Whole-value groundness must not replace that obligation.
+
+## Established Prolog finite return projections
+
+Commit `f2c43b0` connects the verified finite-shape component theorem to the
+existing structural backend. The optional `shapeStructuralBackend` envelope
+checks every observed entry, its actual-return seeds, the argument filter and
+all PiDP children. A retained unconstrained shape edge is rejected; cyclic or
+open erased fields cannot become a decreasing measure. The original structural
+backend remains accepted.
+
+Verification 1088/1089 and export 1090 pass. Unified O2 integration is
+`target/unified-shape-backend-1091/ceta`, SHA-256
+`a1a1ec337905d56cf13fcbbd6cf5f3c796bcee46d85b2a2054080313ce563c4d`,
+on `codex/prolog-production-integration`. Ferrum `7e989ea2` passes four native
+and four strict family proofs, seven controls and 24 mutation checks. Retention
+1092 passes 360 checks over 87 Prolog and 93 LP-with-cut certificates. Complete
+Prolog strict replay 1508 preserves 79 YES + 8 NO / 221 with no new benchmark
+verdicts. This is a development integration, not protected-category production
+promotion. Evidence is pinned in the sibling Ferrum checkout at
+`docs/data/prolog-shape-backend-20261111.json`.
