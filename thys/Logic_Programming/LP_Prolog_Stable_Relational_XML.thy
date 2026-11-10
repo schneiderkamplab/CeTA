@@ -16,13 +16,23 @@ definition lpp_relational_component_parser where
       atom\<leftarrow>xml_singleton (STR ''returnedCall'') lpp_success_atom_parser id;
       first_call\<leftarrow>xml_singleton (STR ''firstCall'') lpc_triple_clause_receipt_parser id;
       second_call\<leftarrow>xml_singleton (STR ''secondCall'') lpc_triple_clause_receipt_parser id;
-      xml_return (None,LPPSRelational first_types second_types split evidence atom first_call second_call)})"
+      xml_return (None,LPPSRelational first_types second_types split evidence atom first_call second_call)}) XMLor
+    (XMLdo (STR ''relationalShapeSplit'') {
+      split\<leftarrow>lpc_triple_split_parser;
+      evidence\<leftarrow>lpp_finite_shape_receipt_parser;
+      first_types\<leftarrow>lpp_evaluation_types_parser (STR ''firstTypes'');
+      second_types\<leftarrow>lpp_evaluation_types_parser (STR ''secondTypes'');
+      atom\<leftarrow>xml_singleton (STR ''returnedCall'') lpp_success_atom_parser id;
+      first_call\<leftarrow>xml_singleton (STR ''firstCall'') lpc_triple_clause_receipt_parser id;
+      second_call\<leftarrow>xml_singleton (STR ''secondCall'') lpc_triple_clause_receipt_parser id;
+      xml_return (None,LPPSControlShape first_types second_types split evidence atom first_call second_call)})"
 
 definition lpp_relational_component_header where
   "lpp_relational_component_header P fuel transfer component =
     (case component of (header,LPPSExisting old descent) \<Rightarrow>
       lpp_established_finite_component_header P fuel transfer (header,old)
-    | (header,LPPSRelational ft st split evidence atom first_call second_call) \<Rightarrow> header=None)"
+    | (header,LPPSRelational ft st split evidence atom first_call second_call) \<Rightarrow> header=None
+    | (header,LPPSControlShape ft st split evidence atom first_call second_call) \<Rightarrow> header=None)"
 
 definition lpp_structural_entries_parser where
   "lpp_structural_entries_parser = xml_many (STR ''entries'') (XMLdo (STR ''entry'') {

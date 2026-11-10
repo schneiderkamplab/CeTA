@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "8dcc37019d5b664801199b8cab21e5075200c49ca11aae9a2ac4457223bc3693",
+      "Prolog_Stable_Mixed_Generated.hs": "1e768a965f9308bd39ed5709a9b49612c5fd6a545161e8b3ecd96a1556b2d214",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "6daa6f4c3a4e85d9afcfea3ff0ea7ecf1315127c01ff029f02a23f156308b837",
+    "archive_sha256": "f95a1660793b8a27989e249f1639b5ef1db9159dddca048eb433c067bb038fd9",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -1025,6 +1025,23 @@
         "thys/Logic_Programming/LP_Prolog_Stable_Subtract_Library.thy": "a26d558af831e561dded68c1ead3bb17a2ff25cd2933f7f3c3812330114db387",
         "thys/Logic_Programming/LP_Prolog_Subtract_Library.thy": "86bbc27fbae908a7b0a36dc7aa82ddb2a93132619bcee0ba09570d3b83fae6d5"
       }
+    },
+    "prolog_control_shape_integration": {
+      "verification": "target/prolog-control-shape-xml-1062.log",
+      "return_verification": "target/prolog-control-shapes-1056.log",
+      "receipt_verification": "target/prolog-control-shape-integers-1061.log",
+      "export_verification": "target/prolog-control-shape-export-1063.log",
+      "export": "target/prolog-control-shape-export-1063",
+      "generated_sha256": "1e768a965f9308bd39ed5709a9b49612c5fd6a545161e8b3ecd96a1556b2d214",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Control_Shape_Check.thy": "d5342f51cf7ca7a79312865779de1327888c621ddeafa59e58e825944be51975",
+        "thys/Logic_Programming/LP_Prolog_Control_Shape_Receipt.thy": "d578e78d21d431a48ed14768e823a8e0e2682f95e1ccf05c038ff85dafbaed7d",
+        "thys/Logic_Programming/LP_Prolog_Control_Shape_Return.thy": "adc03f21292a1709f96a6bf7939846fc2c8bf595fa4e54d6daddc32d2982717f",
+        "thys/Logic_Programming/LP_Prolog_Control_Shape_Split.thy": "aca300ee3073b1e26d9f7ebdbb18dfa5111c840422cfc18a62e83793ca7e7934",
+        "thys/Logic_Programming/LP_Prolog_Stable_Relational_Component.thy": "d0734be09fef9164b1923615bf0cc4d59e031fec44b4724e7b432cd477a63905",
+        "thys/Logic_Programming/LP_Prolog_Stable_Relational_XML.thy": "7118afcce9d8898287bf3091807ae8715310aaa2af9148a55ffb967b740e8ce8"
+      },
+      "scope": "Control shape receipts and source Split assembly only; later projected-entry backend theories are not part of this export."
     }
   },
   "higher-order": {

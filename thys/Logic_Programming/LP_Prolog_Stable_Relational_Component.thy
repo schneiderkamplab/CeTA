@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Relational_Component
- imports LP_Prolog_Stable_Relational_Check LP_Prolog_Stable_Guarded_Graph
+ imports LP_Prolog_Control_Shape_Check LP_Prolog_Stable_Relational_Check LP_Prolog_Stable_Guarded_Graph
 begin
 hide_const (open) Tree_Automata_Containment.entry
 
@@ -7,6 +7,9 @@ datatype lpp_stable_relational_component =
     LPPSExisting lpp_finite_triple_component lpp_finite_guarded_descent
   | LPPSRelational lpp_link_types lpp_link_types "string lpc_triple_split"
       lpp_source_ground_receipt "string * string lpc_term list"
+      lpp_guarded_call_receipt lpp_guarded_call_receipt
+  | LPPSControlShape lpp_link_types lpp_link_types "string lpc_triple_split"
+      lpp_source_shape_receipt "string * string lpc_term list"
       lpp_guarded_call_receipt lpp_guarded_call_receipt
 
 fun lpp_check_stable_relational_component where
@@ -17,6 +20,10 @@ fun lpp_check_stable_relational_component where
 | "lpp_check_stable_relational_component fuel P SP D Q T roots contexts incoming entry OD
       (LPPSRelational ft st receipt evidence atom first_call second_call) =
     lpp_check_stable_relational_split T ft st fuel P SP D Q roots contexts incoming entry receipt evidence
+      atom OD first_call second_call"
+| "lpp_check_stable_relational_component fuel P SP D Q T roots contexts incoming entry OD
+      (LPPSControlShape ft st receipt evidence atom first_call second_call) =
+    lpp_check_control_shape_split T ft st fuel P SP D Q roots contexts incoming entry receipt evidence
       atom OD first_call second_call"
 
 theorem lpp_stable_relational_component_checked_lower:
@@ -49,6 +56,14 @@ next
     receipt evidence (f,ts) OD first_call second_call"
     using checked by (simp add: LPPSRelational atom)
   show ?thesis by (rule lpp_checked_stable_relational_split_sound[OF compatible transfer local program
+    known observed free lower])
+next
+  case (LPPSControlShape ft st receipt evidence atom first_call second_call)
+  obtain f ts where atom: "atom=(f,ts)" by (cases atom) auto
+  have local: "lpp_check_control_shape_split T ft st fuel P SP D Q roots contexts incoming entry
+    receipt evidence (f,ts) OD first_call second_call"
+    using checked by (simp add: LPPSControlShape atom)
+  show ?thesis by (rule lpp_checked_control_shape_split_sound[OF compatible transfer local program
     known observed free lower])
 qed
 
