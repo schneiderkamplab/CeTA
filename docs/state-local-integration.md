@@ -2044,3 +2044,45 @@ Retention 1050 passes 356 checks across all previous 85 Prolog and 93 LP-with-cu
 certificates. This is not protected-category production promotion.
 [The pinned cross-repository evidence](../../ferrum-prolog-release/docs/data/prolog-control-returns-20261110.json)
 includes the archive, hashes, failed attempts, full replay and remaining gaps.
+
+## General control-return shape integration in progress
+
+Verification 1056 proves that actual conditional helper returns preserve seed
+shape facts under substitution and satisfy the existing shared shape-transfer
+checker. Verification 1057 checks the executable control-shape receipt and its
+returned context; 1058 checks its Split interface and descent composition.
+Full mixed-source XML verification 1059 passes with the additive
+`LPPSControlShape` component and `relationalShapeSplit` parser. Existing component
+forms remain available. These changes have not been exported or promoted.
+
+Verification 1061 extends the receipt with conditional integer-return facts from
+that same actual helper model. Full mixed-source XML verification 1062 passes.
+The native connection now discovers shared shape grammars, emits the new Split
+component and exposes residuals through an additive explicit strategy. Preparation
+1474 passes for a conditional helper returning a list with open record fields and
+its renamed variant; native shared LP tests 1477 pass 587 tests with thirteen
+ignored. Export 1063 is in progress. These checks do not establish a new certified
+benchmark result; the baseline remains 79 YES + 8 NO. Unified executable checks,
+semantic mutations, strict replay and benchmark gains remain outstanding.
+Verification failures 1053–1055 and 1060 and all successful attempts are retained
+under the persistent target directory.
+
+Export 1063 and unified build 1068 are complete. Checker SHA-256 is
+`751a5fb6e3ee7c6b42c46dc54bbb4089c36643489d93d63c58c7b9d4c1dd883c`.
+Retention 1073 accepts all 87 Prolog and 93 LP-with-cut certificates twice (360
+checks). Ferrum family 1490 passes four native and four strict positives, seven
+semantic/advice controls, and mutation 1493 passes twelve checks. Full strict
+replay 1492 retains 79 YES + 8 NO and all source hashes; all 87 receipts are
+independently authorized. No new benchmark gain or production promotion follows.
+[The cross-repository evidence](../../ferrum-prolog-release/docs/data/prolog-control-shapes-20261110.json)
+retains failed attempts, including the corrected native ground-observation/guard
+slot mismatch, successful source certificates and checking identities.
+
+Separate projection foundations pass verification 1087: inductive return shapes
+justify finite selected projections, and the existing PiDP proof discharges a
+component when every actual entry has such a projection. Verification 1076
+rejects keeping or collapsing onto unconstrained fields and permits an erased
+arbitrary head. These theories are not connected to the exported backend parser
+yet. The next integration must retain every row's observations, bind the selected
+filter to its shape coverage and expose any filter restrictions in complete
+residual identities. Whole-value groundness must not replace that obligation.
