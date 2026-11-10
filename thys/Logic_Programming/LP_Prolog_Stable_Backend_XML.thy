@@ -2,8 +2,8 @@ theory LP_Prolog_Stable_Backend_XML
  imports LP_Prolog_Stable_Relational_XML LP_Dependency_Triple_XML LP_Prolog_Stable_Return_XML
 begin
 
-definition lpp_structural_backend_parser where
-  "lpp_structural_backend_parser = XMLdo (STR ''structuralBackend'') {
+definition lpp_plain_structural_backend_parser where
+  "lpp_plain_structural_backend_parser = XMLdo (STR ''structuralBackend'') {
     entries\<leftarrow>lpp_structural_entries_parser;
     coverage\<leftarrow>lpp_structural_coverage_parser;
     source_rows\<leftarrow>xml_many (STR ''triples'') (XMLdo (STR ''triple'') {
@@ -16,14 +16,31 @@ definition lpp_structural_backend_parser where
     child\<leftarrow>lp_triple_pidp_parser;
     xml_return (entries,coverage,source_rows,predicates,constructors,child)}"
 
+definition lpp_shape_coverage_parser where
+  "lpp_shape_coverage_parser = xml_many (STR ''shapeCoverage'') (XMLdo (STR ''row'') {
+    slot\<leftarrow>xml_nat (STR ''entryIndex'');
+    facts\<leftarrow>xml_many (STR ''facts'') lpp_transfer_fact_parser id;
+    grammar\<leftarrow>lpp_return_grammar_parser;
+    seeds\<leftarrow>xml_many (STR ''seeds'') lpp_shape_fact_parser id;
+    shapes\<leftarrow>xml_many (STR ''arguments'') lpp_return_shape_parser id;
+    xml_return (slot,facts,grammar,seeds,shapes)}) id"
+
+definition lpp_structural_backend_parser where
+  "lpp_structural_backend_parser =
+    (xml_change lpp_plain_structural_backend_parser (\<lambda>x. xml_return (x,None))) XMLor
+    (XMLdo (STR ''shapeStructuralBackend'') {
+      child\<leftarrow>lpp_plain_structural_backend_parser;
+      evidence\<leftarrow>lpp_shape_coverage_parser;
+      xml_return (child,Some evidence)})"
+
 definition lpp_decode_structural_backend where
   "lpp_decode_structural_backend P data = (case data of
-    (entries,coverage,source_rows,predicates,constructors,
-      (D,Q,outs,fallback,dnames,pnames,marks,filters,(q,n,positions),labs,proofs)) \<Rightarrow>
+    ((entries,coverage,source_rows,predicates,constructors,
+      (D,Q,outs,fallback,dnames,pnames,marks,filters,(q,n,positions),labs,proofs)),shape_meta) \<Rightarrow>
     (let p=lpc_lookup fallback predicates; d=lpc_lookup fallback constructors in
       if D=lp_roles_triples p d source_rows \<and> Q=lp_roles_program p d (lpp_erase_success P) \<and>
         list_ex (\<lambda>(name,arity,ground). p (LPCUser name)=q \<and> arity=n \<and> ground = positions) entries
-      then Some (entries,coverage,source_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs)
+      then Some (entries,coverage,source_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs,shape_meta)
       else None))"
 
 definition lpp_plain_numeric_backend_parser where

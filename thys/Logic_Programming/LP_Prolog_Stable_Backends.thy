@@ -1,13 +1,16 @@
 theory LP_Prolog_Stable_Backends
- imports LP_Prolog_Stable_Structural_Child LP_Prolog_Stable_Computed_Projection
+ imports LP_Prolog_Stable_Shape_Coverage LP_Prolog_Stable_Structural_Child LP_Prolog_Stable_Computed_Projection
    LP_Prolog_Stable_Relational_Routing LP_Prolog_Stable_Return_Component
 begin
 
 definition lpp_check_stable_backend where
   "lpp_check_stable_backend I J T P D backend =
     (case backend of
-      Inl (entries,evidence,child_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs) \<Rightarrow>
-        lpp_check_structural_entry_coverage T entries D evidence \<and>
+      Inl (entries,evidence,child_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs,shape_meta) \<Rightarrow>
+        (case shape_meta of None \<Rightarrow> lpp_check_structural_entry_coverage T entries D evidence
+         | Some shape_evidence \<Rightarrow> (case afs_of filters of None \<Rightarrow> False | Some flt \<Rightarrow>
+             lpp_check_shape_coverage T entries flt (lpc_lookup fallback predicates)
+               (lpc_lookup fallback constructors) marks D shape_evidence)) \<and>
         set child_rows=lpp_erase_triples (fst ` set D) \<and>
         lpp_check_structural_pidp_entries I J child_rows (lpp_erase_success P) entries
           (lpc_lookup fallback predicates) (lpc_lookup fallback constructors)
@@ -29,16 +32,28 @@ theorem lpp_check_stable_backend_sound:
   shows "SN (lpp_stable_observed_calls operation (set D) P :: string lpp_success_iatom rel)"
 proof (cases backend)
   case (Inl structural)
-  obtain entries evidence child_rows predicates constructors outs fallback dnames pnames marks filters labs proofs
-    where shape: "structural=(entries,evidence,child_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs)"
+  obtain entries evidence child_rows predicates constructors outs fallback dnames pnames marks filters labs proofs shape_meta
+    where shape: "structural=(entries,evidence,child_rows,predicates,constructors,outs,fallback,dnames,pnames,marks,filters,labs,proofs,shape_meta)"
     by (cases structural) auto
-  have coverage: "lpp_check_structural_entry_coverage T entries D evidence"
-    and subject: "set child_rows=lpp_erase_triples (fst ` set D)"
+  have subject: "set child_rows=lpp_erase_triples (fst ` set D)"
     and children: "lpp_check_structural_pidp_entries I J child_rows (lpp_erase_success P) entries
       (lpc_lookup fallback predicates) (lpc_lookup fallback constructors)
       outs fallback dnames pnames marks filters labs proofs"
-    using checked by (simp_all add: lpp_check_stable_backend_def Inl shape)
-  show ?thesis by (rule lpp_checked_structural_pidp_component[OF I J compatible coverage transfer subject children])
+    using checked by (auto simp: lpp_check_stable_backend_def Inl shape)
+  show ?thesis
+  proof (cases shape_meta)
+    case None
+    have coverage: "lpp_check_structural_entry_coverage T entries D evidence"
+      using checked by (simp add: lpp_check_stable_backend_def Inl shape None)
+    show ?thesis by (rule lpp_checked_structural_pidp_component[OF I J compatible coverage transfer subject children])
+  next
+    case (Some shape_evidence)
+    obtain flt where filter: "afs_of filters=Some flt"
+      and coverage: "lpp_check_shape_coverage T entries flt (lpc_lookup fallback predicates)
+        (lpc_lookup fallback constructors) marks D shape_evidence"
+      using checked by (auto simp: lpp_check_stable_backend_def Inl shape Some split: option.splits)
+    show ?thesis by (rule lpp_checked_shape_pidp_component[OF I J compatible coverage transfer subject filter children])
+  qed
 next
   case (Inr numeric)
   obtain expressions positions coordinates modes locations system row_receipts child return_meta
