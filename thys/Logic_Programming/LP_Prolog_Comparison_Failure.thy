@@ -56,7 +56,7 @@ proof -
     by (simp only: outcomes)
   show ?thesis using step selected
     by (cases rule: lpp_answer_transition.cases)
-      (auto simp: lpp_builtin_active_def lpp_integer_source_no_probe simp del: lpp_integer_source_builtin.simps
+      (auto simp: lpp_builtin_active_def lpp_integer_source_no_probe lpp_integer_source_no_call lpp_integer_source_no_branch simp del: lpp_integer_source_builtin.simps
         dest: failure dest!: success)
 qed
 
@@ -88,9 +88,10 @@ proof -
   qed
   have selected: "(f,length [a,b])\<in>lpp_builtin_signature"
     using lpp_comparison_selected[OF descriptor] by (simp add: numeral_2_eq_2)
+  have ns: "f\<noteq>''3:subtract''" and nc: "f\<noteq>''2:;''" using comparison by auto
   have old: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin
       ((LPCGoals (LPCAtom (LPIFun (LPCUser f) [a,b])#gs),eta)#saved) event tt"
-    using step by (simp only: lpp_finite_source_nonis_step[OF ne nd nl np selected])
+    using step by (simp only: lpp_finite_source_nonis_step[OF ne nd nl np ns nc selected])
   show ?thesis by (rule lpp_finite_comparison_precise_step[OF descriptor old])
 qed
 

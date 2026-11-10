@@ -35,6 +35,16 @@ definition lpp_evaluation_action_parser where
       yf\<leftarrow>lpp_evaluation_types_parser (STR ''yesTypes'');
       nf\<leftarrow>lpp_evaluation_types_parser (STR ''noTypes'');
       xml_return (LPPEPrimitive (LPPEGroundDisequality a b gs active saved yes no yf nf))}) XMLor
+    (XMLdo (STR ''conditionalBranch'') {
+      c\<leftarrow>lpc_term_parser; y\<leftarrow>lpc_term_parser; z\<leftarrow>lpc_term_parser;
+      cs\<leftarrow>xml_many (STR ''conditionGoals'') lpc_goal_parser id;
+      ys\<leftarrow>xml_many (STR ''thenGoals'') lpc_goal_parser id;
+      zs\<leftarrow>xml_many (STR ''elseGoals'') lpc_goal_parser id;
+      m\<leftarrow>xml_nat (STR ''commitScope''); n\<leftarrow>xml_nat (STR ''localScope'');
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      e\<leftarrow>lpc_link_parser; fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
+      xml_return (LPPEPrimitive (LPPEBranch c y z cs ys zs m n gs active saved e fs))}) XMLor
     (XMLdo (STR ''opaqueProbe'') {
       f\<leftarrow>xml_text (STR ''predicate''); g\<leftarrow>xml_text (STR ''targetPredicate'');
       argv\<leftarrow>xml_many (STR ''arguments'') lpc_term_parser id;
@@ -103,6 +113,13 @@ definition lpp_evaluation_action_parser where
       result_var\<leftarrow>xml_text (STR ''resultVariable''); middle\<leftarrow>lpc_link_parser;
       fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
       xml_return (LPPEFiniteLength a e gs active saved result_var middle fs)}) XMLor
+    (XMLdo (STR ''subtractLibrary'') {
+      e\<leftarrow>lpc_term_parser; s\<leftarrow>lpc_term_parser; a\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      middle\<leftarrow>lpc_link_parser;
+      fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
+      xml_return (LPPESubtractLibrary e s a gs active saved middle fs)}) XMLor
     (XMLdo (STR ''normalizedConstantEvaluation'') {
       evidence\<leftarrow>lpp_integer_expression_parser; a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
       gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;

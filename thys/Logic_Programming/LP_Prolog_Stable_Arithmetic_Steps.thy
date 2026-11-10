@@ -38,9 +38,13 @@ proof -
   have selected: "(''2:is'',length [a,e])\<in>lpp_builtin_signature" by code_simp
   have no_probe: "\<And>probe keep. \<not>lpp_stable_is_outcome operation a e (LPPBuiltinProbe probe keep)"
     by (auto simp: lpp_stable_source_is lpp_stable_is_outcome_def split: option.splits)
+  have no_call: "\<And>aa. \<not>lpp_stable_is_outcome operation a e (LPPBuiltinCall aa)"
+    by (auto simp: lpp_stable_is_outcome_def split: option.splits)
+  have no_branch: "\<And>cs ys ns. \<not>lpp_stable_is_outcome operation a e (LPPBuiltinBranch cs ys ns)"
+    by (auto simp: lpp_stable_is_outcome_def split: option.splits)
   show ?thesis using step selected
     by (cases rule: lpp_answer_transition.cases)
-      (auto simp: lpp_builtin_active_def no_probe lpp_stable_source_is)
+      (auto simp: lpp_builtin_active_def no_probe no_call no_branch lpp_stable_source_is)
 qed
 
 ML \<open>

@@ -71,11 +71,15 @@ definition lpp_established_finite_integer_split_parser where
     second_types\<leftarrow>lpp_evaluation_types_parser (STR ''secondTypes'');
     xml_return (None,LPPFTIntegerSplit first_types second_types split evidence)}"
 
+definition lpp_control_return_model_parser where
+  "lpp_control_return_model_parser tag = XMLdo tag {
+    F\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
+    transfer\<leftarrow>lpp_transfer_contract_parser; xml_return (F,transfer)}"
+
 definition lpp_finite_ground_receipt_parser where
   "lpp_finite_ground_receipt_parser = XMLdo (STR ''sourceGroundReturn'') {
-    model\<leftarrow>XMLdo (STR ''sourceFiniteReturnModel'') {
-      F\<leftarrow>xml_many (STR ''predicates'') (xml_text (STR ''predicate'')) id;
-      transfer\<leftarrow>lpp_transfer_contract_parser; xml_return (F,transfer)};
+    model\<leftarrow>(lpp_control_return_model_parser (STR ''sourceFiniteReturnModel'') XMLor
+      lpp_control_return_model_parser (STR ''sourceControlReturnModel''));
     modes\<leftarrow>xml_many (STR ''groundModes'') (XMLdo (STR ''groundMode'') {
       f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
       n\<leftarrow>xml_nat (STR ''arity'');

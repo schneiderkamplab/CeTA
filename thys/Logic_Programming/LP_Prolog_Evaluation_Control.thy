@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Control
- imports LP_Prolog_Equation_Rewrite LP_Prolog_Finite_Evaluation_Error LP_Prolog_Finite_Comparison_Error LP_Prolog_Finite_Context_Length LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
+ imports LP_Prolog_Subtract_Library LP_Prolog_Equation_Rewrite LP_Prolog_Finite_Evaluation_Error LP_Prolog_Finite_Comparison_Error LP_Prolog_Finite_Context_Length LP_Prolog_Finite_Observed_Is LP_Prolog_Evaluation_Primitive LP_Prolog_Finite_Context_Constant LP_Prolog_Context_Free_Control
 begin
 
 datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
@@ -16,6 +16,8 @@ datatype lpp_evaluation_action = LPPEPrimitive lpp_evaluation_primitive
       "string lpc_term list" "string lpc_return_state" string "string lpc_link" lpp_link_types
   | LPPEFiniteLength "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
       "string lpc_term list" "string lpc_return_state" string "string lpc_link" lpp_link_types
+  | LPPESubtractLibrary "string lpc_term" "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
+      "string lpc_term list" "string lpc_return_state" "string lpc_link" lpp_link_types
   | LPPEComparisonError string lpp_integer_comparison bool "string lpc_term" "string lpc_term"
       "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state"
   | LPPEEvaluationError "string lpc_term" "string lpc_term"
@@ -52,6 +54,8 @@ fun lpp_check_evaluation_module_action where
     lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEFiniteLength a e gs active saved result_var middle fs) =
     lpp_check_finite_context_length T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+| "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPESubtractLibrary e s a gs active saved middle fs) =
+    lpp_check_subtract_library T fs fuel P Q nds states contexts Fs nd F ss source_context e s a gs active saved middle"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEComparisonError f comparison reversed a b gs active saved) =
     lpp_check_finite_comparison_error nd F ss source_context f comparison reversed a b gs active saved"
 | "lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPEEvaluationError a e gs active saved) =
@@ -156,6 +160,32 @@ next
     using check by (auto simp: lpp_check_finite_context_length_def lpp_check_evaluation_link_def lpc_check_return_table_link_def lpc_check_return_link_def lpc_check_link_def)
   show ?thesis
   proof (rule lpp_finite_context_length_contract[where J=J, OF transfer check known free observed invariant frames])
+    fix rho
+    assume edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
+      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+"
+      and knowledge: "lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho"
+      and child_free: "lpc_free_knowledge (set (Fs!lpcl_target middle)) rho"
+      and child_context: "lpp_evaluation_context_holds lpp_finite_evaluation_result SP (contexts!lpcl_target middle) rho"
+      and inv: "J (lpc_return_eval rho (states!lpcl_target middle))"
+    have represented: "lpp_evaluation_module_rep SP nds states contexts Fs
+      (lpc_return_eval rho (states!lpcl_target middle))
+      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))]"
+      unfolding lpp_evaluation_module_rep_def lpp_evaluation_rep_def
+      by (rule exI[of _ "[]"], rule exI[of _ "lpcl_target middle"], rule exI[of _ rho])
+        (use bounds knowledge child_free child_context in auto)
+    show "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature lpp_finite_source_builtin lpp_finite_source_domain)
+      (lpc_return_eval rho (states!lpcl_target middle)) R t ret"
+      by (rule lower[OF edge represented inv])
+  qed
+next
+  case (LPPESubtractLibrary e s a gs active saved middle fs)
+  have check: "lpp_check_subtract_library T fs fuel P Q nds states contexts Fs nd F ss source_context e s a gs active saved middle"
+    using checked LPPESubtractLibrary by simp
+  have bounds: "lpcl_target middle<length nds \<and> lpcl_target middle<length states \<and>
+    lpcl_target middle<length contexts \<and> lpcl_target middle<length Fs"
+    using check by (auto simp: lpp_check_subtract_library_def lpp_check_evaluation_link_def lpc_check_return_table_link_def lpc_check_return_link_def lpc_check_link_def)
+  show ?thesis
+  proof (rule lpp_context_subtract_library_contract[where J=J, OF transfer check known free observed invariant frames])
     fix rho
     assume edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
       [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+"

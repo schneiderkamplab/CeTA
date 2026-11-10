@@ -98,6 +98,40 @@ proof -
   show ?thesis using result ordinary by simp
 qed
 
+lemma lpp_open_stable_control_model:
+  assumes checked: "lpp_open_builtin_check F SP" and reachable: "f\<in>F"
+    and outcome: "lpp_stable_source_builtin operation f ts result"
+    and control: "(\<exists>a. result=LPPBuiltinCall a) \<or>
+      (\<exists>cs ys ns. result=LPPBuiltinBranch cs ys ns)"
+  shows "lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation)
+    (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+proof -
+  have finite: "lpp_finite_source_builtin f ts result"
+    by (rule lpp_stable_source_refines_finite[OF outcome])
+  have selected: "(f,length ts)\<in>lpp_builtin_signature"
+    by (rule lpp_finite_source_selected[OF finite])
+  have excluded: "\<not>lpp_finite_source_builtin ''2:is'' ts result"
+    "\<not>lpp_finite_source_builtin ''1:integer'' ts result"
+    "\<not>lpp_finite_source_builtin ''2:length'' ts result"
+    using control by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def lpp_integer_is_outcome_def
+      lpp_finite_length_outcome_def lpp_integer_test_outcome_def lpp_integer_source_no_call lpp_integer_source_no_branch
+      simp del: lpp_integer_source_builtin.simps split: option.splits if_splits)
+  have ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''" "f\<noteq>''2:length''"
+    using finite excluded by auto
+  have clause: "((f,lpp_return_builtin_args (length ts)),[],[])\<in>set SP"
+    using checked selected reachable ordinary by (auto simp: lpp_open_builtin_check_def)
+  let ?us = "map (\<lambda>t. lp_isubst t sigma) ts"
+  let ?eta = "\<lambda>v. ?us!(length v-1)"
+  have success: "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation)
+    (lpp_success_atom_eval (f,lpp_return_builtin_args (length ts)) ?eta)"
+    by (rule lpp_guarded_success.clause[OF clause]) simp_all
+  have instantiated: "map (\<lambda>t. lp_ieval t ?eta) (lpp_return_builtin_args (length ts))=?us"
+    using lpp_return_builtin_args_eval[of ?us] by simp
+  have result: "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation) (f,?us)"
+    using success by (simp only: lpp_success_atom_eval_def fst_conv snd_conv instantiated)
+  show ?thesis using result ordinary by simp
+qed
+
 ML \<open>
 val checked = [@{thm lpp_open_stable_builtin_model},@{thm lpp_open_stable_probe_model}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))

@@ -1,5 +1,5 @@
 theory LP_Prolog_Open_Relational_Split
- imports LP_Prolog_Open_Ground_Receipt
+ imports LP_Prolog_Control_Relational_Split
 begin
 hide_const (open) Tree_Automata_Containment.entry
 
@@ -53,7 +53,8 @@ qed
 definition lpp_mixed_ground_receipt_check where
   "lpp_mixed_ground_receipt_check P incoming pre G H vs evidence =
     (lpp_finite_ground_receipt_check P incoming pre G H vs evidence \<or>
-     lpp_open_ground_receipt_check P incoming pre G H vs evidence)"
+     lpp_open_ground_receipt_check P incoming pre G H vs evidence \<or>
+     lpp_control_ground_receipt_check P incoming pre G H vs evidence)"
 
 theorem lpp_mixed_guarded_relational_ground_split_checked_lower:
   fixes P :: "(string,string) lp_cut_program"
@@ -84,21 +85,25 @@ theorem lpp_mixed_guarded_relational_ground_split_checked_lower:
   shows "lpp_stable_triple_answer_contract operation P (lpc_return_eval eta (lpc_triple_root_state entry)) Q
     (lp_atom_eval (lpctr_output entry))"
 proof -
-  have either: "lpp_finite_ground_receipt_check P incoming_context (lpcts_pre receipt)
-      (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence \<or>
-    lpp_open_ground_receipt_check P incoming_context (lpcts_pre receipt)
+  consider (old) "lpp_finite_ground_receipt_check P incoming_context (lpcts_pre receipt)
       (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence"
-    using ground_checked by (simp only: lpp_mixed_ground_receipt_check_def)
-  from either show ?thesis
-  proof
-    assume old: "lpp_finite_ground_receipt_check P incoming_context (lpcts_pre receipt)
+    | (legacy_open) "lpp_open_ground_receipt_check P incoming_context (lpcts_pre receipt)
       (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence"
+    | (control) "lpp_control_ground_receipt_check P incoming_context (lpcts_pre receipt)
+      (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence"
+    using ground_checked by (auto simp: lpp_mixed_ground_receipt_check_def)
+  then show ?thesis
+  proof cases
+    case old
     show ?thesis by (rule lpp_stable_guarded_relational_ground_split_checked_lower[OF compatible transfer old
       model_identity pre checked program known observed free first_descent return_descent lower])
   next
-    assume fresh: "lpp_open_ground_receipt_check P incoming_context (lpcts_pre receipt)
-      (lpcn_ground (lpctr_node entry)) (lpcts_ground receipt) (lpcn_vars (lpctr_node entry)) evidence"
-    show ?thesis by (rule lpp_open_guarded_relational_ground_split_checked_lower[OF compatible transfer fresh
+    case legacy_open
+    show ?thesis by (rule lpp_open_guarded_relational_ground_split_checked_lower[OF compatible transfer legacy_open
+      model_identity pre checked program known observed free first_descent return_descent lower])
+  next
+    case control
+    show ?thesis by (rule lpp_control_guarded_relational_ground_split_checked_lower[OF compatible transfer control
       model_identity pre checked program known observed free first_descent return_descent lower])
   qed
 qed

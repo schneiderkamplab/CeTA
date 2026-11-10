@@ -23,9 +23,11 @@ proof -
   have ne: "f\<noteq>''2:is''" using name by (auto simp: lpp_var_name_def)
   have nd: "f\<noteq>lpp_disequality_predicate" using name by auto
   have nl: "f\<noteq>''2:length''" using name by (auto simp: lpp_var_name_def)
+  have ns: "f\<noteq>''3:subtract''" using name by (auto simp: lpp_var_name_def)
+  have nb: "f\<noteq>''2:;''" using name by (auto simp: lpp_var_name_def)
   have np: "\<not>lpp_probe_name f" using name by (auto simp: lpp_var_name_def)
   have same: "\<And>outcome. lpp_finite_source_builtin f [a] outcome=lpp_test_builtin f [a] outcome"
-    by (simp only: lpp_finite_source_legacy[OF ne nd nl np] lpp_integer_source_legacy[OF disjI1[OF name]])
+    by (simp only: lpp_finite_source_legacy[OF ne nd nl np ns nb] lpp_integer_source_legacy[OF disjI1[OF name]])
   have selected: "(f,length [a])\<in>lpp_builtin_signature"
     using lpp_var_selected[OF name] by simp
   show ?thesis

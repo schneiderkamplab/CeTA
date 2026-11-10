@@ -14,6 +14,15 @@ theorem lpp_open_relational_actual_return:
     and probe_model: "\<And>f ts a keep sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
       (\<not>keep \<or> lpp_open_return_model F (lpp_inline_return_model SP E) (lp_isubst a sigma)) \<Longrightarrow>
       lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and call_model: "\<And>f ts a sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      lpp_open_return_model F (lpp_inline_return_model SP E) (lp_isubst a sigma) \<Longrightarrow>
+      lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and branch_model: "\<And>f ts cs ys ns sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      (list_all (lpc_model_goal (lpp_open_return_model F (lpp_inline_return_model SP E)))
+        (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal (lpp_open_return_model F (lpp_inline_return_model SP E)))
+        (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
+      lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
     and selected: "f\<in>F" and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D)
@@ -34,6 +43,16 @@ proof -
     if "U g us (LPPBuiltinProbe a keep)" and "\<not>keep \<or> ?M (lp_isubst a sigma)"
     for g us a keep sigma
     using probe_model[OF _ that] by (cases "g\<in>F") auto
+  have call_open: "?M (lp_isubst (LPIFun (LPCUser g) us) sigma)"
+    if "U g us (LPPBuiltinCall a)" and "?M (lp_isubst a sigma)"
+    for g us a sigma
+    using call_model[OF _ that] by (cases "g\<in>F") auto
+  have branch_open: "?M (lp_isubst (LPIFun (LPCUser g) us) sigma)"
+    if "U g us (LPPBuiltinBranch cs ys ns)" and
+      "list_all (lpc_model_goal ?M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal ?M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)"
+    for g us cs ys ns sigma
+    using branch_model[OF _ that] by (cases "g\<in>F") auto
   have stable_open: "?M (lp_isubst t sigma)" if "?M t" for t sigma
     by (rule lpp_open_return_model_subst[OF lpp_inline_return_model_subst[where E=E, OF stable] that])
   have initial: "lpc_model_goals ?M ?property ?gs eta"
@@ -41,7 +60,7 @@ proof -
       lp_ieval_subst map_map o_def)
   have known: "list_all (lpc_model_frame ?M ?property) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
-  show ?thesis by (rule lpp_model_actual_return[OF modeled builtin_open probe_open stable_open known actual])
+  show ?thesis by (rule lpp_model_actual_return[OF modeled builtin_open probe_open call_open branch_open stable_open known actual])
 qed
 
 ML \<open>

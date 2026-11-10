@@ -43,13 +43,17 @@ proof -
   have selected: "(''2:is'',2)\<in>lpp_builtin_signature" by (simp add: lpp_builtin_signature_def)
   have no_probe: "\<And>aa keep. \<not>lpp_finite_is_outcome a e (LPPBuiltinProbe aa keep)"
     by (auto simp: lpp_finite_is_outcome_def lpp_integer_is_outcome_def split: if_splits option.splits)
+  have no_call: "\<And>aa. \<not>lpp_finite_is_outcome a e (LPPBuiltinCall aa)"
+    by (auto simp: lpp_finite_is_outcome_def lpp_integer_is_outcome_def split: if_splits option.splits)
+  have no_branch: "\<And>cs ys ns. \<not>lpp_finite_is_outcome a e (LPPBuiltinBranch cs ys ns)"
+    by (auto simp: lpp_finite_is_outcome_def lpp_integer_is_outcome_def split: if_splits option.splits)
   from step consider
     (success) mu where "lpp_finite_is_outcome a e (LPPBuiltinSuccess mu)" "event=None"
       "tt=(LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t mu)) gs),\<lambda>x. lp_isubst (eta x) mu)#saved"
   | (failure) "lpp_finite_is_outcome a e LPPBuiltinFailure" "event=None" "tt=saved"
   | (error) "event=None" "tt=[]"
     by (cases rule: lpp_answer_transition.cases)
-      (use selected in \<open>auto simp: lpp_builtin_active_def lpp_finite_source_builtin_def numeral_2_eq_2 no_probe\<close>)
+      (use selected in \<open>auto simp: lpp_builtin_active_def lpp_finite_source_builtin_def numeral_2_eq_2 no_probe no_call no_branch\<close>)
   then show ?thesis
   proof cases
     case (success mu)

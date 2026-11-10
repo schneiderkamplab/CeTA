@@ -15,6 +15,16 @@ theorem lpp_scoped_model_answer_preserved:
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and probe_control: "\<And>f ts a keep. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
       lpc_return_control_igoal F (LPCAtom a)"
+    and call_model: "\<And>f ts a sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      M (lp_isubst a sigma) \<Longrightarrow> M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and branch_model: "\<And>f ts cs ys ns sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and call_control: "\<And>f ts a. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      lpc_return_control_igoal F (LPCAtom a)"
+    and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      list_all (lpc_return_control_igoal F) (cs@ys@ns)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_answer_transition P B U ss event tt"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
@@ -47,6 +57,34 @@ next
     by (rule probe_control[OF member probe(4)])
   show ?thesis using probe known before models control
     by (cases keep) (auto simp: lpp_probe_goals_def lpp_probe_else_def lpc_model_goals_def)
+next
+  case (call f ts a gs eta es)
+  have member: "f\<in>F" using call known by simp
+  have before: "lpc_model_goals M K (LPCAtom (LPIFun (LPCUser f) ts)#gs) eta"
+    using call known by simp
+  have models: "\<And>sigma. M (lp_isubst a sigma) \<Longrightarrow>
+    M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    by (rule call_model[OF member call(4)])
+  have control: "lpc_return_control_igoal F (LPCAtom a)"
+    by (rule call_control[OF member call(4)])
+  show ?thesis using call known before models control
+    by (auto simp: lpc_model_goals_def)
+next
+  case (branch f ts cs ys ns m gs es n eta)
+  have member: "f\<in>F" using branch known by simp
+  have safe: "list_all lpc_model_safe_goal (cs@ys@ns)"
+    using branch(5) by (auto simp: list_all_iff dest: lpp_plain_goal_model_safe)
+  have before: "lpc_model_goals M K (LPCAtom (LPIFun (LPCUser f) ts)#gs) eta"
+    using branch known by simp
+  have models: "\<And>sigma.
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    by (rule branch_model[OF member branch(4)])
+  have control: "list_all (lpc_return_control_igoal F) (cs@ys@ns)"
+    by (rule branch_control[OF member branch(4)])
+  show ?thesis using branch known safe before models control
+    by (auto simp: lpc_model_goals_def)
 qed (use known in auto)
 
 lemma lpp_scoped_model_domain_answer_preserved:
@@ -58,11 +96,21 @@ lemma lpp_scoped_model_domain_answer_preserved:
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and probe_control: "\<And>f ts a keep. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
       lpc_return_control_igoal F (LPCAtom a)"
+    and call_model: "\<And>f ts a sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      M (lp_isubst a sigma) \<Longrightarrow> M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and branch_model: "\<And>f ts cs ys ns sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and call_control: "\<And>f ts a. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      lpc_return_control_igoal F (LPCAtom a)"
+    and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      list_all (lpc_return_control_igoal F) (cs@ys@ns)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_domain_answers P B U D ss event tt"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
   shows "list_all (lpc_scoped_model_frame F M K) tt"
-  using step known lpp_scoped_model_answer_preserved[OF program builtin probe_model probe_control stable]
+  using step known lpp_scoped_model_answer_preserved[OF program builtin probe_model probe_control call_model branch_model call_control branch_control stable]
   by (auto simp: lpp_domain_answers_def)
 
 theorem lpp_scoped_model_actual_return:
@@ -76,6 +124,16 @@ theorem lpp_scoped_model_actual_return:
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and probe_control: "\<And>f ts a keep. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
       lpc_return_control_igoal F (LPCAtom a)"
+    and call_model: "\<And>f ts a sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      M (lp_isubst a sigma) \<Longrightarrow> M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and branch_model: "\<And>f ts cs ys ns sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and call_control: "\<And>f ts a. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      lpc_return_control_igoal F (LPCAtom a)"
+    and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      list_all (lpc_return_control_igoal F) (cs@ys@ns)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D) ss rho"
@@ -91,7 +149,7 @@ proof -
     case (step us vs)
     then obtain ev where transition: "lpp_domain_answers P B U D us ev vs"
       by (auto simp: lp_answer_steps_def)
-    show ?case by (rule lpp_scoped_model_domain_answer_preserved[OF program builtin probe_model probe_control stable transition step.hyps(3)])
+    show ?case by (rule lpp_scoped_model_domain_answer_preserved[OF program builtin probe_model probe_control call_model branch_model call_control branch_control stable transition step.hyps(3)])
   qed
   have transition: "lpp_answer_transition P B U us (Some rho) tail"
     using event by (simp add: lpp_domain_answers_def)
@@ -110,11 +168,13 @@ lemma lpp_scoped_model_actual_return_without_probe:
     and builtin: "\<And>f ts sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinSuccess sigma) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and no_probe: "\<And>f ts a keep. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinProbe a keep)"
+    and no_call: "\<And>f ts a. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinCall a)"
+    and no_branch: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinBranch cs ys ns)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D) ss rho"
   shows "K rho"
-  by (rule lpp_scoped_model_actual_return[OF program builtin _ _ stable known actual])
-    (use no_probe in blast)+
+  by (rule lpp_scoped_model_actual_return[OF program builtin _ _ _ _ _ _ stable known actual])
+    (use no_probe no_call no_branch in blast)+
 
 end

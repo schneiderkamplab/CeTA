@@ -17,6 +17,16 @@ theorem lpp_inline_relational_actual_return_with_probes:
       lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and probe_control: "\<And>f ts a keep. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinProbe a keep) \<Longrightarrow>
       lpc_return_control_igoal F (LPCAtom a)"
+    and call_model: "\<And>f ts a sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      lpp_inline_return_model SP E (lp_isubst a sigma) \<Longrightarrow> lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and branch_model: "\<And>f ts cs ys ns sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      (list_all (lpc_model_goal (lpp_inline_return_model SP E)) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
+       list_all (lpc_model_goal (lpp_inline_return_model SP E)) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
+      lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and call_control: "\<And>f ts a. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinCall a) \<Longrightarrow>
+      lpc_return_control_igoal F (LPCAtom a)"
+    and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
+      list_all (lpc_return_control_igoal F) (cs@ys@ns)"
     and stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
     and selected: "f\<in>F" and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D)
@@ -33,7 +43,7 @@ proof -
       lp_ieval_subst map_map o_def)
   have known: "list_all (lpc_scoped_model_frame F ?M ?property) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
-  show ?thesis by (rule lpp_scoped_model_actual_return[OF modeled builtin probe_model probe_control
+  show ?thesis by (rule lpp_scoped_model_actual_return[OF modeled builtin probe_model probe_control call_model branch_model call_control branch_control
     lpp_inline_return_model_subst[where E=E, OF stable] known actual])
 qed
 

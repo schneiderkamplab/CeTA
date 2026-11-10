@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Primitive
- imports LP_Prolog_Stable_Builtins LP_Prolog_Evaluation_Primitive
+ imports LP_Prolog_Stable_Branch LP_Prolog_Stable_Builtins LP_Prolog_Evaluation_Primitive
 begin
 
 theorem lpp_stable_primitive_sound:
@@ -55,6 +55,11 @@ next
   have check: "lpp_check_evaluation_probe T fs fuel Q nds states contexts Fs nd F ss source_context f g argv m n gs active saved e"
     using checked LPPEProbe by simp
   show ?thesis using lpp_stable_probe_sound[OF compatible program check known free observed step] by auto
+next
+  case (LPPEBranch c y z cs ys zs m n gs active saved e fs)
+  have check: "lpp_check_evaluation_branch T fs fuel Q nds states contexts Fs nd F ss source_context c y z cs ys zs m n gs active saved e"
+    using checked LPPEBranch by simp
+  show ?thesis using lpp_stable_branch_sound[OF compatible program check known free observed step] by auto
 next
   case (LPPEIdentity f a b gs active saved yes no yes_facts no_facts)
   have check: "lpp_check_evaluation_identity T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context f a b gs active saved yes no"

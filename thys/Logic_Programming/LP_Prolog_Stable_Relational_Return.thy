@@ -66,6 +66,16 @@ lemma lpp_stable_inline_no_probe:
     \<not>lpp_stable_source_builtin operation f ts (LPPBuiltinProbe a keep)"
   using lpp_inline_no_probe lpp_stable_source_refines_finite by blast
 
+lemma lpp_stable_inline_no_call:
+  "lpp_inline_builtin_check F SP \<Longrightarrow> f\<in>F \<Longrightarrow>
+    \<not>lpp_stable_source_builtin operation f ts (LPPBuiltinCall a)"
+  using lpp_inline_no_call lpp_stable_source_refines_finite by blast
+
+lemma lpp_stable_inline_no_branch:
+  "lpp_inline_builtin_check F SP \<Longrightarrow> f\<in>F \<Longrightarrow>
+    \<not>lpp_stable_source_builtin operation f ts (LPPBuiltinBranch cs ys ns)"
+  using lpp_inline_no_branch lpp_stable_source_refines_finite by blast
+
 theorem lpp_inline_stable_relational_return:
   fixes P :: "(string,string) lp_cut_program"
     and eta :: "string \<Rightarrow> (string lp_cut_symbol,string) lp_iterm"
@@ -76,7 +86,7 @@ theorem lpp_inline_stable_relational_return:
       [(LPCGoals [LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)],eta)] rho"
   shows "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation) (lpp_success_atom_eval (f,ts) rho)"
   by (rule lpp_inline_relational_actual_return[where E="lpp_stable_scalar_evaluation operation",
-    OF program lpp_stable_inline_builtin_model[OF builtins] lpp_stable_inline_no_probe[OF builtins]
+    OF program lpp_stable_inline_builtin_model[OF builtins] lpp_stable_inline_no_probe[OF builtins] lpp_stable_inline_no_call[OF builtins] lpp_stable_inline_no_branch[OF builtins]
       lpp_stable_scalar_evaluation_subst selected ordinary actual])
 
 lemma lpp_stable_add_success:

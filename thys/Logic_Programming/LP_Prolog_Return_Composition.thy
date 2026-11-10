@@ -6,6 +6,15 @@ text \<open>Continuation attachment reuses the cut-aware stack and saved answer
 interface. Builtin failure backtracks; builtin error discards the complete stack.
 Neither is interpreted as a successful helper return.\<close>
 
+lemma lpp_plain_owned_prefix:
+  "list_all lpp_plain_goal ps \<Longrightarrow> lpc_owned_goals E B (ps@gs)=lpc_owned_goals E B gs"
+proof (induction ps)
+  case Nil then show ?case by simp
+next
+  case (Cons a ps)
+  then show ?case by (cases a) auto
+qed
+
 lemma lpp_owned_answer_preserved:
   assumes program: "lp_cut_source_program P"
     and owned: "lpc_owned_stack E (map fst ss)"
@@ -16,7 +25,7 @@ proof (cases rule: lpp_answer_transition.cases)
   case base
   show ?thesis
     by (rule lpc_owned_source_preserved[OF program owned lpc_answer_transition_erases[OF base(2)]])
-qed (use owned in \<open>auto simp: lpc_owned_goals_map lpp_probe_goals_def lpp_probe_else_def lp_cut_fresh_def lpc_owned_fresh_barrier split: if_splits\<close>)
+qed (use owned in \<open>auto simp: lpp_plain_owned_prefix lpc_owned_goals_map lpp_probe_goals_def lpp_probe_else_def lp_cut_fresh_def lpc_owned_fresh_barrier split: if_splits\<close>)
 
 lemma lpp_owned_answer_append:
   assumes nonempty: "ss\<noteq>[]"
@@ -62,6 +71,25 @@ proof -
     show ?thesis using local probe(2,3) shape ss
       by (intro exI[of _ "(LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
         (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#tail"]) simp
+  next
+    case (branch f ts cs ys ns m gs saved n rho)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      "rho=eta" "saved=tail@es"
+      using branch(1) ss by auto
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst tail)"
+      using branch(6) shape by (auto simp: lp_cut_fresh_def)
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst tail)"
+      using branch(7) shape by (auto simp: lp_cut_fresh_def)
+    have local: "lpp_answer_transition P B U
+      ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#tail) None
+      ((LPCGoals (cs@(LPCCut m#(ys@gs))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (ns@gs),eta)#(LPCBarrier m,eta)#tail)"
+      by (rule lpp_answer_transition.branch) (rule branch(4), rule branch(5), rule fm, rule fn)
+    show ?thesis using local branch(2,3) shape ss
+      by (intro exI[of _ "(LPCGoals (cs@(LPCCut m#(ys@gs))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (ns@gs),eta)#(LPCBarrier m,eta)#tail"]) simp
+  next
+    case call then show ?thesis using ss by (auto intro: lpp_answer_transition.call)
   qed
 qed
 
@@ -163,6 +191,37 @@ proof -
       unfolding ss shape by (rule lpp_answer_transition.probe) (rule probe(4), rule fm, rule fn)
     show ?thesis using probe local gs saved rho
       by (auto simp: lpc_attach_answers_def lpp_probe_goals_def lpp_probe_else_def split: if_splits)
+  next
+    case (branch f ts cs ys ns m gs saved n rho)
+    obtain prefix where shape: "e = LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)"
+      and gs: "gs = prefix @ map (lp_cut_map (\<lambda>t. lp_ieval t eta)) rest"
+      and saved: "saved = lpc_attach_answers rest es" and rho: "rho = eta"
+      using goals_shape branch by blast
+    have fm0: "lp_cut_fresh m (map fst ss)"
+      by (rule lpc_attach_fresh[where rest=rest])
+        (use branch in \<open>simp add: lpc_attach_answers_erases[symmetric]\<close>)
+    have fn0: "lp_cut_fresh n (map fst ((LPCBarrier m,eta)#ss))"
+      by (rule lpc_attach_fresh[where rest=rest])
+        (use branch in \<open>simp add: lpc_attach_answers_erases[symmetric]\<close>)
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)#map fst es)"
+      using fm0 by (simp add: ss shape)
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)#map fst es)"
+      using fn0 by (simp add: ss shape)
+    have local: "lpp_answer_transition P B U ss None
+      ((LPCGoals (cs@(LPCCut m#(ys@prefix))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (ns@prefix),eta)#(LPCBarrier m,eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.branch) (rule branch(4), rule branch(5), rule fm, rule fn)
+    show ?thesis using branch local gs saved rho
+      by (auto simp: lpc_attach_answers_def lpp_probe_goals_def lpp_probe_else_def split: if_splits)
+  next
+    case (call f ts a gs rho tail)
+    obtain prefix where shape: "e = LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)"
+      and gs: "gs = prefix @ map (lp_cut_map (\<lambda>t. lp_ieval t eta)) rest"
+      and tail: "tail = lpc_attach_answers rest es" and rho: "rho = eta"
+      using goals_shape call by blast
+    have local: "lpp_answer_transition P B U ss None ((LPCGoals (LPCAtom a#prefix),eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.call) (rule call(4))
+    show ?thesis using call local gs tail rho by (auto simp: lpc_attach_answers_def)
   qed
 qed
 
@@ -187,6 +246,18 @@ next
   have before: "lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (lpc_attach rest ss)) = {}"
     using separated by (simp add: lpc_attach_barriers)
   show ?thesis using before probe m n by simp
+next
+  case (branch f ts cs ys ns m gs es n)
+  have fm: "lp_cut_fresh m (lpc_attach rest ss)" using branch by simp
+  have fn: "lp_cut_fresh n (lpc_attach rest ss)"
+    using branch by (auto simp: lp_cut_fresh_def)
+  have m: "m\<notin>lpc_rest_scopes rest"
+    by (rule lpc_attach_fresh_goals[OF fm]) (use branch in simp)
+  have n: "n\<notin>lpc_rest_scopes rest"
+    by (rule lpc_attach_fresh_goals[OF fn]) (use branch in simp)
+  have before: "lpc_rest_scopes rest \<inter> set (lpc_barrier_ids (lpc_attach rest ss)) = {}"
+    using separated by (simp add: lpc_attach_barriers)
+  show ?thesis using before branch m n by simp
 qed (use separated in \<open>auto simp: lpc_attach_barriers lpc_barrier_ids_Cons lp_cut_fresh_def lpp_probe_goals_def lpp_probe_else_def split: lp_cut_entry.splits\<close>)
 
 lemma lpp_answer_contract_owned_append:

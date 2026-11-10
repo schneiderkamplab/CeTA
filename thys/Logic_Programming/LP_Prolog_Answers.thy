@@ -14,6 +14,9 @@ finishes nor covers enumerating builtins with their own choice points.\<close>
 datatype ('f,'w) lpp_builtin_result =
     LPPBuiltinSuccess "'w \<Rightarrow> ('f lp_cut_symbol,'w) lp_iterm"
   | LPPBuiltinFailure | LPPBuiltinError
+  | LPPBuiltinBranch "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list"
+      "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list" "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list"
+  | LPPBuiltinCall "('f lp_cut_symbol,'w) lp_iterm"
   | LPPBuiltinProbe "('f lp_cut_symbol,'w) lp_iterm" bool
 
 
@@ -28,6 +31,21 @@ definition lpp_probe_goals where
 definition lpp_probe_else where
   "lpp_probe_else keep gs = (if keep then LPCFail else LPCTrue) # gs"
 
+
+fun lpp_plain_goal where
+  "lpp_plain_goal (LPCAtom a) = True"
+| "lpp_plain_goal (LPCUnify a b) = True"
+| "lpp_plain_goal LPCTrue = True"
+| "lpp_plain_goal LPCFail = True"
+| "lpp_plain_goal _ = False"
+
+lemma lpp_plain_goal_scope:
+  "lpp_plain_goal g \<Longrightarrow> lp_cut_scope_goal r g=g"
+  by (cases g) auto
+
+lemma lpp_plain_goals_scope:
+  "list_all lpp_plain_goal gs \<Longrightarrow> map (lp_cut_scope_goal r) gs=gs"
+  by (induction gs) (auto dest: lpp_plain_goal_scope)
 
 inductive_set lpp_atomic_source ::
   "('f,string) lp_cut_program \<Rightarrow> ('f \<times> nat) set \<Rightarrow>
@@ -54,6 +72,18 @@ inductive_set lpp_atomic_source ::
     (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es,
       LPCGoals (lpp_probe_goals a keep m gs)#LPCBarrier n#
       LPCGoals (lpp_probe_else keep gs)#LPCBarrier m#es) \<in>lpp_atomic_source P B U"
+
+| call: "U f ts (LPPBuiltinCall a) \<Longrightarrow>
+    (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es,
+      LPCGoals (LPCAtom a#gs)#es) \<in>lpp_atomic_source P B U"
+
+| branch: "U f ts (LPPBuiltinBranch cond yes no) \<Longrightarrow>
+    list_all lpp_plain_goal (cond@yes@no) \<Longrightarrow>
+    lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es) \<Longrightarrow>
+    lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es) \<Longrightarrow>
+    (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es,
+      LPCGoals (cond@(LPCCut m#(yes@gs)))#LPCBarrier n#
+      LPCGoals (no@gs)#LPCBarrier m#es) \<in>lpp_atomic_source P B U"
 
 inductive lpp_answer_transition ::
   "('f,string) lp_cut_program \<Rightarrow> ('f \<times> nat) set \<Rightarrow>
@@ -86,6 +116,18 @@ inductive lpp_answer_transition ::
       None ((LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
         (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#es)"
 
+| call: "U f ts (LPPBuiltinCall a) \<Longrightarrow>
+    lpp_answer_transition P B U ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#es)
+      None ((LPCGoals (LPCAtom a#gs),eta)#es)"
+
+| branch: "U f ts (LPPBuiltinBranch cond yes no) \<Longrightarrow>
+    list_all lpp_plain_goal (cond@yes@no) \<Longrightarrow>
+    lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es) \<Longrightarrow>
+    lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es) \<Longrightarrow>
+    lpp_answer_transition P B U ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#es)
+      None ((LPCGoals (cond@(LPCCut m#(yes@gs))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (no@gs),eta)#(LPCBarrier m,eta)#es)"
+
 lemma lpp_answer_transition_erases:
   "lpp_answer_transition P B U ss event tt \<Longrightarrow>
    (map fst ss,map fst tt)\<in>lpp_atomic_source P B U"
@@ -108,6 +150,15 @@ proof -
     then obtain event tt where "lpc_answer_transition P ss event tt" "map fst tt=t"
       using lpc_answer_source_lifts by blast
     then show ?thesis using base by (auto intro: lpp_answer_transition.base)
+  next
+    case (branch f ts cond yes no m gs rest n)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)" and rest: "rest=map fst es"
+      using branch(1) ss by simp_all
+    show ?thesis
+      by (rule exI[of _ None], rule exI[of _
+        "((LPCGoals (cond@(LPCCut m#(yes@gs))),eta)#(LPCBarrier n,eta)#
+          (LPCGoals (no@gs),eta)#(LPCBarrier m,eta)#es)"])
+        (use branch ss shape rest in \<open>auto intro!: lpp_answer_transition.branch\<close>)
   qed (use ss in \<open>force intro: lpp_answer_transition.intros\<close>)+
 qed
 
@@ -117,10 +168,12 @@ lemma lpp_answer_event_is_success:
     (auto dest: lpc_answer_event_is_success)
 
 theorem lpp_answer_instrumentation_SN:
+  fixes ss :: "(('f lp_cut_symbol,string) lp_iterm lp_cut_entry * ('v \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm)) list"
   assumes sn: "SN_on (lp_answer_steps (lpp_answer_transition P B U)) {ss}"
   shows "SN_on (lpp_atomic_source P B U) {map fst ss}"
 proof (rule SN_on_induct[OF sn singletonI])
-  fix s assume ih: "\<And>t. (s,t)\<in>lp_answer_steps (lpp_answer_transition P B U) \<Longrightarrow>
+  fix s :: "(('f lp_cut_symbol,string) lp_iterm lp_cut_entry * ('v \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm)) list"
+  assume ih: "\<And>t. (s,t)\<in>lp_answer_steps (lpp_answer_transition P B U) \<Longrightarrow>
     SN_on (lpp_atomic_source P B U) {map fst t}"
   show "SN_on (lpp_atomic_source P B U) {map fst s}"
   proof (rule step_reflects_SN_on)

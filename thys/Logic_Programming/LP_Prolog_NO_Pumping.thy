@@ -70,6 +70,23 @@ proof -
         by (rule lpp_atomic_source.probe) (rule probe(3), rule fm, rule fn)
       show ?thesis by (rule exI[of _ bs])
         (use raw probe builtin(2) barriers gates in \<open>auto simp: lp_prolog_source_def\<close>)
+    next
+      case (branch f ts cond yes no m gs es n)
+      have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#(es@bs))"
+        using branch fresh by (auto simp: lp_cut_fresh_def)
+      have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#(es@bs))"
+        using branch fresh by (auto simp: lp_cut_fresh_def)
+      have raw: "(LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#(es@bs),
+        LPCGoals (cond@(LPCCut m#(yes@gs)))#LPCBarrier n#
+        LPCGoals (no@gs)#LPCBarrier m#(es@bs))
+          \<in>lpp_atomic_source P lpp_builtin_signature U"
+        by (rule lpp_atomic_source.branch) (rule branch(3), rule branch(4), rule fm, rule fn)
+      show ?thesis by (rule exI[of _ bs])
+        (use raw branch builtin(2) barriers gates in \<open>auto simp: lp_prolog_source_def\<close>)
+    next
+      case call
+      show ?thesis by (rule exI[of _ bs])
+        (use call builtin(2) barriers in \<open>auto simp: lp_prolog_source_def lpp_builtin_active_def intro: lpp_atomic_source.call\<close>)
     qed
   next
     case error

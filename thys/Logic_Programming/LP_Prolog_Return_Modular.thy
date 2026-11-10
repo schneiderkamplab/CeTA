@@ -91,6 +91,23 @@ proof -
     show ?thesis using local probe(2,3) shape ss
       by (intro exI[of _ "(LPCGoals (lpp_probe_goals a keep m gs),eta)#(LPCBarrier n,eta)#
         (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#tail"] exI[of _ 0]) simp
+  next
+    case (branch f ts cs ys ns m gs es n rho)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      "rho=eta" "es=tail@bs"
+      using branch(1) ss by auto
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst tail)"
+      using branch(6) shape by (auto simp: lp_cut_fresh_def)
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst tail)"
+      using branch(7) shape by (auto simp: lp_cut_fresh_def)
+    have local: "lpp_answer_transition P B U
+      ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#tail) None
+      ((LPCGoals (cs@(LPCCut m#(ys@gs))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (ns@gs),eta)#(LPCBarrier m,eta)#tail)"
+      by (rule lpp_answer_transition.branch) (rule branch(4), rule branch(5), rule fm, rule fn)
+    show ?thesis using local branch(2,3) shape ss
+      by (intro exI[of _ "(LPCGoals (cs@(LPCCut m#(ys@gs))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (ns@gs),eta)#(LPCBarrier m,eta)#tail"] exI[of _ 0]) simp
   qed (use ss in \<open>force intro: exI[of _ 0] lpp_answer_transition.intros\<close>)+
 qed
 

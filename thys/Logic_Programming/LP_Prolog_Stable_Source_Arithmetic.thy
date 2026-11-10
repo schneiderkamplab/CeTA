@@ -20,6 +20,8 @@ proof -
     using name by (simp only: lpp_source_comparison_descriptor)
   have nd: "f\<noteq>lpp_disequality_predicate"
     using descriptor by (auto simp only: lpp_disequality_names)
+  have ns: "f\<noteq>''3:subtract''" using name by (cases comparison; cases reversed; auto)
+  have nb: "f\<noteq>''2:;''" using name by (cases comparison; cases reversed; auto)
   have np: "\<not>lpp_probe_name f"
   proof
     assume probe: "lpp_probe_name f"
@@ -29,7 +31,7 @@ proof -
   qed
   show ?thesis
     by (simp only: lpp_stable_source_builtin_def ne if_False descriptor option.case prod.case
-      lpp_finite_source_legacy[OF ne nd nl np] lpp_integer_source_finite_comparison[OF name];
+      lpp_finite_source_legacy[OF ne nd nl np ns nb] lpp_integer_source_finite_comparison[OF name];
       auto simp: lpp_stable_compare_outcome_def)
 qed
 

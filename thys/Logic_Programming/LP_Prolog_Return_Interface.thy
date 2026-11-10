@@ -64,6 +64,23 @@ proof -
         (LPCGoals (lpp_probe_else keep gs),eta)#(LPCBarrier m,eta)#es)"
       unfolding ss shape by (rule lpp_answer_transition.probe) (rule probe(4), rule fm, rule fn)
     show ?thesis using probe local rho tail by (auto simp: lpc_reinterface_def)
+  next
+    case (branch f ts cs ys ns m gs tail n rho)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      and rho: "rho=F eta" and tail: "tail=lpc_reinterface F es"
+      using branch ss by (auto simp: lpc_reinterface_def)
+    have fm: "lp_cut_fresh m (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es)"
+      using branch(6) tail by simp
+    have fn: "lp_cut_fresh n (LPCBarrier m#LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#map fst es)"
+      using branch(7) tail by simp
+    have local: "lpp_answer_transition P B U ss None
+      ((LPCGoals (cs@(LPCCut m#(ys@gs))),eta)#(LPCBarrier n,eta)#
+        (LPCGoals (ns@gs),eta)#(LPCBarrier m,eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.branch) (rule branch(4), rule branch(5), rule fm, rule fn)
+    show ?thesis using branch local rho tail by (auto simp: lpc_reinterface_def)
+  next
+    case call
+    then show ?thesis using ss by (auto simp: lpc_reinterface_def lpc_attach_answers_def intro: lpp_answer_transition.call)
   qed
 qed
 

@@ -3,7 +3,7 @@ theory LP_Prolog_Inline_Return_Builtins
 begin
 
 definition lpp_inline_builtin_check where
-  "lpp_inline_builtin_check F SP = ((\<forall>f\<in>F. \<not>lpp_probe_name f) \<and> (\<forall>(f,n)\<in>lpp_builtin_signature.
+  "lpp_inline_builtin_check F SP = ((\<forall>f\<in>F. \<not>lpp_probe_name f \<and> f\<noteq>''3:subtract'' \<and> f\<noteq>''2:;'') \<and> (\<forall>(f,n)\<in>lpp_builtin_signature.
     f\<in>F \<and> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<longrightarrow>
       (((f,lpp_return_builtin_args n),[],[])\<in>set SP \<or>
        (f=''2:length'' \<and> n=2 \<and>
@@ -21,9 +21,33 @@ proof
   assume outcome: "lpp_finite_source_builtin f ts (LPPBuiltinProbe a keep)"
   have name: "lpp_probe_name f" by (rule lpp_finite_source_probe_name[OF outcome])
   have excluded: "\<forall>f\<in>F. \<not>lpp_probe_name f"
-    using checked unfolding lpp_inline_builtin_check_def by (rule conjunct1)
+    using checked unfolding lpp_inline_builtin_check_def by blast
   from excluded member have "\<not>lpp_probe_name f" by (rule bspec)
   with name show False by contradiction
+qed
+
+lemma lpp_inline_no_call:
+  assumes checked: "lpp_inline_builtin_check F SP" and member: "f\<in>F"
+  shows "\<not>lpp_finite_source_builtin f ts (LPPBuiltinCall a)"
+proof -
+  have names: "f\<noteq>''3:subtract''" "f\<noteq>''2:;''"
+    using checked member by (auto simp: lpp_inline_builtin_check_def)
+  show ?thesis using names lpp_integer_source_no_call[of f ts a]
+    by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
+      lpp_finite_length_outcome_def lpp_rational_disequality_outcome_def
+      lpp_probe_outcome_def split: if_splits option.splits)
+qed
+
+lemma lpp_inline_no_branch:
+  assumes checked: "lpp_inline_builtin_check F SP" and member: "f\<in>F"
+  shows "\<not>lpp_finite_source_builtin f ts (LPPBuiltinBranch cs ys ns)"
+proof -
+  have names: "f\<noteq>''3:subtract''" "f\<noteq>''2:;''"
+    using checked member by (auto simp: lpp_inline_builtin_check_def)
+  show ?thesis using names lpp_integer_source_no_branch[of f ts cs ys ns]
+    by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
+      lpp_finite_length_outcome_def lpp_rational_disequality_outcome_def
+      lpp_probe_outcome_def split: if_splits option.splits)
 qed
 
 lemma lpp_inline_builtin_model:
@@ -99,7 +123,7 @@ theorem lpp_inline_finite_integer_return:
       [(LPCGoals [LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)],eta)] rho"
   shows "lpp_integer_known K rho"
   by (rule lpp_inline_integer_actual_return[where E=lpp_finite_evaluation_result,
-      OF program lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins]
+      OF program lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins] lpp_inline_no_call[OF builtins] lpp_inline_no_branch[OF builtins]
       lpp_finite_evaluation_subst lpp_finite_evaluation_integer_contract selected ordinary transfer typing guards actual])
 
 ML \<open>

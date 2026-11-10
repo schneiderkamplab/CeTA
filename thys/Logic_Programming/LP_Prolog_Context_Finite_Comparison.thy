@@ -32,7 +32,7 @@ proof -
     using identity outcomes by metis
   show ?thesis using step selected
     by (cases rule: lpp_answer_transition.cases)
-      (auto simp: lpp_builtin_active_def lpp_integer_source_no_probe simp del: lpp_integer_source_builtin.simps
+      (auto simp: lpp_builtin_active_def lpp_integer_source_no_probe lpp_integer_source_no_call lpp_integer_source_no_branch simp del: lpp_integer_source_builtin.simps
         dest!: success)
 qed
 
