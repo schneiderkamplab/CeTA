@@ -2015,3 +2015,32 @@ separately by Ferrum. This retention check is not fresh protected-category nativ
 replay or production promotion.
 [Pinned verification and integration evidence](data/prolog-modulo-20261107.json)
 binds the export, checker, controls and retention checks.
+
+## Conditional actual helper returns (2026-11-10)
+
+Logic/export commit `5b7ecf0` extends the shared answer-sensitive semantics with
+checked library delegation and conditional control, then proves complete logical
+path coverage and actual-successful-return contracts across established Prolog
+Splits. Return contracts remain separate from helper termination. Failed condition
+bindings do not enter the else path. Finite groundness requires checked input or
+return premises; cyclic equations alone cannot provide a structural measure.
+The existing dedicated conjunction, equality and truth symbols are preserved.
+
+Full mixed-source XML verification 1047 and export 1048 pass, including eight
+executable source-cover regressions and dependency audits. The regenerated
+mixed module has SHA-256
+`8dcc37019d5b664801199b8cab21e5075200c49ca11aae9a2ac4457223bc3693`.
+Unified `make ceta` build 1049, LP unit `ceta-lp-1.0-b10cf37d6904b875`, has SHA-256
+`98ceb8a60719e1eb3ebd7c70f80ba1b965b30e7f9dff1d2f2013b9ce00a600ea`.
+No generated checking logic was manually edited; other category exports remain
+unchanged. Earlier rejected assemblies and proof-development attempts are retained.
+
+Ferrum `ba973cd3` strictly replays the fixed 221-root population to 79 YES + 8 NO,
+adding both Hett grouping roots and preserving every previous result. All 87
+results have source audits, two checks with this executable and independently
+authorized complete receipts. The three-positive family passes native and strict
+replay, seven semantic/advice controls and 40 certificate mutation checks.
+Retention 1050 passes 356 checks across all previous 85 Prolog and 93 LP-with-cut
+certificates. This is not protected-category production promotion.
+[The pinned cross-repository evidence](../../ferrum-prolog-release/docs/data/prolog-control-returns-20261110.json)
+includes the archive, hashes, failed attempts, full replay and remaining gaps.
