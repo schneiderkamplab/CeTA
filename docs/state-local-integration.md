@@ -2136,3 +2136,31 @@ records all attempts, the generated export, complete receipts and the fresh
 16-root cohort. All sixteen targets remain UNKNOWN; the next shared source
 interface work concerns builtin/library return relations. Fixture certification
 does not establish benchmark gains or superiority.
+
+## Nonnegative builtin-result contexts (2026-11-11)
+
+`LP_Prolog_Natural_Return_Context` and
+`LP_Prolog_Stable_Natural_Return_Context` introduce integer and nonnegative
+observations from a proved integer-valued result. The latter requires the
+existing integer-compatibility premise of the binary64-aware source profile.
+`LP_Prolog_Finite_Context_Length` and `LP_Prolog_Stable_Length` instantiate these
+rules only for the fresh scalar before output unification. Freshness covers the
+source stack, saved environments, context, interface, free variables and guards.
+The unchanged link checker must justify every transported child fact.
+
+Verification 1113 passes the integer-only adapter; 1116 passes the stronger
+nonnegative adapter and both reusable context rules. Failed attempts 1114 and
+1115 retain their logs (reserved proof identifier and missing integer-value
+proof simplification). Full source-assembly verification/export 1117 passes.
+CeTA commit `964e3a9` is integrated through the `prolog_natural_result_integration`
+metadata in `scripts/unified-exports.json`; only the generated mixed source
+module changes. Unified build 1118 has SHA-256
+`a3c5c25f2f14e6b7d57500673ff212be5e1787b8a58bf175502af2bf878579e9`.
+
+Ferrum `bcfe16b4` passes three native and three strict fixture certificates,
+fourteen controls and twenty-four mutation checks. Retention 1119 preserves all
+87 Prolog and 93 LP-with-cut certificates with 360 checks. Full strict replay
+1555 preserves 79 YES + 8 NO / 221 and all complete receipts. The remaining-gap
+native diagnostic has no complete benchmark proofs. No benchmark gain or
+production promotion is asserted. Pinned cross-repository evidence is
+`../ferrum-prolog-release/docs/data/prolog-natural-results-20261111.json`.
