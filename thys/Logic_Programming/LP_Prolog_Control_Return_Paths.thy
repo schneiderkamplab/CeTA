@@ -1,5 +1,5 @@
 theory LP_Prolog_Control_Return_Paths
- imports LP_Prolog_Control_Return_Model
+ imports LP_Prolog_Control_Return_Model LP_Prolog_Finite_Choice
 begin
 
 text \<open>Logical path extraction is separate from source execution. Both
@@ -15,6 +15,13 @@ definition lpp_control_equality_clause :: "string lpp_success_clause" where
 
 definition lpp_control_product where
   "lpp_control_product xs ys = concat (map (\<lambda>x. map (\<lambda>y. x@y) ys) xs)"
+
+definition lpp_control_alternative_paths where
+  "lpp_control_alternative_paths recurse a b =
+    (case (lpp_branch_lower_term a,lpp_branch_lower_term b) of
+      (Some aa,Some bb) \<Rightarrow> (case (recurse aa,recurse bb) of
+        (Some left,Some right) \<Rightarrow> Some (left@right) | _ \<Rightarrow> None)
+    | _ \<Rightarrow> None)"
 
 definition lpp_control_goal_paths ::
   "(string lpc_term lp_cut_goal list \<Rightarrow> string lpc_term lp_cut_goal list list option) \<Rightarrow>
@@ -35,7 +42,8 @@ definition lpp_control_goal_paths ::
                    (case (recurse (cs@ys),recurse zs) of
                      (Some left,Some right) \<Rightarrow> Some (left@right) | _ \<Rightarrow> None)
                | _ \<Rightarrow> None)
-              else None)
+              else lpp_control_alternative_paths recurse (Fun (LPCUser arrow) [c,y]) z)
+           | [a,b] \<Rightarrow> lpp_control_alternative_paths recurse a b
            | _ \<Rightarrow> None)
           else if f=''3:subtract'' then
             (if length ts=3 then Some [[LPCAtom (Fun (LPCUser lpp_subtract_library) ts)]] else None)
@@ -69,14 +77,18 @@ proof -
     by (simp add: lpp_success_atom_eval_def lpp_control_equality_def)
 qed
 
-lemma lpp_control_conditional_paths:
+lemma lpp_control_semicolon_paths:
   assumes checked: "lpp_control_goal_paths recurse (LPCAtom (Fun (LPCUser ''2:;'') ts))=Some paths"
-  shows "\<exists>c y z cs ys zs left right.
+  shows "(\<exists>c y z cs ys zs left right.
     ts=[Fun (LPCUser ''2:->'') [c,y],z] \<and>
     lpp_branch_lower_term c=Some cs \<and> lpp_branch_lower_term y=Some ys \<and>
     lpp_branch_lower_term z=Some zs \<and>
-    recurse (cs@ys)=Some left \<and> recurse zs=Some right \<and> paths=left@right"
-  using checked by (auto simp: lpp_control_goal_paths_def
+    recurse (cs@ys)=Some left \<and> recurse zs=Some right \<and> paths=left@right) \<or>
+    (\<exists>a b aa bb left right. ts=[a,b] \<and> lpp_choice_source_left a \<and>
+      lpp_branch_lower_term a=Some aa \<and> lpp_branch_lower_term b=Some bb \<and>
+      recurse aa=Some left \<and> recurse bb=Some right \<and> paths=left@right)"
+  using checked by (auto simp: lpp_control_goal_paths_def lpp_control_alternative_paths_def
+    lpp_choice_source_left_def
     split: list.splits term.splits lp_cut_symbol.splits option.splits prod.splits if_splits)
 
 lemma lpp_control_goal_paths_complete:
@@ -101,11 +113,22 @@ proof (cases g)
   show ?thesis
   proof (cases "f=''2:;''")
     case conditional: True
-    obtain c y z cs ys zs left right where shape: "ts=[Fun (LPCUser ''2:->'') [c,y],z]"
-      and lower: "lpp_branch_lower_term c=Some cs" "lpp_branch_lower_term y=Some ys" "lpp_branch_lower_term z=Some zs"
-      and left: "recurse (cs@ys)=Some left" and right: "recurse zs=Some right"
-      and paths: "paths=left@right"
-      using lpp_control_conditional_paths[of recurse ts paths] checked LPCAtom t conditional by auto
+    have alternatives_cases: "(\<exists>c y z cs ys zs left right.
+      ts=[Fun (LPCUser ''2:->'') [c,y],z] \<and>
+      lpp_branch_lower_term c=Some cs \<and> lpp_branch_lower_term y=Some ys \<and>
+      lpp_branch_lower_term z=Some zs \<and> recurse (cs@ys)=Some left \<and>
+      recurse zs=Some right \<and> paths=left@right) \<or>
+      (\<exists>a b aa bb left right. ts=[a,b] \<and> lpp_choice_source_left a \<and>
+      lpp_branch_lower_term a=Some aa \<and> lpp_branch_lower_term b=Some bb \<and>
+      recurse aa=Some left \<and> recurse bb=Some right \<and> paths=left@right)"
+      using lpp_control_semicolon_paths[of recurse ts paths] checked LPCAtom t conditional by auto
+    then show ?thesis
+    proof (elim disjE exE conjE)
+      fix c y z cs ys zs left right
+      assume shape: "ts=[Fun (LPCUser ''2:->'') [c,y],z]"
+        and lower: "lpp_branch_lower_term c=Some cs" "lpp_branch_lower_term y=Some ys" "lpp_branch_lower_term z=Some zs"
+        and left: "recurse (cs@ys)=Some left" and right: "recurse zs=Some right"
+        and paths: "paths=left@right"
     have selected: "lpp_control_return_model M (LPIFun (LPCUser ''2:;'')
       [LPIFun (LPCUser ''2:->'') [lp_ieval c eta,lp_ieval y eta],lp_ieval z eta])"
       using model by (simp add: conditional shape)
@@ -118,6 +141,22 @@ proof (cases g)
         lpp_branch_lower_term_sound[where eta=eta, OF lower(2)]
         lpp_branch_lower_term_sound[where eta=eta, OF lower(3)] selected] by simp
     show ?thesis using recursion[OF left] recursion[OF right] alternatives by (auto simp: paths)
+    next
+      fix a b aa bb left right
+      assume shape: "ts=[a,b]" and choice: "lpp_choice_source_left a"
+        and lower: "lpp_branch_lower_term a=Some aa" "lpp_branch_lower_term b=Some bb"
+        and left: "recurse aa=Some left" and right: "recurse bb=Some right"
+        and paths: "paths=left@right"
+      have selected: "lpp_control_return_model M (LPIFun (LPCUser ''2:;'') [lp_ieval a eta,lp_ieval b eta])"
+        using model by (simp add: conditional shape)
+      have alternatives: "list_all (lpc_model_goal (lpp_control_return_model M))
+          (map (lp_cut_map (\<lambda>t. lp_ieval t eta)) aa) \<or>
+        list_all (lpc_model_goal (lpp_control_return_model M))
+          (map (lp_cut_map (\<lambda>t. lp_ieval t eta)) bb)"
+        by (rule lpp_control_return_choice[OF lpp_choice_source_left_sound[OF choice]
+          lpp_branch_lower_term_sound[OF lower(1)] lpp_branch_lower_term_sound[OF lower(2)] selected])
+      show ?thesis using recursion[OF left] recursion[OF right] alternatives by (auto simp: paths)
+    qed
   next
     case no_conditional: False
     show ?thesis

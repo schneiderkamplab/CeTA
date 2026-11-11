@@ -23,6 +23,10 @@ theorem lpp_model_answer_preserved:
       (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
        list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and choice_model: "\<And>f ts left right sigma. U f ts (LPPBuiltinChoice left right) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_answer_transition P B U ss event tt"
     and known: "list_all (lpc_model_frame M K) ss"
@@ -72,6 +76,19 @@ next
     by (rule branch_model[OF branch(4)])
   show ?thesis using branch known safe before models
     by (auto simp: lpc_model_goals_def)
+next
+  case (choice f ts left right gs eta es)
+  have before: "lpc_model_goals M K (LPCAtom (LPIFun (LPCUser f) ts)#gs) eta"
+    using choice known by simp
+  have models: "\<And>sigma.
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    by (rule choice_model[OF choice(4)])
+  have safe: "list_all lpc_model_safe_goal (left@right)"
+    using choice(5) by (auto simp: list_all_iff dest: lpp_plain_goal_model_safe)
+  show ?thesis using choice known safe before models
+    by (auto simp: lpc_model_goals_def)
 qed (use known in auto)
 
 lemma lpp_model_domain_answer_preserved:
@@ -87,11 +104,15 @@ lemma lpp_model_domain_answer_preserved:
       (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
        list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and choice_model: "\<And>f ts left right sigma. U f ts (LPPBuiltinChoice left right) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_domain_answers P B U D ss event tt"
     and known: "list_all (lpc_model_frame M K) ss"
   shows "list_all (lpc_model_frame M K) tt"
-  using step known lpp_model_answer_preserved[OF program builtin probe_model call_model branch_model stable]
+  using step known lpp_model_answer_preserved[OF program builtin probe_model call_model branch_model choice_model stable]
   by (auto simp: lpp_domain_answers_def)
 
 theorem lpp_model_actual_return:
@@ -109,6 +130,10 @@ theorem lpp_model_actual_return:
       (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
        list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and choice_model: "\<And>f ts left right sigma. U f ts (LPPBuiltinChoice left right) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and known: "list_all (lpc_model_frame M K) ss"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D) ss rho"
@@ -124,7 +149,7 @@ proof -
     case (step us vs)
     then obtain ev where transition: "lpp_domain_answers P B U D us ev vs"
       by (auto simp: lp_answer_steps_def)
-    show ?case by (rule lpp_model_domain_answer_preserved[OF program builtin probe_model call_model branch_model stable transition step.hyps(3)])
+    show ?case by (rule lpp_model_domain_answer_preserved[OF program builtin probe_model call_model branch_model choice_model stable transition step.hyps(3)])
   qed
   have transition: "lpp_answer_transition P B U us (Some rho) tail"
     using event by (simp add: lpp_domain_answers_def)

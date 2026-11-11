@@ -42,13 +42,15 @@ proof -
     by (auto simp: lpp_finite_length_outcome_def split: option.splits)
   have no_branch: "\<And>cs ys ns. \<not>lpp_finite_length_outcome e a (LPPBuiltinBranch cs ys ns)"
     by (auto simp: lpp_finite_length_outcome_def split: option.splits)
+  have no_choice: "\<And>left right. \<not>lpp_finite_length_outcome e a (LPPBuiltinChoice left right)"
+    by (auto simp: lpp_finite_length_outcome_def split: option.splits)
   from step consider
     (success) mu where "lpp_finite_length_outcome e a (LPPBuiltinSuccess mu)" "event=None"
       "tt=(LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t mu)) gs),\<lambda>x. lp_isubst (eta x) mu)#saved"
   | (failure) "lpp_finite_length_outcome e a LPPBuiltinFailure" "event=None" "tt=saved"
   | (error) "event=None" "tt=[]"
     by (cases rule: lpp_answer_transition.cases)
-      (use selected in \<open>auto simp: lpp_builtin_active_def lpp_finite_source_builtin_def numeral_2_eq_2 no_probe no_call no_branch\<close>)
+      (use selected in \<open>auto simp: lpp_builtin_active_def lpp_finite_source_builtin_def numeral_2_eq_2 no_probe no_call no_branch no_choice\<close>)
   then show ?thesis
   proof cases
     case (success mu)

@@ -50,6 +50,18 @@ proof -
       lpp_probe_outcome_def split: if_splits option.splits)
 qed
 
+lemma lpp_inline_no_choice:
+  assumes checked: "lpp_inline_builtin_check F SP" and member: "f\<in>F"
+  shows "\<not>lpp_finite_source_builtin f ts (LPPBuiltinChoice left right)"
+proof -
+  have names: "f\<noteq>''3:subtract''" "f\<noteq>''2:;''"
+    using checked member by (auto simp: lpp_inline_builtin_check_def)
+  show ?thesis using names lpp_integer_source_no_choice[of f ts left right]
+    by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
+      lpp_finite_length_outcome_def lpp_rational_disequality_outcome_def
+      lpp_probe_outcome_def split: if_splits option.splits)
+qed
+
 lemma lpp_inline_builtin_model:
   assumes checked: "lpp_inline_builtin_check F SP"
     and reachable: "f\<in>F"
@@ -123,7 +135,7 @@ theorem lpp_inline_finite_integer_return:
       [(LPCGoals [LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)],eta)] rho"
   shows "lpp_integer_known K rho"
   by (rule lpp_inline_integer_actual_return[where E=lpp_finite_evaluation_result,
-      OF program lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins] lpp_inline_no_call[OF builtins] lpp_inline_no_branch[OF builtins]
+      OF program lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins] lpp_inline_no_call[OF builtins] lpp_inline_no_branch[OF builtins] lpp_inline_no_choice[OF builtins]
       lpp_finite_evaluation_subst lpp_finite_evaluation_integer_contract selected ordinary transfer typing guards actual])
 
 ML \<open>

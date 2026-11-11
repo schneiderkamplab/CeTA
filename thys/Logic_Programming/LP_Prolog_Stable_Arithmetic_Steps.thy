@@ -42,9 +42,11 @@ proof -
     by (auto simp: lpp_stable_is_outcome_def split: option.splits)
   have no_branch: "\<And>cs ys ns. \<not>lpp_stable_is_outcome operation a e (LPPBuiltinBranch cs ys ns)"
     by (auto simp: lpp_stable_is_outcome_def split: option.splits)
+  have no_choice: "\<And>left right. \<not>lpp_stable_is_outcome operation a e (LPPBuiltinChoice left right)"
+    by (auto simp: lpp_stable_is_outcome_def split: option.splits)
   show ?thesis using step selected
     by (cases rule: lpp_answer_transition.cases)
-      (auto simp: lpp_builtin_active_def no_probe no_call no_branch lpp_stable_source_is)
+      (auto simp: lpp_builtin_active_def no_probe no_call no_branch no_choice lpp_stable_source_is)
 qed
 
 ML \<open>

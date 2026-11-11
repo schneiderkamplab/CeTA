@@ -60,11 +60,26 @@ lemma lpp_branch_lower_term_sound:
   apply (auto simp: lpp_branch_lower_term.simps split: if_splits list.splits option.splits prod.splits intro: lpp_branch_lower.intros)
   done
 
+definition lpp_choice_left where
+  "lpp_choice_left a = (case a of LPIFun f ts \<Rightarrow>
+    f\<noteq>LPCUser ''2:->'' \<or> length ts\<noteq>2 | _ \<Rightarrow> False)"
+
+lemma lpp_choice_left_Fun[simp]:
+  "lpp_choice_left (LPIFun f ts) = (f\<noteq>LPCUser ''2:->'' \<or> length ts\<noteq>2)"
+  by (simp add: lpp_choice_left_def)
+
+lemma lpp_choice_left_subst:
+  "lpp_choice_left a \<Longrightarrow> lpp_choice_left (lp_isubst a sigma)"
+  by (cases a) (auto simp: lpp_choice_left_def)
+
 definition lpp_branch_outcome where
-  "lpp_branch_outcome ts outcome = (\<exists>c y n cs ys ns.
+  "lpp_branch_outcome ts outcome = ((\<exists>c y n cs ys ns.
     ts=[LPIFun (LPCUser ''2:->'') [c,y],n] \<and>
     lpp_branch_lower c cs \<and> lpp_branch_lower y ys \<and> lpp_branch_lower n ns \<and>
-    outcome=LPPBuiltinBranch cs ys ns)"
+    outcome=LPPBuiltinBranch cs ys ns) \<or>
+    (\<exists>a b left right. ts=[a,b] \<and> lpp_choice_left a \<and>
+      lpp_branch_lower a left \<and> lpp_branch_lower b right \<and>
+      outcome=LPPBuiltinChoice left right))"
 
 definition lpp_branch_domain where
   "lpp_branch_domain ts = (\<exists>outcome. lpp_branch_outcome ts outcome)"

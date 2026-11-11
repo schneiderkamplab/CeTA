@@ -81,6 +81,16 @@ proof -
   next
     case call
     then show ?thesis using ss by (auto simp: lpc_reinterface_def lpc_attach_answers_def intro: lpp_answer_transition.call)
+  next
+    case (choice f ts left right gs rho tail)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      and rho: "rho=F eta" and tail: "tail=lpc_reinterface F es"
+      using choice ss by (auto simp: lpc_reinterface_def)
+    have local: "lpp_answer_transition P B U ss None
+      ((LPCGoals (left@gs),eta)#(LPCGoals (right@gs),eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.choice) (rule choice(4), rule choice(5))
+    show ?thesis using choice local rho tail by (auto simp: lpc_reinterface_def)
+
   qed
 qed
 

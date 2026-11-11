@@ -26,6 +26,11 @@ inductive lpp_control_return_model ::
     lpp_branch_lower n ns \<Longrightarrow>
     list_all (lpc_model_goal (lpp_control_return_model M)) ns \<Longrightarrow>
     lpp_control_return_model M (LPIFun (LPCUser ''2:;'') [LPIFun (LPCUser ''2:->'') [c,y],n])"
+| choice: "lpp_choice_left a \<Longrightarrow>
+    lpp_branch_lower a left \<Longrightarrow> lpp_branch_lower b right \<Longrightarrow>
+    (list_all (lpc_model_goal (lpp_control_return_model M)) left \<or>
+     list_all (lpc_model_goal (lpp_control_return_model M)) right) \<Longrightarrow>
+    lpp_control_return_model M (LPIFun (LPCUser ''2:;'') [a,b])"
 | subtract_call: "length ts=3 \<Longrightarrow>
     lpp_control_return_model M (LPIFun (LPCUser lpp_subtract_library) ts) \<Longrightarrow>
     lpp_control_return_model M (LPIFun (LPCUser ''3:subtract'') ts)"
@@ -110,6 +115,16 @@ next
       lpp_branch_lower_subst[OF conditional_no.hyps(3)]]) (rule body)
   then show ?case by simp
 next
+  case (choice a left b right)
+  have alternatives: "list_all (lpc_model_goal (lpp_control_return_model M))
+      (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+    list_all (lpc_model_goal (lpp_control_return_model M))
+      (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)"
+    using choice by (auto simp: list_all_iff intro: lpp_control_goal_subst)
+  show ?case unfolding lp_isubst_Fun list.map
+    by (rule lpp_control_return_model.choice[OF lpp_choice_left_subst[OF choice.hyps(1)]
+      lpp_branch_lower_subst[OF choice.hyps(2)] lpp_branch_lower_subst[OF choice.hyps(3)] alternatives])
+next
   case (subtract_call ts)
   show ?case unfolding lp_isubst_Fun
     by (rule lpp_control_return_model.subtract_call) (use subtract_call in simp_all)
@@ -124,6 +139,16 @@ lemma lpp_control_return_conditional:
   using model
   by (cases (no_simp) rule: lpp_control_return_model.cases)
     (use lower in \<open>auto dest: lpp_branch_lower_unique\<close>)
+
+lemma lpp_control_return_choice:
+  assumes left: "lpp_choice_left a"
+    and lower: "lpp_branch_lower a aa" "lpp_branch_lower b bb"
+    and model: "lpp_control_return_model M (LPIFun (LPCUser ''2:;'') [a,b])"
+  shows "list_all (lpc_model_goal (lpp_control_return_model M)) aa \<or>
+    list_all (lpc_model_goal (lpp_control_return_model M)) bb"
+  using model
+  by (cases (no_simp) rule: lpp_control_return_model.cases)
+    (use left lower in \<open>auto dest: lpp_branch_lower_unique\<close>)
 
 lemma lpp_control_return_delegate:
   assumes "lpp_control_return_model M (LPIFun (LPCUser ''3:subtract'') ts)"

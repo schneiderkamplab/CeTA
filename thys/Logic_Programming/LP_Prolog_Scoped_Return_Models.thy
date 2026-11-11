@@ -25,6 +25,7 @@ theorem lpp_scoped_model_answer_preserved:
       lpc_return_control_igoal F (LPCAtom a)"
     and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
       list_all (lpc_return_control_igoal F) (cs@ys@ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_answer_transition P B U ss event tt"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
@@ -85,6 +86,10 @@ next
     by (rule branch_control[OF member branch(4)])
   show ?thesis using branch known safe before models control
     by (auto simp: lpc_model_goals_def)
+next
+  case (choice f ts left right gs eta es)
+  have member: "f\<in>F" using choice known by simp
+  show ?thesis using no_choice[OF member] choice(4) by blast
 qed (use known in auto)
 
 lemma lpp_scoped_model_domain_answer_preserved:
@@ -106,11 +111,12 @@ lemma lpp_scoped_model_domain_answer_preserved:
       lpc_return_control_igoal F (LPCAtom a)"
     and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
       list_all (lpc_return_control_igoal F) (cs@ys@ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and step: "lpp_domain_answers P B U D ss event tt"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
   shows "list_all (lpc_scoped_model_frame F M K) tt"
-  using step known lpp_scoped_model_answer_preserved[OF program builtin probe_model probe_control call_model branch_model call_control branch_control stable]
+  using step known lpp_scoped_model_answer_preserved[where U=U and M=M and F=F, OF program builtin probe_model probe_control call_model branch_model call_control branch_control no_choice stable]
   by (auto simp: lpp_domain_answers_def)
 
 theorem lpp_scoped_model_actual_return:
@@ -134,6 +140,7 @@ theorem lpp_scoped_model_actual_return:
       lpc_return_control_igoal F (LPCAtom a)"
     and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
       list_all (lpc_return_control_igoal F) (cs@ys@ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D) ss rho"
@@ -149,7 +156,7 @@ proof -
     case (step us vs)
     then obtain ev where transition: "lpp_domain_answers P B U D us ev vs"
       by (auto simp: lp_answer_steps_def)
-    show ?case by (rule lpp_scoped_model_domain_answer_preserved[OF program builtin probe_model probe_control call_model branch_model call_control branch_control stable transition step.hyps(3)])
+    show ?case by (rule lpp_scoped_model_domain_answer_preserved[where U=U and M=M and F=F, OF program builtin probe_model probe_control call_model branch_model call_control branch_control no_choice stable transition step.hyps(3)])
   qed
   have transition: "lpp_answer_transition P B U us (Some rho) tail"
     using event by (simp add: lpp_domain_answers_def)
@@ -170,11 +177,12 @@ lemma lpp_scoped_model_actual_return_without_probe:
     and no_probe: "\<And>f ts a keep. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinProbe a keep)"
     and no_call: "\<And>f ts a. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinCall a)"
     and no_branch: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinBranch cs ys ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
     and stable: "\<And>t sigma. M t \<Longrightarrow> M (lp_isubst t sigma)"
     and known: "list_all (lpc_scoped_model_frame F M K) ss"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D) ss rho"
   shows "K rho"
-  by (rule lpp_scoped_model_actual_return[OF program builtin _ _ _ _ _ _ stable known actual])
+  by (rule lpp_scoped_model_actual_return[where U=U and M=M and F=F, OF program builtin _ _ _ _ _ _ no_choice stable known actual])
     (use no_probe no_call no_branch in blast)+
 
 end

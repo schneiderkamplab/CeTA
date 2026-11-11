@@ -87,6 +87,10 @@ proof -
       case call
       show ?thesis by (rule exI[of _ bs])
         (use call builtin(2) barriers in \<open>auto simp: lp_prolog_source_def lpp_builtin_active_def intro: lpp_atomic_source.call\<close>)
+    next
+      case choice
+      show ?thesis by (rule exI[of _ bs])
+        (use choice builtin(2) barriers in \<open>auto simp: lp_prolog_source_def lpp_builtin_active_def intro!: lpp_atomic_source.choice\<close>)
     qed
   next
     case error

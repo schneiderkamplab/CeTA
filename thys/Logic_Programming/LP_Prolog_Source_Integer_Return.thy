@@ -41,7 +41,7 @@ proof -
   have known: "list_all (lpc_scoped_model_frame F ?M (lpp_integer_known K)) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
   show ?thesis by (rule lpp_scoped_model_actual_return_without_probe[OF modeled
-    lpp_return_builtin_model[OF builtins] lpp_integer_source_no_probe lpp_integer_source_no_call lpp_integer_source_no_branch lpp_source_return_model_subst known actual])
+    lpp_return_builtin_model[OF builtins] lpp_integer_source_no_probe lpp_integer_source_no_call lpp_integer_source_no_branch lpp_integer_source_no_choice lpp_source_return_model_subst known actual])
 qed
 
 ML \<open>

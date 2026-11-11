@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Primitive
-  imports LP_Prolog_Evaluation_Branch LP_Prolog_Evaluation_Probe LP_Prolog_Evaluation_Rational_Disequality LP_Prolog_Evaluation_Cut_Actions
+  imports LP_Prolog_Evaluation_Choice LP_Prolog_Evaluation_Branch LP_Prolog_Evaluation_Probe LP_Prolog_Evaluation_Rational_Disequality LP_Prolog_Evaluation_Cut_Actions
 begin
 
 type_synonym lpp_link_types = "string lpp_transfer_fact list"
@@ -23,6 +23,9 @@ datatype lpp_evaluation_primitive =
   | LPPEBranch "string lpc_term" "string lpc_term" "string lpc_term"
       "string lpc_term lp_cut_goal list" "string lpc_term lp_cut_goal list" "string lpc_term lp_cut_goal list"
       nat nat "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state" "string lpc_link" lpp_link_types
+  | LPPEChoice "string lpc_term" "string lpc_term"
+      "string lpc_term lp_cut_goal list" "string lpc_term lp_cut_goal list"
+      "string lpc_term lp_cut_goal list" "string lpc_term list" "string lpc_return_state" "string lpc_link" lpp_link_types
   | LPPEIdentity string "string lpc_term" "string lpc_term" "string lpc_term lp_cut_goal list"
       "string lpc_term list" "string lpc_return_state" "string lpc_link" "string lpc_link"
       lpp_link_types lpp_link_types
@@ -50,6 +53,9 @@ fun lpp_check_evaluation_primitive where
 | "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
     (LPPEBranch c y z cs ys zs m n gs active saved e fs) =
       lpp_check_evaluation_branch T fs fuel Q nds states contexts Fs nd F ss source_context c y z cs ys zs m n gs active saved e"
+| "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
+    (LPPEChoice a b left right gs active saved e fs) =
+      lpp_check_evaluation_choice T fs fuel Q nds states contexts Fs nd F ss source_context a b left right gs active saved e"
 | "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity
     (LPPEIdentity f a b gs active saved yes no yes_facts no_facts) =
       lpp_check_evaluation_identity T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context f a b gs active saved yes no"
@@ -125,6 +131,12 @@ next
   show ?thesis using lpp_evaluation_branch_sound[OF lpp_finite_evaluation_integer_contract
     lpp_finite_evaluation_ground program check known free observed step] by auto
 next
+  case (LPPEChoice a b left right gs active saved e fs)
+  have check: "lpp_check_evaluation_choice T fs fuel Q nds states contexts Fs nd F ss source_context a b left right gs active saved e"
+    using checked LPPEChoice by simp
+  show ?thesis using lpp_evaluation_choice_sound[OF lpp_finite_evaluation_integer_contract
+    lpp_finite_evaluation_ground program check known free observed step] by auto
+next
   case (LPPEIdentity f a b gs active saved yes no yes_facts no_facts)
   have check: "lpp_check_evaluation_identity T yes_facts no_facts fuel Q nds states contexts Fs nd F ss source_context f a b gs active saved yes no"
     using checked LPPEIdentity by simp
@@ -187,6 +199,11 @@ next
   have check: "lpp_check_evaluation_branch T fs fuel Q nds states contexts Fs nd F ss source_context c y z cs ys zs m n gs active saved e"
     using checked LPPEBranch by simp
   show ?thesis by (rule lpp_evaluation_branch_domain[OF check])
+next
+  case (LPPEChoice a b left right gs active saved e fs)
+  have check: "lpp_check_evaluation_choice T fs fuel Q nds states contexts Fs nd F ss source_context a b left right gs active saved e"
+    using checked LPPEChoice by simp
+  show ?thesis by (rule lpp_evaluation_choice_domain[OF check])
 next
   case (LPPEIdentity f a b gs active saved yes no yes_facts no_facts)
   have name: "lpp_identity_name f" and shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs),active)#saved"

@@ -13,7 +13,7 @@ theorem lpp_control_stable_relational_return:
   shows "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation)
     (lpp_success_atom_eval (f,ts) rho)"
 proof (rule lpp_control_relational_actual_return[where E="lpp_stable_scalar_evaluation operation",
-      OF program lpp_control_stable_success_model[OF builtins] _ _ _
+      OF program lpp_control_stable_success_model[OF builtins] _ _ _ _
       lpp_stable_scalar_evaluation_subst selected ordinary actual])
   fix g us a keep sigma
   assume outcome: "lpp_stable_source_builtin operation g us (LPPBuiltinProbe a keep)"
@@ -46,6 +46,20 @@ next
       (lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation)))
     (lp_isubst (LPIFun (LPCUser g) us) sigma)"
     by (rule lpp_control_stable_branch_model[where M="lpp_open_return_model F
+      (lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation))", OF outcome model])
+next
+  fix g us left right sigma
+  assume outcome: "lpp_stable_source_builtin operation g us (LPPBuiltinChoice left right)"
+    and model: "list_all (lpc_model_goal (lpp_control_return_model (lpp_open_return_model F
+        (lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation)))))
+      (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+      list_all (lpc_model_goal (lpp_control_return_model (lpp_open_return_model F
+        (lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation)))))
+      (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)"
+  show "lpp_control_return_model (lpp_open_return_model F
+      (lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation)))
+    (lp_isubst (LPIFun (LPCUser g) us) sigma)"
+    by (rule lpp_control_stable_choice_model[where M="lpp_open_return_model F
       (lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation))", OF outcome model])
 qed
 

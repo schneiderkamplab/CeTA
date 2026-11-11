@@ -102,7 +102,8 @@ lemma lpp_open_stable_control_model:
   assumes checked: "lpp_open_builtin_check F SP" and reachable: "f\<in>F"
     and outcome: "lpp_stable_source_builtin operation f ts result"
     and control: "(\<exists>a. result=LPPBuiltinCall a) \<or>
-      (\<exists>cs ys ns. result=LPPBuiltinBranch cs ys ns)"
+      (\<exists>cs ys ns. result=LPPBuiltinBranch cs ys ns) \<or>
+      (\<exists>left right. result=LPPBuiltinChoice left right)"
   shows "lpp_inline_return_model SP (lpp_stable_scalar_evaluation operation)
     (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
 proof -
@@ -114,7 +115,7 @@ proof -
     "\<not>lpp_finite_source_builtin ''1:integer'' ts result"
     "\<not>lpp_finite_source_builtin ''2:length'' ts result"
     using control by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def lpp_integer_is_outcome_def
-      lpp_finite_length_outcome_def lpp_integer_test_outcome_def lpp_integer_source_no_call lpp_integer_source_no_branch
+      lpp_finite_length_outcome_def lpp_integer_test_outcome_def lpp_integer_source_no_call lpp_integer_source_no_branch lpp_integer_source_no_choice
       simp del: lpp_integer_source_builtin.simps split: option.splits if_splits)
   have ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''" "f\<noteq>''2:length''"
     using finite excluded by auto

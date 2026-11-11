@@ -27,6 +27,7 @@ theorem lpp_inline_relational_actual_return_with_probes:
       lpc_return_control_igoal F (LPCAtom a)"
     and branch_control: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinBranch cs ys ns) \<Longrightarrow>
       list_all (lpc_return_control_igoal F) (cs@ys@ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
     and stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
     and selected: "f\<in>F" and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
     and actual: "lp_actual_answer (lpp_domain_answers P B U D)
@@ -43,7 +44,7 @@ proof -
       lp_ieval_subst map_map o_def)
   have known: "list_all (lpc_scoped_model_frame F ?M ?property) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
-  show ?thesis by (rule lpp_scoped_model_actual_return[OF modeled builtin probe_model probe_control call_model branch_model call_control branch_control
+  show ?thesis by (rule lpp_scoped_model_actual_return[OF modeled builtin probe_model probe_control call_model branch_model call_control branch_control no_choice
     lpp_inline_return_model_subst[where E=E, OF stable] known actual])
 qed
 

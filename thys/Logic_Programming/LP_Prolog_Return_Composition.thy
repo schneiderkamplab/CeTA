@@ -90,6 +90,17 @@ proof -
         (LPCGoals (ns@gs),eta)#(LPCBarrier m,eta)#tail"]) simp
   next
     case call then show ?thesis using ss by (auto intro: lpp_answer_transition.call)
+  next
+    case (choice f ts left right gs rho saved)
+    have shape: "e=LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)"
+      "rho=eta" "saved=tail@es" using choice(1) ss by auto
+    have local: "lpp_answer_transition P B U
+      ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#tail) None
+      ((LPCGoals (left@gs),eta)#(LPCGoals (right@gs),eta)#tail)"
+      by (rule lpp_answer_transition.choice) (rule choice(4), rule choice(5))
+    show ?thesis using local choice(2,3) shape ss
+      by (intro exI[of _ "(LPCGoals (left@gs),eta)#(LPCGoals (right@gs),eta)#tail"]) simp
+
   qed
 qed
 
@@ -222,6 +233,17 @@ proof -
     have local: "lpp_answer_transition P B U ss None ((LPCGoals (LPCAtom a#prefix),eta)#es)"
       unfolding ss shape by (rule lpp_answer_transition.call) (rule call(4))
     show ?thesis using call local gs tail rho by (auto simp: lpc_attach_answers_def)
+  next
+    case (choice f ts left right gs rho tail)
+    obtain prefix where shape: "e = LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#prefix)"
+      and gs: "gs = prefix @ map (lp_cut_map (\<lambda>t. lp_ieval t eta)) rest"
+      and tail: "tail = lpc_attach_answers rest es" and rho: "rho = eta"
+      using goals_shape choice by blast
+    have local: "lpp_answer_transition P B U ss None
+      ((LPCGoals (left@prefix),eta)#(LPCGoals (right@prefix),eta)#es)"
+      unfolding ss shape by (rule lpp_answer_transition.choice) (rule choice(4), rule choice(5))
+    show ?thesis using choice local gs tail rho by (auto simp: lpc_attach_answers_def)
+
   qed
 qed
 

@@ -23,6 +23,10 @@ theorem lpp_control_relational_actual_return:
       (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) (cs@ys)) \<or>
        list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ns)) \<Longrightarrow>
       M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and choice: "\<And>f ts left right sigma. U f ts (LPPBuiltinChoice left right) \<Longrightarrow>
+      (list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) left) \<or>
+       list_all (lpc_model_goal M) (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) right)) \<Longrightarrow>
+      M (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
     and stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
     and selected: "f\<in>F"
     and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''" "f\<noteq>''2:;''" "f\<noteq>''3:subtract''"
@@ -53,7 +57,7 @@ proof -
       lpp_control_return_ordinary lpp_success_atom_eval_def lp_ieval_subst map_map o_def)
   have known: "list_all (lpc_model_frame M ?property) [(LPCGoals ?gs,eta)]"
     using initial by simp
-  show ?thesis by (rule lpp_model_actual_return[OF modeled builtin probe call branch stable_model known actual])
+  show ?thesis by (rule lpp_model_actual_return[OF modeled builtin probe call branch choice stable_model known actual])
 qed
 
 ML \<open>

@@ -188,6 +188,7 @@ theorem lpp_inline_integer_actual_return:
     and no_probe: "\<And>f ts a keep. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinProbe a keep)"
     and no_call: "\<And>f ts a. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinCall a)"
     and no_branch: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinBranch cs ys ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
     and stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
     and evaluation: "lpp_eval_integer_contract TYPE(string) E"
     and selected: "f\<in>F" and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
@@ -219,7 +220,7 @@ proof -
   qed
   have known: "list_all (lpc_scoped_model_frame F ?M (lpp_integer_known K)) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
-  show ?thesis by (rule lpp_scoped_model_actual_return_without_probe[OF modeled builtin no_probe no_call no_branch
+  show ?thesis by (rule lpp_scoped_model_actual_return_without_probe[OF modeled builtin no_probe no_call no_branch no_choice
     lpp_inline_return_model_subst[where E=E, OF stable] known actual])
 qed
 

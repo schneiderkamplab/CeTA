@@ -87,6 +87,11 @@ next
 next
   case call
   then show ?thesis by (auto intro: lpp_answer_transition.call)
+next
+  case choice
+  then show ?thesis
+    by (auto simp: lpp_plain_goals_scope intro: lpp_answer_transition.choice)
+
 
 qed
 

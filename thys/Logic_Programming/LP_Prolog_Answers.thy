@@ -16,6 +16,8 @@ datatype ('f,'w) lpp_builtin_result =
   | LPPBuiltinFailure | LPPBuiltinError
   | LPPBuiltinBranch "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list"
       "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list" "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list"
+  | LPPBuiltinChoice "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list"
+      "('f lp_cut_symbol,'w) lp_iterm lp_cut_goal list"
   | LPPBuiltinCall "('f lp_cut_symbol,'w) lp_iterm"
   | LPPBuiltinProbe "('f lp_cut_symbol,'w) lp_iterm" bool
 
@@ -85,6 +87,11 @@ inductive_set lpp_atomic_source ::
       LPCGoals (cond@(LPCCut m#(yes@gs)))#LPCBarrier n#
       LPCGoals (no@gs)#LPCBarrier m#es) \<in>lpp_atomic_source P B U"
 
+| choice: "U f ts (LPPBuiltinChoice left right) \<Longrightarrow>
+    list_all lpp_plain_goal (left@right) \<Longrightarrow>
+    (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es,
+      LPCGoals (left@gs)#LPCGoals (right@gs)#es) \<in>lpp_atomic_source P B U"
+
 inductive lpp_answer_transition ::
   "('f,string) lp_cut_program \<Rightarrow> ('f \<times> nat) set \<Rightarrow>
    ('f \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm list \<Rightarrow>
@@ -127,6 +134,15 @@ inductive lpp_answer_transition ::
     lpp_answer_transition P B U ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#es)
       None ((LPCGoals (cond@(LPCCut m#(yes@gs))),eta)#(LPCBarrier n,eta)#
         (LPCGoals (no@gs),eta)#(LPCBarrier m,eta)#es)"
+
+| choice: "U f ts (LPPBuiltinChoice left right) \<Longrightarrow>
+    list_all lpp_plain_goal (left@right) \<Longrightarrow>
+    lpp_answer_transition P B U ((LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs),eta)#es)
+      None ((LPCGoals (left@gs),eta)#(LPCGoals (right@gs),eta)#es)"
+
+text \<open>A disjunction saves the right alternative with the incoming answer
+  environment. Successful substitutions in the left branch affect its active
+  continuation only. Both branches stay in the shared ordered cut stack.\<close>
 
 lemma lpp_answer_transition_erases:
   "lpp_answer_transition P B U ss event tt \<Longrightarrow>
