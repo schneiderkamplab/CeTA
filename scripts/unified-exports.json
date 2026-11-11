@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "5ad0eb8b253f3b0b075799f72ddb0725cb7c49c2cbe4aa13c8a81462e51059f9",
+      "Prolog_Stable_Mixed_Generated.hs": "2ed6c2f7448b1c4a4f35cebcb206b51c5d936d36f4a64f24ec5bdd4a88002407",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "fa02c7ac7e988e70093a909232d8b1025f7e3865352247d53f333f4ea35c233a",
+    "archive_sha256": "b2066dc62bddb8b01b859707fec8b770ac5ae08ce7c1091196c57b91b0bf3be8",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -1187,6 +1187,22 @@
         "thys/Logic_Programming/LP_Prolog_Stopped_Component.thy": "4cb5673b8068b5a1ec63ff8ac8925b6f022b21439a06d8c7125f378449a3b1f1",
         "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy": "d9e94dac0f0c7f798b6b16a4c4e11519d2a165e95ee2b34a07cce9f51bce4dee",
         "thys/Logic_Programming/LP_Return_Productivity.thy": "221b9bab2b1b7f14a32626a4c9c710ca2929a5d39838faadeca36a637aa9f459"
+      }
+    },
+    "prolog_normalization_integration": {
+      "verification": "target/prolog-observed-normalization-export-1214.log",
+      "component_verification": "target/prolog-observed-normalization-export-1214.log",
+      "split_verification": "target/prolog-observed-normalization-1209.log",
+      "source_verification": "target/prolog-observed-normalization-export-1214.log",
+      "source_baseline": "07a855c",
+      "contract_base": "07a855c",
+      "export_verification": "target/prolog-observed-normalization-export-1214.log",
+      "export": "target/prolog-normalization-export-1214",
+      "generated_sha256": "2ed6c2f7448b1c4a4f35cebcb206b51c5d936d36f4a64f24ec5bdd4a88002407",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Observed_Equation_Rewrite.thy": "1fd53eeef74ad192a80d3813001518bacf8f61b5400d3895844e69831428f486",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_Graph.thy": "d49999d34e6db35272c3e997680fe5e268d8a281cc52755dae3c16f9e9d7545a",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy": "8da096a558a2ecff74a4eb0ea38cb72c429a38db0119747c9e59724955815379"
       }
     }
   },

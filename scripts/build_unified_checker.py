@@ -25,6 +25,8 @@ def main():
     ap.add_argument('--exports',type=Path,help='Override the committed, hash-verified export snapshots')
     ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--jobs',type=int,default=4)
+    ap.add_argument('--reuse-build',type=Path,action='append',default=[],
+                    help='Reuse matching hash-verified libraries from an immutable prior build')
     a=ap.parse_args();out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
     exports=a.exports.resolve() if a.exports else out/'exports'
     ghc=shutil.which(os.environ.get('GHC','ghc'));pkg=shutil.which(os.environ.get('GHC_PKG','ghc-pkg'));ar=shutil.which('ar')
@@ -63,6 +65,28 @@ def main():
         if receipt.exists():
             old=json.loads(receipt.read_text())
             if old['identity']==identity and sha(work/('libHS'+unit+'.a'))==old['archive_sha256']:return old
+        # Separate executable snapshots need not recompile identical libraries.
+        # Reuse is read-only: all changed units are built in the new output.
+        for previous in a.reuse_build:
+            cached=previous.resolve()/unit;cached_receipt=cached/'build.json'
+            # A prior executable may itself reference reused libraries.
+            if not cached_receipt.is_file() and (previous/'build.json').is_file():
+                prior=json.loads((previous/'build.json').read_text())
+                match=next((r for r in prior.get('libraries',[]) if r.get('unit')==unit),None)
+                if match and match.get('configuration'):
+                    cached=Path(match['configuration']).parent
+                    if cached.name!=unit:continue
+                    cached_receipt=cached/'build.json'
+            if not cached_receipt.is_file():continue
+            old=json.loads(cached_receipt.read_text())
+            cached_archive=cached/('libHS'+unit+'.a');conf=cached/'package.conf'
+            if old.get('identity')!=identity or old.get('unit')!=unit:continue
+            if not cached_archive.is_file() or sha(cached_archive)!=old.get('archive_sha256'):continue
+            if old.get('configuration')!=str(conf) or not conf.is_file():continue
+            dependency_line=next((line for line in conf.read_text().splitlines() if line.startswith('depends: ')),None)
+            if dependency_line!='depends: '+' '.join(dependencies):continue
+            print('Reused',key,'from',str(previous.resolve()),flush=True)
+            return old
         # Fresh private objects ensure every generated module gets -O2.
         obj=work/'objects'
         if obj.exists():shutil.rmtree(obj)

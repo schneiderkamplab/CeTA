@@ -45,12 +45,13 @@ test: ceta
 
 CETA_UNIFIED_BUILD_DIR?=target/unified
 CETA_BUILD_JOBS?=4
+CETA_REUSE_BUILD?=
 
 .PHONY: ceta ceta-unified
 ceta: ceta-unified
 
 ceta-unified:
-	GHC="$(GHC)" python3 scripts/build_unified_checker.py --output "$(CETA_UNIFIED_BUILD_DIR)" --jobs "$(CETA_BUILD_JOBS)"
+	GHC="$(GHC)" python3 scripts/build_unified_checker.py --output "$(CETA_UNIFIED_BUILD_DIR)" --jobs "$(CETA_BUILD_JOBS)" $(if $(CETA_REUSE_BUILD),--reuse-build "$(CETA_REUSE_BUILD)",)
 	@mkdir -p "$(CETA_BIN_DIR)"
 	cp "$(CETA_UNIFIED_BUILD_DIR)/ceta" "$(CETA_BIN_DIR)/ceta"
 

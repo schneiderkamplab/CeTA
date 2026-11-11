@@ -110,41 +110,44 @@ definition lpp_established_stopped_mixed_parser where
     roots\<leftarrow>xml_many (STR ''roots'') lpc_triple_root_parser id;
     blocks\<leftarrow>xml_many (STR ''components'') lpp_stopped_component_parser id;
     OD\<leftarrow>xml_many (STR ''observedTriples'') lpp_observed_triple_parser id;
+    normalization\<leftarrow>[0] xml_nat (STR ''equationNormalizationFuel'');
+    NOD\<leftarrow>[[]] xml_many (STR ''normalizedTriples'') lpp_observed_triple_parser id;
     ranks\<leftarrow>xml_many (STR ''routing'') (XMLdo (STR ''entry'') {
       p\<leftarrow>xml_text (STR ''predicate''); n\<leftarrow>xml_nat (STR ''rank''); xml_return (p,n)}) id;
     backends\<leftarrow>xml_many (STR ''backends'') lpp_mixed_backend_parser id;
-    xml_return (profile,P,q,modes,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,ranks,backends)}"
+    xml_return (profile,P,q,modes,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,normalization,NOD,ranks,backends)}"
 
 definition check_lpp_established_stopped_mixed_xml where
   "check_lpp_established_stopped_mixed_xml xml = (case parse_xml_string lpp_established_stopped_mixed_parser xml of
-    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,ranks,raw) \<Rightarrow>
-      (let candidates=lpp_decode_mixed_backends (summaries,SP,receipts) OD ranks raw in
+    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,normalization,NOD,ranks,raw) \<Rightarrow>
+      (let enriched_rows=(if normalization=0 then OD else NOD);
+        candidates=lpp_decode_mixed_backends (summaries,SP,receipts) enriched_rows ranks raw in
         profile=''iso-rational-libraries-v1'' \<and>
         lpp_check_transfer_contract summaries SP receipts \<and>
         list_all (lpp_stopped_component_header P fuel (summaries,SP,receipts)) blocks \<and>
         distinct (map fst ranks) \<and>
         list_all (\<lambda>((h,ps,b,gs),os). fst h\<in>set (map fst ranks) \<and> fst b\<in>set (map fst ranks)) OD \<and>
         list_all (\<lambda>candidate. case candidate of None \<Rightarrow> False | Some _ \<Rightarrow> True) candidates \<and>
-        lpp_check_stopped_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
-          roots contexts (map snd blocks) q modes chain_pred OD (lpp_mixed_rank_lookup ranks) (map the candidates))
+        lpp_check_stopped_normalized_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
+          roots contexts (map snd blocks) q modes chain_pred OD (if normalization=0 then OD else NOD) normalization (lpp_mixed_rank_lookup ranks) (map the candidates))
     | _ \<Rightarrow> False)"
 
 theorem check_lpp_established_stopped_mixed_xml_sound:
   fixes ts :: "(string lp_cut_symbol,string) term list"
   assumes parsed: "parse_xml_string lpp_established_stopped_mixed_parser xml =
-    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,ranks,raw)"
+    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,normalization,NOD,ranks,raw)"
     and ok: "check_lpp_established_stopped_mixed_xml xml"
     and len: "length ts=length modes"
     and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
   shows "SN_on (lp_prolog_source P lpp_builtin_signature (lpp_domain_source P lpp_builtin_signature (lpp_stable_source_builtin (lpp_stable_profile_operation fallback)) lpp_finite_source_domain))
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
 proof -
-  have checked: "lpp_check_stopped_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
-      roots contexts (map snd blocks) q modes chain_pred OD (lpp_mixed_rank_lookup ranks)
-      (map the (lpp_decode_mixed_backends (summaries,SP,receipts) OD ranks raw))"
+  have checked: "lpp_check_stopped_normalized_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
+      roots contexts (map snd blocks) q modes chain_pred OD (if normalization=0 then OD else NOD) normalization (lpp_mixed_rank_lookup ranks)
+      (map the (lpp_decode_mixed_backends (summaries,SP,receipts) (if normalization=0 then OD else NOD) ranks raw))"
     using parsed ok by (auto simp: check_lpp_established_stopped_mixed_xml_def Let_def)
   show ?thesis
-  proof (rule lpp_check_stopped_mixed_graph_sound[OF tp_rbt_impl dpp_rbt_impl lpp_stable_profile_integer_compatible checked])
+  proof (rule lpp_check_stopped_normalized_mixed_graph_sound[OF tp_rbt_impl dpp_rbt_impl lpp_stable_profile_integer_compatible checked])
     show "length (map (\<lambda>t. lp_ieval t LPIVar) ts)=length modes" using len by simp
     show "\<forall>(t,b)\<in>set (zip (map (\<lambda>t. lp_ieval t LPIVar) ts) modes). b \<longrightarrow> lp_seg_ground t"
       using ground len by (auto simp: in_set_zip lpc_positions_def lp_seg_ground_eval ground_vars_term_empty)

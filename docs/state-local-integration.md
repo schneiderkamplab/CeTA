@@ -2279,3 +2279,27 @@ These attempts are preserved; no checker acceptance rule was weakened.
 Stopped length and subtraction local actions and abort-based suffix discharge
 remain explicit gaps. Production promotion remains gated on protected-category
 replay with this same unified executable.
+
+
+## Prolog observed-equation normalization and incremental builds
+
+Verification/export 1214 adds checked equation enrichment between the original
+stopped SEG obligations and independently scheduled component backends. Original
+source rows, helper prefixes, endpoints and complete row coverage remain bound;
+normalization adds consequences of initialized equations without integer-domain
+or finite-spine assumptions. Optional normalization fields default to the old
+row subject for existing artifacts. Unified build 1211 has SHA-256
+`8971c7405a3e13890cb2a070edb4568501c8534f80dff5bc178ca8cf477ff71b`.
+Six fixture native/strict replays, fourteen controls, eleven mutation cases twice
+and 362 prior Prolog/LP-with-cut certificate checks pass with this checker.
+Benchmark gains and production promotion are not established by those fixtures.
+
+Use `make ceta CETA_REUSE_BUILD=target/unified-prolog-normalization-reuse-1215`
+with a fresh output/install directory for subsequent Prolog exports. The builder
+hash-checks and reuses unchanged category libraries read-only, including libraries
+referenced transitively by prior builds. Only changed identities rebuild.
+Validation 1215 and 1216 reuse all eight libraries and produce the identical
+binary hash; no category library is recompiled. Their logs and build manifests
+are under `target/prolog-normalization-reuse-1215.log`,
+`target/prolog-normalization-reuse-1216.log` and the corresponding unified build
+directories. Reusing these libraries preserves immutable previous checkers.
