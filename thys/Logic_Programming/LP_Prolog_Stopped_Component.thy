@@ -12,6 +12,8 @@ datatype lpp_stopped_component =
       lpp_source_shape_receipt "string * string lpc_term list"
       lpp_guarded_call_receipt lpp_guarded_call_receipt
 
+  | LPPSStoppedRefuted nat "string lpc_term"
+
 fun lpp_check_stopped_component where
   "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
       (LPPSStoppedRegion region actions connections) =
@@ -25,6 +27,9 @@ fun lpp_check_stopped_component where
       (LPPSStoppedShape ft st receipt evidence atom first_call second_call) =
     lpp_check_control_shape_split T ft st fuel P SP D Q roots contexts incoming entry receipt evidence
       atom OD first_call second_call"
+
+| "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
+      (LPPSStoppedRefuted i pattern) = lpp_check_shape_refutation fuel incoming i pattern"
 
 theorem lpp_stopped_component_checked_lower:
   fixes P :: "(string,string) lp_cut_program"
@@ -65,6 +70,11 @@ next
     using checked by (simp add: LPPSStoppedShape atom)
   show ?thesis by (rule lpp_checked_stopped_shape_split_sound[OF compatible transfer local program
     known observed free lower])
+next
+  case (LPPSStoppedRefuted i pattern)
+  have check: "lpp_check_shape_refutation fuel incoming i pattern"
+    using checked LPPSStoppedRefuted by simp
+  show ?thesis using lpp_stable_shape_refutation_sound[OF check observed] by blast
 qed
 
 ML \<open>

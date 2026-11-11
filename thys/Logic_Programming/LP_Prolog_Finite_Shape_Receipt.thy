@@ -9,6 +9,7 @@ record lpp_source_shape_receipt =
   lppssr_modes :: "(string lp_cut_symbol \<times> lp_return_shape list \<times> lp_return_shape list) list"
   lppssr_seeds :: "(lp_return_shape \<times> string) list"
   lppssr_outputs :: "(lp_return_shape \<times> string) list"
+  lppssr_nonproductive :: "(string lp_cut_symbol \<times> nat) list"
 
 fun lpp_finite_shape_prefix_check where
   "lpp_finite_shape_prefix_check F shape_fuel grammar modes seeds outputs [LPCAtom (Fun (LPCUser f) ts)] =

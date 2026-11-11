@@ -18,6 +18,10 @@ definition lpp_stopped_control_parser where
     actions\<leftarrow>xml_many (STR ''actions'')
       ((XMLdo (STR ''boundary'') {xml_return None}) XMLor
        (XMLdo (STR ''undefinedProcedure'') {xml_return (Some LPPSUndefined)}) XMLor
+       (XMLdo (STR ''refutedShape'') {
+          i\<leftarrow>xml_nat (STR ''index'');
+          t\<leftarrow>xml_singleton (STR ''pattern'') lpc_term_parser id;
+          xml_return (Some (LPPSRefutedShape i t))}) XMLor
        (xml_change lpp_evaluation_action_parser (\<lambda>a. xml_return (Some (LPPSControl a))))) id;
     Q\<leftarrow>xml_many (STR ''residual'') (XMLdo (STR ''clause'') {
       h\<leftarrow>xml_singleton (STR ''head'') lpc_atom_parser id;
@@ -47,6 +51,10 @@ definition lpp_stopped_region_parser where
 
 definition lpp_stopped_component_parser where
   "lpp_stopped_component_parser =
+    (XMLdo (STR ''refutedShapeModule'') {
+      i\<leftarrow>xml_nat (STR ''index'');
+      t\<leftarrow>xml_singleton (STR ''pattern'') lpc_term_parser id;
+      xml_return (None,LPPSStoppedRefuted i t)}) XMLor
     (XMLdo (STR ''existingComponent'') {
       block\<leftarrow>lpp_stopped_region_parser;
       connections\<leftarrow>XMLdo (STR ''guardedRegion'') {
@@ -77,7 +85,8 @@ definition lpp_stopped_component_header where
     (case component of (header,LPPSStoppedRegion region actions connections) \<Rightarrow>
       header=Some (P,fuel,0,transfer)
     | (header,LPPSStoppedRelational ft st split evidence atom first_call second_call) \<Rightarrow> header=None
-    | (header,LPPSStoppedShape ft st split evidence atom first_call second_call) \<Rightarrow> header=None)"
+    | (header,LPPSStoppedShape ft st split evidence atom first_call second_call) \<Rightarrow> header=None
+    | (header,LPPSStoppedRefuted i pattern) \<Rightarrow> header=None)"
 
 definition lpp_established_stopped_mixed_parser where
   "lpp_established_stopped_mixed_parser = XMLdo (STR ''prologEstablishedStoppedSEGMixedProof'') {

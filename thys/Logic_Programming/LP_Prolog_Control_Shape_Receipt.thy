@@ -1,5 +1,5 @@
 theory LP_Prolog_Control_Shape_Receipt
- imports LP_Prolog_Control_Ground_Receipt LP_Prolog_Control_Shape_Return LP_Prolog_Stable_Shape_Receipt
+ imports LP_Prolog_Control_Ground_Receipt LP_Prolog_Return_Productivity LP_Prolog_Stable_Shape_Receipt
 begin
 
 definition lpp_control_shape_context where
@@ -24,8 +24,11 @@ definition lpp_control_shape_receipt_check where
        set (lppsir_integers (lppsgr_model (lppssr_ground evidence))) \<union>
        set (map snd (filter (\<lambda>(shape,x). shape=LPReturnGround) (lppssr_outputs evidence))) \<and>
      set (map snd (lppssr_outputs evidence)) \<subseteq> set vs \<and>
+     lp_return_nonproductive_check (lpp_shape_program (lppsir_program (lppsgr_model (lppssr_ground evidence))))
+       (lppssr_nonproductive evidence) \<and>
      lp_return_shape_program_check (lppssr_fuel evidence) (lppssr_grammar evidence)
-       (lppssr_modes evidence) (lpp_shape_program (lppsir_program (lppsgr_model (lppssr_ground evidence)))) \<and>
+       (lppssr_modes evidence) (lp_return_productive_program
+         (lpp_shape_program (lppsir_program (lppsgr_model (lppssr_ground evidence)))) (lppssr_nonproductive evidence)) \<and>
      lpp_shape_seed_check (lppssr_grammar evidence) G incoming (lppssr_seeds evidence) \<and>
      lpp_finite_shape_prefix_check (set (lppsir_predicates (lppsgr_model (lppssr_ground evidence))))
        (lppssr_fuel evidence) (lppssr_grammar evidence) (lppssr_modes evidence)
@@ -95,15 +98,16 @@ proof -
     and keep: "set (lppssr_outputs evidence) \<subseteq> set shape_result"
     using checked prefix by (auto simp: lpp_control_shape_receipt_check_def
       elim!: lpp_finite_shape_prefix_check.elims split: option.splits)
-  have shape_check: "lp_return_shape_program_check (lppssr_fuel evidence) (lppssr_grammar evidence)
-      (lppssr_modes evidence) (lpp_shape_program ?SP)"
+  have productive_check: "lp_return_nonproductive_check (lpp_shape_program ?SP) (lppssr_nonproductive evidence)"
+    and shape_check: "lp_return_shape_program_check (lppssr_fuel evidence) (lppssr_grammar evidence)
+      (lppssr_modes evidence) (lp_return_productive_program (lpp_shape_program ?SP) (lppssr_nonproductive evidence))"
     and seed_check: "lpp_shape_seed_check (lppssr_grammar evidence) G incoming_context (lppssr_seeds evidence)"
     using checked by (auto simp: lpp_control_shape_receipt_check_def)
   have seeds: "lp_return_shape_known (lppssr_grammar evidence) (lppssr_seeds evidence) eta"
     by (rule lpp_shape_seed_check_sound[OF seed_check _ lpp_stable_context_finite_envelope[OF compatible observed]])
       (use gr in auto)
   have shapes: "lp_return_shape_known (lppssr_grammar evidence) (lppssr_outputs evidence) theta"
-    using lpp_control_stable_shape_transfer[OF program builtin selected ordinary shape_check seeds shape_flow source_call] keep
+    using lpp_control_stable_productive_shape_transfer[OF program builtin selected ordinary productive_check shape_check seeds shape_flow source_call] keep
     by (auto simp: lp_return_shape_known_def)
   have transfer: "lpp_check_transfer_program (lpp_transfer_lookup (lppsir_summaries ?model)) ?SP (lppsir_proofs ?model)"
     using base_checked by (auto simp: lpp_control_ground_receipt_check_def lpp_check_transfer_contract_def Let_def)

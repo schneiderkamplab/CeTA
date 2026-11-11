@@ -112,6 +112,9 @@ definition lpp_finite_shape_receipt_parser where
     integers\<leftarrow>xml_many (STR ''integers'') (xml_text (STR ''var'')) id;
     fuel\<leftarrow>xml_nat (STR ''shapeFuel'');
     grammar\<leftarrow>lpp_return_grammar_parser;
+    blocked\<leftarrow>[[]] xml_many (STR ''nonproductivePredicates'') (XMLdo (STR ''signature'') {
+      f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
+      n\<leftarrow>xml_nat (STR ''arity''); xml_return (f,n)}) id;
     modes\<leftarrow>xml_many (STR ''shapeContracts'') (XMLdo (STR ''shapeContract'') {
       f\<leftarrow>xml_singleton (STR ''symbol'') lpc_symbol_parser id;
       inputs\<leftarrow>xml_many (STR ''inputs'') lpp_return_shape_parser id;
@@ -121,7 +124,7 @@ definition lpp_finite_shape_receipt_parser where
     outputs\<leftarrow>xml_many (STR ''outputs'') lpp_shape_fact_parser id;
     xml_return \<lparr>lppssr_ground = base\<lparr>lppsgr_model :=
         (lppsgr_model base)\<lparr>lppsir_facts := facts,lppsir_integers := integers\<rparr>\<rparr>,
-      lppssr_fuel = fuel,lppssr_grammar = grammar,lppssr_modes = modes,lppssr_seeds = seeds,lppssr_outputs = outputs\<rparr>}"
+      lppssr_fuel = fuel,lppssr_grammar = grammar,lppssr_modes = modes,lppssr_seeds = seeds,lppssr_outputs = outputs,lppssr_nonproductive = blocked\<rparr>}"
 
 definition lpp_established_finite_shape_split_parser where
   "lpp_established_finite_shape_split_parser = XMLdo (STR ''prologTripleShapeSplit'') {

@@ -1,8 +1,9 @@
 theory LP_Prolog_Stopped_Action_Dispatch
-  imports LP_Prolog_Stopped_Module_Action
+  imports LP_Prolog_Stopped_Module_Action LP_Prolog_Shape_Refutation
 begin
 
 datatype lpp_stopped_action = LPPSControl lpp_evaluation_action | LPPSUndefined
+  | LPPSRefutedShape nat "string lpc_term"
 
 fun lpp_check_stopped_module_action where
   "lpp_check_stopped_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPSControl action) =
@@ -10,6 +11,9 @@ fun lpp_check_stopped_module_action where
       lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity action)"
 | "lpp_check_stopped_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity LPPSUndefined =
     lpp_check_undefined_frame P lpp_builtin_signature ss"
+
+| "lpp_check_stopped_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity (LPPSRefutedShape i pattern) =
+    lpp_check_shape_refutation fuel source_context i pattern"
 
 theorem lpp_stopped_module_action_contract:
   fixes SP :: "string lpp_success_clause list"
@@ -40,6 +44,11 @@ next
   have check: "lpp_check_undefined_frame P lpp_builtin_signature ss"
     using checked LPPSUndefined by simp
   show ?thesis by (rule lpp_undefined_frame_contract[OF check])
+next
+  case (LPPSRefutedShape i pattern)
+  have check: "lpp_check_shape_refutation fuel source_context i pattern"
+    using checked LPPSRefutedShape by simp
+  show ?thesis using lpp_stable_shape_refutation_sound[OF check observed] by blast
 qed
 
 ML \<open>

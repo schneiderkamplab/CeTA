@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "c3213dbc3ecad2423f419452c35ae19f55a7ecab61d679dd963368fb7db36960",
+      "Prolog_Stable_Mixed_Generated.hs": "5ad0eb8b253f3b0b075799f72ddb0725cb7c49c2cbe4aa13c8a81462e51059f9",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "d5c78b8d0bba90b9cf6ef26b5e218e93e0e46eb8e9905357b98e712da6dca6fd",
+    "archive_sha256": "fa02c7ac7e988e70093a909232d8b1025f7e3865352247d53f333f4ea35c233a",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -1165,6 +1165,28 @@
         "thys/Logic_Programming/LP_Prolog_Stopped_Triple_Observed.thy": "1682179ffc3076c4956fb74e9e77b2af2960ee9eabc3fc04226d51e538cad952",
         "thys/Logic_Programming/LP_Prolog_Stopped_Triple_Prefix.thy": "463c4fcf73a9b8ca857dbf7778ea31e83d679adf3cafd4a1e7363ae4e6662d90",
         "thys/Logic_Programming/LP_Prolog_Undefined_Frame.thy": "8d644207636ed6aaaf2d14cd59d47ffbc1a9252fb21fd78117b1defc5bc3c8ae"
+      }
+    },
+    "prolog_productive_integration": {
+      "verification": "target/prolog-shape-refutation-1187.log",
+      "component_verification": "target/prolog-shape-refutation-1187.log",
+      "split_verification": "target/prolog-productivity-receipt-1180.log",
+      "source_verification": "target/prolog-shape-refutation-1187.log",
+      "source_baseline": "5edf5b7",
+      "contract_base": "5edf5b7",
+      "export_verification": "target/prolog-shape-refutation-1187.log",
+      "export": "target/prolog-productive-export-1187",
+      "generated_sha256": "5ad0eb8b253f3b0b075799f72ddb0725cb7c49c2cbe4aa13c8a81462e51059f9",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Control_Shape_Receipt.thy": "bf223d8ba773dd28ed0d821d62e6adb2a0db2c847c33b689928dec43a0d6b13e",
+        "thys/Logic_Programming/LP_Prolog_Finite_Shape_Receipt.thy": "ff5864b5569f282e49c9f82b6e34fdf3a7657ab3757ce893d5273479d0fbc8c9",
+        "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy": "7244495b17116c2ad589a02b9b7a78faea896e88f64dc807e6920644a25c6ee1",
+        "thys/Logic_Programming/LP_Prolog_Return_Productivity.thy": "9fef748593c80e5650d8d69786e2be288f1537658d84c1edbb851c89bfdf2c72",
+        "thys/Logic_Programming/LP_Prolog_Shape_Refutation.thy": "3ecbc70d561172e721593af20ee3a6d65cfd5dcc18103706c89fbb07fac59638",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Action_Dispatch.thy": "1c685fe2103127103cb1dcbbe67d551eb8496d1c7957b1b33716f94c838e75a9",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Component.thy": "4cb5673b8068b5a1ec63ff8ac8925b6f022b21439a06d8c7125f378449a3b1f1",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy": "d9e94dac0f0c7f798b6b16a4c4e11519d2a165e95ee2b34a07cce9f51bce4dee",
+        "thys/Logic_Programming/LP_Return_Productivity.thy": "221b9bab2b1b7f14a32626a4c9c710ca2929a5d39838faadeca36a637aa9f459"
       }
     }
   },
