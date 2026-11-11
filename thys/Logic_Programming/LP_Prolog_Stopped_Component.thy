@@ -1,5 +1,5 @@
 theory LP_Prolog_Stopped_Component
- imports LP_Prolog_Stopped_Region_Descent LP_Prolog_Stopped_Relational_Check LP_Prolog_Stable_Relational_Component
+ imports LP_Prolog_Stopped_Result_Split LP_Prolog_Stopped_Region_Descent LP_Prolog_Stopped_Relational_Check LP_Prolog_Stable_Relational_Component
 begin
 hide_const (open) Tree_Automata_Containment.entry
 
@@ -10,6 +10,9 @@ datatype lpp_stopped_component =
       lpp_guarded_call_receipt lpp_guarded_call_receipt
   | LPPSStoppedShape lpp_link_types lpp_link_types "string lpc_triple_split"
       lpp_source_shape_receipt "string * string lpc_term list"
+      lpp_guarded_call_receipt lpp_guarded_call_receipt
+  | LPPSStoppedResultShape lpp_link_types lpp_link_types "string lpc_triple_split"
+      lpp_source_shape_receipt lpp_result_records lpp_source_integer_receipt "string * string lpc_term list"
       lpp_guarded_call_receipt lpp_guarded_call_receipt
 
   | LPPSStoppedRefuted nat "string lpc_term"
@@ -26,6 +29,10 @@ fun lpp_check_stopped_component where
 | "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
       (LPPSStoppedShape ft st receipt evidence atom first_call second_call) =
     lpp_check_control_shape_split T ft st fuel P SP D Q roots contexts incoming entry receipt evidence
+      atom OD first_call second_call"
+| "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
+      (LPPSStoppedResultShape ft st receipt evidence records result_evidence atom first_call second_call) =
+    lpp_check_result_shape_split T ft st fuel P SP D Q roots contexts incoming entry receipt evidence records result_evidence
       atom OD first_call second_call"
 
 | "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
@@ -69,6 +76,14 @@ next
     receipt evidence (f,ts) OD first_call second_call"
     using checked by (simp add: LPPSStoppedShape atom)
   show ?thesis by (rule lpp_checked_stopped_shape_split_sound[OF compatible transfer local program
+    known observed free lower])
+next
+  case (LPPSStoppedResultShape ft st receipt evidence records result_evidence atom first_call second_call)
+  obtain f ts where atom: "atom=(f,ts)" by (cases atom) auto
+  have local: "lpp_check_result_shape_split T ft st fuel P SP D Q roots contexts incoming entry
+    receipt evidence records result_evidence (f,ts) OD first_call second_call"
+    using checked by (simp add: LPPSStoppedResultShape atom)
+  show ?thesis by (rule lpp_checked_stopped_result_shape_split_sound[OF compatible transfer local program
     known observed free lower])
 next
   case (LPPSStoppedRefuted i pattern)

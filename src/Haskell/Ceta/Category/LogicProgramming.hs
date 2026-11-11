@@ -162,6 +162,10 @@ runProlog [path] = do
 #ifdef LP_PROLOG_RATIONAL_NO
       PR.check_lpp_rational_no_xml (cachedCharacters PR.explode input) ||
 #endif
+#ifdef LP_PROLOG_STABLE_MIXED
+      PSM.check_lpp_machine_no_xml (cachedCharacters PSM.explode input) ||
+      PSM.check_lpp_ground_integer_no_xml (cachedCharacters PSM.explode input) ||
+#endif
       PS.check_lpp_test_no_xml (cachedCharacters PS.explode input) ||
       PS.check_lpp_integer_no_xml (cachedCharacters PS.explode input)
       then putStrLn "CERTIFIED SOURCE-BOUND PROLOG NO"

@@ -244,4 +244,22 @@ val _ = if Thm_Deps.has_skip_proof checked orelse
   exists (fn n => not (member (op =) inherited n)) (oracles checked)
   then error "Untrusted evaluation-context transport dependency" else ();
 \<close>
+lemma lpp_evaluation_context_ground_sound:
+  assumes evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
+    and observed: "lpp_evaluation_context_holds E SP source_context eta"
+  shows "\<forall>x\<in>lpp_source_context_ground source_context. lp_seg_ground (eta x)"
+proof -
+  obtain facts guards observations where shape: "source_context=(facts,guards,observations)"
+    by (cases source_context) auto
+  have each: "\<forall>x\<in>lpp_observation_ground_vars observation. lp_seg_ground (eta x)"
+    if member: "observation\<in>set observations" for observation
+  proof -
+    have holds: "lpp_evaluation_observation_holds E eta observation"
+      using observed member by (auto simp: shape lpp_evaluation_context_holds_def list_all_iff)
+    show ?thesis by (rule lpp_evaluation_observation_ground[OF evaluation holds])
+  qed
+  show ?thesis using each by (auto simp: shape lpp_observations_ground_def)
+qed
+
+
 end

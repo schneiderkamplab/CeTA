@@ -28,7 +28,7 @@ proof -
   let ?bindings = "lppsnc_bindings receipt"
   let ?formula = "lppsnc_formula receipt"
   have path: "lpp_check_stable_numeric_path ?K ?G ?inputs ?outputs
-      (filter lpp_stable_constraint_observation os) (lppsnc_tests receipt) ?bindings ?formula"
+      (lpp_stable_selected_observations os (lppsnc_tests receipt)) (lppsnc_tests receipt) ?bindings ?formula"
     and admissible: "lpp_check_stable_numeric_bindings ?inputs ?outputs ?bindings"
     and input_names: "map fst ?inputs=coordinates (fst h)"
     and input_modes: "map (lpp_stable_endpoint_mode o snd o snd) ?inputs=modes (fst h)"
@@ -40,8 +40,8 @@ proof -
     using checked by (auto simp: lpp_check_stable_numeric_call_row_def Let_def list_all_iff)
   have ground: "\<And>x. x\<in>set ?G \<Longrightarrow> lp_seg_ground (eta x)"
     by (rule lpp_stable_numeric_call_row_ground[OF checked known observations])
-  have obs: "list_all (lpp_stable_observation_holds operation eta) (filter lpp_stable_constraint_observation os)"
-    using observations by (auto simp: list_all_iff)
+  have obs: "list_all (lpp_stable_observation_holds operation eta) (lpp_stable_selected_observations os (lppsnc_tests receipt))"
+    using lpp_stable_selected_observations_holds[OF observations] .
   have input_rep: "lpp_stable_numeric_call operation coordinates modes (lpp_success_atom_eval h eta) pre"
     by (rule lpp_stable_numeric_call_match[OF matching represented])
   have input_tuple: "lpp_stable_numeric_tuple operation (map fst ?inputs)

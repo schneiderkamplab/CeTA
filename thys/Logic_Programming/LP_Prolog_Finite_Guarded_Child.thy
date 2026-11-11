@@ -27,16 +27,25 @@ proof -
   obtain ce where state: "lpcn_state ?nd=[ce]"
     using checked by (auto simp: lpp_finite_triple_check_child_def Let_def split: list.splits;
       metis list.exhaust)
-  have inst: "lpc_seg_check_instance_boundary (LPCGoals pre) G guards vs (map Var vs)
+  have context_ground: "\<forall>x\<in>lpp_source_context_ground context. lp_seg_ground (eta x)"
+    by (rule lpp_evaluation_context_ground_sound[OF lpp_finite_evaluation_ground observed])
+  have enriched_known: "lp_cut_knowledge
+      (set (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground context) vs)) guards eta"
+    using known context_ground by (auto simp: lp_cut_knowledge_def)
+  obtain grounded where inst: "lpc_seg_check_instance_boundary (LPCGoals pre) grounded guards vs (map Var vs)
       ce (lpcn_ground ?nd) (lpcn_guards ?nd) (lpcn_vars ?nd)
       (lpcsh_bindings receipt) (lpcsh_swaps receipt)"
-    and free_check: "lpc_check_link_free fuel [] F (lpctr_free ?entry) (lpcsh_bindings receipt)"
+    and grounded_known: "lp_cut_knowledge (set grounded) guards eta"
+    using checked known enriched_known
+    unfolding lpp_finite_triple_check_child_def Let_def state
+    by auto
+  have free_check: "lpc_check_link_free fuel [] F (lpctr_free ?entry) (lpcsh_bindings receipt)"
     and inp: "lp_atom_subst (lpctr_input ?entry) ?mu=inp"
     and equal: "lpc_triple_observe_atom (map (lpc_seg_position_template vs) (map ?mu (lpcn_vars ?nd)))
       (lpctr_output ?entry) = lpc_triple_observe_atom (map (lpc_seg_position_template vs) (map Var vs)) out"
     using checked by (auto simp: lpp_finite_triple_check_child_def Let_def state)
   have child_known: "lp_cut_knowledge (set (lpcn_ground ?nd)) (lpcn_guards ?nd) ?eta"
-    by (rule lpc_seg_instance_boundary_knowledge[OF inst known])
+    by (rule lpc_seg_instance_boundary_knowledge[OF inst grounded_known])
   have child_free: "lpc_free_knowledge (set (lpctr_free ?entry)) ?eta"
     by (rule lpc_checked_link_free_sound[OF free_check _ free]) (simp add: lp_equations_def)
   have enriched: "lpp_evaluation_context_holds lpp_finite_evaluation_result SP (lpp_context_add_ground context G) eta"
@@ -58,7 +67,7 @@ proof -
   have answer: "lpc_triple_check_instance_answer Q vs (map Var vs) (lpcn_vars ?nd)
       (lpcsh_bindings receipt) (lpctr_output ?entry) out 0 []"
     using equal by (simp add: lpc_triple_check_instance_answer_def)
-  show ?thesis by (rule lpp_finite_triple_checked_instance_contract[OF inst program known answer child])
+  show ?thesis by (rule lpp_finite_triple_checked_instance_contract[OF inst program grounded_known answer child])
 qed
 
 end

@@ -9,7 +9,9 @@ facts separately and cannot be substituted for an arbitrary numeric guard.\<clos
 
 fun lpp_check_numeric_observation where
   "lpp_check_numeric_observation K (LPPOGround t) numeric_test = False"
-| "lpp_check_numeric_observation K (LPPOEquation a b) numeric_test = False"
+| "lpp_check_numeric_observation K (LPPOEquation l r) (comparison,a,b) =
+    (comparison=LPPIntEqual \<and> l=lpp_expression_term a \<and> r=lpp_expression_term b \<and>
+      lpp_expression_check K a \<and> lpp_expression_check K b)"
 | "lpp_check_numeric_observation K (LPPOShape G shape t) numeric_test = False"
 | "lpp_check_numeric_observation K (LPPOInteger t) numeric_test = False"
 | "lpp_check_numeric_observation K (LPPOEvaluation e t) (comparison,a,b) =
@@ -31,7 +33,16 @@ proof -
   proof (cases observation)
     case (LPPOShape G shape t) then show ?thesis using checked by simp
   next
-    case (LPPOEquation a b) then show ?thesis using checked by simp
+    case (LPPOEquation l r)
+    have left: "lpp_integer_evaluation (lp_ieval l eta) (lpp_expression_value a rho)"
+      and right: "lpp_integer_evaluation (lp_ieval r eta) (lpp_expression_value b rho)"
+      using checked lpp_expression_evaluation[of K a eta rho, OF _ typed]
+        lpp_expression_evaluation[of K b eta rho, OF _ typed]
+      by (auto simp: LPPOEquation numeric_test)
+    have equation: "lp_ieval l eta=lp_ieval r eta" using observed by (simp add: LPPOEquation)
+    have equal: "lpp_expression_value a rho=lpp_expression_value b rho"
+      using lpp_integer_evaluation_unique[OF left right[folded equation]] .
+    show ?thesis using checked equal by (auto simp: numeric_test LPPOEquation)
   next
     case (LPPOGround t)
     then show ?thesis using checked by simp

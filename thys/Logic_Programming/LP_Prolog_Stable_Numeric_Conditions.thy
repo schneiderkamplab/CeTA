@@ -8,10 +8,14 @@ datatype 'v lpp_stable_condition_receipt =
   | LPPStableMagnitudeModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableMagnitudeQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableScaledEqualityCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableScaledEvaluationCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledOrderCondition bool "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableIgnoredCondition
   | LPPStableIntegerCondition "'v lpp_numeric_condition"
+  | LPPStableSquareIntegerCondition bool "'v lpp_integer_expression" "'v lpp_integer_expression"
+  | LPPStableSquareUpperCondition "'v lpp_integer_expression" "(string lp_cut_symbol,'v) term"
   | LPPStableUpperCondition "'v lpp_integer_expression" "(string lp_cut_symbol,'v) term"
 
   | LPPStableQuotientCondition "(string lp_cut_symbol,'v) term" int "(string lp_cut_symbol,'v) term"
@@ -31,11 +35,17 @@ fun lpp_check_stable_numeric_observation where
 |   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeModuloCondition a b result) = False"
 |   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeQuotientModuloCondition a n d result) = False"
 |   "lpp_check_stable_numeric_observation K observation (LPPStableScaledQuotientModuloCondition a n d result) = False"
+| "lpp_check_stable_numeric_observation K observation (LPPStableScaledEqualityCondition a b) = (observation=LPPOComparison LPPIntEqual a b)"
+| "lpp_check_stable_numeric_observation K observation (LPPStableScaledEvaluationCondition a b) = (observation=LPPOEvaluation a b)"
 |  "lpp_check_stable_numeric_observation K observation (LPPStableScaledOrderCondition is_strict a b) =
     (observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) a b)"
 | "lpp_check_stable_numeric_observation K observation (LPPStableScaledModuloCondition a b result) = False"
 |  "lpp_check_stable_numeric_observation K observation (LPPStableIntegerCondition test) =
     lpp_check_numeric_observation K observation test"
+| "lpp_check_stable_numeric_observation K observation (LPPStableSquareIntegerCondition is_strict expression rhs_expression) =
+    lpp_check_numeric_observation K observation ((if is_strict then LPPIntLess else LPPIntLessEqual), LPPEMultiply expression expression, rhs_expression)"
+| "lpp_check_stable_numeric_observation K observation (LPPStableSquareUpperCondition expression bound_term) =
+    lpp_check_stable_upper_observation K observation (LPPEMultiply expression expression) bound_term"
 | "lpp_check_stable_numeric_observation K observation (LPPStableUpperCondition expression bound_term) =
     lpp_check_stable_upper_observation K observation expression bound_term"
 | "lpp_check_stable_numeric_observation K observation (LPPStableQuotientCondition a d result) =
@@ -57,11 +67,17 @@ fun lpp_stable_numeric_condition where
 |   "lpp_stable_numeric_condition (LPPStableMagnitudeModuloCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 |   "lpp_stable_numeric_condition (LPPStableMagnitudeQuotientModuloCondition a n d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 |   "lpp_stable_numeric_condition (LPPStableScaledQuotientModuloCondition a n d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
+| "lpp_stable_numeric_condition (LPPStableScaledEqualityCondition a b) = (LPPIntEqual,lpp_scaled_expression a,lpp_scaled_expression b)"
+| "lpp_stable_numeric_condition (LPPStableScaledEvaluationCondition a b) = (LPPIntEqual,lpp_scaled_expression a,lpp_scaled_expression b)"
 |  "lpp_stable_numeric_condition (LPPStableScaledOrderCondition is_strict a b) =
     ((if is_strict then LPPIntLess else LPPIntLessEqual),lpp_scaled_expression a,lpp_scaled_expression b)"
 | "lpp_stable_numeric_condition (LPPStableScaledModuloCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 |  "lpp_stable_numeric_condition (LPPStableIntegerCondition test) =
     lpp_rename_numeric_condition LPPIntegerKey test"
+| "lpp_stable_numeric_condition (LPPStableSquareIntegerCondition is_strict expression rhs_expression) =
+    lpp_rename_numeric_condition LPPIntegerKey (LPPIntLessEqual, expression, rhs_expression)"
+| "lpp_stable_numeric_condition (LPPStableSquareUpperCondition expression bound_term) =
+    lpp_stable_upper_condition expression bound_term"
 | "lpp_stable_numeric_condition (LPPStableUpperCondition expression bound_term) =
     lpp_stable_upper_condition expression bound_term"
 | "lpp_stable_numeric_condition (LPPStableQuotientCondition a d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
@@ -78,6 +94,16 @@ lemma lpp_stable_observation_finite_envelope:
   shows "lpp_evaluation_observation_holds lpp_finite_evaluation_result eta observation"
   using observed lpp_stable_evaluation_finite_envelope[OF compatible]
     by (cases observation) (auto dest: lpp_stable_compare_refines_finite)
+
+lemma lpp_integer_square_upper: "(x::int) \<le> x*x"
+proof (cases "x \<le> 0")
+  case True
+  show ?thesis by (rule order_trans[OF True]) simp
+next
+  case False then have one: "1 \<le> x" by simp
+  have "x*1 \<le> x*x" by (rule mult_left_mono[OF one]) (use one in simp)
+  then show ?thesis by simp
+qed
 
 theorem lpp_checked_stable_numeric_condition:
   assumes compatible: "lpp_stable_integer_operations operation"
@@ -111,6 +137,22 @@ next
 next
   case (LPPStableScaledQuotientModuloCondition a n d result)
   then show ?thesis by simp
+next
+  case (LPPStableScaledEqualityCondition a b)
+  have order: "lpp_stable_compare_outcome operation LPPIntEqual (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
+    using checked observed by (simp add: LPPStableScaledEqualityCondition)
+  show ?thesis using lpp_stable_scaled_comparison[OF order]
+    by (simp add: LPPStableScaledEqualityCondition lpp_scaled_expression_value)
+next
+  case (LPPStableScaledEvaluationCondition a b)
+  have evaluation: "lpp_stable_scalar_evaluation operation (lp_ieval a eta) (lp_ieval b eta)"
+    using checked observed by (simp add: LPPStableScaledEvaluationCondition)
+  obtain n d where scalar: "lpp_scalar_fraction (lp_ieval b eta) n d"
+    using lpp_stable_scalar_evaluation_result[OF evaluation] by blast
+  have result: "lpp_stable_scalar_evaluation operation (lp_ieval b eta) (lp_ieval b eta)"
+    by (rule lpp_stable_scalar_evaluation.scalar[OF scalar])
+  show ?thesis by (simp add: LPPStableScaledEvaluationCondition lpp_scaled_expression_value
+    lpp_stable_scaled_bound_exact[OF evaluation] lpp_stable_scaled_bound_exact[OF result])
 next
   case (LPPStableScaledOrderCondition is_strict a b)
   have observed_order: "lpp_stable_compare_outcome operation (if is_strict then LPPIntLess else LPPIntLessEqual)
@@ -157,6 +199,38 @@ next
   show ?thesis unfolding LPPStableQuotientUpperCondition lpp_stable_numeric_condition.simps
     by (rule lpp_checked_stable_upper_condition[OF compatible check observed])
       (use typed in auto)
+next
+  case (LPPStableSquareIntegerCondition is_strict expression rhs_expression)
+  let ?test = "((if is_strict then LPPIntLess else LPPIntLessEqual), LPPEMultiply expression expression, rhs_expression)"
+  have check: "lpp_check_numeric_observation K observation ?test"
+    using checked by (simp add: LPPStableSquareIntegerCondition)
+  have known: "lpp_integer_known K eta"
+    using typed by (auto simp: lpp_integer_known_def)
+  have finite: "lpp_evaluation_observation_holds lpp_finite_evaluation_result eta observation"
+    by (rule lpp_stable_observation_finite_envelope[OF compatible observed])
+  have numeric: "lpp_numeric_observation_holds eta observation"
+    by (rule lpp_finite_numeric_observation_integer[OF check known finite])
+  have result: "lpp_numeric_condition_holds source_values ?test"
+    by (rule lpp_check_numeric_observation_sound[OF check numeric typed])
+  have upper: "lpp_expression_value expression source_values * lpp_expression_value expression source_values \<le> lpp_expression_value rhs_expression source_values"
+    using result unfolding lpp_numeric_condition_holds.simps lpp_expression_value.simps
+    by (cases is_strict) (simp_all)
+  have rhs_expression: "lpp_expression_value expression source_values \<le> lpp_expression_value rhs_expression source_values"
+    by (rule order_trans[OF lpp_integer_square_upper upper])
+  show ?thesis using rhs_expression
+    by (simp add: LPPStableSquareIntegerCondition lpp_rename_numeric_condition_holds lpp_numeric_condition_holds.simps lpp_expression_rename_value o_def)
+next
+  case (LPPStableSquareUpperCondition expression bound_term)
+  have check: "lpp_check_stable_upper_observation K observation
+      (LPPEMultiply expression expression) bound_term"
+    using checked by (simp add: LPPStableSquareUpperCondition)
+  have result: "lpp_numeric_condition_holds (lpp_stable_key_value operation eta source_values)
+      (lpp_stable_upper_condition (LPPEMultiply expression expression) bound_term)"
+    by (rule lpp_checked_stable_upper_condition[OF compatible check observed])
+      (use typed in auto)
+  show ?thesis using result lpp_integer_square_upper[of "lpp_expression_value expression source_values"]
+    by (simp add: LPPStableSquareUpperCondition lpp_stable_upper_condition_def
+        lpp_expression_rename_value o_def; arith)
 next
   case (LPPStableUpperCondition expression bound_term)
   have check: "lpp_check_stable_upper_observation K observation expression bound_term"

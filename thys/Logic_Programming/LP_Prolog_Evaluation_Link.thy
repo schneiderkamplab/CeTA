@@ -13,7 +13,9 @@ fun lpp_evaluation_context_transport where
 
 definition lpp_check_evaluation_link where
   "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e =
-    (lpc_check_return_table_link fuel Q nds states nd ss G K eqs e \<and>
+    ((lpc_check_return_table_link fuel Q nds states nd ss G K eqs e \<or>
+      lpc_check_return_table_link fuel Q nds states nd ss
+        (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground source_context) (lpcn_vars nd)) K eqs e) \<and>
      lpcl_target e<length contexts \<and> lpcl_target e<length Fs \<and>
      lpc_check_link_free_normalized fuel eqs F (Fs!lpcl_target e) (lpcl_bindings e) \<and>
      lpp_evaluation_context_transport T fs
@@ -39,11 +41,18 @@ lemma lpp_evaluation_link_witness:
 proof -
   let ?j = "lpcl_target e"
   let ?nu = "\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'"
-  have base: "lpc_check_return_table_link fuel Q nds states nd ss G K eqs e"
-    and free_check: "lpc_check_link_free_normalized fuel eqs F (Fs!?j) (lpcl_bindings e)"
+  have context_ground: "\<forall>x\<in>lpp_source_context_ground source_context. lp_seg_ground (eta' x)"
+    by (rule lpp_evaluation_context_ground_sound[OF evaluation observed])
+  have enriched_known: "lp_cut_knowledge
+      (set (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground source_context) (lpcn_vars nd))) K eta'"
+    using known context_ground by (auto simp: lp_cut_knowledge_def)
+  obtain grounded where base: "lpc_check_return_table_link fuel Q nds states nd ss grounded K eqs e"
+    and grounded_known: "lp_cut_knowledge (set grounded) K eta'"
+    using checked known enriched_known unfolding lpp_check_evaluation_link_def by blast
+  have free_check: "lpc_check_link_free_normalized fuel eqs F (Fs!?j) (lpcl_bindings e)"
     and free_bound: "?j<length Fs"
     using checked by (auto simp: lpp_check_evaluation_link_def)
-  have link: "lpc_check_return_link fuel Q nds nd ss G K eqs (states!?j) e"
+  have link: "lpc_check_return_link fuel Q nds nd ss grounded K eqs (states!?j) e"
     and state_bound: "?j<length states"
     using base by (auto simp: lpc_check_return_table_link_def)
   have node_bound: "?j<length nds"
@@ -51,7 +60,7 @@ proof -
   have same: "lpc_return_eval eta' ss = lpc_return_scope_word (lpcl_swaps e) (lpc_return_eval ?nu (states!?j))"
     and child_known: "lp_cut_knowledge (set (lpcn_ground (nds!?j))) (lpcn_guards (nds!?j)) ?nu"
     and edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!?j),map ?nu (lpcn_vars (nds!?j)))])\<in>lp_ild Q"
-    using lpc_return_link_sound[OF link equations old known] by blast+
+    using lpc_return_link_sound[OF link equations old grounded_known] by blast+
   have child_free: "lpc_free_knowledge (set (Fs!?j)) ?nu"
     by (rule lpc_checked_link_free_normalized_sound[OF free_check equations free])
   let ?norm = "lp_cut_instance_subst (zip (lpcl_vars e) (lpcl_terms e))"

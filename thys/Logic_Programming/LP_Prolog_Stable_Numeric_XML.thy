@@ -15,6 +15,7 @@ definition lpp_stable_endpoint_parser where
     coordinate\<leftarrow>xml_text (STR ''coordinate'');
     t\<leftarrow>lpc_term_parser;
     e\<leftarrow>(xml_singleton (STR ''integerEndpoint'') lpp_integer_expression_parser LPPStableEndpointInteger)
+      XMLor (xml_singleton (STR ''integerBoundEndpoint'') lpp_integer_expression_parser LPPStableEndpointIntegerBound)
       XMLor (xml_singleton (STR ''magnitudeEndpoint'') lpc_term_parser LPPStableEndpointMagnitude)
       XMLor (xml_singleton (STR ''scaledEndpoint'') lpc_term_parser LPPStableEndpointScaled)
       XMLor (xml_singleton (STR ''boundEndpoint'') lpc_term_parser LPPStableEndpointBound);
@@ -41,6 +42,12 @@ definition lpp_stable_condition_parser where
     (XMLdo (STR ''scaledQuotientModuloCondition'') {
       a\<leftarrow>lpc_term_parser; n\<leftarrow>lpc_term_parser; d\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
       xml_return (LPPStableScaledQuotientModuloCondition a n d result)}) XMLor
+    (XMLdo (STR ''scaledEqualityCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableScaledEqualityCondition a b)}) XMLor
+    (XMLdo (STR ''scaledEvaluationCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableScaledEvaluationCondition a b)}) XMLor
     (XMLdo (STR ''scaledLessCondition'') {
       a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
       xml_return (LPPStableScaledOrderCondition True a b)}) XMLor
@@ -50,6 +57,15 @@ definition lpp_stable_condition_parser where
     (XMLdo (STR ''scaledModuloCondition'') {
       a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; result\<leftarrow>lpc_term_parser;
       xml_return (LPPStableScaledModuloCondition a b result)}) XMLor
+    (XMLdo (STR ''squareIntegerLessCondition'') {
+      a\<leftarrow>lpp_integer_expression_parser; b\<leftarrow>lpp_integer_expression_parser;
+      xml_return (LPPStableSquareIntegerCondition True a b)}) XMLor
+    (XMLdo (STR ''squareIntegerLeqCondition'') {
+      a\<leftarrow>lpp_integer_expression_parser; b\<leftarrow>lpp_integer_expression_parser;
+      xml_return (LPPStableSquareIntegerCondition False a b)}) XMLor
+    (XMLdo (STR ''squareUpperCondition'') {
+      expression\<leftarrow>lpp_integer_expression_parser; bound_term\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableSquareUpperCondition expression bound_term)}) XMLor
     (XMLdo (STR ''ignoredCondition'') {xml_return LPPStableIgnoredCondition}) XMLor
     (XMLdo (STR ''integerCondition'') {
       comparison\<leftarrow>lpp_numeric_comparison_parser;

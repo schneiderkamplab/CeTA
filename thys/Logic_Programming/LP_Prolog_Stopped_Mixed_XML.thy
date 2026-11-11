@@ -1,6 +1,35 @@
 theory LP_Prolog_Stopped_Mixed_XML
- imports LP_Prolog_Stopped_Mixed_Graph LP_Prolog_Stable_Mixed_XML
+ imports LP_Prolog_Stopped_Case_Mixed_Graph LP_Prolog_Stable_Field_Backend_XML
 begin
+
+partial_function (sum_bot) lpp_integer_result_parser :: "string lpp_integer_result_receipt xmlt" where
+[code]: "lpp_integer_result_parser x = (
+  xml_change (xml_int (STR ''integerResultLiteral'')) (xml_return \<circ> LPPRILiteral) XMLor
+  xml_change (xml_text (STR ''integerResultKnown'')) (xml_return \<circ> LPPRIKnown) XMLor
+  (XMLdo (STR ''integerResultQuotient'') {a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; xml_return (LPPRIQuotient a b)}) XMLor
+  (XMLdo (STR ''integerResultModulo'') {a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; xml_return (LPPRIModulo a b)}) XMLor
+  (XMLdo (STR ''integerResultAdd'') {a\<leftarrow>lpp_integer_result_parser; b\<leftarrow>lpp_integer_result_parser; xml_return (LPPRIAdd a b)}) XMLor
+  (XMLdo (STR ''integerResultSubtract'') {a\<leftarrow>lpp_integer_result_parser; b\<leftarrow>lpp_integer_result_parser; xml_return (LPPRISubtract a b)}) XMLor
+  (XMLdo (STR ''integerResultMultiply'') {a\<leftarrow>lpp_integer_result_parser; b\<leftarrow>lpp_integer_result_parser; xml_return (LPPRIMultiply a b)})) x"
+
+
+definition lpp_result_context_parser where
+  "lpp_result_context_parser = XMLdo (STR ''resultContext'') {
+    records\<leftarrow>xml_many (STR ''records'') (XMLdo (STR ''record'') {
+      clause\<leftarrow>XMLdo (STR ''clause'') {
+        h\<leftarrow>xml_singleton (STR ''head'') lpp_success_atom_parser id;
+        bs\<leftarrow>xml_many (STR ''body'') lpp_success_atom_parser id;
+        gs\<leftarrow>xml_many (STR ''guards'') lpp_success_guard_parser id; xml_return (h,bs,gs)};
+      receipts\<leftarrow>xml_many (STR ''receipts'') (XMLdo (STR ''resultGuard'') {
+        i\<leftarrow>xml_nat (STR ''index''); receipt\<leftarrow>lpp_integer_result_parser;
+        xml_return (i,receipt)}) id;
+      xml_return (clause,receipts)}) id;
+    transfer\<leftarrow>lpp_transfer_contract_parser;
+    facts\<leftarrow>xml_many (STR ''facts'') lpp_transfer_fact_parser id;
+    integers\<leftarrow>xml_many (STR ''integers'') (xml_text (STR ''var'')) id;
+    xml_return (records,\<lparr>lppsir_predicates=[],lppsir_summaries=fst transfer,
+      lppsir_program=fst (snd transfer),lppsir_proofs=snd (snd transfer),
+      lppsir_facts=facts,lppsir_integers=integers\<rparr>)}"
 
 definition lpp_stopped_control_parser where
   "lpp_stopped_control_parser = XMLdo (STR ''prologEvaluationControl'') {
@@ -22,6 +51,14 @@ definition lpp_stopped_control_parser where
           i\<leftarrow>xml_nat (STR ''index'');
           t\<leftarrow>xml_singleton (STR ''pattern'') lpc_term_parser id;
           xml_return (Some (LPPSRefutedShape i t))}) XMLor
+    (XMLdo (STR ''normalizedIntegerResultEvaluation'') {
+      domain_receipt\<leftarrow>lpp_integer_result_parser;
+      a\<leftarrow>lpc_term_parser; e\<leftarrow>lpc_term_parser;
+      gs\<leftarrow>xml_many (STR ''goals'') lpc_goal_parser id;
+      active\<leftarrow>xml_many (STR ''active'') lpc_term_parser id; saved\<leftarrow>lpc_return_state_parser;
+      result_var\<leftarrow>xml_text (STR ''resultVariable''); middle\<leftarrow>lpc_link_parser;
+      fs\<leftarrow>lpp_evaluation_types_parser (STR ''types'');
+      xml_return (Some (LPPSIntegerResultIs domain_receipt a e gs active saved result_var middle fs))}) XMLor
        (xml_change lpp_evaluation_action_parser (\<lambda>a. xml_return (Some (LPPSControl a))))) id;
     Q\<leftarrow>xml_many (STR ''residual'') (XMLdo (STR ''clause'') {
       h\<leftarrow>xml_singleton (STR ''head'') lpc_atom_parser id;
@@ -70,6 +107,16 @@ definition lpp_stopped_component_parser where
       first_call\<leftarrow>xml_singleton (STR ''firstCall'') lpc_triple_clause_receipt_parser id;
       second_call\<leftarrow>xml_singleton (STR ''secondCall'') lpc_triple_clause_receipt_parser id;
       xml_return (None,LPPSStoppedRelational first_types second_types split evidence atom first_call second_call)}) XMLor
+    (XMLdo (STR ''relationalResultShapeSplit'') {
+      split\<leftarrow>lpc_triple_split_parser;
+      evidence\<leftarrow>lpp_finite_shape_receipt_parser;
+      result_context\<leftarrow>lpp_result_context_parser;
+      first_types\<leftarrow>lpp_evaluation_types_parser (STR ''firstTypes'');
+      second_types\<leftarrow>lpp_evaluation_types_parser (STR ''secondTypes'');
+      atom\<leftarrow>xml_singleton (STR ''returnedCall'') lpp_success_atom_parser id;
+      first_call\<leftarrow>xml_singleton (STR ''firstCall'') lpc_triple_clause_receipt_parser id;
+      second_call\<leftarrow>xml_singleton (STR ''secondCall'') lpc_triple_clause_receipt_parser id;
+      xml_return (None,LPPSStoppedResultShape first_types second_types split evidence (fst result_context) (snd result_context) atom first_call second_call)}) XMLor
     (XMLdo (STR ''relationalShapeSplit'') {
       split\<leftarrow>lpc_triple_split_parser;
       evidence\<leftarrow>lpp_finite_shape_receipt_parser;
@@ -86,7 +133,16 @@ definition lpp_stopped_component_header where
       header=Some (P,fuel,0,transfer)
     | (header,LPPSStoppedRelational ft st split evidence atom first_call second_call) \<Rightarrow> header=None
     | (header,LPPSStoppedShape ft st split evidence atom first_call second_call) \<Rightarrow> header=None
+    | (header,LPPSStoppedResultShape ft st split evidence records result_evidence atom first_call second_call) \<Rightarrow> header=None
     | (header,LPPSStoppedRefuted i pattern) \<Rightarrow> header=None)"
+
+definition lpp_success_case_record_parser where
+ "lpp_success_case_record_parser =
+  (XMLdo (STR ''keep'') {xml_return None}) XMLor
+  (XMLdo (STR ''expand'') {
+    i\<leftarrow>xml_nat (STR ''prefix''); k\<leftarrow>xml_nat (STR ''freshPrefix'');
+    children\<leftarrow>xml_many (STR ''rows'') lpp_observed_triple_parser id;
+    xml_return (Some (i,k,children))})"
 
 definition lpp_established_stopped_mixed_parser where
   "lpp_established_stopped_mixed_parser = XMLdo (STR ''prologEstablishedStoppedSEGMixedProof'') {
@@ -110,44 +166,45 @@ definition lpp_established_stopped_mixed_parser where
     roots\<leftarrow>xml_many (STR ''roots'') lpc_triple_root_parser id;
     blocks\<leftarrow>xml_many (STR ''components'') lpp_stopped_component_parser id;
     OD\<leftarrow>xml_many (STR ''observedTriples'') lpp_observed_triple_parser id;
+    cases\<leftarrow>[None] xml_many (STR ''successCases'') lpp_success_case_record_parser Some;
     normalization\<leftarrow>[0] xml_nat (STR ''equationNormalizationFuel'');
     NOD\<leftarrow>[[]] xml_many (STR ''normalizedTriples'') lpp_observed_triple_parser id;
     ranks\<leftarrow>xml_many (STR ''routing'') (XMLdo (STR ''entry'') {
       p\<leftarrow>xml_text (STR ''predicate''); n\<leftarrow>xml_nat (STR ''rank''); xml_return (p,n)}) id;
-    backends\<leftarrow>xml_many (STR ''backends'') lpp_mixed_backend_parser id;
-    xml_return (profile,P,q,modes,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,normalization,NOD,ranks,backends)}"
+    backends\<leftarrow>xml_many (STR ''backends'') lpp_field_backend_parser id;
+    xml_return (profile,P,q,modes,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,cases,normalization,NOD,ranks,backends)}"
 
 definition check_lpp_established_stopped_mixed_xml where
   "check_lpp_established_stopped_mixed_xml xml = (case parse_xml_string lpp_established_stopped_mixed_parser xml of
-    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,normalization,NOD,ranks,raw) \<Rightarrow>
-      (let enriched_rows=(if normalization=0 then OD else NOD);
-        candidates=lpp_decode_mixed_backends (summaries,SP,receipts) enriched_rows ranks raw in
+    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,cases,normalization,NOD,ranks,raw) \<Rightarrow>
+      (let enriched_rows=(if normalization=0 then lpp_success_case_expanded OD cases else NOD);
+        candidates=lpp_decode_field_backends (summaries,SP,receipts) enriched_rows ranks raw in
         profile=''iso-rational-libraries-v1'' \<and>
         lpp_check_transfer_contract summaries SP receipts \<and>
         list_all (lpp_stopped_component_header P fuel (summaries,SP,receipts)) blocks \<and>
         distinct (map fst ranks) \<and>
         list_all (\<lambda>((h,ps,b,gs),os). fst h\<in>set (map fst ranks) \<and> fst b\<in>set (map fst ranks)) OD \<and>
         list_all (\<lambda>candidate. case candidate of None \<Rightarrow> False | Some _ \<Rightarrow> True) candidates \<and>
-        lpp_check_stopped_normalized_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
-          roots contexts (map snd blocks) q modes chain_pred OD (if normalization=0 then OD else NOD) normalization (lpp_mixed_rank_lookup ranks) (map the candidates))
+        lpp_check_stopped_case_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
+          roots contexts (map snd blocks) q modes chain_pred OD cases (if normalization=0 then lpp_success_case_expanded OD cases else NOD) normalization (lpp_mixed_rank_lookup ranks) (map the candidates))
     | _ \<Rightarrow> False)"
 
 theorem check_lpp_established_stopped_mixed_xml_sound:
   fixes ts :: "(string lp_cut_symbol,string) term list"
   assumes parsed: "parse_xml_string lpp_established_stopped_mixed_parser xml =
-    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,normalization,NOD,ranks,raw)"
+    Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,cases,normalization,NOD,ranks,raw)"
     and ok: "check_lpp_established_stopped_mixed_xml xml"
     and len: "length ts=length modes"
     and ground: "\<And>i. i\<in>set (lpc_positions modes) \<Longrightarrow> ground (ts!i)"
   shows "SN_on (lp_prolog_source P lpp_builtin_signature (lpp_domain_source P lpp_builtin_signature (lpp_stable_source_builtin (lpp_stable_profile_operation fallback)) lpp_finite_source_domain))
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) ts))]]}"
 proof -
-  have checked: "lpp_check_stopped_normalized_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
-      roots contexts (map snd blocks) q modes chain_pred OD (if normalization=0 then OD else NOD) normalization (lpp_mixed_rank_lookup ranks)
-      (map the (lpp_decode_mixed_backends (summaries,SP,receipts) (if normalization=0 then OD else NOD) ranks raw))"
+  have checked: "lpp_check_stopped_case_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
+      roots contexts (map snd blocks) q modes chain_pred OD cases (if normalization=0 then lpp_success_case_expanded OD cases else NOD) normalization (lpp_mixed_rank_lookup ranks)
+      (map the (lpp_decode_field_backends (summaries,SP,receipts) (if normalization=0 then lpp_success_case_expanded OD cases else NOD) ranks raw))"
     using parsed ok by (auto simp: check_lpp_established_stopped_mixed_xml_def Let_def)
   show ?thesis
-  proof (rule lpp_check_stopped_normalized_mixed_graph_sound[OF tp_rbt_impl dpp_rbt_impl lpp_stable_profile_integer_compatible checked])
+  proof (rule lpp_check_stopped_case_mixed_graph_sound[OF tp_rbt_impl dpp_rbt_impl lpp_stable_profile_integer_compatible checked])
     show "length (map (\<lambda>t. lp_ieval t LPIVar) ts)=length modes" using len by simp
     show "\<forall>(t,b)\<in>set (zip (map (\<lambda>t. lp_ieval t LPIVar) ts) modes). b \<longrightarrow> lp_seg_ground t"
       using ground len by (auto simp: in_set_zip lpc_positions_def lp_seg_ground_eval ground_vars_term_empty)

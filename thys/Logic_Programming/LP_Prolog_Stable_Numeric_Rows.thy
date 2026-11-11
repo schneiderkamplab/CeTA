@@ -11,6 +11,24 @@ fun lpp_stable_constraint_observation where
 | "lpp_stable_constraint_observation (LPPOComparison c a b) = True"
 | "lpp_stable_constraint_observation _ = False"
 
+text \<open>Old receipts select only evaluations and comparisons. The extended
+list additionally keeps equations; its exact length distinguishes the format.
+Both lists consist solely of observations checked at this source state.\<close>
+
+fun lpp_stable_equation_observation where
+  "lpp_stable_equation_observation (LPPOEquation a b) = True"
+| "lpp_stable_equation_observation observation = lpp_stable_constraint_observation observation"
+
+definition lpp_stable_selected_observations where
+ "lpp_stable_selected_observations os tests =
+   (if length tests=length (filter lpp_stable_constraint_observation os)
+    then filter lpp_stable_constraint_observation os
+    else filter lpp_stable_equation_observation os)"
+
+lemma lpp_stable_selected_observations_holds:
+ "list_all Q os \<Longrightarrow> list_all Q (lpp_stable_selected_observations os tests)"
+ by (auto simp: lpp_stable_selected_observations_def list_all_iff)
+
 record 'v lpp_stable_numeric_call_receipt =
   lppsnc_facts :: "'v lpp_transfer_fact list"
   lppsnc_ground :: "'v list"
@@ -30,7 +48,7 @@ definition lpp_check_stable_numeric_call_row where
       in lpp_check_path_types T ps gs (lppsnc_facts receipt) \<and>
         set G \<subseteq> set K \<union> lpp_observations_ground os \<and>
         lpp_check_stable_numeric_path K G inputs outputs
-          (filter lpp_stable_constraint_observation os) (lppsnc_tests receipt) bindings formula \<and>
+          (lpp_stable_selected_observations os (lppsnc_tests receipt)) (lppsnc_tests receipt) bindings formula \<and>
         lpp_check_stable_numeric_bindings inputs outputs bindings \<and>
         map fst inputs=coordinates (fst h) \<and>
         map (lpp_stable_endpoint_mode o snd o snd) inputs=modes (fst h) \<and>

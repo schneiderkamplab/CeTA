@@ -4,6 +4,7 @@
 Run with `isabelle env`; this does not certify a benchmark root.
 """
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -46,7 +47,8 @@ theories.extend(p.resolve().with_suffix('') for p in args.extra_theory)
 if args.export_directory:
     export = args.export_directory.resolve()
     export.mkdir(parents=True, exist_ok=False)
-    driver = export / 'Prolog_Integer_Recurrence_Export.thy'
+    driver_name = 'Prolog_Integer_Recurrence_Export_' + hashlib.sha256(str(export).encode()).hexdigest()[:12]
+    driver = export / (driver_name + '.thy')
     export_theory = (root / 'thys/Logic_Programming/LP_Prolog_Integer_Call_XML'
                      if args.export_call_rows else theories[0])
     export_constant = ('check_lpp_integer_calls_xml' if args.export_call_rows
@@ -73,11 +75,14 @@ if args.export_directory:
     if args.export_stopped_mixed:
         export_theory = root / 'thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML'
         export_constants = ['check_lpp_established_stable_mixed_xml',
-                            'check_lpp_established_stopped_mixed_xml']
+                            'check_lpp_established_stopped_mixed_xml',
+                            'check_lpp_ground_integer_no_xml',
+                            'check_lpp_machine_no_xml']
         export_module = 'Prolog_Stable_Mixed_Generated'
     driver.write_text(
-        'theory Prolog_Integer_Recurrence_Export\n imports ' + json.dumps(str(export_theory)) + ' ' +
+        'theory ' + driver_name + '\n imports ' + json.dumps(str(export_theory)) + ' ' +
         json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code')) +
+        ((' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Ground_Integer_NO_Code')) + ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Binary64_NO_Code'))) if args.export_stopped_mixed else '') +
         '\nbegin\nML \\<open>\n' +
         'val (modules, _) = Code_Target.produce_code @{context} true\n' +
         '  [' + ', '.join('@{const_name ' + name + '}' for name in export_constants) + '] "Haskell" "' + export_module + '" NONE [];\n' +

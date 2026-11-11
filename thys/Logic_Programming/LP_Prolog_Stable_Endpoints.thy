@@ -4,12 +4,14 @@ begin
 
 datatype 'v lpp_stable_endpoint_expression =
     LPPStableEndpointInteger "'v lpp_integer_expression"
+  | LPPStableEndpointIntegerBound "'v lpp_integer_expression"
   | LPPStableEndpointBound "(string lp_cut_symbol,'v) term"
   | LPPStableEndpointScaled "(string lp_cut_symbol,'v) term"
   | LPPStableEndpointMagnitude "(string lp_cut_symbol,'v) term"
 
 fun lpp_stable_endpoint_mode where
   "lpp_stable_endpoint_mode (LPPStableEndpointInteger e) = LPPStableInteger"
+| "lpp_stable_endpoint_mode (LPPStableEndpointIntegerBound e) = LPPStableUpperBound"
 | "lpp_stable_endpoint_mode (LPPStableEndpointBound t) = LPPStableUpperBound"
 
 | "lpp_stable_endpoint_mode (LPPStableEndpointScaled t) = LPPStableScaledBound"
@@ -18,6 +20,7 @@ fun lpp_stable_endpoint_mode where
 
 fun lpp_stable_endpoint_numeric_expression where
   "lpp_stable_endpoint_numeric_expression (LPPStableEndpointInteger e) = map_lpp_integer_expression LPPIntegerKey e"
+| "lpp_stable_endpoint_numeric_expression (LPPStableEndpointIntegerBound e) = map_lpp_integer_expression LPPIntegerKey e"
 | "lpp_stable_endpoint_numeric_expression (LPPStableEndpointBound t) = LPPEVariable (LPPBoundKey t)"
 
 | "lpp_stable_endpoint_numeric_expression (LPPStableEndpointScaled t) = LPPEVariable (LPPScaledKey t)"
@@ -26,6 +29,8 @@ fun lpp_stable_endpoint_numeric_expression where
 
 fun lpp_check_stable_endpoint where
   "lpp_check_stable_endpoint K G t (LPPStableEndpointInteger e) =
+    (t=lpp_expression_term e \<and> lpp_integer_endpoint e \<and> lpp_expression_check K e)"
+| "lpp_check_stable_endpoint K G t (LPPStableEndpointIntegerBound e) =
     (t=lpp_expression_term e \<and> lpp_integer_endpoint e \<and> lpp_expression_check K e)"
 | "lpp_check_stable_endpoint K G t (LPPStableEndpointBound expression) =
     (t=expression \<and> vars_term t \<subseteq> set G)"
@@ -60,6 +65,19 @@ proof (cases endpoint)
   have result: "lp_ieval t eta=lpp_integer_value (lpp_expression_value e rho)"
     by (rule lpp_checked_numeric_endpoint[OF check typed])
   show ?thesis by (simp add: LPPStableEndpointInteger lpp_expression_rename_value o_def result)
+next
+  case (LPPStableEndpointIntegerBound e)
+  have check: "lpp_check_numeric_endpoint K (coordinate_name,t,e)" for coordinate_name
+    using checked by (simp add: LPPStableEndpointIntegerBound)
+  have result: "lp_ieval t eta=lpp_integer_value (lpp_expression_value e rho)"
+    by (rule lpp_checked_numeric_endpoint[OF check typed])
+  have exact: "lpp_stable_expression_bound operation (lpp_integer_value n)=n" for n
+    using lpp_stable_expression_bound_exact[OF lpp_stable_integer_literal, of operation n]
+      lpp_scalar_floor_exact[OF lpp_integer_scalar_observation, of n]
+    by simp
+  have finite: "lp_seg_ground (lpp_integer_value n)" for n
+    by (auto simp: lpp_integer_value_def intro: lp_seg_ground.intros)
+  show ?thesis by (simp add: LPPStableEndpointIntegerBound lpp_expression_rename_value o_def result exact finite)
 next
   case (LPPStableEndpointBound expression)
   have equal: "t=expression" and finite: "lp_seg_ground (lp_ieval t eta)"
