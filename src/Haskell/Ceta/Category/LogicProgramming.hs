@@ -127,6 +127,7 @@ runProlog [path] = do
       PCI.check_lpp_context_its_xml (cachedCharacters PCI.explode input) ||
 #endif
 #ifdef LP_PROLOG_STABLE_MIXED
+      PSM.check_lpp_established_stopped_mixed_xml (cachedCharacters PSM.explode input) ||
       PSM.check_lpp_established_stable_mixed_xml (cachedCharacters PSM.explode input) ||
 #endif
 #ifdef LP_PROLOG_STABLE_GUARDED

@@ -11,6 +11,21 @@ proof -
   show ?thesis by (cases f) (simp_all add: t lp_atom_eval_def lpp_success_atom_eval_def)
 qed
 
+definition lpp_check_guarded_region_descent where
+  "lpp_check_guarded_region_descent D roots root region connections boundary =
+    (lpp_lift_atom (lpp_unlift_atom (lpctr_input root))=lpctr_input root \<and>
+     length connections=length (lpcsc_nodes (lppftr_control region)) \<and>
+     list_all (\<lambda>i. boundary i \<longrightarrow>
+       (let receipt=connections!i; original=lppftr_connections region!i;
+            inp=lpc_triple_position_atom (lpcn_vars (lpctr_node root)) (lpctr_input root)
+        in lpctc_target receipt=lpctc_target original \<and>
+           lpctc_bindings receipt=lpctc_bindings original \<and>
+           (case lppftr_contexts region!i of (facts,guards,observations) \<Rightarrow>
+             lpp_check_context_connection D facts guards observations roots
+               (lpcsc_nodes (lppftr_control region)!i)
+               (lpcsc_states (lppftr_control region)!i) inp receipt)))
+       [0..<length (lpcsc_nodes (lppftr_control region))])"
+
 definition lpp_check_finite_guarded_region_descent where
   "lpp_check_finite_guarded_region_descent D roots root region connections =
     (lpp_lift_atom (lpp_unlift_atom (lpctr_input root))=lpctr_input root \<and>

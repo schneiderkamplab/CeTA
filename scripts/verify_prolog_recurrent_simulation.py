@@ -24,10 +24,12 @@ parser.add_argument('--export-stable-guarded', action='store_true',
                     help='Export established graph assembly with stable numeric bounds')
 parser.add_argument('--export-stable-mixed', action='store_true',
                     help='Export relational graph assembly with structural and numeric SCC children')
+parser.add_argument('--export-stopped-mixed', action='store_true',
+                    help='Export established mixed graphs with checked stopped-answer contracts')
 parser.add_argument('--extra-theory', type=Path, action='append', default=[])
 args = parser.parse_args()
 if sum((args.export_call_rows, args.export_partial_call_rows,
-        args.export_helper_call_rows, args.export_stable_guarded, args.export_stable_mixed)) > 1:
+        args.export_helper_call_rows, args.export_stable_guarded, args.export_stable_mixed, args.export_stopped_mixed)) > 1:
     parser.error('select at most one export route')
 root = Path(__file__).resolve().parents[1]
 if args.save_heap:
@@ -67,25 +69,38 @@ if args.export_directory:
         export_theory = root / 'thys/Logic_Programming/LP_Prolog_Stable_Mixed_XML'
         export_constant = 'check_lpp_established_stable_mixed_xml'
         export_module = 'Prolog_Stable_Mixed_Generated'
+    export_constants = [export_constant]
+    if args.export_stopped_mixed:
+        export_theory = root / 'thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML'
+        export_constants = ['check_lpp_established_stable_mixed_xml',
+                            'check_lpp_established_stopped_mixed_xml']
+        export_module = 'Prolog_Stable_Mixed_Generated'
     driver.write_text(
         'theory Prolog_Integer_Recurrence_Export\n imports ' + json.dumps(str(export_theory)) + ' ' +
         json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code')) +
         '\nbegin\nML \\<open>\n' +
         'val (modules, _) = Code_Target.produce_code @{context} true\n' +
-        '  [@{const_name ' + export_constant + '}] "Haskell" "' + export_module + '" NONE [];\n' +
+        '  [' + ', '.join('@{const_name ' + name + '}' for name in export_constants) + '] "Haskell" "' + export_module + '" NONE [];\n' +
         'val root = Path.explode ' + json.dumps(str(export)) + ';\n' +
         'val _ = List.app (fn (names, bytes) => Bytes.write (root + Path.make names) bytes) modules;\n' +
         '\\<close>\nend\n')
     theories.append(driver.with_suffix(''))
-resources = ('(if can Thy_Info.get_theory \"ITS_Ext.ITS4_Parser\" then () else '
-    '(ignore (Thy_Info.use_theories (Options.default ()) \"ITS_Ext\" [('
-    + json.dumps(str(root/'thys/ITS_Ext/Integration/ITS4_Parser'))
-    + ', Position.none)]); Thy_Info.finish ()));\n')
+resources = ('let val names = Thy_Info.get_names (); '
+ 'val dirs = map (fn n => (Path.implode (Thy_Info.master_directory n), Resources.theory_qualifier n)) names; '
+ 'val globals = map_filter (fn n => Option.map (pair n) (Resources.global_theory n)) names; '
+ 'in Resources.init_session {session_positions=[], session_directories=[' +
+ ','.join('(' + json.dumps(str(root/path)) + ',' + json.dumps(namespace) + ')' for namespace,path in [
+ ('Draft','thys/Logic_Programming'), ('ITS_Ground','thys/ITS_Ext/Ground'), ('ITS_Arithmetic','thys/ITS_Ext/Arithmetic'),
+ ('ITS_Ext','thys/ITS_Ext/Integration')]) +
+ '] @ dirs, command_timings=[], load_commands=[], scala_functions=[], global_theories=globals, '
+ 'loaded_theories=filter Resources.loaded_theory names} end; '
+ 'ignore (Thy_Info.use_theories (Options.default ()) "ITS_Ext" [('
+ + json.dumps(str(root/'thys/ITS_Ext/Integration/ITS4_Parser')) + ', Position.none)]); ')
 save = '' if not args.save_heap else 'ML_Heap.save_child ' + json.dumps(str(args.save_heap.resolve())) + ';'
 command = ('((' + resources + '; '.join('Thy_Info.use_thy_legacy ' + json.dumps(str(theory))
                            for theory in theories) +
            '; ' + save + ' writeln "SOURCE_RECURRENT_SIMULATION_VERIFIED"; OS.Process.exit OS.Process.success) '
-           'handle exn => (writeln (Runtime.exn_message exn); OS.Process.exit OS.Process.failure));\n')
+           'handle exn => (writeln (Runtime.exn_message exn); ML_Heap.save_child ' + json.dumps(str(args.log.resolve().with_suffix('.dependencies.heap'))) + '; OS.Process.exit OS.Process.failure));\n')
 args.log.parent.mkdir(parents=True, exist_ok=True)
 with args.log.open('w') as log:
     result = subprocess.run([str(poly), '-q', '--minheap', '1000', '--gcthreads', '4',

@@ -3,10 +3,10 @@ theory LP_Prolog_Stable_Guarded_Region_Descent
 begin
 hide_const (open) NthRoot.root Term.root Tree_Automata_Containment.entry
 
-theorem lpp_stable_guarded_region_descent_checked:
-  assumes checked: "lpp_check_finite_guarded_region_descent D roots root region connections"
+theorem lpp_stable_guarded_region_descent_general:
+  assumes checked: "lpp_check_guarded_region_descent D roots root region connections boundaries"
     and index: "i<length (lpcsc_nodes (lppftr_control region))"
-    and boundary: "lppftr_actions region!i=None"
+    and boundary: "boundaries i"
     and observed: "lpp_stable_context_holds operation SP (lppftr_contexts region!i) rho"
     and invariant: "lpc_triple_instance_invariant (lp_atom_eval (lpctr_input root) eta)
       (lpc_triple_position_atom (lpcn_vars (lpctr_node root)) (lpctr_input root))
@@ -22,13 +22,13 @@ proof -
   obtain facts guards observations where context_eq: "lppftr_contexts region!i=(facts,guards,observations)"
     by (cases "lppftr_contexts region!i") auto
   have user: "lpp_lift_atom (lpp_unlift_atom (lpctr_input root))=lpctr_input root"
-    using checked by (simp add: lpp_check_finite_guarded_region_descent_def)
+    using checked by (simp add: lpp_check_guarded_region_descent_def)
   have selected: "lpctc_target ?receipt=lpctc_target (lppftr_connections region!i) \<and>
       lpctc_bindings ?receipt=lpctc_bindings (lppftr_connections region!i) \<and>
       (case lppftr_contexts region!i of (fs,gs,os) \<Rightarrow>
         lpp_check_context_connection D fs gs os roots (lpcsc_nodes (lppftr_control region)!i)
           (lpcsc_states (lppftr_control region)!i) ?inp ?receipt)"
-    using checked index boundary by (auto simp: lpp_check_finite_guarded_region_descent_def
+    using checked index boundary by (auto simp: lpp_check_guarded_region_descent_def
       list_all_iff Let_def)
   have target: "lpctc_target ?receipt=lpctc_target (lppftr_connections region!i)"
     and bindings: "lpctc_bindings ?receipt=lpctc_bindings (lppftr_connections region!i)"
@@ -47,6 +47,21 @@ proof -
       (use observed in \<open>simp only: context_eq\<close>)
   show ?thesis using edge by (simp add: inv_image_def lpp_unlift_atom_eval target bindings)
 qed
+
+theorem lpp_stable_guarded_region_descent_checked:
+  assumes checked: "lpp_check_finite_guarded_region_descent D roots root region connections"
+    and index: "i<length (lpcsc_nodes (lppftr_control region))"
+    and boundary: "lppftr_actions region!i=None"
+    and observed: "lpp_stable_context_holds operation SP (lppftr_contexts region!i) rho"
+    and invariant: "lpc_triple_instance_invariant (lp_atom_eval (lpctr_input root) eta)
+      (lpc_triple_position_atom (lpcn_vars (lpctr_node root)) (lpctr_input root))
+      (lpc_return_eval rho (lpcsc_states (lppftr_control region)!i))"
+  shows "(lp_atom_eval (lpctr_input root) eta,
+      lp_atom_eval (lpctr_input (roots!lpctc_target (lppftr_connections region!i)))
+        (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpctc_bindings (lppftr_connections region!i)) x) rho))
+    \<in>inv_image (lpp_stable_observed_calls operation (set D) SP) lpp_unlift_atom"
+  by (rule lpp_stable_guarded_region_descent_general[where boundaries="\<lambda>j. lppftr_actions region!j=None" and connections=connections, OF _ index boundary observed invariant])
+    (use checked in \<open>simp only: lpp_check_finite_guarded_region_descent_def lpp_check_guarded_region_descent_def\<close>)
 
 theorem lpp_stable_guarded_region_checked_lower:
   fixes P :: "(string,string) lp_cut_program"

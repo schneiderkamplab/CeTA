@@ -2229,3 +2229,53 @@ are retained. Combined verification 1155 passes the original mixed XML assembly
 after the constant-result refactor. The checked implementation is commit
 `f06aa82` on `codex/prolog-production-integration` in this CeTA tree.
 Pinned evidence is `../ferrum-prolog-release/docs/data/prolog-stopped-contracts-20261111.json`.
+
+### Stopped graph source assembly and certified integration
+
+Verification 1168 connects the stopped contracts through return-interface
+projection, source-instance boundaries, ranked regions, actual-return Split
+composition, and complete referenced module graphs. Ground and shape receipts
+reuse their existing successful-return theorems through the checked inclusion
+of stopped actual answers into ordinary actual answers. The shared region-descent
+rule now takes an explicit boundary predicate; the legacy checker and theorem
+retain their previous behavior.
+
+`prologEstablishedStoppedSEGMixedProof` binds the same source profile, complete
+program, query, transfer model, initial contexts, module roots, observed triples,
+routing and structural/numeric backend proofs. Region headers must match the
+parent program, fuel, transfer model and root index. Stopped actions preserve the
+existing region record and bind its action projection; checked undefined exits
+are distinct from unresolved module boundaries. The graph theorem concludes
+termination of the existing `lp_prolog_source`, without assuming every abstract
+helper output is an actual return.
+
+The new native scalar strategy uses the established graph with historical
+construction and independently scheduled backend choices. Old strategy atoms
+retain their previous preparation. Native tests 1597 pass 602 with thirteen
+ignored, including undefined-call arity, builtin, rational-callable and recursive
+obligation controls. Export 1169 passes, with generated mixed-module SHA-256
+`c3213dbc3ecad2423f419452c35ae19f55a7ecab61d679dd963368fb7db36960`.
+It exports both old and stopped source checkers in the same generated module.
+Unified build 1170 passes, with executable SHA-256
+`2305139e31b74080cdae3c470bae3fd737bea79d73e520e2df1d5132629033c1`.
+Retention 1172 passes 360 checks over 87 Prolog and 93 LP-with-cut certificates.
+Ferrum's complete strict replay 1603 establishes 80 YES and eight NO on the same
+221 sources, preserving every previous verdict; all 88 receipts are independently
+authorized. The gain is the original `AProVE_numeric/svcomp-ex3b-c.pl` source.
+The other candidate, `Hett/p2_10.pl`, reaches a missing comparison groundness or
+return-fact obligation, without reaching residual search.
+
+Family 1600 passes three native and three strict fixtures, including copied-list
+helper returns, with fifteen controls. Mutation 1602 passes fifteen cases twice;
+Split mutation 1605 passes twenty-three cases twice, including two individual
+dependency-removal audits. Attempt 1604 incorrectly expected every model
+declaration to be necessary: an unused equality declaration may be removed.
+Required return dependencies and complete module coverage remain checked.
+Preparation 1601 stopped before root execution because an equality-only guidance
+merge did not recognize an already-authorized strategy alternative. Replay 1603
+retains that old alternative and independently authorizes the observed action.
+These attempts are preserved; no checker acceptance rule was weakened.
+
+Stopped length and subtraction local actions and abort-based suffix discharge
+remain explicit gaps. Production promotion remains gated on protected-category
+replay with this same unified executable.
