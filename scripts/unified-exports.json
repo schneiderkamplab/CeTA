@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "7f2799abab668e28fc60c5188c062684444ff9632c9f3973c4d489b1ae4e41b0",
+      "Prolog_Stable_Mixed_Generated.hs": "a424b7a8185bb7c014ebba4f83f313612abc59b53d5621ea904ff9a2089ff72d",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "3d80684f92c5cc0d56b8959f497df7f6b11d835b15252b32f7097739863b9f72",
+    "archive_sha256": "0d3b77e37da45a817ff7a5c64b7f68e99913308f8aaface168aee9cdaf8df576",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -1107,6 +1107,20 @@
         "thys/Logic_Programming/LP_Prolog_Stable_Normalization.thy": "7a8233c699b5e388442717e7d55d69084d190ff559885e4bf0748d2476be5e3a",
         "thys/Logic_Programming/LP_Prolog_Stable_Primitive.thy": "8218e960b8d81676dd0dd659518f4240005ee93632aa1ef93723e4b688e05768",
         "thys/Logic_Programming/LP_Prolog_Stable_Relational_Return.thy": "eeaa1f18ed217c96cfdc64b0bbb4403832416e837f59d0df1caf3853471f4660"
+      }
+    },
+    "prolog_natural_result_integration": {
+      "verification": "target/prolog-result-mixed-1117.log",
+      "component_verification": "target/prolog-result-natural-1116.log",
+      "backend_verification": "target/prolog-result-integer-1113.log",
+      "export_verification": "target/prolog-result-mixed-1117.log",
+      "export": "target/prolog-result-export-1117",
+      "generated_sha256": "a424b7a8185bb7c014ebba4f83f313612abc59b53d5621ea904ff9a2089ff72d",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Finite_Context_Length.thy": "69e45ce48866a365758b15909337ea5d068ff7af99a2dd71a342fbd625213ba6",
+        "thys/Logic_Programming/LP_Prolog_Natural_Return_Context.thy": "326f125478eabcbc909aa6b4599209bfc17b13167e7a4c3b10bf7987b4315bbd",
+        "thys/Logic_Programming/LP_Prolog_Stable_Length.thy": "4ca1d14a7de0a5c249e7732bdfba141f42e9df97f531f5e9990b7697654f0bec",
+        "thys/Logic_Programming/LP_Prolog_Stable_Natural_Return_Context.thy": "6e2bd2285e5cab8606ddb8d5b2f3cb0b65b61b14c29ad337b1d86f77c0a382c7"
       }
     }
   },

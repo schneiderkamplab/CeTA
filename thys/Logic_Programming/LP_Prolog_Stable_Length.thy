@@ -1,5 +1,5 @@
 theory LP_Prolog_Stable_Length
- imports LP_Prolog_Stable_Constant LP_Prolog_Finite_Context_Length
+ imports LP_Prolog_Stable_Constant LP_Prolog_Finite_Context_Length LP_Prolog_Stable_Natural_Return_Context
 begin
 
 lemma lpp_stable_length_normalized_contract:
@@ -88,7 +88,7 @@ proof -
     and link: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
       ((LPCGoals (LPCUnify a (Var result_var)#gs),active)#saved)
       (result_var#lpcn_ground nd) (lpcn_guards nd) [] F
-      source_context middle"
+      (lpp_add_natural_observation (Var result_var) source_context) middle"
     using checked by (auto simp: lpp_check_finite_context_length_def)
   have ground: "lp_seg_ground (lp_ieval e eta)"
     using known expr_ground lpp_stable_context_ground_sound[OF observed]
@@ -117,6 +117,11 @@ proof -
     using interface by (auto intro!: map_cong)
   have old_context: "lpp_stable_context_holds operation SP source_context ?nu"
     using lpp_stable_context_fresh_eval[OF context_fresh, of operation SP eta "LPIFun (LPCUser f) []"] observed by simp
+  obtain n where result_value: "lp_ieval (Var result_var) ?nu=lpp_integer_value n" and bound: "0\<le>n"
+    using evaluated by (auto simp: lpp_length_result_def)
+  have result_context: "lpp_stable_context_holds operation SP
+      (lpp_add_natural_observation (Var result_var) source_context) ?nu"
+    by (rule lpp_add_stable_natural_holds[OF compatible old_context result_value bound])
   have extended_free: "lpc_free_knowledge (set F) ?nu"
     using free free_fresh by (auto simp: lpc_free_knowledge_def inj_on_def)
   have equations: "lp_equations [] ?nu" by (simp add: lp_equations_def)
@@ -126,7 +131,7 @@ proof -
     and child_context: "lpp_stable_context_holds operation SP (contexts!lpcl_target middle) rho"
     and edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
       [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q"
-    using lpp_stable_link_witness[OF compatible program link equations parent extended extended_free old_context] by (simp add: swaps) blast
+    using lpp_stable_link_witness[OF compatible program link equations parent extended extended_free result_context] by (simp add: swaps) blast
   have frame_same: "map snd (lpc_return_eval ?nu ?synthetic)=map snd (lpc_return_eval eta ss)"
     using arg_cong[OF unchanged, of "map snd"]
     by (simp add: shape lpc_return_eval_def)
