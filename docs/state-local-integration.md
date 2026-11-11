@@ -2164,3 +2164,68 @@ fourteen controls and twenty-four mutation checks. Retention 1119 preserves all
 native diagnostic has no complete benchmark proofs. No benchmark gain or
 production promotion is asserted. Pinned cross-repository evidence is
 `../ferrum-prolog-release/docs/data/prolog-natural-results-20261111.json`.
+
+## Stopped answer contracts for nested undefined calls (development, 2026-11-11)
+
+`LP_Answer_Stop_Contracts` adds a shared contract adapter for source-justified
+uncaught errors. It proves termination lifting, preservation of actual successful
+answers, absence of answers on an error exit, retention of unstopped loops,
+primitive composition, continuation attachment and ordered suffix reflection.
+The adapter clears the complete annotated stack; it does not resume a saved
+alternative with stale facts. Its stop predicate is a separate checked premise.
+
+`LP_Prolog_Stopped_Answers` instantiates that premise with the existing
+`lpp_undefined` and builtin-dispatch conditions and proves simulation into
+`lp_prolog_source`. Unsupported builtin-domain self-loops are retained.
+`LP_Prolog_Undefined_Frame` checks definition absence against the complete source
+program and exact predicate arity, excluding builtins. Its tests cover defined
+predicates, differing arities and saved alternatives.
+
+Primitive actions reuse the existing context/link checker. Stopped modular
+contracts reuse the shared ordered-stack composition rules. Arithmetic-result
+normalization uses the existing scalar evaluation and rational equality rules.
+The original observed-is theorem now factors through a continuation-parametric
+context theorem, shared by its old contract and the stopped contract; freshness,
+integer compatibility, context facts and saved environments are unchanged.
+
+Verification 1136 passes the shared stop, source simulation, primitive and
+undefined-frame rules; 1137 passes stopped evaluation normalization. Verification
+1141 passes the context refactor and the original contract; 1142 passes stopped
+stack composition. Full combined source verification 1143 passes, including the existing mixed XML source assembly. Verification 1145 passes the analogous continuation-parametric constant-result theorem and both its ordinary and stopped contracts. Earlier
+failed and interrupted attempts 1122–1140 retain their logs. No checker export,
+unified executable change, new root certificate or benchmark gain is claimed.
+
+Ferrum inventory 1591 reproduces the undefined-operation rejection on the
+established graphs for two original sources, with hashes checked against the
+221-root replay. One has no Splits, the other has nested Splits. The next required
+step is checked source module/graph assembly, then native receipt emission and
+source-audited twice-checked strict replay. The existing 79 YES + 8 NO frontier
+and production gate remain unchanged.
+
+The saved-alternative fixture exposes a separate precision obligation: the graph
+retains the later divergent clause even when an earlier clause necessarily aborts.
+A no-answer summary cannot justify eliminating that clause, because ordinary
+finite failure also has no successful answers and resumes alternatives. Safe
+suffix discharge needs a checked abort effect or continuation-unreachability
+contract. The fixture remains an unresolved positive control; its defined-failure,
+divergent-prefix, builtin-repeat and rational-callable variants remain negative
+controls. Inventory 1593 records their current established graphs and first gaps.
+
+Development module composition keeps the existing action witnesses and contexts.
+Its stopped dispatcher distinguishes checked undefined exits from ordinary actions.
+Length and subtraction compositions remain rejected until their stopped contracts
+are connected. No acceptance change to the existing exported checker is made.
+
+Verification 1154 passes stopped module dispatch, scope restoration and ranked
+control-graph composition. These are conditional contracts: each boundary still
+requires its complete child contract. The action witness type wraps existing
+actions or a source-checked undefined exit; no benchmark name appears in a rule.
+Attempt 1146 and 1148 exposed theorem-instantiation errors, 1147 used a nonexistent
+heap path, 1149 exposed a dispatch instantiation error, 1152 was explicitly
+interrupted during broad simplification, and 1153 exposed missing stack-emptiness
+preservation under scope renaming. The corrected proof uses explicit scope
+induction and verifies preservation of stack length and emptiness. All attempts
+are retained. Combined verification 1155 passes the original mixed XML assembly
+after the constant-result refactor. The checked implementation is commit
+`f06aa82` on `codex/prolog-production-integration` in this CeTA tree.
+Pinned evidence is `../ferrum-prolog-release/docs/data/prolog-stopped-contracts-20261111.json`.
