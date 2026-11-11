@@ -58,3 +58,42 @@ the properties and all bridge/checker sessions also built. A mechanical comparis
 covered all 78 original definitions, allowing only the shared-name changes and
 unfolding of the common sequence definition. No generated checker or runtime
 artifact changed.
+
+
+## Reusing the local verification cache
+
+The established cache for this checkout uses 64-bit Poly/ML, the Isabelle
+installation under `../ferrum/.tools/Isabelle2025-2`, and the consolidated AFP
+snapshot. The user settings in `target/trs-standard/user` select
+`/tmp/trs-standard-output` for output heaps and `/tmp/trs-standard-heaps` for
+system heaps. These temporary caches are local build artifacts, not prerequisites
+for using the specification package elsewhere.
+
+From the CeTA repository, reproduce the cached bridge build with:
+
+```sh
+USER_HOME="$PWD/target/trs-standard/user" \
+ISABELLE_IDENTIFIER=trs_standard \
+AFP="$PWD/../CeTA-consolidated/target/consolidation-build/afp-source/thys" \
+../ferrum/.tools/Isabelle2025-2/bin/isabelle build -j4 \
+  -d ../CeTA-consolidated/target/consolidation-build/afp-source/thys \
+  -d thys -D thys/Category_Bridges
+```
+
+Use the same environment with `isabelle getenv ISABELLE_HOME_USER
+ISABELLE_HEAPS ISABELLE_HEAPS_SYSTEM ML_PLATFORM AFP` to inspect the effective
+configuration before a build. An absent cache requires a rebuild; do not copy
+heaps between the 32-bit and 64-bit Poly/ML platforms or bypass Isabelle's
+source/dependency checks. Selecting the entire bridge directory includes the
+serial LP-with-cut session chain, which must rebuild when shared term syntax
+changes. The narrower make targets above remain available for category-local
+changes.
+
+The [November 11 cleanup verification](data/spec-syntax-cleanup-20261111.json)
+records a successful complete cached bridge build in 14 minutes 46 seconds,
+including the LP-with-cut chain, with no source-registration errors. All ten
+former shared-base declarations are unchanged modulo whitespace after moving
+the raw syntax into its own theory. The
+[build log](data/spec-syntax-cleanup-20261111-build.log.gz) preserves the session
+results. Generated checker code and production executables were not changed.
+An unchanged-build dry check then passed in 28 seconds with no rebuilds required.
