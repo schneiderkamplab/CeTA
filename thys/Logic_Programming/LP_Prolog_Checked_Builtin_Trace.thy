@@ -1,5 +1,5 @@
 theory LP_Prolog_Checked_Builtin_Trace
- imports LP_Prolog_Integer_NO
+ imports LP_Prolog_Integer_NO LP_Prolog_NO_Pending
 begin
 
 text \<open>Shared ordered trace pumping for any locally checked subset of the
@@ -95,11 +95,54 @@ proof -
     by (simp add: lp_cut_state_map_def)
 qed
 
+lemma trace_pending_pump:
+  assumes program: "lp_cut_source_program P"
+    and loop: "lpp_checked_builtin_trace step_check [LPCGoals [LPCAtom a]] steps
+      ([LPCGoals [LPCAtom a]] @ after)"
+    and progress: "steps \<noteq> []"
+    and safe_steps: "list_all (\<lambda>x. snd x\<noteq>[] \<and> lpc_no_suffix_safe (snd x)) steps"
+  shows "\<not> SN_on (lpp_builtin_source P U)
+    {lp_cut_state_eval ([LPCGoals [LPCAtom a]] @ before) LPIVar}"
+proof -
+  interpret source: lp_pending_execution "lpp_builtin_source P U"
+    by (rule lpp_builtin_pending_execution[OF program])
+  let ?core = "lp_cut_state_eval [LPCGoals [LPCAtom a]] LPIVar"
+  obtain u us where steps: "map (\<lambda>x. lp_cut_state_eval (snd x) LPIVar) steps = u#us"
+    using progress by (cases steps) auto
+  have path: "source.path ?core (u#us)"
+    using trace_path[OF program loop] steps by simp
+  have nonempty: "map snd steps \<noteq> []" using progress by simp
+  have last_finite: "last (map snd steps) = [LPCGoals [LPCAtom a]] @ after"
+    using trace_last[OF loop] progress by (cases steps) auto
+  have last_mapped: "last (map (\<lambda>s. lp_cut_state_eval s LPIVar) (map snd steps)) =
+    lp_cut_state_eval ([LPCGoals [LPCAtom a]] @ after) LPIVar"
+    using last_map[OF nonempty, of "\<lambda>s. lp_cut_state_eval s LPIVar"] last_finite by simp
+  have last: "last (u#us) = ?core @ lp_cut_state_eval after LPIVar"
+  proof -
+    have mapped: "map (\<lambda>s. lp_cut_state_eval s LPIVar) (map snd steps) = u#us"
+      using steps by (simp only: map_map o_def)
+    have eq: "last (u#us) = lp_cut_state_eval ([LPCGoals [LPCAtom a]] @ after) LPIVar"
+      using last_mapped mapped by metis
+    show ?thesis using eq by (simp only: lp_cut_state_map_def map_append)
+  qed
+  have core: "map (lp_cut_scope_entry r) ?core = ?core" for r
+    by (simp add: lp_cut_state_map_def)
+  have safe_eval: "lpc_no_suffix_safe (map (lp_cut_entry_map f) s)=lpc_no_suffix_safe s" for s f
+    by (cases s rule: lpc_no_suffix_safe.cases) (auto simp: lp_cut_state_map_def)
+  have safe: "v\<noteq>[] \<and> lpc_no_suffix_safe v" if "v\<in>set (?core#u#us)" for v
+    using that safe_steps steps
+    by (fastforce simp: list_all_iff lp_cut_state_map_def safe_eval)
+  show ?thesis using source.pending_pump[OF path last safe core]
+    by (simp add: lp_cut_state_map_def)
+qed
+
+
 definition check_source where
   "check_source q modes argv a before after initial_steps steps =
     (lp_cut_source_program P \<and> length argv=length modes \<and>
      list_all (\<lambda>(t,b). b \<longrightarrow> ground t) (zip argv modes) \<and>
-     lp_cut_barriers before \<and> lp_cut_barriers after \<and> steps \<noteq> [] \<and>
+     (lp_cut_barriers before \<and> lp_cut_barriers after \<or>
+       list_all (\<lambda>x. snd x\<noteq>[] \<and> lpc_no_suffix_safe (snd x)) steps) \<and> steps \<noteq> [] \<and>
      lpp_checked_builtin_trace step_check [LPCGoals [LPCAtom (Fun (LPCUser q) argv)]] initial_steps
        ([LPCGoals [LPCAtom a]] @ before) \<and>
      lpp_checked_builtin_trace step_check [LPCGoals [LPCAtom a]] steps
@@ -114,8 +157,13 @@ theorem check_source_sound:
 proof -
   have pump: "\<not> SN_on (lpp_builtin_source P U)
     {lp_cut_state_eval ([LPCGoals [LPCAtom a]] @ before) LPIVar}"
-    by (rule trace_pump)
-      (use checked in \<open>auto simp: check_source_def\<close>)
+  proof (cases "lp_cut_barriers before \<and> lp_cut_barriers after")
+    case True
+    show ?thesis by (rule trace_pump) (use checked True in \<open>auto simp: check_source_def\<close>)
+  next
+    case False
+    show ?thesis by (rule trace_pending_pump) (use checked False in \<open>auto simp: check_source_def\<close>)
+  qed
   have reach: "(lp_cut_state_eval [LPCGoals [LPCAtom (Fun (LPCUser q) argv)]] LPIVar,
     lp_cut_state_eval ([LPCGoals [LPCAtom a]] @ before) LPIVar) \<in> (lpp_builtin_source P U)\<^sup>*"
     by (rule trace_sound[where steps=initial_steps])
