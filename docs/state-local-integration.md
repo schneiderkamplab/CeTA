@@ -2303,3 +2303,63 @@ binary hash; no category library is recompiled. Their logs and build manifests
 are under `target/prolog-normalization-reuse-1215.log`,
 `target/prolog-normalization-reuse-1216.log` and the corresponding unified build
 directories. Reusing these libraries preserves immutable previous checkers.
+
+
+## Checked Prolog helper cases and context-groundness at Split boundaries
+
+The current integration atop `f617aaa` on `codex/prolog-production-integration`
+checks exhaustive successful-helper clause cases and transports initialized
+integer-return observations through finite, stable and stopped Split boundaries.
+Boundary groundness may be derived from the checked incoming evaluation context;
+this is proved by the context-groundness lemma, not assumed from a terminating
+helper. Existing boundary checks remain accepted. Saved alternatives and module
+dependencies retain their original obligations.
+
+Verification 1321 and 1322, export 1323, installation 1324 and unified build 1325
+are preserved under `target/prolog-context-*` and
+`target/unified-prolog-context-boundary-1325`. The immutable executable has
+SHA-256 `8fac3b39e6c30bc810cb2e566dbc4141691ec04f37f0e48ccc6231e4c0cace64`.
+Seven unchanged category libraries were reused; no generated checking logic was
+patched. Retention 1326 checks all 91 retained Prolog and 93 LP-with-cut
+certificates twice (368 checks).
+
+Ferrum strict replay 1831 preserves 81 YES and ten NO on the fixed 221 sources,
+with 91 independently authorized complete receipts. Family 1835 passes five
+native and five strict fixtures plus thirteen controls. Helper-case/context
+mutation suite 1833 passes sixteen cases twice; ground-comparison suite 1834
+passes eleven cases twice. Compound arithmetic input is a positive case when
+its actual evaluation returns an integer; an earlier negative expectation was
+corrected. There is no new benchmark gain from the boundary extension itself.
+Protected-category production promotion remains gated.
+
+## Binary64 arithmetic in checked Prolog source loops
+
+Integration `31e6eef` on `codex/prolog-production-integration` extends the fixed
+stable scalar-operation profile with integer and binary64 arithmetic, preserving
+separate operand conversion, signed zero, finite range and exact scalar
+comparisons. Isabelle theories prove expression evaluation and source steps,
+then instantiate the shared complete-stack source-loop checker. Sixteen
+executable rounding controls supplement these proofs. Generated Haskell logic
+was not edited. The retained pumping interface still requires its original
+barrier and dependency conditions; unsupported pending-alternative pumps are
+not accepted.
+
+The resident verification transcript is
+`target/prolog-binary64-resident-1330.log`; failed attempts remain there.
+Fresh export `target/prolog-binary64-export-1331` and installation 1332 bind the
+new function alongside all existing stable, stopped and ground-integer checks.
+The initial export driver name collided with a loaded theory and produced no
+module; a unique fresh theory generated the verified export. The reusable
+export script now gives output directories distinct theory names.
+
+Unified build 1333 reuses seven libraries and rebuilds only LP. The installed
+checker `target/installed-prolog-binary64-1333/ceta` has SHA-256
+`3486eda4f44017e0e67ee136c2d0a49050e7e8c91a5aaed0a501a7fe3ff8366d`.
+Retention 1334 passes all 368 checks of the prior 91 Prolog and 93 LP-with-cut
+certificates. Ferrum integration `186493f5` strictly replays all 221 original
+sources in frontier 1858: 81 YES, seventeen NO, 123 UNKNOWN, and 98 independently
+authorized complete receipts. Seven new NO roots use this binary64 route.
+Family 1854 passes eight native and eight strict proofs plus thirteen controls;
+mutation suite 1856 passes 36 checks with this same executable. Twelve saved
+native cycle candidates remain source-parent assembly obligations. This is not
+a matched-semantics superiority claim or protected-category production promotion.
