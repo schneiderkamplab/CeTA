@@ -2363,3 +2363,35 @@ Family 1854 passes eight native and eight strict proofs plus thirteen controls;
 mutation suite 1856 passes 36 checks with this same executable. Twelve saved
 native cycle candidates remain source-parent assembly obligations. This is not
 a matched-semantics superiority claim or protected-category production promotion.
+
+## Shared pending-stack pumping for checked builtin traces
+
+Integration `da399c2` on `codex/prolog-production-integration` generalizes the
+existing LP-with-cut pending-stack argument through a shared execution contract
+and proves its Prolog builtin instance. Recorded loop states must be nonempty
+and have no selected cut when arbitrary suffixes are pumped. Error transitions
+that discard the stack are excluded. Existing barrier-only proofs remain valid.
+The ground-integer and binary64 source checkers instantiate the same theorem;
+there is no replacement operational semantics or SEG.
+
+Resident verification 1335 preserves two proof-automation failures followed by
+the successful shared, source-step and complete-trace proofs. Fresh export 1336,
+installation 1337 and unified build 1338 produce checker SHA-256
+`dc23ddc547070e38b72978fb0ce0681fa03b0306ecd48959c393828f7782673a`.
+Only the LP library rebuilt; seven category libraries were reused. The verified
+export and original helper modules are installed without hand-edited generated
+logic. Retention 1339 passes 382 checks over the prior 98 Prolog and 93 LP-with-cut
+certificates.
+
+Ferrum integration `cfb76576` reuses the existing checked resolution transposition
+earlier in a trace and re-executes subsequent operations exactly. Native
+constructor capabilities preserve the oldest integer route's barrier restriction.
+The final strict 221-root replay 1871 certifies 81 YES and 29 NO with 110 complete
+receipts independently authorized: twelve new NO roots and no lost verdicts.
+All nineteen saved binary64 candidates are now certified. Shared tests pass 636
+cases; four fixture suites pass fifteen native and fifteen strict proofs, and
+mutation suites pass 64 checks. A byte-identical pending-stack certificate is
+rejected by the previous checker and accepted twice by checker 1338, as recorded
+in Ferrum's `target/prolog-pending-previous-checker-1861/new-checker-comparison.json`.
+The broader remaining-root scan finds no further gains. Protected-category
+promotion and matched-semantics superiority remain separate gates.
