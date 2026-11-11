@@ -2106,3 +2106,33 @@ Prolog strict replay 1508 preserves 79 YES + 8 NO / 221 with no new benchmark
 verdicts. This is a development integration, not protected-category production
 promotion. Evidence is pinned in the sibling Ferrum checkout at
 `docs/data/prolog-shape-backend-20261111.json`.
+
+## Shared Prolog disjunction and actual returns, 2026-11-11
+
+Commit `05de7d7` extends the shared Prolog answer stack with checked static
+disjunction. Both alternatives retain their incoming environment. Scope,
+reinterface and nested-Split composition proofs cover the additional transition;
+conditional choice retains its existing rule. Complete path extraction connects
+actual successful returns to the existing control-aware contracts. Unsupported
+dynamic or cut-containing alternative lowering remains an explicit obligation.
+
+Verification 1106/1107 and full verification/export 1108 pass. The Isabelle
+exported mixed module has SHA-256
+`7f2799abab668e28fc60c5188c062684444ff9632c9f3973c4d489b1ae4e41b0`;
+shared generated helpers are unchanged. Unified `make ceta` integration is
+`target/unified-prolog-choice-1109/ceta`, SHA-256
+`6da699e60e25462f7457a9ff14ae3a75b5f7f4995624ba74e13a90b542a8f9dc`.
+No generated checking logic was edited by hand.
+
+Ferrum `c8a76f65` passes two native and two strict generalized fixtures, ten
+controls and 34 mutation checks. Retention 1110 preserves 87 Prolog and 93
+LP-with-cut certificates on 360 checks. Full strict replay 1536 preserves
+79 YES + 8 NO across all 221 Prolog roots, with unchanged source hashes and all
+87 receipts authorized. Shared tests pass 595 tests with thirteen ignored.
+There are no new benchmark gains and no protected-category production promotion.
+
+[Cross-repository evidence](../../ferrum-prolog-release/docs/data/prolog-choice-returns-20261111.json)
+records all attempts, the generated export, complete receipts and the fresh
+16-root cohort. All sixteen targets remain UNKNOWN; the next shared source
+interface work concerns builtin/library return relations. Fixture certification
+does not establish benchmark gains or superiority.
