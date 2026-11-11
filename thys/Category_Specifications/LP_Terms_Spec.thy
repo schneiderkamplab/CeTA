@@ -1,5 +1,5 @@
 theory LP_Terms_Spec
-  imports TRS_Spec_Base Rewriting_Sequences_Spec
+  imports First_Order_Terms_Spec Rewriting_Sequences_Spec
 begin
 
 text \<open>Program clauses and initial queries use the shared finite first-order

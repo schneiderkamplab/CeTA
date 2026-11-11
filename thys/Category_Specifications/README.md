@@ -16,18 +16,22 @@ Read [Rewriting_Sequences_Spec.thy](Rewriting_Sequences_Spec.thy) first.
 excludes a sequence indexed by all natural numbers whose consecutive elements
 are related by `step`. Nontermination means the negation of that property.
 
-For first-order categories, [TRS_Spec_Base.thy](TRS_Spec_Base.thy) supplies:
+For first-order syntax, read [First_Order_Terms_Spec.thy](First_Order_Terms_Spec.thy):
 
-- `fo_term`: finite terms, with variables `SVar x` and applications `SFun f ts`;
-- `ranked_signature`: a partial assignment of exactly one arity to each symbol;
-- `arity_correct`: membership in the signature's term universe;
-- `fo_subst`: simultaneous substitution, and `correct_substitution`: all images
-  respect the signature;
-- `fo_context`: a term with exactly one hole, and `fo_plug`: filling that hole;
-- `correct_context`: the surrounding symbols and sibling terms respect the signature;
+- `fo_term`: finite variables and function applications;
+- `fo_subst`: simultaneous substitution, allowing nonground images;
+- `fo_context` and `fo_plug`: one-hole contexts and plugging.
+
+Then [TRS_Spec_Base.thy](TRS_Spec_Base.thy) adds ranked rewriting:
+
+- `ranked_signature`: a partial arity function; `Some n` admits an n-ary symbol,
+  while `None` excludes it (`Some 0` admits a constant);
+- `arity_correct`, `correct_substitution`, and `correct_context`: membership
+  in the chosen term universe;
 - `trs_problem`: finite, signature-correct rules over an infinite variable type;
-- `fo_step`: a rule instance in any signature-correct context, with both endpoints
-  in the signature's term universe.
+- `fo_step`: a rule instance in any signature-correct context.
+
+LP term definitions import only the signature-independent syntax.
 
 The prefix `fo` means first-order. These objects are shared across all TRS
 categories. Signatures need not contain constants or have finite domains. Rule

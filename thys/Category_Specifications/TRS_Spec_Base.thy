@@ -1,33 +1,22 @@
 theory TRS_Spec_Base
-  imports Main
+  imports First_Order_Terms_Spec
 begin
 
-text \<open>The prefix fo means first-order and is shared by all TRS categories.
-Finite first-order terms over a variable type. The problem-validity predicate below requires
-that type to be infinite. A signature assigns each permitted symbol exactly one arity; None
-excludes a symbol. Neither the signature nor the terms need contain constants.\<close>
-datatype ('f, 'v) fo_term = SVar 'v | SFun 'f "('f, 'v) fo_term list"
+text \<open>A ranked signature is a partial arity function: Some n admits a symbol
+with arity n, while None excludes it. In particular, Some 0 admits a constant;
+None does not. The empty signature and signatures without constants are allowed.
+The shared raw term operations are restricted here to this signature.\<close>
 type_synonym 'f ranked_signature = "'f \<Rightarrow> nat option"
 
 fun arity_correct :: "'f ranked_signature \<Rightarrow> ('f, 'v) fo_term \<Rightarrow> bool" where
   "arity_correct A (SVar x) = True"
 | "arity_correct A (SFun f ts) = (A f = Some (length ts) \<and> list_all (arity_correct A) ts)"
 
-text \<open>A substitution replaces variables simultaneously by finite terms. Its
-images may themselves contain variables. Signature correctness is global.\<close>
-fun fo_subst :: "('v \<Rightarrow> ('f, 'v) fo_term) \<Rightarrow> ('f, 'v) fo_term \<Rightarrow> ('f, 'v) fo_term" where
-  "fo_subst s (SVar x) = s x"
-| "fo_subst s (SFun f ts) = SFun f (map (fo_subst s) ts)"
+text \<open>A correct substitution maps every variable to a signature-correct term.\<close>
 definition correct_substitution where
   "correct_substitution A s \<longleftrightarrow> (\<forall>x. arity_correct A (s x))"
 
-text \<open>A context contains exactly one hole. The lists contain its left and
-right siblings. Plugging fills the hole, at any depth.\<close>
-datatype ('f, 'v) fo_context = SHole
-  | SMore 'f "('f, 'v) fo_term list" "('f, 'v) fo_context" "('f, 'v) fo_term list"
-fun fo_plug where
-  "fo_plug SHole t = t"
-| "fo_plug (SMore f ls C rs) t = SFun f (ls @ fo_plug C t # rs)"
+text \<open>A correct context respects the signature at every node outside its hole.\<close>
 fun correct_context where
   "correct_context A SHole = True"
 | "correct_context A (SMore f ls C rs) =

@@ -2,6 +2,7 @@ session Category_Specifications = HOL +
   options [document = false, quick_and_dirty = false]
   theories
     Rewriting_Sequences_Spec
+    First_Order_Terms_Spec
     TRS_Spec_Base
     TRS_Standard_Spec
     TRS_Innermost_Spec
