@@ -2395,3 +2395,41 @@ rejected by the previous checker and accepted twice by checker 1338, as recorded
 in Ferrum's `target/prolog-pending-previous-checker-1861/new-checker-comparison.json`.
 The broader remaining-root scan finds no further gains. Protected-category
 promotion and matched-semantics superiority remain separate gates.
+
+
+## Checked positive arithmetic contexts for Prolog (2026-11-12)
+
+Integration `219557c` in `/work/dfm/festschrift/CeTA-prolog-release`, branch
+`codex/prolog-production-integration`, adds indexed consequence receipts for
+positive literals, equations, exact positive quotients and positive integer lower
+bounds. The stopped-region composition checks local enrichment and incoming
+boundary obligations without resetting established contexts. Actual integer
+membership is required for the lower bound; groundness is insufficient. Missing
+exactness cannot justify quotient positivity (`1 // 2 = 0`). Theorems preserve
+actual stable arithmetic semantics, including the source's binary64 behavior.
+
+Fresh Isabelle export `target/prolog-positive-lower-export-1346` produces Haskell
+SHA-256 `66cb656e559d706b08784fa244b383b1345a5cfc768865b849d24149ae435e54`.
+Installation 1347 retains a complete matching source snapshot. Unified build 1348
+reuses seven unchanged category libraries and rebuilds LP only. The executable
+`target/installed-prolog-positive-lower-1348/ceta` has SHA-256
+`bf5d58f2bf81d31b4309f6898283cdd66e7eb070f8a825c8f9a7cbba3f396b9b`.
+No generated checking logic was patched. Retention 1349 passes 406 checks over
+all 110 prior Prolog and 93 LP-with-cut certificates.
+
+Ferrum integration `b599c6b4` and full strict replay
+`../ferrum-prolog-release/target/prolog-positive-frontier-1915` establish
+82 YES + 29 NO on the unchanged 221 sources, adding `Hett/p2_10.pl`. All 111
+complete receipts are independently authorized, with two checks per result by
+this same executable. Family 1911 passes three native and three strict proofs
+with twelve controls; benchmark gate 1918 passes native/strict with eleven
+controls. Mutation suite 1917 passes 38 checks across nineteen cases, including
+missing arithmetic derivations, incorrect indices, missing module dependencies
+and ground/integer confusion. LP-with-cut remains 84 YES + 9 NO.
+
+Earlier checker 1343 passed retention but could not close the zero-loop numeric
+abstraction; the final consequence and aligned-bound projection remove that
+obstruction. Attempt 1916 retains the expected old-checker rejection of the new
+constructor. Protected-category production promotion remains gated. The complete
+[pinned Ferrum evidence](../../ferrum-prolog-release/docs/data/prolog-positive-context-progress-20261112.json)
+records replay, source snapshots and executable identities.
