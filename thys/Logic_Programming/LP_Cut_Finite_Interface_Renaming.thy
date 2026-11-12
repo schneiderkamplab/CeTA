@@ -46,16 +46,18 @@ lemma lpc_exchange_support_fixes_interface:
  shows "lpc_exchange_support B q x = x"
  using assms by (auto simp: lpc_exchange_support_def)
 
-lemma lpc_fresh_private_permutation:
+lemma lpc_fresh_private_involution:
  fixes A B C :: "string set"
  assumes "finite A" "finite B" "finite C" "A \<inter> B = {}"
- shows "\<exists>p. bij p \<and> (\<forall>x\<in>A. p x = x) \<and> p ` B \<inter> (A \<union> B \<union> C) = {}"
+ shows "\<exists>p. (\<forall>x. p (p x) = x) \<and> bij p \<and> (\<forall>x\<in>A. p x = x) \<and> p ` B \<inter> (A \<union> B \<union> C) = {}"
 proof -
  obtain q :: "string \<Rightarrow> string" where q:
    "inj q" "(A \<union> B \<union> C) \<inter> range q = {}"
    using lpc_fresh_namespace_for_finite_interface[of "A \<union> B \<union> C"] assms by auto
  have inj: "inj_on q B" using q(1) by (auto simp: inj_on_def)
  have disjoint: "B \<inter> q ` B = {}" using q(2) by blast
+ have inverse: "\<forall>x. lpc_exchange_support B q (lpc_exchange_support B q x) = x"
+   using lpc_exchange_support_involution[OF inj disjoint] by blast
  have bij: "bij (lpc_exchange_support B q)"
    by (rule lpc_exchange_support_bij[OF inj disjoint])
  have fixed: "\<forall>x\<in>A. lpc_exchange_support B q x = x"
@@ -64,12 +66,18 @@ proof -
    by (auto simp: lpc_exchange_support_def)
  show ?thesis
    by (rule exI[of _ "lpc_exchange_support B q"])
-     (use bij fixed moved q(2) in blast)
+     (use inverse bij fixed moved q(2) in blast)
 qed
+
+lemma lpc_fresh_private_permutation:
+ fixes A B C :: "string set"
+ assumes "finite A" "finite B" "finite C" "A \<inter> B = {}"
+ shows "\<exists>p. bij p \<and> (\<forall>x\<in>A. p x = x) \<and> p ` B \<inter> (A \<union> B \<union> C) = {}"
+ using lpc_fresh_private_involution[OF assms] by blast
 
 ML \<open>
 val checked = [@{thm lpc_exchange_support_involution},
- @{thm lpc_exchange_support_bij}, @{thm lpc_fresh_private_permutation}, @{thm lpc_exchange_support_fixes_interface}];
+ @{thm lpc_exchange_support_bij}, @{thm lpc_fresh_private_permutation}, @{thm lpc_fresh_private_involution}, @{thm lpc_exchange_support_fixes_interface}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted finite interface renaming dependency" else ();
 \<close>
