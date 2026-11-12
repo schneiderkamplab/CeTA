@@ -1,15 +1,15 @@
 theory LP_Cut_MGU_Fresh_Support
- imports LP_Cut_MGU_Fresh_Resolve
+ imports LP_Cut_MGU_Fresh_Resolve LP_Cut_MGU_Equivariance
 begin
 
 text \<open>Only clause variables that occur in the head or body need a fresh
 renaming. This finite support can be moved away from an accumulated continuation
 without reserving an entire infinite namespace.\<close>
 
-theorem lpc_checked_mgu_resolve_fresh_support:
+theorem lpc_global_mgu_resolve_fresh_support:
   fixes a h :: "('f,string) term"
     and rename_clause_var :: "string \<Rightarrow> string"
-  assumes checked: "lpc_check_mgu fuel [(a,h\<cdot>(\<lambda>x. Var (rename_clause_var x)))] V images"
+  assumes checked: "lpc_global_mgu [(a,h\<cdot>(\<lambda>x. Var (rename_clause_var x)))] substitution"
     and injective: "inj_on rename_clause_var B"
     and head_vars: "vars_term h \<subseteq> B"
     and body_vars: "\<forall>g\<in>set bs. \<forall>t\<in>set (lp_cut_terms g). vars_term t \<subseteq> B"
@@ -17,14 +17,14 @@ theorem lpc_checked_mgu_resolve_fresh_support:
     and fresh_gs: "\<forall>g\<in>set gs. \<forall>t\<in>set (lp_cut_terms g). vars_term t \<inter> rename_clause_var ` B = {}"
   shows "lpc_mgu_resolve (lp_ieval a LPIVar)
     (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) h bs
-    (\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) LPIVar)
-    (\<lambda>x. lp_ieval (lpc_mgu_substitution V images (rename_clause_var x)) LPIVar)"
+    (\<lambda>x. lp_ieval (substitution x) LPIVar)
+    (\<lambda>x. lp_ieval (substitution (rename_clause_var x)) LPIVar)"
 proof -
-  let ?s = "\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) LPIVar"
+  let ?s = "\<lambda>x. lp_ieval (substitution x) LPIVar"
   let ?r = "\<lambda>x. ?s (rename_clause_var x)"
   let ?eqs = "[(a,h\<cdot>(\<lambda>x. Var (rename_clause_var x)))]"
   have unifies: "lp_isubst (lp_ieval a LPIVar) ?s = lp_ieval h ?r"
-    using lpc_checked_mgu_unifies[OF checked]
+    using lpc_global_mgu_unifies[OF checked]
     by (simp add: lp_equations_def lp_ieval_subst lp_ieval_finite_subst)
   have factor: "\<And>\<tau> \<nu> :: string \<Rightarrow> ('f,string) lp_iterm.
     lp_isubst (lp_ieval a LPIVar) \<tau> = lp_ieval h \<nu> \<Longrightarrow>
@@ -51,8 +51,8 @@ proof -
       using comparison old[OF fresh_a] renamed_eval[OF head_vars]
       by (simp add: lp_equations_def lp_ieval_finite_subst lp_ieval_subst)
     have composed: "(\<lambda>x. lp_isubst (?s x) ?d) = ?d"
-      by (rule ext) (simp add: lp_ieval_subst lpc_checked_mgu_factor[OF checked solution])
-    have composed_eval: "(\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) ?d) = ?d"
+      by (rule ext) (simp add: lp_ieval_subst lpc_global_mgu_factor[OF checked solution])
+    have composed_eval: "(\<lambda>x. lp_ieval (substitution x) ?d) = ?d"
       using composed by (simp add: lp_ieval_subst)
     have active: "\<And>t. (vars_term t \<inter> rename_clause_var ` B = {}) \<Longrightarrow>
       lp_isubst (lp_isubst (lp_ieval t LPIVar) ?s) ?d = lp_isubst (lp_ieval t LPIVar) \<tau>"
@@ -89,8 +89,24 @@ proof -
   show ?thesis unfolding lpc_mgu_resolve_def using unifies factor by blast
 qed
 
+theorem lpc_checked_mgu_resolve_fresh_support:
+  fixes a h :: "('f,string) term"
+    and rename_clause_var :: "string \<Rightarrow> string"
+  assumes checked: "lpc_check_mgu fuel [(a,h\<cdot>(\<lambda>x. Var (rename_clause_var x)))] V images"
+    and injective: "inj_on rename_clause_var B"
+    and head_vars: "vars_term h \<subseteq> B"
+    and body_vars: "\<forall>g\<in>set bs. \<forall>t\<in>set (lp_cut_terms g). vars_term t \<subseteq> B"
+    and fresh_a: "vars_term a \<inter> rename_clause_var ` B = {}"
+    and fresh_gs: "\<forall>g\<in>set gs. \<forall>t\<in>set (lp_cut_terms g). vars_term t \<inter> rename_clause_var ` B = {}"
+  shows "lpc_mgu_resolve (lp_ieval a LPIVar)
+    (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) h bs
+    (\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) LPIVar)
+    (\<lambda>x. lp_ieval (lpc_mgu_substitution V images (rename_clause_var x)) LPIVar)"
+  by (rule lpc_global_mgu_resolve_fresh_support[OF lpc_checked_global_mgu[OF checked]
+    injective head_vars body_vars fresh_a fresh_gs])
+
 ML \<open>
-val checked = [@{thm lpc_checked_mgu_resolve_fresh_support}];
+val checked = [@{thm lpc_checked_mgu_resolve_fresh_support}, @{thm lpc_global_mgu_resolve_fresh_support}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted finite-support MGU dependency" else ();
 \<close>

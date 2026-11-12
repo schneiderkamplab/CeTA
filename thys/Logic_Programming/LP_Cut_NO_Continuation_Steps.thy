@@ -1,5 +1,5 @@
 theory LP_Cut_NO_Continuation_Steps
- imports LP_Cut_NO_Steps LP_Cut_Return_Attached_Answers LP_Cut_MGU_Fresh_Resolve
+ imports LP_Cut_NO_Steps LP_Cut_Return_Attached_Answers LP_Cut_MGU_Fresh_Support
 begin
 
 text \<open>A suspended continuation is part of the active unification
@@ -112,12 +112,45 @@ proof -
       lp_cut_map_comp lp_ieval_finite_subst lp_ieval_subst lp_cut_map_bind)
 qed
 
+lemma lpc_global_resolve_swap_retains_continuation:
+  fixes P :: "('f,string) lp_cut_program"
+    and rename_clause_var :: "string \<Rightarrow> string"
+  assumes index: "c<length P"
+    and checked: "lpc_global_mgu
+      [(a,fst (P!c)\<cdot>(\<lambda>v. Var (rename_clause_var v)))] substitution"
+    and injective: "inj_on rename_clause_var B"
+    and head_vars: "vars_term (fst (P!c)) \<subseteq> B"
+    and body_vars: "\<forall>g\<in>set (snd (P!c)). \<forall>t\<in>set (lp_cut_terms g). vars_term t \<subseteq> B"
+    and fresh_a: "vars_term a \<inter> rename_clause_var ` B = {}"
+    and fresh_goals: "\<forall>g\<in>set (gs@rest). \<forall>t\<in>set (lp_cut_terms g).
+      vars_term t \<inter> rename_clause_var ` B = {}"
+  shows "(lp_cut_state_eval (LPCClause (LPCAtom a # gs @ rest) c m#es) LPIVar,
+    lp_cut_state_eval
+      (LPCGoals
+        (map (lp_cut_bind m (\<lambda>t. (t\<cdot>(\<lambda>v. substitution (rename_clause_var v)))\<cdot>(\<lambda>v. Var (lpc_no_swap x y v)))) (snd (P!c)) @
+         map (lp_cut_map (\<lambda>t. (t\<cdot>substitution)\<cdot>(\<lambda>v. Var (lpc_no_swap x y v)))) (gs@rest))#es) LPIVar)
+    \<in> lp_cut_mgu_source P"
+proof -
+  have mgu: "lpc_mgu_resolve (lp_ieval a LPIVar)
+    (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) (gs@rest))
+    (fst (P!c)) (snd (P!c))
+    (\<lambda>v. lp_ieval (substitution v) LPIVar)
+    (\<lambda>v. lp_ieval (substitution (rename_clause_var v)) LPIVar)"
+    by (rule lpc_global_mgu_resolve_fresh_support[OF checked injective head_vars body_vars fresh_a fresh_goals])
+  show ?thesis
+    using lp_cut_mgu_source.resolve[OF index lpc_mgu_resolve_output_swap[OF mgu, of x y],
+      of m "lp_cut_state_eval es LPIVar"]
+    by (simp add: lp_cut_state_map_def map_map o_def
+      lp_cut_map_comp lp_ieval_finite_subst lp_ieval_subst lp_cut_map_bind)
+qed
+
 ML \<open>
 val checked = [@{thm lpc_prefix_mgu_cannot_instantiate_live_continuation},
  @{thm lpc_checked_unify_retains_continuation},
  @{thm lpc_checked_resolve_retains_continuation},
  @{thm lpc_checked_resolve_swap_retains_continuation},
- @{thm lpc_fresh_resolve_swap_retains_continuation}];
+ @{thm lpc_fresh_resolve_swap_retains_continuation},
+ @{thm lpc_global_resolve_swap_retains_continuation}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted continuation-step dependency" else ();
 \<close>
