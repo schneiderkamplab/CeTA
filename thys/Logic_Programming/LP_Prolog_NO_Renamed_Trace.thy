@@ -1,11 +1,13 @@
 theory LP_Prolog_NO_Renamed_Trace
- imports LP_Prolog_NO_Renamed_Machine
+ imports LP_Prolog_NO_Renamed_Machine LP_Prolog_NO_Renamed_Permutation
 begin
 
 fun lpp_no_return_step_support where
  "lpp_no_return_step_support P ss (LPPMBase (LPPGIBase (LPPIOrdinary (LPPNOOrdinary action)))) =
    lpc_no_action_support P action"
 | "lpp_no_return_step_support P ss (LPPMIs e) = lpp_no_return_is_support ss"
+| "lpp_no_return_step_support P ss (LPPMResolvePermute k V images swaps) =
+    lpc_no_resolve_permutation_support P k V swaps"
 | "lpp_no_return_step_support P ss action = {}"
 
 lemma lpp_no_return_step_support_finite[simp]:
@@ -35,7 +37,8 @@ lemma lpp_no_return_step_renamed_sound:
        lpp_no_return_compare_sound[OF lpp_no_return_compare_renamed]
        lpp_no_return_integer_sound[OF lpp_no_return_integer_renamed]
        lpp_no_return_probe_renamed_sound
-       lpp_no_return_list_sound[OF lpp_no_return_list_renamed])
+       lpp_no_return_list_sound[OF lpp_no_return_list_renamed]
+       lpp_no_return_permutation_renamed_sound[OF _ inverse])
 
 fun lpp_no_return_trace_support where
  "lpp_no_return_trace_support P ss [] = {}"

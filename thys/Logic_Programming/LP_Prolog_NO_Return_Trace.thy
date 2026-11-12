@@ -1,5 +1,5 @@
 theory LP_Prolog_NO_Return_Trace
- imports LP_Prolog_NO_Return_Compare
+ imports LP_Prolog_NO_Return_Compare LP_Prolog_NO_Return_Permutation
 begin
 
 text \<open>Reuse the existing machine NO action language. Ordinary steps retain
@@ -18,6 +18,8 @@ fun lpp_no_return_step where
 | "lpp_no_return_step fuel P reserved ss (LPPMProbe m n) tt =
     (m\<notin>set reserved \<and> n\<notin>set reserved \<and> lpp_no_return_probe m n ss tt)"
 | "lpp_no_return_step fuel P reserved ss (LPPMList held) tt = lpp_no_return_list fuel held ss tt"
+| "lpp_no_return_step fuel P reserved ss (LPPMResolvePermute k V images swaps) tt =
+    lpp_no_return_permutation fuel P k V images swaps ss tt"
 | "lpp_no_return_step fuel P reserved ss action tt = False"
 
 lemma lpp_no_return_step_sound:
@@ -28,7 +30,7 @@ lemma lpp_no_return_step_sound:
  using checked scopes
  by (induct fuel P reserved ss action tt rule: lpp_no_return_step.induct)
    (auto intro: lpp_no_return_ordinary_step_sound lpp_no_return_is_sound
-     lpp_no_return_compare_sound lpp_no_return_integer_sound lpp_no_return_probe_sound lpp_no_return_list_sound)
+     lpp_no_return_compare_sound lpp_no_return_integer_sound lpp_no_return_probe_sound lpp_no_return_list_sound lpp_no_return_permutation_sound)
 
 fun lpp_no_return_trace where
  "lpp_no_return_trace fuel P reserved ss [] tt = (ss=tt)"

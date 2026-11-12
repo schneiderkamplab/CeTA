@@ -28,7 +28,13 @@ definition lpp_machine_no_action_parser where
    (XMLdo (STR ''opaqueProbe'') {
      m\<leftarrow>xml_nat (STR ''scope''); n\<leftarrow>xml_nat (STR ''innerScope'');
      xml_return (LPPMProbe m n)}) XMLor
-   (XMLdo (STR ''listTest'') {held\<leftarrow>xml_bool (STR ''holds''); xml_return (LPPMList held)})"
+   (XMLdo (STR ''listTest'') {held\<leftarrow>xml_bool (STR ''holds''); xml_return (LPPMList held)}) XMLor
+   (XMLdo (STR ''resolvePermute'') {
+     k\<leftarrow>xml_nat (STR ''prefix''); V\<leftarrow>xml_many (STR ''variables'') (xml_text (STR ''var'')) id;
+     images\<leftarrow>xml_many (STR ''images'') lpc_term_parser id;
+     swaps\<leftarrow>xml_many (STR ''swaps'') (XMLdo (STR ''swap'') {
+       x\<leftarrow>xml_text (STR ''from''); y\<leftarrow>xml_text (STR ''to''); xml_return (x,y)}) id;
+     xml_return (LPPMResolvePermute k V images swaps)})"
 
 definition lpp_machine_no_certificate_parser where
   "lpp_machine_no_certificate_parser = XMLdo (STR ''prologBinary64SourceNonterminationProof'') {

@@ -1,5 +1,5 @@
 theory LP_Prolog_Binary64_Actions
- imports LP_Prolog_Binary64_Steps LP_Prolog_NO_Probe_Definition LP_Prolog_NO_List_Definition
+ imports LP_Prolog_Binary64_Steps LP_Prolog_NO_Probe_Definition LP_Prolog_NO_List_Definition LP_Prolog_NO_Permutation
 begin
 
 fun lpp_machine_is_integer where
@@ -18,7 +18,8 @@ lemma lpp_machine_integer_test:
 datatype lpp_machine_no_action = LPPMBase lpp_ground_integer_no_action |
  LPPMIs lpp_machine_expression |
  LPPMCompare lpp_machine_expression lpp_machine_expression bool |
- LPPMInteger lpp_machine_scalar | LPPMProbe nat nat | LPPMList bool
+ LPPMInteger lpp_machine_scalar | LPPMProbe nat nat | LPPMList bool |
+ LPPMResolvePermute nat "string list" "(string lp_cut_symbol,string) term list" "(string * string) list"
 
 fun lpp_machine_no_step_action where
  "lpp_machine_no_step_action fuel P (LPPMBase action) s t = lpp_ground_integer_no_step fuel P s action t"
@@ -48,6 +49,9 @@ fun lpp_machine_no_step_action where
 | "lpp_machine_no_step_action fuel P (LPPMProbe m n) s t = lpp_no_plain_probe m n s t"
 
 | "lpp_machine_no_step_action fuel P (LPPMList held) s t = lpp_no_plain_list fuel held s t"
+
+| "lpp_machine_no_step_action fuel P (LPPMResolvePermute k V images swaps) s t =
+    lpp_no_plain_permutation fuel P k V images swaps s t"
 
 abbreviation lpp_machine_no_step where
  "lpp_machine_no_step fuel P s action t \<equiv> lpp_machine_no_step_action fuel P action s t"
