@@ -163,6 +163,7 @@ runProlog [path] = do
       PR.check_lpp_rational_no_xml (cachedCharacters PR.explode input) ||
 #endif
 #ifdef LP_PROLOG_STABLE_MIXED
+      PSM.check_lpp_call_trace_xml (cachedCharacters PSM.explode input) ||
       PSM.check_lpp_machine_no_xml (cachedCharacters PSM.explode input) ||
       PSM.check_lpp_ground_integer_no_xml (cachedCharacters PSM.explode input) ||
 #endif
