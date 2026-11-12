@@ -9,6 +9,7 @@ fun lpc_no_action_scope_support where
 fun lpp_no_action_scope_support where
  "lpp_no_action_scope_support (LPPMBase (LPPGIBase (LPPIOrdinary (LPPNOOrdinary action)))) =
    lpc_no_action_scope_support action"
+| "lpp_no_action_scope_support (LPPMProbe m n) = {m,n}"
 | "lpp_no_action_scope_support action = {}"
 
 lemma lpc_no_action_scopes_safe:

@@ -1,5 +1,5 @@
 theory LP_Prolog_NO_Probe
- imports LP_Prolog_NO_Return_Trace LP_Prolog_Evaluation_Probe
+ imports LP_Prolog_Stable_Source LP_Cut_NO_Return_Control LP_Prolog_NO_Probe_Definition
 begin
 
 text \<open>Entering an opaque probe is an operational step, not a successful
@@ -44,14 +44,6 @@ proof -
  show ?thesis using actual selected
    by (auto simp: lp_prolog_source_def lpp_builtin_active_def)
 qed
-
-definition lpp_no_return_probe where
- "lpp_no_return_probe m n ss tt = (case ss of
-   (LPCGoals (LPCAtom (Fun (LPCUser f) [Fun (LPCUser g) argv])#gs),payload)#saved \<Rightarrow>
-   (lpp_probe_name f \<and> lp_cut_fresh m (LPCGoals gs#map fst saved) \<and>
-    lp_cut_fresh n (LPCBarrier m#LPCGoals gs#map fst saved) \<and>
-    tt=lpp_probe_stack (Fun (LPCUser g) argv) (f=''1:once'') m n gs payload saved)
- | _ \<Rightarrow> False)"
 
 lemma lpp_no_probe_attachment:
  "lpc_attach rest (lpc_return_eval eta (lpp_probe_stack a keep m n gs payload saved)) =

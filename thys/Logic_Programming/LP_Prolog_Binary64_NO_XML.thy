@@ -24,7 +24,10 @@ definition lpp_machine_no_action_parser where
      held\<leftarrow>xml_bool (STR ''holds''); xml_return (LPPMCompare a b held)}) XMLor
    (XMLdo (STR ''machineIntegerTest'') {
      v\<leftarrow>xml_singleton (STR ''machineLiteral'') lpp_machine_scalar_parser id;
-     xml_return (LPPMInteger v)})"
+     xml_return (LPPMInteger v)}) XMLor
+   (XMLdo (STR ''opaqueProbe'') {
+     m\<leftarrow>xml_nat (STR ''scope''); n\<leftarrow>xml_nat (STR ''innerScope'');
+     xml_return (LPPMProbe m n)})"
 
 definition lpp_machine_no_certificate_parser where
   "lpp_machine_no_certificate_parser = XMLdo (STR ''prologBinary64SourceNonterminationProof'') {

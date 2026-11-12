@@ -1,5 +1,5 @@
 theory LP_Prolog_Binary64_NO
- imports LP_Prolog_Binary64_Actions
+ imports LP_Prolog_Binary64_Actions LP_Prolog_NO_Probe_Check
 begin
 
 lemma lpp_machine_comparison_value:
@@ -17,24 +17,70 @@ lemma lpp_machine_no_step_sound:
  "lpp_machine_no_step fuel P s action t \<Longrightarrow>
    (lp_cut_state_eval s LPIVar,lp_cut_state_eval t LPIVar)\<in>
    lpp_builtin_source P (lpp_stable_source_builtin (lpp_binary64_profile_operation fallback))"
-proof (induct fuel P s action t rule: lpp_machine_no_step.induct)
- case (1 fuel P s action t)
+proof (induct fuel P action s t rule: lpp_machine_no_step_action.induct)
+ case (1 fuel P action s t)
  have included: "lpp_builtin_source P lpp_ground_integer_no_builtin \<subseteq>
    lpp_builtin_source P (lpp_stable_source_builtin (lpp_binary64_profile_operation fallback))"
    by (rule lpp_builtin_source_mono)
      (rule lpp_ground_integer_no_stable[OF lpp_binary64_profile_integer_compatible])
  show ?case using 1 included lpp_ground_integer_no_step_sound by auto
 next
- case (2 fuel P f a b gs es e t)
- then obtain v where f: "f=''2:is''" and b: "b=lpp_machine_expression_term e"
+ case (2 fuel P e s t)
+
+ obtain entry es where st: "s=entry#es"
+   using 2 by (cases s) auto
+ obtain goals where en: "entry=LPCGoals goals"
+   using 2 unfolding st by (cases entry) auto
+ obtain goal gs where gl: "goals=goal#gs"
+   using 2 unfolding st en by (cases goals) auto
+ obtain atom where at: "goal=LPCAtom atom"
+   using 2 unfolding st en gl by (cases goal) auto
+ obtain symbol args where tm: "atom=Fun symbol args"
+   using 2 unfolding st en gl at by (cases atom) auto
+ obtain f where sy: "symbol=LPCUser f"
+   using 2 unfolding st en gl at tm by (cases symbol) auto
+ obtain a tail where ar: "args=a#tail"
+   using 2 unfolding st en gl at tm sy by (cases args) auto
+ obtain b tail2 where ar2: "tail=b#tail2"
+   using 2 unfolding st en gl at tm sy ar by (cases tail) auto
+ have ar3: "tail2=[]"
+   using 2 unfolding st en gl at tm sy ar ar2 by (cases tail2) auto
+ have shape: "s=LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs)#es" by (simp add: st en gl at tm sy ar ar2 ar3)
+ have step: "lpp_machine_no_step fuel P (LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs)#es) (LPPMIs e) t"
+   using 2 shape by simp
+ from step
+ obtain v where f: "f=''2:is''" and b: "b=lpp_machine_expression_term e"
    and evaluated: "lpp_machine_evaluate e=Some v"
    and t: "t=(case lpp_machine_unifier a v of None \<Rightarrow> es
        | Some mu \<Rightarrow> LPCGoals (map (lp_cut_map (\<lambda>t. t\<cdot>mu)) gs)#es)"
    by (auto split: option.splits)
- show ?case using lpp_machine_is_step[OF evaluated, of a gs es P fallback] by (simp add: f b t)
+ show ?case using lpp_machine_is_step[OF evaluated, of a gs es P fallback] by (simp add: shape f b t)
 next
- case (4 fuel P f a b gs es left right held t)
- then obtain comparison reversed x y where name: "lpp_source_comparison f=Some (comparison,reversed)"
+ case (3 fuel P left right held s t)
+
+ obtain entry es where st: "s=entry#es"
+   using 3 by (cases s) auto
+ obtain goals where en: "entry=LPCGoals goals"
+   using 3 unfolding st by (cases entry) auto
+ obtain goal gs where gl: "goals=goal#gs"
+   using 3 unfolding st en by (cases goals) auto
+ obtain atom where at: "goal=LPCAtom atom"
+   using 3 unfolding st en gl by (cases goal) auto
+ obtain symbol args where tm: "atom=Fun symbol args"
+   using 3 unfolding st en gl at by (cases atom) auto
+ obtain f where sy: "symbol=LPCUser f"
+   using 3 unfolding st en gl at tm by (cases symbol) auto
+ obtain a tail where ar: "args=a#tail"
+   using 3 unfolding st en gl at tm sy by (cases args) auto
+ obtain b tail2 where ar2: "tail=b#tail2"
+   using 3 unfolding st en gl at tm sy ar by (cases tail) auto
+ have ar3: "tail2=[]"
+   using 3 unfolding st en gl at tm sy ar ar2 by (cases tail2) auto
+ have shape: "s=LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs)#es" by (simp add: st en gl at tm sy ar ar2 ar3)
+ have step: "lpp_machine_no_step fuel P (LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs)#es) (LPPMCompare left right held) t"
+   using 3 shape by simp
+ from step
+ obtain comparison reversed x y where name: "lpp_source_comparison f=Some (comparison,reversed)"
    and left: "lpp_machine_evaluate left=Some x" and right: "lpp_machine_evaluate right=Some y"
    and a: "a=lpp_machine_expression_term left" and b: "b=lpp_machine_expression_term right"
    and held: "held=lpp_integer_compare comparison
@@ -53,16 +99,37 @@ next
  have outcome: "lpp_stable_source_builtin (lpp_binary64_profile_operation fallback) f
    [lp_ieval a LPIVar,lp_ieval b LPIVar] (if held then LPPBuiltinSuccess LPIVar else LPPBuiltinFailure)"
    by (rule lpp_stable_source_comparison_evaluated[OF lpp_binary64_profile_integer_compatible descriptor compared])
- show ?case unfolding t
+ show ?case unfolding shape t
    by (rule lpp_checked_boolean_step) (use lpp_comparison_selected[OF descriptor] outcome in \<open>simp_all add: numeral_2_eq_2\<close>)
 next
- case (6 fuel P f a gs es v t)
- then have f: "f=''1:integer''" and a: "a=lpp_machine_term v" and valid: "lpp_machine_valid v"
+ case (4 fuel P v s t)
+
+ obtain entry es where st: "s=entry#es"
+   using 4 by (cases s) auto
+ obtain goals where en: "entry=LPCGoals goals"
+   using 4 unfolding st by (cases entry) auto
+ obtain goal gs where gl: "goals=goal#gs"
+   using 4 unfolding st en by (cases goals) auto
+ obtain atom where at: "goal=LPCAtom atom"
+   using 4 unfolding st en gl by (cases goal) auto
+ obtain symbol args where tm: "atom=Fun symbol args"
+   using 4 unfolding st en gl at by (cases atom) auto
+ obtain f where sy: "symbol=LPCUser f"
+   using 4 unfolding st en gl at tm by (cases symbol) auto
+ obtain a tail where ar: "args=a#tail"
+   using 4 unfolding st en gl at tm sy by (cases args) auto
+ have ar2: "tail=[]"
+   using 4 unfolding st en gl at tm sy ar by (cases tail) auto
+ have shape: "s=LPCGoals (LPCAtom (Fun (LPCUser f) [a])#gs)#es" by (simp add: st en gl at tm sy ar ar2)
+ have step: "lpp_machine_no_step fuel P (LPCGoals (LPCAtom (Fun (LPCUser f) [a])#gs)#es) (LPPMInteger v) t"
+   using 4 shape by simp
+ from step
+ have f: "f=''1:integer''" and a: "a=lpp_machine_term v" and valid: "lpp_machine_valid v"
    and t: "t=(if lpp_machine_is_integer v then LPCGoals gs#es else es)" by auto
- show ?case unfolding f a t
+ show ?case unfolding shape f a t
    by (rule lpp_checked_boolean_step)
      (use lpp_machine_integer_test[OF valid] in \<open>simp_all add: lpp_builtin_signature_def lpp_machine_term_eval\<close>)
-qed simp_all
+qed (simp_all add: lpp_no_plain_probe_sound)
 
 definition lpp_machine_no_check_source where
  "lpp_machine_no_check_source fuel P q modes argv a before after initial_steps steps =

@@ -15,6 +15,8 @@ lemma lpp_no_return_step_support_finite[simp]:
 fun lpp_no_action_scope_safe where
  "lpp_no_action_scope_safe rest (LPPMBase (LPPGIBase (LPPIOrdinary (LPPNOOrdinary action)))) =
    lpc_no_action_scope_safe rest action"
+| "lpp_no_action_scope_safe rest (LPPMProbe m n) =
+   (m\<notin>lpc_rest_scopes rest \<and> n\<notin>lpc_rest_scopes rest)"
 | "lpp_no_action_scope_safe rest action = True"
 
 lemma lpp_no_return_step_renamed_sound:
@@ -31,7 +33,8 @@ lemma lpp_no_return_step_renamed_sound:
      intro: lpp_no_return_ordinary_renamed_sound[OF _ inverse]
        lpp_no_return_is_renamed_sound[OF _ inverse]
        lpp_no_return_compare_sound[OF lpp_no_return_compare_renamed]
-       lpp_no_return_integer_sound[OF lpp_no_return_integer_renamed])
+       lpp_no_return_integer_sound[OF lpp_no_return_integer_renamed]
+       lpp_no_return_probe_renamed_sound)
 
 fun lpp_no_return_trace_support where
  "lpp_no_return_trace_support P ss [] = {}"
