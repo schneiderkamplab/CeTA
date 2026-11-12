@@ -171,8 +171,8 @@ definition lpp_success_case_record_parser where
     children\<leftarrow>xml_many (STR ''rows'') lpp_observed_triple_parser id;
     xml_return (Some (i,k,children))})"
 
-definition lpp_established_stopped_mixed_parser where
-  "lpp_established_stopped_mixed_parser = XMLdo (STR ''prologEstablishedStoppedSEGMixedProof'') {
+definition lpp_established_stopped_mixed_raw_parser where
+  "lpp_established_stopped_mixed_raw_parser = XMLdo (STR ''prologEstablishedStoppedSEGMixedProof'') {
     profile\<leftarrow>xml_text (STR ''profile'');
     P\<leftarrow>xml_many (STR ''program'') (XMLdo (STR ''clause'') {
       h\<leftarrow>xml_singleton (STR ''head'') lpc_term_parser id;
@@ -200,6 +200,28 @@ definition lpp_established_stopped_mixed_parser where
       p\<leftarrow>xml_text (STR ''predicate''); n\<leftarrow>xml_nat (STR ''rank''); xml_return (p,n)}) id;
     backends\<leftarrow>xml_many (STR ''backends'') lpp_field_backend_parser id;
     xml_return (profile,P,q,modes,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,cases,normalization,NOD,ranks,backends)}"
+
+text \<open>A reference expands only to the unique enclosing contract. The existing
+parser and semantic checker still consume the complete resolved subject.\<close>
+
+fun lpp_expand_transfer_reference :: "xml \<Rightarrow> xml \<Rightarrow> xml" where
+  "lpp_expand_transfer_reference contract_xml (XML xml_tag xml_attrs xml_children) =
+    (if xml_tag=''enclosingTransferContract'' \<and> xml_attrs=[] \<and> xml_children=[] then contract_xml
+     else XML xml_tag xml_attrs (map (lpp_expand_transfer_reference contract_xml) xml_children))"
+| "lpp_expand_transfer_reference contract_xml (XML_text xml_text_value) = XML_text xml_text_value"
+
+fun lpp_is_transfer_contract where
+  "lpp_is_transfer_contract (XML xml_tag xml_attrs xml_children) = (xml_tag=''prologSuccessTransferContract'')"
+| "lpp_is_transfer_contract (XML_text xml_text_value) = False"
+
+definition lpp_established_stopped_mixed_parser where
+  "lpp_established_stopped_mixed_parser xml_input =
+    (case fst xml_input of XML xml_tag xml_attrs xml_children \<Rightarrow>
+      (case filter lpp_is_transfer_contract xml_children of [contract_xml] \<Rightarrow>
+        lpp_established_stopped_mixed_raw_parser
+          (XML xml_tag xml_attrs (map (lpp_expand_transfer_reference contract_xml) xml_children),snd xml_input)
+      | _ \<Rightarrow> lpp_established_stopped_mixed_raw_parser xml_input)
+    | _ \<Rightarrow> lpp_established_stopped_mixed_raw_parser xml_input)"
 
 definition check_lpp_established_stopped_mixed_xml where
   "check_lpp_established_stopped_mixed_xml xml = (case parse_xml_string lpp_established_stopped_mixed_parser xml of

@@ -30,9 +30,20 @@ proof -
   have enriched_known: "lp_cut_knowledge
       (set (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground source_context) (lpcn_vars nd))) K eta'"
     using known context_ground by (auto simp: lp_cut_knowledge_def)
+  have equation_ground: "\<forall>x\<in>lpp_equation_link_ground source_context G eqs. lp_seg_ground (eta' x)"
+  proof -
+    have prior: "lpp_evaluation_context_holds (lpp_stable_scalar_evaluation operation) SP source_context eta'"
+      using observed by (simp add: lpp_stable_context_holds_def)
+    show ?thesis by (rule lpp_equation_link_ground_sound[where E="lpp_stable_scalar_evaluation operation", OF _ prior known equations])
+      (auto dest: lpp_stable_scalar_evaluation_ground)
+  qed
+  have equation_known: "lp_cut_knowledge
+      (set (G @ filter (\<lambda>x. x\<in>lpp_equation_link_ground source_context G eqs)
+        (lpcn_vars nd @ concat (map (sorted_list_of_set \<circ> vars_term \<circ> snd) (lpcl_bindings e))))) K eta'"
+    using known equation_ground by (auto simp: lp_cut_knowledge_def)
   obtain grounded where base: "lpc_check_return_table_link fuel Q nds states nd ss grounded K eqs e"
     and grounded_known: "lp_cut_knowledge (set grounded) K eta'"
-    using checked known enriched_known unfolding lpp_check_evaluation_link_def by blast
+    using checked known enriched_known equation_known unfolding lpp_check_evaluation_link_def by blast
   have free_check: "lpc_check_link_free_normalized fuel eqs F (Fs!?j) (lpcl_bindings e)"
     and free_bound: "?j<length Fs"
     using checked by (auto simp: lpp_check_evaluation_link_def)

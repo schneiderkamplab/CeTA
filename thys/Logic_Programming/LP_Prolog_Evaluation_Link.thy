@@ -11,11 +11,44 @@ fun lpp_evaluation_context_transport where
     lpp_check_evaluation_context_transport T facts guards observations fs
       child_facts child_guards child_observations bindings"
 
+fun lpp_equation_link_ground where
+  "lpp_equation_link_ground (facts,guards,observations) G eqs =
+    lpp_observations_equation_ground (observations @ map (\<lambda>x. LPPOGround (Var x)) G @
+      map (\<lambda>(a,b). LPPOEquation a b) eqs)"
+
+lemma lpp_equation_link_ground_sound:
+  assumes evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
+    and observed: "lpp_evaluation_context_holds E SP source_context eta"
+    and known: "lp_cut_knowledge (set G) K eta"
+    and equations: "lp_equations eqs eta"
+  shows "\<forall>x\<in>lpp_equation_link_ground source_context G eqs. lp_seg_ground (eta x)"
+proof -
+  obtain facts guards observations where shape: "source_context=(facts,guards,observations)"
+    by (cases source_context) auto
+  let ?obs = "observations @ map (\<lambda>x. LPPOGround (Var x)) G @ map (\<lambda>(a,b). LPPOEquation a b) eqs"
+  have holds: "list_all (lpp_evaluation_observation_holds E eta) ?obs"
+    using observed known equations
+    by (auto simp: shape lpp_evaluation_context_holds_def lp_cut_knowledge_def lp_equations_def list_all_iff)
+  have each: "\<forall>x\<in>lpp_observation_ground_vars ob. lp_seg_ground (eta x)"
+    if "ob\<in>set ?obs" for ob
+    by (rule lpp_evaluation_observation_ground[where E=E, OF evaluation])
+      (use holds that in \<open>auto simp: list_all_iff\<close>)
+  have initial: "\<forall>x\<in>lpp_observations_ground ?obs. lp_seg_ground (eta x)"
+    using each known by (auto simp: lpp_observations_ground_def lp_cut_knowledge_def)
+  have equalities: "\<forall>(a,b)\<in>set (concat (map lpp_observation_equations ?obs)). lp_ieval a eta=lp_ieval b eta"
+    using holds by (fastforce simp: list_all_iff dest: lpp_evaluation_observation_equations)
+  show ?thesis unfolding shape lpp_equation_link_ground.simps lpp_observations_equation_ground_def
+    by (rule lp_ground_equation_closure_sound[OF equalities initial])
+qed
+
 definition lpp_check_evaluation_link where
   "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e =
     ((lpc_check_return_table_link fuel Q nds states nd ss G K eqs e \<or>
       lpc_check_return_table_link fuel Q nds states nd ss
-        (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground source_context) (lpcn_vars nd)) K eqs e) \<and>
+        (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground source_context) (lpcn_vars nd)) K eqs e \<or>
+      lpc_check_return_table_link fuel Q nds states nd ss
+        (G @ filter (\<lambda>x. x\<in>lpp_equation_link_ground source_context G eqs)
+          (lpcn_vars nd @ concat (map (sorted_list_of_set \<circ> vars_term \<circ> snd) (lpcl_bindings e)))) K eqs e) \<and>
      lpcl_target e<length contexts \<and> lpcl_target e<length Fs \<and>
      lpc_check_link_free_normalized fuel eqs F (Fs!lpcl_target e) (lpcl_bindings e) \<and>
      lpp_evaluation_context_transport T fs
@@ -46,9 +79,15 @@ proof -
   have enriched_known: "lp_cut_knowledge
       (set (G @ filter (\<lambda>x. x\<in>lpp_source_context_ground source_context) (lpcn_vars nd))) K eta'"
     using known context_ground by (auto simp: lp_cut_knowledge_def)
+  have equation_ground: "\<forall>x\<in>lpp_equation_link_ground source_context G eqs. lp_seg_ground (eta' x)"
+    by (rule lpp_equation_link_ground_sound[OF evaluation observed known equations])
+  have equation_known: "lp_cut_knowledge
+      (set (G @ filter (\<lambda>x. x\<in>lpp_equation_link_ground source_context G eqs)
+        (lpcn_vars nd @ concat (map (sorted_list_of_set \<circ> vars_term \<circ> snd) (lpcl_bindings e))))) K eta'"
+    using known equation_ground by (auto simp: lp_cut_knowledge_def)
   obtain grounded where base: "lpc_check_return_table_link fuel Q nds states nd ss grounded K eqs e"
     and grounded_known: "lp_cut_knowledge (set grounded) K eta'"
-    using checked known enriched_known unfolding lpp_check_evaluation_link_def by blast
+    using checked known enriched_known equation_known unfolding lpp_check_evaluation_link_def by blast
   have free_check: "lpc_check_link_free_normalized fuel eqs F (Fs!?j) (lpcl_bindings e)"
     and free_bound: "?j<length Fs"
     using checked by (auto simp: lpp_check_evaluation_link_def)

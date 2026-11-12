@@ -1,6 +1,13 @@
 theory LP_Prolog_Stable_Backend_XML
- imports LP_Prolog_Stable_Relational_XML LP_Dependency_Triple_XML LP_Prolog_Stable_Return_XML
+ imports LP_Dependency_Triple_Constructor_XML LP_Prolog_Stable_Relational_XML LP_Dependency_Triple_XML LP_Prolog_Stable_Return_XML
 begin
+
+definition lpp_structural_child_parser where
+  "lpp_structural_child_parser =
+    (xml_change lp_triple_pidp_parser (\<lambda>(D,Q,outs,fallback,dnames,pnames,marks,filters,query,labs,proofs).
+      xml_return (D,Q,outs,fallback,dnames,pnames,marks,filters,query,labs,Inl proofs))) XMLor
+    (xml_change lp_triple_constructor_parser (\<lambda>(D,Q,outs,fallback,dnames,pnames,marks,filters,query,seed,nfs,prf).
+      xml_return (D,Q,outs,fallback,dnames,pnames,marks,filters,query,[],Inr (seed,nfs,prf))))"
 
 definition lpp_plain_structural_backend_parser where
   "lpp_plain_structural_backend_parser = XMLdo (STR ''structuralBackend'') {
@@ -13,7 +20,7 @@ definition lpp_plain_structural_backend_parser where
       xml_return (h,ps,b)}) id;
     predicates\<leftarrow>lpc_seg_encoding_parser (STR ''predicates'');
     constructors\<leftarrow>lpc_seg_encoding_parser (STR ''constructors'');
-    child\<leftarrow>lp_triple_pidp_parser;
+    child\<leftarrow>lpp_structural_child_parser;
     xml_return (entries,coverage,source_rows,predicates,constructors,child)}"
 
 definition lpp_shape_coverage_parser where

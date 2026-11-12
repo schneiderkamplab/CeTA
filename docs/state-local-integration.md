@@ -2433,3 +2433,30 @@ obstruction. Attempt 1916 retains the expected old-checker rejection of the new
 constructor. Protected-category production promotion remains gated. The complete
 [pinned Ferrum evidence](../../ferrum-prolog-release/docs/data/prolog-positive-context-progress-20261112.json)
 records replay, source snapshots and executable identities.
+
+## Prolog constructor backends and finite length returns (2026-11-12)
+
+The established source checker now accepts the shared constructor dependency-triple
+backend with checked finite-ground observations at every entry. Other arguments
+may remain rational; a finite graph representation is never a structural measure.
+Constructor proofs require ground coverage and cannot use shape-only coverage.
+The exact triples, success program, filters and complete DP child remain checked.
+
+The stopped-source composition now instantiates the existing finite-length
+semantics, retaining fresh results, output unification and failure/error behavior.
+Resolution links may derive groundness from checked context and unification
+equations. New controls exclude cyclic equations without a finite ground seed.
+The XML format can reference the unique enclosing success-transfer contract;
+references expand before the existing parser and semantic checks. Distinct nested
+contracts remain inline. No generated checking logic was patched.
+
+Verified export 1357 and source-bound installation 1358 feed unified build 1359.
+Only LP rebuilt; seven category libraries were reused. The checker SHA-256 is
+`e7d072bca0d006fa7f9d7b0a8ec1c7deb920ae7e600c120e498201ebfec8eedd`.
+Retention 1360 passes 408 checks of all 111 Prolog and 93 LP-with-cut certificates.
+Ferrum family 1963 passes five native and five strict source proofs, including
+two original benchmark gaps, with eleven negative/advice controls. Mutation suite
+1964 passes 46 checks over 23 cases. The complete 221-root preservation replay
+is still pending; these individual gains do not yet replace the recorded baseline.
+[Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-constructor-progress-20261112.json)
+records the source snapshots, executable identities and retained attempts.
