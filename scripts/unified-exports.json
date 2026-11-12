@@ -124,7 +124,7 @@
       "Prolog_Rational_NO_Generated.hs": "393f1159501b7d26a5507be7751ec429055c31bb597e3a5f71c353ddc0a14c35",
       "Prolog_Recurrence_Generated.hs": "007c94c9a25d2f7bbef057b84d3badb6b5db23e4e8e596f73f0bcfd9571b8cf7",
       "Prolog_Stable_Guarded_Generated.hs": "f2592205cb196ab1b4b02b396d95cd33e8cae3b776e6a36c6a2e50b1eaeee6ad",
-      "Prolog_Stable_Mixed_Generated.hs": "2273f54e48b183627d829bd2fe0a3a0d540b6d963e9ef54a21f69546ac4fff89",
+      "Prolog_Stable_Mixed_Generated.hs": "66cb656e559d706b08784fa244b383b1345a5cfc768865b849d24149ae435e54",
       "Prolog_Static_Generated.hs": "c41520ac5d30c60b0aef9c4588ff2a5473015f911df96af90ab9f11fff452fbf",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
@@ -133,7 +133,7 @@
     },
     "origin": "/work/dfm/festschrift/CeTA-consolidated/target/certificate-performance-20261027/lp-final-export",
     "archive": "tests/unified/exports/lp-source-stable-mixed.tar.gz",
-    "archive_sha256": "e132228020ff0a9e3f8d0a412a06ae42c5e2f523e692560b3fd796ad4c55b8f0",
+    "archive_sha256": "26589ac440b3df95768ee9d9465f6990a5b54e54ed02303362b4656efa047f66",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "prolog_source_theory": "thys/Logic_Programming/LP_Prolog_Static_Code.thy",
@@ -1529,6 +1529,48 @@
         "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy": "e033c374dde7afc23e98862988fc08c1bb69b580289de12d2caef439aed072c0",
         "thys/Logic_Programming/LP_Prolog_Stopped_Result_Split.thy": "a63d92859f5458b9bfe61f011ebaa4ca23584bab13c270d2c996cb322a669aab",
         "thys/Logic_Programming/LP_Source_Pending_Pumping.thy": "a250f0bd610501104c2a1321b78bde1a5ed2e0137d8a547f1cb06ccf51760f10"
+      }
+    },
+    "prolog_positive_context_integration": {
+      "verification": "target/prolog-positive-export-1341.log",
+      "component_verification": "target/prolog-positive-export-1341.log",
+      "split_verification": "target/prolog-positive-contract-resident-1340.log",
+      "source_verification": "target/prolog-positive-export-1341.log",
+      "source_baseline": "71cab34",
+      "contract_base": "71cab34",
+      "export_verification": "target/prolog-positive-export-1341.log",
+      "export": "target/prolog-positive-export-1341",
+      "generated_sha256": "3eafd39bafc5e06203524f897c9805a1a405bdda93e8c44f8b88dc9ad06d8846",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Stable_Positive_Context.thy": "d01e1d02a9d9c2428455d4d89f7e8c7196e97843cb6a1d276785cd7a0fbb06b5",
+        "thys/Logic_Programming/LP_Prolog_Stable_Positive_Controls.thy": "51c4dad61bcaf043a99ccd5cbe196aef2e8b041476dd8a9fe64459896f19ddad",
+        "thys/Logic_Programming/LP_Prolog_Stable_Positive_Quotient.thy": "a3b33a566c38c64568678ea51ca524f1e75d3fe6574adb728077fdcf0848f886",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Component.thy": "5a2c0f0e9a4bf22ce40a0973d96dab63fd19de15249019ba5f0841edfdd702d0",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Guarded_Region.thy": "83e9c4827d670c2190958688c9ac668112cb409aad6a9d57829d19fbd783eacc",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy": "a7007c34e11a8a40023154043b1ce58fa7ecae6b81eda2ff7c900cf7a61793e5",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Positive_Region.thy": "0a067c206277b9fcd9d108364d1a8eaf31da74f454ff2b969896c482f7a99ea0",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Region_Descent.thy": "c294565b8823c26514d31f87d66b888e52fab4bba7a3a38ba01445aeadac8c62"
+      }
+    },
+    "prolog_positive_lower_integration": {
+      "verification": "target/prolog-positive-lower-export-1346.log",
+      "component_verification": "target/prolog-positive-lower-export-1346.log",
+      "split_verification": "target/prolog-positive-lower-resident-1345.log",
+      "source_verification": "target/prolog-positive-lower-export-1346.log",
+      "source_baseline": "71cab34",
+      "contract_base": "71cab34",
+      "export_verification": "target/prolog-positive-lower-export-1346.log",
+      "export": "target/prolog-positive-lower-export-1346",
+      "generated_sha256": "66cb656e559d706b08784fa244b383b1345a5cfc768865b849d24149ae435e54",
+      "theories": {
+        "thys/Logic_Programming/LP_Prolog_Stable_Positive_Context.thy": "a3ec20f9c920b5181825b2182acc6716d1767c7b2c812713fe0752e861f1b250",
+        "thys/Logic_Programming/LP_Prolog_Stable_Positive_Controls.thy": "9d51b99afc9d09a84343af049c3bee187df0b4194eff4331d8f630547b3ece9d",
+        "thys/Logic_Programming/LP_Prolog_Stable_Positive_Quotient.thy": "a3b33a566c38c64568678ea51ca524f1e75d3fe6574adb728077fdcf0848f886",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Component.thy": "5a2c0f0e9a4bf22ce40a0973d96dab63fd19de15249019ba5f0841edfdd702d0",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Guarded_Region.thy": "83e9c4827d670c2190958688c9ac668112cb409aad6a9d57829d19fbd783eacc",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy": "1deb6709f0005118403751393c6b82c7b49a5b609ef5e7ca1f0f39b517712dad",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Positive_Region.thy": "0a067c206277b9fcd9d108364d1a8eaf31da74f454ff2b969896c482f7a99ea0",
+        "thys/Logic_Programming/LP_Prolog_Stopped_Region_Descent.thy": "c294565b8823c26514d31f87d66b888e52fab4bba7a3a38ba01445aeadac8c62"
       }
     }
   },

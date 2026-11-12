@@ -1,10 +1,12 @@
 theory LP_Prolog_Stopped_Component
- imports LP_Prolog_Stopped_Result_Split LP_Prolog_Stopped_Region_Descent LP_Prolog_Stopped_Relational_Check LP_Prolog_Stable_Relational_Component
+ imports LP_Prolog_Stopped_Positive_Region LP_Prolog_Stopped_Result_Split LP_Prolog_Stopped_Region_Descent LP_Prolog_Stopped_Relational_Check LP_Prolog_Stable_Relational_Component
 begin
 hide_const (open) Tree_Automata_Containment.entry
 
 datatype lpp_stopped_component =
     LPPSStoppedRegion lpp_finite_triple_region "lpp_stopped_action option list" "string lpc_triple_connection list"
+  | LPPSStoppedPositiveRegion lpp_finite_triple_region "lpp_stopped_action option list"
+      "string lpc_triple_connection list" "string lpp_positive_receipt list list"
   | LPPSStoppedRelational lpp_link_types lpp_link_types "string lpc_triple_split"
       lpp_source_ground_receipt "string * string lpc_term list"
       lpp_guarded_call_receipt lpp_guarded_call_receipt
@@ -22,6 +24,9 @@ fun lpp_check_stopped_component where
       (LPPSStoppedRegion region actions connections) =
     (lpp_stopped_check_region_contexts fuel P D Q T roots contexts incoming entry region actions (lppftr_contexts region) \<and>
       lpp_check_guarded_region_descent OD roots entry region connections (\<lambda>i. actions!i=None))"
+| "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
+      (LPPSStoppedPositiveRegion region actions connections derivations) =
+    lpp_check_stopped_positive_region fuel P D Q T roots contexts incoming entry OD region actions connections derivations"
 | "lpp_check_stopped_component fuel P SP D Q T roots contexts incoming entry OD
       (LPPSStoppedRelational ft st receipt evidence atom first_call second_call) =
     lpp_check_stable_relational_split T ft st fuel P SP D Q roots contexts incoming entry receipt evidence
@@ -60,6 +65,12 @@ proof (cases component)
     and calls: "lpp_check_guarded_region_descent OD roots entry region connections (\<lambda>i. actions!i=None)"
     using checked by (simp_all add: LPPSStoppedRegion)
   show ?thesis by (rule lpp_stopped_guarded_region_checked_lower[OF compatible local calls program
+    transfer observed known free lower])
+next
+  case (LPPSStoppedPositiveRegion region actions connections derivations)
+  have local: "lpp_check_stopped_positive_region fuel P D Q T roots contexts incoming entry OD region actions connections derivations"
+    using checked by (simp add: LPPSStoppedPositiveRegion)
+  show ?thesis by (rule lpp_stopped_positive_region_checked_lower[OF compatible local program
     transfer observed known free lower])
 next
   case (LPPSStoppedRelational ft st receipt evidence atom first_call second_call)

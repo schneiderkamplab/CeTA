@@ -20,7 +20,7 @@ definition lpp_stopped_check_region_contexts where
         (lpcsc_returned data) (lpcsc_arity data) actions \<and>
       list_all (\<lambda>i.
         (actions!i=None \<longrightarrow>
-          lpp_finite_triple_check_connection T (lppftr_typings region!i) fuel D Q roots root_contexts (contexts!i) (nds!i) (Fs!i) (states!i) inp
+          lpp_finite_triple_check_connection T (lppftr_typings region!i) fuel D Q roots root_contexts (local_contexts!i) (nds!i) (Fs!i) (states!i) inp
             (lpctr_output root) (lppftr_connections region!i)) \<and>
         lpp_finite_triple_check_emit fuel (nds!i) (lpp_stopped_emit_action (actions!i)) Q (lpctr_output root) (states!i)
           (fst (lppftr_emits region!i)) (snd (lppftr_emits region!i))) [0..<length nds])"
@@ -92,11 +92,13 @@ proof -
       and observed': "lpp_stable_context_holds operation SP (?contexts!i) rho"
       and free': "lpc_free_knowledge (set (?Fs!i)) rho"
       and inv': "lpc_triple_instance_invariant ?a ?inp (lpc_return_eval rho (?states!i))"
-    have connection: "lpp_finite_triple_check_connection T (lppftr_typings region!i) fuel D Q roots root_contexts (?contexts!i) (?nds!i) (?Fs!i) (?states!i)
+    have connection: "lpp_finite_triple_check_connection T (lppftr_typings region!i) fuel D Q roots root_contexts (local_contexts!i) (?nds!i) (?Fs!i) (?states!i)
       ?inp (lpctr_output root) (lppftr_connections region!i)"
       using checked index boundary_node by (auto simp: lpp_stopped_check_region_contexts_def Let_def list_all_iff)
+    have observed_local: "lpp_stable_context_holds operation SP (local_contexts!i) rho"
+      by (rule enrich[OF index known' observed'])
     show "lpp_stopped_triple_answer_contract operation P (lpc_return_eval rho (?states!i)) Q (lp_atom_eval (lpctr_output root))"
-      by (rule lpp_stopped_guarded_connection_checked_lower[OF compatible transfer connection program known' observed' free' inv' descent[OF index boundary_node known' observed' inv'] lower])
+      by (rule lpp_stopped_guarded_connection_checked_lower[OF compatible transfer connection program known' observed_local free' inv' descent[OF index boundary_node known' observed' inv'] lower])
   next
     fix i assume "i<length ?nds"
     then show "lpp_finite_triple_check_emit fuel (?nds!i) (lpp_stopped_emit_action (actions!i)) Q (lpctr_output root) (?states!i)
