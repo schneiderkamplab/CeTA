@@ -2456,7 +2456,11 @@ Only LP rebuilt; seven category libraries were reused. The checker SHA-256 is
 Retention 1360 passes 408 checks of all 111 Prolog and 93 LP-with-cut certificates.
 Ferrum family 1963 passes five native and five strict source proofs, including
 two original benchmark gaps, with eleven negative/advice controls. Mutation suite
-1964 passes 46 checks over 23 cases. The complete 221-root preservation replay
-is still pending; these individual gains do not yet replace the recorded baseline.
+1964 passes 46 checks over 23 cases. Full strict Prolog replay 1970 establishes
+84 YES + 29 NO on the unchanged 221-root population, preserving every prior verdict and authorizing all 113
+complete receipts. Fresh LP-with-cut replay 1971 preserves 84 YES + 9 NO and
+nineteen unguided inputs with the same binaries. Ferrum integration is `0437a30c`;
+CeTA integration is `47943a7`. Protected-category promotion and superiority
+remain open.
 [Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-constructor-progress-20261112.json)
 records the source snapshots, executable identities and retained attempts.
