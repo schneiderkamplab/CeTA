@@ -31,6 +31,6 @@ lemma lpp_finite_source_probe_name:
   using lpp_integer_source_no_probe[of f ts a keep]
   by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
     lpp_integer_is_outcome_def lpp_finite_length_outcome_def
-    lpp_rational_disequality_outcome_def lpp_branch_outcome_def split: if_splits option.splits)
+    lpp_rational_disequality_outcome_def lpp_branch_outcome_def lpp_is_list_outcome_def split: if_splits option.splits)
 
 end

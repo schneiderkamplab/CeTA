@@ -27,7 +27,8 @@ definition lpp_machine_no_action_parser where
      xml_return (LPPMInteger v)}) XMLor
    (XMLdo (STR ''opaqueProbe'') {
      m\<leftarrow>xml_nat (STR ''scope''); n\<leftarrow>xml_nat (STR ''innerScope'');
-     xml_return (LPPMProbe m n)})"
+     xml_return (LPPMProbe m n)}) XMLor
+   (XMLdo (STR ''listTest'') {held\<leftarrow>xml_bool (STR ''holds''); xml_return (LPPMList held)})"
 
 definition lpp_machine_no_certificate_parser where
   "lpp_machine_no_certificate_parser = XMLdo (STR ''prologBinary64SourceNonterminationProof'') {

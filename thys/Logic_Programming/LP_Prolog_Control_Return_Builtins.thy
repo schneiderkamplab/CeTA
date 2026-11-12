@@ -8,7 +8,7 @@ lemma lpp_control_finite_call_shape:
     a=LPIFun (LPCUser lpp_subtract_library) ts"
   using assms by (auto simp: lpp_finite_source_builtin_def
     lpp_probe_outcome_def lpp_finite_is_outcome_def lpp_integer_is_outcome_def lpp_rational_disequality_outcome_def
-    lpp_finite_length_outcome_def lpp_branch_outcome_def lpp_integer_source_no_call
+    lpp_finite_length_outcome_def lpp_branch_outcome_def lpp_is_list_outcome_def lpp_integer_source_no_call
     simp del: lpp_integer_source_builtin.simps split: if_splits option.splits)
 
 lemma lpp_control_finite_branch_shape:
@@ -18,7 +18,7 @@ lemma lpp_control_finite_branch_shape:
     lpp_branch_lower c cs \<and> lpp_branch_lower y ys \<and> lpp_branch_lower n ns)"
   using assms by (auto simp: lpp_finite_source_builtin_def
     lpp_probe_outcome_def lpp_finite_is_outcome_def lpp_integer_is_outcome_def lpp_rational_disequality_outcome_def
-    lpp_finite_length_outcome_def lpp_branch_outcome_def lpp_integer_source_no_branch
+    lpp_finite_length_outcome_def lpp_branch_outcome_def lpp_is_list_outcome_def lpp_integer_source_no_branch
     simp del: lpp_integer_source_builtin.simps split: if_splits option.splits)
 
 lemma lpp_control_finite_choice_shape:
@@ -27,7 +27,7 @@ lemma lpp_control_finite_choice_shape:
     lpp_branch_lower a left \<and> lpp_branch_lower b right)"
   using assms by (auto simp: lpp_finite_source_builtin_def
     lpp_probe_outcome_def lpp_finite_is_outcome_def lpp_integer_is_outcome_def lpp_rational_disequality_outcome_def
-    lpp_finite_length_outcome_def lpp_branch_outcome_def lpp_integer_source_no_choice
+    lpp_finite_length_outcome_def lpp_branch_outcome_def lpp_is_list_outcome_def lpp_integer_source_no_choice
     simp del: lpp_integer_source_builtin.simps split: if_splits option.splits)
 
 lemma lpp_control_stable_choice_model:

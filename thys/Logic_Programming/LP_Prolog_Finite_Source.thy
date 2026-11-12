@@ -1,8 +1,9 @@
 theory LP_Prolog_Finite_Source
- imports LP_Prolog_Branch_Scope LP_Prolog_Finite_Length LP_Prolog_Ground_Disequality LP_Prolog_Probe_Builtin
+ imports LP_Prolog_List_Observation LP_Prolog_Branch_Scope LP_Prolog_Finite_Length LP_Prolog_Ground_Disequality LP_Prolog_Probe_Builtin
 begin
 
 lemma lpp_nonprobe_names [simp]:
+  "lpp_probe_name ''1:is_list'' = False"
   "lpp_probe_name ''2:is'' = False"
   "lpp_probe_name ''2:length'' = False"
   "lpp_probe_name ''3:subtract'' = False"
@@ -48,6 +49,7 @@ definition lpp_finite_source_builtin where
      else if f=''2:length'' then length ts=2 \<and> lpp_finite_length_outcome (ts!0) (ts!1) outcome
      else if f=''3:subtract'' then length ts=3 \<and> (outcome=LPPBuiltinCall (LPIFun (LPCUser lpp_subtract_library) ts) \<or> outcome=LPPBuiltinError)
      else if f=''2:;'' then lpp_branch_outcome ts outcome
+     else if f=''1:is_list'' then length ts=1 \<and> lpp_is_list_outcome (ts!0) outcome
      else lpp_integer_source_builtin f ts outcome)"
 
 definition lpp_finite_source_domain where
@@ -59,6 +61,7 @@ definition lpp_finite_source_domain where
      else if f=''2:length'' then length ts=2 \<and> lp_seg_ground (ts!0)
      else if f=''3:subtract'' then length ts=3
      else if f=''2:;'' then lpp_branch_domain ts
+     else if f=''1:is_list'' then length ts=1
      else lpp_integer_source_domain f ts)"
 
 lemma lpp_length_outside_legacy_domain[simp]:
@@ -72,7 +75,7 @@ lemma lpp_finite_length_source_success:
       rule lpp_finite_length_success_integer)
 
 lemma lpp_finite_source_legacy:
-  "f\<noteq>''2:is'' \<Longrightarrow> f\<noteq>lpp_disequality_predicate \<Longrightarrow> f\<noteq>''2:length'' \<Longrightarrow> \<not>lpp_probe_name f \<Longrightarrow> f\<noteq>''3:subtract'' \<Longrightarrow> f\<noteq>''2:;'' \<Longrightarrow> lpp_finite_source_builtin f ts outcome=lpp_integer_source_builtin f ts outcome"
+  "f\<noteq>''2:is'' \<Longrightarrow> f\<noteq>lpp_disequality_predicate \<Longrightarrow> f\<noteq>''2:length'' \<Longrightarrow> \<not>lpp_probe_name f \<Longrightarrow> f\<noteq>''3:subtract'' \<Longrightarrow> f\<noteq>''2:;'' \<Longrightarrow> f\<noteq>''1:is_list'' \<Longrightarrow> lpp_finite_source_builtin f ts outcome=lpp_integer_source_builtin f ts outcome"
   by (simp add: lpp_finite_source_builtin_def)
 
 lemma lpp_probe_legacy_domain [simp]:
@@ -94,8 +97,9 @@ next
   have different: "f\<noteq>lpp_disequality_predicate" using domain lpp_disequality_outside_legacy_domain[of ts] by blast
   have nonlength: "f\<noteq>''2:length''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
   have nonsubtract: "f\<noteq>''3:subtract''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
+  have nonlist: "f\<noteq>''1:is_list''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
   have nonbranch: "f\<noteq>''2:;''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
-  show ?thesis by (rule lpp_finite_source_legacy[OF False different nonlength lpp_probe_legacy_domain[OF domain] nonsubtract nonbranch])
+  show ?thesis by (rule lpp_finite_source_legacy[OF False different nonlength lpp_probe_legacy_domain[OF domain] nonsubtract nonbranch nonlist])
 qed
 
 lemma lpp_finite_source_domain_extends:
@@ -106,10 +110,11 @@ proof -
     using domain lpp_disequality_outside_legacy_domain[of ts] by blast
   have nonlength: "f\<noteq>''2:length''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
   have nonsubtract: "f\<noteq>''3:subtract''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
+  have nonlist: "f\<noteq>''1:is_list''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
   have nonbranch: "f\<noteq>''2:;''" using domain by (auto simp: lpp_var_name_def lpp_identity_name_def)
   show ?thesis using domain
     by (cases "f=''2:is''")
-      (auto simp: lpp_finite_source_domain_def different nonlength nonsubtract nonbranch lpp_probe_legacy_domain[OF domain] dest: lpp_integer_evaluation_ground)
+      (auto simp: lpp_finite_source_domain_def different nonlength nonsubtract nonbranch nonlist lpp_probe_legacy_domain[OF domain] dest: lpp_integer_evaluation_ground)
 qed
 
 lemma lpp_finite_source_selected:
@@ -163,9 +168,17 @@ next
             by (auto simp: True lpp_builtin_signature_def)
         next
           case nonbranch: False
-          have "lpp_integer_source_builtin f ts outcome"
-            using outcome by (simp only: lpp_finite_source_legacy[OF False different nonlength nonprobe nonsubtract nonbranch])
-          then show ?thesis by (rule lpp_integer_source_selected)
+          show ?thesis
+          proof (cases "f=''1:is_list''")
+            case True
+            then show ?thesis using outcome
+              by (auto simp: lpp_finite_source_builtin_def nonprobe False different nonlength nonsubtract nonbranch lpp_builtin_signature_def lpp_disequality_predicate_def)
+          next
+            case nonlist: False
+            have "lpp_integer_source_builtin f ts outcome"
+              using outcome by (simp only: lpp_finite_source_legacy[OF False different nonlength nonprobe nonsubtract nonbranch nonlist])
+            then show ?thesis by (rule lpp_integer_source_selected)
+          qed
         qed
       qed
     qed
@@ -226,10 +239,19 @@ next
             by (simp add: lpp_finite_source_domain_def lpp_finite_source_builtin_def nonprobe lpp_disequality_predicate_def lpp_branch_domain_def)
         next
           case nonbranch: False
-          have old: "lpp_integer_source_domain f ts"
-            using domain by (simp add: lpp_finite_source_domain_def nonprobe False different nonlength nonsubtract nonbranch)
-          show ?thesis using lpp_integer_source_total_on_domain[OF old]
-            by (simp add: lpp_finite_source_builtin_def nonprobe False different nonlength nonsubtract nonbranch)
+          show ?thesis
+          proof (cases "f=''1:is_list''")
+            case True
+            then show ?thesis using domain
+              by (auto simp: lpp_finite_source_domain_def lpp_finite_source_builtin_def
+                nonprobe False different nonlength nonsubtract nonbranch lpp_is_list_outcome_def lpp_disequality_predicate_def)
+          next
+            case nonlist: False
+            have old: "lpp_integer_source_domain f ts"
+              using domain by (simp add: lpp_finite_source_domain_def nonprobe False different nonlength nonsubtract nonbranch nonlist)
+            show ?thesis using lpp_integer_source_total_on_domain[OF old]
+              by (simp add: lpp_finite_source_builtin_def nonprobe False different nonlength nonsubtract nonbranch nonlist)
+          qed
         qed
       qed
     qed

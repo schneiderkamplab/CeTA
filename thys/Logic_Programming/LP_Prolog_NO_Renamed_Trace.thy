@@ -34,7 +34,8 @@ lemma lpp_no_return_step_renamed_sound:
        lpp_no_return_is_renamed_sound[OF _ inverse]
        lpp_no_return_compare_sound[OF lpp_no_return_compare_renamed]
        lpp_no_return_integer_sound[OF lpp_no_return_integer_renamed]
-       lpp_no_return_probe_renamed_sound)
+       lpp_no_return_probe_renamed_sound
+       lpp_no_return_list_sound[OF lpp_no_return_list_renamed])
 
 fun lpp_no_return_trace_support where
  "lpp_no_return_trace_support P ss [] = {}"

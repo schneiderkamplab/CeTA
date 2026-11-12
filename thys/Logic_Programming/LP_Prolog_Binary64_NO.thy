@@ -1,5 +1,5 @@
 theory LP_Prolog_Binary64_NO
- imports LP_Prolog_Binary64_Actions LP_Prolog_NO_Probe_Check
+ imports LP_Prolog_Binary64_Actions LP_Prolog_NO_Probe_Check LP_Prolog_NO_List
 begin
 
 lemma lpp_machine_comparison_value:
@@ -129,7 +129,7 @@ next
  show ?case unfolding shape f a t
    by (rule lpp_checked_boolean_step)
      (use lpp_machine_integer_test[OF valid] in \<open>simp_all add: lpp_builtin_signature_def lpp_machine_term_eval\<close>)
-qed (simp_all add: lpp_no_plain_probe_sound)
+qed (simp_all add: lpp_no_plain_probe_sound lpp_no_plain_list_sound)
 
 definition lpp_machine_no_check_source where
  "lpp_machine_no_check_source fuel P q modes argv a before after initial_steps steps =

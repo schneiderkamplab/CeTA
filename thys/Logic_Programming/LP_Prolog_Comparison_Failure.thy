@@ -89,9 +89,10 @@ proof -
   have selected: "(f,length [a,b])\<in>lpp_builtin_signature"
     using lpp_comparison_selected[OF descriptor] by (simp add: numeral_2_eq_2)
   have ns: "f\<noteq>''3:subtract''" and nc: "f\<noteq>''2:;''" using comparison by auto
+  have nlist: "f\<noteq>''1:is_list''" using comparison by auto
   have old: "lpp_answer_transition P lpp_builtin_signature lpp_integer_source_builtin
       ((LPCGoals (LPCAtom (LPIFun (LPCUser f) [a,b])#gs),eta)#saved) event tt"
-    using step by (simp only: lpp_finite_source_nonis_step[OF ne nd nl np ns nc selected])
+    using step by (simp only: lpp_finite_source_nonis_step[OF ne nd nl np ns nc nlist selected])
   show ?thesis by (rule lpp_finite_comparison_precise_step[OF descriptor old])
 qed
 

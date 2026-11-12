@@ -35,7 +35,7 @@ proof -
   show ?thesis using names lpp_integer_source_no_call[of f ts a]
     by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
       lpp_finite_length_outcome_def lpp_rational_disequality_outcome_def
-      lpp_probe_outcome_def split: if_splits option.splits)
+      lpp_probe_outcome_def lpp_is_list_outcome_def split: if_splits option.splits)
 qed
 
 lemma lpp_inline_no_branch:
@@ -47,7 +47,7 @@ proof -
   show ?thesis using names lpp_integer_source_no_branch[of f ts cs ys ns]
     by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
       lpp_finite_length_outcome_def lpp_rational_disequality_outcome_def
-      lpp_probe_outcome_def split: if_splits option.splits)
+      lpp_probe_outcome_def lpp_is_list_outcome_def split: if_splits option.splits)
 qed
 
 lemma lpp_inline_no_choice:
@@ -59,7 +59,7 @@ proof -
   show ?thesis using names lpp_integer_source_no_choice[of f ts left right]
     by (auto simp: lpp_finite_source_builtin_def lpp_finite_is_outcome_def
       lpp_finite_length_outcome_def lpp_rational_disequality_outcome_def
-      lpp_probe_outcome_def split: if_splits option.splits)
+      lpp_probe_outcome_def lpp_is_list_outcome_def split: if_splits option.splits)
 qed
 
 lemma lpp_inline_builtin_model:
