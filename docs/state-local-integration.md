@@ -2464,3 +2464,30 @@ CeTA integration is `47943a7`. Protected-category promotion and superiority
 remain open.
 [Pinned integration evidence](../../ferrum-prolog-release/docs/data/prolog-constructor-progress-20261112.json)
 records the source snapshots, executable identities and retained attempts.
+
+## Evaluated integer values and staged observations (2026-11-15)
+
+Integration `bfe0ef46fddc81afd77663ab3d70cc8a6ee43663` checks integer-valued
+compound expressions from successful arithmetic observations and existing
+literal-integer facts. It does not turn groundness into integer typing.
+Floor-order receipts preserve scalar order, including binary64 values, while
+staged argument expansions retain nested observed expressions with checked
+arity and dependency coverage. The sequence theorem composes the existing
+stable numeric and actual-return backends. Old backend formats remain valid.
+
+Verified Isabelle export 1433, installation 1435 and unified build 1436 produce
+checker SHA-256
+`ff5fc747079fb8088e374ec7a71f8cd3e9c2a614dcf4532fc83381f64ad67537`.
+Only LP rebuilt; seven category libraries were reused. An invalid Array mapping
+in attempt 1429 was corrected in the final export driver's code-printing setup.
+Generated checking logic was never patched. Verified heap 1437 is retained.
+
+Ferrum `fb9a445a6654cd9c47593efd3f1723db1e4432b6` passes four native and four
+strict fixtures, eleven controls, four packaged strict proofs, and fifty
+mutation checks. Fresh complete replay 2227 preserves 84 YES + 48 NO on 221
+Prolog roots and authorizes all 132 receipts. LP-with-cut replay 2228 preserves
+84 YES + 9 NO and authorizes all 93 receipts with this same checker. This is
+infrastructure and residual precision progress, with no new benchmark verdict.
+Protected-category production promotion remains gated.
+[Pinned Ferrum evidence](../../ferrum-prolog-release/docs/data/prolog-evaluated-integer-progress-20261115.json)
+records source snapshots, executable identities and attempts.
