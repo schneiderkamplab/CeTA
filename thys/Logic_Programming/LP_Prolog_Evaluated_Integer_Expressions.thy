@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluated_Integer_Expressions
-  imports LP_Prolog_Stable_Modulo LP_Prolog_Stable_Context
+  imports LP_Prolog_Stable_Modulo LP_Prolog_Stable_Context LP_Prolog_Integer_Expression_Shapes
 begin
 
 text \<open>Reuse the integer expression language with leaves that are source
@@ -89,7 +89,16 @@ fun lpp_observed_evaluated_integers where
 | "lpp_observed_evaluated_integers (LPPOEvaluation e r) = lpp_evaluated_integer_operands e"
 | "lpp_observed_evaluated_integers (LPPOComparison c a b) =
     lpp_evaluated_integer_operands a @ lpp_evaluated_integer_operands b"
+| "lpp_observed_evaluated_integers (LPPOShape G shape t) =
+    (if lpp_integer_expression_shape G shape then [t] else [])"
 | "lpp_observed_evaluated_integers observation = []"
+
+lemma lpp_stable_integer_shape_evaluation:
+  assumes "lpp_stable_integer_operations operation" "lpp_integer_expression_shape G shape"
+    "lp_return_shape_holds G shape t"
+  shows "\<exists>n. lpp_stable_scalar_evaluation operation t (lpp_integer_value n)"
+  using lpp_integer_expression_shape_sound[OF assms(2,3)]
+    lpp_stable_evaluation_integer_exact[OF assms(1)] by blast
 
 lemma lpp_observed_evaluated_integers_sound:
   assumes compatible: "lpp_stable_integer_operations operation"
@@ -99,7 +108,7 @@ lemma lpp_observed_evaluated_integers_sound:
   using observed member
   by (cases observation;
     auto simp: lpp_stable_compare_outcome_def lpp_stable_compare_values_def lpp_is_integer_def
-      split: if_splits intro: lpp_evaluated_integer_operands_sound[OF compatible]; metis lpp_stable_integer_literal)
+      split: if_splits intro: lpp_evaluated_integer_operands_sound[OF compatible] lpp_stable_integer_shape_evaluation[OF compatible]; metis lpp_stable_integer_literal)
 
 theorem lpp_observed_integer_expression_bound:
   assumes compatible: "lpp_stable_integer_operations operation"

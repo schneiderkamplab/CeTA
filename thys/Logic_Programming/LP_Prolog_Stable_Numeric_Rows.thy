@@ -19,11 +19,17 @@ fun lpp_stable_equation_observation where
   "lpp_stable_equation_observation (LPPOEquation a b) = True"
 | "lpp_stable_equation_observation observation = lpp_stable_constraint_observation observation"
 
+fun lpp_stable_shape_observation where
+  "lpp_stable_shape_observation (LPPOShape G shape t) = True"
+| "lpp_stable_shape_observation observation = lpp_stable_equation_observation observation"
+
 definition lpp_stable_selected_observations where
  "lpp_stable_selected_observations os tests =
    (if length tests=length (filter lpp_stable_constraint_observation os)
     then filter lpp_stable_constraint_observation os
-    else filter lpp_stable_equation_observation os)"
+    else if length tests=length (filter lpp_stable_equation_observation os)
+    then filter lpp_stable_equation_observation os
+    else filter lpp_stable_shape_observation os)"
 
 lemma lpp_stable_selected_observations_holds:
  "list_all Q os \<Longrightarrow> list_all Q (lpp_stable_selected_observations os tests)"
