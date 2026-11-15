@@ -1,9 +1,11 @@
 theory LP_Prolog_Stable_Numeric_Conditions
- imports LP_Prolog_Stable_Magnitude_Conditions
+ imports LP_Prolog_Stable_Magnitude_Conditions LP_Prolog_Evaluated_Integer_Expressions
 begin
 
 datatype 'v lpp_stable_condition_receipt =
-    LPPStableMagnitudeLiteralOrderCondition int bool "(string lp_cut_symbol,'v) term"
+    LPPStableEvaluatedIntegerCondition "('v \<times> (string lp_cut_symbol,'v) term) list" "'v lpp_integer_expression"
+  | LPPStableFloorOrderCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableMagnitudeLiteralOrderCondition int bool "(string lp_cut_symbol,'v) term"
   |     LPPStableMagnitudeOrderCondition bool "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableMagnitudeModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableMagnitudeQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
@@ -29,7 +31,9 @@ datatype 'v lpp_stable_condition_receipt =
   | LPPStableQuotientDescentCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
 fun lpp_check_stable_numeric_observation where
-  "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeLiteralOrderCondition n is_strict b) =
+  "lpp_check_stable_numeric_observation K observation (LPPStableEvaluatedIntegerCondition bindings e) = False"
+| "lpp_check_stable_numeric_observation K observation (LPPStableFloorOrderCondition a b) = False"
+| "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeLiteralOrderCondition n is_strict b) =
     (0\<le>n \<and> observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) (lpp_integer_term n) b)"
 |   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeOrderCondition is_strict a b) = False"
 |   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeModuloCondition a b result) = False"
@@ -61,7 +65,13 @@ fun lpp_check_stable_numeric_observation where
 | "lpp_check_stable_numeric_observation K observation LPPStableIgnoredCondition = True"
 
 fun lpp_stable_numeric_condition where
-  "lpp_stable_numeric_condition (LPPStableMagnitudeLiteralOrderCondition n is_strict b) =
+  "lpp_stable_numeric_condition (LPPStableEvaluatedIntegerCondition bindings e) =
+    (LPPIntEqual, LPPEVariable (LPPBoundKey (lpp_evaluated_expression_term
+      (map_lpp_integer_expression (lpp_evaluated_leaf bindings) e))),
+      map_lpp_integer_expression (LPPBoundKey o lpp_evaluated_leaf bindings) e)"
+| "lpp_stable_numeric_condition (LPPStableFloorOrderCondition a b) =
+    (LPPIntLessEqual,LPPEVariable (LPPBoundKey a),LPPEVariable (LPPBoundKey b))"
+| "lpp_stable_numeric_condition (LPPStableMagnitudeLiteralOrderCondition n is_strict b) =
     ((if is_strict then LPPIntLess else LPPIntLessEqual),LPPEConstant (n*lpp_scalar_scale),lpp_magnitude_expression b)"
 |   "lpp_stable_numeric_condition (LPPStableMagnitudeOrderCondition is_strict a b) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 |   "lpp_stable_numeric_condition (LPPStableMagnitudeModuloCondition a b result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
@@ -113,6 +123,12 @@ theorem lpp_checked_stable_numeric_condition:
   shows "lpp_numeric_condition_holds (lpp_stable_key_value operation eta source_values)
     (lpp_stable_numeric_condition receipt)"
 proof (cases receipt)
+  case (LPPStableEvaluatedIntegerCondition bindings e)
+  then show ?thesis using checked by simp
+next
+  case (LPPStableFloorOrderCondition a b)
+  then show ?thesis using checked by simp
+next
   case (LPPStableMagnitudeLiteralOrderCondition n is_strict b)
   have sign: "0\<le>n" and order: "lpp_stable_compare_outcome operation
     (if is_strict then LPPIntLess else LPPIntLessEqual) (lpp_integer_value n) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"
@@ -463,7 +479,11 @@ qed (use lpp_stable_numeric_condition_formula_sound[OF compatible checked observ
     assigned checked in auto)
 
 fun lpp_check_stable_path_observation where
-  "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeOrderCondition is_strict a b) = (observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) a b \<and> (a=lpp_integer_term 0 \<or> LPPOComparison LPPIntLess (lpp_integer_term 0) a \<in>set ambient \<or> LPPOComparison LPPIntLessEqual (lpp_integer_term 0) a \<in>set ambient))"
+  "lpp_check_stable_path_observation K ambient observation (LPPStableEvaluatedIntegerCondition bindings e) =
+    lpp_check_evaluated_expression (map (LPPOInteger o Var) K @ ambient) bindings e"
+| "lpp_check_stable_path_observation K ambient observation (LPPStableFloorOrderCondition a b) =
+    (observation=LPPOComparison LPPIntLess a b \<or> observation=LPPOComparison LPPIntLessEqual a b)"
+| "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeOrderCondition is_strict a b) = (observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) a b \<and> (a=lpp_integer_term 0 \<or> LPPOComparison LPPIntLess (lpp_integer_term 0) a \<in>set ambient \<or> LPPOComparison LPPIntLessEqual (lpp_integer_term 0) a \<in>set ambient))"
 |   "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeModuloCondition a b result) = (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,b]) result \<and> LPPOComparison LPPIntLess (lpp_integer_term 0) b \<in>set ambient)"
 |   "lpp_check_stable_path_observation K ambient observation (LPPStableMagnitudeQuotientModuloCondition a n d result) = (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]]) result \<and> LPPOComparison LPPIntLess (lpp_integer_term 0) (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]) \<in>set ambient)"
 |   "lpp_check_stable_path_observation K ambient observation (LPPStableScaledQuotientModuloCondition a n d result) = (observation=LPPOEvaluation (Fun (LPCUser ''2:prolog_data_6d6f64'') [a,Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]]) result \<and> LPPOComparison LPPIntLess (lpp_integer_term 0) (Fun (LPCUser ''2:prolog_data_2f2f'') [n,d]) \<in>set ambient)"
@@ -492,6 +512,37 @@ lemma lpp_stable_path_receipt_formula_sound:
       rho (rename key)=lpp_stable_key_value operation eta source_values key"
   shows "IA4.satisfies (lpp_integer_assignment rho) (lpp_stable_receipt_formula rename receipt)"
 proof (cases receipt)
+  case (LPPStableFloorOrderCondition a b)
+  have progress: "lpp_stable_expression_bound operation (lp_ieval a eta) \<le>
+      lpp_stable_expression_bound operation (lp_ieval b eta)"
+    using checked observed lpp_stable_floor_order[of LPPIntLess operation "lp_ieval a eta" "lp_ieval b eta"]
+      lpp_stable_floor_order[of LPPIntLessEqual operation "lp_ieval a eta" "lp_ieval b eta"]
+    by (auto simp: LPPStableFloorOrderCondition)
+  have left: "rho (rename (LPPBoundKey a))=lpp_stable_expression_bound operation (lp_ieval a eta)"
+    and right: "rho (rename (LPPBoundKey b))=lpp_stable_expression_bound operation (lp_ieval b eta)"
+    using assigned by (auto simp: LPPStableFloorOrderCondition)
+  show ?thesis using progress
+    by (simp add: LPPStableFloorOrderCondition lpp_comparison_typed_assignment left right)
+next
+  case (LPPStableEvaluatedIntegerCondition bindings e)
+  have check: "lpp_check_evaluated_expression (map (LPPOInteger o Var) K @ ambient) bindings e"
+    using checked by (simp add: LPPStableEvaluatedIntegerCondition)
+  have augmented: "list_all (lpp_stable_observation_holds operation eta)
+      (map (LPPOInteger o Var) K @ ambient)"
+    using ambient typed by (auto simp: list_all_iff lpp_is_integer_def)
+  have truth: "lpp_numeric_condition_holds (lpp_stable_key_value operation eta source_values)
+      (lpp_stable_numeric_condition receipt)"
+    using lpp_checked_bound_expression[OF compatible augmented check]
+    by (simp add: LPPStableEvaluatedIntegerCondition lpp_expression_rename_value o_def)
+  have renamed: "lpp_numeric_condition_holds rho
+      (lpp_rename_numeric_condition rename (lpp_stable_numeric_condition receipt))"
+    unfolding lpp_rename_numeric_condition_holds
+    using truth lpp_numeric_condition_value_cong[of "lpp_stable_numeric_condition receipt"
+      "rho o rename" "lpp_stable_key_value operation eta source_values"] assigned
+    by (auto simp: LPPStableEvaluatedIntegerCondition)
+  show ?thesis using renamed
+    by (simp add: LPPStableEvaluatedIntegerCondition lpp_comparison_typed_assignment lpp_expression_typed_assignment)
+next
   case (LPPStableMagnitudeOrderCondition is_strict a b)
   have order: "lpp_stable_compare_outcome operation (if is_strict then LPPIntLess else LPPIntLessEqual)
       (lp_ieval a eta) (lp_ieval b eta) (LPPBuiltinSuccess LPIVar)"

@@ -59,31 +59,39 @@ definition lpp_plain_numeric_backend_parser where
     child\<leftarrow>lpp_stable_numeric_component_parser;
     xml_return (projections,child)}"
 
+definition lpp_argument_expansion_parser where
+  "lpp_argument_expansion_parser = xml_many (STR ''argumentExpansion'') (XMLdo (STR ''entry'') {
+    p\<leftarrow>xml_text (STR ''predicate'');
+    es\<leftarrow>xml_many (STR ''expressions'') (XMLdo (STR ''expression'') {
+      f\<leftarrow>lpc_symbol_parser;
+      indices\<leftarrow>xml_many (STR ''positions'') (xml_nat (STR ''position'')) id;
+      xml_return (f,indices)}) id;
+    xml_return (p,es)}) id"
+
 definition lpp_legacy_numeric_backend_parser where
   "lpp_legacy_numeric_backend_parser =
     (xml_change lpp_plain_numeric_backend_parser (\<lambda>x. xml_return ([],x))) XMLor
     (XMLdo (STR ''computedNumericBackend'') {
-      expressions\<leftarrow>xml_many (STR ''argumentExpansion'') (XMLdo (STR ''entry'') {
-        p\<leftarrow>xml_text (STR ''predicate'');
-        es\<leftarrow>xml_many (STR ''expressions'') (XMLdo (STR ''expression'') {
-          f\<leftarrow>lpc_symbol_parser;
-          indices\<leftarrow>xml_many (STR ''positions'') (xml_nat (STR ''position'')) id;
-          xml_return (f,indices)}) id;
-        xml_return (p,es)}) id;
+      expressions\<leftarrow>lpp_argument_expansion_parser;
       child\<leftarrow>lpp_plain_numeric_backend_parser;
-      xml_return (expressions,child)})"
+      xml_return ([expressions],child)}) XMLor
+    (XMLdo (STR ''computedSequenceNumericBackend'') {
+      stages\<leftarrow>xml_many (STR ''argumentExpansions'')
+        (xml_singleton (STR ''stage'') lpp_argument_expansion_parser id) id;
+      child\<leftarrow>lpp_plain_numeric_backend_parser;
+      xml_return (stages,child)})"
 
 definition lpp_decode_legacy_numeric_backend where
   "lpp_decode_legacy_numeric_backend transfer source_rows data = (case data of
     (expressions,(projections,(child_transfer,coordinates,coordinate_modes,locations,child_rows,row_data,system,child_proof))) \<Rightarrow>
       (let positions=lpp_numeric_coordinate_lookup projections;
-           expand=lpp_numeric_coordinate_lookup expressions in
-        if child_transfer=transfer \<and> distinct (map fst expressions) \<and>
+           expand=map lpp_numeric_coordinate_lookup expressions in
+        if child_transfer=transfer \<and> list_all (\<lambda>stage. distinct (map fst stage)) expressions \<and>
           distinct (map fst projections) \<and> distinct (map fst coordinates) \<and>
           distinct (map fst coordinate_modes) \<and> distinct (map fst locations) \<and>
           list_all (\<lambda>((h,ps,b,gs),os). fst h\<in>set (map fst projections) \<and>
             fst b\<in>set (map fst projections)) source_rows \<and>
-          child_rows=map (lpp_project_observed_triple positions o lpp_expand_observed_triple expand) source_rows
+          child_rows=map (lpp_project_observed_triple positions) (lpp_expand_observed_sequence expand source_rows)
         then Some (expand,positions,lpp_numeric_coordinate_lookup coordinates,
           lpp_numeric_coordinate_lookup coordinate_modes,lpp_numeric_location_lookup locations,system,row_data,child_proof)
         else None))"

@@ -1,6 +1,6 @@
 theory LP_Prolog_Stable_Backends
  imports LP_Prolog_Stable_Constructor_Child LP_Prolog_Stable_Shape_Coverage LP_Prolog_Stable_Structural_Child LP_Prolog_Stable_Computed_Projection
-   LP_Prolog_Stable_Relational_Routing LP_Prolog_Stable_Return_Component
+   LP_Prolog_Stable_Relational_Routing LP_Prolog_Stable_Computed_Sequence_Return
 begin
 
 definition lpp_check_stable_backend where
@@ -22,10 +22,10 @@ definition lpp_check_stable_backend where
             outs fallback dnames pnames marks filters seed nfs cert)
     | Inr (expressions,positions,coordinates,modes,locations,system,row_receipts,child,return_meta) \<Rightarrow>
         (case return_meta of None \<Rightarrow>
-          lpp_check_stable_computed_numeric_component T expressions positions coordinates modes locations system D row_receipts child
+          lpp_check_computed_sequence_component T expressions positions coordinates modes locations system D row_receipts child
         | Some (summaries,return_receipts,weak_system,extra_rows) \<Rightarrow>
           length extra_rows=length row_receipts \<and>
-          lpp_check_computed_return_component T P summaries return_receipts expressions positions coordinates modes locations
+          lpp_check_computed_sequence_return_component T P summaries return_receipts expressions positions coordinates modes locations
             weak_system system D (zip row_receipts extra_rows) child))"
 
 theorem lpp_check_stable_backend_sound:
@@ -87,17 +87,17 @@ next
   show ?thesis
   proof (cases return_meta)
     case None
-    have component: "lpp_check_stable_computed_numeric_component T expressions positions coordinates modes locations system D row_receipts child"
+    have component: "lpp_check_computed_sequence_component T expressions positions coordinates modes locations system D row_receipts child"
       using checked by (simp add: lpp_check_stable_backend_def Inr shape None)
-    show ?thesis by (rule lpp_check_stable_computed_numeric_component_sound[OF compatible component transfer])
+    show ?thesis by (rule lpp_check_computed_sequence_component_sound[OF compatible component transfer])
   next
     case (Some metadata)
     obtain summaries return_receipts weak_system extra_rows where meta: "metadata=(summaries,return_receipts,weak_system,extra_rows)"
       by (cases metadata) auto
-    have component: "lpp_check_computed_return_component T P summaries return_receipts expressions positions coordinates modes locations
+    have component: "lpp_check_computed_sequence_return_component T P summaries return_receipts expressions positions coordinates modes locations
       weak_system system D (zip row_receipts extra_rows) child"
       using checked by (simp add: lpp_check_stable_backend_def Inr shape Some meta)
-    show ?thesis by (rule lpp_check_computed_return_component_sound[OF compatible component transfer])
+    show ?thesis by (rule lpp_check_computed_sequence_return_component_sound[OF compatible component transfer])
   qed
 qed
 

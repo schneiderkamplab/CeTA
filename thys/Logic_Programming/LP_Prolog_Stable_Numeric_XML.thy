@@ -23,6 +23,13 @@ definition lpp_stable_endpoint_parser where
 
 definition lpp_stable_condition_parser where
   "lpp_stable_condition_parser =
+    (XMLdo (STR ''floorOrderCondition'') {a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableFloorOrderCondition a b)}) XMLor
+    (XMLdo (STR ''evaluatedIntegerCondition'') {
+      bindings\<leftarrow>xml_many (STR ''leaves'')
+        (XMLdo (STR ''leaf'') {x\<leftarrow>xml_text (STR ''var''); t\<leftarrow>lpc_term_parser; xml_return (x,t)}) id;
+      e\<leftarrow>lpp_integer_expression_parser;
+      xml_return (LPPStableEvaluatedIntegerCondition bindings e)}) XMLor
     (XMLdo (STR ''magnitudeLiteralLessCondition'') {n\<leftarrow>xml_int (STR ''integer''); b\<leftarrow>lpc_term_parser;
       xml_return (LPPStableMagnitudeLiteralOrderCondition n True b)}) XMLor
     (XMLdo (STR ''magnitudeLiteralLeqCondition'') {n\<leftarrow>xml_int (STR ''integer''); b\<leftarrow>lpc_term_parser;
