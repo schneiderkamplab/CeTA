@@ -2491,3 +2491,31 @@ infrastructure and residual precision progress, with no new benchmark verdict.
 Protected-category production promotion remains gated.
 [Pinned Ferrum evidence](../../ferrum-prolog-release/docs/data/prolog-evaluated-integer-progress-20261115.json)
 records source snapshots, executable identities and attempts.
+
+## Positioned Prolog helper contracts and multi-scale retention, 2026-11-15
+
+Implementation `18d850a996580ba1f60dee49f6c6a0757ad2b0bf` checks conditional
+successful-return order contracts and magnitude evaluation observations in the
+established Prolog source graph. Explicit observation positions preserve the
+exact emitted child subject. Distinct `positionedRow` tags fix XML committed
+choice, while legacy `row` proofs remain replayable. The full checked export
+1475 is installed in `lp-source-stable-mixed.tar.gz` through the unified manifest;
+no generated checker logic was patched.
+
+The O2 unified build 1477 rebuilt LP in 540.1 seconds and reused seven unchanged
+libraries. Its immutable executable
+`target/installed-prolog-positioned-1477/ceta` has SHA-256
+`031e9f4f70276aed4fa89f6518b4673ce1239bad9957306e7b09b1b65fa47771`.
+Ferrum implementation `90b82f2781d7d320531081adaa09ad51b759dba2` strictly replays
+84 YES + 52 NO on all 221 Prolog roots, retaining every prior verdict and adding
+four binary64 NOs. LP-with-cut retains 84 YES + 9 NO with this same checker.
+Three helper-return source fixtures and 20 NO cases pass native and strict
+checks; 106 mutation checks and 19 merged-package fixture replays pass.
+
+The [pinned cross-repository audit](../../ferrum-prolog-release/docs/data/prolog-order-multiscale-20261115.json)
+records source identities, source audits, two same-checker passes, complete
+receipts, environment, per-root timing and all unresolved roots. The
+[authoritative Ferrum ledger](../../ferrum-prolog-release/docs/state-of-the-art.md)
+records failed attempts and diagnosis. Production promotion remains gated on
+the protected-category replay; this category integration does not claim that
+release gate or a matched-semantics comparison with AProVE.
