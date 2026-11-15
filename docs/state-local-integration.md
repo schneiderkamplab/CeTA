@@ -2519,3 +2519,31 @@ receipts, environment, per-root timing and all unresolved roots. The
 records failed attempts and diagnosis. Production promotion remains gated on
 the protected-category replay; this category integration does not claim that
 release gate or a matched-semantics comparison with AProVE.
+
+## Prolog finite arithmetic-expression shapes, 2026-11-15
+
+CeTA commit `5c2e82167d6efe70cb83c668a39580c2ab49c93f` on
+`codex/prolog-production-integration` checks total integer evaluation from
+inductive finite return-shape grammars. Ground/arbitrary grammar children and
+floating literals cannot establish the new fact. The existing source context,
+initialization and Split checks remain required. Numeric observation selection
+preserves the two legacy receipt formats. Isabelle export 1481 and its ten
+positive/negative tests passed; unified build 1483 reused seven libraries and
+rebuilt LP only. Generated checking logic was not patched.
+
+The immutable unified executable is
+`target/installed-prolog-arithmetic-shapes-1483/ceta`, SHA-256
+`b7c67a3e012da0ab919cb261390a73801764762cf3b333c3e3aac9232971824f`.
+Ferrum commit `fa1681501b49b4a6ad2a1d99fd3500b49af9e7c0` supplies native
+shape discovery and fixes dependent equation-parameter completion. Fresh strict
+replay certifies 85 YES + 52 NO on the fixed 221 Prolog roots, retaining all
+previous verdicts, and preserves 84 YES + 9 NO for LP-with-cut using this same
+checker. All retained results have source audits, two checker passes and
+authorized reconstruction receipts. Three source-family proofs, 14 controls,
+20 new mutation checks, 106 legacy mutation checks and 21 packaged fixture
+replays pass. Production promotion remains a separate protected-category gate.
+
+The [Ferrum pinned audit](../../ferrum-prolog-release/docs/data/prolog-arithmetic-shapes-20261115.json)
+records both implementations, frozen source hashes, guidance and per-root
+search/checking evidence. The source gain is Weinert `prime.pl`; recurring
+abstract residuals found during diagnosis are not counted as source NOs.
