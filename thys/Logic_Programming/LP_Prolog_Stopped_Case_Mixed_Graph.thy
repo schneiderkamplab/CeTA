@@ -33,7 +33,7 @@ definition lpp_check_stopped_case_mixed_graph where
       lpp_check_observed_normalization normalization (lpp_success_case_expanded OD cases) NOD \<and>
       lpp_check_transfer_program T SP transfers \<and>
       lpp_check_stopped_graph fuel P SP D Q T roots contexts blocks q modes chain_pred OD \<and>
-      lpp_check_field_backend_routing I J T SP route_rank NOD backends)"
+      lpp_check_order_backend_routing I J T SP route_rank NOD backends)"
 
 theorem lpp_check_stopped_case_mixed_graph_sound:
  fixes ts :: "(string lp_cut_symbol,string) lp_iterm list"
@@ -50,10 +50,10 @@ proof -
    and enriched_rows: "lpp_check_observed_normalization normalization (lpp_success_case_expanded OD cases) NOD"
    and transfer: "lpp_check_transfer_program T SP transfers"
    and graph: "lpp_check_stopped_graph fuel P SP D Q T roots contexts blocks q modes chain_pred OD"
-   and routed: "lpp_check_field_backend_routing I J T SP route_rank NOD backends"
+   and routed: "lpp_check_order_backend_routing I J T SP route_rank NOD backends"
    using checked by (auto simp: lpp_check_stopped_case_mixed_graph_def)
  have normalized_calls: "SN (lpp_stable_observed_calls operation (set NOD) SP :: string lpp_success_iatom rel)"
-   by (rule lpp_check_field_backend_routing_sound[OF I J compatible routed transfer])
+   by (rule lpp_check_order_backend_routing_sound[OF I J compatible routed transfer])
  have expanded_calls: "SN (lpp_stable_observed_calls operation (set (lpp_success_case_expanded OD cases)) SP :: string lpp_success_iatom rel)"
    by (rule SN_subset[OF normalized_calls lpp_check_observed_normalization_sound[OF enriched_rows]])
  have calls: "SN (lpp_stable_observed_calls operation (set OD) SP :: string lpp_success_iatom rel)"

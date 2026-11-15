@@ -1,5 +1,5 @@
 theory LP_Prolog_Stopped_Mixed_Graph
- imports LP_Prolog_Stable_Field_Backends LP_Prolog_Stable_Backend_Routing LP_Prolog_Stopped_Graph LP_Prolog_Observed_Equation_Rewrite
+ imports LP_Prolog_Stable_Order_Backends LP_Prolog_Stable_Backend_Routing LP_Prolog_Stopped_Graph LP_Prolog_Observed_Equation_Rewrite
 begin
 
 definition lpp_check_stopped_mixed_graph where
@@ -76,7 +76,7 @@ definition lpp_check_stopped_field_mixed_graph where
     (lpp_check_observed_normalization normalization OD NOD \<and>
       lpp_check_transfer_program T SP transfers \<and>
       lpp_check_stopped_graph fuel P SP D Q T roots contexts blocks q modes chain_pred OD \<and>
-      lpp_check_field_backend_routing I J T SP route_rank NOD backends)"
+      lpp_check_order_backend_routing I J T SP route_rank NOD backends)"
 
 theorem lpp_check_stopped_field_mixed_graph_sound:
   fixes ts :: "(string lp_cut_symbol,string) lp_iterm list"
@@ -92,10 +92,10 @@ proof -
   have enriched_rows: "lpp_check_observed_normalization normalization OD NOD"
     and transfer: "lpp_check_transfer_program T SP transfers"
     and graph: "lpp_check_stopped_graph fuel P SP D Q T roots contexts blocks q modes chain_pred OD"
-    and routed: "lpp_check_field_backend_routing I J T SP route_rank NOD backends"
+    and routed: "lpp_check_order_backend_routing I J T SP route_rank NOD backends"
     using checked by (auto simp: lpp_check_stopped_field_mixed_graph_def)
   have normalized_calls: "SN (lpp_stable_observed_calls operation (set NOD) SP :: string lpp_success_iatom rel)"
-    by (rule lpp_check_field_backend_routing_sound[OF I J compatible routed transfer])
+    by (rule lpp_check_order_backend_routing_sound[OF I J compatible routed transfer])
   have calls: "SN (lpp_stable_observed_calls operation (set OD) SP :: string lpp_success_iatom rel)"
     by (rule SN_subset[OF normalized_calls lpp_check_observed_normalization_sound[OF enriched_rows]])
   have lifted: "SN (inv_image (lpp_stable_observed_calls operation (set OD) SP) lpp_unlift_atom ::

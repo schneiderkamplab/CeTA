@@ -1,5 +1,5 @@
 theory LP_Prolog_Stopped_Mixed_XML
- imports LP_Prolog_Stopped_Case_Mixed_Graph LP_Prolog_Stable_Field_Backend_XML
+ imports LP_Prolog_Stopped_Case_Mixed_Graph LP_Prolog_Stable_Order_Backend_XML
 begin
 
 partial_function (sum_bot) lpp_integer_result_parser :: "string lpp_integer_result_receipt xmlt" where
@@ -198,7 +198,7 @@ definition lpp_established_stopped_mixed_raw_parser where
     NOD\<leftarrow>[[]] xml_many (STR ''normalizedTriples'') lpp_observed_triple_parser id;
     ranks\<leftarrow>xml_many (STR ''routing'') (XMLdo (STR ''entry'') {
       p\<leftarrow>xml_text (STR ''predicate''); n\<leftarrow>xml_nat (STR ''rank''); xml_return (p,n)}) id;
-    backends\<leftarrow>xml_many (STR ''backends'') lpp_field_backend_parser id;
+    backends\<leftarrow>xml_many (STR ''backends'') lpp_order_backend_parser id;
     xml_return (profile,P,q,modes,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,cases,normalization,NOD,ranks,backends)}"
 
 text \<open>A reference expands only to the unique enclosing contract. The existing
@@ -227,7 +227,7 @@ definition check_lpp_established_stopped_mixed_xml where
   "check_lpp_established_stopped_mixed_xml xml = (case parse_xml_string lpp_established_stopped_mixed_parser xml of
     Right (profile,P,q,modes,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,cases,normalization,NOD,ranks,raw) \<Rightarrow>
       (let enriched_rows=(if normalization=0 then lpp_success_case_expanded OD cases else NOD);
-        candidates=lpp_decode_field_backends (summaries,SP,receipts) enriched_rows ranks raw in
+        candidates=lpp_decode_order_backends (summaries,SP,receipts) enriched_rows ranks raw in
         profile=''iso-rational-libraries-v1'' \<and>
         lpp_check_transfer_contract summaries SP receipts \<and>
         list_all (lpp_stopped_component_header P fuel (summaries,SP,receipts)) blocks \<and>
@@ -250,7 +250,7 @@ theorem check_lpp_established_stopped_mixed_xml_sound:
 proof -
   have checked: "lpp_check_stopped_case_mixed_graph tp_rbt_impl dpp_rbt_impl fuel P D Q (lpp_transfer_lookup summaries) SP receipts
       roots contexts (map snd blocks) q modes chain_pred OD cases (if normalization=0 then lpp_success_case_expanded OD cases else NOD) normalization (lpp_mixed_rank_lookup ranks)
-      (map the (lpp_decode_field_backends (summaries,SP,receipts) (if normalization=0 then lpp_success_case_expanded OD cases else NOD) ranks raw))"
+      (map the (lpp_decode_order_backends (summaries,SP,receipts) (if normalization=0 then lpp_success_case_expanded OD cases else NOD) ranks raw))"
     using parsed ok by (auto simp: check_lpp_established_stopped_mixed_xml_def Let_def)
   show ?thesis
   proof (rule lpp_check_stopped_case_mixed_graph_sound[OF tp_rbt_impl dpp_rbt_impl lpp_stable_profile_integer_compatible checked])

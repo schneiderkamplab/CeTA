@@ -52,6 +52,9 @@ definition lpp_stable_condition_parser where
     (XMLdo (STR ''scaledEqualityCondition'') {
       a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
       xml_return (LPPStableScaledEqualityCondition a b)}) XMLor
+    (XMLdo (STR ''magnitudeEvaluationCondition'') {
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
+      xml_return (LPPStableMagnitudeEvaluationCondition a b)}) XMLor
     (XMLdo (STR ''scaledEvaluationCondition'') {
       a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser;
       xml_return (LPPStableScaledEvaluationCondition a b)}) XMLor

@@ -11,6 +11,7 @@ datatype 'v lpp_stable_condition_receipt =
   | LPPStableMagnitudeQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledQuotientModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledEqualityCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
+  | LPPStableMagnitudeEvaluationCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledEvaluationCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledOrderCondition bool "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPStableScaledModuloCondition "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
@@ -40,6 +41,7 @@ fun lpp_check_stable_numeric_observation where
 |   "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeQuotientModuloCondition a n d result) = False"
 |   "lpp_check_stable_numeric_observation K observation (LPPStableScaledQuotientModuloCondition a n d result) = False"
 | "lpp_check_stable_numeric_observation K observation (LPPStableScaledEqualityCondition a b) = (observation=LPPOComparison LPPIntEqual a b)"
+| "lpp_check_stable_numeric_observation K observation (LPPStableMagnitudeEvaluationCondition a b) = (observation=LPPOEvaluation a b)"
 | "lpp_check_stable_numeric_observation K observation (LPPStableScaledEvaluationCondition a b) = (observation=LPPOEvaluation a b)"
 |  "lpp_check_stable_numeric_observation K observation (LPPStableScaledOrderCondition is_strict a b) =
     (observation=LPPOComparison (if is_strict then LPPIntLess else LPPIntLessEqual) a b)"
@@ -78,6 +80,7 @@ fun lpp_stable_numeric_condition where
 |   "lpp_stable_numeric_condition (LPPStableMagnitudeQuotientModuloCondition a n d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 |   "lpp_stable_numeric_condition (LPPStableScaledQuotientModuloCondition a n d result) = (LPPIntEqual,LPPEConstant 0,LPPEConstant 0)"
 | "lpp_stable_numeric_condition (LPPStableScaledEqualityCondition a b) = (LPPIntEqual,lpp_scaled_expression a,lpp_scaled_expression b)"
+| "lpp_stable_numeric_condition (LPPStableMagnitudeEvaluationCondition a b) = (LPPIntEqual,lpp_magnitude_expression a,lpp_magnitude_expression b)"
 | "lpp_stable_numeric_condition (LPPStableScaledEvaluationCondition a b) = (LPPIntEqual,lpp_scaled_expression a,lpp_scaled_expression b)"
 |  "lpp_stable_numeric_condition (LPPStableScaledOrderCondition is_strict a b) =
     ((if is_strict then LPPIntLess else LPPIntLessEqual),lpp_scaled_expression a,lpp_scaled_expression b)"
@@ -159,6 +162,16 @@ next
     using checked observed by (simp add: LPPStableScaledEqualityCondition)
   show ?thesis using lpp_stable_scaled_comparison[OF order]
     by (simp add: LPPStableScaledEqualityCondition lpp_scaled_expression_value)
+next
+  case (LPPStableMagnitudeEvaluationCondition a b)
+  have evaluation: "lpp_stable_scalar_evaluation operation (lp_ieval a eta) (lp_ieval b eta)"
+    using checked observed by (simp add: LPPStableMagnitudeEvaluationCondition)
+  obtain n d where scalar: "lpp_scalar_fraction (lp_ieval b eta) n d"
+    using lpp_stable_scalar_evaluation_result[OF evaluation] by blast
+  have result: "lpp_stable_scalar_evaluation operation (lp_ieval b eta) (lp_ieval b eta)"
+    by (rule lpp_stable_scalar_evaluation.scalar[OF scalar])
+  show ?thesis by (simp add: LPPStableMagnitudeEvaluationCondition lpp_magnitude_expression_value
+    lpp_stable_scaled_bound_exact[OF evaluation] lpp_stable_scaled_bound_exact[OF result])
 next
   case (LPPStableScaledEvaluationCondition a b)
   have evaluation: "lpp_stable_scalar_evaluation operation (lp_ieval a eta) (lp_ieval b eta)"

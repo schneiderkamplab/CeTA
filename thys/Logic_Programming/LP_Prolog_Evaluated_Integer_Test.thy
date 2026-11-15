@@ -2,6 +2,22 @@ theory LP_Prolog_Evaluated_Integer_Test
   imports LP_Prolog_Stable_Numeric_Conditions
 begin
 
+lemma magnitude_evaluation_accepts_actual_result:
+  "lpp_check_stable_numeric_observation K (LPPOEvaluation a b)
+    (LPPStableMagnitudeEvaluationCondition a b)"
+  by simp
+
+lemma magnitude_evaluation_rejects_groundness:
+  "\<not> lpp_check_stable_numeric_observation K (LPPOGround a)
+    (LPPStableMagnitudeEvaluationCondition a b)"
+  by simp
+
+lemma magnitude_evaluation_rejects_wrong_result:
+  "b\<noteq>c \<Longrightarrow> \<not> lpp_check_stable_numeric_observation K (LPPOEvaluation a b)
+    (LPPStableMagnitudeEvaluationCondition a c)"
+  by simp
+
+
 lemma evaluated_integer_requires_observation:
   "\<not> lpp_check_evaluated_expression [] [(x,t)] (LPPEVariable x)"
   by (simp add: lpp_check_evaluated_expression_def)
