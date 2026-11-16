@@ -2658,3 +2658,44 @@ binds source, proof, receipt, guidance and executable identities. Ten saved
 AProVE YESs in this cohort use an unmatched source/arithmetic profile; seven
 saved results are MAYBE. No matched-profile superiority or protected-category
 production promotion is claimed.
+
+## Recurrent domain graphs across source predicates (2026-11-16)
+
+CeTA `30fb9fefbcce6b1ddb66b504d71a82235c872ddf` on
+`codex/prolog-production-integration`, in `/work/dfm/festschrift/CeTA-prolog-release`,
+adds `LP_Prolog_Domain_Edge`, `LP_Prolog_Domain_Graph` and their source/XML
+constructors. Checked source edges establish successor argument domains;
+complete finite module coverage yields a recurrent set of actual source states.
+Initialization remains an exact checked entry trace. Pending continuations and
+saved alternatives are preserved. The source semantics and established SEG
+remain unchanged, and no helper termination or successful-return contract is
+inferred from recurrence.
+
+The unified LP adapter exports `check_lpp_domain_graph_xml` alongside all older
+constructors. Verified export 1540 takes 402.257 seconds; build 1542 rebuilds
+LP in 547.0 seconds and reuses seven other category libraries.
+`target/installed-prolog-domain-graph-1542/ceta` has SHA-256
+`73fd97a3cc6c275eddd0ac12807fbaa93a2502169c63f353faff360e4e7ea141`.
+The snapshot binds 1,067 Isabelle/export files; verified heap 1543 is saved.
+
+The large serialized benchmark lemma in attempt 1539 was interrupted after
+over ten minutes and is not counted as evidence. Its wrapper also exited;
+verified heap 1534 was restored, and the five new theories and rule tests were
+rechecked in resident 1544 before export. All benchmark certificates were then
+checked by the verified unified executable and fresh strict replay. The
+interrupted attempt and corrected proof-name/simplifier attempts are preserved.
+No generated checking logic was patched.
+
+Ferrum `8cfe8424b073391da3b8e0f3225e0e95ce1ad022` recovers eight benchmark NOs
+with one witness-free action. Full strict replay certifies **86 YES + 87 NO**,
+retaining all 165 previous results with 173 authorized receipts. LP-with-cut
+retains **84 YES + 9 NO** using this identical checker. Validation includes ten
+native and ten strict family certificates, ten advice/inapplicability controls,
+54 new mutation checks, 172 legacy mutation checks and 29 packaged fixture
+replays. Bounded SWI execution times out on all eight actual new witnesses.
+
+The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-domain-graphs-20261116.json)
+binds sources, artifacts, receipts, guidance and executable identities. A cut
+in the recurrent prefix and a long finite inner-loop summary remain explicit
+obligations. The unmatched arithmetic/source profile prevents a superiority
+claim; protected-category production promotion remains separately gated.
