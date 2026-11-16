@@ -46,7 +46,8 @@ definition lpp_machine_no_certificate_parser where
     modes\<leftarrow>xml_many (STR ''modes'') (xml_bool (STR ''mode'')) id;
     fuel\<leftarrow>xml_nat (STR ''fuel'');
     argv\<leftarrow>xml_many (STR ''arguments'') lpc_term_parser id;
-    a\<leftarrow>xml_singleton (STR ''core'') lpc_term_parser id;
+    a\<leftarrow>(xml_singleton (STR ''core'') lpc_term_parser Inl XMLor
+      xml_many (STR ''coreGoals'') lpc_goal_parser Inr);
     before\<leftarrow>xml_many (STR ''before'') lpc_entry_parser id;
     after\<leftarrow>xml_many (STR ''after'') lpc_entry_parser id;
     initial_steps\<leftarrow>xml_many (STR ''prefix'') (XMLdo (STR ''step'') {
@@ -61,7 +62,8 @@ definition check_lpp_machine_no_xml where
   "check_lpp_machine_no_xml xml = (case parse_xml_string lpp_machine_no_certificate_parser xml of
     Right (profile,P,q,modes,fuel,argv,a,before,after,initial_steps,steps) \<Rightarrow>
       profile = ''iso-rational-libraries-v1'' \<and>
-      lpp_machine_no_check_source fuel P q modes argv a before after initial_steps steps
+      (case a of Inl atom \<Rightarrow> lpp_machine_no_check_source fuel P q modes argv atom before after initial_steps steps
+      | Inr gs \<Rightarrow> lpp_machine_no_check_goals_source fuel P q modes argv gs before after initial_steps steps)
     | _ \<Rightarrow> False)"
 
 theorem check_lpp_machine_no_xml_sound:
@@ -73,9 +75,11 @@ theorem check_lpp_machine_no_xml_sound:
    \<not>SN_on (lpp_builtin_source P (lpp_stable_source_builtin (lpp_binary64_profile_operation fallback)))
      {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) argv))]]}"
 proof -
- have checked: "lpp_machine_no_check_source fuel P q modes argv a before after initial_steps steps"
-   using parsed ok by (simp add: check_lpp_machine_no_xml_def)
- show ?thesis by (rule lpp_machine_no_check_source_sound[OF checked])
+ show ?thesis using parsed ok
+   by (cases a) (auto simp: check_lpp_machine_no_xml_def
+     dest: lpp_machine_no_check_source_sound[where fallback=fallback]
+       lpp_machine_no_check_goals_source_sound[where fallback=fallback])
+
 qed
 
 ML \<open>

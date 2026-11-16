@@ -21,4 +21,20 @@ proof -
  show ?thesis by (simp only: lpp_machine_no_check_source_def trace.check_source_def)
 qed
 
+lemma lpp_machine_no_check_goals_source_code [code]:
+ "lpp_machine_no_check_goals_source fuel P q modes argv gs before after initial_steps steps =
+    (lp_cut_source_program P \<and> length argv=length modes \<and>
+     list_all (\<lambda>(t,b). b \<longrightarrow> ground t) (zip argv modes) \<and>
+     (lp_cut_barriers before \<and> lp_cut_barriers after) \<and>
+     list_all (\<lambda>g. lp_cut_goal_scopes g={}) gs \<and> steps \<noteq> [] \<and>
+     lpp_checked_builtin_trace (lpp_machine_no_step fuel P) [LPCGoals [LPCAtom (Fun (LPCUser q) argv)]] initial_steps
+       ([LPCGoals gs] @ before) \<and>
+     lpp_checked_builtin_trace (lpp_machine_no_step fuel P) [LPCGoals gs] steps
+       ([LPCGoals gs] @ after))"
+proof -
+ interpret trace: lpp_builtin_trace_checker P "lpp_stable_source_builtin (lpp_binary64_profile_operation fallback)" "lpp_machine_no_step fuel P"
+   by unfold_locales (rule lpp_machine_no_step_sound)
+ show ?thesis by (simp only: lpp_machine_no_check_goals_source_def trace.check_goals_source_def)
+qed
+
 end

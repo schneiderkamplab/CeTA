@@ -148,6 +148,23 @@ proof -
  show ?thesis using assms trace.check_source_sound by (simp add: lpp_machine_no_check_source_def)
 qed
 
+definition lpp_machine_no_check_goals_source where
+ "lpp_machine_no_check_goals_source fuel P q modes argv gs before after initial_steps steps =
+   lpp_builtin_trace_checker.check_goals_source P (lpp_machine_no_step fuel P) q modes argv gs before after initial_steps steps"
+
+theorem lpp_machine_no_check_goals_source_sound:
+ assumes "lpp_machine_no_check_goals_source fuel P q modes argv gs before after initial_steps steps"
+ shows "length argv=length modes \<and>
+   list_all (\<lambda>(t,b). b \<longrightarrow> ground t) (zip argv modes) \<and>
+   \<not>SN_on (lpp_builtin_source P (lpp_stable_source_builtin (lpp_binary64_profile_operation fallback)))
+     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) argv))]]}"
+proof -
+ interpret trace: lpp_builtin_trace_checker P
+   "lpp_stable_source_builtin (lpp_binary64_profile_operation fallback)" "lpp_machine_no_step fuel P"
+   by unfold_locales (rule lpp_machine_no_step_sound)
+ show ?thesis using assms trace.check_goals_source_sound by (simp add: lpp_machine_no_check_goals_source_def)
+qed
+
 ML \<open>
 val checked = [@{thm lpp_machine_no_check_source_sound}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
