@@ -164,6 +164,7 @@ runProlog [path] = do
 #endif
 #ifdef LP_PROLOG_STABLE_MIXED
       PSM.check_lpp_call_trace_xml (cachedCharacters PSM.explode input) ||
+      PSM.check_lpp_guarded_domain_graph_xml (cachedCharacters PSM.explode input) ||
       PSM.check_lpp_domain_graph_xml (cachedCharacters PSM.explode input) ||
       PSM.check_lpp_domain_recurrence_xml (cachedCharacters PSM.explode input) ||
       PSM.check_lpp_scalar_recurrence_xml (cachedCharacters PSM.explode input) ||
