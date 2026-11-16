@@ -2734,3 +2734,27 @@ The complete per-root scan covers all 48 previous gaps, including source parser
 rejections. Saved AProVE MAYBE is not upgraded from successful transformed NO
 children. Matched-profile comparison and protected-category production promotion
 remain open.
+
+## Guarded-domain Prolog integration (2026-11-16)
+
+Integration `c1eb7f090be8df4a38fcb3b8c7567d52bb4b2bf5` on `codex/prolog-production-integration`
+adds version-1 `prologGuardedDomainGraphNonterminationProof` to unified Prolog
+dispatch. `LP_Prolog_Guarded_Domain_Graph_XML` checks original source binding,
+initialization, both exhaustive comparison branches and every referenced module.
+Actual first-clause failure and source progress use the existing operational
+semantics. All soundness dependencies pass the no-oracle/no-skipped-proof audit.
+The established termination SEG and old constructors are unchanged.
+
+Unified checker SHA-256 `fd4b9a0a94ae8c16524a4cdb8b24ec300680fa6548deddbe645b444d432b8d32` is frozen at
+`target/installed-prolog-guarded-domain-1568/ceta`. Export 1566 and install 1567
+bind the verified sources; build 1568 reuses seven category libraries. Verified
+heap 1569 is saved. Ferrum `c2183099f6a3e5fc723104f49cdfee78ee687ed1` retains 86 YES +
+91 NO over 221 roots and all 84 YES + 9 NO cut results, with
+original-source audits, two checks and authorized reconstruction receipts.
+300 mutation checks and 35 fixture replays pass.
+
+Pinned evidence lives in the adjacent Ferrum checkout at
+`docs/data/prolog-guarded-domain-20261116.json`. This is development integration;
+matched-profile superiority and protected-category production promotion remain
+pending. Initial failed proof/test/export attempts remain retained in the
+resident log and the separate first export source capsule.
