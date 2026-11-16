@@ -4,6 +4,10 @@ begin
 
 definition lpp_guarded_module_parser where
  "lpp_guarded_module_parser =
+  (XMLdo (STR ''cut'') {
+   segments\<leftarrow>xml_many (STR ''segments'') (xml_many (STR ''segment'') lpp_domain_prefix_parser id) id;
+   m\<leftarrow>lpp_domain_module_parser;
+   xml_return (LPPGuardedCut segments m)}) XMLor
   xml_singleton (STR ''plain'') lpp_domain_module_parser LPPGuardedPlain XMLor
   (XMLdo (STR ''choice'') {
    g\<leftarrow>xml_singleton (STR ''guard'') lpp_scalar_guard_parser id;

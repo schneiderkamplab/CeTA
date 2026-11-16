@@ -1,10 +1,13 @@
 theory LP_Prolog_Guarded_Domain_Graph
- imports LP_Prolog_Domain_Choice
+ imports LP_Prolog_Domain_Choice LP_Prolog_Domain_Cut_Module
 begin
 
 datatype lpp_guarded_domain_module = LPPGuardedPlain lpp_domain_module |
- LPPGuardedChoice lpp_scalar_guard lpp_scalar_guard lpp_domain_module lpp_domain_module
+ LPPGuardedChoice lpp_scalar_guard lpp_scalar_guard lpp_domain_module lpp_domain_module |
+ LPPGuardedCut "lpp_domain_prefix list list" lpp_domain_module
 fun lpp_guarded_module_interface where
+ "lpp_guarded_module_interface (LPPGuardedCut segments m)=m"
+|
  "lpp_guarded_module_interface (LPPGuardedPlain m)=m"
 | "lpp_guarded_module_interface (LPPGuardedChoice g h a b)=a"
 definition lpp_guarded_module_q where
@@ -12,6 +15,9 @@ definition lpp_guarded_module_q where
 definition lpp_guarded_module_observations where
  "lpp_guarded_module_observations m=lpp_domain_module_observations (lpp_guarded_module_interface m)"
 fun lpp_guarded_module_check where
+ "lpp_guarded_module_check P modules (LPPGuardedCut segments m)=
+   lpp_domain_cut_module_check P (map lpp_guarded_module_interface modules) segments m"
+|
  "lpp_guarded_module_check P modules (LPPGuardedPlain m)=
    lpp_domain_module_check P (map lpp_guarded_module_interface modules) m"
 | "lpp_guarded_module_check P modules (LPPGuardedChoice g h a b)=
@@ -47,6 +53,15 @@ next
    using observed by (simp add: LPPGuardedChoice lpp_guarded_module_observations_def)
  show ?thesis using lpp_domain_choice_progress[OF ok obs, where gs=gs and es=es]
    by (auto simp: LPPGuardedChoice lpp_guarded_module_q_def lpp_guarded_module_observations_def; blast)
+next
+ case (LPPGuardedCut segments a)
+ have ok: "lpp_domain_cut_module_check P (map lpp_guarded_module_interface modules) segments a"
+   using checked by (simp add: LPPGuardedCut)
+ have obs: "lpp_domain_observations (lpp_binary64_profile_operation fallback)
+   (lpp_domain_module_observations a) actuals"
+   using observed by (simp add: LPPGuardedCut lpp_guarded_module_observations_def)
+ show ?thesis using lpp_domain_cut_module_progress[OF ok obs, where gs=gs and es=es]
+   by (auto simp: LPPGuardedCut lpp_guarded_module_q_def lpp_guarded_module_observations_def; blast)
 qed
 
 lemma lpp_guarded_domain_graph_nontermination:
