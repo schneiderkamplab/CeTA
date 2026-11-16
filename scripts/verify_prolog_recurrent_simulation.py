@@ -80,7 +80,8 @@ if args.export_directory:
                             'check_lpp_machine_no_xml',
                             'check_lpp_call_trace_xml',
                             'check_lpp_scalar_recurrence_xml',
-                            'check_lpp_domain_recurrence_xml']
+                            'check_lpp_domain_recurrence_xml',
+                            'check_lpp_domain_graph_xml']
         export_module = 'Prolog_Stable_Mixed_Generated'
     driver.write_text(
         'theory ' + driver_name + '\n imports ' + json.dumps(str(export_theory)) + ' ' +
@@ -88,7 +89,7 @@ if args.export_directory:
         ((' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Ground_Integer_NO_Code')) + ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Binary64_NO_Code')) +
           ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_NO_Call_Trace_XML')) +
           ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_List_Observation_Code')) +
-          ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Scalar_Domain_XML'))) if args.export_stopped_mixed else '') +
+          ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Domain_Graph_XML'))) if args.export_stopped_mixed else '') +
         '\nbegin\n' +
         ('code_printing constant Array \\<rightharpoonup> (Haskell) \"Array.Array\"\n' +
          'code_printing type_constructor array \\<rightharpoonup> (Haskell) \"Array.Array/ _\"\n'
