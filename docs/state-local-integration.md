@@ -2758,3 +2758,25 @@ Pinned evidence lives in the adjacent Ferrum checkout at
 matched-profile superiority and protected-category production promotion remain
 pending. Initial failed proof/test/export attempts remain retained in the
 resident log and the separate first export source capsule.
+
+## Scoped cut recurrence integration (2026-11-16)
+
+CeTA `1e55d2f9ee3a249ca2fdafd116b5d99cebf59ab7` on `codex/prolog-production-integration` extends the
+existing version-1 guarded-domain checker with cut modules. The new prefix,
+iteration, edge and module theorems execute the existing scoped pruning
+operation and preserve the actual resulting saved stack. Source semantics and
+the established termination SEG are unchanged. All soundness dependencies pass
+the no-oracle/no-skipped-proof audit; multiple-cut and missing-coverage controls
+pass independently.
+
+Unified checker SHA-256 `7d9762f7d46859e096b3a6fee7d98c9c641af3b09d14e80ad7386e1cf147f4ed` is frozen at
+`target/installed-prolog-domain-cuts-1590/ceta`. Export 1588, install 1589 and
+LP-only build 1590 retain source identities and reuse seven category libraries.
+Verified heap 1591 is retained. Ferrum `d71cc7f1d31daf024c8603ec49691d9868ffe7bc` certifies
+86 YES + 93 NO over 221 roots, preserving all prior
+results and all 84 YES + 9 NO LP-with-cut results. Original-source audits, two
+checks, strict replay and complete authorized receipts cover every solved root.
+336 mutation checks and 37 fixture replays pass.
+Pinned evidence is in the adjacent Ferrum checkout at
+`docs/data/prolog-domain-cuts-20261116.json`. Matched-profile superiority and
+protected-category production promotion remain pending.
