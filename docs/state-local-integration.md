@@ -2577,3 +2577,46 @@ The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-numeric-r
 records frozen sources, artifact identities and separate search/checking times.
 The [Ferrum ledger](../../ferrum-prolog-release/docs/state-of-the-art.md) records
 the next family-sized cohort work and the limits of the current contract scan.
+
+## Scalar-expression recurrent source states (2026-11-16)
+
+CeTA integration `b42dba722aa68a27fc2a7ed33b2f211ae4757372` on
+`codex/prolog-production-integration` adds a checked source nontermination
+constructor for fixed scalar observations of growing arithmetic expressions.
+The implementation is in `/work/dfm/festschrift/CeTA-prolog-release`.
+`LP_Prolog_Scalar_Recurrence_NO` proves actual source nontermination using the
+shared recurrent simulation theorem. Its checked interface retains earlier
+clause failures, fresh-head resolution, cuts, pending continuations and saved
+alternatives. Scalar template evaluation uses the existing exact integer and
+binary64 profile. No source semantics or SEG is replaced.
+
+`LP_Prolog_Scalar_Recurrence_XML` exports
+`check_lpp_scalar_recurrence_xml`; the unified LP adapter accepts this constructor
+through the regenerated `Prolog_Stable_Mixed_Generated` module. The executable
+is `target/installed-prolog-scalar-recurrence-1514/ceta`, SHA-256
+`19ffcdfe57894e070808f7aaabaa58e7cae8dc961249d8b3ab694eabb72aba2c`.
+Verified export 1512 takes 401.544 seconds. Build 1514 rebuilds LP in 513.6
+seconds and reuses the seven other category libraries. The export snapshot,
+1,050 source hashes, copied verification log and installation receipts remain
+under `target/prolog-scalar-recurrence-export-1512` and
+`target/prolog-scalar-recurrence-install-1513`. Verified heap 1515 preserves the
+new checked dependency closure. The supported stopped-mixed export script now
+includes this constructor and call traces, with the established Array mapping
+applied after imports.
+
+Ferrum `6c2ad3701fb71fe88a771402546a505086948bc5` discovers ten additional
+benchmark NOs with one witness-free action. The complete 221-root strict replay
+retains every earlier verdict and reaches **86 YES + 62 NO**, with 148 authorized
+receipts. LP-with-cut retains **84 YES + 9 NO** using this same executable.
+The family passes 10 native and 10 strict checks, 12 advice/inapplicability
+controls, 28 new complete-certificate checks, 106 legacy mutation checks and
+25 packaged fixture replays. Isabelle checks positive and rejecting rule cases
+and the eight initially targeted serialized benchmark certificates. The two
+Ackermann roots are recovered by the same native implementation and checker.
+
+The [Ferrum pinned audit](../../ferrum-prolog-release/docs/data/prolog-scalar-recurrence-20261116.json)
+binds original sources, proof hashes, receipt hashes, timings, guidance and both
+executables. The ten new binary64 witnesses also exceed bounded SWI-Prolog
+execution limits. These results do not establish a matched-semantics comparison
+with the saved AProVE YES records or satisfy the protected-category production
+promotion gate.
