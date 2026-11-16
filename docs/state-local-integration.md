@@ -2620,3 +2620,41 @@ executables. The ten new binary64 witnesses also exceed bounded SWI-Prolog
 execution limits. These results do not establish a matched-semantics comparison
 with the saved AProVE YES records or satisfy the protected-category production
 promotion gate.
+
+## Scalar-domain recurrence with source entry (2026-11-16)
+
+CeTA `456451b867552772f931c77f91ccd82e6b3b3b2a` on
+`codex/prolog-production-integration`, in `/work/dfm/festschrift/CeTA-prolog-release`,
+adds `LP_Prolog_Scalar_Domain_NO` and its proved XML constructor. Fixed scalar
+observations and arbitrary evaluated integers form a recurrent interface.
+Checked source entry traces establish its initialization. Exact clause
+coverage, fresh `is/2` assignments and recursive argument dependencies preserve
+it; the shared source recurrent-simulation theorem yields nontermination.
+Unobserved arguments do not license arithmetic. Integer-domain closure admits
+addition, subtraction and multiplication, not arbitrary float mixtures or
+division. Existing SEG construction and return contracts are unchanged.
+
+The unified LP adapter exports `check_lpp_domain_recurrence_xml` alongside all
+previous constructors. Verified export 1528 takes 403.161 seconds. Build 1530
+rebuilds LP in 529.6 seconds and reuses seven other category libraries.
+`target/installed-prolog-scalar-domain-1530/ceta` has SHA-256
+`17ab17045bcb3f8acb49aedbfcf898420c02f2de85d9c9ecbf282fce96e987e2`.
+Source copies and 1,061 hashes, the frozen verification log, installation
+receipt and verified heap 1534 remain on the persistent drive. Initial test
+quoting, code-equation import and type errors are retained; corrected tests
+1531/1533 pass, with no generated checking logic patched.
+
+Ferrum `5b81709ce914dbddeff1c32ca4ee6363566ef64d` obtains 17 additional benchmark
+NOs with one witness-free action. Full strict replay certifies **86 YES + 79 NO**,
+retaining all earlier verdicts with 165 authorized receipts. LP-with-cut retains
+**84 YES + 9 NO** using this identical checker. Validation includes seven
+serialized benchmark certificates in Isabelle, domain rule controls, nine
+native and nine strict family certificates, eight advice/inapplicability
+controls, 38 new mutation checks, 106 legacy mutation checks and 27 packaged
+fixture replays. SWI bounded runs time out on all 17 actual new witnesses.
+
+The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-scalar-domains-20261116.json)
+binds source, proof, receipt, guidance and executable identities. Ten saved
+AProVE YESs in this cohort use an unmatched source/arithmetic profile; seven
+saved results are MAYBE. No matched-profile superiority or protected-category
+production promotion is claimed.
