@@ -2699,3 +2699,38 @@ binds sources, artifacts, receipts, guidance and executable identities. A cut
 in the recurrent prefix and a long finite inner-loop summary remain explicit
 obligations. The unmatched arithmetic/source profile prevents a superiority
 claim; protected-category production promotion remains separately gated.
+
+## Integer quotient and modulo in recurrent observations (2026-11-16)
+
+CeTA `32ce692648d54544a499868b034fb1d65be2a5b0` on
+`codex/prolog-production-integration`, in `/work/dfm/festschrift/CeTA-prolog-release`,
+adds `LP_Prolog_Scalar_Operations` and its rule controls. Existing scalar
+expression/domain constructors now evaluate `//` and `mod` using the integer
+operations already specified by the source profile. No source semantics or
+established SEG definition changes. Zero and floating divisors remain rejected;
+a changing integer numerator requires a fixed nonzero integer divisor.
+Existing XML versions and processor guidance remain compatible.
+
+Verified export 1548 passes in 406.751 seconds. Unified build 1550 rebuilds LP
+in 528.5 seconds and reuses seven other category libraries.
+`target/installed-prolog-scalar-quotient-1550/ceta` has SHA-256
+`0803b0618bd4e373d8c9a5c707867d42402643888e8881c9fb1e861162787fef`.
+The source snapshot binds 1,065 Isabelle/export files and verified heap 1551
+is saved on the persistent drive. No generated checking logic was patched.
+
+Ferrum `859701834f6100f390cf80d08522b045b32f596c` gains one benchmark NO,
+`Weinert_15/division-nonterm.pl`. Full strict replay certifies **86 YES + 88 NO**,
+retaining every previous verdict with 174 authorized receipts. LP-with-cut
+retains **84 YES + 9 NO** using this identical executable. Validation includes
+eight native and eight strict family proofs, 22 advice/inapplicability controls,
+26 new and 226 legacy mutation checks, and 33 packaged fixture replays. The
+four generalized fixtures exercise fixed and changing integer observations.
+Bounded SWI execution agrees with the actual witness remaining active.
+
+The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-scalar-quotient-20261116.json)
+records source/proof/receipt identities, attempts and separate search/checking
+times. Initial proof and test errors are preserved with corrected verification.
+The complete per-root scan covers all 48 previous gaps, including source parser
+rejections. Saved AProVE MAYBE is not upgraded from successful transformed NO
+children. Matched-profile comparison and protected-category production promotion
+remain open.
