@@ -68,24 +68,28 @@ TRS_Relative_Spec.thy
 - all seems well
 
 
-TRS_Conditional_Spec_Base.thy
------------------------------
-- definition conditional_problem
-  Again, the hypothesis "infinite (UNIV :: 'v set) should not be included.
-
-- the whole formalization style changes radically
-
-TRS_Conditional_Ordinary_Spec.thy
-
-TRS_Conditional_Operational_Spec.thy
-
 SRS_Spec_Base.thy
+-----------------
+- definition string_problem
+  Strange definition. Why the bool, and why finite? Again, making it a type sounds much more natural.
+
 
 SRS_Standard_Spec.thy
+---------------------
+- all seems well
+
 
 SRS_Cycle_Spec.thy
+------------------
+- all seems well
+
 
 SRS_Relative_Spec.thy
+---------------------
+- definition relative_string_step
+  Type annotations are missing, so it's hard to read - I assume R and S are "string_problems".
+  Maybe add an auxiliary definition in the style of TRS_Relative_Spec?
+
 
 Higher_Order_Spec_Base.thy
 
@@ -112,3 +116,17 @@ LP_Cut_Finite_Spec.thy
 LP_Cut_Infinite_Spec.thy
 
 LP_Cut_Rational_Spec.thy
+
+
+[on waiting list...]
+
+TRS_Conditional_Spec_Base.thy
+-----------------------------
+- definition conditional_problem
+  Again, the hypothesis "infinite (UNIV :: 'v set) should not be included.
+
+- the whole formalization style changes radically
+
+TRS_Conditional_Ordinary_Spec.thy
+
+TRS_Conditional_Operational_Spec.thy
