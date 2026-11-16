@@ -18,12 +18,16 @@ fun lpp_recurrent_integer_domain where
 definition lpp_recurrent_total_integer_operator where
  "lpp_recurrent_total_integer_operator f =
    (f\<in>{''2:prolog_data_2b'',''2:prolog_data_2d'',''2:prolog_data_2a''})"
+fun lpp_recurrent_nonzero_integer where
+ "lpp_recurrent_nonzero_integer (LPPRecurrentFixed (LPPMachineInteger n)) = (n\<noteq>0)"
+| "lpp_recurrent_nonzero_integer _ = False"
 fun lpp_recurrent_scalar_binary where
  "lpp_recurrent_scalar_binary f (LPPRecurrentFixed x) (LPPRecurrentFixed y) =
-   map_option LPPRecurrentFixed (lpp_machine_binary f x y)"
+   map_option LPPRecurrentFixed (lpp_scalar_binary f x y)"
 | "lpp_recurrent_scalar_binary f a b =
    (if lpp_recurrent_integer_domain a \<and> lpp_recurrent_integer_domain b \<and>
-      lpp_recurrent_total_integer_operator f then Some LPPRecurrentInteger else None)"
+      (lpp_recurrent_total_integer_operator f \<or>
+       lpp_scalar_integer_binary_name f \<and> lpp_recurrent_nonzero_integer b) then Some LPPRecurrentInteger else None)"
 
 lemma lpp_recurrent_member_valid:
  "lpp_recurrent_scalar_member d v \<Longrightarrow> lpp_machine_valid v"
@@ -35,19 +39,19 @@ lemma lpp_recurrent_integer_member:
 lemma lpp_recurrent_scalar_binary_sound:
  assumes checked: "lpp_recurrent_scalar_binary f a b=Some d"
    and left: "lpp_recurrent_scalar_member a x" and right: "lpp_recurrent_scalar_member b y"
- shows "\<exists>v. lpp_machine_binary f x y=Some v \<and> lpp_recurrent_scalar_member d v"
+ shows "\<exists>v. lpp_scalar_binary f x y=Some v \<and> lpp_recurrent_scalar_member d v"
  using checked left right
  by (cases a; cases b; cases x; cases y)
-   (auto simp: lpp_recurrent_total_integer_operator_def
+   (auto simp: lpp_recurrent_total_integer_operator_def lpp_scalar_integer_binary_name_def
      split: option.splits if_splits lpp_machine_scalar.splits
-     dest: lpp_machine_binary_valid lpp_machine_float_binary_valid)
+     dest: lpp_scalar_binary_valid lpp_machine_float_binary_valid)
 
 fun lpp_recurrent_template_domain where
  "lpp_recurrent_template_domain domains (LPPScalarParameter x) = domains x"
 | "lpp_recurrent_template_domain domains (LPPScalarLiteral v) =
    (if lpp_machine_valid v then Some (LPPRecurrentFixed v) else None)"
 | "lpp_recurrent_template_domain domains (LPPScalarBinary f a b) =
-   (if lpp_machine_binary_name f then
+   (if lpp_scalar_binary_name f then
     (case (lpp_recurrent_template_domain domains a,lpp_recurrent_template_domain domains b) of
      (Some x,Some y) \<Rightarrow> lpp_recurrent_scalar_binary f x y | _ \<Rightarrow> None)
     else None)"
@@ -82,7 +86,7 @@ next
  obtain da db where left: "lpp_recurrent_template_domain domains a=Some da"
    and right: "lpp_recurrent_template_domain domains b=Some db"
    and operated: "lpp_recurrent_scalar_binary f da db=Some d"
-   and name: "lpp_machine_binary_name f"
+   and name: "lpp_scalar_binary_name f"
    using LPPScalarBinary.prems by (auto split: option.splits prod.splits if_splits)
  obtain x where mx: "lpp_recurrent_scalar_member da x"
    and ex: "lpp_stable_scalar_evaluation (lpp_binary64_profile_operation fallback)
@@ -92,12 +96,12 @@ next
    and ey: "lpp_stable_scalar_evaluation (lpp_binary64_profile_operation fallback)
      (lp_ieval (lpp_scalar_template_term b) eta) (lpp_machine_value y)"
    using LPPScalarBinary.hyps(2)[OF right] by blast
- obtain v where operation: "lpp_machine_binary f x y=Some v"
+ obtain v where operation: "lpp_scalar_binary f x y=Some v"
    and member: "lpp_recurrent_scalar_member d v"
    using lpp_recurrent_scalar_binary_sound[OF operated mx my] by blast
  have profile: "lpp_binary64_profile_operation fallback (LPCUser f)
      [lpp_machine_value x,lpp_machine_value y]=Some (lpp_machine_value v)"
-   using lpp_machine_binary_profile[OF lpp_recurrent_member_valid[OF mx]
+   using lpp_scalar_binary_profile[OF lpp_recurrent_member_valid[OF mx]
      lpp_recurrent_member_valid[OF my] name] operation by simp
  have evaluation: "lpp_stable_scalar_evaluation (lpp_binary64_profile_operation fallback)
      (lp_ieval (lpp_scalar_template_term (LPPScalarBinary f a b)) eta) (lpp_machine_value v)"
