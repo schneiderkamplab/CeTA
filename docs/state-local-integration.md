@@ -2780,3 +2780,27 @@ checks, strict replay and complete authorized receipts cover every solved root.
 Pinned evidence is in the adjacent Ferrum checkout at
 `docs/data/prolog-domain-cuts-20261116.json`. Matched-profile superiority and
 protected-category production promotion remain pending.
+
+## Scope-invariant pending-goal source loops (2026-11-16)
+
+CeTA `08da0a878d4bbc53702059f92f2dff7d9817d687` on `codex/prolog-production-integration` extends
+`LP_Prolog_Checked_Builtin_Trace` and the binary64 source/XML/code interfaces
+with complete goal cores. Scope invariance, nonempty checked execution,
+barrier suffixes and source initialization instantiate the existing shared
+barrier-pumping theorem. Old atomic certificates remain replayable; the
+source semantics and established SEG are unchanged. The concrete executable
+equation is proved from the locale definition. No soundness dependency uses
+skipped proofs or oracles, and no generated logic was patched.
+
+Unified checker SHA-256 `ebc745a4a5fd3c2e77b8d15ab70b56f28924c93bb39e7e2ad510df1e3695526c` is frozen at
+`target/installed-prolog-goal-trace-1596/ceta`. Export 1594 and install 1595
+bind the source snapshots; LP-only build 1596 reuses seven category libraries.
+Verified heap 1597 is retained. Ferrum `27ba22834d2e485978499a70d4c04ceda49a24ca` certifies
+86 YES + 94 NO over 221 roots, preserving all
+179 prior verdicts and all 84 YES + 9 NO LP-with-cut results. Every retained
+result has original-source audit, two unified checks, strict replay and an
+authorized reconstruction receipt. There are
+362 mutation checks and
+38 fixture replays. Evidence is pinned in the
+adjacent Ferrum checkout at `docs/data/prolog-goal-trace-20261116.json`.
+Matched-profile superiority and protected-category promotion remain open.
