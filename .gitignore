@@ -7,3 +7,4 @@ __pycache__/
 
 # macOS resource forks are not generated checker source.
 ._*
+thys/Category_Specifications/notes.txt~
