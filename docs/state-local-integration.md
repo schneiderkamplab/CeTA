@@ -2547,3 +2547,33 @@ The [Ferrum pinned audit](../../ferrum-prolog-release/docs/data/prolog-arithmeti
 records both implementations, frozen source hashes, guidance and per-root
 search/checking evidence. The source gain is Weinert `prime.pl`; recurring
 abstract residuals found during diagnosis are not counted as source NOs.
+
+## Prolog evaluated-input helper contracts, 2026-11-16
+
+Integration `12b70142623856baaa43855b5f7d556c6c81f809` on
+`codex/prolog-production-integration` preserves successful numeric comparisons
+in the established helper model and checks actual-return value-domain and
+conditional order summaries. The new component backend checks every selected
+helper dependency and its observation position before composing the existing
+numeric child proof. Groundness and comparisons alone do not imply integer
+values. Legacy source strategies and proof formats remain valid.
+
+Isabelle integration 1495 and export 1496 passed. The generated source is
+installed through `scripts/unified-exports.json` and
+`tests/unified/exports/lp-source-stable-mixed.tar.gz`; generated checking logic
+was not patched. Export took 412.609 seconds. Unified build 1498 rebuilt LP in
+510.8 seconds and reused seven unchanged libraries. Its checker SHA-256 is
+`5a34aacae9e4838f767bec1f0fbf15cfa2f4d8580fbec93d6b4a0c9f27089430`.
+
+Ferrum `3d3f077e9aba28fded49df368381026b354b1b68` certifies and strictly replays
+86 YES + 52 NO on all 221 Prolog roots, preserving every prior verdict and
+adding Euler `euler-03.pl`. All 138 results have original-source audits, two
+checks and authorized reconstruction receipts. LP-with-cut retains 84 YES +
+9 NO with this same checker. Three source-family proofs, thirteen controls,
+28 new mutation checks, 106 legacy mutation checks and 23 packaged fixture
+replays pass. The protected-category production promotion gate remains open.
+
+The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-numeric-returns-20261116.json)
+records frozen sources, artifact identities and separate search/checking times.
+The [Ferrum ledger](../../ferrum-prolog-release/docs/state-of-the-art.md) records
+the next family-sized cohort work and the limits of the current contract scan.
