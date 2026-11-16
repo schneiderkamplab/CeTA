@@ -91,23 +91,63 @@ SRS_Relative_Spec.thy
   Maybe add an auxiliary definition in the style of TRS_Relative_Spec?
 
 
-Higher_Order_Spec_Base.thy
-
-Higher_Order_Spec.thy
-
-Higher_Order_Sorts_Spec.thy
-
-ITS_Spec.thy
-
 LP_Terms_Spec.thy
+-----------------
+- definition logic_tree
+  Not sure I understand why the codatatype
+
+- definition logic_subst
+  The first argument of the substitution is a string?!
+
+- definition logic_eval
+  This is the same as logic_subst (albeit written differently)
+
+- definition logic_subtree
+  Arguments are (intuitively) in the wrong order
+
+- definition logic_substitution
+  Not sure what this means (no types)
+
 
 LP_Spec_Base.thy
+----------------
+- definition logic_atom
+  Here we have yet a different way to deal with arities (an "atom" is a pair (name,arity).
+
+- definition logic_clause
+  Here the type of variables is hardcoded to be string (why?)
+
+- definition logic_mgu
+  "logic_subst" and "logic_eval" are used indistinctively...
+  I don't get the complexity. There should only be one substitution as argument. I would expect something like
+    logic_mgu D t1 t2 s \<longleftrightarrow>
+      logic_substitution D s \<and>
+      logic_atom_map (logic_subst s) t1 = logic_atom_map (logic_subst s) t2 \<and>
+      (\<forall>u. logic_substitution D u \<longrightarrow>
+        logic_atom_map (logic_subst u) t1 = logic_atom_map (logic_subst u) t2) \<longrightarrow>
+	(\<exists> v. logic_substitution D v \<and>
+	  [u = v \<circ> s, however this is written]))
+
+- definition logic_query
+  I don't get the variable "modes"
+
 
 LP_Finite_Spec.thy
+------------------
+- in itself, all seems well :-)
+
 
 LP_Infinite_Spec.thy
+--------------------
+- all seems well
+
 
 LP_Rational_Spec.thy
+--------------------
+- all seems well
+
+
+[oh my dear]
 
 LP_Cut_Spec_Base.thy
 
@@ -130,3 +170,11 @@ TRS_Conditional_Spec_Base.thy
 TRS_Conditional_Ordinary_Spec.thy
 
 TRS_Conditional_Operational_Spec.thy
+
+Higher_Order_Spec_Base.thy
+
+Higher_Order_Spec.thy
+
+Higher_Order_Sorts_Spec.thy
+
+ITS_Spec.thy
