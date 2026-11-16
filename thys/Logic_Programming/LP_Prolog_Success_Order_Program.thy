@@ -11,9 +11,9 @@ fun lpp_check_order_facts where
 lemma lpp_check_order_facts_sound:
   assumes compatible: "lpp_stable_integer_operations operation"
     and checked: "lpp_check_order_facts summaries increasing bs gs known fs"
-    and known: "\<And>t. t\<in>set known \<Longrightarrow> lpp_order_bound_holds increasing eta n t"
+    and known: "\<And>t. t\<in>set known \<Longrightarrow> lpp_order_bound_holds operation increasing eta n t"
     and guards: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) eta) gs"
-    and helpers: "list_all (\<lambda>b. lpp_order_summaries_hold summaries (lpp_success_atom_eval b eta)) bs"
+    and helpers: "list_all (\<lambda>b. lpp_order_summaries_hold operation summaries (lpp_success_atom_eval b eta)) bs"
   shows "\<forall>f\<in>set fs. \<exists>m. eta (lpp_order_fact_variable f)=lpp_integer_value m \<and>
     lpp_order_relation increasing n m"
   using checked known
@@ -27,10 +27,10 @@ next
   obtain m where returned_value: "eta (lpp_order_fact_variable f)=lpp_integer_value m"
     and order: "lpp_order_relation increasing n m"
     using lpp_check_order_fact_sound[OF compatible check Cons.prems(2) guards helpers] by blast
-  have fresh: "lpp_order_bound_holds increasing eta n (Var (lpp_order_fact_variable f))"
+  have fresh: "lpp_order_bound_holds operation increasing eta n (Var (lpp_order_fact_variable f))"
     unfolding lpp_order_bound_holds_def
-    by (rule exI[of _ m]) (simp add: returned_value order lpp_integer_evaluation.literal)
-  have extended: "lpp_order_bound_holds increasing eta n t"
+    by (rule exI[of _ m]) (simp add: returned_value order lpp_stable_integer_literal)
+  have extended: "lpp_order_bound_holds operation increasing eta n t"
     if "t\<in>set (Var (lpp_order_fact_variable f)#known)" for t
     using that Cons.prems(2) fresh by auto
   show ?case using Cons.IH[OF rest extended] returned_value order by auto
@@ -49,8 +49,8 @@ lemma lpp_check_order_clause_sound:
   assumes compatible: "lpp_stable_integer_operations operation"
     and checked: "lpp_check_order_clause summaries (h,bs,gs) contract receipt"
     and guards: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) eta) gs"
-    and helpers: "list_all (\<lambda>b. lpp_order_summaries_hold summaries (lpp_success_atom_eval b eta)) bs"
-  shows "lpp_order_contract_holds (snd (lpp_success_atom_eval h eta)) contract"
+    and helpers: "list_all (\<lambda>b. lpp_order_summaries_hold operation summaries (lpp_success_atom_eval b eta)) bs"
+  shows "lpp_order_contract_holds operation (snd (lpp_success_atom_eval h eta)) contract"
 proof -
   obtain increasing selector j fs k t where shape: "contract=(increasing,selector,j)" "receipt=(fs,k)"
     and outpos: "j<length (snd h)" "k<length fs" "snd h!j=Var (lpp_order_fact_variable (fs!k))"
@@ -62,9 +62,9 @@ proof -
     by (simp add: o_def)
   have result: "\<exists>m. lp_ieval (snd h!j) eta=lpp_integer_value m \<and>
       lpp_order_relation increasing n m"
-    if evaluated: "lpp_integer_evaluation (lp_ieval t eta) n" for n
+    if evaluated: "lpp_stable_scalar_evaluation operation (lp_ieval t eta) (lpp_integer_value n)" for n
   proof -
-    have seed: "lpp_order_bound_holds increasing eta n u" if "u\<in>set [t]" for u
+    have seed: "lpp_order_bound_holds operation increasing eta n u" if "u\<in>set [t]" for u
       using that evaluated by (auto simp: lpp_order_bound_holds_def lpp_order_relation_def)
     have all: "\<forall>f\<in>set fs. \<exists>m. eta (lpp_order_fact_variable f)=lpp_integer_value m \<and>
         lpp_order_relation increasing n m"
@@ -76,32 +76,35 @@ proof -
 qed
 
 definition lpp_check_order_rows where
-  "lpp_check_order_rows summaries c receipts = (case c of (h,bs,gs) \<Rightarrow>
-    list_all2 (lpp_check_order_clause summaries c) (summaries (fst h,length (snd h))) receipts)"
+  "lpp_check_order_rows summaries P c receipts = (case c of (h,bs,gs) \<Rightarrow>
+    list_all2 (lpp_check_order_clause summaries (h,bs,lpp_numeric_enriched_guards P bs gs)) (summaries (fst h,length (snd h))) receipts)"
 
 definition lpp_check_order_program where
-  "lpp_check_order_program summaries P receipts = list_all2 (lpp_check_order_rows summaries) P receipts"
+  "lpp_check_order_program summaries P receipts = list_all2 (lpp_check_order_rows summaries P) P receipts"
 
 theorem lpp_check_order_program_sound:
   assumes compatible: "lpp_stable_integer_operations operation"
     and checked: "lpp_check_order_program summaries P receipts"
     and success: "lpp_guarded_success P (lpp_stable_scalar_evaluation operation) a"
-  shows "lpp_order_summaries_hold summaries a"
-proof (rule lpp_magnitude_success_invariant[OF success])
+  shows "lpp_order_summaries_hold operation summaries a"
+proof (rule lpp_success_invariant_with_calls[OF success])
   fix h bs gs eta
   assume member: "(h,bs,gs)\<in>set P"
     and guards: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) eta) gs"
-    and helpers: "list_all (\<lambda>b. lpp_order_summaries_hold summaries (lpp_success_atom_eval b eta)) bs"
-  obtain rows where row: "lpp_check_order_rows summaries (h,bs,gs) rows"
+    and actual: "list_all (lpp_guarded_success P (lpp_stable_scalar_evaluation operation)) (map (\<lambda>b. lpp_success_atom_eval b eta) bs)"
+    and helpers: "list_all (\<lambda>b. lpp_order_summaries_hold operation summaries (lpp_success_atom_eval b eta)) bs"
+  have enriched: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) eta) (lpp_numeric_enriched_guards P bs gs)"
+    by (rule lpp_numeric_enriched_guards_sound[OF guards actual])
+  obtain rows where row: "lpp_check_order_rows summaries P (h,bs,gs) rows"
     using lpp_magnitude_list_all2_member[OF checked[unfolded lpp_check_order_program_def] member] by blast
-  have result: "lpp_order_contract_holds (snd (lpp_success_atom_eval h eta)) contract"
+  have result: "lpp_order_contract_holds operation (snd (lpp_success_atom_eval h eta)) contract"
     if selected: "contract\<in>set (summaries (fst h,length (snd h)))" for contract
   proof -
-    obtain receipt where clause: "lpp_check_order_clause summaries (h,bs,gs) contract receipt"
+    obtain receipt where clause: "lpp_check_order_clause summaries (h,bs,lpp_numeric_enriched_guards P bs gs) contract receipt"
       using lpp_magnitude_list_all2_member[OF row[unfolded lpp_check_order_rows_def, simplified] selected] by blast
-    show ?thesis by (rule lpp_check_order_clause_sound[OF compatible clause guards helpers])
+    show ?thesis by (rule lpp_check_order_clause_sound[OF compatible clause enriched helpers])
   qed
-  show "lpp_order_summaries_hold summaries (lpp_success_atom_eval h eta)"
+  show "lpp_order_summaries_hold operation summaries (lpp_success_atom_eval h eta)"
     using result by (auto simp: lpp_order_summaries_hold_def lpp_success_atom_eval_def list_all_iff)
 qed
 

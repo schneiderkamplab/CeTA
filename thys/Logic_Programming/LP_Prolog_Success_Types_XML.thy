@@ -23,6 +23,8 @@ definition lpp_success_guard_parser where
   "lpp_success_guard_parser =
     (xml_singleton (STR ''integerGuard'') lpc_term_parser LPPSInteger) XMLor
     (XMLdo (STR ''evaluationGuard'') {e\<leftarrow>lpc_term_parser; t\<leftarrow>lpc_term_parser; xml_return (LPPSEvaluates e t)}) XMLor
+    (XMLdo (STR ''numericSuccessGuard'') {c\<leftarrow>xml_nat (STR ''comparison'');
+      a\<leftarrow>lpc_term_parser; b\<leftarrow>lpc_term_parser; xml_return (LPPSNumeric c a b)}) XMLor
     (xml_singleton (STR ''opaqueGuard'') lpc_term_parser LPPSOpaque)"
 
 definition lpp_integer_fact_parser where

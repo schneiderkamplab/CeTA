@@ -41,18 +41,21 @@ definition order_test_receipts where
 lemma order_contract_recursive_wrapper:
   "lpp_check_order_program order_test_table order_test_program order_test_receipts"
   by (simp add: lpp_check_order_program_def lpp_check_order_rows_def lpp_check_order_clause_def
-    order_test_table_def order_test_program_def order_test_receipts_def lpp_order_relation_def)
+    order_test_table_def order_test_program_def order_test_receipts_def lpp_order_relation_def
+    lpp_numeric_enriched_guards_def lpp_numeric_call_guards_def lpp_numeric_model_check_def lpp_numeric_return_guards_def)
 
 lemma order_contract_missing_clause_receipt:
   "\<not>lpp_check_order_program order_test_table order_test_program (tl order_test_receipts)"
   by (simp add: lpp_check_order_program_def lpp_check_order_rows_def lpp_check_order_clause_def
-    order_test_table_def order_test_program_def order_test_receipts_def lpp_order_relation_def)
+    order_test_table_def order_test_program_def order_test_receipts_def lpp_order_relation_def
+    lpp_numeric_enriched_guards_def lpp_numeric_call_guards_def lpp_numeric_model_check_def lpp_numeric_return_guards_def)
 
 lemma order_contract_missing_helper_dependency:
   "\<not>lpp_check_order_program (\<lambda>signature. if signature=(''wrapper'',1) then [(True,LPPOrderConstant 2,0)] else [])
     order_test_program order_test_receipts"
   by (simp add: lpp_check_order_program_def lpp_check_order_rows_def lpp_check_order_clause_def
-    order_test_program_def order_test_receipts_def)
+    order_test_program_def order_test_receipts_def
+    lpp_numeric_enriched_guards_def lpp_numeric_call_guards_def lpp_numeric_model_check_def lpp_numeric_return_guards_def)
 
 lemma order_contract_wrong_shift_direction:
   "\<not>lpp_check_order_bound True [Var ''x'']

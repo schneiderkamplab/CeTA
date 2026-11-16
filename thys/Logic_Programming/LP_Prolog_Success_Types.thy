@@ -13,6 +13,7 @@ datatype 'v lpp_success_guard =
     LPPSInteger "(string lp_cut_symbol,'v) term"
   | LPPSEvaluates "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
   | LPPSOpaque "(string lp_cut_symbol,'v) term"
+  | LPPSNumeric nat "(string lp_cut_symbol,'v) term" "(string lp_cut_symbol,'v) term"
 
 type_synonym 'v lpp_success_clause =
   "'v lpp_success_atom \<times> 'v lpp_success_atom list \<times> 'v lpp_success_guard list"
@@ -21,10 +22,26 @@ type_synonym lpp_success_summary = "(string \<times> nat) \<Rightarrow> nat list
 definition lpp_is_integer where
   "lpp_is_integer t = (\<exists>n. t=lpp_integer_value n)"
 
+text \<open>A successful numerical test retains finite operands and successful
+operand evaluations. Its order consequence is conditional on integer values;
+finite ground expressions and floating values do not imply integer typing.
+Groundness makes this contract stable under later helper substitutions.\<close>
+fun lpp_success_numeric_relation :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> bool" where
+  "lpp_success_numeric_relation 0 n m = (n<m)"
+| "lpp_success_numeric_relation (Suc 0) n m = (n\<le>m)"
+| "lpp_success_numeric_relation (Suc (Suc 0)) n m = (n=m)"
+| "lpp_success_numeric_relation (Suc (Suc (Suc 0))) n m = (n\<noteq>m)"
+| "lpp_success_numeric_relation _ n m = False"
+
 fun lpp_success_guard_holds where
   "lpp_success_guard_holds E eta (LPPSInteger t) = lpp_is_integer (lp_ieval t eta)"
 | "lpp_success_guard_holds E eta (LPPSEvaluates e t) = E (lp_ieval e eta) (lp_ieval t eta)"
 | "lpp_success_guard_holds E eta (LPPSOpaque t) = True"
+| "lpp_success_guard_holds E eta (LPPSNumeric c a b) =
+    (lp_seg_ground (lp_ieval a eta) \<and> lp_seg_ground (lp_ieval b eta) \<and>
+     (\<exists>u v. E (lp_ieval a eta) u \<and> E (lp_ieval b eta) v \<and>
+     (\<forall>n m. u = lpp_integer_value n \<longrightarrow>
+       v = lpp_integer_value m \<longrightarrow> lpp_success_numeric_relation c n m)))"
 
 definition lpp_eval_integer_contract :: "'v itself \<Rightarrow>
   ((string lp_cut_symbol,'w) lp_iterm \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm \<Rightarrow> bool) \<Rightarrow> bool" where

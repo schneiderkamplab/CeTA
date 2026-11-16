@@ -41,12 +41,12 @@ proof -
     using selected by (auto simp: lpp_order_use_def split: prod.splits if_splits lpp_order_base.splits)
   have actual: "lpp_guarded_success P (lpp_stable_scalar_evaluation operation) (lpp_success_atom_eval (ps!i) eta)"
     using helpers index by (simp add: list_all_length)
-  have contracts: "lpp_order_summaries_hold summaries (lpp_success_atom_eval (ps!i) eta)"
+  have contracts: "lpp_order_summaries_hold operation summaries (lpp_success_atom_eval (ps!i) eta)"
     by (rule lpp_check_order_program_sound[OF compatible program actual])
-  have contract: "lpp_order_contract_holds (map (\<lambda>t. lp_ieval t eta) (snd (ps!i))) (increasing,LPPOrderConstant k,j)"
+  have contract: "lpp_order_contract_holds operation (map (\<lambda>t. lp_ieval t eta) (snd (ps!i))) (increasing,LPPOrderConstant k,j)"
     using contracts rule_index rule
     by (auto simp: lpp_order_summaries_hold_def lpp_success_atom_eval_def list_all_length)
-  show ?thesis using contract outterm lpp_integer_evaluation.literal[of k]
+  show ?thesis using contract outterm lpp_stable_integer_literal[of operation k]
     by (auto simp: lpp_order_contract_holds_def)
 qed
 

@@ -1,5 +1,5 @@
 theory LP_Prolog_Open_Return_Builtins
- imports LP_Prolog_Open_Relational_Return LP_Prolog_Stable_Relational_Return
+ imports LP_Prolog_Open_Relational_Return LP_Prolog_Stable_Relational_Return LP_Prolog_Numeric_Return_Guards
 begin
 
 definition lpp_open_builtin_check where
@@ -7,7 +7,9 @@ definition lpp_open_builtin_check where
     f\<in>F \<and> f\<noteq>''2:is'' \<and> f\<noteq>''1:integer'' \<longrightarrow>
       (((f,lpp_return_builtin_args n),[],[])\<in>set SP \<or>
        (f=''2:length'' \<and> n=2 \<and>
-        ((f,lpp_return_builtin_args 2),[],[LPPSInteger (Var ''xx'')])\<in>set SP)))"
+        ((f,lpp_return_builtin_args 2),[],[LPPSInteger (Var ''xx'')])\<in>set SP) \<or>
+       (case lpp_numeric_return_guards f n of None \<Rightarrow> False | Some gs \<Rightarrow>
+         ((f,lpp_return_builtin_args n),[],gs)\<in>set SP)))"
 
 lemma lpp_open_stable_builtin_model:
   assumes checked: "lpp_open_builtin_check F SP"
@@ -45,17 +47,30 @@ next
       show ?thesis by (rule that[OF True]) simp
     next
       case False
-      have name: "f=''2:length''" and arity: "length ts=2"
-        and typed: "((f,lpp_return_builtin_args 2),[],[LPPSInteger (Var ''xx'')])\<in>set SP"
-        using checked selected reachable no_is no_integer False
-        by (auto simp: lpp_open_builtin_check_def)
-      have success: "lpp_finite_length_outcome (ts!0) (ts!1) (LPPBuiltinSuccess sigma)"
-        using lpp_stable_source_refines_finite[OF outcome] by (simp add: lpp_finite_source_builtin_def name)
-      have integer: "lpp_is_integer (lp_isubst (ts!1) sigma)"
-        by (rule lpp_finite_length_success_integer[OF success])
-      have guard: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) ?eta)
-        [LPPSInteger (Var ''xx'')]" using integer arity by simp
-      show ?thesis using that[of "[LPPSInteger (Var ''xx'')]"] typed arity guard by simp
+      show ?thesis
+      proof (cases "f=''2:length''")
+        case True
+        have name: "f=''2:length''" and arity: "length ts=2"
+          and typed: "((f,lpp_return_builtin_args 2),[],[LPPSInteger (Var ''xx'')])\<in>set SP"
+          using checked selected reachable no_is no_integer False True
+          by (auto simp: lpp_open_builtin_check_def lpp_numeric_return_guards_def)
+        have success: "lpp_finite_length_outcome (ts!0) (ts!1) (LPPBuiltinSuccess sigma)"
+          using lpp_stable_source_refines_finite[OF outcome] by (simp add: lpp_finite_source_builtin_def name)
+        have integer: "lpp_is_integer (lp_isubst (ts!1) sigma)"
+          by (rule lpp_finite_length_success_integer[OF success])
+        have guard: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) ?eta)
+          [LPPSInteger (Var ''xx'')]" using integer arity by simp
+        show ?thesis using that[of "[LPPSInteger (Var ''xx'')]"] typed arity guard by simp
+      next
+        case no_length: False
+        obtain gs where selected_guard: "lpp_numeric_return_guards f (length ts)=Some gs"
+          and clause: "((f,lpp_return_builtin_args (length ts)),[],gs)\<in>set SP"
+          using checked selected reachable no_is no_integer no_length False
+          by (auto simp: lpp_open_builtin_check_def split: option.splits)
+        have holds: "list_all (lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) ?eta) gs"
+          by (rule lpp_numeric_return_guards_sound[OF outcome selected_guard])
+        show ?thesis by (rule that[OF clause holds])
+      qed
     qed
     have success: "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation)
       (lpp_success_atom_eval (f,lpp_return_builtin_args (length ts)) ?eta)"
@@ -84,8 +99,12 @@ proof -
     by code_simp+
   have ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''" "f\<noteq>''2:length''"
     using probe excluded by blast+
+  have no_numeric: "lpp_numeric_return_guards f (length ts)=None"
+    using outcome ordinary(1)
+    by (auto simp: lpp_numeric_return_guards_def lpp_stable_source_builtin_def
+      lpp_stable_compare_outcome_def split: option.splits prod.splits if_splits)
   have clause: "((f,lpp_return_builtin_args (length ts)),[],[])\<in>set SP"
-    using checked selected reachable ordinary by (auto simp: lpp_open_builtin_check_def)
+    using checked selected reachable ordinary no_numeric by (auto simp: lpp_open_builtin_check_def)
   let ?us = "map (\<lambda>t. lp_isubst t sigma) ts"
   let ?eta = "\<lambda>v. ?us!(length v-1)"
   have success: "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation)
@@ -119,8 +138,12 @@ proof -
       simp del: lpp_integer_source_builtin.simps split: option.splits if_splits)
   have ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''" "f\<noteq>''2:length''"
     using finite excluded by auto
+  have no_numeric: "lpp_numeric_return_guards f (length ts)=None"
+    using outcome ordinary(1) control
+    by (auto simp: lpp_numeric_return_guards_def lpp_stable_source_builtin_def
+      lpp_stable_compare_outcome_def split: option.splits prod.splits if_splits)
   have clause: "((f,lpp_return_builtin_args (length ts)),[],[])\<in>set SP"
-    using checked selected reachable ordinary by (auto simp: lpp_open_builtin_check_def)
+    using checked selected reachable ordinary no_numeric by (auto simp: lpp_open_builtin_check_def)
   let ?us = "map (\<lambda>t. lp_isubst t sigma) ts"
   let ?eta = "\<lambda>v. ?us!(length v-1)"
   have success: "lpp_guarded_success SP (lpp_stable_scalar_evaluation operation)

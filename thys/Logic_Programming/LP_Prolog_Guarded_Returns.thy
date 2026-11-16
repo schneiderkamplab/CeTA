@@ -19,7 +19,7 @@ lemma lpp_success_guard_integer_subst:
     and sigma :: "'w \<Rightarrow> (string lp_cut_symbol,'w) lp_iterm"
   assumes "lpp_success_guard_holds lpp_integer_result eta success_guard"
   shows "lpp_success_guard_holds lpp_integer_result (\<lambda>x. lp_isubst (eta x) sigma) success_guard"
-  using assms by (cases success_guard) (auto simp: lp_ieval_subst[symmetric]
+  using assms by (cases success_guard) (auto simp: lp_ieval_subst[symmetric] lp_seg_ground_subst
     intro: lpp_is_integer_subst lpp_integer_result_subst)
 
 lemma lpp_guarded_success_integer_subst:

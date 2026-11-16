@@ -13,6 +13,7 @@ fun lpp_success_guard_subst where
   "lpp_success_guard_subst (LPPSInteger t) mu = LPPSInteger (t\<cdot>mu)"
 | "lpp_success_guard_subst (LPPSEvaluates e t) mu = LPPSEvaluates (e\<cdot>mu) (t\<cdot>mu)"
 | "lpp_success_guard_subst (LPPSOpaque t) mu = LPPSOpaque (t\<cdot>mu)"
+| "lpp_success_guard_subst (LPPSNumeric c a b) mu = LPPSNumeric c (a\<cdot>mu) (b\<cdot>mu)"
 
 lemma lpp_success_atom_subst_eval:
   "lpp_success_atom_eval (lpp_success_atom_subst a mu) eta =

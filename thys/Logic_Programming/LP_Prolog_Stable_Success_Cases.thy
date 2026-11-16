@@ -10,6 +10,7 @@ fun lpp_success_case_observations where
   "lpp_success_case_observations (LPPSInteger t) = [LPPOInteger t]"
 | "lpp_success_case_observations (LPPSEvaluates e t) = [LPPOEvaluation e t]"
 | "lpp_success_case_observations (LPPSOpaque t) = []"
+| "lpp_success_case_observations (LPPSNumeric c a b) = []"
 
 lemma lpp_success_case_observations_sound:
   "lpp_success_guard_holds (lpp_stable_scalar_evaluation operation) eta g \<Longrightarrow>

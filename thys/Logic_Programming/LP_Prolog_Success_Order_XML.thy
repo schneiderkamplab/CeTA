@@ -6,7 +6,9 @@ partial_function (sum_bot) lpp_order_bound_parser :: "lpp_order_bound xmlt" wher
 [code]: "lpp_order_bound_parser x = (
   (XMLdo (STR ''knownOrder'') {i\<leftarrow>xml_nat (STR ''position''); xml_return (LPPOrderKnown i)}) XMLor
   (XMLdo (STR ''shiftOrder'') {p\<leftarrow>lpp_order_bound_parser; k\<leftarrow>xml_int (STR ''integer'');
-    xml_return (LPPOrderShift p k)})) x"
+    xml_return (LPPOrderShift p k)}) XMLor
+  (XMLdo (STR ''subtractOrder'') {p\<leftarrow>lpp_order_bound_parser; k\<leftarrow>xml_int (STR ''integer'');
+    xml_return (LPPOrderSubtract p k)})) x"
 
 definition lpp_order_base_parser where
   "lpp_order_base_parser =
@@ -15,6 +17,8 @@ definition lpp_order_base_parser where
 
 definition lpp_order_fact_parser where
   "lpp_order_fact_parser =
+    (XMLdo (STR ''comparedEvaluationOrder'') {i\<leftarrow>xml_nat (STR ''guard''); j\<leftarrow>xml_nat (STR ''comparison'');
+      p\<leftarrow>lpp_order_bound_parser; v\<leftarrow>xml_text (STR ''var''); xml_return (LPPOrderComparedEvaluation i j p v)}) XMLor
     (XMLdo (STR ''evaluationOrder'') {i\<leftarrow>xml_nat (STR ''guard''); p\<leftarrow>lpp_order_bound_parser;
       v\<leftarrow>xml_text (STR ''var''); xml_return (LPPOrderEvaluation i p v)}) XMLor
     (XMLdo (STR ''helperOrder'') {i\<leftarrow>xml_nat (STR ''call''); r\<leftarrow>xml_nat (STR ''rule'');

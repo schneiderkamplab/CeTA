@@ -6,6 +6,7 @@ fun lpp_context_guard_terms where
   "lpp_context_guard_terms (LPPSInteger t) = [t]"
 | "lpp_context_guard_terms (LPPSEvaluates e t) = [e,t]"
 | "lpp_context_guard_terms (LPPSOpaque t) = [t]"
+| "lpp_context_guard_terms (LPPSNumeric c a b) = [a,b]"
 fun lpp_context_observation_terms where
   "lpp_context_observation_terms (LPPOGround t) = [t]"
 | "lpp_context_observation_terms (LPPOEquation a b) = [a,b]"

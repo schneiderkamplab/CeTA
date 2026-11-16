@@ -11,6 +11,7 @@ fun lpp_rewrite_success_guard where
 | "lpp_rewrite_success_guard s t (LPPSEvaluates e a) =
     LPPSEvaluates (lp_equation_replace s t e) (lp_equation_replace s t a)"
 | "lpp_rewrite_success_guard s t (LPPSOpaque a) = LPPSOpaque (lp_equation_replace s t a)"
+| "lpp_rewrite_success_guard s t (LPPSNumeric c a b) = LPPSNumeric c (lp_equation_replace s t a) (lp_equation_replace s t b)"
 
 fun lpp_rewrite_observation where
   "lpp_rewrite_observation s t (LPPOGround a) = LPPOGround (lp_equation_replace s t a)"

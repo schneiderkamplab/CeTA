@@ -10,6 +10,7 @@ fun lpp_guard_ground_vars where
   "lpp_guard_ground_vars (LPPSInteger t) = vars_term t"
 | "lpp_guard_ground_vars (LPPSEvaluates e t) = vars_term e \<union> vars_term t"
 | "lpp_guard_ground_vars (LPPSOpaque t) = {}"
+| "lpp_guard_ground_vars (LPPSNumeric c a b) = {}"
 
 definition lpp_guards_ground where
   "lpp_guards_ground gs = Union (set (map lpp_guard_ground_vars gs))"

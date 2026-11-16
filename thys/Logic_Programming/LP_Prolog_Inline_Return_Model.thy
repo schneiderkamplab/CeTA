@@ -121,7 +121,7 @@ lemma lpp_success_guard_evaluation_subst:
   assumes stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
     and holds: "lpp_success_guard_holds E eta g"
   shows "lpp_success_guard_holds E (\<lambda>x. lp_isubst (eta x) sigma) g"
-  using holds by (cases g) (auto simp: lp_ieval_subst[symmetric]
+  using holds by (cases g) (auto simp: lp_ieval_subst[symmetric] lp_seg_ground_subst
     intro: lpp_is_integer_subst stable)
 
 lemma lpp_guarded_success_evaluation_subst:
