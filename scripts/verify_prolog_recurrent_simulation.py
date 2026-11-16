@@ -77,13 +77,22 @@ if args.export_directory:
         export_constants = ['check_lpp_established_stable_mixed_xml',
                             'check_lpp_established_stopped_mixed_xml',
                             'check_lpp_ground_integer_no_xml',
-                            'check_lpp_machine_no_xml']
+                            'check_lpp_machine_no_xml',
+                            'check_lpp_call_trace_xml',
+                            'check_lpp_scalar_recurrence_xml']
         export_module = 'Prolog_Stable_Mixed_Generated'
     driver.write_text(
         'theory ' + driver_name + '\n imports ' + json.dumps(str(export_theory)) + ' ' +
         json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Integer_Recurrence_Code')) +
-        ((' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Ground_Integer_NO_Code')) + ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Binary64_NO_Code'))) if args.export_stopped_mixed else '') +
-        '\nbegin\nML \\<open>\n' +
+        ((' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Ground_Integer_NO_Code')) + ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Binary64_NO_Code')) +
+          ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_NO_Call_Trace_XML')) +
+          ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_List_Observation_Code')) +
+          ' ' + json.dumps(str(root/'thys/Logic_Programming/LP_Prolog_Scalar_Recurrence_XML'))) if args.export_stopped_mixed else '') +
+        '\nbegin\n' +
+        ('code_printing constant Array \\<rightharpoonup> (Haskell) \"Array.Array\"\n' +
+         'code_printing type_constructor array \\<rightharpoonup> (Haskell) \"Array.Array/ _\"\n'
+         if args.export_stopped_mixed else '') +
+        'ML \\<open>\n' +
         'val (modules, _) = Code_Target.produce_code @{context} true\n' +
         '  [' + ', '.join('@{const_name ' + name + '}' for name in export_constants) + '] "Haskell" "' + export_module + '" NONE [];\n' +
         'val root = Path.explode ' + json.dumps(str(export)) + ';\n' +
