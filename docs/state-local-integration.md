@@ -2852,3 +2852,20 @@ checks, 42 packaged fixture replays, three native/strict family proofs,
 [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-failed-choice-20261117.json).
 Priority 1 remains active. Matched superiority and protected-category production
 promotion remain gated.
+
+## Finite-input Prolog source root (2026-11-17, integration pending)
+
+Resident checks 1648–1653 verify original-query initialization, a reachable
+signature check against the complete source program, and the finite direct
+XML soundness theorem. Unreachable library clauses are retained with original
+indices; variable heads, missing reachable callees, unjustified initial free
+facts and absent actions are rejected. This instantiates the shared finite
+control induction and preserves the established graph and query modes.
+No oracle or skipped proof occurs in the new soundness dependencies.
+
+The adjacent Ferrum implementation consumes established residuals and routing.
+It rejects open Split/module obligations and emits a closed control certificate.
+Native fixture, audit and scheduler checks pass, including a divergent-root
+control. Isabelle XML evaluation attempt 1654 was interrupted after 137 seconds
+without a verdict. Unified export 1655 is in progress; no new accepted source
+certificate, benchmark gain or production promotion is claimed here.
