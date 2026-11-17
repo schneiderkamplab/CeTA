@@ -2997,3 +2997,47 @@ allowing existing actual-return contracts to discharge that obligation. Attempt
 fixes parsing without changing the theorem. Five continuation regressions pass
 again. Concrete preserved/integer/ground return-family adapters and the root
 constructor remain the next integration work.
+
+Resident checks 1725–1730 complete preserved, integer, ground and shape
+actual-return adapters, local component/descent assembly, the original-query
+root theorem, and mixed backend/XML composition. The new constructor
+`prologEstablishedFiniteLocalSEGMixedProof` retains the existing referenced
+component datatype, transfer contracts and common backend routing. It has not
+yet been exported to the unified executable. No benchmark gain is claimed.
+
+Runtime attempt 1731 exposed a non-executable existential in the static source
+predicate. An equivalent proved code equation fixes this; the partial equation
+in 1732 caused a match exception on cuts, and the exhaustive equation in 1733
+passes runtime generation. The same three native artifacts from Ferrum 2601
+then show complete source-assembly acceptance for `division.pl`; the list-length
+and gcd candidates reject finite-head side conditions. The latter are genuine
+remaining source obligations, not residual solver failures. Full generation
+and evaluation in 1733 took 153.916 seconds. All failed attempts remain in the
+resident log.
+
+Checks 1735–1736 prove and integrate finite-ground-template resolution:
+a finite selected call may unify with a ground clause head without every call
+argument already being ground. A finite comparison substitution and actual
+most-generality preserve the body and continuation; arbitrary rational
+substitutions are not assumed finite. Attempt 1734 exposed a missing theory
+import and is retained. The general extension is motivated by a rejected base
+clause, with no benchmark dispatch in the checker. The source assembly cohort
+and head regressions are being rerun in 1737 before unified export.
+
+Runtime 1737 accepts both division and list-length source assemblies; gcd
+retains three finite-head failures. Ten head regressions pass. Follow-up
+1741–1743 generalizes the proof to head variables covered by ground actual
+arguments: checked coverage makes the successful head instance ground, and
+finite comparison substitutions preserve body and continuation through the
+actual MGU. Twelve head regressions pass, including repeated-variable coverage,
+missing-anchor rejection and cyclic-binding rejection. This intentionally turns
+one former conservative rejection into a checked acceptance. Attempts 1738–1742
+retain syntax and type-instantiation errors; 1740's broad Metis search was
+interrupted after 26.481 seconds and fixed by separating template-variable
+and runtime-variable types. Runtime cohort 1744 and incremental export 1745
+are pending; the old unified checker remains installed.
+
+Runtime 1744 accepts all source-assembly checks for division, list length and
+gcd using the exact original native 2601 artifacts. These are source checks
+only, with residual backends deliberately absent. Export 1745 is underway;
+no installed checker or certified benchmark count has changed.

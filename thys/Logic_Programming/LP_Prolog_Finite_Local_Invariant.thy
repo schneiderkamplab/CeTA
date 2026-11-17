@@ -2,6 +2,13 @@ theory LP_Prolog_Finite_Local_Invariant
  imports LP_Prolog_Finite_Local_State
 begin
 
+lemma lpp_static_template_code [code]:
+ "lpp_static_template A g =
+   (case g of LPCAtom a \<Rightarrow>
+     (case a of Fun (LPCUser f) ts \<Rightarrow> (f,length ts)\<in>A | _ \<Rightarrow> False)
+    | LPCMeta a \<Rightarrow> False | LPCExpand a m \<Rightarrow> False | _ \<Rightarrow> True)"
+ by (cases g; auto split: term.splits lp_cut_symbol.splits)
+
 fun lpp_check_static_resolution_entry where
  "lpp_check_static_resolution_entry A P (LPCClause gs c m) =
    (c<length P \<longrightarrow> list_all (lpp_static_template A) (snd (P!c)))"

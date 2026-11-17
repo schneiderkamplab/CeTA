@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Head_Check
- imports LP_Prolog_Finite_Partial_Head LP_Prolog_Finite_Direct_State
+ imports LP_Prolog_Finite_Anchored_Head
 begin
 
 fun lpp_head_argument_separated where
@@ -33,7 +33,7 @@ fun lpp_check_head_argument_domain where
 definition lpp_check_finite_head where
  "lpp_check_finite_head G actuals hs =
    (length actuals=length hs \<and>
-     (list_all (\<lambda>a. vars_term a \<subseteq> set G) actuals \<or>
+     (lpp_check_anchored_head G actuals hs \<or> list_all (\<lambda>a. vars_term a \<subseteq> set G) actuals \<or>
       (lpp_check_separated_head hs \<and>
        list_all (\<lambda>i. lpp_check_head_argument_domain G (actuals!i) (hs!i)) [0..<length hs])))"
 
@@ -45,7 +45,20 @@ lemma lpp_checked_head_finite_terms:
    and continuation: "lpp_finite_goals gs"
  shows "lpp_finite_goals (map (lp_cut_bind m (\<lambda>t. lp_ieval t rho)) bs @
    map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) gs)"
-proof -
+proof (cases "lpp_check_anchored_head G actuals hs")
+ case True
+ have lengths: "length actuals=length hs"
+   using checked by (simp add: lpp_check_finite_head_def)
+ have equation: "map (\<lambda>t. lp_isubst (lp_ieval t eta) sigma) actuals=map (\<lambda>t. lp_ieval t rho) hs"
+   using mgu by (simp add: lpc_mgu_resolve_def map_map o_def)
+ have head: "lp_seg_ground (lp_ieval (Fun f hs) rho)"
+   by (rule lpp_checked_anchored_head_ground[OF True lengths known equation])
+ have call: "lpp_finite_term (LPIFun f (map (\<lambda>t. lp_ieval t eta) actuals))"
+   using finite by simp
+ show ?thesis by (rule lpp_finite_instance_resolution_finite[OF mgu lpp_ground_finite_term[OF head] call continuation])
+next
+ case nonground: False
+
  have old: "lpp_finite_term t" if "g\<in>set gs" "t\<in>set (lp_cut_terms g)" for g t
    using continuation that by (auto simp: lpp_finite_goals_def list_all_iff)
  show ?thesis
@@ -62,14 +75,14 @@ proof -
  next
   case False
   have separated: "lpp_separated_variable_arguments hs"
-   using checked False lpp_check_separated_head_sound by (auto simp: lpp_check_finite_head_def)
+   using checked False nonground lpp_check_separated_head_sound by (auto simp: lpp_check_finite_head_def)
   have ground: "lp_seg_ground ((map (\<lambda>t. lp_ieval t eta) actuals)!i)"
    if i: "i<length hs" and nonvar: "\<And>x. hs!i\<noteq>Var x" for i
   proof -
    obtain f ts where shape: "hs!i=Fun f ts" using nonvar by (cases "hs!i") auto
    have length: "length actuals=length hs"
     and checks: "list_all (\<lambda>j. lpp_check_head_argument_domain G (actuals!j) (hs!j)) [0..<length hs]"
-    using checked False by (auto simp: lpp_check_finite_head_def)
+    using checked False nonground by (auto simp: lpp_check_finite_head_def)
    have selected: "lpp_check_head_argument_domain G (actuals!i) (hs!i)"
     using checks i by (auto simp: list_all_iff)
    have vars: "vars_term (actuals!i) \<subseteq> set G"
