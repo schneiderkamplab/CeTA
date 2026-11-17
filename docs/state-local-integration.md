@@ -3503,3 +3503,26 @@ retain every module/Split dependency, establish required finite observations on
 actual returns, and discharge the structural residual. Complete source/name
 correspondence, native serialization, strict replay and benchmark certification
 remain unproved. The high-water mark is unchanged.
+
+
+The functor local proof table is now explicit in
+`LP_Prolog_Functor_Control_Check.thy`. Its action datatype references the existing
+cut actions and checked term-test, observed-is and univ links. The table requires
+matching lengths for states, contexts, free facts, functor facts and actions,
+checks each state's established node identity, and exposes every Some action's
+check. None remains a module-boundary obligation; it is not a solved node or a
+termination result. Existing tables and strategy atoms remain unchanged.
+
+Check 1893 passes complete-entry extraction, missing-action/missing-fact-table
+and state-mismatch rejection, wrong univ arity rejection and the arithmetic
+source-domain theorem in 6.947 seconds. The latter derives ground expression
+evaluation from checked incoming observations without assuming integer values.
+Attempt 1891's overlapping function patterns were interrupted after 41.390
+seconds and replaced by explicit case dispatch; 1892 verified that table in
+6.606 seconds. No operation coverage was removed by this implementation change.
+Evidence remains in the resident 1544 log.
+
+The table's global answer-contract theorem and module boundary composition are
+still required. The Boolean table check alone is not exported as a source
+certificate. Original-source audits, finite invariants, residual solving and
+strict replay remain outstanding, so no benchmark gain is claimed.
