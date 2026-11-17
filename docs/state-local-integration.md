@@ -2869,3 +2869,15 @@ Native fixture, audit and scheduler checks pass, including a divergent-root
 control. Isabelle XML evaluation attempt 1654 was interrupted after 137 seconds
 without a verdict. Unified export 1655 is in progress; no new accepted source
 certificate, benchmark gain or production promotion is claimed here.
+
+Finite-input source export 1655 and LP-only unified build 1657 now pass,
+reusing seven category libraries. Verified heap 1658 is retained. Unified
+checker SHA-256 `677c5501613c5706db34099e8cd719cead2d7392d4e2172ecc21bed64dc84311`
+is frozen at `target/installed-prolog-finite-direct-1657/ceta`. It accepts the
+original `sum.pl` certificate and its renamed fixture; fresh native and strict
+runs pass two checks each. The fixed-221 replay reaches 87 YES + 97 NO,
+retaining every previous result, and LP-with-cut retains 84 YES + 9 NO.
+There are 184 authorized Prolog receipts, 524 mutation checks and 43 packaged
+fixture replays. Source semantics and the established graph are unchanged.
+Priority 1 remains active for checked module/Split assembly and its remaining
+candidates. Protected-category promotion and matched superiority remain gated.
