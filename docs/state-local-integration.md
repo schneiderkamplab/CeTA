@@ -4591,3 +4591,36 @@ contract, then solve its exact residuals and bind source/profile/query before
 strict unified replay. Reuse the existing shared actual-return Split theorem;
 do not switch to the independent source-composed graph builder or reset contexts.
 Priority 1 remains unfinished. Next resident 2079; native 2714.
+
+
+### Module context and actual-return interfaces (2079–2082)
+
+The unchanged local checker export 2078 accepts context and functor transport
+for all five numbervars boundaries entering local modules: 0:19 to 19, 0:25
+to 28, 35:5 to 28, 47:17 to 35 and 47:19 to 19. These checks use native 2713
+xml-fixed equation-refined contexts and the identity execution substitutions
+reconstructed in native 2715. Empty source context rejects every nonempty target
+context; adding an unsupported ground observation rejects all five connections.
+The two Split targets still require their own context/interface instantiations.
+
+`LP_Answer_Post_Actual` adds a shared answer-contract postcomposition rule and
+an uncovered-actual-return rejection lemma. `LP_Prolog_Module_Return_Interface`
+uses the existing commuting interface lift and start relation to compose a
+module boundary with different caller/callee answer tuples. The return bridge
+is required only for actual successful execution, but remains an explicit
+premise independent of child termination. No operational semantics is added.
+
+All four new theorems pass the inherited-oracle and skip-proof audit. Resident
+2082 checks the small new theories in 0.175 and 1.848 seconds; no rebuild or
+code export. The first diagnostic attempts had SML value-restriction type
+errors; the initial generic rejection proof used an unconstrained blast search
+and was interrupted after 31.855 seconds, then replaced by an explicit proof.
+All attempts remain in `target/prolog-module-context-2079/`, including
+`Check.ML`, `check-controls.log`, `return-interface-resident.log` and the
+resident-written trust-checked `proofs-2082.log`.
+
+These are proof lemmas and boundary checks, not an accepting root constructor.
+Concrete interface maps, actual-return bridges, the two Split contracts, global
+residual discharge, source initialization and unified strict replay are still
+required. Numbervars remains UNKNOWN; priority 1 is unfinished. Next resident
+2083, native 2716.
