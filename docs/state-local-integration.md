@@ -4399,3 +4399,32 @@ serialize the native reconstructed tables and local evidence, bind source/query
 initialization, compose explicit Split/module return contracts, discharge the
 structural residuals, and run original-source audits and strict unified-checker
 replay. The goal stays active. Next native 2711, resident 2054.
+
+## Native local-evidence serialization and parser (2711; 2054–2055)
+
+Ferrum now reconstructs the local dispatcher choice for every original local
+state. Conditional head receipts must have their actual observed-spine premise
+before selection. Fresh/reflexive/pair/univ choices reference only the bound
+parent's reconstructed traces; missing or changed rows fail fresh validation.
+Serialization validates the complete parent and uses the existing source data
+encoding, retaining source predicate symbols separately from data symbols.
+
+`LP_Prolog_Separation_Witness_XML` parses this evidence using the common symbol,
+term and binding parsers. It exposes no accepting source-proof constructor.
+Resident parser definition/reload takes 0.480/0.533 seconds; incremental SML
+parser export takes 13.752 seconds. The unedited generated parser compiles and
+reads all five original files: regions 0/19/28/35/47 have 30/4/3/10/21 rows.
+Every dispatcher-family count matches the native inventory. Missing fresh binding
+fields and unknown witness tags are rejected. Evidence:
+`target/prolog-separation-witness-2054-2055-resident.log` and
+`target/prolog-separation-witness-parser-2055/{Check.ML,check.log}`; native files
+are in Ferrum `target/prolog-local-witnesses-2711/xml/`.
+
+The 68 rows comprise 30 absent rows (23 exhausted, 7 module boundaries),
+21 ordinary actions, 3 ground equalities, 6 finite-head resolutions, and 2 each
+of pair, reflexive, fresh and univ evidence. Absence is not a module proof.
+The renamed acquisition fixture, missing-row serialization mutation, finite-head
+and univ regressions pass. No full rebuild, unified checker export or certified
+gain. Next serialize actual table states, contexts, functor/separation facts,
+actions and exact links; bind source/query and explicit Split/module contracts,
+then discharge residuals and strictly replay. Next native 2712, resident 2056.
