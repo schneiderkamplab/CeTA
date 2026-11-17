@@ -4346,3 +4346,56 @@ export or new certified root. Next combine these instances and the existing
 fresh/reflexive/pair/univ rules in the executable local checker, then bind source
 and Split/module assembly, residual proofs and strict replay. Next resident 2045;
 native remains 2710.
+
+## Executable separation action and table assembly (2045–2053)
+
+The new head check binds matching, ground-anchored and observed-spine receipts to
+the actual selected call and source clause. The unification dispatcher retains
+both admitted outcomes and checks their successor conditions. Dedicated executable
+side checks cover separated pairs, context-reflexive equality, normalized fresh
+clause acquisition and initialized univ observations. These checks reuse the
+established semantic proofs and all ordinary source-action checks.
+
+`LP_Prolog_Separation_Action_Check` dispatches these rule families from explicit
+local evidence. `LP_Prolog_Separation_Table_Check` checks witness and separation
+coverage for every source row, then derives local answer contracts without a
+separate assumption for each local action. Empty states use the exhausted-state
+rule. Nonempty rows without actions still require external module contracts;
+residual SN, initial knowledge and finite execution remain explicit premises.
+Missing witness/context rows, missing action evidence and orphan witnesses are
+rejected. This does not discharge Split boundaries or certify a source root.
+
+Native diagnostic 2710 confirms both original observed-spine sites retain their
+required observations: region 0/local 23 and region 35/local 3. The unchanged
+native binary also passes the renamed producer/consumer acquisition fixture
+(4.50 seconds) and the finite-head context/mutation regression. Evidence is
+Ferrum `target/prolog-separation-head-check-2710/{inventory,fixture,head}.log`.
+The inventory includes clause-shaped stack-split rows; these are not additional
+resolution actions. The actual resolution count remains eight.
+
+The first incremental code-generation check exposed a non-executable existential
+list tail in `lpp_check_fresh_univ_clause`. An equivalent proved list-pattern code
+equation preserves the logical predicate, freshness conditions and soundness
+proof. The failed export and corrected attempts are retained with the resident
+log; this is a Prolog integration issue, not an unrelated tool issue.
+
+Resident 2045–2052 and their corrected reloads pass with zero oracles/skips.
+The combined dispatcher initially loads in 5.675 seconds; the final table proof
+reload takes 0.983 seconds. Ten additional head/unification regression lemmas
+pass. The complete local-table predicate generates 439,932 bytes of SML in
+34.801 seconds and compiles successfully in Poly/ML. The generated module is
+unchanged; the external compile wrapper supplies the standard reference alias
+and disables the `before` infix notation. Generated SHA-256 is
+`a7a82ae184bec72e7c886cd24b77ac20170ad51e1be6c2537ad3de4eeba41b67`.
+Artifacts: `target/prolog-separation-check-code-2053/`, including the export driver,
+compiler wrapper, generated module and compile logs. All attempted loads and
+corrections are retained in `target/prolog-separation-dispatch-2045-2053-resident.log`.
+The standard in-process compiler check lacked `ISABELLE_TMP`; the explicit
+persistent-directory workaround is recorded in Ferrum's non-Prolog issue log.
+
+This was an incremental local code-generation/compilation check, not a rebuilt
+unified checker, source certificate or new benchmark gain. Remaining work is to
+serialize the native reconstructed tables and local evidence, bind source/query
+initialization, compose explicit Split/module return contracts, discharge the
+structural residuals, and run original-source audits and strict unified-checker
+replay. The goal stays active. Next native 2711, resident 2054.
