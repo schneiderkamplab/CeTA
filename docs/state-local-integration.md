@@ -3423,3 +3423,28 @@ These remain unexported proof components. Remaining graph work includes other
 local actions, normalized functor transport where required, initialization and
 complete table coverage, module/Split interfaces and finite structural residual
 measures. No new root certificate or benchmark gain is claimed.
+
+
+Functor-aware administrative and allocation actions now reuse the shared cut
+machine's exact next state, scope swaps and return-event checks.
+`LP_Prolog_Functor_Admin.thy`, `LP_Prolog_Functor_Allocate.thy` and
+`LP_Prolog_Functor_Cut_Actions.thy` retain functor relations in the same child
+valuation as arithmetic contexts and ground/free knowledge. The dispatcher uses
+the existing action datatype, including terminal, inconsistent, administrative,
+case, meta-call, equality and resolution actions. Checks 1880–1881 pass these
+proofs; 1883 includes missing-table rejection and dependency audits.
+
+`LP_Prolog_Functor_Term_Test.thy` checks term tests on both outcomes, proves exact
+operation correspondence for the extended univ source interpretation and proves
+the source domain admitted. Failure keeps the incoming facts on the resumed
+saved alternative. Check 1884 passes the proofs, missing-table control and audit
+in 3.646 seconds. Attempt 1882 needed controlled rewriting of the existing
+source-comparison correspondence rather than expansion of all comparisons.
+Only affected resident theories and invalidated dependencies were loaded; no
+full rebuild, export or checker executable change occurred. Evidence remains
+in the resident 1544 log.
+
+The candidate still requires arithmetic actions with functor preservation,
+normalized fact projection where needed, complete table and module/Split
+composition, finite structural measures and residual discharge. These checks
+are not benchmark certificates and do not change the certified baseline.
