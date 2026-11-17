@@ -2804,3 +2804,24 @@ authorized reconstruction receipt. There are
 38 fixture replays. Evidence is pinned in the
 adjacent Ferrum checkout at `docs/data/prolog-goal-trace-20261116.json`.
 Matched-profile superiority and protected-category promotion remain open.
+
+## Ordered Prolog head failures (2026-11-17)
+
+Proof commit `b9c6c45` and export integration `f24fc08` add checked failure
+of earlier repeated-variable and linear nullary-constructor heads to the
+existing recurrent source graph. Factored most-general resolution preserves
+the caller continuation and fresh clause variables. False guards restore the
+original saved alternatives; dummy constructor names cannot supply facts.
+Old variable-head receipts remain replayable. Source semantics is unchanged.
+
+The unified checker at `target/installed-prolog-head-failure-1608/ceta` has
+SHA-256 `c8d0df480dfbe8caced3f146d605740ece426e89ac3497132c144f1d853b7c74`.
+Isabelle export 1606 and LP-only build 1608 pass; seven category libraries
+are reused. Verified resident heap 1609 is retained. Both new benchmark NOs,
+`exercise_range.pl` and `extend.pl`, pass two checker runs and strict replay.
+The fixed-221 campaign retains all prior verdicts at **86 YES + 96 NO**;
+LP-with-cut retains **84 YES + 9 NO**. There are 414 mutation checks, 40
+packaged fixture replays, and 701 passing shared native tests (26 ignored).
+The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-head-failure-20261117.json)
+binds original sources, reconstruction receipts, binaries and guidance.
+Protected-category production promotion and matched superiority remain gated.
