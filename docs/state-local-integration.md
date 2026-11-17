@@ -3571,3 +3571,28 @@ valuation type. Evidence remains in the resident 1544 log.
 The global table theorem, module/Split boundary contracts, concrete finite
 invariant discharge and structural residual remain open. No native certificate,
 checker export, full rebuild or new benchmark verdict is claimed.
+
+
+`LP_Prolog_Functor_Table_Contract.thy` now proves whole-table answer-contract
+composition using the shared `lp_answer_contract_modular` theorem. Its root
+requires residual termination, all incoming ground/free/stable/functor facts,
+and the invariant. Scope renaming preserves that invariant explicitly. Every
+Some action requires its node contract; every None entry separately requires a
+module-boundary contract. The theorem never interprets a missing action as a
+successful proof. Four introduction lemmas connect the existing checked cut,
+term-test, observed-arithmetic and univ contracts to these node obligations.
+Arithmetic and univ normalization invariants remain explicit proof premises.
+
+Resident check 1906 passes the table theorem, all four introductions and the
+inherited-oracle/no-skip dependency audit in 1.775 seconds. Evidence remains in
+`target/prolog-domain-graph-resident-1544.log`. Attempt 1901 was interrupted during
+higher-order representation inference; explicit instantiation resolves it.
+Attempts 1902–1905 corrected reserved proof labels, the dependency-audit argument
+type and explicit invariant instantiation. No build limits were raised and no
+full build or checker export ran.
+
+This is a conditional assembly theorem, not an executable source certificate:
+Split boundary contracts and their finite referenced dependencies, concrete
+finite-observation invariants, original-source/name correspondence, native
+serialization, residual discharge and strict replay remain required. The fixed
+population remains 90 YES, 97 NO and 34 UNKNOWN; numbervars.pl remains UNKNOWN.
