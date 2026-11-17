@@ -38,7 +38,7 @@ proof -
 
 qed
 
-lemma lpp_univ_stable_context_contract:
+lemma lpp_univ_stable_context_contract_invariant:
  fixes SP :: "string lpp_success_clause list"
  assumes compatible: "lpp_stable_integer_operations operation"
  and program: "lpp_check_transfer_program T SP receipts"
@@ -52,6 +52,11 @@ lemma lpp_univ_stable_context_contract:
  and domain: "\<And>a b. lpp_univ_view_domain a b \<Longrightarrow> D ''2:=..'' [a,b]"
  and coverage: "\<And>a b out. lpp_univ_view_domain a b \<Longrightarrow> U ''2:=..'' [a,b] out \<Longrightarrow>
     lpp_univ_view_outcome names a b out"
+ and invariant: "J (lpc_return_eval eta ss)"
+ and normalized: "\<And>f ts. lp_ieval input_template eta=LPIFun f ts \<Longrightarrow> J (lpc_return_eval eta ss) \<Longrightarrow>
+   J ((LPCGoals (LPCUnify (LPIFun f ts) (LPIFun f ts)#
+     LPCUnify (lp_ieval requested eta) (lpp_argument_list (LPIFun (names f) [] # ts))#
+     map (lp_cut_map (\<lambda>u. lp_ieval u eta)) gs),lpc_return_env active eta)#lpc_return_eval eta saved)"
  and lower: "\<And>rho.
     ([(lpcn_pred nd,map eta (lpcn_vars nd))],
      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q \<Longrightarrow>
@@ -59,6 +64,7 @@ lemma lpp_univ_stable_context_contract:
     lpc_free_knowledge (set (Fs!lpcl_target middle)) rho \<Longrightarrow>
     lpp_stable_context_holds operation SP (contexts!lpcl_target middle) rho \<Longrightarrow>
     list_all (lpp_functor_fact_holds names rho) (functor_contexts!lpcl_target middle) \<Longrightarrow>
+    J (lpc_return_eval rho (states!lpcl_target middle)) \<Longrightarrow>
     lp_answer_contract (lpp_domain_answers P B U D) (lpc_return_eval rho (states!lpcl_target middle)) R t ret"
  shows "lp_answer_contract (lpp_domain_answers P B U D) (lpc_return_eval eta ss) R t ret"
 proof -
@@ -118,13 +124,15 @@ proof -
      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q"
    using lpp_stable_functor_link_witness[OF compatible program link equations old extended_known base_free context_extended observed_extended]
    by (simp add: swaps) blast
-  have child: "lp_answer_contract ?T (lpc_return_eval ?nu ?synthetic) R t ret"
-   using lower[OF edge target_known target_free target_context target_functors] by (simp only: same)
   have represented: "lpc_return_eval ?nu ?synthetic =
    ((LPCGoals (LPCUnify (LPIFun f ts) (LPIFun f ts)#
      LPCUnify (lp_ieval requested eta) (lpp_argument_list (LPIFun (names f) [] # ts))#
      map (lp_cut_map (\<lambda>u. lp_ieval u eta)) gs),lpc_return_env active eta)#lpc_return_eval eta saved)"
    by (rule lpp_univ_stable_initialized_state[OF init[unfolded shape] input context_held functors])
+  have child_invariant: "J (lpc_return_eval rho (states!lpcl_target middle))"
+   using normalized[OF input invariant] represented same by simp
+  have child: "lp_answer_contract ?T (lpc_return_eval ?nu ?synthetic) R t ret"
+   using lower[OF edge target_known target_free target_context target_functors child_invariant] by (simp only: same)
   show ?thesis by (rule lpp_reflexive_equality_contract_drop[OF child[unfolded represented]])
  qed
  have root: "lpc_return_eval eta ss =
@@ -139,8 +147,40 @@ proof -
   by (rule contracts, assumption)
 qed
 
+lemma lpp_univ_stable_context_contract:
+ fixes SP :: "string lpp_success_clause list"
+ assumes compatible: "lpp_stable_integer_operations operation"
+ and program: "lpp_check_transfer_program T SP receipts"
+ and checked: "lpp_check_univ_evaluation_context T fs fuel Q nds states contexts functor_contexts Fs nd F ss source_context source_functors
+    input_template requested gs active saved value_variable name_variable arguments_variable middle"
+ and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
+ and free: "lpc_free_knowledge (set F) eta"
+ and context_held: "lpp_stable_context_holds operation SP source_context eta"
+ and functors: "list_all (lpp_functor_fact_holds names eta) source_functors"
+ and selected: "(''2:=..'',2)\<in>B"
+ and domain: "\<And>a b. lpp_univ_view_domain a b \<Longrightarrow> D ''2:=..'' [a,b]"
+ and coverage: "\<And>a b out. lpp_univ_view_domain a b \<Longrightarrow> U ''2:=..'' [a,b] out \<Longrightarrow>
+    lpp_univ_view_outcome names a b out"
+ and lower: "\<And>rho.
+    ([(lpcn_pred nd,map eta (lpcn_vars nd))],
+     [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q \<Longrightarrow>
+    lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho \<Longrightarrow>
+    lpc_free_knowledge (set (Fs!lpcl_target middle)) rho \<Longrightarrow>
+    lpp_stable_context_holds operation SP (contexts!lpcl_target middle) rho \<Longrightarrow>
+    list_all (lpp_functor_fact_holds names rho) (functor_contexts!lpcl_target middle) \<Longrightarrow>
+    lp_answer_contract (lpp_domain_answers P B U D) (lpc_return_eval rho (states!lpcl_target middle)) R t ret"
+ shows "lp_answer_contract (lpp_domain_answers P B U D) (lpc_return_eval eta ss) R t ret"
+ apply (rule lpp_univ_stable_context_contract_invariant[where J="\<lambda>_. True",
+   OF compatible program checked known free context_held functors])
+      apply (rule selected)
+     apply (rule domain, assumption)
+    apply (rule coverage; assumption)
+   apply simp
+  apply simp
+ by (auto intro: lower)
+
 ML \<open>
-val checked = [@{thm lpp_univ_stable_context_contract}, @{thm lpp_univ_stable_initialized_state}];
+val checked = [@{thm lpp_univ_stable_context_contract_invariant}, @{thm lpp_univ_stable_context_contract}, @{thm lpp_univ_stable_initialized_state}];
 val oracles = map (fst o fst) o Thm_Deps.all_oracles;
 val inherited = oracles [@{thm check_trs_termination_proof}];
 val _ = if Thm_Deps.has_skip_proof checked orelse

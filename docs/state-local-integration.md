@@ -3549,3 +3549,25 @@ remains in the resident 1544 log; no full build ran.
 Arithmetic/univ dispatcher contracts, the global table theorem and explicit
 module-boundary/Split composition remain open, followed by finite invariants,
 residual discharge and strict replay. No new root verdict is claimed.
+
+
+All four current dispatcher cases now have local source answer contracts.
+`LP_Prolog_Functor_Control_Contract.thy` adds observed arithmetic and univ
+contracts, explicit target-table bounds and introduction of the scoped module
+representation with full stable and functor contexts. Lower contracts are lifted
+to the caller only along the checked residual edge. Arithmetic obtains its
+source domain from the Boolean check; no integer-input assumption is added.
+
+The univ local theorem now has an invariant-aware version. Its normalization
+premise must establish the invariant on the actual two-equality successor, which
+is then transported to the exact checked target. The prior theorem remains an
+unchanged compatibility corollary using True. This makes finite-observation
+obligations explicit rather than treating termination children as return or
+finiteness proofs. Check 1900 verifies both dispatcher contracts, compatibility
+and dependency audits in 7.531 seconds. Attempts 1897–1899 record explicit bound
+extraction, controlled higher-order premise application and the shared runtime
+valuation type. Evidence remains in the resident 1544 log.
+
+The global table theorem, module/Split boundary contracts, concrete finite
+invariant discharge and structural residual remain open. No native certificate,
+checker export, full rebuild or new benchmark verdict is claimed.
