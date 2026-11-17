@@ -116,8 +116,64 @@ lemma lpp_fresh_decomposition_output_alias_rejected:
  "\<not> lpp_check_fresh_decomposition h bs x y y"
  by (simp add: lpp_check_fresh_decomposition_def)
 
+text \<open>The native clause receipt additionally binds freshness to the first
+  source operation. A later univ goal cannot inherit entry separation through
+  arbitrary intervening unification.\<close>
+
+definition lpp_check_fresh_univ_clause where
+ "lpp_check_fresh_univ_clause h bs input_variable name_variable arguments_variable =
+  (lpp_check_fresh_decomposition h bs input_variable name_variable arguments_variable \<and>
+   (\<exists>gs. bs=LPCAtom (Fun (LPCUser ''2:=..'') [Var input_variable,
+     Fun (LPCUser ''2:prolog_data_2e'') [Var name_variable,Var arguments_variable]])#gs))"
+
+lemma lpp_check_fresh_univ_clause_sound:
+ assumes checked: "lpp_check_fresh_univ_clause h bs x y z"
+ and mgu: "lpc_mgu_resolve a gs h bs sigma rho"
+ and finite: "lpp_finite_term (lp_isubst a sigma)"
+ shows "\<exists>n r. rho y=LPIVar n \<and> rho z=LPIVar r \<and>
+   n\<noteq>r \<and> n\<notin>set2_lp_iterm (rho x) \<and> r\<notin>set2_lp_iterm (rho x)"
+ by (rule lpp_check_fresh_decomposition_sound[OF _ mgu finite])
+   (use checked in \<open>simp add: lpp_check_fresh_univ_clause_def\<close>)
+
+lemma lpp_fresh_univ_intervening_unification_rejected:
+ "\<not> lpp_check_fresh_univ_clause h (LPCUnify a b#bs) x y z"
+ by (simp add: lpp_check_fresh_univ_clause_def)
+
+lemma lpp_fresh_univ_head_alias_rejected:
+ "y\<in>vars_term h \<Longrightarrow> \<not> lpp_check_fresh_univ_clause h bs x y z"
+ by (auto simp: lpp_check_fresh_univ_clause_def lpp_check_fresh_decomposition_def lpc_body_only_variables_def)
+
+lemma lpp_finite_eval_variable:
+ "x\<in>vars_term t \<Longrightarrow> lpp_finite_term (lp_ieval t eta) \<Longrightarrow> lpp_finite_term (eta x)"
+ by (induction t) (auto simp: list_all_iff)
+
+lemma lpp_fresh_univ_clause_finite_continuation:
+ assumes checked: "lpp_check_fresh_univ_clause h bs x y z"
+ and resolved: "lpc_mgu_resolve a gs h bs sigma rho"
+ and finite: "lpp_finite_term (lp_isubst a sigma)"
+ and constructor: "rho x=LPIFun f ts"
+ and outcome: "lpp_univ_decompose_outcome names (rho x)
+   (LPIFun (LPCUser ''2:prolog_data_2e'') [rho y,rho z]) (LPPBuiltinSuccess mu)"
+ and goals: "lpp_finite_goals rest"
+ shows "lpp_finite_goals (map (lp_cut_map (\<lambda>t. lp_isubst t mu)) rest)"
+proof -
+ obtain n r where fields: "rho y=LPIVar n" "rho z=LPIVar r"
+ and distinct: "n\<noteq>r"
+ and fresh: "n\<notin>set2_lp_iterm (rho x)" "r\<notin>set2_lp_iterm (rho x)"
+  using lpp_check_fresh_univ_clause_sound[OF checked resolved finite] by blast
+ have head: "lp_isubst a sigma=lp_ieval h rho"
+  using resolved by (simp add: lpc_mgu_resolve_def)
+ have member: "x\<in>vars_term h"
+  using checked by (simp add: lpp_check_fresh_univ_clause_def lpp_check_fresh_decomposition_def)
+ have input_finite: "lpp_finite_term (rho x)"
+  by (rule lpp_finite_eval_variable[OF member]) (use finite head in simp)
+ show ?thesis
+  by (rule lpp_fresh_univ_finite_goals[OF _ _ distinct _ _ goals])
+    (use outcome input_finite fresh in \<open>simp_all add: fields constructor\<close>)
+qed
+
 ML \<open>
-val checked = [@{thm lpp_check_fresh_decomposition_sound}, @{thm lpp_mgu_fresh_body_avoids_finite_head}];
+val checked = [@{thm lpp_fresh_univ_clause_finite_continuation}, @{thm lpp_check_fresh_univ_clause_sound}, @{thm lpp_check_fresh_decomposition_sound}, @{thm lpp_mgu_fresh_body_avoids_finite_head}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted fresh body separation dependency" else ();
 \<close>

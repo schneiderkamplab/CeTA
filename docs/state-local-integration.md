@@ -3624,3 +3624,25 @@ These are semantic composition interfaces. Native referenced-module receipts,
 checked initialization of the actual-return predicates, concrete finite-input
 invariants and structural residual discharge are still needed for numbervars.pl.
 There is no new benchmark verdict; priority 1 remains active.
+
+
+Native inspection 2678 confirms two recursive Split sites and two univ operations
+in the original numbervars graph. `LP_Prolog_Finite_Fresh_Body.thy` now checks that
+fresh decomposition is the first source-clause operation, with distinct body-only
+outputs and an input occurring in the head. The matching native receipt binds the
+entire original clause and its index. Entry freshness cannot be reused after an
+intervening unification. Check 1912 verifies this interface and rejection lemmas.
+
+Check 1913 (1.922 seconds) proves the combined finite-continuation rule: given the
+checked clause, actual MGU resolution, a finite instantiated head, a constructor
+input and the actual successful univ outcome, finite continuation goals remain
+finite. Input finiteness is derived from the instantiated head. This does not
+assume that arbitrary resolution preserves finite heads; establishing that
+premise at every recursive entry remains necessary. The dependency audit passes
+without oracles or skipped proofs. Evidence remains in resident log 1544.
+
+Ferrum native 2679 passes three focused tests and an original-source diagnostic:
+the relevant clause has fresh-decomposition evidence, both univ views initialize,
+and all 69 established states project. Renamed fixtures, head/output aliases,
+changed source clauses and intervening unification are covered. No executable
+source certificate or benchmark verdict is added by these candidate receipts.
