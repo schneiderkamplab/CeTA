@@ -4327,3 +4327,22 @@ local checker. Then bind the source constructor and explicit Split return/module
 dependencies, discharge structural residuals and run strict source-certified
 replay. The full campaign remains 90 YES + 97 NO; numbervars is still UNKNOWN.
 Next native 2710, resident 2043.
+
+## Finite unification in premised tables (2043–2044)
+
+The empty-successor specialization now covers equality and resolution, checking
+both admitted outcomes independently. Incoming node conditions are preserved as
+local premises; neither branch receives invented separation facts. Finite instances
+reuse the established proofs for ground equality, matching heads, ground-anchored
+heads and observed proper-spine heads. Groundness may come from the checked source
+context and does not imply integer typing. A proper spine alone is insufficient:
+finite runtime execution remains a separate premise, and the head must be linear.
+
+`LP_Prolog_Separation_Empty_Unification` and
+`LP_Prolog_Separation_Finite_Unification` pass resident 2043/2044 in 5.577/0.895
+seconds with zero oracles/skips. Evidence:
+`target/prolog-separation-unification-2043-2044-resident.log`. No native rebuild,
+export or new certified root. Next combine these instances and the existing
+fresh/reflexive/pair/univ rules in the executable local checker, then bind source
+and Split/module assembly, residual proofs and strict replay. Next resident 2045;
+native remains 2710.
