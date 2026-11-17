@@ -3957,3 +3957,19 @@ in 0.842 seconds, without oracles or skipped proofs. All attempts remain in
 resident log 1544. No native/checker rebuild, source acceptance or root gain.
 Next instantiate these rules on the paired normalized univ equalities and
 thread the facts through source table links. Next Isabelle 1994, native 2694.
+
+Paired normalized univ equalities (resident 1994–1998):
+`LP_Prolog_Finite_Pair_Unify` proves finite continuation after a binary constructor
+pair MGU with distinct fresh variables and separated finite right-hand terms.
+It then composes an actual reflexive MGU with that pair MGU, using the checked
+inverse-based finiteness, freeness and support transport. The final theorem
+instantiates the sequence to the two normalized univ equalities, retaining the
+constructor name, actual argument list and both substitutions. This supplies
+the full successful-sequence finite premise without assuming arbitrary
+substitution stability; source failure/error coverage remains separate.
+
+Check 1994 passes the general pair rule in 0.331 seconds. Attempts 1995–1996
+needed explicit fixes for colliding constants and defined terms; 1997 passes
+the composed rule in 0.691 seconds. Final 1998 passes the actual univ sequence
+and no-oracle/no-skip audits in 0.923 seconds. Resident log 1544 retains all
+attempts. No checker rebuild or accepted root certificate. Next Isabelle 1999.
