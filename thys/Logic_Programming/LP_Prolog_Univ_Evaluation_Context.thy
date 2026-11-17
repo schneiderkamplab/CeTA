@@ -1,5 +1,5 @@
 theory LP_Prolog_Univ_Evaluation_Context
- imports LP_Prolog_Univ_Context LP_Prolog_Univ_Evaluation_Initialization LP_Prolog_Evaluation_Functor_Link
+ imports LP_Prolog_Univ_Context LP_Prolog_Univ_Evaluation_Initialization LP_Prolog_Evaluation_Functor_Link LP_Prolog_Equation_Initialization
 begin
 
 lemma lpp_univ_evaluation_initialized_state:
@@ -51,7 +51,7 @@ definition lpp_check_univ_evaluation_context where
    lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts nd
     (lpp_univ_projected_state input_template requested gs active saved value_variable name_variable arguments_variable)
     (lpp_univ_projected_ground (lpcn_ground nd) input_template name_variable arguments_variable)
-    (lpcn_guards nd) [] F source_context
+    (lpcn_guards nd) [] F (lpp_context_with_equations source_context [(input_template,Var value_variable)])
     (LPPFunctorFact (Var value_variable) (Var name_variable) (Var arguments_variable)#source_functors) middle)"
 
 lemma lpp_univ_evaluation_context_contract:
@@ -91,7 +91,7 @@ proof -
       list_all (lpp_fresh_guard x) (lpcn_guards nd)"
  and swaps: "lpcl_swaps middle=[]"
  and link: "lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts nd ?synthetic ?G
-    (lpcn_guards nd) [] F source_context ?observed middle"
+    (lpcn_guards nd) [] F (lpp_context_with_equations source_context [(input_template,Var value_variable)]) ?observed middle"
   using checked by (auto simp: lpp_check_univ_evaluation_context_def)
  have admitted: "lpp_univ_view_domain (lp_ieval input_template eta) (lp_ieval requested eta)"
   by (rule lpp_check_univ_view_domain_sound[OF dom_check free])
@@ -123,6 +123,12 @@ proof -
    using fresh by (auto intro!: map_cong)
   have context_extended: "lpp_evaluation_context_holds E SP source_context ?nu"
    by (rule lpp_univ_evaluation_initialization_sound(2)[OF init input context_held functors])
+  have initialized_equality: "lp_ieval input_template ?nu=lp_ieval (Var value_variable) ?nu"
+   by (rule lpp_univ_evaluation_initialization_sound(4)[OF init input context_held functors])
+  have initialized_context: "lpp_evaluation_context_holds E SP
+    (lpp_context_with_equations source_context [(input_template,Var value_variable)]) ?nu"
+   using context_extended initialized_equality
+   by (cases source_context) (auto simp: lpp_evaluation_context_holds_def)
   have observed_extended: "list_all (lpp_functor_fact_holds names ?nu) ?observed"
    by (rule lpp_univ_evaluation_initialization_sound(3)[OF init input context_held functors])
   have equations: "lp_equations [] ?nu" by (simp add: lp_equations_def)
@@ -133,7 +139,7 @@ proof -
    and target_functors: "list_all (lpp_functor_fact_holds names rho) (functor_contexts!lpcl_target middle)"
    and edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
      [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q"
-   using lpp_evaluation_functor_link_witness[OF contract evaluation program link equations old extended_known base_free context_extended observed_extended]
+   using lpp_evaluation_functor_link_witness[OF contract evaluation program link equations old extended_known base_free initialized_context observed_extended]
    by (simp add: swaps) blast
   have child: "lp_answer_contract ?T (lpc_return_eval ?nu ?synthetic) R t ret"
    using lower[OF edge target_known target_free target_context target_functors] by (simp only: same)

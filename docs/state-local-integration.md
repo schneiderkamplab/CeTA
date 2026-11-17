@@ -4029,3 +4029,32 @@ theories were loaded. No checker export/rebuild or accepted benchmark gain.
 Remaining cases include ground-anchored/list-spine heads and normalized univ
 reflexive/separated equalities, as well as full source/Split assembly.
 Next Isabelle 2008.
+
+
+Univ initialization equation in checked successor contexts (resident 2008–2013):
+`lpp_check_univ_evaluation_context` now constructs the successor's available
+context by adding exactly (input_template, Var value_variable) to the incoming
+context. Both evaluation and stable source contract proofs justify this equation
+using the fourth conclusion of the existing initialization theorem, before using
+the shared checked functor link. Freshness and saved-state preservation remain
+unchanged. No arbitrary certificate-supplied equality is accepted by this rule.
+
+Resident 2008 exposed the missing Equation_Initialization import; 2009 loads the
+corrected checker and all affected dependencies through finite-unification node
+contracts successfully. `LP_Prolog_Functor_Reflexive_Contract` then proves full-state
+finite preservation for an actually reflexive MGU and lifts a checked incoming
+context equation to the functor node contract. An equation-availability lemma
+connects the exact univ extension to that check; a missing nontrivial equation is
+rejected. The initial 2010 proof needed explicit stable evaluation/SP parameters;
+2011 hit a reserved context identifier; 2012 needed a term-constructor split in
+the availability lemma. Final 2013 passes in 6.606 seconds, including dependency
+audits with no skipped proofs or additional oracles. The existing Split invariant
+also rechecks (3.475 seconds in the 2010 load).
+
+Evidence: `target/prolog-univ-context-reflexive-2013-resident.log`, with all attempts
+in `target/prolog-domain-graph-resident-1544.log`. Only affected theories were
+reloaded in the resident process. No native rebuild, unified export, or benchmark
+verdict change. Next connect the separated pair-equality and remaining head
+contracts, materialize the refined native equation contexts in source assembly,
+and complete referenced Split assembly and residual discharge. Next Isabelle
+2014; priority 1 remains active.
