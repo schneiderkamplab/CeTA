@@ -3477,3 +3477,29 @@ and stable context variants must not be interchanged without their correspondenc
 proof. Only affected theories and invalidated resident dependencies were checked;
 no full build or generated checker edit occurred. Evidence remains in the
 resident 1544 log.
+
+
+Full stable-context closure of the local action layer: the same Boolean checks
+now have proofs for the stronger stable context together with functor relations.
+`LP_Prolog_Stable_Functor_Representation.thy` binds both interpretations to the
+same node index and checked child valuation. `LP_Prolog_Stable_Functor_Actions.thy`
+proves equality, resolution, administrative steps, clause/meta allocation,
+the shared cut-action dispatcher and source term tests with that representation.
+No checker datatype or graph construction is replaced. The existing stable
+fork and equation-observation proofs retain comparison information on success
+and the prior context on failure.
+
+`LP_Prolog_Univ_Stable_Initialization.thy` and
+`LP_Prolog_Univ_Stable_Context.thy` extend initialization and the local univ
+answer contract to full stable contexts. Check 1890 passes all four theories and
+dependency audits (univ context 4.370 seconds). Attempt 1888 corrected a renamed
+definition declaration; 1889 removed an inadvertently duplicated meta-check
+definition from the proof wrapper, leaving the existing checker authoritative.
+Evidence remains in the resident 1544 log; no export or full build ran.
+
+The next obligation is parent assembly rather than more local operation variants:
+construct a complete table contract with the extended source interpretation,
+retain every module/Split dependency, establish required finite observations on
+actual returns, and discharge the structural residual. Complete source/name
+correspondence, native serialization, strict replay and benchmark certification
+remain unproved. The high-water mark is unchanged.
