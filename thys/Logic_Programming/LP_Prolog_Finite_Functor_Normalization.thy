@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Functor_Normalization
- imports LP_Prolog_Functor_Table_Contract LP_Prolog_Finite_Execution_Step
+ imports LP_Prolog_Functor_Control_Reductions LP_Prolog_Finite_Execution_Step
 begin
 
 text \<open>Discharge the normalization invariant at actual source operations.
@@ -49,6 +49,29 @@ lemma lpp_finite_functor_univ_node_contract:
  by (rule lpp_functor_univ_node_contract[OF compatible transfer checked shape])
    (simp only: shape; rule lpp_finite_execution_univ_normalization; assumption)
 
+lemma lpp_finite_functor_trim_node_contract:
+ fixes SP :: "string lpp_success_clause list"
+ assumes compatible: "lpp_stable_integer_operations operation"
+ and transfer: "lpp_check_transfer_program T SP receipts"
+ and checked: "lpp_check_functor_source_action T fuel P Q nds states contexts Fs functor_contexts
+   (nds!i) (Fs!i) (states!i) (contexts!i) (functor_contexts!i) returned arity
+   (LPPFTrim successor barriers e fs)"
+ shows "lpp_functor_node_contract names operation SP P Q nds states contexts Fs functor_contexts
+   lpp_finite_execution returned arity i"
+ by (rule lpp_functor_trim_node_contract[OF compatible transfer checked])
+   (auto simp: lpp_finite_execution_def list_all_iff)
+
+lemma lpp_finite_functor_parallel_node_contract:
+ fixes SP :: "string lpp_success_clause list"
+ assumes compatible: "lpp_stable_integer_operations operation"
+ and transfer: "lpp_check_transfer_program T SP receipts"
+ and checked: "lpp_check_functor_source_action T fuel P Q nds states contexts Fs functor_contexts
+   (nds!i) (Fs!i) (states!i) (contexts!i) (functor_contexts!i) returned arity (LPPFParallel links factss)"
+ shows "lpp_functor_node_contract names operation SP P Q nds states contexts Fs functor_contexts
+   lpp_finite_execution returned arity i"
+ by (rule lpp_functor_parallel_node_contract[OF compatible transfer checked])
+   (auto simp: lpp_finite_execution_def list_all_iff)
+
 theorem lpp_finite_functor_table_contract:
  fixes SP :: "string lpp_success_clause list"
  assumes checked: "lpp_check_functor_control T fuel P Q nds states contexts Fs functor_contexts returned arity actions"
@@ -73,7 +96,7 @@ theorem lpp_finite_functor_table_contract:
 ML \<open>
 val checked = @{thms lpp_finite_execution_is_normalization lpp_finite_execution_univ_normalization};
 val inherited = map (fst o fst) (Thm_Deps.all_oracles @{thms check_trs_termination_proof});
-val contracts = @{thms lpp_finite_functor_table_contract lpp_finite_functor_is_node_contract lpp_finite_functor_univ_node_contract};
+val contracts = @{thms lpp_finite_functor_trim_node_contract lpp_finite_functor_parallel_node_contract lpp_finite_functor_table_contract lpp_finite_functor_is_node_contract lpp_finite_functor_univ_node_contract};
 val _ = if Thm_Deps.has_skip_proof contracts orelse
  exists (fn n => not (member (op =) inherited n)) (map (fst o fst) (Thm_Deps.all_oracles contracts))
  then error "Untrusted finite functor node contract" else ();

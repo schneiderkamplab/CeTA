@@ -3973,3 +3973,36 @@ needed explicit fixes for colliding constants and defined terms; 1997 passes
 the composed rule in 0.691 seconds. Final 1998 passes the actual univ sequence
 and no-oracle/no-skip audits in 0.923 seconds. Resident log 1544 retains all
 attempts. No checker rebuild or accepted root certificate. Next Isabelle 1999.
+
+
+Functor control reductions and finite action coverage (resident 1999–2004):
+The established projected numbervars tables contain four TrimBarriers and four
+StackSplit operations. `LP_Prolog_Functor_Control_Check` now represents them as
+LPPFTrim and LPPFParallel, requiring the exact barrier suffix or complete
+alternative/link/type-list coverage and a checked stable functor link for each
+child. These constructors do not classify a boundary as solved.
+`LP_Prolog_Functor_Control_Reductions` proves their node answer contracts using
+the shared domain barrier/singleton composition rules and an explicit deletion
+closure premise for the invariant. Residual paths are lifted from each child to
+the original residual subject. Missing alternative/context coverage and a
+nonbarrier suffix are rejected by proved controls.
+
+Resident 1999 rejected missing whitespace in the subset premise; 2000 verifies
+the reduction theory in 3.000 seconds. Finite-execution instances are integrated
+in `LP_Prolog_Finite_Functor_Normalization`. Resident 2001 verifies these and
+reloads the existing Split invariant theorem (5.564 seconds for the latter).
+`LP_Prolog_Functor_Simple_Control` supplies a syntactic simple-frame check and
+finite node contracts for ordinary allocation/administrative operations and
+term tests. It explicitly rejects clause resolution, equality and meta calls;
+these retain separate finite-unification obligations. The initial evaluation
+proof in 2002 needed function induction rather than an ineffective splitter;
+2003 passes in 2.962 seconds, and 2004 including term-test contracts passes in
+3.536 seconds. All new theorem dependency audits pass, with no skipped proofs
+or additional oracles beyond the existing checker dependency allowance.
+
+Evidence: `target/prolog-functor-control-2004-resident.log`, with all attempts
+also retained in `target/prolog-domain-graph-resident-1544.log`. Only affected
+theories were reloaded in the resident Isabelle process. No unified executable
+was rebuilt or exported, and no new root was accepted. Source serialization,
+resolution/equality invariant coverage and referenced Split assembly remain.
+Next Isabelle 2005; priority 1 remains active.

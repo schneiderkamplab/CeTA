@@ -12,6 +12,8 @@ datatype lpp_functor_action =
  | LPPFTest "string lpc_link" "string lpc_link" "string lpp_transfer_fact list" "string lpp_transfer_fact list"
  | LPPFIs string "string lpc_link" "string lpp_transfer_fact list"
  | LPPFUniv string string string "string lpc_link" "string lpp_transfer_fact list"
+ | LPPFTrim "string lpc_return_state" "string lpc_return_state" "string lpc_link" "string lpp_transfer_fact list"
+ | LPPFParallel "string lpc_link list" "string lpp_transfer_fact list list"
 
 definition lpp_check_functor_source_action where
  "lpp_check_functor_source_action T fuel P Q nds states contexts Fs functor_contexts nd F ss source_context source_functors returned arity action =
@@ -20,6 +22,14 @@ definition lpp_check_functor_source_action where
     (lpp_no_builtin_frame ss \<or> control=LPCRInconsistent) \<and>
     lpp_check_functor_cut_action T yes_facts no_facts fuel P Q nds states contexts Fs functor_contexts
      nd F ss source_context source_functors returned arity control
+  | LPPFTrim successor barriers e fs \<Rightarrow>
+    (ss=successor@barriers \<and> lp_cut_barriers (map fst barriers) \<and>
+     lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts nd successor
+      (lpcn_ground nd) (lpcn_guards nd) [] F source_context source_functors e)
+  | LPPFParallel links factss \<Rightarrow>
+    (length links=length ss \<and> length factss=length ss \<and> list_all (\<lambda>i.
+     lpp_check_evaluation_functor_link T (factss!i) fuel Q nds states contexts Fs functor_contexts nd [ss!i]
+      (lpcn_ground nd) (lpcn_guards nd) [] F source_context source_functors (links!i)) [0..<length ss])
   | _ \<Rightarrow> (case ss of
     (LPCGoals (LPCAtom (Fun (LPCUser f) ts)#gs),active)#saved \<Rightarrow>
      (case action of
