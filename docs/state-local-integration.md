@@ -3877,3 +3877,25 @@ with inherited checker oracles only for the functor Split theorem. All attempts
 remain in resident log 1544. No native build or checker export was necessary.
 The root still requires discharge of the reachable invariant-preservation premise,
 complete native source assembly, structural residual certification and replay.
+
+Finite attached-execution preservation (resident checks 1967–1973) now covers
+complete states, including saved alternatives, scope transport and pruning.
+`LP_Prolog_Finite_Execution_Step` proves resolution from finite instantiated
+heads and equality from ground right-hand sides; dynamic meta calls remain an
+explicit separate obligation. `LP_Prolog_Finite_Execution_Builtin` lifts checked
+outcome finiteness to extended and domain answer steps, retaining failure/error
+branches. `LP_Prolog_Finite_Operation_Outcome` supplies arithmetic, term tests,
+and fresh univ outcomes, including the actual fresh-clause resolution rule.
+These are finiteness results, not termination or builtin-domain coverage.
+Arithmetic uses the existing stable source interpretation, without equating
+groundness with integer inputs. The domain-error self-loop can preserve
+finiteness and still diverge.
+
+Attempt 1967 needed explicit extraction of the actual MGU premise; 1968 passes
+base preservation. Attempt 1969 required explicit builtin cases; 1970 passes.
+Attempt 1971 passes initial operation instances. Attempt 1972 required explicit
+scope/entry cases; final 1973 rechecks all three theories and passes the final
+operation theory in 2.773 seconds. Dependency audits reject skipped proofs and
+oracles. All attempts remain in `target/prolog-domain-graph-resident-1544.log`.
+No unified checker export or new certified benchmark is claimed. Reachable
+node coverage, source assembly, residual certification and replay remain open.
