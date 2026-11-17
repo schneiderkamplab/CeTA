@@ -3771,3 +3771,24 @@ wrong enum variant in diagnostic code; the corrected incremental build passes
 and the exact ignored diagnostic passes. Source proof assembly, recursive finite
 entries, residual discharge, and strict replay remain open. No new root verdict
 is claimed.
+
+`LP_Prolog_Finite_List_Head.thy` connects an incoming proper-spine observation to
+actual successful clause resolution. Constructor discrimination exposes the
+nonempty list; a linear cons head with arbitrary additional variable arguments
+then matches the runtime call. The matching-head theorem supplies finite
+instantiated head, body, and continuation under explicit finite-input premises.
+A separate theorem transports the exact predecessor spine length to the head's
+tail variable. It needs neither ground elements nor a helper termination premise.
+
+Resident 1933 passes the shape and finite-resolution theorems in 1.625 seconds;
+1934 also passes tail observation and the no-oracle/no-skip audit in 1.760 seconds.
+Native 2689 discovers all twelve contextual selected-clause candidates on the
+original established graph: six Matching, four GroundAnchored, two ObservedSpine.
+The latter remain explicit obligations, not assumed facts. Receipts bind the
+entire source state, context, selected index and clause. Mutations cover missing
+context, clause changes, return-interface changes, repeated variables, and
+replacement of the spine obligation by a ground claim. SWI independently shows
+that dropping the linear-head restriction can turn a finite one-cell list into
+a cyclic term. Complete module-level invariant transport, source assembly and
+residual certification are still required; the installed checker and root totals
+are unchanged.
