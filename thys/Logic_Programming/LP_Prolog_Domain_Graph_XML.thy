@@ -2,6 +2,14 @@ theory LP_Prolog_Domain_Graph_XML
  imports LP_Prolog_Domain_Graph_NO LP_Prolog_Scalar_Domain_XML
 begin
 
+partial_function (sum_bot) lpp_failed_tree_parser :: "lpp_failed_guard_tree xmlt" where
+[code]: "lpp_failed_tree_parser x = (
+ xml_singleton (STR ''guardFails'') lpp_scalar_guard_parser LPPFailedGuard XMLor
+ (XMLdo (STR ''guardThen'') {g\<leftarrow>lpp_scalar_guard_parser;
+   t\<leftarrow>lpp_failed_tree_parser; xml_return (LPPFailedThen g t)}) XMLor
+ (XMLdo (STR ''choiceFails'') {a\<leftarrow>lpp_failed_tree_parser;
+   b\<leftarrow>lpp_failed_tree_parser; xml_return (LPPFailedChoice a b)})) x"
+
 definition lpp_head_failure_parser where
  "lpp_head_failure_parser =
  (XMLdo (STR ''failure'') {
@@ -9,6 +17,9 @@ definition lpp_head_failure_parser where
    guards\<leftarrow>xml_many (STR ''guards'') lpp_scalar_guard_parser id;
    failed\<leftarrow>xml_singleton (STR ''failed'') lpp_scalar_guard_parser id;
    xml_return (LPPVariableFailure (V,guards,failed))}) XMLor
+ (XMLdo (STR ''treeFailure'') {
+   V\<leftarrow>xml_many (STR ''variables'') (xml_text (STR ''var'')) id;
+   t\<leftarrow>lpp_failed_tree_parser; xml_return (LPPTreeFailure (V,t))}) XMLor
  (XMLdo (STR ''headApart'') {
    i\<leftarrow>xml_nat (STR ''left''); j\<leftarrow>xml_nat (STR ''right'');
    xml_return (LPPHeadApart i j)}) XMLor
