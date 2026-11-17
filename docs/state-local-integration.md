@@ -4657,3 +4657,33 @@ A shared interface is not the actual-success residual bridge. Concrete return
 relations, nested Split contracts, the referenced module assembly, global
 residual discharge and source/unified replay remain unfinished. No new root
 verdict or unified export. Next resident 2087; native 2717.
+
+
+### Observation coordinates through actual returns (2087–2090)
+
+Concatenating caller/callee output tuples alone omits observation-only fields:
+numbervars boundary 47:17 needs the functor-name variable V3, and 0:25 needs V1.
+Native 2717 appends the complete source/answer/free/context/observation variable
+interface, preserving both prior projections. Its explicit variable-to-coordinate
+route is reconstruction evidence, not an assumption of stable variable values.
+
+`LP_Prolog_Return_Functor_Route` checks coordinate bounds, exact variable entries
+and coverage of every functor observation term using the shared
+`lpc_check_return_route`. Its initialization lemma and actual-return theorem
+preserve the complete functor relation under runtime substitution. Every saved
+frame must satisfy routing; no finite-term or integer premise is introduced.
+The two theorems pass the inherited-oracle and skip-proof audit. Early incomplete
+case proofs were replaced by explicit observation-constructor reasoning.
+
+Export 2090 takes 25.018 seconds (117,132 bytes). Unmodified generated code checks
+all five actual local-module shared interfaces with the ambient coordinates
+reported by native 2717. The two nonempty observation sets (0:25 and 47:17) pass;
+missing routes and erased tuples reject. Evidence is in
+`target/prolog-return-functor-route-2090/{Check.ML,check-fixed.log,proofs.log}`;
+the first harness attempt's wrongly cased typeclass field is retained in check.log.
+This is a local export, not a unified rebuild or root verdict.
+
+The successful-return relation is now preserved in the shared coordinates, but
+its concrete residual bridge, nested Split contracts, full referenced assembly,
+residual termination and original-source/unified replay remain required.
+Priority 1 is active. Next resident 2091; native 2718.
