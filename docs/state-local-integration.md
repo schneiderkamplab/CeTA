@@ -3697,3 +3697,31 @@ missing-input and removed-output-contract controls, and refuses to infer tree
 output groundness from the model's erased source equality. Actual module-return
 interface transport and finite recursive-entry invariants still need assembly.
 No root verdict, native certificate, checker export or full rebuild is claimed.
+
+
+`LP_Prolog_Univ_Ground_Receipt.thy` now connects the existing checked ground-return
+receipt to the actual Split interface under extended univ semantics. Generic
+reinterface reflection identifies a source valuation for the returned tuple.
+The receipt theorem preserves the incoming full stable context and functor facts,
+then adds only ground outputs justified by the actual-return model. It reuses
+`lpp_finite_ground_receipt_check`; no independent summary checker is introduced.
+Check 1925 passes all three theorems and the dependency audit in 5.868 seconds.
+Attempt 1924 corrected an unavailable legacy-envelope lemma by deriving incoming
+groundness directly from the stable evaluation interpretation; no integer
+compatibility assumption is needed for that derivation.
+
+Check 1926 extends the finite ground-equality theorem to explicit incoming
+context observations (2.051 seconds, no-oracle/no-skip audit). Native 2686 binds
+that context in the receipt instead of mutating the graph ground set. Missing
+context and changed saved-answer controls pass. Original-source diagnostics now
+cover both marker-binding branches, at region 0/local 12 and region 47/local 12,
+as well as their ground arithmetic equalities.
+
+Context inventory 2685 corrected the prior raw-node diagnosis: the established
+context fixed point already transports counter groundness through both Splits.
+The old diagnostic 2684 failed before inference because it requested legacy
+residual projection. It now uses the same routing plan's path starts, without
+changing production projection or certification. Both Split prefixes receive
+ground V1 and return ground V2. Finite-entry/spine invariants, complete module
+serialization, structural residual proof and strict replay remain outstanding.
+No benchmark verdict, installed checker change or full rebuild is claimed.

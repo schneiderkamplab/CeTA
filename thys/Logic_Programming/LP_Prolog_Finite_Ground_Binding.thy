@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Ground_Binding
- imports LP_Prolog_Finite_Scalar_Unify
+ imports LP_Prolog_Finite_Scalar_Unify LP_Prolog_Evaluation_Context
 begin
 
 text \<open>Binding a runtime variable to a ground constructor tree preserves
@@ -98,6 +98,19 @@ lemma lpp_checked_ground_equality_finite_goals:
  by (rule lpp_ground_equality_mgu_finite_goals[OF mgu input _ finite])
    (use checked known in \<open>auto simp: lp_cut_knowledge_def lp_seg_ground_eval\<close>)
 
+lemma lpp_context_ground_equality_finite_goals:
+ assumes checked: "vars_term b \<subseteq> set G \<union> lpp_source_context_ground ctx"
+ and known: "lp_cut_knowledge (set G) guards eta"
+ and observed: "lpp_evaluation_context_holds E SP ctx eta"
+ and evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
+ and mgu: "lpc_mgu_unify (lp_ieval a eta) (lp_ieval b eta) gs sigma"
+ and input: "lpp_finite_term (lp_ieval a eta)"
+ and finite: "lpp_finite_goals gs"
+ shows "lpp_finite_goals (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) gs)"
+ by (rule lpp_ground_equality_mgu_finite_goals[OF mgu input _ finite])
+   (use checked known lpp_evaluation_context_ground_sound[OF evaluation observed]
+    in \<open>auto simp: lp_cut_knowledge_def lp_seg_ground_eval\<close>)
+
 definition lpp_check_finite_ground_binding where
  "lpp_check_finite_ground_binding G F a b =
   (\<exists>x. a=Var x \<and> x\<in>set F \<and> vars_term b \<subseteq> set G)"
@@ -129,7 +142,7 @@ lemma lpp_ground_binding_constructor_checked:
  by (simp add: lpp_check_finite_ground_binding_def)
 
 ML \<open>
-val checked = @{thms lpp_checked_ground_equality_finite_goals lpp_ground_equality_mgu_finite_goals lpp_checked_ground_binding_finite_goals lpp_ground_binding_mgu_finite_goals lpp_ground_binding_symbolic_finite_goals};
+val checked = @{thms lpp_context_ground_equality_finite_goals lpp_checked_ground_equality_finite_goals lpp_ground_equality_mgu_finite_goals lpp_checked_ground_binding_finite_goals lpp_ground_binding_mgu_finite_goals lpp_ground_binding_symbolic_finite_goals};
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted finite ground binding" else ();
 \<close>
