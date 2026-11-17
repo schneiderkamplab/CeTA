@@ -3646,3 +3646,27 @@ the relevant clause has fresh-decomposition evidence, both univ views initialize
 and all 69 established states project. Renamed fixtures, head/output aliases,
 changed source clauses and intervening unification are covered. No executable
 source certificate or benchmark verdict is added by these candidate receipts.
+
+
+`LP_Prolog_Finite_Ground_Binding.thy` supplies the finite-input equality case
+needed alongside fresh univ decomposition. Its general theorem proves that an
+actual most-general unifier of a finite term with a ground constructor tree
+preserves finite continuation goals. The proof constructs a finite comparison
+substitution from the actual unifier on variables of the input, using identity
+elsewhere; it does not assume the actual substitution is globally finite.
+A checked symbolic form derives right-side groundness from the incoming ground
+set. A separate free-variable specialization does not require input finiteness.
+
+Check 1920 verifies the general and specialized rules and the no-oracle/no-skip
+audit in 0.717 seconds. Rejection controls cover missing groundness and freeness
+for the specialization. Attempts 1914 and 1918 corrected proof-name collisions;
+1916 corrected subset syntax. Intermediate checks 1915, 1917 and 1919 passed.
+Evidence remains in resident log 1544; no checker export or full rebuild ran.
+
+Native evidence 2680 found that the established projected equality states do not
+carry freeness. This motivated the proved general finite-input rule rather than
+adding an unchecked free fact. Native 2681 finds conditional ground-equality
+receipts at nodes 12, 19 and 67. Node 60 lacks right-side groundness, and nodes 10
+and 58 require their existing functor projection. The next concrete gap is the
+helper counter's conditional ground-return fact across the recursive Split.
+All 69 states still project; no root certificate or new verdict is claimed.
