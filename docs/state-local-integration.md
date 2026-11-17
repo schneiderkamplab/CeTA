@@ -3596,3 +3596,31 @@ Split boundary contracts and their finite referenced dependencies, concrete
 finite-observation invariants, original-source/name correspondence, native
 serialization, residual discharge and strict replay remain required. The fixed
 population remains 90 YES, 97 NO and 34 UNKNOWN; numbervars.pl remains UNKNOWN.
+
+
+The functor table's node contract now receives residual termination at its own
+subject. Check 1907 verifies propagation from the root and along strict residual
+edges (1.805 seconds). This is needed by Split/module contracts; it does not
+assume termination independently or remove any root residual obligation.
+
+`LP_Prolog_Functor_Split_Contract.thy` applies the shared actual-answer composition
+theorem to the extended source interpretation, with checked original Split
+routing and checked return projection. A separate actual-return predicate carries
+helper properties into the continuation. No obligation is imposed only on an
+unchecked abstract return, and helper termination does not establish that
+predicate. The same theory proves preservation of initialized functor relations
+through actual returns, jointly with full stable contexts and finite observed
+spine length. Every incoming frame must establish the observations; free facts
+and finite trees are not claimed to be substitution-invariant.
+
+Check 1911 passes these three theorems and their dependency audit in 3.482 seconds.
+Check 1910 verified composition alone. Attempt 1908 was interrupted in an
+unnecessary historical module-semantics import; the final theory imports only
+the shared routing/composition dependencies. Attempt 1909 fixed the explicit
+string type of projection-interface variables. Evidence remains in resident log
+1544. No full rebuild, export or installed checker change was needed.
+
+These are semantic composition interfaces. Native referenced-module receipts,
+checked initialization of the actual-return predicates, concrete finite-input
+invariants and structural residual discharge are still needed for numbervars.pl.
+There is no new benchmark verdict; priority 1 remains active.

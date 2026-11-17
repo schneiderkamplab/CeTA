@@ -12,6 +12,7 @@ definition lpp_functor_node_contract where
    lpp_stable_context_holds operation SP (contexts!i) eta \<longrightarrow>
    list_all (lpp_functor_fact_holds names eta) (functor_contexts!i) \<longrightarrow>
    J (lpc_return_eval eta (states!i)) \<longrightarrow>
+   SN_on (lp_ild Q) {[(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))]} \<longrightarrow>
    (\<forall>vs v. ([(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))],v)\<in>(lp_ild Q)\<^sup>+ \<longrightarrow>
     lpp_stable_functor_module_rep names operation SP nds states contexts Fs functor_contexts vs v \<longrightarrow> J vs \<longrightarrow>
     lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_univ_source_builtin names operation) lpp_univ_source_domain)
@@ -136,12 +137,12 @@ theorem lpp_functor_table_contract:
 proof -
  let ?T = "lpp_domain_answers P lpp_builtin_signature (lpp_univ_source_builtin names operation) lpp_univ_source_domain"
  let ?ret = "\<lambda>rho. [(returned,map rho [0..<arity])]"
- let ?rep = "\<lambda>ss t out. out=?ret \<and> J ss \<and>
+ let ?rep = "\<lambda>ss t out. out=?ret \<and> J ss \<and> SN_on (lp_ild Q) {t} \<and>
    lpp_stable_functor_module_rep names operation SP nds states contexts Fs functor_contexts ss t"
  have bounds: "i<length states" "i<length contexts" "i<length Fs" "i<length functor_contexts"
   using checked root by (auto simp: lpp_check_functor_control_def)
  have initial: "?rep (lpc_return_eval eta (states!i)) [(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))] ?ret"
-  using invariant lpp_stable_functor_module_intro[OF root bounds known free observed functors] by blast
+  using invariant residual lpp_stable_functor_module_intro[OF root bounds known free observed functors] by blast
  show ?thesis
  proof (rule lp_answer_contract_modular[where rep="?rep", OF residual initial])
   fix ss t and out :: "(nat\<Rightarrow>(string lp_cut_symbol,string) lp_iterm)\<Rightarrow>
@@ -161,12 +162,18 @@ proof -
    using scopes[of ss swaps] represented shape by auto
   have node: "lpp_functor_node_contract names operation SP P Q nds states contexts Fs functor_contexts J returned arity j"
    by (cases "actions!j") (use local boundary bound in auto)
+  have sn: "SN_on (lp_ild Q) {t}" using represented by simp
   have descendants: "lp_answer_contract ?T vs (lp_ild Q) v ?ret"
    if "(t,v)\<in>(lp_ild Q)\<^sup>+"
     "lpp_stable_functor_module_rep names operation SP nds states contexts Fs functor_contexts vs v" "J vs" for vs v
-   by (rule lower[OF that(1)]) (use that in auto)
+  proof -
+   have child_sn: "SN_on (lp_ild Q) {v}"
+    by (rule SN_on_subset2[OF _ SN_on_Image_rtrancl[OF sn]])
+      (use trancl_into_rtrancl[OF that(1)] in auto)
+   show ?thesis by (rule lower[OF that(1)]) (use that child_sn in auto)
+  qed
   have canonical: "lp_answer_contract ?T (lpc_return_eval nu (states!j)) (lp_ild Q) t ?ret"
-   using node knowledge fresh observations facts inv descendants unfolding lpp_functor_node_contract_def subject by blast
+   using node knowledge fresh observations facts inv sn descendants unfolding lpp_functor_node_contract_def subject by blast
   have restored: "lp_answer_contract ?T (lpc_return_scope_word (rev swaps) (lpc_return_eval nu (states!j))) (lp_ild Q) t ?ret"
    by (rule lpp_domain_contract_scopes[OF program canonical])
   show "lp_answer_contract ?T ss (lp_ild Q) t out"
