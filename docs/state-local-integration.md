@@ -3747,3 +3747,27 @@ and relate constructor traversal to the structural residual. Spine descent alone
 covers the tail continuation, not recursion into each element. Complete native
 module/context serialization and residual certification remain open; no installed
 checker or root verdict changed and no rebuild was needed.
+
+`LP_Prolog_Finite_Matching_Head.thy` proves finite instantiated heads, bodies,
+and caller continuations for actual MGU resolution when the selected call is
+an instance of the clause head. The executable premise reuses the existing
+`lp_cut_check_match`, including distinct binding keys and exact one-pass head
+substitution. It requires finite input and continuation; it does not infer
+finiteness from matching. A constructor-with-nonground-elements positive control
+and a repeated-head alias rejection are included.
+
+Resident checks 1928/1929 passed the semantic and executable bridges. Check 1930
+failed to instantiate an existential factorization in the proof; 1931 makes the
+identity comparison explicit and passes. Final 1932 checks all five theorems and
+the no-oracle/no-skip audit in 0.767 seconds. No shared theory or installed checker
+was rebuilt. Log 1544 retains the attempts.
+
+Native inventory 2688 on the original established contextual graph reports six
+matching variable-head states and six unmatched list-head states. List calls
+remain abstract at those nodes; their retained constructor/spine observations
+must justify runtime matching or the existing ground-anchor rule. Syntactic
+matching alone does not close these cases. Initial native compilation used the
+wrong enum variant in diagnostic code; the corrected incremental build passes
+and the exact ignored diagnostic passes. Source proof assembly, recursive finite
+entries, residual discharge, and strict replay remain open. No new root verdict
+is claimed.
