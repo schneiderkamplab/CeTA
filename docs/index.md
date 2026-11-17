@@ -62,3 +62,4 @@ okf_version: "0.2"
 
 - [ITS and logic-programming category specifications](its-lp-specifications.md) — Definitions and explicit bridge obligations.
 - [ITS and LP semantic correspondence completion](its-lp-completion.md) — Full remaining proof and runtime-boundary ledger.
+- [LP refactor historical checkpoints](lp-refactor-history-20261117.md) — Intermediate states superseded by the ranked LP verification.

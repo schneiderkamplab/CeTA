@@ -2,9 +2,9 @@ theory LP_Cut_Domain_Checker
   imports LP_Cut_Domain_Canonical
 begin
 
-text \<open>The locale premise in the common proof is discharged below for
-finite and rational trees. The final serialized corollaries have only the exact
-parse result and actual assumption-free checker acceptance as premises.\<close>
+text \<open>The domain and projection obligations in the common proof are discharged
+below for finite and rational trees. Serialized corollaries identify the exact
+source, require source validity, and use assumption-free checker acceptance.\<close>
 
 context
   fixes D :: "(string lp_cut_symbol,string) lp_iterm \<Rightarrow> bool"
@@ -55,10 +55,13 @@ theorem domain_canonical_xml_yes:
     Right (cut_program P,q,modes,fuel,r,nds,acts,Q,enc_pred,enc_data,
       (R,outs,fallback,names,filters,(q',n,positions),prf))"
     and accepted: "check_lpc_xml xml"
-  shows "logic_cut_terminates_in (\<lambda>t. D (cut_tree t)) P q modes"
-proof (rule canonical_termination)
+    and program: "logic_cut_problem A P q modes"
+    and projection: "\<And>u. D (cut_tree u) \<Longrightarrow>
+      D (cut_tree (logic_arity_project (logic_symbol_arity A) undefined u))"
+  shows "logic_cut_terminates_in A (\<lambda>t. D (cut_tree t)) P q modes"
+proof (rule canonical_termination[OF program projection])
   fix ts :: "(string logic_symbol,string) fo_term list"
-  assume query: "logic_query (LogicUser q) modes (LogicUser q,ts)"
+  assume query: "logic_query (logic_symbol_arity A) (LogicUser q) modes (LAtom (LogicUser q) ts)"
   have len: "length (map cut_term ts) = length modes"
     using query by (simp add: logic_query_def)
   have gr: "ground (map cut_term ts!i)" if "i\<in>set (lpc_positions modes)" for i
@@ -68,7 +71,7 @@ proof (rule canonical_termination)
     {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) (map cut_term ts)))]]}"
     by (rule domain_xml_sound[OF parsed accepted len gr])
   show "SN_on (source (cut_program P))
-    {cut_state [LogicGoals [LogicAtom (LFun (LogicUser q) (map logic_embed ts))]]}"
+    {cut_state [LogicGoals [LogicAtom (LAtom q (map logic_embed ts))]]}"
     using native by (simp add: map_map o_def cut_tree_embed)
 qed
 
@@ -79,18 +82,30 @@ theorem lp_cut_table_finite_yes:
     Right (cut_program P,q,modes,fuel,r,nds,acts,Q,enc_pred,enc_data,
       (R,outs,fallback,names,filters,(q',n,positions),prf))"
     and accepted: "check_lpc_xml xml"
-  shows "lp_cut_finite_terminates P q modes"
-  using domain_canonical_xml_yes[OF finite_cut.cut_runtime_domain_axioms parsed accepted]
-  by (simp add: lp_cut_finite_terminates_def cut_finite_domain_iff)
+    and program: "logic_cut_problem A P q modes"
+  shows "lp_cut_finite_terminates A P q modes"
+proof -
+  have projection: "cut_finite_runtime (cut_tree u) \<Longrightarrow>
+    cut_finite_runtime (cut_tree (logic_arity_project (logic_symbol_arity A) undefined u))" for u
+    by (simp add: cut_finite_domain_iff logic_arity_project_finite)
+  show ?thesis using domain_canonical_xml_yes[OF finite_cut.cut_runtime_domain_axioms parsed accepted program projection]
+    by (simp add: lp_cut_finite_terminates_def cut_finite_domain_iff)
+qed
 
 theorem lp_cut_table_rational_yes:
   assumes parsed: "parse_xml_string lpc_certificate_parser xml =
     Right (cut_program P,q,modes,fuel,r,nds,acts,Q,enc_pred,enc_data,
       (R,outs,fallback,names,filters,(q',n,positions),prf))"
     and accepted: "check_lpc_xml xml"
-  shows "lp_cut_rational_terminates P q modes"
-  using domain_canonical_xml_yes[OF rational_cut.cut_runtime_domain_axioms parsed accepted]
-  by (simp add: lp_cut_rational_terminates_def cut_rational_runtime_def)
+    and program: "logic_cut_problem A P q modes"
+  shows "lp_cut_rational_terminates A P q modes"
+proof -
+  have projection: "cut_rational_runtime (cut_tree u) \<Longrightarrow>
+    cut_rational_runtime (cut_tree (logic_arity_project (logic_symbol_arity A) undefined u))" for u
+    by (simp add: cut_rational_runtime_def logic_arity_project_rational)
+  show ?thesis using domain_canonical_xml_yes[OF rational_cut.cut_runtime_domain_axioms parsed accepted program projection]
+    by (simp add: lp_cut_rational_terminates_def cut_rational_runtime_def)
+qed
 
 ML \<open>
   val results = @{thms lp_cut_table_finite_yes lp_cut_table_rational_yes}

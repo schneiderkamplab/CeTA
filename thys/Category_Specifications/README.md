@@ -24,14 +24,16 @@ For first-order syntax, read [First_Order_Terms_Spec.thy](First_Order_Terms_Spec
 
 Then [TRS_Spec_Base.thy](TRS_Spec_Base.thy) adds ranked rewriting:
 
-- `ranked_signature`: a partial arity function; `Some n` admits an n-ary symbol,
-  while `None` excludes it (`Some 0` admits a constant);
+- `arity`: a total function assigning each function symbol its number of
+  arguments; zero denotes a constant, and the symbol type supplies the alphabet;
 - `arity_correct`, `correct_substitution`, and `correct_context`: membership
   in the chosen term universe;
-- `trs_problem`: finite, signature-correct rules over an infinite variable type;
+- `trs_problem`: finite, signature-correct rules;
 - `fo_step`: a rule instance in any signature-correct context.
 
-LP term definitions import only the signature-independent syntax.
+The variable type is arbitrary. Cardinality requirements of a representation
+proof belong in the bridge, not in problem validity. LP term definitions reuse
+the shared first-order syntax, arity function and finite-term arity predicate.
 
 The prefix `fo` means first-order. These objects are shared across all TRS
 categories. Signatures need not contain constants or have finite domains. Rule
@@ -56,7 +58,7 @@ meaning to relations outside valid inputs; this is not additional input coverage
 | Conditional operational | [TRS_Conditional_Operational_Spec.thy](TRS_Conditional_Operational_Spec.thy) | `conditional_problem`; `trs_conditional_operationally_terminates` |
 | TRS Equational | [TRS_Equational_Spec.thy](TRS_Equational_Spec.thy) | `equational_problem`; `trs_equational_terminates` |
 | SRS Standard | [SRS_Standard_Spec.thy](SRS_Standard_Spec.thy) | `string_problem`; `srs_standard_terminates` |
-| SRS Relative | [SRS_Relative_Spec.thy](SRS_Relative_Spec.thy) | `string_problem` for both partitions; `srs_relative_terminates` |
+| SRS Relative | [SRS_Relative_Spec.thy](SRS_Relative_Spec.thy) | `relative_string_problem`; `srs_relative_terminates` |
 | SRS Cycle | [SRS_Cycle_Spec.thy](SRS_Cycle_Spec.thy) | `string_problem`; `srs_cycle_terminates` |
 | Higher-order | [Higher_Order_Sorts_Spec.thy](Higher_Order_Sorts_Spec.thy) | `higher_order_declared_problem`; `higher_order_terminates_over_sorts` |
 
@@ -80,7 +82,7 @@ modulo beta or eta. Its typed terms are intentionally distinct from first-order 
 
 In Isabelle notation, `∀` and `∃` quantify, `⟷` defines logical equivalence,
 `#` prepends to a list, `@` concatenates lists, and `!` selects a zero-based
-list entry. `None` denotes an absent signature/type lookup; `Some A` denotes a
+list entry. `None` denotes a failed optional lookup; `Some A` denotes a
 successful lookup. Premises of an inductive rule precede `⟹`; its conclusion follows.
 
 ## Integer transition systems and logic programs
@@ -94,9 +96,19 @@ independent of any concrete arithmetic expression syntax.
 For logic programs, read [LP_Terms_Spec.thy](LP_Terms_Spec.thy), then
 [LP_Spec_Base.thy](LP_Spec_Base.thy). Program clauses and initial queries use
 `fo_term`; runtime trees distinguish finite trees from rational trees (finitely
-many distinct subtrees), and arbitrary infinite trees. Most-general resolution includes continuation and
-clause-body variables. Query modes mean ground or arbitrary finite arguments,
+many distinct subtrees), and arbitrary infinite trees. Variable types are
+polymorphic. `logic_subtree u t` means that `u` occurs in `t`, and
+`logic_eval s t` abbreviates `logic_subst s (logic_embed t)`. The runtime arity
+predicate uses the shared `arity` function throughout validity and execution.
+`LAtom` distinguishes predicate applications from function terms.
+`logic_mgu D a b s` requires one unifier and factorization on every variable.
+Resolution first renames the clause apart from all active goals, then applies
+the same MGU to the renamed body and caller continuation. Query modes mean
+ground or arbitrary finite arguments,
 including compound nonground arguments and shared variables.
+Use termination together with `logic_problem A P p modes` or
+`logic_cut_problem A P p modes`: validity checks clause arities and the query
+mode length independently of whether any execution exists.
 
 | Category variant | Definition | Final property |
 | --- | --- | --- |

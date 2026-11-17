@@ -2,6 +2,26 @@ theory LP_Unification_Factorisation
   imports Category_LP_Bridge.LP_Cut_Finite_Unification
 begin
 
+lemma lp_finite_embedding_injective:
+  "lp_ieval s LPIVar=lp_ieval t LPIVar \<Longrightarrow> s=t"
+proof (induct s arbitrary: t)
+  case (Var x) then show ?case by (cases t) auto
+next
+  case (Fun f ss)
+  obtain g ts where t: "t=Fun g ts" using Fun.prems by (cases t) auto
+  have symbol: "f=g" and eq: "map (\<lambda>u. lp_ieval u LPIVar) ss=map (\<lambda>u. lp_ieval u LPIVar) ts"
+    using Fun.prems by (simp_all add: t)
+  have len: "length ss=length ts" using arg_cong[OF eq, of length] by simp
+  have nth: "ss!i=ts!i" if i: "i<length ss" for i
+  proof (rule Fun.hyps[OF nth_mem[OF i]])
+    show "lp_ieval (ss!i) LPIVar=lp_ieval (ts!i) LPIVar"
+      using arg_cong[OF eq, of "\<lambda>xs. xs!i"] i len by simp
+  qed
+  have "ss=ts" by (rule nth_equalityI[OF len nth])
+  then show ?case by (simp add: t symbol)
+qed
+
+
 text \<open>A successful finite unification algorithm factors every tree-valued
 solution, including rational and unrestricted infinite trees. Completeness of
 finite unification is used only to obtain a successful run from a finite witness;

@@ -26,6 +26,12 @@ def check(package):
         graph[name] = [d for d in deps if d != 'Main']
         commands = re.sub(r'\(\*.*?\*\)', '', text, flags=re.S)
         commands = re.sub(r'\\<open>.*?\\<close>', '', commands, flags=re.S)
+        declarations = re.finditer(
+            r'^(?:definition|abbreviation|fun|primcorec|inductive|coinductive)\s+(\w+)\b([^"\n]*(?:\n\s+[^"\n]*)?)',
+            commands, re.M)
+        for declaration in declarations:
+            assert '::' in declaration.group(2), (
+                f'{name}.{declaration.group(1)}: missing explicit type')
         commands = re.sub(r'"(?:[^"\\]|\\.)*"', '', commands, flags=re.S)
         assert not re.search(forbidden, commands, re.M), f'{name}: non-specification command'
     def visit(name, active, seen):

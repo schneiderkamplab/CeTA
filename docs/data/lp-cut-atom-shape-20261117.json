@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-17",
+  "session": "LP_Cut_Shape_Check",
+  "exit_code": 0,
+  "proof_checking": "quick_and_dirty=false",
+  "scope": "Isolated session using byte-identical installed theories; not a full cut NO checker build.",
+  "log": "lp-cut-atom-shape-20261117.log.gz",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Back_Representation.thy": "792fb39368a7f585eb6c3920eb7ffec20f9682846444c78945cb7e1c53e1e217",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Shape.thy": "0aeb03404825c4a8f57846559a634345e0cf1f21d8df9af7d22345238ad0876b",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_MGU.thy": "2f48d92bed1ba3b91b36dfdbcc90071696bac981c4217213b9f236eac5e3a488",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Source.thy": "8a8e80c93183fddb6fc849dfabe625b4fe86607780870e41366c20a4a64880af"
+  },
+  "remaining": [
+    "Cut NO canonical execution and checker correspondence",
+    "Precise-MGU cut YES correspondence",
+    "Ranked cut parser/checker boundary",
+    "Full affected-session verification"
+  ]
+}

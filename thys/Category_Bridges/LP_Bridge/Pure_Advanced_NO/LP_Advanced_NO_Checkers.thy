@@ -47,8 +47,8 @@ theorem lp_recurrent_pair_category_no:
     Right (logic_to_program P,(q,length modes,positions),A,C,x,y,s,d,n,m,a,b,c,keep,steps1,steps2)"
     and accepted: "check_lp_recurrent_pair_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
   by (rule lp_checked_finite_witness_no[OF modes])
     (use check_lp_recurrent_pair_xml_finite_sound[OF parsed accepted] in auto)
 
@@ -57,8 +57,8 @@ theorem lp_pattern_loop_category_no:
     Right (logic_to_program P,(q,length modes,positions),A,sig,mu,firststeps,steps,acc)"
     and accepted: "check_lp_pattern_loop_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
   by (rule lp_checked_finite_witness_no[OF modes])
     (use check_lp_pattern_loop_xml_finite_sound[OF parsed accepted] in auto)
 
@@ -67,8 +67,8 @@ theorem lp_affine_loop_category_no:
     Right (logic_to_program P,(q,length modes,positions),c,z,env,A,firststeps,steps,u,v)"
     and accepted: "check_lp_affine_loop_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
   by (rule lp_checked_finite_witness_no[OF modes])
     (use check_lp_affine_loop_xml_finite_sound[OF parsed accepted] in auto)
 ML \<open>

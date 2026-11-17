@@ -2,6 +2,12 @@ theory LP_Cut_Domain_NO_Steps
   imports LP_Cut_Domain_NO_Renaming
 begin
 
+lemma no_finite_eval[simp]: "cut_finite_runtime (lp_ieval t LPIVar)"
+  by (auto simp: cut_finite_runtime_def)
+lemma no_finite_renamed_eval[simp]:
+  "cut_finite_runtime (lp_ieval t (\<lambda>x. LPIVar (r x)))"
+  by (rule cut_domain_eval[where D=cut_finite_runtime, OF _ cut_finite_function]) (simp add: cut_finite_variable)
+
 context cut_runtime_domain
 begin
 
@@ -22,7 +28,7 @@ proof -
       (\<lambda>x. lp_ieval (lpc_mgu_substitution V images (lp_prefix k x)) LPIVar)"
     by (rule checked_mgu_resolve[OF mgu short])
   show ?thesis
-    using mgu_source.resolve[OF index actual, of m "lp_cut_state_eval es LPIVar"] checked
+    using mgu_source.resolve[OF index actual lp_checked_fresh_resolution[OF variables constructors mgu short], of m "lp_cut_state_eval es LPIVar"] checked
     by (simp add: lpc_no_resolve_def lp_cut_state_map_def map_map o_def
       lp_cut_map_comp lp_ieval_finite_subst lp_ieval_subst lp_cut_map_bind)
 qed
@@ -43,7 +49,8 @@ proof -
       (\<lambda>v. lp_ieval (lpc_mgu_substitution V images (lp_prefix k v)) LPIVar)"
     by (rule checked_mgu_resolve[OF mgu short])
   show ?thesis
-    using mgu_source.resolve[OF index mgu_resolve_output_swap[OF actual, of x y],
+    using mgu_source.resolve[OF index mgu_resolve_output_swap[OF actual, of x y]
+      fresh_resolution_output_swap[OF lp_checked_fresh_resolution[OF variables constructors mgu short], where x=x and y=y and bs="snd (P!c)"],
       of m "lp_cut_state_eval es LPIVar"] checked
     by (simp add: lpc_no_resolve_swap_def lp_cut_state_map_def map_map o_def
       lp_cut_map_comp lp_ieval_finite_subst lp_ieval_subst lp_cut_map_bind)
@@ -89,7 +96,8 @@ lemma no_unify_sound:
   shows "(lp_cut_state_eval (LPCGoals (LPCUnify a b#gs)#es) LPIVar,
     lp_cut_state_eval (LPCGoals (map (lp_cut_map (\<lambda>t. t\<cdot>lpc_mgu_substitution V images)) gs)#es) LPIVar)
     \<in>mgu_source P"
-  using mgu_source.unify[OF checked_mgu_unify[OF checked, of gs],
+  using mgu_source.unify[OF checked_mgu_unify[OF checked, of gs]
+    lp_checked_global_mgu[OF variables constructors checked],
     of "lp_cut_state_eval es LPIVar" P]
   by (simp add: lp_cut_state_map_def map_map o_def lp_cut_map_comp lp_ieval_finite_subst lp_ieval_subst)
 

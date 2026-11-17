@@ -1,4 +1,4 @@
-# Rewriting representation and checker bridges
+# Category representation and checker bridges
 
 This package connects the sibling specifications and properties to IsaFoR and
 CeTA. It is deliberately outside the self-contained definition package.
@@ -31,3 +31,21 @@ isabelle build -d /path/to/AFP/thys -d /path/to/CeTA/thys -D /path/to/Category_B
 
 Checker-family restrictions and signature-transfer conditions belong here,
 not in the category definitions. The specification does not import this package.
+
+## Logic programming
+
+`LP_Bridge/Ranked` translates ranked cut executions and queries to the native
+checker semantics. `LP_Bridge/Arity_MGU` proves that arity-correct global MGUs
+remain most-general in the finite, rational and arbitrary-tree domains. Its
+abstraction proof names malformed subtrees and reconstructs them after
+factorization; no signature-restriction termination assumption is used.
+`LP_Bridge/MGU` composes erasure with clause freshening and native contextual
+factorization. The downstream return and segment sessions reuse this connection.
+
+The canonical definitions remain polymorphic in variables. Serialized checker
+corollaries instantiate variables with strings and use `(name, arity)` symbols.
+Final cut endpoints require a parser result and guarded acceptance, including
+ordinary-atom shape and fixed-control arity checks. The native checker and
+certificate formats are unchanged; Ferrum's handwritten source audit remains
+part of the runtime correspondence trust boundary. See the
+[LP review](../../docs/its-lp-specifications.md) for evidence and reading order.

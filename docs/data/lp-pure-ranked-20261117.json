@@ -1,0 +1,33 @@
+{
+  "scope": "Pure LP ranked program/query boundary, fresh single-MGU NO execution, all seven NO endpoints, TOCL09 and ten further YES endpoints",
+  "goal_complete": false,
+  "checks": {
+    "registered": {
+      "exit_code": 0,
+      "log": "lp-pure-ranked-20261117-registered.log.gz"
+    },
+    "yes_families": {
+      "exit_code": 0,
+      "log": "lp-pure-ranked-20261117-yes_families.log.gz"
+    }
+  },
+  "registered_sessions": [
+    "Category_LP_Bridge",
+    "Category_LP_NO_Bridge",
+    "Category_LP_Advanced_NO_Bridge"
+  ],
+  "yes_family_check": "Isolated session compiling byte-identical copy of installed LP_Yes_Category_Bridges; its registered mixed cut-family session still awaits cut migration",
+  "no_oracle_audit": "LP_Advanced_NO_Checkers compiled its zero-oracle dependency audit for all seven endpoints",
+  "certificate_or_generated_code_changes": false,
+  "remaining": "Cut NO and precise-MGU family correspondence, ranked cut boundary, complete all-category rebuild and audit",
+  "source_sha256": {
+    "thys/Category_Bridges/LP_Bridge/ROOT": "1c978f7cb86c7f9a21e7e38343638b317f3232c00b75adbda7ae9058196cb96d",
+    "thys/Category_Bridges/LP_Bridge/LP_Ranked_Representation.thy": "08d992ca3616d13215107e5f4fd52a99fae4fef6af6e53b063779c549b1768ed",
+    "thys/Category_Bridges/LP_Bridge/LP_Ranked_Checker_Bridge.thy": "e127fd3e5786ec8323b30cf38a45e118cf5506db1598c669be6cce327a97c974",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_MGU_Canonical.thy": "45563b87b7823b3b75a7c3205bf3de987fbe91b681c15ebab79fc364901d707d",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_NO_Canonical.thy": "08e0434e5cb76945c1cec9585f3bb7b52ce3692df94b16692f24fb20ca55d34e",
+    "thys/Category_Bridges/LP_Bridge/Pure_NO/LP_Finite_NO_Checkers.thy": "da9bd5ade4dcdce04d37761254a29039f2dd39893e37912b318b260bd7fbaf94",
+    "thys/Category_Bridges/LP_Bridge/Pure_Advanced_NO/LP_Advanced_NO_Checkers.thy": "37955f0c3863bfea09f9dd110fd6da40a46ec368ca83e73cfe5d7073fc802324",
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Yes_Category_Bridges.thy": "b8825f858d967a5fd4fe175577c78321cb0602fa561300e51a2537984af3d900"
+  }
+}

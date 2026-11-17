@@ -1,168 +1,40 @@
 theory LP_Cut_Domain_NO_Canonical
-  imports LP_Cut_Back_Representation
+  imports LP_Cut_Domain_NO_Finite
 begin
 
-lemma logic_flat_goal_map:
-  "concat (map logic_goal_terms (map (logic_goal_map f) gs)) =
-   map f (concat (map logic_goal_terms gs))"
-proof -
-  have single: "logic_goal_terms (logic_goal_map f g) = map f (logic_goal_terms g)" for g
-    by (cases g) auto
-  show ?thesis by (induct gs) (simp_all add: single)
-qed
-lemma logic_flat_equal:
-  assumes "map (logic_goal_map f) gs = map (logic_goal_map g) gs"
-  shows "map (logic_atom_map f) (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms gs))) =
-    map (logic_atom_map g) (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms gs)))"
-proof -
-  have "map f (concat (map logic_goal_terms gs)) = map g (concat (map logic_goal_terms gs))"
-    using arg_cong[OF assms, of "\<lambda>xs. concat (map logic_goal_terms xs)"]
-    by (simp only: logic_flat_goal_map)
-  then show ?thesis
-    using arg_cong[of _ _ "map (\<lambda>t. ((),[t]))"]
-    by (simp add: logic_atom_map_def map_map o_def)
-qed
-lemma cut_back_maps_equal:
-  assumes eq: "map (lp_cut_map f) gs = map (lp_cut_map g) gs"
-    and f: "\<And>t. cut_tree_back (f t) = h (k t)"
-    and g: "\<And>t. cut_tree_back (g t) = j (k t)"
-  shows "map (logic_goal_map h) (map (cut_goal_back k) gs) =
-    map (logic_goal_map j) (map (cut_goal_back k) gs)"
-proof -
-  have left: "cut_goal_back cut_tree_back (lp_cut_map f v) = logic_goal_map h (cut_goal_back k v)" for v
-    by (rule cut_back_goal_map; rule f)
-  have right: "cut_goal_back cut_tree_back (lp_cut_map g v) = logic_goal_map j (cut_goal_back k v)" for v
-    by (rule cut_back_goal_map; rule g)
-  show ?thesis using arg_cong[OF eq, of "map (cut_goal_back cut_tree_back)"]
-    by (simp only: map_map o_def left right)
-qed
+lemma cut_goals_forward_back:
+  "list_all (cut_goal_shape cut_iatom_shape) gs \<Longrightarrow>
+    map cut_igoal (map cut_igoal_back gs) = gs"
+  by (auto simp: map_map o_def list_all_iff intro!: map_idI intro: cut_igoal_forward_back)
+lemma cut_back_clause_forward:
+  assumes "cut_program_shape P" "c<length P"
+  shows "cut_head (fst (cut_program_back P!c)) = fst (P!c)"
+    "map cut_fgoal (snd (cut_program_back P!c)) = snd (P!c)"
+  using arg_cong[OF cut_program_forward_back[OF assms(1)], where f="\<lambda>P. P!c"]
+    assms(2) by (auto simp: cut_program_nth dest: arg_cong[where f=fst] arg_cong[where f=snd])
+lemma cut_finite_atom_support:
+  "cut_finite_runtime (cut_atom a) \<Longrightarrow> t\<in>set (logic_arguments a) \<Longrightarrow>
+    finite (logic_variables t)"
+  by (cases a) (auto intro!: cut_finite_variable_support dest: cut_finite_arguments[unfolded list_all_iff])
 
 context cut_runtime_domain
 begin
 
-lemma canonical_mgu_resolve:
-  assumes mgu: "mgu_resolve a gs h bs sigma rho"
-  shows "logic_cut_mgu (\<lambda>t. D (cut_tree t)) (cut_tree_back a)
-    (map (cut_goal_back cut_tree_back) gs) (cut_term_back h)
-    (map (cut_goal_back cut_term_back) bs)
-    (cut_tree_back \<circ> sigma) (cut_tree_back \<circ> rho)"
-proof -
-  have ds: "\<forall>x. D (sigma x)" and dr: "\<forall>x. D (rho x)"
-    and eq: "lp_isubst a sigma = lp_ieval h rho"
-    using mgu by (auto simp: mgu_resolve_def)
-  show ?thesis unfolding logic_cut_mgu_def logic_mgu_def
-  proof (intro conjI)
-    show "logic_substitution (\<lambda>t. D (cut_tree t)) (cut_tree_back \<circ> sigma)"
-      using ds by (simp add: logic_substitution_def)
-    show "logic_substitution (\<lambda>t. D (cut_tree t)) (cut_tree_back \<circ> rho)"
-      using dr by (simp add: logic_substitution_def)
-    show "logic_atom_map (logic_subst (cut_tree_back \<circ> sigma)) ((),[cut_tree_back a]) =
-      logic_atom_map (logic_eval (cut_tree_back \<circ> rho)) ((),[cut_term_back h])"
-      using arg_cong[OF eq, of cut_tree_back]
-      by (simp add: logic_atom_map_def cut_back_subst cut_back_eval)
-    show "\<forall>t u. logic_substitution (\<lambda>t. D (cut_tree t)) t \<longrightarrow>
-      logic_substitution (\<lambda>t. D (cut_tree t)) u \<longrightarrow>
-      logic_atom_map (logic_subst t) ((),[cut_tree_back a]) =
-        logic_atom_map (logic_eval u) ((),[cut_term_back h]) \<longrightarrow>
-      (\<exists>d. logic_substitution (\<lambda>t. D (cut_tree t)) d \<and>
-        logic_atom_map (logic_subst d \<circ> logic_subst (cut_tree_back \<circ> sigma)) ((),[cut_tree_back a]) =
-          logic_atom_map (logic_subst t) ((),[cut_tree_back a]) \<and>
-        map (logic_atom_map (logic_subst d \<circ> logic_subst (cut_tree_back \<circ> sigma)))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_tree_back) gs)))) =
-        map (logic_atom_map (logic_subst t))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_tree_back) gs)))) \<and>
-        map (logic_atom_map (logic_subst d \<circ> logic_eval (cut_tree_back \<circ> rho)))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_term_back) bs)))) =
-        map (logic_atom_map (logic_eval u))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_term_back) bs)))))"
-    proof (intro allI impI)
-      fix t u
-      assume dt: "logic_substitution (\<lambda>t. D (cut_tree t)) t"
-        and du: "logic_substitution (\<lambda>t. D (cut_tree t)) u"
-        and eq: "logic_atom_map (logic_subst t) ((),[cut_tree_back a]) =
-          logic_atom_map (logic_eval u) ((),[cut_term_back h])"
-      have eq': "lp_isubst a (cut_tree \<circ> t) = lp_ieval h (cut_tree \<circ> u)"
-        using eq cut_back_subst[of a "cut_tree \<circ> t"] cut_back_eval[of h "cut_tree \<circ> u"]
-        by (simp add: logic_atom_map_def o_def; metis cut_tree_native_roundtrip)
-      obtain delta where dd: "\<forall>x. D (delta x)" and atom:
-        "lp_isubst (lp_isubst a sigma) delta = lp_isubst a (cut_tree \<circ> t)"
-        and goals: "map (lp_cut_map (\<lambda>v. lp_isubst (lp_isubst v sigma) delta)) gs =
-          map (lp_cut_map (\<lambda>v. lp_isubst v (cut_tree \<circ> t))) gs"
-        and body: "map (lp_cut_map (\<lambda>v. lp_isubst (lp_ieval v rho) delta)) bs =
-          map (lp_cut_map (\<lambda>v. lp_ieval v (cut_tree \<circ> u))) bs"
-        using spec[OF spec[OF conjunct2[OF conjunct2[OF conjunct2[OF mgu[unfolded mgu_resolve_def]]]], of "cut_tree \<circ> t"], of "cut_tree \<circ> u"] dt du eq'
-        by (simp only: logic_substitution_def o_apply) blast
-      let ?d = "cut_tree_back \<circ> delta"
-      have goals': "map (logic_goal_map (logic_subst ?d \<circ> logic_subst (cut_tree_back \<circ> sigma)))
-        (map (cut_goal_back cut_tree_back) gs) =
-        map (logic_goal_map (logic_subst t)) (map (cut_goal_back cut_tree_back) gs)"
-        by (rule cut_back_maps_equal[OF goals]) (simp_all add: cut_back_subst o_def)
-      have body': "map (logic_goal_map (logic_subst ?d \<circ> logic_eval (cut_tree_back \<circ> rho)))
-        (map (cut_goal_back cut_term_back) bs) =
-        map (logic_goal_map (logic_eval u)) (map (cut_goal_back cut_term_back) bs)"
-        by (rule cut_back_maps_equal[OF body]) (simp_all add: cut_back_subst cut_back_eval o_def)
-      show "\<exists>d. logic_substitution (\<lambda>t. D (cut_tree t)) d \<and>
-        logic_atom_map (logic_subst d \<circ> logic_subst (cut_tree_back \<circ> sigma)) ((),[cut_tree_back a]) =
-          logic_atom_map (logic_subst t) ((),[cut_tree_back a]) \<and>
-        map (logic_atom_map (logic_subst d \<circ> logic_subst (cut_tree_back \<circ> sigma)))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_tree_back) gs)))) =
-        map (logic_atom_map (logic_subst t))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_tree_back) gs)))) \<and>
-        map (logic_atom_map (logic_subst d \<circ> logic_eval (cut_tree_back \<circ> rho)))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_term_back) bs)))) =
-        map (logic_atom_map (logic_eval u))
-          (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms (map (cut_goal_back cut_term_back) bs))))"
-        apply (rule exI[of _ ?d], intro conjI)
-           apply (simp add: logic_substitution_def dd)
-          apply (use arg_cong[OF atom, of cut_tree_back] in
-            \<open>simp add: logic_atom_map_def cut_back_subst o_def\<close>)
-         apply (rule logic_flat_equal[OF goals'])
-        apply (rule logic_flat_equal[OF body'])
-        done
-    qed
-  qed
-qed
-
-lemma canonical_mgu_unify:
-  assumes mgu: "mgu_unify a b gs sigma"
-  shows "logic_unify_mgu (\<lambda>t. D (cut_tree t)) (cut_tree_back a) (cut_tree_back b)
-    (map (cut_goal_back cut_tree_back) gs) (cut_tree_back \<circ> sigma)"
-proof -
-  have ds: "\<forall>x. D (sigma x)" and eq: "lp_isubst a sigma = lp_isubst b sigma"
-    using mgu by (auto simp: mgu_unify_def)
-  have factor: "\<exists>d. logic_substitution (\<lambda>t. D (cut_tree t)) d \<and>
-    logic_subst d (logic_subst (cut_tree_back \<circ> sigma) (cut_tree_back a)) = logic_subst t (cut_tree_back a) \<and>
-    map (logic_goal_map (logic_subst d \<circ> logic_subst (cut_tree_back \<circ> sigma)))
-      (map (cut_goal_back cut_tree_back) gs) =
-    map (logic_goal_map (logic_subst t)) (map (cut_goal_back cut_tree_back) gs)"
-    if dt: "logic_substitution (\<lambda>t. D (cut_tree t)) t"
-      and eq: "logic_subst t (cut_tree_back a) = logic_subst t (cut_tree_back b)" for t
-  proof -
-    have eq': "lp_isubst a (cut_tree \<circ> t) = lp_isubst b (cut_tree \<circ> t)"
-      using arg_cong[OF eq, of cut_tree] by (simp add: cut_tree_subst)
-    obtain delta where dd: "\<forall>x. D (delta x)" and atom:
-      "lp_isubst (lp_isubst a sigma) delta = lp_isubst a (cut_tree \<circ> t)"
-      and goals: "map (lp_cut_map (\<lambda>v. lp_isubst (lp_isubst v sigma) delta)) gs =
-        map (lp_cut_map (\<lambda>v. lp_isubst v (cut_tree \<circ> t))) gs"
-      using spec[OF conjunct2[OF conjunct2[OF mgu[unfolded mgu_unify_def]]], of "cut_tree \<circ> t"] dt eq'
-      by (simp only: logic_substitution_def o_apply) blast
-    have goals': "map (logic_goal_map (logic_subst (cut_tree_back \<circ> delta) \<circ> logic_subst (cut_tree_back \<circ> sigma)))
-      (map (cut_goal_back cut_tree_back) gs) =
-      map (logic_goal_map (logic_subst t)) (map (cut_goal_back cut_tree_back) gs)"
-      by (rule cut_back_maps_equal[OF goals]) (simp_all add: cut_back_subst o_def)
-    show ?thesis by (rule exI[of _ "cut_tree_back \<circ> delta"])
-      (use dd arg_cong[OF atom, of cut_tree_back] goals' in
-        \<open>simp add: logic_substitution_def cut_back_subst o_def\<close>)
-  qed
-  show ?thesis unfolding logic_unify_mgu_def
-    using ds arg_cong[OF eq, of cut_tree_back] factor
-    by (auto simp: logic_substitution_def cut_back_subst)
-qed
-
+text \<open>The inverse simulation uses proved shape, arity and finite-variable
+invariants. Its domain-projection premise is discharged separately for the three
+term domains; it is not a termination-restriction assumption.\<close>
 lemma canonical_no_step:
-  assumes "(s,t)\<in>mgu_source P"
-  shows "logic_cut_step (\<lambda>t. D (cut_tree t)) (cut_program_back P) (cut_state_back s) (cut_state_back t)"
-  using assms
+  assumes step: "(s,t)\<in>mgu_source P"
+    and program_shape: "cut_program_shape P"
+    and program: "logic_cut_problem A (cut_program_back P) q modes"
+    and shape: "list_all (cut_choice_shape cut_iatom_shape) s"
+    and finite: "list_all cut_choice_finite s"
+    and correct: "logic_runtime_state_correct A (cut_state_back s)"
+    and projection: "\<And>u. D (cut_tree u) \<Longrightarrow>
+      D (cut_tree (logic_arity_project (logic_symbol_arity A) undefined u))"
+  shows "logic_cut_step A (\<lambda>u. D (cut_tree u)) (cut_program_back P)
+    (cut_state_back s) (cut_state_back t)"
+  using step
 proof (cases rule: mgu_source.cases)
   case admin
   then show ?thesis by (auto intro: logic_cut_step.admin cut_back_admin)
@@ -170,57 +42,186 @@ next
   case (case_call m f ts gs es)
   have fresh: "logic_fresh_mark m (cut_state_back (LPCGoals (LPCAtom (LPIFun (LPCUser f) ts)#gs)#es))"
     by (rule cut_back_fresh) (use case_call in blast)
-  show ?thesis using logic_cut_step.case_call[OF fresh[simplified], where P="cut_program_back P" and D="\<lambda>t. D (cut_tree t)"] case_call
-    by (simp add: cut_back_slice map_map o_def)
+  show ?thesis using logic_cut_step.case_call[OF fresh[simplified],
+      where P="cut_program_back P" and D="\<lambda>u. D (cut_tree u)" and A=A] case_call
+    by (simp add: cut_back_slice[OF program_shape] map_map o_def)
 next
   case (resolve c a gs sigma rho m es)
-  have mgu: "logic_cut_mgu (\<lambda>t. D (cut_tree t)) (cut_tree_back a)
-    (map (cut_goal_back cut_tree_back) gs) (fst (cut_program_back P!c)) (snd (cut_program_back P!c))
-    (cut_tree_back \<circ> sigma) (cut_tree_back \<circ> rho)"
-    using canonical_mgu_resolve[OF resolve(4)] resolve(3) by (simp add: cut_back_program_nth)
-  have index: "c<length (cut_program_back P)" using resolve by simp
-  show ?thesis using logic_cut_step.resolve[OF index mgu, of m "cut_state_back es"] resolve
-    by (simp add: cut_back_program_nth map_map o_def
-      cut_back_goal_subst cut_back_goal_eval_bind)
+  let ?a = "cut_iatom_back a"
+  let ?gs = "map cut_igoal_back gs"
+  let ?Q = "cut_program_back P"
+  have index: "c<length P" using resolve by blast
+  have ashape: "cut_iatom_shape a" and gshape: "list_all (cut_goal_shape cut_iatom_shape) gs"
+    and eshape: "list_all (cut_choice_shape cut_iatom_shape) es"
+    using shape resolve by simp_all
+  have atom: "cut_atom ?a = a" by (rule cut_iatom_forward_back[OF ashape])
+  have goals: "map cut_igoal ?gs = gs" by (rule cut_goals_forward_back[OF gshape])
+  have suffix: "cut_state (cut_state_back es) = es" by (rule cut_state_forward_back[OF eshape])
+  have native: "lp_fresh_resolution D (cut_atom ?a) (map cut_igoal ?gs)
+      (cut_head (fst (?Q!c))) (map cut_fgoal (snd (?Q!c))) sigma rho"
+    using resolve by (simp only: atom goals cut_back_clause_forward[OF program_shape index])
+  have caller_atom: "logic_atom_correct A (logic_tree_arity_correct (logic_symbol_arity A)) ?a"
+    using correct resolve by simp
+  have caller: "list_all (logic_tree_arity_correct (logic_symbol_arity A)) (logic_arguments ?a)"
+    using caller_atom by (cases ?a) simp
+  have head_atom: "logic_atom_correct A (arity_correct (logic_symbol_arity A)) (fst (?Q!c))"
+    using program index nth_mem[of c ?Q]
+    by (auto simp: logic_cut_problem_def case_prod_unfold)
+  have head: "list_all (arity_correct (logic_symbol_arity A)) (logic_arguments (fst (?Q!c)))"
+    using head_atom by (cases "fst (?Q!c)") simp
+  note lifted = cut_resolution_step[where A=A and P="?Q" and a="?a" and gs="?gs"
+    and es="cut_state_back es" and m=m and z=undefined,
+    OF _ native caller head projection]
+  show ?thesis using lifted index resolve
+    by (simp add: goals[unfolded map_map o_def] suffix[unfolded map_map o_def]
+      cut_back_clause_forward[OF program_shape index] map_map o_def)
 next
   case (backtrack c a gs m)
-  have index: "c<length (cut_program_back P)" using backtrack by simp
-  have failure: "\<not>(\<exists>sigma rho. logic_substitution (\<lambda>t. D (cut_tree t)) sigma \<and>
-    logic_substitution (\<lambda>t. D (cut_tree t)) rho \<and>
-    logic_subst sigma (cut_tree_back a) = logic_eval rho (fst (cut_program_back P!c)))"
-  proof
-    assume "\<exists>sigma rho. logic_substitution (\<lambda>t. D (cut_tree t)) sigma \<and>
-      logic_substitution (\<lambda>t. D (cut_tree t)) rho \<and>
-      logic_subst sigma (cut_tree_back a) = logic_eval rho (fst (cut_program_back P!c))"
-    then obtain sigma rho where eq: "logic_subst sigma (cut_tree_back a) = logic_eval rho (cut_term_back (fst (P!c)))"
-      using backtrack(2) by (auto simp: cut_back_program_nth)
-    have "lp_isubst a (cut_tree \<circ> sigma) = lp_ieval (fst (P!c)) (cut_tree \<circ> rho)"
-      using eq cut_back_subst[of a "cut_tree \<circ> sigma"] cut_back_eval[of "fst(P!c)" "cut_tree \<circ> rho"]
-      by (simp add: o_def; metis cut_tree_native_roundtrip)
-    then show False using backtrack by blast
+  let ?a = "cut_iatom_back a"
+  let ?gs = "map cut_igoal_back gs"
+  let ?Q = "cut_program_back P"
+  have index: "c<length P" using backtrack by blast
+  have ashape: "cut_iatom_shape a" and gshape: "list_all (cut_goal_shape cut_iatom_shape) gs"
+    using shape backtrack by simp_all
+  have atom: "cut_atom ?a = a" by (rule cut_iatom_forward_back[OF ashape])
+  have goals: "map cut_igoal ?gs = gs" by (rule cut_goals_forward_back[OF gshape])
+  have active: "finite (logic_variables u)"
+    if active_member: "u\<in>set (logic_arguments ?a @ concat (map logic_goal_terms ?gs))" for u
+  proof -
+    have af: "cut_finite_runtime (cut_atom ?a)" and gf: "list_all cut_goal_finite (map cut_igoal ?gs)"
+      using finite backtrack by (simp_all add: atom goals[unfolded map_map o_def] map_map o_def)
+    show ?thesis
+    proof (cases "u\<in>set (logic_arguments ?a)")
+      case True
+      show ?thesis by (rule cut_finite_atom_support[OF af True])
+    next
+      case False
+      obtain g where member: "g\<in>set ?gs" "u\<in>set (logic_goal_terms g)"
+        using active_member False by auto
+      have fg: "cut_goal_finite (cut_igoal g)" using gf member(1) by (auto simp: list_all_iff)
+      show ?thesis by (rule cut_finite_goal_support[OF fg member(2)])
+    qed
   qed
-  show ?thesis using logic_cut_step.backtrack[OF index failure, of "map (cut_goal_back cut_tree_back) gs" m "cut_state_back t"] backtrack by simp
+  have failure: "\<not>(\<exists>sigma :: string \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm. \<exists>rho.
+      lp_isubst (cut_atom ?a) sigma = lp_ieval (cut_head (fst (?Q!c))) rho)"
+    using backtrack by (simp add: atom cut_back_clause_forward[OF program_shape index])
+  show ?thesis using cut_backtrack_step[where P="?Q" and A=A and D="\<lambda>u. D (cut_tree u)"
+    and gs="?gs" and m=m and es="cut_state_back t", OF _ infinite_UNIV_listI active failure]
+    index backtrack by simp
 next
   case (unify a b gs sigma es)
-  show ?thesis using logic_cut_step.unify[OF canonical_mgu_unify[OF unify(3)], where es="cut_state_back es" and P="cut_program_back P"] unify
-    by (simp add: map_map o_def cut_back_goal_subst)
+  have raw: "logic_mgu (\<lambda>u. D (cut_tree u)) (LAtom () [cut_tree_back a])
+      (LAtom () [cut_tree_back b]) (cut_tree_back \<circ> sigma)"
+    using unify by (simp add: cut_tree_native.mgu_iff o_def)
+  have ca: "logic_tree_arity_correct (logic_symbol_arity A) (cut_tree_back a)"
+    and cb: "logic_tree_arity_correct (logic_symbol_arity A) (cut_tree_back b)"
+    using correct unify by simp_all
+  have typed: "logic_mgu (\<lambda>u. D (cut_tree u) \<and> logic_tree_arity_correct (logic_symbol_arity A) u)
+      (LAtom () [cut_tree_back a]) (LAtom () [cut_tree_back b]) (cut_tree_back \<circ> sigma)"
+    by (rule logic_mgu_correct_arity[OF raw _ _ projection]) (simp_all add: ca cb)
+  have goals: "list_all (cut_goal_shape cut_iatom_shape) gs" using shape unify by simp
+  show ?thesis using logic_cut_step.unify[OF typed, where P="cut_program_back P"
+      and gs="map cut_igoal_back gs" and es="cut_state_back es"] unify goals
+    by (simp add: map_map o_def list_all_iff cut_back_goal_subst cong: map_cong)
 next
   case (unify_fail a b gs)
-  have failure: "\<not>(\<exists>sigma. logic_substitution (\<lambda>t. D (cut_tree t)) sigma \<and>
-    logic_subst sigma (cut_tree_back a) = logic_subst sigma (cut_tree_back b))"
-    using unify_fail(2) cut_tree_subst[of _ "cut_tree_back a"] cut_tree_subst[of _ "cut_tree_back b"]
-    by (metis cut_tree_native_roundtrip)
-  show ?thesis using logic_cut_step.unify_fail[OF failure, where gs="map (cut_goal_back cut_tree_back) gs" and es="cut_state_back t" and P="cut_program_back P"] unify_fail by simp
+  have failure: "\<not>(\<exists>sigma. logic_substitution_in (\<lambda>u. D (cut_tree u) \<and>
+      logic_tree_arity_correct (logic_symbol_arity A) u) sigma \<and>
+      logic_subst sigma (cut_tree_back a) = logic_subst sigma (cut_tree_back b))"
+  proof
+    assume "\<exists>sigma. logic_substitution_in (\<lambda>u. D (cut_tree u) \<and>
+      logic_tree_arity_correct (logic_symbol_arity A) u) sigma \<and>
+      logic_subst sigma (cut_tree_back a) = logic_subst sigma (cut_tree_back b)"
+    then obtain sigma where "logic_subst sigma (cut_tree_back a) = logic_subst sigma (cut_tree_back b)" by blast
+    then have "lp_isubst a (cut_tree \<circ> sigma) = lp_isubst b (cut_tree \<circ> sigma)"
+      by (metis cut_tree_subst cut_tree_native_roundtrip)
+    then show False using unify_fail by blast
+  qed
+  show ?thesis using logic_cut_step.unify_fail[OF failure, where P="cut_program_back P"
+      and gs="map cut_igoal_back gs" and es="cut_state_back t"] unify_fail by simp
 next
   case (meta m a gs es body)
   obtain f ts where a: "a=LPIFun f ts" using meta by blast
   have fresh: "logic_fresh_mark m (cut_state_back (LPCGoals (LPCMeta a#gs)#es))"
     by (rule cut_back_fresh) (use meta in blast)
-  have lower: "logic_lower m (cut_tree_back a) (map (cut_goal_back cut_tree_back) body)"
+  have lower: "logic_lower m (cut_tree_back a) (map cut_igoal_back body)"
     by (rule cut_back_lower) (use meta in blast)
-  show ?thesis using logic_cut_step.meta[OF fresh[unfolded a, simplified] lower[unfolded a, simplified], where P="cut_program_back P" and D="\<lambda>t. D (cut_tree t)"] meta a
-    by simp
+  show ?thesis using logic_cut_step.meta[OF fresh[unfolded a, simplified]
+      lower[unfolded a, simplified], where P="cut_program_back P" and D="\<lambda>u. D (cut_tree u)" and A=A]
+    meta a by simp
+qed
+
+
+lemma canonical_no_run:
+  fixes sequence :: "nat \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm lp_cut_entry list"
+  assumes steps: "\<And>n. (sequence n,sequence (Suc n))\<in>mgu_source P"
+    and program_shape: "cut_program_shape P"
+    and program: "logic_cut_problem A (cut_program_back P) q modes"
+    and shape: "list_all (cut_choice_shape cut_iatom_shape) (sequence 0)"
+    and finite: "list_all cut_choice_finite (sequence 0)"
+    and correct: "logic_runtime_state_correct A (cut_state_back (sequence 0))"
+    and projection: "\<And>u. D (cut_tree u) \<Longrightarrow>
+      D (cut_tree (logic_arity_project (logic_symbol_arity A) undefined u))"
+  shows "logic_cut_step A (\<lambda>u. D (cut_tree u)) (cut_program_back P)
+    (cut_state_back (sequence n)) (cut_state_back (sequence (Suc n)))"
+proof -
+  have shapes: "list_all (cut_choice_shape cut_iatom_shape) (sequence n)" for n
+    by (rule no_run_shape[OF program_shape shape steps])
+  have finites: "list_all cut_choice_finite (sequence n)" for n
+    by (rule no_run_finite[OF finite steps])
+  have corrects: "logic_runtime_state_correct A (cut_state_back (sequence n))" for n
+  proof (induct n)
+    case 0 show ?case by (rule correct)
+  next
+    case (Suc n)
+    have step: "logic_cut_step A (\<lambda>u. D (cut_tree u)) (cut_program_back P)
+        (cut_state_back (sequence n)) (cut_state_back (sequence (Suc n)))"
+      by (rule canonical_no_step[OF steps program_shape program shapes finites Suc.hyps projection])
+    show ?case by (rule logic_cut_step_arity[OF program step Suc.hyps])
+  qed
+  show ?thesis by (rule canonical_no_step[OF steps program_shape program shapes finites corrects projection])
+qed
+
+
+lemma canonical_no_checked_run:
+  assumes checked: "lpc_no_check_source fuel P q modes argv a before after initial_steps steps"
+    and program_shape: "cut_program_shape P"
+    and program: "logic_cut_problem A (cut_program_back P) q modes"
+    and arguments: "list_all (arity_correct (logic_symbol_arity A)) (map cut_term_back argv)"
+    and projection: "\<And>u. D (cut_tree u) \<Longrightarrow>
+      D (cut_tree (logic_arity_project (logic_symbol_arity A) undefined u))"
+  obtains sequence where
+    "sequence 0 = [LogicGoals [LogicAtom (LAtom q (map logic_embed (map cut_term_back argv)))]]"
+    "\<And>n. logic_cut_step A (\<lambda>u. D (cut_tree u)) (cut_program_back P)
+      (sequence n) (sequence (Suc n))"
+proof -
+  obtain native where start:
+      "native 0 = [LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) argv))]]"
+    and transitions: "\<And>n. (native n,native (Suc n))\<in>mgu_source P"
+    and finite: "\<And>n. list_all cut_choice_finite (native n)"
+    by (rule no_checked_finite_run[OF checked]) blast
+  have shape: "list_all (cut_choice_shape cut_iatom_shape) (native 0)"
+    by (simp add: start)
+  have initial: "cut_state_back (native 0) =
+      [LogicGoals [LogicAtom (LAtom q (map logic_embed (map cut_term_back argv)))]]"
+    by (simp add: start map_map o_def cut_back_finite)
+  have lengths: "length argv = A q"
+    using checked program by (simp add: lpc_no_check_source_def logic_cut_problem_def)
+  have correct: "logic_runtime_state_correct A (cut_state_back (native 0))"
+    using arguments lengths by (simp add: initial list_all_iff)
+  have lifted: "logic_cut_step A (\<lambda>u. D (cut_tree u)) (cut_program_back P)
+      (cut_state_back (native n)) (cut_state_back (native (Suc n)))" for n
+    by (rule canonical_no_run[OF transitions program_shape program shape finite correct projection])
+  show thesis by (rule that[of "\<lambda>n. cut_state_back (native n)", OF initial lifted])
 qed
 
 end
+
+ML \<open>
+  val results = @{thms cut_runtime_domain.canonical_no_step cut_runtime_domain.canonical_no_run
+    cut_runtime_domain.canonical_no_checked_run}
+  val _ = if Thm_Deps.has_skip_proof results then error "Cut inverse simulation: admitted proof" else ()
+  val names = Thm_Deps.all_oracles results |> map (fn ((name, _), _) => name) |> distinct (op =)
+  val _ = if null names then () else error ("Cut inverse simulation: oracle dependencies: " ^ commas names)
+\<close>
 end

@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-17",
+  "session": "Category_LP_Cut_Arity_MGU_Bridge",
+  "exit_code": 0,
+  "log": "lp-cut-arity-mgu-20261117.log.gz",
+  "proof_checking": "quick_and_dirty=false",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_MGU_Arity_Extension.thy": "b1240e590be814e8161be458fb02992db6d545f2638dea43649c0da811465b1d",
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_MGU_Abstraction_Domains.thy": "9573a98d8c2617112ba70a68fb8ef017210e6ab7450d0fa12bf1789ce48ac23b",
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_MGU_Domain_Extension.thy": "038c2275ed468be7a7bdbe739a7a4e8fc5b3569b94ec592fe2d1f30fed3f907c",
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_MGU_Abstraction_Names.thy": "3b9dbd6d30266efdc19b8d7e6afc1840b958e9f26bd1ad83fe158846d2dc31a2",
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_MGU_Arity_Abstraction.thy": "5b28a629bc450b7672e72700695592110780db4e425a096adc182c6d02a5d8f5",
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_Tree_Countability.thy": "99a383b55258f153943ea146990aeec570b9201505cb4312b44a3e2585a001c6",
+    "thys/Category_Bridges/LP_Bridge/Arity_MGU/LP_MGU_Concrete_Extension.thy": "963076ea3fcc2d68a88dccd5e468f65aa22337d6db160be9c1f0e2b8aaae0b25",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "6cf0033873009898fb46f68be6cb6e317dbadba9dec7c1852dd427c03aeec66f"
+  },
+  "audit": {
+    "oracles": [],
+    "admitted_proofs": false
+  },
+  "theorems": [
+    "logic_substitution_abstraction_names",
+    "logic_mgu_arity_extension_by_abstraction",
+    "logic_finite_mgu_arity_extension",
+    "logic_rational_mgu_arity_extension",
+    "logic_infinite_mgu_arity_extension"
+  ],
+  "meaning": "For string variables and arity-correct input atoms, typed global MGUs are unrestricted MGUs in each of the finite/rational/arbitrary tree domains. No unrestricted-MGU-existence premise. Malformed subtrees are abstracted into countably many distinct variables, then reconstructed by a domain-correct substitution.",
+  "remaining": [
+    "transport extended MGUs to native cut resolution/context factors",
+    "migrate precise-MGU canonical YES connection",
+    "downstream checker families and complete rebuild/audit"
+  ]
+}

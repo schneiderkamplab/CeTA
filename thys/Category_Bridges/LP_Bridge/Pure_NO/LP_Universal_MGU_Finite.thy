@@ -2,25 +2,6 @@ theory LP_Universal_MGU_Finite
   imports LP_Universal_MGU
 begin
 
-lemma lp_finite_embedding_injective:
-  "lp_ieval s LPIVar=lp_ieval t LPIVar \<Longrightarrow> s=t"
-proof (induct s arbitrary: t)
-  case (Var x) then show ?case by (cases t) auto
-next
-  case (Fun f ss)
-  obtain g ts where t: "t=Fun g ts" using Fun.prems by (cases t) auto
-  have symbol: "f=g" and eq: "map (\<lambda>u. lp_ieval u LPIVar) ss=map (\<lambda>u. lp_ieval u LPIVar) ts"
-    using Fun.prems by (simp_all add: t)
-  have len: "length ss=length ts" using arg_cong[OF eq, of length] by simp
-  have nth: "ss!i=ts!i" if i: "i<length ss" for i
-  proof (rule Fun.hyps[OF nth_mem[OF i]])
-    show "lp_ieval (ss!i) LPIVar=lp_ieval (ts!i) LPIVar"
-      using arg_cong[OF eq, of "\<lambda>xs. xs!i"] i len by simp
-  qed
-  have "ss=ts" by (rule nth_equalityI[OF len nth])
-  then show ?case by (simp add: t symbol)
-qed
-
 lemma lp_universal_mgu_finite_factor:
   fixes tau nu :: "string \<Rightarrow> ('f,string) term"
   assumes mgu: "lp_universal_mgu a h sigma rho"

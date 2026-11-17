@@ -1,5 +1,5 @@
 theory LP_Cut_Domain_MGU
-  imports Category_LP_Cut_Checker_Bridge.LP_Cut_Domain_Checker Category_LP_Library.LP_Cut_NO_XML
+  imports Category_LP_Bridge.LP_Fresh_MGU_Context Category_LP_Cut_Checker_Bridge.LP_Cut_Domain_Checker Category_LP_Library.LP_Cut_NO_XML
 begin
 
 text \<open>NO certificates require actual most-general transitions. Both the
@@ -74,6 +74,42 @@ proof -
     done
 qed
 
+lemma fresh_resolution_mgu_resolve:
+  assumes fresh: "lp_fresh_resolution D a gs h bs sigma rho"
+  shows "mgu_resolve a gs h bs sigma rho"
+proof -
+  have basic: "lp_isubst a sigma = lp_ieval h rho"
+    "\<forall>x. D (sigma x)" "\<forall>x. D (rho x)"
+    using fresh unfolding lp_fresh_resolution_def lp_runtime_mgu_def
+    by (auto simp: lp_iatom_subst_def lp_ieval_subst o_def)
+  have factor: "\<exists>delta. (\<forall>x. D (delta x)) \<and>
+      lp_isubst (lp_isubst a sigma) delta = lp_isubst a tau \<and>
+      map (lp_cut_map (\<lambda>t. lp_isubst (lp_isubst t sigma) delta)) gs =
+        map (lp_cut_map (\<lambda>t. lp_isubst t tau)) gs \<and>
+      map (lp_cut_map (\<lambda>t. lp_isubst (lp_ieval t rho) delta)) bs =
+        map (lp_cut_map (\<lambda>t. lp_ieval t nu)) bs"
+    if dt: "\<forall>x. D (tau x)" and dn: "\<forall>x. D (nu x)"
+      and eq: "lp_isubst a tau = lp_ieval h nu"
+    for tau nu :: "string \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm"
+  proof -
+    obtain delta where dd: "\<And>x. D (delta x)"
+      and caller: "\<And>t. t\<in>set (a # concat (map lp_cut_terms gs)) \<Longrightarrow>
+        lp_isubst (lp_isubst t sigma) delta = lp_isubst t tau"
+      and clause: "\<And>t. t\<in>set (h # concat (map lp_cut_terms bs)) \<Longrightarrow>
+        lp_isubst (lp_ieval t rho) delta = lp_ieval t nu"
+      by (rule lp_fresh_resolution_factors_context[OF fresh _ _ eq]) (use dt dn in auto)
+    show ?thesis
+      apply (intro exI[of _ delta] conjI allI dd)
+        apply (rule caller; simp)
+       apply (intro map_cong refl lp_cut_goal_map_cong)
+       apply (rule caller; auto)[1]
+      apply (intro map_cong refl lp_cut_goal_map_cong)
+      apply (rule clause; auto)
+      done
+  qed
+  show ?thesis unfolding mgu_resolve_def using basic factor by blast
+qed
+
 theorem checked_mgu_resolve:
   fixes a h :: "('f lp_cut_symbol,string) term"
   assumes checked: "lpc_check_mgu fuel [(a,h\<cdot>(\<lambda>x. Var (lp_prefix k x)))] V images"
@@ -83,75 +119,8 @@ theorem checked_mgu_resolve:
     (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) h bs
     (\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) LPIVar)
     (\<lambda>x. lp_ieval (lpc_mgu_substitution V images (lp_prefix k x)) LPIVar)"
-proof -
-  let ?s = "\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) LPIVar"
-  let ?r = "\<lambda>x. ?s (lp_prefix k x)"
-  let ?eqs = "[(a,h\<cdot>(\<lambda>x. Var (lp_prefix k x)))]"
-  have unifies: "lp_isubst (lp_ieval a LPIVar) ?s = lp_ieval h ?r"
-    using lpc_checked_mgu_unifies[OF checked]
-    by (simp add: lp_equations_def lp_ieval_subst lp_ieval_finite_subst)
-  have factor: "\<And>\<tau> \<nu> :: string \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm.
-    (\<forall>x. D (\<tau> x)) \<Longrightarrow> (\<forall>x. D (\<nu> x)) \<Longrightarrow>
-    lp_isubst (lp_ieval a LPIVar) \<tau> = lp_ieval h \<nu> \<Longrightarrow>
-    \<exists>\<delta>. (\<forall>x. D (\<delta> x)) \<and>
-      lp_isubst (lp_isubst (lp_ieval a LPIVar) ?s) \<delta> = lp_isubst (lp_ieval a LPIVar) \<tau> \<and>
-      map (lp_cut_map (\<lambda>t. lp_isubst (lp_isubst t ?s) \<delta>))
-        (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) =
-      map (lp_cut_map (\<lambda>t. lp_isubst t \<tau>))
-        (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) \<and>
-      map (lp_cut_map (\<lambda>t. lp_isubst (lp_ieval t ?r) \<delta>)) bs =
-      map (lp_cut_map (\<lambda>t. lp_ieval t \<nu>)) bs"
-  proof -
-    fix \<tau> \<nu> :: "string \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm"
-    assume dt: "\<forall>x. D (\<tau> x)" and dn: "\<forall>x. D (\<nu> x)"
-    assume comparison: "lp_isubst (lp_ieval a LPIVar) \<tau> = lp_ieval h \<nu>"
-    let ?d = "\<lambda>x. if length x<k then \<tau> x else \<nu> (drop k x)"
-    have fresh: "\<And>x. ?d (lp_prefix k x) = \<nu> x" by (simp add: lp_prefix_def)
-    have old: "\<And>t. (\<forall>x\<in>vars_term t. length x<k) \<Longrightarrow> lp_ieval t ?d = lp_ieval t \<tau>"
-      by (rule lp_ieval_cong) auto
-    have solution: "lp_equations ?eqs ?d"
-      using comparison old[OF short_a]
-      by (simp add: lp_equations_def lp_ieval_finite_subst lp_ieval_subst fresh)
-    have composed: "(\<lambda>x. lp_isubst (?s x) ?d) = ?d"
-      by (rule ext) (simp add: lp_ieval_subst lpc_checked_mgu_factor[OF checked solution])
-    have composed_eval: "(\<lambda>x. lp_ieval (lpc_mgu_substitution V images x) ?d) = ?d"
-      using composed by (simp add: lp_ieval_subst)
-    have active: "\<And>t. (\<forall>x\<in>vars_term t. length x<k) \<Longrightarrow>
-      lp_isubst (lp_isubst (lp_ieval t LPIVar) ?s) ?d = lp_isubst (lp_ieval t LPIVar) \<tau>"
-      by (simp add: lp_ieval_subst composed_eval old)
-    show "\<exists>\<delta>. (\<forall>x. D (\<delta> x)) \<and>
-      lp_isubst (lp_isubst (lp_ieval a LPIVar) ?s) \<delta> = lp_isubst (lp_ieval a LPIVar) \<tau> \<and>
-      map (lp_cut_map (\<lambda>t. lp_isubst (lp_isubst t ?s) \<delta>))
-        (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) =
-      map (lp_cut_map (\<lambda>t. lp_isubst t \<tau>))
-        (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) \<and>
-      map (lp_cut_map (\<lambda>t. lp_isubst (lp_ieval t ?r) \<delta>)) bs =
-      map (lp_cut_map (\<lambda>t. lp_ieval t \<nu>)) bs"
-    proof (rule exI[of _ ?d], intro conjI)
-      show "\<forall>x. D (?d x)" using dt dn by simp
-      show "lp_isubst (lp_isubst (lp_ieval a LPIVar) ?s) ?d = lp_isubst (lp_ieval a LPIVar) \<tau>"
-        by (rule active[OF short_a])
-      show "map (lp_cut_map (\<lambda>t. lp_isubst (lp_isubst t ?s) ?d))
-        (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs) =
-        map (lp_cut_map (\<lambda>t. lp_isubst t \<tau>))
-        (map (lp_cut_map (\<lambda>t. lp_ieval t LPIVar)) gs)"
-        unfolding map_map o_def lp_cut_map_comp
-        by (rule map_cong[OF refl], rule lp_cut_goal_map_cong, rule active)
-          (use short_gs in \<open>auto simp: lp_cut_short_goals_def\<close>)
-      show "map (lp_cut_map (\<lambda>t. lp_isubst (lp_ieval t ?r) ?d)) bs =
-        map (lp_cut_map (\<lambda>t. lp_ieval t \<nu>)) bs"
-      proof -
-        have "(\<lambda>x. lp_isubst (?r x) ?d) = \<nu>"
-          using fun_cong[OF composed, of "lp_prefix k _"] by (auto simp: fresh)
-        then show ?thesis by (simp add: lp_ieval_subst)
-      qed
-    qed
-  qed
-  have ds: "\<forall>x. D (?s x)"
-    by (intro allI; rule cut_domain_eval[OF variables constructors])
-  have dr: "\<forall>x. D (?r x)" using ds by simp
-  show ?thesis unfolding mgu_resolve_def using unifies ds dr factor by blast
-qed
+  by (rule fresh_resolution_mgu_resolve)
+    (rule lp_checked_fresh_resolution[OF variables constructors checked short_a short_gs])
 
 
 end

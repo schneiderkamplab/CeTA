@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-17",
+  "session": "Category_LP_Bridge",
+  "exit_code": 0,
+  "proof_checking": "quick_and_dirty=false",
+  "log": "lp-cut-ranked-mgu-execution-20261117.log.gz",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Ranked_MGU.thy": "7ace5c22f02d1a542fa90da85682f75f0ba56a982edca55d635a98a2d22b9f7f",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Ranked_Execution.thy": "a5cb554dcd6f13d4bab17241048b2650e6e406f35a7e73927a37d45abf3c6498",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Ranked_Representation.thy": "486da9c265aca9169beab4f13bf66aee3f006feb31e3607852fa6281c61e03a3",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "c5592f2e57abb01eb9a9d65957ab2779f095ecec529dd745f3acb19b2e036efc"
+  },
+  "audits": {
+    "oracles": [],
+    "admitted_proofs": false
+  },
+  "results": [
+    "Global MGU transport into ranking image, followed by proved arity restriction",
+    "Finite/rational/arbitrary-tree MGU transfers",
+    "Runtime atom/goal substitution and embedding correspondence",
+    "Clause-selection indexes, cut marks, pruning and administration preserved",
+    "Finite and divergent meta-call decoding preserved",
+    "Variable sets and clause freshening preserved"
+  ],
+  "remaining": [
+    "Ranked native certificate-run simulation and final validated input boundary",
+    "Precise-MGU YES correspondence",
+    "All affected cut examples and complete downstream sessions"
+  ],
+  "checks": {
+    "package_inventory": "Failed: pre-existing unlisted TRS_Conditional_Spec_Base2.thy; preserved"
+  }
+}

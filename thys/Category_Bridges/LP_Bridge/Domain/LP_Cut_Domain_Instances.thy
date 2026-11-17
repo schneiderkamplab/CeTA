@@ -28,7 +28,8 @@ lemma cut_native_subst_back:
   by (rule cut_tree_injective[THEN iffD1]) (simp add: cut_tree_subst o_def)
 
 lemma cut_rational_substitute:
-  "cut_rational_runtime t \<Longrightarrow> (\<And>x. cut_rational_runtime (sigma x)) \<Longrightarrow>
+  fixes sigma :: "'v \<Rightarrow> ('f lp_cut_symbol,'v) lp_iterm"
+  shows   "cut_rational_runtime t \<Longrightarrow> (\<And>x. cut_rational_runtime (sigma x)) \<Longrightarrow>
     cut_rational_runtime (lp_isubst t sigma)"
   unfolding cut_rational_runtime_def cut_native_subst_back
   by (rule logic_rational_substitution) (auto simp: o_def)

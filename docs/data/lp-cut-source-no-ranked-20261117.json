@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-17",
+  "proof_checking": "quick_and_dirty=false",
+  "builds": {
+    "source_no": {
+      "log": "lp-cut-source-no-ranked-20261117-source_no.log.gz",
+      "exit_code": 0,
+      "session": "LP_Cut_NO_Checker_Check"
+    },
+    "ranked_base": {
+      "log": "lp-cut-source-no-ranked-20261117-ranked_base.log.gz",
+      "exit_code": 0,
+      "session": "Category_LP_Bridge"
+    }
+  },
+  "scope": "Source NO corollaries checked in a byte-identical isolated session; ranked representation checked in registered Category_LP_Bridge. Final ranked cut checker correspondence remains incomplete.",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy": "6e8ae942583c22348e4d574a852c2f4d9a383a860a5cc194e6f52d509a0bc286",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Canonical.thy": "a41105dd87ddd8fd5373b6a2081de42cf0c21e8a47558aaa390b6ab243a9d925",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Ranked_Representation.thy": "486da9c265aca9169beab4f13bf66aee3f006feb31e3607852fa6281c61e03a3",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "7f0ebcfa5b07b6d2eaf5beddd5966d7ea167bc64ff9462218dd7080e5984770d"
+  },
+  "source_no_conditions": [
+    "Exact parser result and existing checker acceptance",
+    "Explicit canonical source validity",
+    "Explicit witness-query argument arity correctness"
+  ],
+  "audits": {
+    "source_no_oracles": [],
+    "ranked_representation_oracles": [],
+    "admitted_proofs": false
+  },
+  "ranked_results": [
+    "User symbols paired with argument count; dedicated controls preserved",
+    "Substitution and finite embedding commute with ranking/erasure",
+    "Erasure inverse on arity-correct ranked trees",
+    "Finite and rational term domains preserved and reflected",
+    "Shared finite arity predicate used to validate control applications",
+    "Overloaded names, malformed comma and meta-call examples proved"
+  ],
+  "remaining": [
+    "Ranked cut execution and MGU correspondence",
+    "Final checker statements with input conditions discharged by validated boundary",
+    "Precise-MGU cut YES proofs",
+    "NO examples and complete affected-session verification"
+  ]
+}

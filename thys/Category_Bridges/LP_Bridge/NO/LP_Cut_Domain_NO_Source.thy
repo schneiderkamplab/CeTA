@@ -1,5 +1,5 @@
 theory LP_Cut_Domain_NO_Source
-  imports LP_Cut_Domain_MGU
+  imports LP_Cut_Domain_MGU Category_LP_Bridge.LP_Checked_Global_MGU
 begin
 
 text \<open>The witness relation uses domain-specific MGUs and admits only
@@ -19,6 +19,8 @@ inductive_set mgu_source ::
      map (\<lambda>c. LPCClause (LPCAtom (LPIFun (LPCUser f) ts)#gs) c m)
        (lp_cut_slice P (LPCUser f) (length ts)) @ LPCBarrier m # es) \<in> mgu_source P"
 | resolve: "c<length P \<Longrightarrow> mgu_resolve a gs (fst (P!c)) (snd (P!c)) \<sigma> \<rho> \<Longrightarrow>
+    lp_fresh_resolution D a gs (fst (P!c)) (snd (P!c)) \<sigma> \<rho> \<Longrightarrow>
+    (\<forall>x. cut_finite_runtime (\<sigma> x) \<and> cut_finite_runtime (\<rho> x)) \<Longrightarrow>
     (LPCClause (LPCAtom a#gs) c m # es,
      LPCGoals (map (lp_cut_bind m (\<lambda>t. lp_ieval t \<rho>)) (snd (P!c)) @
        map (lp_cut_map (\<lambda>t. lp_isubst t \<sigma>)) gs) # es) \<in> mgu_source P"
@@ -26,6 +28,8 @@ inductive_set mgu_source ::
       lp_isubst a \<sigma> = lp_ieval (fst (P!c)) \<rho>) \<Longrightarrow>
     (LPCClause (LPCAtom a#gs) c m # es, es) \<in> mgu_source P"
 | unify: "mgu_unify a b gs \<sigma> \<Longrightarrow>
+    lp_runtime_mgu D ((),[a]) ((),[b]) \<sigma> \<Longrightarrow>
+    (\<forall>x. cut_finite_runtime (\<sigma> x)) \<Longrightarrow>
     (LPCGoals (LPCUnify a b#gs)#es,
      LPCGoals (map (lp_cut_map (\<lambda>t. lp_isubst t \<sigma>)) gs)#es) \<in> mgu_source P"
 | unify_fail: "\<not>(\<exists>\<sigma>::string \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm.
@@ -79,7 +83,7 @@ next
       intro!: map_cong lp_cut_scope_bind)
   have mgu: "mgu_resolve a (map (lp_cut_scope_goal r) gs) (fst (P!c)) (snd (P!c)) \<sigma> \<rho>"
     by (rule mgu_resolve_scope[OF resolve(2)])
-  show ?case using mgu_source.resolve[OF resolve(1) mgu, of "r m" "map (lp_cut_scope_entry r) es"]
+  show ?case using mgu_source.resolve[OF resolve(1) mgu lp_fresh_resolution_scope[OF resolve(3)] resolve(4), of "r m" "map (lp_cut_scope_entry r) es"]
     by (simp add: resolve body[unfolded map_map o_def] map_map o_def lp_cut_scope_goal_map)
 next
   case (backtrack c a gs m es)
@@ -90,7 +94,7 @@ next
   case (unify a b gs \<sigma> es)
   have mgu: "mgu_unify a b (map (lp_cut_scope_goal r) gs) \<sigma>"
     by (rule mgu_unify_scope[OF unify(1)])
-  show ?case using mgu_source.unify[OF mgu, of "map (lp_cut_scope_entry r) es"]
+  show ?case using mgu_source.unify[OF mgu unify(2,3), of "map (lp_cut_scope_entry r) es"]
     by (simp add: unify map_map o_def lp_cut_scope_goal_map)
 next
   case (unify_fail a b gs es)

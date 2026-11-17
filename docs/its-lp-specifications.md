@@ -10,6 +10,53 @@ to integer transition systems, definite logic programs and logic programs with c
 The separate Prolog category is excluded. Finite-term, rational-tree and arbitrary-infinite-tree LP
 semantics have separate final predicates; none is an alias for another.
 
+## Verified ranked LP semantics
+
+The specifications use polymorphic variables, explicit arities, dedicated `LAtom`
+predicate applications and conventional single-substitution global MGUs.
+`logic_mgu D a b s` requires every domain-correct unifier to factor through `s`
+on every variable. Resolution freshens clauses against the active goals and
+applies the same substitution to the renamed body and continuation. Saved cut
+alternatives retain their bindings. `logic_eval` abbreviates embedding followed
+by substitution. Finite, rational and arbitrary-tree semantics remain distinct.
+
+The [final verification receipt](data/lp-ranked-complete-20261117.json) records
+the registered bridge builds and the combined audit of all 51 cut corollaries:
+16 YES branches and one NO branch, each in three domains. Each final cut theorem
+has exactly two premises: its parse result and guarded checker acceptance.
+Program validity, MGU erasure, projection and domain closure are proved, not
+caller-supplied semantic assumptions. Pure LP covers eleven YES families and
+seven NO families. Historical [migration checkpoints](lp-refactor-history-20261117.md)
+retain the earlier partial results without treating them as current evidence.
+
+The checker boundary uses string variables and symbols `(name, arity)`, with
+arity function `snd`; overloaded names remain distinct. The arity-MGU extension
+proof names malformed subtrees with fresh variables and reconstructs them after
+factorization. It proves extension to unrestricted MGUs without assuming that
+signature restriction preserves termination or that an unrestricted MGU exists.
+See the [bridge reading guide](../thys/Category_Bridges/README.md).
+
+The HOL-only examples cover overloaded names, malformed atom/query arities,
+nonground modes, occurs-check differences, scoped cut, success backtracking and
+meta-calls. [Variable properties](../thys/Category_Properties/LP_Variables_Properties.thy)
+expose the supply requirement: infinite variable types allow freshening against
+finite support, but an arbitrary infinite runtime tree can use every variable.
+The concrete correspondence proofs establish the needed invariants; no claim
+of standard-resolution equivalence for every finite variable type is made.
+
+Formal guarded acceptance includes ordinary-atom shape and fixed control arities;
+NO also checks witness terms. Ferrum enforces the corresponding source audit
+before certification. The unchanged native checker executable alone does not
+enforce these new guards. Its handwritten Rust/XML binding to the original
+source and selected domain remains a trust surface. The
+[runtime gate](../../ferrum/docs/data/lp-ranked-boundary-20261117.json) passes
+185 cut tests, with three pre-existing ignored tests. No certificate format,
+generated checking code or production binary changed.
+
+The declared specification package passes its definition-only check (29 theories).
+The shared-folder inventory check separately finds the concurrent, unlisted
+`TRS_Conditional_Spec_Base2.thy`; that unrelated file is untouched.
+
 ## Reference semantics
 
 The [current ITS category description](https://termination-portal.org/wiki/Integer_Transition_Systems)
@@ -82,7 +129,7 @@ infinite executions in both directions. Its concrete checker connection targets
 `check_its4`, including termination, ground nontermination and recurrent-region
 and recurrent-cycle certificates.
 
-The [LP bridge](../thys/Category_Bridges/LP_Bridge/LP_Representation.thy)
+The [ranked LP bridge](../thys/Category_Bridges/LP_Bridge/LP_Ranked_Checker_Bridge.thy)
 structurally translates runtime trees and source clauses. Exact most-general
 resolution is simulated by the existing all-unifier infinite-tree YES calculus.
 The serialized YES corollaries conclude finite, rational and
@@ -99,9 +146,8 @@ This simulation is not an equivalence and cannot be reversed for NO.
 The [cut representation](../thys/Category_Bridges/LP_Bridge/LP_Cut_Representation.thy)
 preserves user/control symbols, ordered clauses, substitutions, saved alternatives,
 scopes and meta-call decoding. It simulates canonical unrestricted-tree steps by
-the native YES relation. The serialized cut-table corollary binds the exact
-program and query to `check_lpc_xml` acceptance. The original unrestricted-tree
-connection is retained alongside the new domain-specific proofs below.
+the native YES relation. The final ranked cut-table corollaries bind the exact program and query to
+`check_lpc_ranked_table_xml` acceptance, including source validity.
 
 The finite/rational work is separate. The
 [solved-substitution proofs](../thys/Category_Bridges/LP_Bridge/LP_Cut_Finite_Unification.thy)
@@ -114,8 +160,9 @@ are not extra assumptions on certificates. The
 [domain checker bridge](../thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Checker.thy)
 now propagates that interpretation through knowledge, node checks, links,
 resolution, equality, control, answer sequencing and the complete table theorem.
-It proves finite-term and rational-tree YES directly from the unchanged
-`check_lpc_xml` acceptance event. Failed unification is interpreted in the
+It proves native finite-term and rational-tree YES from the unchanged
+`check_lpc_xml` acceptance event; the ranked canonical bridge additionally
+requires the proved source-validity guard. Failed unification is interpreted in the
 selected domain throughout; this is not a transfer of infinite-tree termination.
 
 The [execution properties](../thys/Category_Properties/LP_Cut_Execution_Properties.thy)
@@ -137,7 +184,7 @@ connects `check_lpc_mgu_constructor_xml` to all three canonical predicates.
 The proof preserves most-generality over the selected domain, including the
 whole continuation and clause body, and uses domain-specific failure. It covers
 all table actions, free-variable links and the concrete constructor residual.
-Its final premises are the exact parse result and actual checker acceptance.
+Its final premises are the exact parse result and guarded checker acceptance.
 
 The [return bridge](../thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Checker.thy)
 and [module bridge](../thys/Category_Bridges/LP_Bridge/Returns/LP_Cut_Domain_Return_Module_Checker.thy)
@@ -146,7 +193,7 @@ shared proofs retain saved environments, distinguish success from failure,
 justify scoped links and establish strict residual descent. Module contracts
 also cover barrier trimming and singleton-stack combination.
 
-The [NO bridge](../thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy)
+The [ranked NO bridge](../thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Ranked_NO_Checker.thy)
 interprets the existing `check_lpc_no_xml` certificate in each domain. Checked
 finite solved substitutions supply domain-valued MGUs and factors. The proof
 covers resolution, output-variable swaps, equality, failure, administrative
@@ -163,18 +210,18 @@ The checked theorem boundaries are:
 | `its_termination_iff` | None | Canonical termination of the translated ITS iff native LTS termination |
 | `its_checker_yes` / `its_checker_no` | Concrete `check_its4` accepts the respective verdict | Canonical termination / its negation |
 | `its_serialized_decision` | Exact CPF parse result and serialized checker acceptance | Canonical termination equals the parsed answer |
-| `lp_tocl09_category_yes` | Exact TOCL09 parse result, checker acceptance, ground-position set equals query modes | Canonical pure-LP termination in each of the three domains |
-| `lp_cut_table_finite_yes` / `lp_cut_table_rational_yes` | Exact cut-table parse result and `check_lpc_xml` acceptance | Canonical finite-term / rational-tree cut termination |
-| `lp_cut_table_infinite_yes` | Exact cut-table parse result and `check_lpc_xml` acceptance | Canonical arbitrary-infinite-tree cut termination |
-| `lp_cut_return_{finite,rational,infinite}_yes` / `lp_cut_return_triples_{finite,rational,infinite}_yes` | Exact return parse and concrete constructor/triple acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_return_module_{finite,rational,infinite}_yes` / `lp_cut_return_module_triples_{finite,rational,infinite}_yes` | Exact module parse and concrete constructor/triple acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_return_composed_{finite,rational,infinite}_yes` / `lp_cut_return_composed_triples_{finite,rational,infinite}_yes` | Exact composed parse and concrete constructor/triple acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_return_nested_{finite,rational,infinite}_yes` / `lp_cut_return_nested_triples_{finite,rational,infinite}_yes` | Exact nested parse and concrete constructor/triple acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_seg_{finite,rational,infinite}_yes` | Exact segment parse and `check_lpc_seg_certificate_xml` acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_projected_{finite,rational,infinite}_yes` | Exact projected parse and `check_lpc_projected_xml` acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_mgu_finite_yes` / `lp_cut_mgu_rational_yes` / `lp_cut_mgu_infinite_yes` | Exact MGU constructor parse result and `check_lpc_mgu_constructor_xml` acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_constructor_finite_yes` / `lp_cut_constructor_rational_yes` / `lp_cut_constructor_infinite_yes` | Exact constructor parse result and `check_lpc_constructor_xml` acceptance | Canonical cut termination in the respective domain |
-| `lp_cut_source_finite_no` / `lp_cut_source_rational_no` / `lp_cut_source_infinite_no` | Exact source-NO parse result and `check_lpc_no_xml` acceptance | Negation of canonical cut termination in the respective domain |
+| `lp_tocl09_ranked_category_yes` | Exact TOCL09 parse result, checker acceptance, ground-position set equals query modes | Canonical pure-LP termination in each of the three domains |
+| `lp_cut_ranked_table_finite_yes` / `lp_cut_ranked_table_rational_yes` | Exact cut-table parse result and `check_lpc_ranked_table_xml` acceptance | Canonical finite-term / rational-tree cut termination |
+| `lp_cut_ranked_table_infinite_yes` | Exact cut-table parse result and `check_lpc_ranked_table_xml` acceptance | Canonical arbitrary-infinite-tree cut termination |
+| `lp_cut_return_{finite,rational,infinite}_yes` / `lp_cut_return_triples_{finite,rational,infinite}_yes` | Exact return parse and guarded constructor/triple acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_return_module_{finite,rational,infinite}_yes` / `lp_cut_return_module_triples_{finite,rational,infinite}_yes` | Exact module parse and guarded constructor/triple acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_return_composed_{finite,rational,infinite}_yes` / `lp_cut_return_composed_triples_{finite,rational,infinite}_yes` | Exact composed parse and guarded constructor/triple acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_return_nested_{finite,rational,infinite}_yes` / `lp_cut_return_nested_triples_{finite,rational,infinite}_yes` | Exact nested parse and guarded constructor/triple acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_seg_{finite,rational,infinite}_yes` | Exact segment parse and guarded acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_projected_{finite,rational,infinite}_yes` | Exact projected parse and guarded acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_mgu_finite_yes` / `lp_cut_mgu_rational_yes` / `lp_cut_mgu_infinite_yes` | Exact MGU constructor parse result and guarded acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_constructor_finite_yes` / `lp_cut_constructor_rational_yes` / `lp_cut_constructor_infinite_yes` | Exact constructor parse result and guarded acceptance | Canonical cut termination in the respective domain |
+| `lp_cut_ranked_finite_no` / `lp_cut_ranked_rational_no` / `lp_cut_ranked_infinite_no` | Exact source-NO parse result and `check_lpc_ranked_no_xml` acceptance | Negation of canonical cut termination in the respective domain |
 
 These are not assumptions that a processor is sound or that two semantics agree.
 They identify the actual input and acceptance event. The ITS abstract theorem

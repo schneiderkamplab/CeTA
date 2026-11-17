@@ -2,53 +2,71 @@ theory LP_Spec_Base
   imports LP_Terms_Spec
 begin
 
-text \<open>An atom separates its predicate from its argument terms. Clauses are
-finite head/body pairs; a program is a finite list of clauses. Bodies are ordered.
-Predicates are identified by name and arity. Repeated clauses are permitted.\<close>
-type_synonym ('f,'t) logic_atom = "'f \<times> 't list"
-type_synonym 'f logic_clause =
-  "('f,('f,string) fo_term) logic_atom \<times> ('f,('f,string) fo_term) logic_atom list"
-definition logic_atom_map where
-  "logic_atom_map f a = (fst a, map f (snd a))"
+text \<open>Predicate applications have their own constructor. Clause bodies are
+ordered; a program is a finite list of head/body pairs and may repeat clauses.\<close>
+datatype ('p,'t) logic_atom = LAtom (logic_predicate: 'p) (logic_arguments: "'t list")
+type_synonym ('f,'v) logic_clause =
+  "('f,('f,'v) fo_term) logic_atom \<times> ('f,('f,'v) fo_term) logic_atom list"
+fun logic_atom_map ::
+  "('s \<Rightarrow> 't) \<Rightarrow> ('p,'s) logic_atom \<Rightarrow> ('p,'t) logic_atom" where
+  "logic_atom_map g (LAtom p ts) = LAtom p (map g ts)"
 
-text \<open>Two substitutions use independent variable namespaces for the caller
-and the clause, expressing fresh clause variables without selecting particular
-fresh names. Most-generality requires every competing solution to factor through
-the result, including the remaining caller goals and the clause body. This
-prevents arbitrary specialization of variables outside the selected equation.\<close>
-definition logic_mgu where
-  "logic_mgu D a gs h bs s r \<longleftrightarrow>
-    logic_substitution D s \<and> logic_substitution D r \<and>
-    logic_atom_map (logic_subst s) a = logic_atom_map (logic_eval r) h \<and>
-    (\<forall>t u. logic_substitution D t \<longrightarrow> logic_substitution D u \<longrightarrow>
-      logic_atom_map (logic_subst t) a = logic_atom_map (logic_eval u) h \<longrightarrow>
-      (\<exists>d. logic_substitution D d \<and>
-        logic_atom_map (logic_subst d \<circ> logic_subst s) a = logic_atom_map (logic_subst t) a \<and>
-        map (logic_atom_map (logic_subst d \<circ> logic_subst s)) gs = map (logic_atom_map (logic_subst t)) gs \<and>
-        map (logic_atom_map (logic_subst d \<circ> logic_eval r)) bs = map (logic_atom_map (logic_eval u)) bs))"
+text \<open>The arity function fixes each predicate's argument count. A separate
+term predicate allows the same definition to check finite and runtime atoms.\<close>
+fun logic_atom_correct :: "'p arity \<Rightarrow> ('t \<Rightarrow> bool) \<Rightarrow> ('p,'t) logic_atom \<Rightarrow> bool" where
+  "logic_atom_correct A T (LAtom p ts) \<longleftrightarrow> length ts = A p \<and> list_all T ts"
+definition logic_problem ::
+  "'f arity \<Rightarrow> ('f,'v) logic_clause list \<Rightarrow> 'f \<Rightarrow> bool list \<Rightarrow> bool" where
+  "logic_problem A P p modes \<longleftrightarrow> length modes = A p \<and>
+    (\<forall>(h,bs)\<in>set P. list_all (logic_atom_correct A (arity_correct A)) (h#bs))"
 
-text \<open>Leftmost resolution replaces the first atom by the selected clause's
-body and propagates the same substitution through the remaining goals. Any
-matching clause may be chosen: the property concerns all derivations, not just
-the first answer. An empty goal has no successor.\<close>
+text \<open>A most-general unifier is one substitution that unifies the atoms.
+Every other domain-correct unifier factors through it on every variable.\<close>
+definition logic_mgu ::
+  "(('f,'v) logic_tree \<Rightarrow> bool) \<Rightarrow>
+    ('p,('f,'v) logic_tree) logic_atom \<Rightarrow>
+    ('p,('f,'v) logic_tree) logic_atom \<Rightarrow>
+    ('v \<Rightarrow> ('f,'v) logic_tree) \<Rightarrow> bool" where
+  "logic_mgu D a b s \<longleftrightarrow>
+    logic_substitution_in D s \<and>
+    logic_atom_map (logic_subst s) a = logic_atom_map (logic_subst s) b \<and>
+    (\<forall>u. logic_substitution_in D u \<and>
+      logic_atom_map (logic_subst u) a = logic_atom_map (logic_subst u) b
+      \<longrightarrow> (\<exists>v. logic_substitution_in D v \<and>
+        (\<forall>x. u x = logic_subst v (s x))))"
+
+text \<open>Leftmost resolution first renames the selected clause apart from
+all current goals, then embeds it and computes one MGU. That substitution acts
+on both the renamed body and the remaining goals. Any clause may be selected.\<close>
 inductive logic_step ::
-  "('f logic_tree \<Rightarrow> bool) \<Rightarrow> 'f logic_clause list \<Rightarrow>
-    ('f,'f logic_tree) logic_atom list \<Rightarrow> ('f,'f logic_tree) logic_atom list \<Rightarrow> bool"
-  for D P where
-  resolve: "(h,bs) \<in> set P \<Longrightarrow> logic_mgu D a gs h bs s r \<Longrightarrow>
-    logic_step D P (a#gs)
-      (map (logic_atom_map (logic_eval r)) bs @ map (logic_atom_map (logic_subst s)) gs)"
+  "'f arity \<Rightarrow> (('f,'v) logic_tree \<Rightarrow> bool) \<Rightarrow> ('f,'v) logic_clause list \<Rightarrow>
+    ('f,('f,'v) logic_tree) logic_atom list \<Rightarrow> ('f,('f,'v) logic_tree) logic_atom list \<Rightarrow> bool"
+  for A D P where
+  resolve: "(h,bs) \<in> set P \<Longrightarrow>
+    logic_freshening r (concat (map logic_arguments (a#gs)))
+      (concat (map logic_arguments (h#bs))) \<Longrightarrow>
+    logic_mgu (\<lambda>t. D t \<and> logic_tree_arity_correct A t)
+      a (logic_atom_map (logic_eval (LVar \<circ> r)) h) s \<Longrightarrow>
+    logic_step A D P (a#gs)
+      (map (logic_atom_map (logic_subst s))
+        (map (logic_atom_map (logic_eval (LVar \<circ> r))) bs @ gs))"
 
-text \<open>Each query mode specifies ground or arbitrary arguments. An arbitrary
-argument need not be a fresh variable: it may be any finite term, and arguments
-may share variables. Initial queries are finite in both runtime semantics.\<close>
-definition logic_query where
-  "logic_query p modes a \<longleftrightarrow> fst a = p \<and> length (snd a) = length modes \<and>
-    list_all (\<lambda>(t,b). b \<longrightarrow> logic_ground t) (zip (snd a) modes)"
-definition logic_terminates_in where
-  "logic_terminates_in D P p modes \<longleftrightarrow>
-    \<not> (\<exists>a s. logic_query p modes a \<and>
+text \<open>Initial arguments are finite terms. Ground modes require no variables;
+arbitrary modes permit sharing and are not limited to fresh variables.\<close>
+definition logic_query ::
+  "'f arity \<Rightarrow> 'f \<Rightarrow> bool list \<Rightarrow> ('f,('f,'v) fo_term) logic_atom \<Rightarrow> bool" where
+  "logic_query A p modes a \<longleftrightarrow>
+    logic_predicate a = p \<and> length modes = A p \<and>
+    logic_atom_correct A (arity_correct A) a \<and>
+    list_all (\<lambda>(t,b). b \<longrightarrow> logic_ground t) (zip (logic_arguments a) modes)"
+text \<open>For a valid logic_problem, termination means that no infinite
+leftmost derivation starts from any query in the declared mode class.\<close>
+definition logic_terminates_in ::
+  "'f arity \<Rightarrow> (('f,'v) logic_tree \<Rightarrow> bool) \<Rightarrow> ('f,'v) logic_clause list \<Rightarrow> 'f
+    \<Rightarrow> bool list \<Rightarrow> bool" where
+  "logic_terminates_in A D P p modes \<longleftrightarrow>
+    \<not> (\<exists>a s. logic_query A p modes a \<and>
       s 0 = [logic_atom_map logic_embed a] \<and>
-      (\<forall>n. logic_step D P (s n) (s (Suc n))))"
+      (\<forall>n. logic_step A D P (s n) (s (Suc n))))"
 
 end

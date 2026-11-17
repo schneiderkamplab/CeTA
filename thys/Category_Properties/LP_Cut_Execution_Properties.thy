@@ -43,38 +43,9 @@ lemma logic_scope_admin:
 lemma logic_scope_lower:
   "logic_lower m a gs \<Longrightarrow> logic_lower (r m) a (map (logic_scope_goal r) gs)"
   by (induct rule: logic_lower.induct) (auto intro: logic_lower.intros)
-lemma logic_scope_resolve_mgu:
-  "logic_cut_mgu D a gs h bs s t \<Longrightarrow>
-    logic_cut_mgu D a (map (logic_scope_goal r) gs) h bs s t"
-  by (simp add: logic_cut_mgu_def map_map o_def)
-lemma logic_scope_unify_mgu:
-  assumes "logic_unify_mgu D a b gs s"
-  shows "logic_unify_mgu D a b (map (logic_scope_goal r) gs) s"
-proof -
-  have mapped: "map (logic_goal_map f) (map (logic_scope_goal r) gs) =
-    map (logic_scope_goal r) (map (logic_goal_map f) gs)" for f
-    by (simp add: map_map o_def logic_scope_goal_map)
-  have factor: "\<exists>d. logic_substitution D d \<and>
-      logic_subst d (logic_subst s a) = logic_subst u a \<and>
-      map (logic_goal_map (logic_subst d \<circ> logic_subst s)) (map (logic_scope_goal r) gs) =
-      map (logic_goal_map (logic_subst u)) (map (logic_scope_goal r) gs)"
-    if domain: "logic_substitution D u" and equation: "logic_subst u a = logic_subst u b" for u
-  proof -
-    obtain d where dom: "logic_substitution D d"
-      and atom: "logic_subst d (logic_subst s a) = logic_subst u a"
-      and goals: "map (logic_goal_map (logic_subst d \<circ> logic_subst s)) gs =
-        map (logic_goal_map (logic_subst u)) gs"
-      using assms domain equation unfolding logic_unify_mgu_def by blast
-    show ?thesis
-      by (rule exI[of _ d], rule conjI[OF dom], rule conjI[OF atom])
-        (simp only: mapped goals)
-  qed
-  show ?thesis using assms factor unfolding logic_unify_mgu_def by blast
-qed
-
 lemma logic_cut_step_scopes:
-  assumes step: "logic_cut_step D P s t" and injective: "inj r"
-  shows "logic_cut_step D P (map (logic_scope_choice r) s) (map (logic_scope_choice r) t)"
+  assumes step: "logic_cut_step A D P s t" and injective: "inj r"
+  shows "logic_cut_step A D P (map (logic_scope_choice r) s) (map (logic_scope_choice r) t)"
   using step
 proof (cases rule: logic_cut_step.cases)
   case admin
@@ -82,24 +53,27 @@ proof (cases rule: logic_cut_step.cases)
 next
   case (case_call m f ts gs es)
   have fresh: "logic_fresh_mark (r m)
-    (map (logic_scope_choice r) (LogicGoals (LogicAtom (LFun (LogicUser f) ts)#gs)#es))"
+    (map (logic_scope_choice r) (LogicGoals (LogicAtom (LAtom f ts)#gs)#es))"
     by (rule logic_scope_fresh[OF injective]) (use case_call in blast)
-  show ?thesis using logic_cut_step.case_call[OF fresh[simplified], where D=D and P=P] case_call
+  show ?thesis using logic_cut_step.case_call[OF fresh[simplified], where A=A and D=D and P=P] case_call
     by (simp add: map_map o_def)
 next
-  case (resolve c a gs sigma rho m es)
-  have mgu: "logic_cut_mgu D a (map (logic_scope_goal r) gs) (fst (P!c)) (snd (P!c)) sigma rho"
-    by (rule logic_scope_resolve_mgu) (use resolve in blast)
-  show ?thesis using logic_cut_step.resolve[OF _ mgu, where m="r m" and es="map (logic_scope_choice r) es"] resolve
+  case (resolve c ren a gs sigma m es)
+  have fresh: "logic_freshening ren
+      (logic_arguments a @ concat (map logic_goal_terms (map (logic_scope_goal r) gs)))
+      (logic_arguments (fst (P!c)) @ concat (map logic_goal_terms (snd (P!c))))"
+    using resolve by (simp add: map_map o_def)
+  show ?thesis using logic_cut_step.resolve[OF _ fresh, where m="r m"
+      and es="map (logic_scope_choice r) es" and s=sigma and A=A and D=D] resolve
     by (simp add: map_map o_def logic_scope_bind logic_scope_goal_map)
 next
-  case (backtrack c a gs m)
-  then show ?thesis by (auto intro: logic_cut_step.backtrack)
+  case (backtrack c ren a gs m)
+  then show ?thesis
+    by (auto simp: map_map o_def intro: logic_cut_step.backtrack)
 next
-  case (unify a b gs sigma es)
-  have mgu: "logic_unify_mgu D a b (map (logic_scope_goal r) gs) sigma"
-    by (rule logic_scope_unify_mgu) (use unify in blast)
-  show ?thesis using logic_cut_step.unify[OF mgu, where es="map (logic_scope_choice r) es"] unify
+  case (unify a b sigma gs es)
+  show ?thesis using logic_cut_step.unify[where es="map (logic_scope_choice r) es"
+      and gs="map (logic_scope_goal r) gs" and A=A and D=D and P=P] unify
     by (simp add: map_map o_def logic_scope_goal_map)
 next
   case (unify_fail a b gs)
@@ -111,7 +85,7 @@ next
     by (rule logic_scope_fresh[OF injective]) (use meta in blast)
   have lower: "logic_lower (r m) (LFun f ts) (map (logic_scope_goal r) body)"
     by (rule logic_scope_lower) (use meta in blast)
-  show ?thesis using logic_cut_step.meta[OF fresh[simplified] lower, where D=D and P=P] meta by simp
+  show ?thesis using logic_cut_step.meta[OF fresh[simplified] lower, where A=A and D=D and P=P] meta by simp
 next
   case (meta_diverges a gs es)
   then show ?thesis by (auto intro: logic_cut_step.meta_diverges)

@@ -12,6 +12,14 @@ This ledger records requirements, not assumed results. Kernel, extraction and
 compiler/runtime trust must be stated precisely; their existence is not an
 unfinished proof obligation. Prolog and LeTA remain outside this task.
 
+## Ranked LP follow-up
+
+The [2026-11-17 ranked refactor](its-lp-specifications.md) supersedes the LP
+representations in the historical ledger below. Its
+[verification receipt](data/lp-ranked-complete-20261117.json) covers polymorphic
+variables, explicit arities, freshening, global MGUs and guarded final checker
+corollaries. Historical runtime and ITS results below retain their original scope.
+
 ## Completion ledger
 
 | Requirement | Evidence required | Current state |

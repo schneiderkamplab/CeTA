@@ -9,44 +9,52 @@ exhausting the computation, not merely producing its first answer.
 The constructors distinguish control from user predicate names.\<close>
 datatype 'f logic_symbol = LogicUser 'f | LogicBang | LogicComma | LogicEquals
   | LogicTrue | LogicFail | LogicCall
-datatype 't logic_goal = LogicAtom 't | LogicCut nat | LogicSuccess | LogicFailure
+datatype ('p,'t) logic_goal = LogicAtom "('p,'t) logic_atom" | LogicCut nat | LogicSuccess | LogicFailure
   | LogicMeta 't | LogicUnify 't 't
-datatype 't logic_choice = LogicGoals "'t logic_goal list"
-  | LogicClause "'t logic_goal list" nat nat | LogicBarrier nat
+datatype ('p,'t) logic_choice = LogicGoals "('p,'t) logic_goal list"
+  | LogicClause "('p,'t) logic_goal list" nat nat | LogicBarrier nat
 
-fun logic_goal_map where
-  "logic_goal_map f (LogicAtom a) = LogicAtom (f a)"
+fun logic_goal_map ::
+  "('a \<Rightarrow> 'b) \<Rightarrow> ('p,'a) logic_goal \<Rightarrow> ('p,'b) logic_goal" where
+  "logic_goal_map f (LogicAtom a) = LogicAtom (logic_atom_map f a)"
 | "logic_goal_map f (LogicCut m) = LogicCut m"
 | "logic_goal_map f LogicSuccess = LogicSuccess"
 | "logic_goal_map f LogicFailure = LogicFailure"
 | "logic_goal_map f (LogicMeta a) = LogicMeta (f a)"
 | "logic_goal_map f (LogicUnify a b) = LogicUnify (f a) (f b)"
-fun logic_goal_terms where
-  "logic_goal_terms (LogicAtom a) = [a]"
+fun logic_goal_terms ::
+  "('p,'a) logic_goal \<Rightarrow> 'a list" where
+  "logic_goal_terms (LogicAtom a) = logic_arguments a"
 | "logic_goal_terms (LogicMeta a) = [a]"
 | "logic_goal_terms (LogicUnify a b) = [a,b]"
 | "logic_goal_terms _ = []"
-fun logic_bind_cut where
+fun logic_bind_cut ::
+  "nat \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('p,'a) logic_goal \<Rightarrow> ('p,'b) logic_goal" where
   "logic_bind_cut m f (LogicCut n) = LogicCut m"
 | "logic_bind_cut m f g = logic_goal_map f g"
-fun logic_goal_marks where
+fun logic_goal_marks ::
+  "('p,'a) logic_goal \<Rightarrow> nat set" where
   "logic_goal_marks (LogicCut m) = {m}"
 | "logic_goal_marks _ = {}"
-fun logic_choice_marks where
+fun logic_choice_marks ::
+  "('p,'a) logic_choice \<Rightarrow> nat set" where
   "logic_choice_marks (LogicGoals gs) = \<Union>(logic_goal_marks ` set gs)"
 | "logic_choice_marks (LogicClause gs c m) = insert m (\<Union>(logic_goal_marks ` set gs))"
 | "logic_choice_marks (LogicBarrier m) = {m}"
-definition logic_fresh_mark where
+definition logic_fresh_mark ::
+  "nat \<Rightarrow> ('p,'a) logic_choice list \<Rightarrow> bool" where
   "logic_fresh_mark m es \<longleftrightarrow> m \<notin> \<Union>(logic_choice_marks ` set es)"
 
 text \<open>A cut discards alternatives up to its own barrier, retaining that
 barrier and the caller's alternatives. Resolution never substitutes into saved
 alternatives: their variable bindings are restored when backtracking.\<close>
-fun logic_prune where
+fun logic_prune ::
+  "nat \<Rightarrow> ('p,'a) logic_choice list \<Rightarrow> ('p,'a) logic_choice list" where
   "logic_prune m [] = []"
 | "logic_prune m (e#es) = (case e of LogicBarrier n \<Rightarrow>
     if m=n then e#es else logic_prune m es | _ \<Rightarrow> logic_prune m es)"
-fun logic_admin where
+fun logic_admin ::
+  "('p,'a) logic_choice list \<Rightarrow> ('p,'a) logic_choice list option" where
   "logic_admin [] = None"
 | "logic_admin (LogicBarrier m#es) = Some es"
 | "logic_admin (LogicClause gs c m#es) = None"
@@ -57,21 +65,33 @@ fun logic_admin where
   | LogicCut m \<Rightarrow> Some (LogicGoals gs#logic_prune m es)
   | _ \<Rightarrow> None)"
 
-type_synonym 'f logic_cut_program =
-  "(('f logic_symbol,string) fo_term \<times> ('f logic_symbol,string) fo_term logic_goal list) list"
-definition logic_slice where
-  "logic_slice P f n = filter (\<lambda>c. \<exists>ts. fst (P!c) = SFun (LogicUser f) ts \<and>
-    length ts=n) [0..<length P]"
+text \<open>User symbols use the same global arities as pure LP. Control symbols
+have the arities of their syntax, including unary call.\<close>
+fun logic_symbol_arity :: "'f arity \<Rightarrow> 'f logic_symbol arity" where
+  "logic_symbol_arity A (LogicUser f) = A f"
+| "logic_symbol_arity A LogicBang = 0"
+| "logic_symbol_arity A LogicTrue = 0"
+| "logic_symbol_arity A LogicFail = 0"
+| "logic_symbol_arity A LogicComma = 2"
+| "logic_symbol_arity A LogicEquals = 2"
+| "logic_symbol_arity A LogicCall = 1"
+type_synonym ('f,'v) logic_cut_program =
+  "(('f,('f logic_symbol,'v) fo_term) logic_atom \<times>
+    ('f,('f logic_symbol,'v) fo_term) logic_goal list) list"
+definition logic_slice ::
+  "(('f,'t) logic_atom \<times> 'body) list \<Rightarrow> 'f \<Rightarrow> nat \<Rightarrow> nat list" where
+  "logic_slice P f n = filter (\<lambda>c. logic_predicate (fst (P!c)) = f \<and>
+    length (logic_arguments (fst (P!c))) = n) [0..<length P]"
 
-text \<open>Meta-calls receive their own cut scope. Decode the whole conjunction
-before execution, leaving variable leaves as opaque meta-calls: later binding
-a leaf to a cut must not give it the enclosing conjunction's scope. An unbound
-meta-call or malformed callable is a finite error, with no successor.\<close>
+text \<open>Meta-calls receive their own cut scope. Decode a whole conjunction
+before executing it; variable leaves remain opaque meta-calls. An unbound
+meta-call has no successor.\<close>
 inductive logic_lower ::
-  "nat \<Rightarrow> 'f logic_symbol logic_tree \<Rightarrow> 'f logic_symbol logic_tree logic_goal list \<Rightarrow> bool"
+  "nat \<Rightarrow> ('f logic_symbol,'v) logic_tree \<Rightarrow>
+    ('f,('f logic_symbol,'v) logic_tree) logic_goal list \<Rightarrow> bool"
   for m where
   variable: "logic_lower m (LVar x) [LogicMeta (LVar x)]"
-| atom: "logic_lower m (LFun (LogicUser f) ts) [LogicAtom (LFun (LogicUser f) ts)]"
+| atom: "logic_lower m (LFun (LogicUser f) ts) [LogicAtom (LAtom f ts)]"
 | cut: "logic_lower m (LFun LogicBang []) [LogicCut m]"
 | conjunction: "logic_lower m a gs \<Longrightarrow> logic_lower m b hs \<Longrightarrow>
     logic_lower m (LFun LogicComma [a,b]) (gs@hs)"
@@ -80,67 +100,72 @@ inductive logic_lower ::
 | failure: "logic_lower m (LFun LogicFail []) [LogicFailure]"
 | call: "logic_lower m (LFun LogicCall [a]) [LogicMeta a]"
 
-text \<open>A cyclic conjunction can require infinitely much decoding. This
-case is distinct from a malformed callable. Decoding visits the left conjunct
-first; it visits the right only after the left has a finite decoding.\<close>
-coinductive logic_lower_diverges :: "'f logic_symbol logic_tree \<Rightarrow> bool" where
+text \<open>A cyclic conjunction may require infinitely much decoding. The left
+conjunct is decoded first; the right is visited only after a finite left decoding.\<close>
+coinductive logic_lower_diverges :: "('f logic_symbol,'v) logic_tree \<Rightarrow> bool" where
   left: "logic_lower_diverges a \<Longrightarrow> logic_lower_diverges (LFun LogicComma [a,b])"
 | right: "logic_lower 0 a gs \<Longrightarrow> logic_lower_diverges b \<Longrightarrow>
     logic_lower_diverges (LFun LogicComma [a,b])"
 
-definition logic_cut_mgu where
-  "logic_cut_mgu D a gs h bs s r \<longleftrightarrow>
-    logic_mgu D ((),[a]) (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms gs)))
-      ((),[h]) (map (\<lambda>t. ((),[t])) (concat (map logic_goal_terms bs))) s r"
-definition logic_unify_mgu where
-  "logic_unify_mgu D a b gs s \<longleftrightarrow>
-    logic_substitution D s \<and> logic_subst s a = logic_subst s b \<and>
-    (\<forall>t. logic_substitution D t \<longrightarrow> logic_subst t a = logic_subst t b \<longrightarrow>
-      (\<exists>d. logic_substitution D d \<and> logic_subst d (logic_subst s a) = logic_subst t a \<and>
-        map (logic_goal_map (logic_subst d \<circ> logic_subst s)) gs =
-          map (logic_goal_map (logic_subst t)) gs))"
-
-text \<open>Case analysis preserves source clause order. Unification is most
-general in the selected term domain, and failure means that no solution exists
-in that same domain. Thus finite and rational semantics may backtrack differently.\<close>
+text \<open>Clause order determines the saved alternatives. Resolution freshens
+against all active goals, then applies one domain-correct MGU to the renamed
+body and continuation. Saved alternatives retain their old bindings. Failure
+means that no unifier exists in the same signature and term domain.\<close>
 inductive logic_cut_step ::
-  "('f logic_symbol logic_tree \<Rightarrow> bool) \<Rightarrow> 'f logic_cut_program \<Rightarrow>
-    'f logic_symbol logic_tree logic_choice list \<Rightarrow>
-    'f logic_symbol logic_tree logic_choice list \<Rightarrow> bool" for D P where
-  admin: "logic_admin s = Some t \<Longrightarrow> logic_cut_step D P s t"
-| case_call: "logic_fresh_mark m (LogicGoals (LogicAtom (LFun (LogicUser f) ts)#gs)#es) \<Longrightarrow>
-    logic_cut_step D P (LogicGoals (LogicAtom (LFun (LogicUser f) ts)#gs)#es)
-      (map (\<lambda>c. LogicClause (LogicAtom (LFun (LogicUser f) ts)#gs) c m)
+  "'f arity \<Rightarrow> (('f logic_symbol,'v) logic_tree \<Rightarrow> bool) \<Rightarrow> ('f,'v) logic_cut_program \<Rightarrow>
+    ('f,('f logic_symbol,'v) logic_tree) logic_choice list \<Rightarrow>
+    ('f,('f logic_symbol,'v) logic_tree) logic_choice list \<Rightarrow> bool" for A D P where
+  admin: "logic_admin s = Some t \<Longrightarrow> logic_cut_step A D P s t"
+| case_call: "logic_fresh_mark m (LogicGoals (LogicAtom (LAtom f ts)#gs)#es) \<Longrightarrow>
+    logic_cut_step A D P (LogicGoals (LogicAtom (LAtom f ts)#gs)#es)
+      (map (\<lambda>c. LogicClause (LogicAtom (LAtom f ts)#gs) c m)
         (logic_slice P f (length ts)) @ LogicBarrier m#es)"
-| resolve: "c<length P \<Longrightarrow> logic_cut_mgu D a gs (fst (P!c)) (snd (P!c)) s r \<Longrightarrow>
-    logic_cut_step D P (LogicClause (LogicAtom a#gs) c m#es)
-      (LogicGoals (map (logic_bind_cut m (logic_eval r)) (snd (P!c)) @
+| resolve: "c<length P \<Longrightarrow>
+    logic_freshening r (logic_arguments a @ concat (map logic_goal_terms gs))
+      (logic_arguments (fst (P!c)) @ concat (map logic_goal_terms (snd (P!c)))) \<Longrightarrow>
+    logic_mgu (\<lambda>t. D t \<and> logic_tree_arity_correct (logic_symbol_arity A) t)
+      a (logic_atom_map (logic_eval (LVar \<circ> r)) (fst (P!c))) s \<Longrightarrow>
+    logic_cut_step A D P (LogicClause (LogicAtom a#gs) c m#es)
+      (LogicGoals (map (logic_bind_cut m (logic_subst s \<circ> logic_eval (LVar \<circ> r))) (snd (P!c)) @
         map (logic_goal_map (logic_subst s)) gs)#es)"
 | backtrack: "c<length P \<Longrightarrow>
-    \<not> (\<exists>s r. logic_substitution D s \<and> logic_substitution D r \<and>
-      logic_subst s a = logic_eval r (fst (P!c))) \<Longrightarrow>
-    logic_cut_step D P (LogicClause (LogicAtom a#gs) c m#es) es"
-| unify: "logic_unify_mgu D a b gs s \<Longrightarrow>
-    logic_cut_step D P (LogicGoals (LogicUnify a b#gs)#es)
+    logic_freshening r (logic_arguments a @ concat (map logic_goal_terms gs))
+      (logic_arguments (fst (P!c)) @ concat (map logic_goal_terms (snd (P!c)))) \<Longrightarrow>
+    \<not> (\<exists>s. logic_substitution_in (\<lambda>t. D t \<and> logic_tree_arity_correct (logic_symbol_arity A) t) s \<and>
+      logic_atom_map (logic_subst s) a =
+        logic_atom_map (logic_subst s \<circ> logic_eval (LVar \<circ> r)) (fst (P!c))) \<Longrightarrow>
+    logic_cut_step A D P (LogicClause (LogicAtom a#gs) c m#es) es"
+| unify: "logic_mgu (\<lambda>t. D t \<and> logic_tree_arity_correct (logic_symbol_arity A) t)
+      (LAtom () [a]) (LAtom () [b]) s \<Longrightarrow>
+    logic_cut_step A D P (LogicGoals (LogicUnify a b#gs)#es)
       (LogicGoals (map (logic_goal_map (logic_subst s)) gs)#es)"
-| unify_fail: "\<not> (\<exists>s. logic_substitution D s \<and> logic_subst s a = logic_subst s b) \<Longrightarrow>
-    logic_cut_step D P (LogicGoals (LogicUnify a b#gs)#es) es"
+| unify_fail: "\<not> (\<exists>s. logic_substitution_in (\<lambda>t. D t \<and> logic_tree_arity_correct (logic_symbol_arity A) t) s \<and>
+      logic_subst s a = logic_subst s b) \<Longrightarrow>
+    logic_cut_step A D P (LogicGoals (LogicUnify a b#gs)#es) es"
 | meta: "logic_fresh_mark m (LogicGoals (LogicMeta (LFun f ts)#gs)#es) \<Longrightarrow>
     logic_lower m (LFun f ts) body \<Longrightarrow>
-    logic_cut_step D P (LogicGoals (LogicMeta (LFun f ts)#gs)#es)
+    logic_cut_step A D P (LogicGoals (LogicMeta (LFun f ts)#gs)#es)
       (LogicGoals (body@gs)#LogicBarrier m#es)"
 | meta_diverges: "logic_lower_diverges a \<Longrightarrow>
-    logic_cut_step D P (LogicGoals (LogicMeta a#gs)#es) (LogicGoals (LogicMeta a#gs)#es)"
+    logic_cut_step A D P (LogicGoals (LogicMeta a#gs)#es) (LogicGoals (LogicMeta a#gs)#es)"
 
-text \<open>Programs have user-predicate heads. The query class uses finite terms
-and the same ground/arbitrary modes as definite LP. The initial state contains
-one goal and no saved alternatives.\<close>
-definition logic_cut_problem where
-  "logic_cut_problem P \<longleftrightarrow> (\<forall>(h,bs)\<in>set P. \<exists>f ts. h = SFun (LogicUser f) ts)"
-definition logic_cut_terminates_in where
-  "logic_cut_terminates_in D P p modes \<longleftrightarrow>
-    \<not> (\<exists>ts s. logic_query (LogicUser p) modes (LogicUser p,ts) \<and>
-      s 0 = [LogicGoals [LogicAtom (LFun (LogicUser p) (map logic_embed ts))]] \<and>
-      (\<forall>n. logic_cut_step D P (s n) (s (Suc n))))"
+fun logic_goal_correct :: "'f arity \<Rightarrow> ('f,('f logic_symbol,'v) fo_term) logic_goal \<Rightarrow> bool" where
+  "logic_goal_correct A (LogicAtom a) = logic_atom_correct A (arity_correct (logic_symbol_arity A)) a"
+| "logic_goal_correct A g = list_all (arity_correct (logic_symbol_arity A)) (logic_goal_terms g)"
+text \<open>Valid programs have arity-correct heads and bodies; the query mode
+has exactly the selected predicate's arity. This is separate from termination.\<close>
+definition logic_cut_problem ::
+  "'f arity \<Rightarrow> ('f,'v) logic_cut_program \<Rightarrow> 'f \<Rightarrow> bool list \<Rightarrow> bool" where
+  "logic_cut_problem A P p modes \<longleftrightarrow> length modes = A p \<and>
+    (\<forall>(h,bs)\<in>set P. logic_atom_correct A (arity_correct (logic_symbol_arity A)) h \<and>
+      list_all (logic_goal_correct A) bs)"
+definition logic_cut_terminates_in ::
+  "'f arity \<Rightarrow> (('f logic_symbol,'v) logic_tree \<Rightarrow> bool) \<Rightarrow> ('f,'v) logic_cut_program
+    \<Rightarrow> 'f \<Rightarrow> bool list \<Rightarrow> bool" where
+  "logic_cut_terminates_in A D P p modes \<longleftrightarrow>
+    \<not> (\<exists>ts s.
+      logic_query (logic_symbol_arity A) (LogicUser p) modes (LAtom (LogicUser p) ts) \<and>
+      s 0 = [LogicGoals [LogicAtom (LAtom p (map logic_embed ts))]] \<and>
+      (\<forall>n. logic_cut_step A D P (s n) (s (Suc n))))"
 
 end

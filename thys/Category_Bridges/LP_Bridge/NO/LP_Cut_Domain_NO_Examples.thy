@@ -1,5 +1,5 @@
 theory LP_Cut_Domain_NO_Examples
-  imports LP_Cut_Domain_NO_Checker
+  imports LP_Cut_Ranked_NO_Checker
 begin
 
 text \<open>The nullary program p :- p grows an invocation barrier on every
@@ -20,16 +20,20 @@ lemma cut_loop_certificate:
     lp_cut_normalize_def lpc_mgu_substitution_def lp_atom_subst_def lp_normalize_goals_code)
 
 lemma cut_loop_finite_nontermination:
-  "\<not> lp_cut_finite_terminates
-    [(SFun (LogicUser p) [],[LogicAtom (SFun (LogicUser p) [])])] p []"
+  "\<not> lp_cut_finite_terminates (\<lambda>_. 0)
+    ([(LAtom p [],[LogicAtom (LAtom p [])])]
+      :: ('f,string) logic_cut_program) p []"
   using finite_cut.canonical_no_certificate[OF cut_loop_certificate[of p]]
   by (simp add: lp_cut_finite_terminates_def cut_finite_domain_iff
-    cut_program_back_def cut_loop_program_def)
+    cut_program_back_def cut_loop_program_def cut_program_shape_def logic_cut_problem_def
+    logic_arity_project_finite logic_arity_project_rational)
 lemma cut_loop_rational_nontermination:
-  "\<not> lp_cut_rational_terminates
-    [(SFun (LogicUser p) [],[LogicAtom (SFun (LogicUser p) [])])] p []"
+  "\<not> lp_cut_rational_terminates (\<lambda>_. 0)
+    ([(LAtom p [],[LogicAtom (LAtom p [])])]
+      :: ('f,string) logic_cut_program) p []"
   using rational_cut.canonical_no_certificate[OF cut_loop_certificate[of p]]
   by (simp add: lp_cut_rational_terminates_def cut_rational_runtime_def
-    cut_program_back_def cut_loop_program_def)
+    cut_program_back_def cut_loop_program_def cut_program_shape_def logic_cut_problem_def
+    logic_arity_project_finite logic_arity_project_rational)
 
 end

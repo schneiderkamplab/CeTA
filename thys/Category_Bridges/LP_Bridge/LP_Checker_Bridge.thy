@@ -6,27 +6,28 @@ text \<open>The concrete checker instantiation disables certificate assumptions.
 The parser-result premise identifies the exact program, query and certificate;
 it is not supplied as a processor soundness hypothesis.\<close>
 theorem lp_tocl09_category_yes:
+  fixes P :: "((string,nat list) lab,string) logic_clause list"
   assumes parsed: "parse_xml_string lp_tocl09_parser xml =
     Right (logic_to_program P,outs,fallback,names,filters,(q,length modes,positions),prf)"
     and accepted: "check_lp_tocl09_xml xml"
     and modes: "set positions = {i. i<length modes \<and> modes!i}"
-  shows "lp_finite_terminates P q modes \<and> lp_rational_terminates P q modes \<and>
-    lp_infinite_terminates P q modes"
+  shows "lp_finite_terminates A P q modes \<and> lp_rational_terminates A P q modes \<and>
+    lp_infinite_terminates A P q modes"
 proof -
-  have all: "logic_terminates_in D P q modes" for D
+  have all: "logic_terminates_in A D P q modes" for D
   proof (rule logic_native_termination)
     fix a :: "((string,nat list) lab, ((string,nat list) lab,string) fo_term) logic_atom"
-    assume query: "logic_query q modes a"
-    have len: "length (map to_term (snd a)) = length modes" using query
-      by (simp add: logic_query_def)
-    have gr: "ground (map to_term (snd a)!i)" if "i\<in>set positions" "i<length modes" for i
+    assume query: "logic_query A q modes a"
+    have len: "length (map to_term (logic_arguments a)) = length modes" using query
+      by (cases a) (simp add: logic_query_def)
+    have gr: "ground (map to_term (logic_arguments a)!i)" if "i\<in>set positions" "i<length modes" for i
       using query modes that
-      by (auto simp: logic_query_def list_all_iff set_zip logic_ground_translation; blast)
+      by (cases a) (auto simp: logic_query_def list_all_iff set_zip logic_ground_translation; blast)
     have native: "SN_on (lp_ild (logic_to_program P))
-      {[(q,map (\<lambda>t. lp_ieval t LPIVar) (map to_term (snd a)))]}"
+      {[(q,map (\<lambda>t. lp_ieval t LPIVar) (map to_term (logic_arguments a)))]}"
       by (rule check_lp_tocl09_xml_sound[OF parsed accepted len gr])
     show "SN_on (lp_ild (logic_to_program P)) {logic_to_goals [logic_atom_map logic_embed a]}"
-      using native query by (simp add: logic_to_goals_def logic_atom_map_def
+      using native query by (cases a) (simp add: logic_to_goals_def logic_to_atom_selectors logic_atom_map_selectors
         logic_query_def map_map o_def logic_embed_translation)
   qed
   show ?thesis using all unfolding lp_finite_terminates_def lp_rational_terminates_def lp_infinite_terminates_def by blast

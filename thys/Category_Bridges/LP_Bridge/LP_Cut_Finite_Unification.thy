@@ -99,13 +99,14 @@ lemma cut_rational_function:
   unfolding cut_rational_runtime_def cut_tree_back_simps
   by (rule logic_rational_function) (auto simp: list_all_iff cut_rational_runtime_def)
 corollary cut_checked_mgu_rational:
+  fixes sigma :: "'v \<Rightarrow> ('f lp_cut_symbol,'v) lp_iterm"
   assumes "lpc_check_mgu fuel equations V images"
   defines "sigma \<equiv> \<lambda>x. lp_ieval (lpc_mgu_substitution V images x) LPIVar"
   shows "(\<forall>x. cut_rational_runtime (sigma x)) \<and> lp_equations equations sigma \<and>
-    (\<forall>tau. (\<forall>x. cut_rational_runtime (tau x)) \<longrightarrow> lp_equations equations tau \<longrightarrow>
+    (\<forall>tau :: 'v \<Rightarrow> ('f lp_cut_symbol,'v) lp_iterm. (\<forall>x. cut_rational_runtime (tau x)) \<longrightarrow> lp_equations equations tau \<longrightarrow>
       (\<exists>delta. (\<forall>x. cut_rational_runtime (delta x)) \<and>
         (\<forall>x. lp_isubst (sigma x) delta = tau x)))"
   unfolding sigma_def
-  by (rule cut_checked_mgu_domain[OF cut_rational_variable cut_rational_function assms(1)])
+  by (rule cut_checked_mgu_domain; (rule cut_rational_variable | rule cut_rational_function | rule assms(1)))
 
 end

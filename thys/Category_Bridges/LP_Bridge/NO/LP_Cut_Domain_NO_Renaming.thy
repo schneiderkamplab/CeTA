@@ -4,6 +4,46 @@ begin
 
 context cut_runtime_domain
 begin
+lemma runtime_mgu_output_swap:
+  fixes a :: "unit \<times> ('f lp_cut_symbol,string) lp_iterm list"
+  assumes mgu: "lp_runtime_mgu D a b sigma"
+  shows "lp_runtime_mgu D a b
+    (\<lambda>v. lp_isubst (sigma v) (\<lambda>w. LPIVar (lpc_no_swap x y w)))"
+proof -
+  let ?r = "\<lambda>w. LPIVar (lpc_no_swap x y w)"
+  let ?s = "\<lambda>v. lp_isubst (sigma v) ?r"
+  have ds: "\<forall>v. D (?s v)"
+    using mgu unfolding lp_runtime_mgu_def by (auto intro: substitute variables)
+  have original: "lp_iatom_subst a sigma = lp_iatom_subst b sigma"
+    using mgu by (simp add: lp_runtime_mgu_def)
+  have mapped: "lp_iatom_subst (lp_iatom_subst a sigma) ?r =
+      lp_iatom_subst (lp_iatom_subst b sigma) ?r"
+    by (rule arg_cong[OF original])
+  have eq: "lp_iatom_subst a ?s = lp_iatom_subst b ?s"
+    using mapped by (simp add: lp_iatom_subst_def map_map o_def lpc_isubst_comp)
+  have factor: "\<exists>v. (\<forall>x. D (v x)) \<and> (\<forall>x. u x = lp_isubst (?s x) v)"
+    if du: "\<forall>x. D (u x)" and eq: "lp_iatom_subst a u = lp_iatom_subst b u"
+    for u :: "string \<Rightarrow> ('f lp_cut_symbol,string) lp_iterm"
+  proof -
+    obtain v where dv: "\<forall>x. D (v x)"
+      and fac: "\<forall>x. u x = lp_isubst (sigma x) v"
+      using mgu du eq unfolding lp_runtime_mgu_def by blast
+    show ?thesis
+      by (intro exI[of _ "\<lambda>w. v (lpc_no_swap x y w)"])
+        (simp add: dv fac lpc_isubst_comp)
+  qed
+  show ?thesis unfolding lp_runtime_mgu_def using ds eq factor by blast
+qed
+
+lemma fresh_resolution_output_swap:
+  fixes a :: "('f lp_cut_symbol,string) lp_iterm"
+  assumes "lp_fresh_resolution D a gs h bs sigma rho"
+  shows "lp_fresh_resolution D a gs h bs
+    (\<lambda>v. lp_isubst (sigma v) (\<lambda>w. LPIVar (lpc_no_swap x y w)))
+    (\<lambda>v. lp_isubst (rho v) (\<lambda>w. LPIVar (lpc_no_swap x y w)))"
+  using assms unfolding lp_fresh_resolution_def
+  by (auto simp: o_def intro: runtime_mgu_output_swap)
+
 lemma mgu_resolve_output_swap:
   fixes a :: "('f lp_cut_symbol,string) lp_iterm"
   assumes mgu: "mgu_resolve a gs h bs sigma rho"

@@ -26,59 +26,112 @@ proof -
     by (rule precise_check_lpc_seg_free_certificate_sound[OF _ _ _ _ values_ground values_domain])
       (use domain tp_rbt_impl dpp_rbt_impl parsed ok len in \<open>auto simp: check_lpc_seg_free_certificate_xml_def\<close>)
 qed
-theorem domain_seg_free_canonical_yes:
-  assumes parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
-    Right (cut_program P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
-    and accepted: "check_lpc_seg_free_certificate_xml xml"
-  shows "logic_cut_terminates_in (\<lambda>t. D (cut_tree t)) P q modes"
-proof (rule precise_canonical_termination)
-  fix ts :: "(string logic_symbol,string) fo_term list"
-  assume query: "logic_query (LogicUser q) modes (LogicUser q,ts)"
-  have len: "length (map cut_term ts) = length modes"
-    using query by (simp add: logic_query_def)
-  have gr: "ground (map cut_term ts!i)" if "i\<in>set (lpc_positions modes)" for i
-    using query that
-    by (auto simp: logic_query_def lpc_positions_def list_all_iff set_zip cut_term_ground; blast)
-  have native: "SN_on (precise_source (cut_program P))
-    {[LPCGoals [LPCAtom (LPIFun (LPCUser q) (map (\<lambda>t. lp_ieval t LPIVar) (map cut_term ts)))]]}"
-    by (rule domain_seg_free_xml_sound[OF parsed accepted len gr])
-  show "SN_on (precise_source (cut_program P))
-    {cut_state [LogicGoals [LogicAtom (LFun (LogicUser q) (map logic_embed ts))]]}"
-    using native by (simp add: map_map o_def cut_tree_embed)
-qed
-
 end
 
-theorem lp_cut_seg_free_finite_yes:
-  assumes parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
-    Right (cut_program P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
-    and accepted: "check_lpc_seg_free_certificate_xml xml"
-  shows "lp_cut_finite_terminates P q modes"
-  using domain_seg_free_canonical_yes[OF finite_cut.cut_runtime_domain_axioms parsed accepted]
-  by (simp add: lp_cut_finite_terminates_def cut_finite_domain_iff)
+context
+  fixes D :: "(string lp_cut_symbol,string) lp_iterm \<Rightarrow> bool"
+  assumes domain: "cut_runtime_domain D"
+begin
+interpretation cut_runtime_domain D by (rule domain)
 
-theorem lp_cut_seg_free_rational_yes:
+theorem ranked_seg_free_xml_yes:
   assumes parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
     Right (cut_program P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
     and accepted: "check_lpc_seg_free_certificate_xml xml"
-  shows "lp_cut_rational_terminates P q modes"
-  using domain_seg_free_canonical_yes[OF rational_cut.cut_runtime_domain_axioms parsed accepted]
-  by (simp add: lp_cut_rational_terminates_def cut_rational_runtime_def)
+    and program: "cut_control_program P"
+    and erasure: "cut_mgu_erasure D"
+    and projection: "\<And>u. D (cut_tree (cut_unrank_tree u)) \<Longrightarrow>
+      cut_rank_tree (cut_unrank_tree u) = u \<Longrightarrow>
+      D (cut_tree (cut_unrank_tree (logic_arity_project (logic_symbol_arity snd) undefined u)))"
+  shows "logic_cut_terminates_in snd (\<lambda>t. D (cut_tree (cut_unrank_tree t)))
+    (cut_rank_program P) (q,length modes) modes"
+apply (rule precise_native_termination[OF program erasure])
+  subgoal by (rule projection; assumption)
+  subgoal by (rule domain_seg_free_xml_sound[OF domain parsed accepted]; assumption)
+  done
+end
+
+text \<open>The guarded boundary checks ordinary heads and control arities.
+Its acceptance is stronger than acceptance by the unchanged native checker.\<close>
+definition check_lpc_ranked_seg_free_xml :: "string \<Rightarrow> bool" where
+  "check_lpc_ranked_seg_free_xml xml \<longleftrightarrow> check_lpc_seg_free_certificate_xml xml \<and>
+    (case parse_xml_string lpc_seg_free_certificate_parser xml of
+      Left e \<Rightarrow> False |
+      Right (P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf) \<Rightarrow>
+        cut_program_shape P \<and> cut_control_program (cut_program_back P))"
+
+lemma ranked_seg_free_guarded_yes:
+  assumes domain: "cut_runtime_domain D"
+    and parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
+    Right (P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
+    and checked: "check_lpc_ranked_seg_free_xml xml"
+    and erasure: "cut_mgu_erasure D"
+    and projection: "\<And>u. D (cut_tree (cut_unrank_tree u)) \<Longrightarrow>
+      cut_rank_tree (cut_unrank_tree u) = u \<Longrightarrow>
+      D (cut_tree (cut_unrank_tree (logic_arity_project (logic_symbol_arity snd) undefined u)))"
+  shows "logic_cut_terminates_in snd (\<lambda>t. D (cut_tree (cut_unrank_tree t)))
+    (cut_rank_program (cut_program_back P)) (q,length modes) modes"
+proof -
+  have shape: "cut_program_shape P" and control: "cut_control_program (cut_program_back P)"
+    and accepted: "check_lpc_seg_free_certificate_xml xml"
+    using checked parsed by (auto simp: check_lpc_ranked_seg_free_xml_def)
+  have inverse: "cut_program (cut_program_back P) = P"
+    by (rule cut_program_forward_back[OF shape])
+  show ?thesis by (rule ranked_seg_free_xml_yes[OF domain _ accepted control erasure projection])
+    (simp only: inverse parsed)
+qed
+corollary lp_cut_seg_free_finite_yes:
+  assumes parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
+    Right (P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
+    and checked: "check_lpc_ranked_seg_free_xml xml"
+  shows "lp_cut_finite_terminates snd (cut_rank_program (cut_program_back P)) (q,length modes) modes"
+proof -
+  have projection: "cut_finite_runtime (cut_tree (cut_unrank_tree u)) \<Longrightarrow>
+      cut_rank_tree (cut_unrank_tree u) = u \<Longrightarrow>
+      cut_finite_runtime (cut_tree (cut_unrank_tree
+        (logic_arity_project (logic_symbol_arity snd) undefined u)))" for u
+    by (simp add: cut_finite_domain_iff cut_finite_projection_closed)
+  have domains: "(\<lambda>t. cut_finite_runtime (cut_tree (cut_unrank_tree t)) \<and>
+      logic_tree_arity_correct (logic_symbol_arity snd) t) =
+    (\<lambda>t. logic_finite t \<and> logic_tree_arity_correct (logic_symbol_arity snd) t)"
+    by (rule ext) (auto simp: cut_finite_domain_iff cut_typed_unrank_finite)
+  show ?thesis using ranked_seg_free_guarded_yes[OF finite_cut.cut_runtime_domain_axioms parsed checked cut_finite_mgu_erasure projection]
+    by (simp add: lp_cut_finite_terminates_def logic_cut_termination_domain_cong[OF domains])
+qed
+
+corollary lp_cut_seg_free_rational_yes:
+  assumes parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
+    Right (P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
+    and checked: "check_lpc_ranked_seg_free_xml xml"
+  shows "lp_cut_rational_terminates snd (cut_rank_program (cut_program_back P)) (q,length modes) modes"
+proof -
+  have projection: "cut_rational_runtime (cut_tree (cut_unrank_tree u)) \<Longrightarrow>
+      cut_rank_tree (cut_unrank_tree u) = u \<Longrightarrow>
+      cut_rational_runtime (cut_tree (cut_unrank_tree
+        (logic_arity_project (logic_symbol_arity snd) undefined u)))" for u
+    by (simp add: cut_rational_runtime_def cut_rational_projection_closed)
+  have domains: "(\<lambda>t. cut_rational_runtime (cut_tree (cut_unrank_tree t)) \<and>
+      logic_tree_arity_correct (logic_symbol_arity snd) t) =
+    (\<lambda>t. logic_rational t \<and> logic_tree_arity_correct (logic_symbol_arity snd) t)"
+    by (rule ext) (auto simp: cut_rational_runtime_def cut_typed_unrank_rational)
+  show ?thesis using ranked_seg_free_guarded_yes[OF rational_cut.cut_runtime_domain_axioms parsed checked cut_rational_mgu_erasure projection]
+    by (simp add: lp_cut_rational_terminates_def logic_cut_termination_domain_cong[OF domains])
+qed
 
 corollary lp_cut_seg_free_infinite_yes:
   assumes parsed: "parse_xml_string lpc_seg_free_certificate_parser xml =
-    Right (cut_program P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
-    and accepted: "check_lpc_seg_free_certificate_xml xml"
-  shows "lp_cut_infinite_terminates P q modes"
-  using domain_seg_free_canonical_yes[OF cut_unrestricted_runtime parsed accepted]
+    Right (P,q,modes,fuel,roots,Fs,regions,continuations,controls,data_map,fallback,constructors,trs_rules,prf)"
+    and checked: "check_lpc_ranked_seg_free_xml xml"
+  shows "lp_cut_infinite_terminates snd (cut_rank_program (cut_program_back P)) (q,length modes) modes"
+  using ranked_seg_free_guarded_yes[OF cut_unrestricted_runtime parsed checked cut_infinite_mgu_erasure]
   by (simp add: lp_cut_infinite_terminates_def)
+
 
 ML \<open>
   val results = @{thms lp_cut_seg_free_finite_yes lp_cut_seg_free_rational_yes lp_cut_seg_free_infinite_yes}
-  val _ = if Thm_Deps.has_skip_proof results then error "SEG_Free category bridge: admitted proof" else ()
+  val _ = if Thm_Deps.has_skip_proof results then error "Ranked seg_free checker: admitted proof" else ()
   val names = Thm_Deps.all_oracles results |> map (fn ((name, _), _) => name) |> distinct (op =)
   val unexpected = subtract (op =) ["Regexp_Method.check_eqv", "Types_To_Sets.cancel_type_definition"] names
-  val _ = if null unexpected then () else error ("SEG_Free category bridge: unexpected oracles: " ^ commas unexpected)
-  val _ = warning ("Cut free seg YES oracle dependencies: " ^ commas names)
+  val _ = if null unexpected then () else error ("Ranked seg_free checker: unexpected oracles: " ^ commas unexpected)
 \<close>
 end

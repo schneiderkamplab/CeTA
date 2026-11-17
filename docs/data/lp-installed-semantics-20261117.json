@@ -1,0 +1,42 @@
+{
+  "scope": "Installed canonical single-MGU, freshening, LAtom and arity definitions; bridge migration remains incomplete",
+  "goal_complete": false,
+  "specification_and_property_sessions": {
+    "exit_code": 0,
+    "log": "lp-installed-semantics-20261117-properties.log.gz"
+  },
+  "isolated_core_proof_check": {
+    "exit_code": 0,
+    "log": "lp-installed-semantics-20261117-core.log.gz",
+    "theories": [
+      "LP_Representation",
+      "LP_Checker_Bridge",
+      "LP_Cut_Representation"
+    ],
+    "copies_identical_to_installed_source": true
+  },
+  "full_bridge_status": "Not verified after migration; execution and concrete boundary theories still require updates",
+  "source_sha256": {
+    "thys/Category_Specifications/LP_Cut_Rational_Spec.thy": "5f933fef26b0a0f233322607bfe9596f0baffcb708e7dab90d629630cf369047",
+    "thys/Category_Specifications/LP_Cut_Infinite_Spec.thy": "606c23e9e92765cac74e702b758067656d5253e069d3917fbb24294370e08643",
+    "thys/Category_Specifications/LP_Spec_Base.thy": "09958d3bb9230702e0cc128b9be1463420065a77514960ab1ba2f2bda9c632c8",
+    "thys/Category_Specifications/LP_Infinite_Spec.thy": "bbc3a6b3fa6d24feb099fadd4fd3721457c10764a8d88aa8316466065232ed06",
+    "thys/Category_Specifications/LP_Cut_Spec_Base.thy": "147a239604fd66ff8555a14cb277353794c7279dab9f51d5dab5ab4f283967bd",
+    "thys/Category_Specifications/LP_Finite_Spec.thy": "660abe7eb90db7e04e0d3e92b7c598453a79a394e85d824aad372e14f5e6d72e",
+    "thys/Category_Specifications/LP_Cut_Finite_Spec.thy": "671a0cd306b8d5b9e07952e801da542e40d0bae30581b38f17f5091edcca5a52",
+    "thys/Category_Specifications/LP_Rational_Spec.thy": "cee5b6a84dc50fc3130c9fac4cdd494963512425b9914bb762b2e814f932b0c1",
+    "thys/Category_Specifications/LP_Terms_Spec.thy": "cc2aebc49d9f037fa59760eb8116ac4a6bb9ae4c4b3a7443334d5717cbd59212",
+    "thys/Category_Properties/LP_Ranked_MGU_Properties.thy": "c9ed7f9155dbc3b0dd212f1fff990eb9ed95f9931b17c42536add02e1361ba54",
+    "thys/Category_Properties/LP_Variables_Properties.thy": "f035eac9070fbdec7fd3ac8f3315ae8bbd5d5ad0d85a79d76d945ef58ab3cc03",
+    "thys/Category_Properties/LP_Cut_Execution_Properties.thy": "79ca6a73990bdc7035b190afb3189886c13682ead5e53a2449153e0292d4bd18",
+    "thys/Category_Properties/LP_Arity_Properties.thy": "f011a1e57d2d765a91dceb290fd824c6b89843711d72c814778680c19b17e544",
+    "thys/Category_Properties/LP_Arity_Projection.thy": "100da5293b77d17d559792c4f41e1d80addf9d63c799bdd8cd60e1c02105ba73",
+    "thys/Category_Properties/LP_Properties.thy": "998d48ff521703f01915f58a716377ab1d8f960b27a24983f6dc4683d414d4c0",
+    "thys/Category_Properties/LP_Domain_Properties.thy": "ac806bd84e1e2ea6c50d1eda5213a859cce2ca534b82c131614f2211b03a878d",
+    "thys/Category_Properties/LP_Cut_Examples.thy": "b355592a7af1f40f7d63a94f0c7839d28d7245fdfef248ba990df3e0fd6592d2",
+    "thys/Category_Properties/ROOT": "52139eb8e0e7621148035960b7366653a9204676079557178f4d0c2aae2a642e",
+    "thys/Category_Bridges/LP_Bridge/LP_Representation.thy": "3457e5ce6ec8f548fdb24f00f833dfedbb2aca19fe686b1df351df6fdc18c934",
+    "thys/Category_Bridges/LP_Bridge/LP_Checker_Bridge.thy": "4582be2b37c6481f082849c348f629c99a1bc7432dcdc8aaeef1e19999d41764",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Representation.thy": "d31db0ade83524610d8d56e177c5ac2a53632109c493c40b6b0c97a8d1209820"
+  }
+}

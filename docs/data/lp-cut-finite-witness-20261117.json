@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-17",
+  "session": "LP_Cut_Native_Finite_Check",
+  "exit_code": 0,
+  "proof_checking": "quick_and_dirty=false",
+  "scope": "Byte-identical isolated check of installed native NO witness, trace, pumping, finite-state and representation theories. Full canonical cut NO/precise-MGU sessions remain incomplete.",
+  "log": "lp-cut-finite-witness-20261117.log.gz",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Source.thy": "221a6bb64ab6c47bfbaca43517b7bf55b5c039a2416940e7161a39ab12e53019",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Renaming.thy": "fbbd8a84954a5752e855464923b9d6e6886a7f9d29684478e55b235a15e74d40",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Steps.thy": "0e62fd4d243eea4313e0ee13499bc23adc5c5160148f3a12faa8a7f9eb18c02f",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Barriers.thy": "89832f25b7c98af93012dda4b04da2101cb94bbd298255d228edcd42cc352fe9",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Pumping.thy": "e79aec65103a2be5eb87d995cd5017ad6d9adb1adca4a484536c06caf28c93f8",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Pending.thy": "6057d812e5156d2b6cfcc18551ef330f8866c92781b7f03915a8273178169053",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Certificate.thy": "23a3110607264e42221b68004ff07feec2e9edbfc5e644db4a189786d7406999",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Back_Representation.thy": "792fb39368a7f585eb6c3920eb7ffec20f9682846444c78945cb7e1c53e1e217",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Shape.thy": "0aeb03404825c4a8f57846559a634345e0cf1f21d8df9af7d22345238ad0876b",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Fresh_Representation.thy": "e90f794680c2692e1f26877f64383f194d2ba86501d546b0ef3e99a0b021ae01",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Finite.thy": "7698581c1499d4980f2fbf0f88725842f56c2d466cd16940644a64dab171a8f0"
+  },
+  "audited_theorems": [
+    "cut_runtime_domain.no_checked_finite_run",
+    "cut_runtime_domain.no_step_finite",
+    "cut_finite_goal_support"
+  ],
+  "oracle_dependencies": [],
+  "admitted_proofs": false,
+  "changes": "Native proof-only witness relation retains finite substitution images already supplied by accepted finite solved substitutions. Certificate checking and serialization are unchanged.",
+  "remaining": [
+    "Canonical cut NO step and infinite-run integration",
+    "Ranked cut boundary and arity validation",
+    "Precise-MGU cut YES correspondence",
+    "Full affected sessions and conformance verification"
+  ]
+}

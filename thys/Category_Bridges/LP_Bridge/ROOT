@@ -11,8 +11,8 @@ session Category_LP_Library in Library = Proof_Checker +
 session Category_LP_Bridge = Category_LP_Library +
   options [document = false, quick_and_dirty = false, timeout = 240]
   sessions Category_Specification_Bridges
-  theories LP_Representation LP_Checker_Bridge LP_Cut_Representation
-    LP_Cut_Checker_Bridge LP_Cut_Finite_Unification LP_Cut_Domain_Guards
+  theories LP_Representation LP_Runtime_MGU LP_MGU_Representation LP_Checker_Bridge LP_Ranked_Representation LP_Ranked_Checker_Bridge LP_Cut_Representation LP_Cut_Ranked_Representation LP_Cut_Ranked_MGU LP_Cut_Ranked_Execution
+    LP_Cut_Checker_Bridge LP_Cut_MGU_Representation LP_Cut_Finite_Unification LP_Checked_Global_MGU LP_Fresh_MGU_Context LP_Cut_Domain_Guards
 
 session Category_LP_Cut_Domain_Bridge in Domain = Category_LP_Bridge +
   options [document = false, quick_and_dirty = false, timeout = 120]
@@ -28,19 +28,32 @@ session Category_LP_Cut_NO_Bridge in NO = Category_LP_Cut_Checker_Bridge +
   theories LP_Cut_Domain_MGU LP_Cut_Domain_NO_Source LP_Cut_Domain_NO_Renaming
     LP_Cut_Domain_NO_Steps LP_Cut_Domain_NO_Barriers LP_Cut_Domain_NO_Pumping
     LP_Cut_Domain_NO_Pending LP_Cut_Domain_NO_Certificate LP_Cut_Back_Representation
-    LP_Cut_Domain_NO_Canonical LP_Cut_Domain_NO_Checker LP_Cut_Domain_NO_Examples
+    LP_Cut_Domain_NO_Shape LP_Cut_Fresh_Representation LP_Cut_Domain_NO_Finite LP_Cut_Domain_NO_Canonical LP_Cut_Domain_NO_Checker
+    LP_Cut_Ranked_Resolution LP_Cut_Ranked_NO LP_Cut_Ranked_NO_Checker LP_Cut_Domain_NO_Examples
 
-session Category_LP_Cut_Family_Bridges in Families = Category_LP_Cut_NO_Bridge +
+session Category_LP_Cut_Ranked_Bridge in Ranked = Category_LP_Cut_NO_Bridge +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_Cut_Ranked_Forward_Unification LP_Cut_Ranked_Erasure
+    LP_Cut_Ranked_Forward LP_Cut_Ranked_Table_Checker
+
+session Category_LP_Cut_Family_Bridges in Families = Category_LP_Cut_Ranked_Bridge +
   options [document = false, quick_and_dirty = false, timeout = 120]
   theories LP_Cut_Constructor_Category_Bridge LP_Yes_Category_Bridges
 
-session Category_LP_Cut_MGU_Bridge in MGU = Category_LP_Cut_Family_Bridges +
+session Category_LP_Cut_Arity_MGU_Bridge in Arity_MGU = Category_LP_Cut_Family_Bridges +
+  options [document = false, quick_and_dirty = false, timeout = 120]
+  theories LP_MGU_Domain_Extension LP_MGU_Arity_Abstraction LP_Tree_Countability
+    LP_MGU_Abstraction_Names LP_MGU_Arity_Extension LP_MGU_Abstraction_Domains
+    LP_MGU_Concrete_Extension
+
+session Category_LP_Cut_MGU_Bridge in MGU = Category_LP_Cut_Arity_MGU_Bridge +
   options [document = false, quick_and_dirty = false, timeout = 120]
   theories LP_Cut_Domain_MGU_Properties LP_Cut_Domain_Precise_Source LP_Cut_Domain_MGU_Head LP_Cut_Domain_Free_Coverage
     LP_Cut_Domain_Precise_Instance LP_Cut_Domain_Precise_Link
     LP_Cut_Domain_Precise_Equality LP_Cut_Domain_Precise_Resolution
     LP_Cut_Domain_Precise_Stack LP_Cut_Domain_Precise_Answer_Split
     LP_Cut_Domain_Precise_Table LP_Cut_Domain_Precise_Certificate
+    LP_Cut_Extended_MGU LP_Cut_MGU_Erasure LP_Cut_Erased_Freshening LP_Cut_Erased_Resolution
     LP_Cut_Domain_Precise_MGU
     LP_Cut_Domain_Precise_Canonical LP_Cut_Domain_Precise_Checker
 
@@ -215,7 +228,7 @@ session Category_LP_Cut_Triple_Segment_Bridge in Triple_Segments = Category_LP_C
 
 session Category_LP_NO_Bridge in Pure_NO = Category_LP_Bridge +
   options [document = false, quick_and_dirty = false, timeout = 120]
-  theories LP_Unification_Factorisation LP_Universal_MGU LP_Universal_MGU_Finite LP_Finite_MGU_Lifting LP_MGU_Canonical LP_Finite_NO_Canonical LP_Finite_Unify_Witness LP_Finite_Trace_Witness LP_Finite_Neutral_Witness LP_Finite_NO_Checkers
+  theories LP_Unification_Factorisation LP_Global_MGU LP_Fresh_Finite_Lifting LP_Universal_MGU LP_Universal_MGU_Finite LP_Finite_MGU_Lifting LP_MGU_Canonical LP_Finite_NO_Canonical LP_Finite_Unify_Witness LP_Finite_Trace_Witness LP_Finite_Neutral_Witness LP_Finite_NO_Checkers
 
 session Category_LP_Advanced_NO_Bridge in Pure_Advanced_NO = Category_LP_NO_Bridge +
   options [document = false, quick_and_dirty = false, timeout = 120]

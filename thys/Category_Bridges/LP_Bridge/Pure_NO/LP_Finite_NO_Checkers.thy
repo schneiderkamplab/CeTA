@@ -3,12 +3,13 @@ theory LP_Finite_NO_Checkers
 begin
 
 lemma lp_checked_finite_witness_no:
+  fixes P :: "('f,string) logic_clause list"
   assumes modes: "set positions={i. i<length modes \<and> modes!i}"
     and witness: "\<exists>ts. length ts=length modes \<and>
       (\<forall>i\<in>set positions. ground (ts!i)) \<and>
       \<not>SN_on (lp_ld (logic_to_program P)) {[(q,ts)]}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
 proof -
   obtain ts where len: "length ts=length modes"
     and gr: "\<forall>i\<in>set positions. ground (ts!i)"
@@ -22,8 +23,8 @@ theorem lp_source_loop_category_no:
     Right (logic_to_program P,(q,length modes,positions),c,seed,bindings)"
     and accepted: "check_lp_nontermination_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
   by (rule lp_checked_finite_witness_no[OF modes])
     (use check_lp_nontermination_xml_sound[OF parsed accepted] modes in
       \<open>auto simp: list_all_iff\<close>)
@@ -33,8 +34,8 @@ theorem lp_source_trace_category_no:
     Right (logic_to_program P,(q,length modes,positions),seed,h,steps,bindings)"
     and accepted: "check_lp_source_trace_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
 proof -
   have checked: "lp_source_trace_check (logic_to_program P) q (length modes) positions h steps bindings"
     using parsed accepted by (simp add: check_lp_source_trace_xml_def)
@@ -47,8 +48,8 @@ theorem lp_source_unify_category_no:
     Right (logic_to_program P,(q,length modes,positions),a0,entry_steps,steps,bindings)"
     and accepted: "check_lp_source_unify_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
 proof -
   have checked: "lp_source_unify_check (logic_to_program P) q (length modes) positions a0 entry_steps steps bindings"
     using parsed accepted by (simp add: check_lp_source_unify_xml_def)
@@ -61,8 +62,8 @@ theorem lp_source_neutral_category_no:
     Right (logic_to_program P,(q,length modes,positions),a0,entry_steps,c,Is,sb,rb)"
     and accepted: "check_lp_source_neutral_xml xml"
     and modes: "set positions={i. i<length modes \<and> modes!i}"
-  shows "\<not>lp_finite_terminates P q modes \<and> \<not>lp_rational_terminates P q modes \<and>
-    \<not>lp_infinite_terminates P q modes"
+  shows "\<not>lp_finite_terminates snd (logic_rank_program P) (q,length modes) modes \<and> \<not>lp_rational_terminates snd (logic_rank_program P) (q,length modes) modes \<and>
+    \<not>lp_infinite_terminates snd (logic_rank_program P) (q,length modes) modes"
 proof -
   have checked: "lp_source_neutral_check (logic_to_program P) q (length modes) positions a0 entry_steps c Is sb rb"
     using parsed accepted by (simp add: check_lp_source_neutral_xml_def)

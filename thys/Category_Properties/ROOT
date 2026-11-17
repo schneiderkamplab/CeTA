@@ -28,6 +28,13 @@ session Category_Properties = Category_Specifications +
     TRS_Standard_Examples
     ITS_Properties
     LP_Properties
+    LP_Variables_Properties
     LP_Cut_Examples
     LP_Cut_Execution_Properties
     LP_Domain_Properties
+    LP_Arity_Properties
+    LP_Arity_Projection
+    LP_Arity_MGU_Properties
+    LP_Cut_Arity_Properties
+    LP_Freshening_Properties
+    LP_Ranked_MGU_Properties

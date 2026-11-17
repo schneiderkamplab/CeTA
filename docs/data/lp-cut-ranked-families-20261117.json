@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-17",
+  "session": "Category_LP_Cut_Family_Bridges",
+  "exit_code": 0,
+  "log": "lp-cut-ranked-families-20261117.log.gz",
+  "proof_checking": "quick_and_dirty=false",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Cut_Constructor_Category_Bridge.thy": "9a717ac03465a718a3d59ff46b513bfece740fcfedb46fec148d163fb64ad770",
+    "thys/Category_Bridges/LP_Bridge/Families/LP_Yes_Category_Bridges.thy": "b8825f858d967a5fd4fe175577c78321cb0602fa561300e51a2537984af3d900"
+  },
+  "results": [
+    "ranked constructor finite YES",
+    "ranked constructor rational YES",
+    "ranked constructor arbitrary-tree YES",
+    "pure-LP YES family endpoints"
+  ],
+  "boundary": "Constructor conclusions require parsed input and guarded acceptance; no exposed domain, validity or projection obligation. Existing checker oracle allowlist unchanged; no admissions.",
+  "remaining": [
+    "precise-MGU YES correspondence",
+    "downstream cut families and complete audit"
+  ]
+}
