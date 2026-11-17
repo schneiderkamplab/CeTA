@@ -4263,3 +4263,26 @@ new certified root. Next assemble action coverage for the premised table, includ
 ordinary actions with empty successor separation contexts and explicit Split
 boundaries; then finish source constructor, residual discharge and strict replay.
 Next resident 2034.
+
+
+## Complete native obligation coverage and ordinary empty-condition links (2034–2035)
+
+Ferrum 2709 reconstructs a row for each local state, distinguishing boundaries,
+exhaustion, equality, resolution, univ and ordinary actions. Ordinary rows require
+explicit empty separation contexts at all successors; every existing source
+context, observation and interface is retained. Boundaries remain obligations,
+not proofs. The five original tables cover 68 states: 7 boundaries, 23 exhausted,
+7 equality, 8 resolution, 2 univ and 21 ordinary rows.
+
+`LP_Prolog_Separation_Empty_Actions` proves the empty-separation specialization of
+the existing checked link and uses it for administrative, clause-selection and
+meta-call steps. `LP_Prolog_Separation_Empty_Test` covers every admitted term-test
+outcome with its own checked target. Resident 2034/2035 pass in 0.850/0.500 seconds
+without skips or oracles. Evidence:
+`target/prolog-separation-empty-2034-2035-resident.log`.
+
+This is complete native receipt coverage, not a completed source proof. Ordinary
+node-contract assembly, trim/parallel and arithmetic normalization integration,
+explicit Split contracts and the accepting source constructor remain. Structural
+residual discharge and strict replay are still required; no export or gain is
+claimed. Next resident 2036.
