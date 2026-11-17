@@ -3526,3 +3526,26 @@ The table's global answer-contract theorem and module boundary composition are
 still required. The Boolean table check alone is not exported as a source
 certificate. Original-source audits, finite invariants, residual solving and
 strict replay remain outstanding, so no benchmark gain is claimed.
+
+
+The parent-contract layer now begins in `LP_Prolog_Functor_Control_Contract.thy`.
+It connects the dispatcher control and term-test cases to full answer contracts
+for the extended source interpretation. Each successor requires its exact scoped
+representation, residual descent and preserved invariant; the shared contract
+start theorem transports its return obligation back to the caller. Administrative
+return events use the checked emit relation. These are contract proofs, not
+termination claims about unchecked children.
+
+This integration exposed a missing side condition in the unexported dispatcher:
+ordinary cut actions must satisfy `lpp_no_builtin_frame`, except for the checked
+inconsistent-state case. The dispatcher now uses the same guard as the established
+source primitive rule, with a rejection lemma. Otherwise a builtin could be
+processed as an ordinary predicate. No installed checker or retained certificate
+used the incomplete candidate. Check 1895 verifies the source bridge and control
+contract; 1896 adds the term-test contract and passes the audit in 1.843 seconds.
+Attempt 1894 corrected an extra parenthesis in the theorem statement. Evidence
+remains in the resident 1544 log; no full build ran.
+
+Arithmetic/univ dispatcher contracts, the global table theorem and explicit
+module-boundary/Split composition remain open, followed by finite invariants,
+residual discharge and strict replay. No new root verdict is claimed.

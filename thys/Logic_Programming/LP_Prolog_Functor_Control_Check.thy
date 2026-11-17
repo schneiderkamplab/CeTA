@@ -17,6 +17,7 @@ definition lpp_check_functor_source_action where
  "lpp_check_functor_source_action T fuel P Q nds states contexts Fs functor_contexts nd F ss source_context source_functors returned arity action =
   (case action of
    LPPFCut control yes_facts no_facts \<Rightarrow>
+    (lpp_no_builtin_frame ss \<or> control=LPCRInconsistent) \<and>
     lpp_check_functor_cut_action T yes_facts no_facts fuel P Q nds states contexts Fs functor_contexts
      nd F ss source_context source_functors returned arity control
   | _ \<Rightarrow> (case ss of
@@ -93,6 +94,12 @@ lemma lpp_functor_action_wrong_univ_arity_rejected:
  "\<not> lpp_check_functor_source_action T fuel P Q nds states contexts Fs functor_contexts nd F
    ((LPCGoals (LPCAtom (Fun (LPCUser ''2:=..'') [a])#gs),active)#saved)
    source_context source_functors returned arity (LPPFUniv value_var name_var args_var middle facts)"
+ by (simp add: lpp_check_functor_source_action_def)
+
+lemma lpp_functor_control_builtin_cut_rejected:
+ "\<not> lpp_no_builtin_frame ss \<Longrightarrow> control\<noteq>LPCRInconsistent \<Longrightarrow>
+  \<not> lpp_check_functor_source_action T fuel P Q nds states contexts Fs functor_contexts nd F ss
+   source_context source_functors returned arity (LPPFCut control yes_facts no_facts)"
  by (simp add: lpp_check_functor_source_action_def)
 
 ML \<open>
