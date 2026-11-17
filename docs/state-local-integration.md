@@ -4163,3 +4163,30 @@ module boundaries remain explicit obligations. No checker export or new certifie
 root. Next connect reflexive separation preservation to the refreshed normalized
 valuation, and add the analogous fresh-resolution/univ action contracts. Then
 complete source/module assembly and residual discharge. Next resident 2022.
+
+
+## Checked continuation separation through reflexive normalization (2022–2023)
+
+`LP_Prolog_Separation_Refresh` checks that both sides of every retained separation
+fact occur in the actual continuation and satisfy the namespace bound. The proof
+uses actual reflexive-MGU continuation factorization, then translates preservation
+into `lp_cut_resolution_env` through the existing refresh theorem. It does not
+assert arbitrary substitution stability. Positive pair coverage and negative
+missing-continuation/unobserved-term checks are included.
+
+`LP_Prolog_Separation_Reflexive_Contract` now discharges the former semantic
+success-preservation premise using checked conditions: context equation, continuation
+coverage, incoming fact inclusion, namespace bounds and separate branch transports.
+It also proves the full-state finite invariant through the actual reflexive step.
+The final resident load reaches `SEPARATION_REFLEXIVE_FINAL_2022_2023_OK` with strict
+zero-oracle/zero-skip checks. All attempts are retained in
+`target/prolog-separation-refresh-2022-2023-resident.log`, including an interrupted
+28-second broad proof search and corrected explicit instantiations.
+
+Ferrum 2705 confirms normalization leaves the relevant refreshed separation terms
+unchanged on both original numbervars paths. The receipt records these terms and
+checks that equality explicitly; a changed term requires a future equation-rewrite
+proof rather than inheriting this rule. All five tables still reconstruct. No
+export, source certificate or root gain. Next fresh-resolution acquisition and
+univ initialization action contracts, then complete source/module assembly,
+residual discharge and strict certified replay. Next resident 2024.
