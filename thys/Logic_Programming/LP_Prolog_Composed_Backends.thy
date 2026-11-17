@@ -48,11 +48,25 @@ fun lpp_effective_success_guard where
 lemma lpp_effective_guards_holds:
  "list_all (lpp_success_guard_holds E eta) (filter lpp_effective_success_guard gs) =
   list_all (lpp_success_guard_holds E eta) gs"
- by (induction gs) (auto split: lpp_success_guard.splits)
+ proof (induction gs)
+ case Nil show ?case by simp
+next
+ case (Cons g gs)
+ show ?case using Cons.IH by (cases g) auto
+qed
 
 fun lpp_same_observed_row where
  "lpp_same_observed_row ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2) =
   (h=h2 \<and> b=b2 \<and> set ps=set ps2 \<and> set (filter lpp_effective_success_guard gs)=set (filter lpp_effective_success_guard gs2) \<and> set os=set os2)"
+
+declare lpp_same_observed_row.simps[code del]
+lemma lpp_same_observed_row_code[code]:
+ "lpp_same_observed_row ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2) =
+  (h=h2 \<and> b=b2 \<and> list_all (\<lambda>x. x\<in>set ps2) ps \<and> list_all (\<lambda>x. x\<in>set ps) ps2 \<and>
+   list_all (\<lambda>g. g\<in>set (filter lpp_effective_success_guard gs2)) (filter lpp_effective_success_guard gs) \<and>
+   list_all (\<lambda>g. g\<in>set (filter lpp_effective_success_guard gs)) (filter lpp_effective_success_guard gs2) \<and>
+   list_all (\<lambda>x. x\<in>set os2) os \<and> list_all (\<lambda>x. x\<in>set os) os2)"
+ by (auto simp: list_all_iff)
 
 lemma lpp_same_observed_row_calls:
  assumes same: "lpp_same_observed_row r s"
@@ -65,8 +79,11 @@ proof -
  have guards: "list_all (lpp_success_guard_holds E eta) gs = list_all (lpp_success_guard_holds E eta) gs2" for E eta
   using eq(4) lpp_effective_guards_holds[of E eta gs] lpp_effective_guards_holds[of E eta gs2]
   by (metis list_all_iff)
+ have guard_sets: "(\<forall>g\<in>set gs. lpp_success_guard_holds E eta g) =
+   (\<forall>g\<in>set gs2. lpp_success_guard_holds E eta g)" for E eta
+  using guards[of E eta] by (simp only: list_all_iff)
  show ?thesis unfolding r s lpp_stable_observed_calls_def
-  by (simp add: guards list_all_iff eq)
+  by (simp add: list_all_iff guard_sets eq)
 qed
 
 lemma lpp_same_observed_rows_calls:

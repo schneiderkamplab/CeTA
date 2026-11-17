@@ -3110,3 +3110,13 @@ Ferrum native candidates 2645–2646 close division residuals via the existing
 magnitude backend and compose complete source certificates. The installed 1747
 checker predates the wrapper and rejects it. No new certified verdict or export
 is claimed before source/runtime validation and unified replay.
+
+
+Runtime 1789 verifies all five source/composition checks on each complete native
+division candidate 2645 and 2646. This corrects the premature statement above:
+1782–1784 required explicit guard cases and set-level proof rewriting; 1785
+then passed source proofs but failed executable set-equality generation. A
+proved bidirectional membership code equation fixes generation without changing
+the logical predicate. Runtime 1789 passes in 160.850 seconds. Numeric child
+checking and unified replay remain pending. Prepared export 1786 never ran;
+its build waiter was stopped without starting compilation.
