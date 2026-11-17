@@ -55,9 +55,17 @@ lemma lpp_finite_direct_contract_refinement:
  by (rule lp_answer_contract_invariant_refinement[where I="lpp_finite_direct_invariant A" and T="lpp_domain_answers P B U D" and U=V, OF initial _ refines contract])
     (rule lpp_finite_direct_domain_step[OF program safe]; assumption)
 
+lemma lpp_finite_direct_is_normalization:
+ assumes "lpp_finite_direct_invariant A
+   ((LPCGoals (LPCAtom (LPIFun (LPCUser ''2:is'') [a,e])#gs),eta)#es)"
+ shows "lpp_finite_direct_invariant A
+   ((LPCGoals (LPCUnify a (LPIFun (LPCUser f) [])#gs),eta)#es)"
+ using assms by (auto simp: lpp_finite_direct_invariant_def
+   lpp_finite_direct_state_def lpp_static_state_def)
+
 ML \<open>
 val checked = [@{thm lpp_finite_direct_domain_step},
- @{thm lpp_finite_direct_initial}, @{thm lpp_finite_direct_contract_refinement}];
+ @{thm lpp_finite_direct_initial}, @{thm lpp_finite_direct_is_normalization}, @{thm lpp_finite_direct_contract_refinement}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted finite direct invariant" else ();
 \<close>

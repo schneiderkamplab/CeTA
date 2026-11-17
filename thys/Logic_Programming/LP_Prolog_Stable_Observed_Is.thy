@@ -2,16 +2,30 @@ theory LP_Prolog_Stable_Observed_Is
  imports LP_Prolog_Stable_Fresh_Context LP_Prolog_Finite_Observed_Is
 begin
 
-theorem lpp_stable_observed_is_context:
+definition lpp_check_observed_evaluation_link where
+  "lpp_check_observed_evaluation_link T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle =
+    (ss=(LPCGoals (LPCAtom (Fun (LPCUser ''2:is'') [a,e])#gs),active)#saved \<and>
+     lpp_fresh_return result_var ss \<and> lpp_context_fresh result_var source_context \<and>
+     result_var\<notin>set F \<and> result_var\<notin>set (lpcn_vars nd) \<and> list_all (lpp_fresh_guard result_var) (lpcn_guards nd) \<and>
+     lpcl_swaps middle=[] \<and>
+     lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd
+       ((LPCGoals (LPCUnify a (Var result_var)#gs),active)#saved)
+       (result_var#lpcn_ground nd) (lpcn_guards nd) [] F
+       (lpp_add_evaluation_observation e (Var result_var) source_context) middle)"
+
+theorem lpp_stable_observed_is_domain_context:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
     and program: "lpp_check_transfer_program T SP receipts"
-    and checked: "lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+    and checked: "lpp_check_observed_evaluation_link T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+    and domain: "lpp_finite_source_domain ''2:is'' [lp_ieval a eta,lp_ieval e eta]"
     and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
     and free: "lpc_free_knowledge (set F) eta"
     and observed: "lpp_stable_context_holds operation SP source_context eta"
     and invariant: "J (lpc_return_eval eta ss)"
-    and frames: "\<And>xs ys. map snd xs=map snd ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
+    and normalized: "\<And>f. J (lpc_return_eval eta ss) \<Longrightarrow>
+      J ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
+        lpc_return_env active eta)#lpc_return_eval eta saved)"
     and lower: "\<And>rho. ([(lpcn_pred nd,map eta (lpcn_vars nd))],
         [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
       lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho \<Longrightarrow>
@@ -19,13 +33,12 @@ theorem lpp_stable_observed_is_context:
       lpp_stable_context_holds operation SP (contexts!lpcl_target middle) rho \<Longrightarrow>
       J (lpc_return_eval rho (states!lpcl_target middle)) \<Longrightarrow>
       C (lpc_return_eval rho (states!lpcl_target middle))"
-  shows "lp_seg_ground (lp_ieval e eta) \<and> (\<forall>f.
+  shows "lpp_finite_source_domain ''2:is'' [lp_ieval a eta,lp_ieval e eta] \<and> (\<forall>f.
     lpp_stable_scalar_evaluation operation (lp_ieval e eta) (LPIFun (LPCUser f) []) \<longrightarrow>
     C ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
       lpc_return_env active eta)#lpc_return_eval eta saved))"
 proof -
   have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser ''2:is'') [a,e])#gs),active)#saved"
-    and expr_ground: "vars_term e \<subseteq> set (lpcn_ground nd) \<union> lpp_source_context_ground source_context"
     and result_var: "lpp_fresh_return result_var ss"
     and context_fresh: "lpp_context_fresh result_var source_context"
     and free_fresh: "result_var\<notin>set F"
@@ -36,14 +49,7 @@ proof -
       ((LPCGoals (LPCUnify a (Var result_var)#gs),active)#saved)
       (result_var#lpcn_ground nd) (lpcn_guards nd) [] F
       (lpp_add_evaluation_observation e (Var result_var) source_context) middle"
-    using checked by (auto simp: lpp_check_finite_observed_is_def)
-  have prior: "lpp_evaluation_context_holds (lpp_stable_scalar_evaluation operation) SP source_context eta"
-    using observed by (simp add: lpp_stable_context_holds_def)
-  have context_ground: "\<forall>x\<in>lpp_source_context_ground source_context. lp_seg_ground (eta x)"
-    by (rule lpp_evaluation_context_ground_sound[where E="lpp_stable_scalar_evaluation operation", OF _ prior])
-      (auto dest: lpp_stable_scalar_evaluation_ground)
-  have ground: "lp_seg_ground (lp_ieval e eta)"
-    using known expr_ground context_ground by (auto simp: lp_cut_knowledge_def lp_seg_ground_eval)
+    using checked by (auto simp: lpp_check_observed_evaluation_link_def)
   have contracts: "C
     ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
       lpc_return_env active eta)#lpc_return_eval eta saved)"
@@ -82,11 +88,8 @@ proof -
     and edge: "([(lpcn_pred nd,map eta (lpcn_vars nd))],
       [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>lp_ild Q"
     using lpp_stable_link_witness[OF compatible program link equations parent extended extended_free facts] by (simp add: swaps) blast
-  have frame_same: "map snd (lpc_return_eval ?nu ?synthetic)=map snd (lpc_return_eval eta ss)"
-    using arg_cong[OF unchanged, of "map snd"]
-    by (simp add: shape lpc_return_eval_def)
   have child_invariant: "J (lpc_return_eval rho (states!lpcl_target middle))"
-    using frames[OF frame_same invariant] same by simp
+    using normalized[OF invariant, of f] represented same by simp
   have child: "C
     (lpc_return_eval rho (states!lpcl_target middle))"
     by (rule lower[OF r_into_trancl[OF edge] knowledge child_free child_context child_invariant])
@@ -95,8 +98,54 @@ proof -
       lpc_return_env active eta)#lpc_return_eval eta saved)"
     using child same represented by simp
   qed
-  show ?thesis using ground contracts by blast
+  show ?thesis using domain contracts by blast
 qed
+
+theorem lpp_stable_observed_is_context:
+  fixes SP :: "string lpp_success_clause list"
+  assumes compatible: "lpp_stable_integer_operations operation"
+    and program: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_finite_observed_is T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+    and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
+    and free: "lpc_free_knowledge (set F) eta"
+    and observed: "lpp_stable_context_holds operation SP source_context eta"
+    and invariant: "J (lpc_return_eval eta ss)"
+    and frames: "\<And>xs ys. map snd xs=map snd ys \<Longrightarrow> J ys \<Longrightarrow> J xs"
+    and lower: "\<And>rho. ([(lpcn_pred nd,map eta (lpcn_vars nd))],
+        [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho \<Longrightarrow>
+      lpc_free_knowledge (set (Fs!lpcl_target middle)) rho \<Longrightarrow>
+      lpp_stable_context_holds operation SP (contexts!lpcl_target middle) rho \<Longrightarrow>
+      J (lpc_return_eval rho (states!lpcl_target middle)) \<Longrightarrow>
+      C (lpc_return_eval rho (states!lpcl_target middle))"
+  shows "lp_seg_ground (lp_ieval e eta) \<and> (\<forall>f.
+    lpp_stable_scalar_evaluation operation (lp_ieval e eta) (LPIFun (LPCUser f) []) \<longrightarrow>
+    C ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
+      lpc_return_env active eta)#lpc_return_eval eta saved))"
+proof -
+ have prior: "lpp_evaluation_context_holds (lpp_stable_scalar_evaluation operation) SP source_context eta"
+   using observed by (simp add: lpp_stable_context_holds_def)
+ have context_ground: "\<forall>x\<in>lpp_source_context_ground source_context. lp_seg_ground (eta x)"
+   by (rule lpp_evaluation_context_ground_sound[where E="lpp_stable_scalar_evaluation operation", OF _ prior])
+      (auto dest: lpp_stable_scalar_evaluation_ground)
+ have ground: "lp_seg_ground (lp_ieval e eta)"
+   using checked known context_ground
+   by (auto simp: lpp_check_finite_observed_is_def lp_cut_knowledge_def lp_seg_ground_eval)
+ have link: "lpp_check_observed_evaluation_link T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+   using checked by (auto simp: lpp_check_finite_observed_is_def lpp_check_observed_evaluation_link_def)
+ have domain: "lpp_finite_source_domain ''2:is'' [lp_ieval a eta,lp_ieval e eta]"
+   using ground by (simp add: lpp_finite_source_domain_def)
+ have normalized: "J ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
+        lpc_return_env active eta)#lpc_return_eval eta saved)" if inv: "J (lpc_return_eval eta ss)" for f
+ proof -
+  have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser ''2:is'') [a,e])#gs),active)#saved"
+    using checked by (auto simp: lpp_check_finite_observed_is_def)
+  show ?thesis by (rule frames[OF _ inv]) (simp add: shape lpc_return_eval_def)
+ qed
+ show ?thesis using ground lpp_stable_observed_is_domain_context[where J=J and C=C,
+   OF compatible program link domain known free observed invariant normalized lower] by blast
+qed
+
 
 theorem lpp_stable_observed_is_contract:
   fixes SP :: "string lpp_success_clause list"
@@ -137,8 +186,50 @@ proof -
     by (simp add: shape lpc_return_eval_def)
 qed
 
+theorem lpp_stable_observed_is_domain_contract:
+  fixes SP :: "string lpp_success_clause list"
+  assumes compatible: "lpp_stable_integer_operations operation"
+    and program: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_observed_evaluation_link T fs fuel P Q nds states contexts Fs nd F ss source_context a e gs active saved result_var middle"
+    and domain: "lpp_finite_source_domain ''2:is'' [lp_ieval a eta,lp_ieval e eta]"
+    and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
+    and free: "lpc_free_knowledge (set F) eta"
+    and observed: "lpp_stable_context_holds operation SP source_context eta"
+    and invariant: "J (lpc_return_eval eta ss)"
+    and normalized: "\<And>f. J (lpc_return_eval eta ss) \<Longrightarrow>
+      J ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
+        lpc_return_env active eta)#lpc_return_eval eta saved)"
+    and lower: "\<And>rho. ([(lpcn_pred nd,map eta (lpcn_vars nd))],
+        [(lpcn_pred (nds!lpcl_target middle),map rho (lpcn_vars (nds!lpcl_target middle)))])\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target middle))) (lpcn_guards (nds!lpcl_target middle)) rho \<Longrightarrow>
+      lpc_free_knowledge (set (Fs!lpcl_target middle)) rho \<Longrightarrow>
+      lpp_stable_context_holds operation SP (contexts!lpcl_target middle) rho \<Longrightarrow>
+      J (lpc_return_eval rho (states!lpcl_target middle)) \<Longrightarrow>
+      lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain)
+        (lpc_return_eval rho (states!lpcl_target middle)) R t ret"
+  shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain)
+    (lpc_return_eval eta ss) R t ret"
+proof -
+  have facts: "lpp_finite_source_domain ''2:is'' [lp_ieval a eta,lp_ieval e eta] \<and> (\<forall>f.
+    lpp_stable_scalar_evaluation operation (lp_ieval e eta) (LPIFun (LPCUser f) []) \<longrightarrow>
+    (\<lambda>xs. lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) xs R t ret) ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
+      lpc_return_env active eta)#lpc_return_eval eta saved))"
+    by (rule lpp_stable_observed_is_domain_context[where C="(\<lambda>xs. lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) xs R t ret)" and J=J,
+      OF compatible program checked domain known free observed invariant]) (fact normalized, fact lower)
+  have ground: "lpp_finite_source_domain ''2:is'' [lp_ieval a eta,lp_ieval e eta]" using facts by blast
+  have contracts: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain)
+    ((LPCGoals (LPCUnify (lp_ieval a eta) (LPIFun (LPCUser f) [])#map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),
+      lpc_return_env active eta)#lpc_return_eval eta saved) R t ret"
+    if "lpp_stable_scalar_evaluation operation (lp_ieval e eta) (LPIFun (LPCUser f) [])" for f
+    using facts that by blast
+  have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser ''2:is'') [a,e])#gs),active)#saved"
+    using checked by (auto simp: lpp_check_observed_evaluation_link_def)
+  show ?thesis using lpp_stable_evaluation_domain_contract[OF ground contracts]
+    by (simp add: shape lpc_return_eval_def)
+qed
+
 ML \<open>
-val checked = [@{thm lpp_stable_observed_is_context}, @{thm lpp_stable_observed_is_contract}];
+val checked = [@{thm lpp_stable_observed_is_domain_context}, @{thm lpp_stable_observed_is_domain_contract}, @{thm lpp_stable_observed_is_context}, @{thm lpp_stable_observed_is_contract}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
   then error "Untrusted stable observed-is dependency" else ();
 \<close>

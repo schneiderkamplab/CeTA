@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Direct_State
- imports LP_Prolog_Finite_Goal_Transport LP_Cut_Answers
+ imports LP_Prolog_Finite_Scalar_Unify LP_Cut_Answers
 begin
 
 fun lpp_direct_source_goal where
@@ -12,7 +12,8 @@ fun lpp_direct_source_goal where
 
 fun lpp_finite_direct_goal where
  "lpp_finite_direct_goal (LPCAtom a) = (lpp_finite_term a \<and> (\<exists>f ts. a=LPIFun f ts))"
-| "lpp_finite_direct_goal (LPCUnify a b) = False"
+| "lpp_finite_direct_goal (LPCUnify a b) =
+   (lpp_finite_term a \<and> (\<exists>f. b=LPIFun (LPCUser f) []))"
 | "lpp_finite_direct_goal (LPCMeta a) = False"
 | "lpp_finite_direct_goal (LPCExpand a m) = False"
 | "lpp_finite_direct_goal g = True"
@@ -40,19 +41,19 @@ lemma lpp_finite_direct_goals_terms:
 lemma lpp_direct_bind_shape:
  "lpp_direct_source_goal g \<Longrightarrow>
   (case lp_cut_bind m (\<lambda>t. lp_ieval t rho) g of LPCAtom a \<Rightarrow> \<exists>f ts. a=LPIFun f ts
-   | LPCUnify a b \<Rightarrow> False | LPCMeta a \<Rightarrow> False | LPCExpand a m \<Rightarrow> False | _ \<Rightarrow> True)"
+   | LPCUnify a b \<Rightarrow> \<exists>f. b=LPIFun (LPCUser f) [] | LPCMeta a \<Rightarrow> False | LPCExpand a m \<Rightarrow> False | _ \<Rightarrow> True)"
  by (cases g; auto; metis lpp_direct_source_goal.simps lp_ieval.simps term.exhaust)
 
 lemma lpp_direct_map_shape:
  assumes shape: "lpp_finite_direct_goal g"
  shows "(case lp_cut_map (\<lambda>t. lp_isubst t sigma) g of LPCAtom a \<Rightarrow> \<exists>f ts. a=LPIFun f ts
-   | LPCUnify a b \<Rightarrow> False | LPCMeta a \<Rightarrow> False | LPCExpand a m \<Rightarrow> False | _ \<Rightarrow> True)"
+   | LPCUnify a b \<Rightarrow> \<exists>f. b=LPIFun (LPCUser f) [] | LPCMeta a \<Rightarrow> False | LPCExpand a m \<Rightarrow> False | _ \<Rightarrow> True)"
  using shape by (cases g) auto
 
 lemma lpp_finite_direct_intro:
  "list_all lpp_finite_term (lp_cut_terms g) \<Longrightarrow>
   (case g of LPCAtom a \<Rightarrow> \<exists>f ts. a=LPIFun f ts
-   | LPCUnify a b \<Rightarrow> False | LPCMeta a \<Rightarrow> False
+   | LPCUnify a b \<Rightarrow> \<exists>f. b=LPIFun (LPCUser f) [] | LPCMeta a \<Rightarrow> False
    | LPCExpand a m \<Rightarrow> False | _ \<Rightarrow> True) \<Longrightarrow>
   lpp_finite_direct_goal g"
  by (cases g) auto
@@ -84,7 +85,7 @@ proof -
     using terms that by (auto simp: lpp_finite_goals_def list_all_iff)
   show "case lp_cut_bind m (\<lambda>t. lp_ieval t rho) g of
     LPCAtom a \<Rightarrow> \<exists>f ts. a=LPIFun f ts | LPCMeta a \<Rightarrow> False
-    | LPCExpand a m \<Rightarrow> False | LPCUnify a b \<Rightarrow> False | _ \<Rightarrow> True"
+    | LPCExpand a m \<Rightarrow> False | LPCUnify a b \<Rightarrow> \<exists>f. b=LPIFun (LPCUser f) [] | _ \<Rightarrow> True"
     by (rule lpp_direct_bind_shape) (use body that in \<open>auto simp: list_all_iff\<close>)
  qed
  have mapped: "lpp_finite_direct_goal (lp_cut_map (\<lambda>t. lp_isubst t sigma) g)"
@@ -94,7 +95,7 @@ proof -
     using terms that by (auto simp: lpp_finite_goals_def list_all_iff)
   show "case lp_cut_map (\<lambda>t. lp_isubst t sigma) g of
     LPCAtom a \<Rightarrow> \<exists>f ts. a=LPIFun f ts | LPCMeta a \<Rightarrow> False
-    | LPCExpand a m \<Rightarrow> False | LPCUnify a b \<Rightarrow> False | _ \<Rightarrow> True"
+    | LPCExpand a m \<Rightarrow> False | LPCUnify a b \<Rightarrow> \<exists>f. b=LPIFun (LPCUser f) [] | _ \<Rightarrow> True"
     by (rule lpp_direct_map_shape) (use continuation that in \<open>auto simp: list_all_iff\<close>)
  qed
  show ?thesis using bound mapped by (auto simp: list_all_iff)
@@ -124,6 +125,26 @@ lemma lpp_finite_direct_prune:
  "lpp_finite_direct_state es \<Longrightarrow> lpp_finite_direct_state (lpc_answer_prune m es)"
  by (induct es) (auto simp: lpp_finite_direct_state_def split: prod.splits lp_cut_entry.splits if_splits)
 
+lemma lpp_finite_direct_scalar_unify:
+ assumes mgu: "lpc_mgu_unify a b gs sigma"
+   and state: "lpp_finite_direct_state ((LPCGoals (LPCUnify a b#gs),eta)#es)"
+ shows "lpp_finite_direct_state ((LPCGoals
+   (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) gs),nu)#es)"
+proof -
+ obtain f where scalar: "b=LPIFun (LPCUser f) []"
+   and rest: "lpp_finite_direct_goals gs"
+   and saved: "lpp_finite_direct_state es"
+   using state by (auto simp: lpp_finite_direct_state_def)
+ have terms: "lpp_finite_goals (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) gs)"
+   using lpp_scalar_mgu_finite_goals[OF mgu[unfolded scalar]
+     lpp_finite_direct_goals_terms[OF rest]] .
+ have mapped: "lpp_finite_direct_goal (lp_cut_map (\<lambda>t. lp_isubst t sigma) g)"
+   if "g\<in>set gs" for g
+   using terms rest that lpp_direct_map_shape[of g sigma]
+   by (auto simp: lpp_finite_goals_def list_all_iff intro: lpp_finite_direct_intro)
+ show ?thesis using saved mapped by (auto simp: lpp_finite_direct_state_def list_all_iff)
+qed
+
 lemma lpp_finite_direct_ordinary_step:
  assumes program: "lpp_finite_direct_program P"
    and transition: "lpc_answer_transition P ss event tt"
@@ -133,6 +154,10 @@ lemma lpp_finite_direct_ordinary_step:
 proof (cases rule: lpc_answer_transition.cases)
  case (resolve c a gs sigma rho m eta es)
  then show ?thesis using state lpp_finite_direct_resolve_state[where nu="\<lambda>x. lp_isubst (eta x) sigma", OF program]
+   by fastforce
+next
+ case (unify a b gs sigma eta es)
+ then show ?thesis using state lpp_finite_direct_scalar_unify[where nu="\<lambda>x. lp_isubst (eta x) sigma"]
    by fastforce
 qed (auto simp: lpp_finite_direct_state_def list_all_iff
   dest: lpp_finite_direct_prune[unfolded lpp_finite_direct_state_def list_all_iff])

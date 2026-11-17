@@ -53,13 +53,13 @@ proof -
 qed
 
 
-lemma lpp_stable_evaluation_normalized_contract:
+lemma lpp_stable_evaluation_domain_contract:
   fixes P :: "(string,string) lp_cut_program"
     and a e :: "(string lp_cut_symbol,string) lp_iterm"
     and eta :: "'v \<Rightarrow> (string lp_cut_symbol,string) lp_iterm"
     and ret :: "('v \<Rightarrow> (string lp_cut_symbol,string) lp_iterm) \<Rightarrow> 'r"
     and R :: "'r rel" and t :: "'r"
-  assumes ground: "lp_seg_ground e"
+  assumes domain: "lpp_finite_source_domain ''2:is'' [a,e]"
     and contracts: "\<And>f. lpp_stable_scalar_evaluation operation e (LPIFun (LPCUser f) []) \<Longrightarrow>
       lp_answer_contract
         (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain)
@@ -73,7 +73,7 @@ proof (rule lp_answer_contract_intro)
   assume step: "?T ((LPCGoals (LPCAtom (LPIFun (LPCUser ''2:is'') [a,e])#gs),eta)#saved) event tt"
   have actual: "lpp_answer_transition P lpp_builtin_signature (lpp_stable_source_builtin operation)
     ((LPCGoals (LPCAtom (LPIFun (LPCUser ''2:is'') [a,e])#gs),eta)#saved) event tt"
-    using step ground by (auto simp: lpp_domain_answers_def lpp_finite_source_domain_def)
+    using step domain by (auto simp: lpp_domain_answers_def)
   have no_answer: "event=None" and cover: "tt=[] \<or> (\<exists>f.
     lpp_stable_scalar_evaluation operation e (LPIFun (LPCUser f) []) \<and>
     lpc_answer_transition P
@@ -106,6 +106,24 @@ proof (rule lp_answer_contract_intro)
   show "(\<forall>rho. event=Some rho \<longrightarrow> (t,ret rho)\<in>R\<^sup>*) \<and> lp_answer_contract ?T tt R t ret"
     using child no_answer by simp
 qed
+
+lemma lpp_stable_evaluation_normalized_contract:
+  fixes P :: "(string,string) lp_cut_program"
+    and a e :: "(string lp_cut_symbol,string) lp_iterm"
+    and eta :: "'v \<Rightarrow> (string lp_cut_symbol,string) lp_iterm"
+    and ret :: "('v \<Rightarrow> (string lp_cut_symbol,string) lp_iterm) \<Rightarrow> 'r"
+    and R :: "'r rel" and t :: "'r"
+  assumes ground: "lp_seg_ground e"
+    and contracts: "\<And>f. lpp_stable_scalar_evaluation operation e (LPIFun (LPCUser f) []) \<Longrightarrow>
+      lp_answer_contract
+        (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain)
+        ((LPCGoals (LPCUnify a (LPIFun (LPCUser f) [])#gs),eta)#saved) R t ret"
+  shows "lp_answer_contract
+    (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain)
+    ((LPCGoals (LPCAtom (LPIFun (LPCUser ''2:is'') [a,e])#gs),eta)#saved) R t ret"
+ by (rule lpp_stable_evaluation_domain_contract[OF _ contracts])
+    (use ground in \<open>simp add: lpp_finite_source_domain_def\<close>)
+
 
 ML \<open>
 val checked = [@{thm lpp_stable_is_uses_shared_equality}, @{thm lpp_stable_evaluation_normalized_contract}];
