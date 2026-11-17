@@ -4216,3 +4216,24 @@ retained. This remains unexported work, not a source certificate or root gain.
 Next bind clause-prefixed acquired facts to normalized source facts, integrate
 univ initialization contracts, then complete source/module assembly, structural
 residual discharge and strict certified replay. Next resident 2028.
+
+
+## Normalized fresh-clause separation (2028–2029)
+
+`LP_Prolog_Separation_Normalize` reuses the verified cut equation normalizer on
+separation payloads. Its soundness theorem requires the initialized source
+equations and preserves evaluated separation facts. Encoded equality goals are
+payloads, not executed unifications. `LP_Prolog_Separation_Normalized_Fresh`
+instantiates the fresh matching node contract with normalized facts: actual MGU,
+namespace bounds and source knowledge establish the resolution equations, and
+checked normalization connects clause-prefixed acquisition to the successor facts.
+
+Resident 2028 passes in 1.178 seconds and 2029 in 0.585 seconds with strict
+zero-oracle/zero-skip checks. Evidence:
+`target/prolog-separation-normalize-2028-2029-resident.log`. Ferrum 2707 binds
+clause-prefixed facts, actual resolution equations and normalized successor facts
+in the acquisition receipt. Both original numbervars paths and all five tables
+reconstruct; removing initialization or clause facts is rejected by reconstruction.
+No new checker export or benchmark certificate. Next integrate univ initialization
+with separation-aware node conditions, then complete source/module assembly,
+residual discharge and strict certified replay. Next resident 2030.
