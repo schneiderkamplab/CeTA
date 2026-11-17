@@ -4136,3 +4136,30 @@ source constructor, executable regeneration or new benchmark certificate. Next
 instantiate local action contracts with these separation-aware link obligations,
 then finish referenced Split/return assembly and residual discharge. Next resident
 number: 2019. Priority 1 and numbervars remain unfinished.
+
+
+## Separation-aware equality actions and finite pair contracts (2019–2021)
+
+`LP_Prolog_Separation_Equality_Action` proves the existing equality action with
+node-local separation conditions. Success uses the actual MGU and resolution
+environment; failure separately transports only incoming facts. Both links retain
+ordinary contexts, functor observations, freeness choices and residual subjects.
+`LP_Prolog_Separation_Equality_Contract` integrates this into the premised node
+contract with actual-return behavior and the runtime invariant intact.
+
+`LP_Prolog_Separation_Pair_Control` adds an executable side-condition check for
+matching binary constructors with two distinct free variables and an explicit
+support-separation fact. It proves full-state finite preservation for the actual
+transition and instantiates the separation-aware node contract. Missing separation
+and repeated variables are rejected. This does not assume arbitrary unification
+preserves finiteness or infer separation from freeness.
+
+Resident checks pass with zero oracles/skips: 2019 in 2.572 seconds, 2020 in 1.047
+seconds, 2021 in 2.453 seconds. All attempts, including corrected type instantiation
+and proof-tactic failures, are retained in
+`target/prolog-separation-equality-2019-2021-resident.log`. Native 2704 reconstructs
+all seven local equality actions and their 14 alternatives. The two equality-shaped
+module boundaries remain explicit obligations. No checker export or new certified
+root. Next connect reflexive separation preservation to the refreshed normalized
+valuation, and add the analogous fresh-resolution/univ action contracts. Then
+complete source/module assembly and residual discharge. Next resident 2022.
