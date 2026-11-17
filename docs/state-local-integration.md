@@ -4428,3 +4428,28 @@ and univ regressions pass. No full rebuild, unified checker export or certified
 gain. Next serialize actual table states, contexts, functor/separation facts,
 actions and exact links; bind source/query and explicit Split/module contracts,
 then discharge residuals and strictly replay. Next native 2712, resident 2056.
+
+## Complete native state transport (2712; resident 2056)
+
+`LP_Prolog_Separation_State_XML` decodes complete node, annotated return-state,
+source-context, free-variable, functor and separation arrays. It reuses the shared
+node/return/context parsers and has no accepting proof constructor. The native
+serializer freshly validates the owning graph receipts and retains observations
+from saved frames as well as the active frame. Source-data encoding preserves
+the predicate/data distinction.
+
+Incremental resident loading passes (1.755 seconds), as does parser generation
+(15.327 seconds, 88,746 bytes). Unmodified generated SML parses all five original
+regions with matching six-array lengths: 30/4/3/10/21 rows, totalling 68. The
+14 functor observations and eight separation facts survive decoding. Missing
+context fields and incomplete functor facts reject. Evidence is in
+`target/prolog-separation-state-parser-2056/{Separation_State_Export.thy,Check.ML,check.log}`;
+native XML and inventory are in Ferrum
+`target/prolog-state-serialization-2712/`. The harness initially had an extra
+parenthesis; correcting that harness syntax produced the recorded successful run.
+Generated checking code was not edited.
+
+This checks serialization only. Actual action/link checks, source/query
+initialization, explicit module return contracts, residual discharge and unified
+strict replay remain necessary. No unified export or new certified gain.
+Next native 2713, resident 2057.
