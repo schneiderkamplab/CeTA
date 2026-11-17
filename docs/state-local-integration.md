@@ -3179,3 +3179,34 @@ that still requires profile-specific instantiation; these lemmas do not assert
 source `=..` coverage. The no-oracle/no-skipped-proof audit passes. Attempt 1799
 collided with the existing `name_of` constant and is preserved. No export or
 checker rebuild includes this unfinished source integration.
+
+
+## Univ decomposition and functor context transport — 2026-11-17
+
+Resident check 1814 verifies `LP_Prolog_Univ_Decomposition.thy`: nonvariable
+constructor decomposition, success observations from shared rational MGU,
+normal-failure exclusion and retention of terminal error outcomes. An executable
+domain check accepts constructor inputs or a checked free output list/name;
+unknown output lists and known-name construction from a variable input remain
+unsupported. Five positive/rejection lemmas pass. The outcome relation is a
+termination overapproximation, not a claim that every retained error occurs.
+Constructor-name encoding remains an explicit parameter needing source-profile
+correspondence. Saved alternatives use the existing answer transition unchanged.
+
+Check 1818 verifies `LP_Prolog_Functor_Context.thy`: explicit value/name/argument
+facts, acquisition on successful decomposition, runtime substitution, checked
+instance transport and the existing resolution environment's refresh operation.
+Identity transport passes; removing a fact or changing its name/argument list
+rejects. Both theories pass no-oracle/no-skipped-proof dependency audits.
+Attempt 1815 collided with Isabelle's factorial constant `fact`; 1816 had a
+lexical spacing error in a bound. Corrected transport passes 1817 and acquisition
+plus controls pass 1818 in 7.532 seconds. No full rebuild was used.
+
+SWI-Prolog 9.0.4 counterexample 2670 in the Ferrum tree establishes why input
+finiteness alone cannot be transported through univ: `T=f(X), T=..[f|X]`
+starts finite and ends cyclic, while the argument list still has length one.
+Fresh/nonalias output evidence must therefore be checked before asserting
+post-state finiteness. These theories are not exported and do not change the
+90 YES + 97 NO certified baseline. Complete source-profile coverage, per-frame
+assembly, finite-domain preservation and Split contracts remain integration
+obligations for numbervars.
