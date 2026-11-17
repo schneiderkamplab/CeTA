@@ -3917,3 +3917,23 @@ and all dependency audits in 2.472 seconds. Normalization lemmas have no oracles
 node/table contracts inherit only the existing checker dependencies. Evidence
 remains in resident log 1544. No native or unified checker rebuild was needed.
 This does not yet assemble or certify a source root. Next Isabelle 1978.
+
+Runtime support separation (resident 1978–1981): inspection of the established
+synthetic univ equality shows that finite execution, distinct free outputs and a
+proper argument spine are insufficient alone. An output can occur inside a list
+element. `LP_Prolog_Separation_Context` represents disjoint runtime supports as
+explicit two-term facts, proves exact interface transport and acquires the facts
+from the checked fresh-clause MGU. Its consumer combines those facts with free
+outputs to establish finite continuation after actual univ decomposition.
+Separation is deliberately not declared stable under arbitrary substitutions.
+Checked controls show arbitrary substitution can destroy it and free outputs
+can coexist with a finite input that contains one of those outputs.
+
+Attempt 1978 collided with the existing `fact` constant; renaming the binder
+fixes it and 1979 passes acquisition/transport/controls in 5.482 seconds.
+Attempt 1980 used reserved `values` as a fact label; renaming it fixes the
+consumer proof. Final 1981 passes the complete theory and no-oracle/no-skip
+dependency audit in 6.045 seconds, retained in resident log 1544. This is not
+blanket runtime-substitution transport. Carrying the facts through synthetic
+normalization links and integrating complete source assembly remain required.
+No checker export or certified benchmark change. Next Isabelle 1982.
