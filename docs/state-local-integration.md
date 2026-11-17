@@ -2939,3 +2939,19 @@ quantifier instantiation, syntax/constant collisions and compatibility-wrapper
 premises were corrected. Automated proof search in 1681 was interrupted after
 43.617 seconds and replaced by a short structured proof. Only affected theories
 were rechecked in the resident process; no unified checker was rebuilt.
+
+Checks 1699 and 1701 complete local static-signature, builtin-outcome and
+source-domain invariant transport, then compose those checks with the local
+control-table contract. Each node uses only its checked ground variables and
+context-derived ground facts; unknown external operations remain excluded.
+Every boundary and actual-return obligation remains a premise. This removes
+the global linear-variable-head requirement from the new local control theorem
+without changing the existing root checker. Failed attempts 1698 and 1700
+correct explicit theorem instantiation; the statements were not weakened.
+
+Referenced triples assembly next needs the conjunction of finite-state evidence
+and the existing triple-input instance invariant. Retain its scope/substitution
+transport and the observed-evaluation normalization interface. Then instantiate
+existing connection, return and Split contracts rather than introducing another
+operational semantics or erasing incoming contexts. Neither these local proofs
+nor checked child residuals count as additional certified benchmark roots.
