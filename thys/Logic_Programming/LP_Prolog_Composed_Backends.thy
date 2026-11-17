@@ -41,9 +41,18 @@ next
  show ?case by (rule lpp_compose_observed_rows_SN[OF short sn])
 qed
 
+fun lpp_effective_success_guard where
+ "lpp_effective_success_guard (LPPSOpaque t) = False"
+| "lpp_effective_success_guard g = True"
+
+lemma lpp_effective_guards_holds:
+ "list_all (lpp_success_guard_holds E eta) (filter lpp_effective_success_guard gs) =
+  list_all (lpp_success_guard_holds E eta) gs"
+ by (induction gs) (auto split: lpp_success_guard.splits)
+
 fun lpp_same_observed_row where
  "lpp_same_observed_row ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2) =
-  (h=h2 \<and> b=b2 \<and> set ps=set ps2 \<and> set gs=set gs2 \<and> set os=set os2)"
+  (h=h2 \<and> b=b2 \<and> set ps=set ps2 \<and> set (filter lpp_effective_success_guard gs)=set (filter lpp_effective_success_guard gs2) \<and> set os=set os2)"
 
 lemma lpp_same_observed_row_calls:
  assumes same: "lpp_same_observed_row r s"
@@ -51,10 +60,13 @@ lemma lpp_same_observed_row_calls:
 proof -
  obtain h ps b gs os where r: "r=((h,ps,b,gs),os)" by (cases r) auto
  obtain h2 ps2 b2 gs2 os2 where s: "s=((h2,ps2,b2,gs2),os2)" by (cases s) auto
- have eq: "h=h2" "b=b2" "set ps=set ps2" "set gs=set gs2" "set os=set os2"
+ have eq: "h=h2" "b=b2" "set ps=set ps2" "set (filter lpp_effective_success_guard gs)=set (filter lpp_effective_success_guard gs2)" "set os=set os2"
   using same by (auto simp: r s)
+ have guards: "list_all (lpp_success_guard_holds E eta) gs = list_all (lpp_success_guard_holds E eta) gs2" for E eta
+  using eq(4) lpp_effective_guards_holds[of E eta gs] lpp_effective_guards_holds[of E eta gs2]
+  by (metis list_all_iff)
  show ?thesis unfolding r s lpp_stable_observed_calls_def
-  by (simp add: list_all_iff eq)
+  by (simp add: guards list_all_iff eq)
 qed
 
 lemma lpp_same_observed_rows_calls:

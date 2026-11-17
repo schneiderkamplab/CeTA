@@ -492,7 +492,11 @@ qed (use lpp_stable_numeric_condition_formula_sound[OF compatible checked observ
     assigned checked in auto)
 
 fun lpp_check_stable_path_observation where
-  "lpp_check_stable_path_observation K ambient observation (LPPStableEvaluatedIntegerCondition bindings e) =
+  "lpp_check_stable_path_observation K ambient observation (LPPStableQuotientCondition a d result) =
+    (lpp_check_stable_numeric_observation K observation (LPPStableQuotientCondition a d result) \<or>
+     (0<d \<and> result=Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d] \<and>
+      result\<in>set (concat (map lpp_observed_evaluated_integers ambient))))"
+| "lpp_check_stable_path_observation K ambient observation (LPPStableEvaluatedIntegerCondition bindings e) =
     lpp_check_evaluated_expression (map (LPPOInteger o Var) K @ ambient) bindings e"
 | "lpp_check_stable_path_observation K ambient observation (LPPStableFloorOrderCondition a b) =
     (observation=LPPOComparison LPPIntLess a b \<or> observation=LPPOComparison LPPIntLessEqual a b)"
@@ -525,6 +529,29 @@ lemma lpp_stable_path_receipt_formula_sound:
       rho (rename key)=lpp_stable_key_value operation eta source_values key"
   shows "IA4.satisfies (lpp_integer_assignment rho) (lpp_stable_receipt_formula rename receipt)"
 proof (cases receipt)
+  case (LPPStableQuotientCondition a d result)
+  show ?thesis
+  proof (cases "lpp_check_stable_numeric_observation K observation receipt")
+   case True
+   show ?thesis by (rule lpp_stable_receipt_formula_sound[where operation=operation and K=K and observation=observation and receipt=receipt and eta=eta and source_values=source_values and rho=rho and rename=rename, OF compatible True observed typed assigned])
+  next
+   case False
+   have positive: "0<d" and result_term: "result=Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d]"
+    and selected: "Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d]
+      \<in>set (concat (map lpp_observed_evaluated_integers ambient))"
+    using checked False by (auto simp: LPPStableQuotientCondition)
+   have bound: "(0\<le>lpp_stable_expression_bound operation (lp_ieval a eta) \<and>
+      lpp_stable_expression_bound operation (lp_ieval result eta)=lpp_stable_expression_bound operation (lp_ieval a eta) div d) \<or>
+     (lpp_stable_expression_bound operation (lp_ieval a eta)<0 \<and>
+      lpp_stable_expression_bound operation (lp_ieval result eta)= - ((-lpp_stable_expression_bound operation (lp_ieval a eta)) div d))"
+    using lpp_observed_quotient_bound[OF compatible ambient selected positive] by (simp add: result_term)
+   have a: "rho (rename (LPPBoundKey a))=lpp_stable_expression_bound operation (lp_ieval a eta)"
+    and result: "rho (rename (LPPBoundKey result))=lpp_stable_expression_bound operation (lp_ieval result eta)"
+    using assigned by (auto simp: LPPStableQuotientCondition)
+   show ?thesis using bound positive by (auto simp: LPPStableQuotientCondition
+     lpp_stable_quotient_formula_def Let_def lpp_comparison_typed_assignment euclid_quot_def a result)
+  qed
+next
   case (LPPStableFloorOrderCondition a b)
   have progress: "lpp_stable_expression_bound operation (lp_ieval a eta) \<le>
       lpp_stable_expression_bound operation (lp_ieval b eta)"

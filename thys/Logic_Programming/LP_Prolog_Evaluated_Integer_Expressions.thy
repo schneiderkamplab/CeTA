@@ -204,8 +204,36 @@ proof -
       lpp_scalar_floor_exact[OF lv] lpp_scalar_floor_exact[OF rv])
 qed
 
+lemma lpp_observed_quotient_bound:
+ assumes compatible: "lpp_stable_integer_operations operation"
+ and ambient: "list_all (lpp_stable_observation_holds operation eta) observations"
+ and selected: "Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d]
+   \<in>set (concat (map lpp_observed_evaluated_integers observations))"
+ and positive: "0<d"
+ defines "t \<equiv> Fun (LPCUser ''2:prolog_data_2f2f'') [a,lpp_integer_term d]"
+ shows "(0\<le>lpp_stable_expression_bound operation (lp_ieval a eta) \<and>
+    lpp_stable_expression_bound operation (lp_ieval t eta)=lpp_stable_expression_bound operation (lp_ieval a eta) div d) \<or>
+   (lpp_stable_expression_bound operation (lp_ieval a eta)<0 \<and>
+    lpp_stable_expression_bound operation (lp_ieval t eta)= - ((-lpp_stable_expression_bound operation (lp_ieval a eta)) div d))"
+proof -
+ obtain observation where member: "observation\<in>set observations"
+  and selected_term: "t\<in>set (lpp_observed_evaluated_integers observation)"
+  using selected by (auto simp: t_def)
+ have observed: "lpp_stable_observation_holds operation eta observation"
+  using ambient member by (simp add: list_all_iff)
+ obtain n where evaluated: "lpp_stable_scalar_evaluation operation (lp_ieval t eta) (lpp_integer_value n)"
+  using lpp_observed_evaluated_integers_sound[OF compatible observed selected_term] by blast
+ have same: "lpp_stable_expression_bound operation (lp_ieval t eta)=
+   lpp_stable_expression_bound operation (lpp_integer_value n)"
+  using lpp_stable_integer_bound[OF evaluated] lpp_stable_integer_bound[OF lpp_stable_integer_literal, of operation n] by simp
+ have evaluation: "lpp_stable_scalar_evaluation operation
+    (LPIFun (LPCUser ''2:prolog_data_2f2f'') [lp_ieval a eta,lpp_integer_value d]) (lpp_integer_value n)"
+  using evaluated by (simp add: t_def)
+ show ?thesis using lpp_stable_quotient_bounds[OF compatible positive evaluation] same by simp
+qed
+
 ML \<open>
-val checked = [@{thm lpp_checked_evaluated_integer_expression},
+val checked = [@{thm lpp_observed_quotient_bound},@{thm lpp_checked_evaluated_integer_expression},
   @{thm lpp_checked_evaluated_integer_bound}, @{thm lpp_evaluated_integer_operands_sound},
   @{thm lpp_observed_evaluated_integers_sound}, @{thm lpp_observed_integer_expression_bound},
   @{thm lpp_checked_bound_expression}, @{thm lpp_stable_floor_order}];

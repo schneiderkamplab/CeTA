@@ -3094,3 +3094,19 @@ and XML soundness theorem passes. This exposes interface-equal values at the
 actual residual head/call rather than only as side observations. Existing
 rational-equation semantics and all helper/return premises are retained. This
 proof change is not yet exported to the unified checker.
+
+
+Observed quotient evidence: checks 1780–1781 prove the truncating quotient bound
+from successful evaluated-integer observations and integrate it into the existing
+quotient path receipt. Both numerator signs retain the existing piecewise formula;
+groundness alone is insufficient. Attempt 1779 used reserved proof label `term`;
+1780 needed explicit instantiation of the existing receipt theorem, fixed in 1781.
+Composition equivalence additionally ignores only `LPPSOpaque` markers, whose
+success-guard interpretation is True; actual observations and nontrivial guards
+remain checked. Its composed-backend theorem has passed during 1782; source
+rechecking and actual-certificate runtime check 1783 are still in progress.
+
+Ferrum native candidates 2645–2646 close division residuals via the existing
+magnitude backend and compose complete source certificates. The installed 1747
+checker predates the wrapper and rejects it. No new certified verdict or export
+is claimed before source/runtime validation and unified replay.
