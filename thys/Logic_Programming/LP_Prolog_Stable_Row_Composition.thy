@@ -12,7 +12,7 @@ fun lpp_compose_observed_row where
     ((h,ps @ map (\<lambda>p. lpp_success_atom_subst p mu) ps2,
        lpp_success_atom_subst b2 mu, gs @ map (\<lambda>g. lpp_success_guard_subst g mu) gs2),
      os @ map (\<lambda>obs. lpp_numeric_observation_substitute obs mu) os2 @
-       map (\<lambda>(s,t). LPPOEquation s t) (zip (snd b) (snd (lpp_success_atom_subst h2 mu)))))"
+       map (\<lambda>(s,t). LPPOEquation s t) (zip (snd (lpp_success_atom_subst h2 mu)) (snd b))))"
 
 lemma lpp_success_case_fresh_observation:
  "lpp_stable_observation_holds operation (lpp_success_case_env k eta theta)
@@ -49,7 +49,7 @@ proof -
  let ?fp = "map (\<lambda>p. lpp_success_atom_subst p ?mu) ps2"
  let ?fg = "map (\<lambda>g. lpp_success_guard_subst g ?mu) gs2"
  let ?fo = "map (\<lambda>obs. lpp_numeric_observation_substitute obs ?mu) os2"
- let ?eqs = "map (\<lambda>(s,t). LPPOEquation s t) (zip (snd b) (snd (lpp_success_atom_subst h2 ?mu)))"
+ let ?eqs = "map (\<lambda>(s,t). LPPOEquation s t) (zip (snd (lpp_success_atom_subst h2 ?mu)) (snd b))"
  have initial: "lpp_stable_context_holds operation P (ps,gs,os) eta"
    using ps gs os by (auto simp: lpp_stable_context_holds_def lpp_evaluation_context_holds_def
       list_all_iff intro: lpp_stable_observation_refines)
@@ -81,8 +81,8 @@ proof -
    using arg_cong[OF atoms, of snd] by (simp only: lpp_success_atom_eval_def snd_conv)
  have equations: "list_all (lpp_stable_observation_holds operation ?nu) ?eqs"
  proof (auto simp: list_all_iff set_zip)
-  fix i assume i: "i<length (snd b)" "i<length (snd (lpp_success_atom_subst h2 ?mu))"
-  show "lp_ieval (snd b!i) ?nu=lp_ieval (snd (lpp_success_atom_subst h2 ?mu)!i) ?nu"
+  fix i assume i: "i<length (snd (lpp_success_atom_subst h2 ?mu))" "i<length (snd b)"
+  show "lp_ieval (snd (lpp_success_atom_subst h2 ?mu)!i) ?nu=lp_ieval (snd b!i) ?nu"
    using arg_cong[OF equality, of "\<lambda>xs. xs!i"] i by simp
  qed
  have matching: "lpp_success_iatom_subst a ?sigma=lpp_success_atom_eval h ?nu"
@@ -105,10 +105,32 @@ qed
 fun lpp_observed_row_short where
  "lpp_observed_row_short k ((h,ps,b,gs),os) = lpp_context_short k (h#b#ps,gs,os)"
 
-definition lpp_compose_observed_rows where
- "lpp_compose_observed_rows k D = concat (map (\<lambda>r. map (lpp_compose_observed_row k r) D) D)"
+fun lpp_observed_rows_connect where
+ "lpp_observed_rows_connect ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2) =
+  (fst b=fst h2 \<and> length (snd b)=length (snd h2))"
 
-lemma lpp_stable_observed_calls_mono:
+lemma lpp_observed_rows_connect_complete:
+ assumes first: "(a,middle)\<in>lpp_stable_observed_calls operation {((h,ps,b,gs),os)} P"
+ and second: "(middle,z)\<in>lpp_stable_observed_calls operation {((h2,ps2,b2,gs2),os2)} P"
+ shows "lpp_observed_rows_connect ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2)"
+proof -
+ obtain eta where first: "middle=lpp_success_atom_eval b eta"
+  using first unfolding lpp_stable_observed_calls_def by blast
+ obtain tau theta where target: "z=lpp_success_atom_eval b2 theta"
+  and second: "lpp_success_iatom_subst middle tau=lpp_success_atom_eval h2 theta"
+  using second by (simp only: lpp_stable_observed_calls_def; blast)
+ have symbols: "fst b=fst h2"
+  using arg_cong[OF second, of fst] by (simp add: first lpp_success_iatom_subst_def lpp_success_atom_eval_def)
+ have arity: "length (snd b)=length (snd h2)"
+  using arg_cong[OF second, of "\<lambda>a. length (snd a)"]
+  by (simp add: first lpp_success_iatom_subst_def lpp_success_atom_eval_def)
+ show ?thesis using symbols arity by simp
+qed
+
+definition lpp_compose_observed_rows where
+ "lpp_compose_observed_rows k D = concat (map (\<lambda>r. map (lpp_compose_observed_row k r) (filter (lpp_observed_rows_connect r) D)) D)"
+
+lemma lpp_composition_calls_mono:
  "D \<subseteq> E \<Longrightarrow> lpp_stable_observed_calls operation D P \<subseteq>
    lpp_stable_observed_calls operation E P"
  unfolding lpp_stable_observed_calls_def by blast
@@ -135,15 +157,18 @@ proof
  have composed: "(a,z)\<in>lpp_stable_observed_calls operation
    {lpp_compose_observed_row k ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2)} P"
   by (rule lpp_compose_observed_row_sound[OF small edge edge2])
+ have connects: "lpp_observed_rows_connect ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2)"
+  by (rule lpp_observed_rows_connect_complete[OF edge edge2])
  have subset: "{lpp_compose_observed_row k ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2)}
    \<subseteq> set (lpp_compose_observed_rows k D)"
   proof -
   let ?r = "((h,ps,b,gs),os)"
   let ?s = "((h2,ps2,b2,gs2),os2)"
-  have inner: "lpp_compose_observed_row k ?r ?s \<in> set (map (lpp_compose_observed_row k ?r) D)"
-   using r2 by (simp only: set_map; rule imageI)
-  have outer: "map (lpp_compose_observed_row k ?r) D \<in>
-    set (map (\<lambda>r. map (lpp_compose_observed_row k r) D) D)"
+  have inner: "lpp_compose_observed_row k ?r ?s \<in> set (map (lpp_compose_observed_row k ?r) (filter (lpp_observed_rows_connect ?r) D))"
+   unfolding set_map
+   by (rule imageI) (use r2 connects in simp)
+  have outer: "map (lpp_compose_observed_row k ?r) (filter (lpp_observed_rows_connect ?r) D) \<in>
+    set (map (\<lambda>r. map (lpp_compose_observed_row k r) (filter (lpp_observed_rows_connect r) D)) D)"
    using r by (simp only: set_map; rule imageI)
   have member: "lpp_compose_observed_row k ?r ?s \<in> set (lpp_compose_observed_rows k D)"
    unfolding lpp_compose_observed_rows_def set_concat
@@ -151,7 +176,7 @@ proof
   show ?thesis using member by blast
  qed
  show "pair\<in>lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P"
-  using subsetD[OF lpp_stable_observed_calls_mono[OF subset] composed] pair by simp
+  using subsetD[OF lpp_composition_calls_mono[OF subset] composed] pair by simp
 qed
 
 lemma lpp_SN_of_square:

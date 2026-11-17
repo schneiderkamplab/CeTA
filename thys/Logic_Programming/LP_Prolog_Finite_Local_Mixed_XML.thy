@@ -6,7 +6,9 @@ definition lpp_composed_backend_parser where
  "lpp_composed_backend_parser =
   (xml_change lpp_mixed_backend_parser (\<lambda>x. xml_return ([],None,x))) XMLor
   (XMLdo (STR ''composedBackend'') {
-   ks\<leftarrow>xml_many (STR ''stages'') (xml_nat (STR ''freshPrefixLength'')) id;
+   ks\<leftarrow>xml_many (STR ''stages'') (XMLdo (STR ''stage'') {
+    k\<leftarrow>xml_nat (STR ''freshPrefixLength'');
+    fuel\<leftarrow>xml_nat (STR ''normalizationFuel''); xml_return (k,fuel)}) id;
    child_rows\<leftarrow>xml_many (STR ''observedTriples'') lpp_observed_triple_parser id;
    child\<leftarrow>lpp_mixed_backend_parser;
    xml_return (ks,Some child_rows,child)})"

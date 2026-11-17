@@ -3073,3 +3073,15 @@ Attempts 1765–1770 retain proof automation, list lemma, reserved `rows` binder
 and type-instantiation corrections. No export or unified rebuild has run yet.
 Native residual probes will determine whether the composed abstraction is
 precise enough before generating another checker.
+
+
+Checks 1772–1777 strengthen composition with proved static predicate/arity
+compatibility and existing checked equation normalization after each stage.
+Runtime substitutions preserve the predicate and arity of the intermediate atom,
+so only incompatible interfaces are excluded. Rationally cyclic equations remain.
+Interface equations orient fresh right-head arguments toward the previous call,
+allowing the existing bounded normalization to expose later arithmetic observations.
+Each stage records freshness and normalization fuel; the full source/XML theorem
+and inherited-oracle audit pass at 1777. Attempts 1772–1774 retain an unconstrained
+runtime-type witness and an image-membership proof correction. No checker export
+or benchmark gain is claimed from these proof checks alone.

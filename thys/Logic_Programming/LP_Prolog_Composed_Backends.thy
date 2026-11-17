@@ -1,16 +1,19 @@
 theory LP_Prolog_Composed_Backends
- imports LP_Prolog_Stable_Backend_Routing LP_Prolog_Stable_Row_Composition
+ imports LP_Prolog_Observed_Equation_Rewrite LP_Prolog_Stable_Backend_Routing LP_Prolog_Stable_Row_Composition
 begin
+
+definition lpp_composition_step where
+ "lpp_composition_step k fuel D = map (lpp_normalize_observed_row fuel) (lpp_compose_observed_rows k D)"
 
 fun lpp_composition_rows where
  "lpp_composition_rows [] D = D"
-| "lpp_composition_rows (k#ks) D = lpp_composition_rows ks (lpp_compose_observed_rows k D)"
+| "lpp_composition_rows ((k,fuel)#ks) D = lpp_composition_rows ks (lpp_composition_step k fuel D)"
 
 fun lpp_check_composition where
  "lpp_check_composition [] D = True"
-| "lpp_check_composition (k#ks) D =
+| "lpp_check_composition ((k,fuel)#ks) D =
    (list_all (lpp_observed_row_short k) D \<and>
-    lpp_check_composition ks (lpp_compose_observed_rows k D))"
+    lpp_check_composition ks (lpp_composition_step k fuel D))"
 
 lemma lpp_composition_rows_SN:
  assumes checked: "lpp_check_composition ks D"
@@ -20,15 +23,18 @@ lemma lpp_composition_rows_SN:
 proof (induction ks arbitrary: D)
  case Nil then show ?case by simp
 next
- case (Cons k ks)
+ case (Cons step ks)
+ obtain k fuel where step: "step=(k,fuel)" by (cases step) auto
  have short: "list_all (lpp_observed_row_short k) D"
-  and rest: "lpp_check_composition ks (lpp_compose_observed_rows k D)"
-  using Cons.prems(1) by auto
+  and rest: "lpp_check_composition ks (lpp_composition_step k fuel D)"
+  using Cons.prems(1) by (auto simp: step)
  have child: "SN (lpp_stable_observed_calls operation
-    (set (lpp_composition_rows ks (lpp_compose_observed_rows k D))) P)"
-  using Cons.prems(2) by simp
- have sn: "SN (lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P)"
+    (set (lpp_composition_rows ks (lpp_composition_step k fuel D))) P)"
+  using Cons.prems(2) by (simp add: step)
+ have normalized: "SN (lpp_stable_observed_calls operation (set (lpp_composition_step k fuel D)) P)"
   by (rule Cons.IH[OF rest child])
+ have sn: "SN (lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P)"
+  by (rule SN_subset[OF normalized[unfolded lpp_composition_step_def] lpp_normalize_observed_calls])
  show ?case by (rule lpp_compose_observed_rows_SN[OF short sn])
 qed
 
