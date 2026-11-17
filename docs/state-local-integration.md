@@ -3792,3 +3792,26 @@ that dropping the linear-head restriction can turn a finite one-cell list into
 a cyclic term. Complete module-level invariant transport, source assembly and
 residual certification are still required; the installed checker and root totals
 are unchanged.
+
+`LP_Prolog_Spine_Context.thy` provides a checked frame-local proper-spine context:
+existing facts, argument lists from functor observations, cons tails, nil, and
+cons construction from an established tail. Runtime substitution and exact
+one-pass interface transport are proved. Actual successful helper returns
+preserve the context only when every incoming frame initializes it; the proof
+does not leak active observations into saved alternatives or infer finite trees.
+Missing acquisition facts, tail facts and interface facts are rejected.
+
+Attempts 1935–1941 exposed local proof-development errors (constant/command name
+collisions, existential witnesses, and case instantiation); all remain in resident
+log 1544. The explicit case proof passes in 1942. Final 1943 also checks the
+actual-return interface corollary and rejection controls in 7.558 seconds with
+the inherited-oracle/no-skip audit. No full build or checker export ran.
+
+Native 2690 adds corresponding derivation/transport discovery and includes an
+argument-spine receipt in the existing initialized univ view. Focused tests pass
+(one spine-context test; three univ tests) including missing facts, wrong
+interfaces, unproved tails, and saved-frame reuse. The original root diagnostic
+finds both univ acquisitions with argument-spine evidence, still 69 projected
+states, zero open projections, and two frame-local functor relations. This is
+conditional acquisition evidence. Complete module context reconstruction and
+source/residual assembly remain open; no benchmark verdict changed.
