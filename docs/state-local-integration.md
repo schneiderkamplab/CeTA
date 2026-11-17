@@ -4517,3 +4517,41 @@ so their exact functor transport requires strengthening. The real tables retain
 all facts. Next: checked equation-aware functor transport and context-justified
 reflexive free-variable preservation, then module contracts/residual discharge.
 Next resident 2066; native remains 2714.
+
+## Equation-aware functor transport (2066–2073)
+
+`LP_Prolog_Functor_Equation_Transport` compares all three terms of a source
+relation with an instantiated target relation under the actual checked link
+equations. It uses the existing `lp_normalize_goals` and its soundness theorem;
+normalization failure cannot discharge the comparison. Exact relation matches
+remain accepted. With no equations, the new transport is proved equivalent to
+the old exact transport. No source relations, contexts or failure branches are
+removed. The changed-argument negative lemma now explicitly has empty equations:
+a checked equation may legitimately identify two argument variables.
+
+Evaluation, stable, separation and univ link witnesses are updated. The full
+affected dependency chain through `LP_Prolog_Separation_Subject_XML` passes at
+2072. New soundness proofs have no oracles or skipped proofs. Proof attempts,
+including an interrupted over-broad Metis attempt and corrected syntax/fuel
+instantiation errors, are retained in
+`target/prolog-functor-equations-2066-2073-resident.log`.
+
+Incremental local checker generation 2073 takes 44.162 seconds (526,404 bytes).
+Unmodified generated SML on the same 2713 xml-fixed evidence now passes all 38
+local checks and 36 source-action checks: both resolution rows (0:22,0:23) close
+with their functor facts intact. Argument renaming justified by an equation
+accepts; missing equations, missing source facts and unjustified changed names
+reject. Existing univ collision/shape mutations still reject. Check.ML/check.log
+in `target/prolog-functor-equation-check-2073/` assert these results; the initial
+SML harness value-restriction failure is retained separately.
+
+The only remaining local failures are reflexive rows 0:10 and 47:10, specifically
+free-variable preservation. The next general route can use the existing shared
+`lpc_mgu_unify_context_factor` with identity as comparison when a checked context
+equation establishes equal operands. This yields preservation for free variables
+occurring in continuation templates, without requiring finite runtime terms.
+Then refresh those variables into the actual resolution environment and expose
+the result as another proved free-set choice. Keep the old conservative choice
+and every other link requirement. Module/return contracts, residual proofs,
+source/query binding and strict unified replay still follow. No root gain,
+native rebuild or unified export. Next resident 2074; native remains 2714.

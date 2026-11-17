@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Functor_Link
- imports LP_Prolog_Evaluation_Link LP_Prolog_Functor_Shape_Context
+ imports LP_Prolog_Evaluation_Link LP_Prolog_Functor_Shape_Context LP_Prolog_Functor_Equation_Transport
 begin
 
 text \<open>Functor observations extend the existing parameterized evaluation
@@ -12,7 +12,7 @@ definition lpp_check_evaluation_functor_link where
   (lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F
      (lpp_functor_shape_context source_context source_functors) e \<and>
    lpcl_target e<length functor_contexts \<and>
-   lpp_check_functor_transport source_functors (functor_contexts!lpcl_target e)
+   lpp_check_functor_equation_transport fuel eqs source_functors (functor_contexts!lpcl_target e)
     (lp_cut_instance_subst (lpcl_bindings e)))"
 
 lemma lpp_evaluation_functor_link_witness:
@@ -42,7 +42,7 @@ proof -
  have transported: "list_all (lpp_functor_fact_holds names
     (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'))
     (functor_contexts!lpcl_target e)"
-  by (rule lpp_check_functor_transport_sound[OF _ functors])
+  by (rule lpp_check_functor_equation_transport_sound[where fuel=fuel, OF _ equations functors])
    (use checked in \<open>simp add: lpp_check_evaluation_functor_link_def\<close>)
  show ?thesis
   by (rule lpp_evaluation_link_witness_with_observation[where J="\<lambda>nu. list_all (lpp_functor_fact_holds names nu) (functor_contexts!lpcl_target e)", OF contract evaluation program
@@ -58,21 +58,21 @@ lemma lpp_evaluation_functor_missing_fact_rejected:
  "functor_contexts!lpcl_target e=[observation] \<Longrightarrow>
   \<not> lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts
    nd ss G K eqs F source_context [] e"
- by (simp add: lpp_check_evaluation_functor_link_def lpp_check_functor_transport_def)
+ by (simp add: lpp_check_evaluation_functor_link_def lpp_check_functor_transport_def lpp_check_functor_equation_transport_def)
 
 lemma lpp_evaluation_functor_changed_arguments_rejected:
  "functor_contexts!lpcl_target e=[LPPFunctorFact (Var ''V'') (Var ''N'') (Var ''B'')] \<Longrightarrow>
   lp_cut_instance_subst (lpcl_bindings e)=Var \<Longrightarrow>
   \<not> lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts
-   nd ss G K eqs F source_context [LPPFunctorFact (Var ''V'') (Var ''N'') (Var ''A'')] e"
- by (simp add: lpp_check_evaluation_functor_link_def lpp_check_functor_transport_def)
+   nd ss G K [] F source_context [LPPFunctorFact (Var ''V'') (Var ''N'') (Var ''A'')] e"
+ by (simp add: lpp_check_evaluation_functor_link_def lpp_check_functor_transport_def lpp_check_functor_equation_transport_def)
 
 lemma lpp_evaluation_functor_empty_extension:
  "lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts
    nd ss G K eqs F source_context [] e =
   (lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e \<and>
    lpcl_target e<length functor_contexts \<and> functor_contexts!lpcl_target e=[])"
- by (auto simp: lpp_check_evaluation_functor_link_def lpp_check_functor_transport_def list_all_iff)
+ by (auto simp: lpp_check_evaluation_functor_link_def lpp_check_functor_transport_def lpp_check_functor_equation_transport_def list_all_iff)
 
 ML \<open>
 val checked = [@{thm lpp_evaluation_functor_link_witness}];

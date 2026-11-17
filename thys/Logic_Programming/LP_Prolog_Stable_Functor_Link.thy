@@ -40,7 +40,7 @@ proof -
  have transported: "list_all (lpp_functor_fact_holds names
     (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'))
     (functor_contexts!lpcl_target e)"
-  by (rule lpp_check_functor_transport_sound[OF _ functors])
+  by (rule lpp_check_functor_equation_transport_sound[where fuel=fuel, OF _ equations functors])
    (use checked in \<open>simp add: lpp_check_evaluation_functor_link_def\<close>)
  show ?thesis
   by (rule lpp_stable_link_witness_with_observation[where J="\<lambda>nu. list_all (lpp_functor_fact_holds names nu) (functor_contexts!lpcl_target e)",

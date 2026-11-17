@@ -107,7 +107,7 @@ proof -
   have transported_functors: "list_all (lpp_functor_fact_holds names
       (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings middle) x) ?nu))
       (functor_contexts!lpcl_target middle)"
-    by (rule lpp_check_functor_transport_sound[OF _ observed_extended])
+    by (rule lpp_check_functor_equation_transport_sound[where fuel=fuel, OF _ equations observed_extended])
       (use link in \<open>simp add: lpp_check_evaluation_functor_link_def\<close>)
   have transported_separation: "lpp_separation_node_conditions separation_contexts (lpcl_target middle)
       (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings middle) x) ?nu)"

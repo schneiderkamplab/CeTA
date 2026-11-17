@@ -32,7 +32,7 @@ proof -
     using checked by (simp add: lpp_check_evaluation_functor_link_def)
   have transported: "list_all (lpp_functor_fact_holds names
       (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta')) (functor_contexts!?j)"
-    by (rule lpp_check_functor_transport_sound[OF _ functors])
+    by (rule lpp_check_functor_equation_transport_sound[where fuel=fuel, OF _ equations functors])
       (use checked in \<open>simp add: lpp_check_evaluation_functor_link_def\<close>)
   have separated: "lpp_separation_node_conditions separation_contexts ?j
       (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta')"
