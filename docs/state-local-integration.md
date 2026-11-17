@@ -3120,3 +3120,26 @@ proved bidirectional membership code equation fixes generation without changing
 the logical predicate. Runtime 1789 passes in 160.850 seconds. Numeric child
 checking and unified replay remain pending. Prepared export 1786 never ran;
 its build waiter was stopped without starting compilation.
+
+
+## Constructor argument observations — 2026-11-17
+
+Resident check 1798 verifies `LP_Prolog_Constructor_Arguments.thy`, including
+exact constructor labels and children, arity from observed list length,
+substitution transport, and equivalence of whole-term/whole-argument-list
+finiteness. A cyclic-child control proves that a one-element argument spine
+does not make its cyclic element finite. All dependency checks reject oracles
+and skipped proofs. This theory is not included in export 1790 or build 1792.
+Checked source `=..` coverage, name translation, context transport and Split
+interfaces are still required before it can certify numbervars.
+
+Attempts 1793 and 1795–1797 retain a name collision with the existing `args`
+constant and unsuccessful automatic cyclic-membership proofs. Explicit
+constructor injectivity and occurrence-specific substitution fix the latter;
+1798 passes in 0.837 seconds. Native replay correction `dff72065` independently
+passes 710 shared LP tests and advances numbervars to its semantic-projection
+obligation. No new benchmark result is claimed by these observation lemmas.
+
+Export 1790 passed in 444.823 seconds; LP-only unified build 1792 reuses seven
+unchanged category libraries. The original source/composition runtime checks
+passed at 1789. Complete backend checking and strict replay remain pending.
