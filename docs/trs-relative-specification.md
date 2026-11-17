@@ -18,7 +18,8 @@ A relative block consists of finitely many weak steps, one strict step and
 finitely many weak steps. `trs_relative_terminates A R S` excludes an infinite
 sequence of such blocks. Infinite weak-only sequences are permitted.
 `relative_problem A R S` requires both finite rule collections to satisfy the
-shared ranked problem predicate; it adds no variable condition.
+shared ranked problem predicate; it adds no variable condition. As in Standard,
+`A` has type `'f arity = 'f ⇒ nat`: every symbol has one prescribed arity.
 
 `relative_step_iff` identifies one block with IsaFoR's `relto` of the two
 signature-restricted rewrite relations. `trs_relative_terminates_iff_signature`
@@ -31,8 +32,7 @@ infinite sequence defining nontermination.
 Unlike Standard, relative termination is not invariant under arbitrary
 signature extension. The existing library proves counterexamples in
 `sig_ext_relative_rewriting_unsound`. The bridge predicate
-`relative_extension_condition A S` requires either a symbol in `A` of arity
-greater than one, or that each weak rule's right-side variables occur on its
+`relative_extension_condition A S` requires either `∃f. A f > 1`, or that each weak rule's right-side variables occur on its
 left side. These conditions are sufficient; they are not asserted necessary
 for each individual problem.
 
@@ -73,3 +73,11 @@ guard or a direct ranked-loop check, proved without signature extension.
 No extra variable restriction is imposed on category validity. Other unrestricted
 NO families still require the sufficient extension condition. Accepted decisions
 use the canonical property; this does not claim certificate completeness.
+
+
+The [total-arity verification](data/trs-relative-total-arity-20261117.json) checks
+the integrated bridge after replacing the optional signature function. Finite
+witness signatures need only be contained in the arity graph; the extension
+condition remains checked for unrestricted NO proofs, while ranked loops use
+the proved containment direction. The constants-only counterexample remains
+protected by the guard.

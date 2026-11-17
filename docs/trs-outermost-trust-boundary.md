@@ -28,8 +28,7 @@ The standalone specification imports only shared specifications and HOL.
 
 A ranked signature assigns each permitted symbol one arity. Terms are finite
 first-order trees; substitutions map variables to signature-correct terms.
-`trs_problem A R` requires finite signature-correct rule pairs and an
-infinite variable supply. It does not require a constant symbol. Contexts have
+`trs_problem A R` requires finite signature-correct rule pairs. It does not require a constant symbol. Contexts have
 one hole. `outermost_above` checks each strict ancestor of that hole for absence
 of a matching rule left side. `outermost_step` contracts one rule instance in
 such a context, with signature-correct endpoints.
@@ -43,8 +42,11 @@ left sides, arity mismatch and signatures without constants.
 ## Exact theorem boundary
 
 `outermost_step_iff` preserves and reflects steps under the shared explicit
-term, substitution, context and rule translations. It has no extra hypotheses.
-`trs_outermost_terminates_iff_signature` states:
+term, substitution, context and rule translations, assuming `trs_problem A R`.
+Endpoint arity correctness follows from the shared
+`trs_problem_instance_arity_correct` theorem; it is not repeated in the step
+definition.
+`trs_outermost_terminates_iff_signature`, under the same validity premise, states:
 
 ```
 trs_outermost_terminates A R <->
@@ -57,13 +59,13 @@ The signature restriction is intentional. Existing unrestricted Outermost
 signature-extension results require well-formed rules and quasi-left-linearity;
 those are not assumptions of this category and are not imposed on its spec.
 
-`trs_outermost_integrated_YES` requires exact translated rules and acceptance
+`trs_outermost_integrated_YES` requires `trs_problem A R`, exact translated rules and acceptance
 by `certify_integrated_cert_problem False` of an Outermost termination claim.
 It concludes the canonical property, for every concrete integrated YES proof
 family. Restricting the checker's terminating relation to the declared signature
 needs no extra assumption. Concrete module contracts are discharged.
 
-`trs_outermost_integrated_NO` uses the same exact rules and assumption-free
+`trs_outermost_integrated_NO` uses the same problem validity, exact rules and assumption-free
 acceptance of a **direct loop** certificate. Its finite witness premises require
 all symbols and arities in the start term, sequence result terms, substitution
 images and loop context to belong to the declared signature. The loop bridge

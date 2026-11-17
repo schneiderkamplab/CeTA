@@ -76,7 +76,8 @@ proof -
 qed
 
 corollary trs_outermost_loop_checker_NO:
-  assumes rules: "set Rs = to_rules R"
+  assumes problem: "trs_problem A R"
+    and rules: "set Rs = to_rules R"
     and ok: "isOK (check_fploop Rs (o_to_fp_impl (map fst Rs)) (FP_loop_prf C mu t seq))"
     and ctxt: "funas_ctxt C \<subseteq> to_signature A"
     and subst: "\<And>x u. (x,u) \<in> set mu \<Longrightarrow> funas_term u \<subseteq> to_signature A"
@@ -84,5 +85,5 @@ corollary trs_outermost_loop_checker_NO:
     and terms: "\<And>p r u. (p,r,u) \<in> set seq \<Longrightarrow> funas_term u \<subseteq> to_signature A"
   shows "\<not> trs_outermost_terminates A R"
   using check_fploop_not_SN_signature[OF ok ctxt subst start terms]
-  by (simp add: trs_outermost_terminates_iff_signature ostep_iff_fpstep rules)
+  by (simp add: trs_outermost_terminates_iff_signature[OF problem] ostep_iff_fpstep rules)
 end

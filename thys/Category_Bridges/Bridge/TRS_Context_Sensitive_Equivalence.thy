@@ -2,10 +2,22 @@ theory TRS_Context_Sensitive_Equivalence
   imports Category_Properties.TRS_Context_Sensitive_Properties
     Rewriting_Sequence_Equivalence TRS_Representation CSR_Checker_Extensions.CSR_Innermost_Switch
 begin
+text \<open>The specification assigns positions to symbols. IsaFoR assigns
+positions to symbol/arity pairs. Only the declared arity matters on correct
+terms; values at other arities need not agree.\<close>
+definition from_replacement_map :: "'f arity \<Rightarrow> ('f \<times> nat \<Rightarrow> nat set) \<Rightarrow> 'f \<Rightarrow> nat set" where
+  "from_replacement_map A mu f = mu (f,A f)"
+definition to_replacement_map :: "('f \<Rightarrow> nat set) \<Rightarrow> 'f \<times> nat \<Rightarrow> nat set" where
+  "to_replacement_map mu = (\<lambda>(f,n). mu f)"
+lemma replacement_map_roundtrip [simp]:
+  "from_replacement_map A (to_replacement_map mu) = mu"
+  by (rule ext) (simp add: from_replacement_map_def to_replacement_map_def)
+
 lemma permitted_context_iff:
-  "permitted_context mu C \<longleftrightarrow>
-    af_regarded_pos mu ((ctxt_apply_term (to_context C) (t))) (hole_pos (to_context C))"
-  by (induct C) (auto simp: nth_append)
+  assumes "correct_context A C"
+  shows "permitted_context (from_replacement_map A mu) C \<longleftrightarrow>
+    af_regarded_pos mu ((ctxt_apply_term (to_context C) t)) (hole_pos (to_context C))"
+  using assms by (induct C) (auto simp: nth_append from_replacement_map_def to_signature_def)
 
 lemma csstep_context_iff:
   "(s,t) \<in> csstep mu R \<longleftrightarrow>
@@ -45,18 +57,20 @@ next
     using lr cond pos eq by (auto simp: rstep_r_p_s_def)
 qed
 lemma context_sensitive_step_iff:
-  "context_sensitive_step A mu R s t \<longleftrightarrow>
+  assumes problem: "trs_problem A R"
+  shows "context_sensitive_step A (from_replacement_map A mu) R s t \<longleftrightarrow>
     (to_term s, to_term t) \<in> sig_step (to_signature A) (csstep mu (to_rules R))"
 proof
-  assume "context_sensitive_step A mu R s t"
-  then obtain l r C sigma where
+  assume step: "context_sensitive_step A (from_replacement_map A mu) R s t"
+  from step context_sensitive_step_arity_correct[OF problem step] obtain l r C sigma where
     wf: "arity_correct A s" "arity_correct A t" and lr: "(l,r) \<in> R"
-    and permitted: "permitted_context mu C"
+    and ctxt: "correct_context A C"
+    and permitted: "permitted_context (from_replacement_map A mu) C"
     and eq: "s = fo_plug C (fo_subst sigma l)"
       "t = fo_plug C (fo_subst sigma r)"
     by (auto simp: context_sensitive_step_def)
   have active: "af_regarded_pos mu ((ctxt_apply_term (to_context C) (to_term l \<cdot> to_substitution sigma))) (hole_pos (to_context C))"
-    using permitted permitted_context_iff[of mu C "to_term l \<cdot> to_substitution sigma"] by blast
+    using permitted permitted_context_iff[OF ctxt, where mu=mu and t="to_term l \<cdot> to_substitution sigma"] by blast
   have "(to_term s, to_term t) \<in> csstep mu (to_rules R)"
     unfolding csstep_context_iff
     apply (rule exI[of _ "to_term l"], rule exI[of _ "to_term r"])
@@ -88,25 +102,38 @@ next
     by (rule to_term_inj[THEN iffD1]) (use eq(1) sub(1) in \<open>simp add: l\<close>)
   have te: "t = fo_plug (from_context C) (fo_subst (from_substitution ?sigma) r)"
     by (rule to_term_inj[THEN iffD1]) (use eq(2) sub(2) in \<open>simp add: r\<close>)
-  have permitted: "permitted_context mu (from_context C)"
-    using active permitted_context_iff[of mu "from_context C" "l' \<cdot> sigma"] by simp
+  have permitted: "permitted_context (from_replacement_map A mu) (from_context C)"
+    using active permitted_context_iff[OF ctxt, where mu=mu and t="l' \<cdot> sigma"] by simp
   have wf': "arity_correct A s" "arity_correct A t" using wf by simp_all
-  show "context_sensitive_step A mu R s t"
+  show "context_sensitive_step A (from_replacement_map A mu) R s t"
     unfolding context_sensitive_step_def using wf' ctxt subst lr se te permitted by blast
 qed
 
 
 theorem trs_context_sensitive_terminates_iff:
-  "trs_context_sensitive_terminates A mu R \<longleftrightarrow>
+  assumes problem: "trs_problem A R"
+  shows "trs_context_sensitive_terminates A (from_replacement_map A mu) R \<longleftrightarrow>
     SN (sig_step (to_signature A) (csstep mu (to_rules R)))"
 proof -
-  interpret step_translation to_term from_term "context_sensitive_step A mu R"
+  interpret step_translation to_term from_term "context_sensitive_step A (from_replacement_map A mu) R"
     "sig_step (to_signature A) (csstep mu (to_rules R))"
-    by unfold_locales (simp_all add: context_sensitive_step_iff)
+    by unfold_locales (simp_all add: context_sensitive_step_iff[OF problem])
   show ?thesis by (simp only: trs_context_sensitive_terminates_def termination_iff)
 qed
 corollary trs_context_sensitive_nonterminates_iff:
-  "(\<not> trs_context_sensitive_terminates A mu R) \<longleftrightarrow>
+  assumes problem: "trs_problem A R"
+  shows "(\<not> trs_context_sensitive_terminates A (from_replacement_map A mu) R) \<longleftrightarrow>
     \<not> SN (sig_step (to_signature A) (csstep mu (to_rules R)))"
-  by (simp add: trs_context_sensitive_terminates_iff)
+  by (simp add: trs_context_sensitive_terminates_iff[OF problem])
+corollary context_sensitive_step_iff_lifted:
+  assumes "trs_problem A R"
+  shows "context_sensitive_step A mu R s t \<longleftrightarrow>
+    (to_term s,to_term t) \<in> sig_step (to_signature A) (csstep (to_replacement_map mu) (to_rules R))"
+  using context_sensitive_step_iff[OF assms, where mu="to_replacement_map mu"] by simp
+
+corollary trs_context_sensitive_terminates_iff_lifted:
+  assumes "trs_problem A R"
+  shows "trs_context_sensitive_terminates A mu R \<longleftrightarrow>
+    SN (sig_step (to_signature A) (csstep (to_replacement_map mu) (to_rules R)))"
+  using trs_context_sensitive_terminates_iff[OF assms, where mu="to_replacement_map mu"] by simp
 end

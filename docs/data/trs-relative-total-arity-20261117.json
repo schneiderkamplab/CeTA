@@ -1,0 +1,35 @@
+{
+  "change": "TRS Relative bridges over total arity; finite witness signatures require containment",
+  "base_commit": "58bd3cd20c357a856ac781f20bb14ac7015f8cef",
+  "command": "USER_HOME=\"$PWD/target/trs-standard/user\" ISABELLE_IDENTIFIER=trs_standard AFP=\"$PWD/../CeTA-consolidated/target/consolidation-build/afp-source/thys\" ../ferrum/.tools/Isabelle2025-2/bin/isabelle build -j4 -o quick_and_dirty=false -d ../CeTA-consolidated/target/consolidation-build/afp-source/thys -d thys -D thys/Category_Bridges/Relative_Integrated",
+  "exit_code": 0,
+  "rebuilt_sessions": [
+    "Category_Relative_Integrated"
+  ],
+  "dependencies": "Isabelle source/dependency checks reused the successful Category_Specification_Bridges build.",
+  "build_log": "trs-relative-total-arity-20261117-build.log.gz",
+  "build_log_uncompressed_sha256": "f3815b8e27f633778b82076b2e7acdb79b88027ef50ebda98901231e70379cab",
+  "source_sha256": {
+    "thys/Category_Specifications/TRS_Spec_Base.thy": "c823462dc2262f90974cb8d88c97deff5405369cfef34b0109cf359abb3e75ba",
+    "thys/Category_Specifications/TRS_Relative_Spec.thy": "0c026635ded00be2770d506f01a699b30617a769fcf9c7f3430f0a76da9076a7",
+    "thys/Category_Bridges/Bridge/TRS_Representation.thy": "150de1063fd20aa6135cd8e3a8193e9a33127723e5939af07fe275b5fb26407e",
+    "thys/Category_Bridges/Bridge/TRS_Relative_Equivalence.thy": "cf4f18ff10d74bd32713b5b1c378acf874d81110a1a5e564e3f2cbc86d1a9652",
+    "thys/Category_Bridges/Bridge/TRS_Relative_Checker_Bridge.thy": "8258aa01210da5934762d7b0a05660c37bf4cc17fc780dd2cbbdfcaa016c5ec2",
+    "thys/Category_Bridges/Relative_Integrated/TRS_Relative_Ranked_Loops.thy": "4048e1e8dcc151bcb47210b5c5d11ce31f8a05b8d6c46bf639552ca91021f31e",
+    "thys/Category_Bridges/Relative_Integrated/TRS_Relative_Integrated.thy": "b6722f5e1d70c0f6c5d89a3f5224694c3e1dbcb4af3cb9187be93e195f940f09"
+  },
+  "checked_theorems": [
+    "relative_signature_nontermination_mono",
+    "relative_no_guard_sound",
+    "trs_relative_integrated_YES",
+    "trs_relative_bound_decision",
+    "trs_relative_bound_NO",
+    "trs_relative_serialized_decision"
+  ],
+  "regression_lemmas": [
+    "relative_finite_guard_infinite_alphabet",
+    "relative_constants_extra_variable_guard_rejected",
+    "relative_spurious_binary_declaration_rejected"
+  ],
+  "admission_check": "Existing transitive Thm_Deps.has_skip_proof audit, extended to the new signature monotonicity theorem, passed."
+}

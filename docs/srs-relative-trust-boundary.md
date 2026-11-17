@@ -7,7 +7,8 @@ status: stable
 
 The [published category](https://termination-portal.org/wiki/SRS_Relative)
 asks whether every reduction uses strict rules only finitely often. Weak-only
-infinite rewriting is permitted. Both components are finite string systems,
+infinite rewriting is permitted. `relative_string_problem R S` requires both
+components to satisfy `string_problem`. They are finite string systems,
 represented by unary term rules with a shared tail variable on both sides.
 Different rules may use different tail variables.
 

@@ -11,7 +11,8 @@ datatype higher_type = SpecHBase nat | SpecHArrow higher_type higher_type
 datatype higher_term = SpecHBound nat | SpecHFree nat | SpecHConst nat
   | SpecHApp higher_term higher_term | SpecHAbs higher_type higher_term
 
-fun higher_lookup where
+fun higher_lookup ::
+  "'a list \<Rightarrow> nat \<Rightarrow> 'a option" where
   "higher_lookup xs n = (if n < length xs then Some (xs ! n) else None)"
 
 text \<open>Typing uses three finite environments: S lists constant types, V
@@ -81,7 +82,8 @@ fun higher_erase_pattern :: "higher_pattern \<Rightarrow> higher_term" where
 
 type_synonym higher_rule = "higher_type list \<times> higher_pattern \<times> higher_pattern"
 
-definition higher_rule_welltyped where
+definition higher_rule_welltyped ::
+  "higher_type list \<Rightarrow> higher_rule \<Rightarrow> bool" where
   "higher_rule_welltyped S r \<longleftrightarrow> (case r of (G,l,u) \<Rightarrow>
     case higher_typeof S G [] (higher_erase_pattern l) of None \<Rightarrow> False
       | Some A \<Rightarrow> higher_typeof S G [] (higher_erase_pattern u) = Some A)"
@@ -90,16 +92,19 @@ text \<open>The category's rule syntax is beta-normal, has a constant head on
 the left, and uses each free meta-variable at a fixed arity there. Its left
 arguments are distinct bound variables; right occurrences have at least that
 arity, with extra ordinary arguments represented by application nodes.\<close>
-fun higher_pattern_head where
+fun higher_pattern_head ::
+  "higher_pattern \<Rightarrow> higher_pattern" where
   "higher_pattern_head (SpecPApp p q) = higher_pattern_head p"
 | "higher_pattern_head p = p"
-fun higher_pattern_metas where
+fun higher_pattern_metas ::
+  "higher_pattern \<Rightarrow> nat set" where
   "higher_pattern_metas (SpecPBound n) = {}"
 | "higher_pattern_metas (SpecPConst n) = {}"
 | "higher_pattern_metas (SpecPApp p q) = higher_pattern_metas p \<union> higher_pattern_metas q"
 | "higher_pattern_metas (SpecPAbs A p) = higher_pattern_metas p"
 | "higher_pattern_metas (SpecPMeta n ps) = insert n (\<Union>(higher_pattern_metas ` set ps))"
-fun higher_left_pattern where
+fun higher_left_pattern ::
+  "(nat \<Rightarrow> nat) \<Rightarrow> higher_pattern \<Rightarrow> bool" where
   "higher_left_pattern ar (SpecPBound n) = True"
 | "higher_left_pattern ar (SpecPConst n) = True"
 | "higher_left_pattern ar (SpecPAbs A p) = higher_left_pattern ar p"
@@ -108,7 +113,8 @@ fun higher_left_pattern where
       higher_left_pattern ar p \<and> higher_left_pattern ar q)"
 | "higher_left_pattern ar (SpecPMeta n ps) =
     (length ps = ar n \<and> distinct ps \<and> (\<forall>p\<in>set ps. \<exists>i. p = SpecPBound i))"
-fun higher_right_pattern where
+fun higher_right_pattern ::
+  "(nat \<Rightarrow> nat) \<Rightarrow> higher_pattern \<Rightarrow> bool" where
   "higher_right_pattern ar (SpecPBound n) = True"
 | "higher_right_pattern ar (SpecPConst n) = True"
 | "higher_right_pattern ar (SpecPAbs A p) = higher_right_pattern ar p"
@@ -117,7 +123,8 @@ fun higher_right_pattern where
       higher_right_pattern ar p \<and> higher_right_pattern ar q)"
 | "higher_right_pattern ar (SpecPMeta n ps) =
     (length ps = ar n \<and> list_all (higher_right_pattern ar) ps)"
-definition higher_category_rule where
+definition higher_category_rule ::
+  "higher_type list \<Rightarrow> higher_rule \<Rightarrow> bool" where
   "higher_category_rule S rule \<longleftrightarrow> higher_rule_welltyped S rule \<and>
     (case rule of (G,l,r) \<Rightarrow> (\<exists>c. higher_pattern_head l = SpecPConst c) \<and>
       higher_pattern_metas r \<subseteq> higher_pattern_metas l \<and>
@@ -125,7 +132,9 @@ definition higher_category_rule where
 
 text \<open>G gives the types of a rule's meta-variables. Each substitution image
 has its assigned type in the current S, V and B environments.\<close>
-definition higher_typed_subst where
+definition higher_typed_subst ::
+  "higher_type list \<Rightarrow> higher_type list \<Rightarrow> higher_type list \<Rightarrow>
+    higher_type list \<Rightarrow> (nat \<Rightarrow> higher_term) \<Rightarrow> bool" where
   "higher_typed_subst S V B G s \<longleftrightarrow>
     (\<forall>n<length G. higher_typeof S V B (s n) = Some (G!n))"
 

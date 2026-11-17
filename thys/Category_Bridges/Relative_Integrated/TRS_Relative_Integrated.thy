@@ -4,16 +4,35 @@ begin
 
 text \<open>The finite declared signature is retained for the NO guard, including
 unused declarations. This is an acceptance condition, not category validity.
-YES needs no signature-extension condition.\<close>
+Every declared pair must agree with the total arity function, but the list need
+not enumerate its entire graph. YES needs no signature-extension condition.\<close>
 definition relative_no_guard where
   "relative_no_guard F Ss =
     ((\<exists>f n. (f,n) \<in> set F \<and> n > 1) \<or>
      (\<forall>l r. (l,r) \<in> set Ss \<longrightarrow> vars_term r \<subseteq> vars_term l))"
 
 lemma relative_no_guard_sound:
-  assumes "set F = to_signature A" "set Ss = to_rules S" "relative_no_guard F Ss"
+  assumes "set F \<subseteq> to_signature A" "set Ss = to_rules S" "relative_no_guard F Ss"
   shows "relative_extension_condition A S"
-  using assms by (auto simp: relative_no_guard_def relative_extension_condition_def to_signature_def)
+  using assms by (auto simp: relative_no_guard_def relative_extension_condition_def to_signature_def; blast)
+
+text \<open>A finite guard remains usable with an infinite symbol type. Only
+its listed arities are checked against the canonical arity function.\<close>
+lemma relative_finite_guard_infinite_alphabet:
+  "set [(0::nat, 2::nat)] \<subseteq> to_signature (\<lambda>_. 2)"
+  "relative_no_guard [(0::nat, 2::nat)] Ss"
+  by (auto simp: to_signature_def relative_no_guard_def)
+
+text \<open>For a to b strictly and a to x weakly, a constants-only
+alphabet fails the extension guard. A binary declaration cannot be smuggled
+into that arity graph. A ranked loop still requires its separate proof check.\<close>
+lemma relative_constants_extra_variable_guard_rejected:
+  "\<not> relative_no_guard [(False, 0::nat), (True, 0)]
+    [(Fun False [], Var (0::nat))]"
+  by (auto simp: relative_no_guard_def)
+lemma relative_spurious_binary_declaration_rejected:
+  "\<not> set [(False, 2)] \<subseteq> to_signature (\<lambda>_::bool. 0)"
+  by (auto simp: to_signature_def)
 
 theorem trs_relative_integrated_YES:
   assumes strict: "set Rs = to_rules R" and weak: "set Ss = to_rules S"
@@ -43,7 +62,7 @@ definition relative_bound_accepts where
 
 theorem trs_relative_bound_decision:
   assumes problem: "relative_problem A R S"
-    and signature: "set F = to_signature A"
+    and signature: "set F \<subseteq> to_signature A"
     and strict: "set Rs = to_rules R" and weak: "set Ss = to_rules S"
     and accepted: "relative_bound_accepts F Rs Ss b certificate"
   shows "b \<longleftrightarrow> trs_relative_terminates A R S"
@@ -77,13 +96,16 @@ next
     have "\<not> SN_rel (sig_step (set F) (Trs.rstep (set Rs)))
       (sig_step (set F) (Trs.rstep (set Ss)))"
       by (rule relative_integrated_ranked_loop[OF checked[unfolded cert] ranked])
+    then have "\<not> SN_rel (sig_step (to_signature A) (Trs.rstep (set Rs)))
+      (sig_step (to_signature A) (Trs.rstep (set Ss)))"
+      by (rule relative_signature_nontermination_mono[OF signature])
     then show ?thesis using False
-      by (simp add: signature strict weak trs_relative_terminates_iff_signature)
+      by (simp add: strict weak trs_relative_terminates_iff_signature)
   qed
 qed
 
 corollary trs_relative_bound_NO:
-  assumes "relative_problem A R S" "set F = to_signature A"
+  assumes "relative_problem A R S" "set F \<subseteq> to_signature A"
     "set Rs = to_rules R" "set Ss = to_rules S"
     "relative_bound_accepts F Rs Ss False certificate"
   shows "\<not> trs_relative_terminates A R S"
@@ -91,7 +113,7 @@ corollary trs_relative_bound_NO:
 
 theorem trs_relative_serialized_decision:
   assumes problem: "relative_problem A R S"
-    and signature: "set F = to_signature A"
+    and signature: "set F \<subseteq> to_signature A"
     and strict: "set Rs = to_rules R" and weak: "set Ss = to_rules S"
     and guard: "b \<or> relative_no_guard F Ss \<or> relative_ranked_certificate F certificate"
     and parsed: "parse_combined_integrated_cert_problem None None None text =
@@ -106,7 +128,7 @@ proof -
 qed
 
 ML \<open>
-  val checked = @{thms ranked_relative_loop_guard_finite relative_integrated_ranked_loop
+  val checked = @{thms relative_signature_nontermination_mono ranked_relative_loop_guard_finite relative_integrated_ranked_loop
     relative_no_guard_sound trs_relative_integrated_YES
     trs_relative_bound_decision trs_relative_bound_NO trs_relative_serialized_decision}
   val _ = if Thm_Deps.has_skip_proof checked then error "Relative: admitted proof" else ()

@@ -27,11 +27,10 @@ to that independently stated property.
 
 ## Conventions
 
-The variable type is polymorphic and required to be infinite by
-`trs_problem`. Examples use natural numbers; CeTA uses strings. Terms are
-finite trees. A signature is a partial arity function: `A f = Some n` permits
-exactly arity `n`, and `None` excludes the symbol. A signature need not be
-finite or contain constants. Rules form a finite set of ordered term pairs;
+The variable type is polymorphic, with no cardinality restriction. Examples use natural numbers; CeTA uses strings. Terms are
+finite trees. An `arity` is a total function: `A f = n` gives the number of
+arguments of symbol `f`. The symbol type supplies the alphabet; it need not be
+finite, and every symbol may have positive arity (so there are no constants). Rules form a finite set of ordered term pairs;
 `trs_problem A R` requires both sides to respect the signature. It imposes
 no left-side shape restriction and no right-side variable restriction.
 
@@ -134,3 +133,22 @@ outstanding benchmark-identity and frontend-validation obligations.
 
 See the [integrated checker and trust boundary](trs-standard-trust-boundary.md)
 for the concrete-module composition and runtime original-input gate.
+
+
+## Total arity cleanup (November 17)
+
+The shared base now defines `'f arity = 'f ⇒ nat`. Every symbol has exactly
+one arity; term and context correctness compare argument counts directly with
+that number. The bridge translates this function to the graph
+`{(f,n). A f = n}`. The Standard termination and nontermination equivalences,
+checker YES/NO corollaries, and integrated/serialized decision theorems retain
+their existing premises. Shared category type references and examples have
+been updated, including zero-arity constants and malformed-rule rejection.
+
+The [verification record](data/trs-standard-total-arity-20261117.json) and
+[build log](data/trs-standard-total-arity-20261117-build.log.gz) record a successful
+build of `Category_Specifications`, `Category_Properties`,
+`Category_Specification_Bridges`, and `Category_Standard_Integrated` with
+`quick_and_dirty=false`. Existing transitive admission checks passed. This
+change concerns the specification and its correspondence proofs; the trust
+boundary described above still applies.

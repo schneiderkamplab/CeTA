@@ -24,7 +24,7 @@ restriction. Costs and strategy declarations are not part of this category.
 
 The lightweight specification imports no checker or IsaFoR rewriting theory.
 `equational_problem A R FA FC` requires finite signature-correct input rules,
-an infinite variable type, finite theory declarations and arity two for every
+finite theory declarations and arity two for every
 theory symbol. The signature need not have constants. The equation-instance
 set is infinite in general: it describes the theory, not additional input rules.
 

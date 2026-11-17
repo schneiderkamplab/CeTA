@@ -16,7 +16,8 @@ text \<open>A context has exactly one hole. Its lists contain the left and right
 siblings; plugging fills the hole at any depth.\<close>
 datatype ('f, 'v) fo_context = SHole
   | SMore 'f "('f, 'v) fo_term list" "('f, 'v) fo_context" "('f, 'v) fo_term list"
-fun fo_plug where
+fun fo_plug ::
+  "('f, 'v) fo_context \<Rightarrow> ('f, 'v) fo_term \<Rightarrow> ('f, 'v) fo_term" where
   "fo_plug SHole t = t"
 | "fo_plug (SMore f ls C rs) t = SFun f (ls @ fo_plug C t # rs)"
 

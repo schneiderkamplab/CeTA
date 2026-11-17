@@ -9,6 +9,7 @@ inductive finite_steps :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow
 | append: "finite_steps step s t \<Longrightarrow> step t u \<Longrightarrow> finite_steps step s u"
 
 text \<open>Termination excludes every sequence indexed by the natural numbers.\<close>
-definition no_infinite_steps where
+definition no_infinite_steps ::
+  "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
   "no_infinite_steps step \<longleftrightarrow> \<not> (\<exists>ts. \<forall>i. step (ts i) (ts (Suc i)))"
 end

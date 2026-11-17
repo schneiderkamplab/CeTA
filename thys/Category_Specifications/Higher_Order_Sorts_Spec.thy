@@ -3,27 +3,33 @@ theory Higher_Order_Sorts_Spec
 begin
 text \<open>An ARI input declares finitely many base sorts, numbered below N.
 Only these sorts occur in variable types, result types and binder annotations.\<close>
-fun higher_sort_type where
+fun higher_sort_type ::
+  "nat \<Rightarrow> higher_type \<Rightarrow> bool" where
   "higher_sort_type N (SpecHBase n) = (n < N)"
 | "higher_sort_type N (SpecHArrow A B) = (higher_sort_type N A \<and> higher_sort_type N B)"
-fun higher_sort_term where
+fun higher_sort_term ::
+  "nat \<Rightarrow> higher_term \<Rightarrow> bool" where
   "higher_sort_term N (SpecHAbs A t) = (higher_sort_type N A \<and> higher_sort_term N t)"
 | "higher_sort_term N (SpecHApp t u) = (higher_sort_term N t \<and> higher_sort_term N u)"
 | "higher_sort_term N t = True"
-fun higher_sort_pattern where
+fun higher_sort_pattern ::
+  "nat \<Rightarrow> higher_pattern \<Rightarrow> bool" where
   "higher_sort_pattern N (SpecPAbs A t) = (higher_sort_type N A \<and> higher_sort_pattern N t)"
 | "higher_sort_pattern N (SpecPApp t u) = (higher_sort_pattern N t \<and> higher_sort_pattern N u)"
 | "higher_sort_pattern N (SpecPMeta n ps) = list_all (higher_sort_pattern N) ps"
 | "higher_sort_pattern N p = True"
-definition higher_sort_rule where
+definition higher_sort_rule ::
+  "nat \<Rightarrow> higher_rule \<Rightarrow> bool" where
   "higher_sort_rule N r \<longleftrightarrow> (case r of (G,l,u) \<Rightarrow>
     list_all (higher_sort_type N) G \<and> higher_sort_pattern N l \<and> higher_sort_pattern N u)"
 text \<open>Category validity includes all declared types. With no base sorts,
 there are no typed rules. This explicit empty case also avoids inventing a sort.\<close>
-definition higher_order_declared_problem where
+definition higher_order_declared_problem ::
+  "nat \<Rightarrow> higher_type list \<Rightarrow> higher_rule list \<Rightarrow> bool" where
   "higher_order_declared_problem N S R \<longleftrightarrow> higher_order_problem S R \<and>
     list_all (higher_sort_type N) S \<and> list_all (higher_sort_rule N) R \<and> (N = 0 \<longrightarrow> R = [])"
-definition higher_order_terminates_over_sorts where
+definition higher_order_terminates_over_sorts ::
+  "nat \<Rightarrow> higher_type list \<Rightarrow> higher_rule list \<Rightarrow> bool" where
   "higher_order_terminates_over_sorts N S R \<longleftrightarrow>
     (\<forall>V A. list_all (higher_sort_type N) V \<and> higher_sort_type N A \<longrightarrow>
       no_infinite_steps (\<lambda>t u. higher_sort_term N t \<and> higher_sort_term N u \<and>

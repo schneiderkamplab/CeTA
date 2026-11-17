@@ -40,7 +40,7 @@ qed
 
 text \<open>A binary signature needs no constants. Commutativity changes an
 open term below the root, and can close a rewrite step into a self-loop.\<close>
-definition eq_binary :: "unit ranked_signature" where "eq_binary f = Some 2"
+definition eq_binary :: "unit arity" where "eq_binary f = 2"
 lemma equational_arity_mismatch:
   "\<not> arity_correct eq_binary (SFun () [])"
   "\<not> arity_correct eq_binary (SFun () [SVar (0::nat)])"

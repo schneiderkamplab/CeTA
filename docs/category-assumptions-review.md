@@ -15,8 +15,8 @@ Human review is pending; no entry below records user approval.
 
 | Order | Category | Compiled connection | Assumptions and open coverage |
 | --- | --- | --- | --- |
-| 1 | [TRS Standard](trs-standard-specification.md) | Equivalence; YES and NO | Finite signature-correct rules, infinite variables; correct checker modules and exact Standard configuration. First review below. |
-| 2 | [TRS Innermost](trs-innermost-specification.md) | Equivalence; YES and NO | Same problem validity; unrestricted equivalence uses countable symbols and variables. Checker variables are strings. Concrete strict review completed below. |
+| 1 | [TRS Standard](trs-standard-specification.md) | Equivalence; YES and NO | Finite signature-correct rules; correct checker modules and exact Standard configuration. First review below. |
+| 2 | [TRS Innermost](trs-innermost-specification.md) | Equivalence; YES and NO | Same problem validity; unrestricted equivalence uses countable symbols and countably infinite variables. Checker variables are strings. Concrete strict review completed below. |
 | 3 | [TRS Relative](trs-relative-specification.md) | Ranked equivalence; YES; checked NO | Unrestricted transfer remains conditional and is false in general. Direct ranked loops now bypass that condition using finite checked witness closure; other NO forms retain the extension guard. No unchecked semantic premise. |
 | 4 | [TRS Context-sensitive](trs-context-sensitive-trust-boundary.md) | Concrete and serialized bound YES/NO | All integrated YES families now have unrestricted soundness; the auxiliary extension conditions are discharged inside checker branches. Both answers cover containing declared signatures with no extra guard or unchecked module premise. |
 | 5 | [SRS Standard](srs-specifications.md) | Equivalence; YES and NO through unary encoding | Concrete and serialized YES/NO compiled; per-rule shared-tail encoding and strict original-input binding checked. No extra signature or proof-family guard. See [review](srs-standard-trust-boundary.md). |
@@ -55,8 +55,8 @@ change is implied by this register.
 ### Mathematical domain
 
 The [shared definition](../thys/Category_Specifications/TRS_Spec_Base.thy)
-uses finite first-order trees, an infinite variable supply and a partial function
-assigning each permitted symbol exactly one arity. Rules form a finite set and
+uses finite first-order trees, an arbitrary variable type and a total function
+assigning each symbol exactly one arity. Rules form a finite set and
 both sides respect that signature. The signature itself need not be finite or
 contain a constant. Terms and substitution images may contain variables.
 Rewriting can take place in any one-hole context at any depth.

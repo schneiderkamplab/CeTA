@@ -32,13 +32,25 @@ start at one; the mathematical and native internal indices start at zero.
 The root is always permitted. Every edge above a nested rewrite must be
 permitted. Rules are arbitrary signature-correct term pairs; no extra
 nonvariable-left-side or variable-preservation restriction is imposed.
-Variables form an infinite supply; signatures need not contain constants.
+The variable type has no cardinality restriction; signatures need not contain constants.
 The mathematical step relation ignores out-of-arity indices because they
 cannot select an occurrence. The input boundary rejects such invalid maps.
 
-`context_sensitive_step_iff` proves preservation and reflection of individual
-steps. `trs_context_sensitive_terminates_iff` identifies the canonical property
-with `SN (sig_step (to_signature A) (csstep mu (to_rules R)))`.
+The canonical replacement map has type `'f ⇒ nat set`: each symbol has a
+single arity given by `A`. The context lists are named `ls` and `rs`, as in the
+shared context definition. Endpoint arity checks are derived from `trs_problem`
+by `context_sensitive_step_arity_correct`, using the shared
+`trs_problem_instance_arity_correct` theorem.
+
+The bridge alone handles IsaFoR's pair-indexed maps:
+`from_replacement_map A mu f = mu (f, A f)` and
+`to_replacement_map mu (f, n) = mu f`. These round-trip on canonical maps.
+For a valid problem, `context_sensitive_step_iff` proves preservation and
+reflection using `from_replacement_map A mu` on the canonical side.
+`trs_context_sensitive_terminates_iff` identifies termination for that map with
+`SN (sig_step (to_signature A) (csstep mu (to_rules R)))`.
+The corresponding `_iff_lifted` theorems start with an arbitrary canonical map
+and use `to_replacement_map` on the IsaFoR side.
 The negated equivalence and infinite-sequence characterization are proved too.
 No checker theory is imported by the specification session.
 
@@ -49,6 +61,13 @@ The general CeTA CSR dispatcher concludes termination, or its negation, on
 explicit signature. The former bridge's equality premise was not automatically
 justified by parsing an ARI file. Ferrum previously dropped unused declarations
 from its operational map; that behavior is now removed.
+
+With total arities, equality with the finite rule signature is impossible for
+an infinite symbol type. The obsolete generic decision/YES corollaries have
+therefore been removed. `trs_context_sensitive_checker_NO` now transfers
+nontermination to any arity-correct containing signature using `trs_problem`
+alone for rule validity. The concrete `trs_context_sensitive_bound_decision`
+and its YES/NO corollaries remain the complete checker connection.
 
 [`CSR_Signature_Extension`](../thys/Category_Bridges/Bridge/CSR_Signature_Extension.thy)
 proves `csr_signature_extension`: if `funas_trs R` is contained in `F`,
@@ -68,7 +87,7 @@ integrated dispatch with certificate assumptions disabled. It concludes
 unrestricted `SN (csstep (mu_of mu) (set Rs))`.
 
 `trs_context_sensitive_bound_decision` now proves
-`b iff trs_context_sensitive_terminates A (mu_of mu) R` from only:
+`b iff trs_context_sensitive_terminates A (from_replacement_map A (mu_of mu)) R` from only:
 
 - `trs_problem A R`;
 - `set Rs = to_rules R`;

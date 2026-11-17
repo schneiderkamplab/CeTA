@@ -17,7 +17,12 @@ Each property excludes infinite sequences of its explicitly defined steps.
 `string_problem R` requires finite rules. Empty words and empty left sides
 are allowed. There are no term variables in these word-level specifications.
 
-A relative block contains one strict replacement between finite weak sequences.
+`relative_string_problem R S` requires `string_problem R` and `string_problem S`.
+Both arguments have type `'a string_rewriting_rules`, a set of pairs of words;
+`string_problem` is a validity predicate, not a type. The explicitly typed
+`relative_string_step R S s t` takes strict rules `R`, weak rules `S`, and two
+words `s` and `t`. A relative block contains one strict replacement between
+finite weak sequences.
 A cycle step rotates a word, makes one replacement, and may rotate the result.
 Rotation by itself does not count as progress. The
 [examples](../thys/Category_Properties/SRS_Examples.thy) cover empty

@@ -63,11 +63,12 @@ next
 qed
 
 lemma outermost_step_iff:
-  "outermost_step A R s t \<longleftrightarrow>
+  assumes problem: "trs_problem A R"
+  shows "outermost_step A R s t \<longleftrightarrow>
     (to_term s, to_term t) \<in> sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R))"
 proof
-  assume "outermost_step A R s t"
-  then obtain l r C sigma where
+  assume step: "outermost_step A R s t"
+  from step outermost_step_arity_correct[OF problem step] obtain l r C sigma where
     wf: "arity_correct A s" "arity_correct A t" and lr: "(l,r) \<in> R"
     and above: "outermost_above A R C (fo_subst sigma l)"
     and eq: "s = fo_plug C (fo_subst sigma l)"
@@ -124,7 +125,8 @@ next
 qed
 
 lemma trs_outermost_terminates_iff_signature:
-  "trs_outermost_terminates A R \<longleftrightarrow> SN (sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R)))"
+  assumes problem: "trs_problem A R"
+  shows "trs_outermost_terminates A R \<longleftrightarrow> SN (sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R)))"
 proof -
   have chains: "(\<exists>ts. \<forall>i. outermost_step A R (ts i) (ts (Suc i))) \<longleftrightarrow>
     (\<exists>ts. \<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R)))"
@@ -132,17 +134,18 @@ proof -
     assume "\<exists>ts. \<forall>i. outermost_step A R (ts i) (ts (Suc i))"
     then obtain ts where "\<forall>i. outermost_step A R (ts i) (ts (Suc i))" by blast
     then show "\<exists>ts. \<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R))"
-      by (intro exI[of _ "to_term \<circ> ts"]) (simp add: outermost_step_iff)
+      by (intro exI[of _ "to_term \<circ> ts"]) (simp add: outermost_step_iff[OF problem])
   next
     assume "\<exists>ts. \<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R))"
     then obtain ts where "\<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R))" by blast
     then show "\<exists>ts. \<forall>i. outermost_step A R (ts i) (ts (Suc i))"
-      by (intro exI[of _ "from_term \<circ> ts"]) (simp add: outermost_step_iff)
+      by (intro exI[of _ "from_term \<circ> ts"]) (simp add: outermost_step_iff[OF problem])
   qed
   show ?thesis unfolding trs_outermost_terminates_def no_infinite_steps_def SN_defs using chains by blast
 qed
 lemma trs_outermost_nonterminates_iff_signature:
-  "\<not> trs_outermost_terminates A R \<longleftrightarrow>
+  assumes "trs_problem A R"
+  shows "\<not> trs_outermost_terminates A R \<longleftrightarrow>
     \<not> SN (sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R)))"
-  by (simp only: trs_outermost_terminates_iff_signature)
+  by (simp only: trs_outermost_terminates_iff_signature[OF assms])
 end

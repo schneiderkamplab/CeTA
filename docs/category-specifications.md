@@ -97,3 +97,50 @@ the raw syntax into its own theory. The
 [build log](data/spec-syntax-cleanup-20261111-build.log.gz) preserves the session
 results. Generated checker code and production executables were not changed.
 An unchanged-build dry check then passed in 28 seconds with no rebuilds required.
+
+
+## Total arities and variable types
+
+`arity` is a total function from symbols to natural numbers. The symbol type
+supplies the alphabet. `rewriting_rules` names a set of first-order term pairs.
+`trs_problem` requires finite rules with arity-correct sides; it places no
+cardinality condition on variables. `conditional_problem` follows the same
+convention, also checking the terms in its conditions.
+
+| Categories | Effect on the bridge |
+| --- | --- |
+| TRS Standard | Signature extension and YES/NO connections need no variable-cardinality premise. |
+| TRS Innermost | The unrestricted equivalence explicitly requires countable symbols and countably infinite variables. The signature-restricted and `SN_on` equivalences have no cardinality requirement. Concrete checker variables are strings, so the requirement is proved in the bridge. |
+| TRS Relative | Finite checker signature lists must be contained in the total arity graph. The existing extension guard or checked ranked-loop witness remains necessary for NO; total arities do not invalidate the constants-only counterexample. |
+| TRS Context-sensitive | Concrete YES/NO connections cover the full arity. Generic NO transfers from the rule signature by inclusion; obsolete generic equality-based decision/YES statements are removed. |
+| TRS Outermost, Conditional ordinary/operational, Equational | Shared arities and validity predicates change; no variable-cardinality premise is added. |
+| SRS Standard/Relative/Cycle, Higher-order, ITS, LP and LP with cut | Their own semantic definitions do not use the changed validity predicates; their sessions are included in the integration check. |
+
+The finite-variable examples in `TRS_Standard_Examples` check a nonempty valid
+problem and a self-loop with variable type `unit`. Existing examples check
+arity mismatches, constants and signatures without constants. These definitions
+and proof changes do not change certificate formats or production executables.
+
+The shared properties theorem `trs_problem_arity_correct` extracts correctness
+of each rule side from problem validity and rule membership.
+`trs_problem_instance_arity_correct` extends this to both endpoints after a
+correct substitution and plugging into a correct context. Innermost, Outermost and
+Context-sensitive use this theorem instead of repeating endpoint checks in their step
+definitions. Their step and termination correspondence theorems explicitly
+assume `trs_problem A R`; the concrete Outermost checker corollaries now state
+that input-validity premise too.
+
+The Context-sensitive replacement map has type `'f ⇒ nat set`, with positions
+indexed from zero. Its pair-indexed IsaFoR representation is confined to the
+bridge, which selects the entry `(f, A f)` for each canonical symbol `f`.
+
+
+The [November 17 verification receipt](data/category-arity-variables-cleanup-20261117.json)
+records a successful complete bridge-directory build with `quick_and_dirty=false`
+in 6 minutes 7 seconds. All 364 theory/session source files matched the snapshot
+recorded before that final run. The [build log](data/category-arity-variables-cleanup-20261117-build.log.gz)
+includes the remaining LP-with-cut chain; unchanged sessions were reused after
+Isabelle's source checks. The focused CSR and SRS integrated builds also passed.
+Package conformance, documentation conformance and whitespace checks passed.
+The receipt includes the SRS type annotations and `relative_string_problem`
+added during this review. No production checker artifact changed.

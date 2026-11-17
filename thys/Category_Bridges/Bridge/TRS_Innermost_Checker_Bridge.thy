@@ -25,7 +25,7 @@ proof -
     by (rule check_trs_termination_proof[OF I J accepted])
   then have "SN (irstep False (to_rules R))"
     by (simp add: tp_spec.qreltrs_sound[OF I] mode Q strict weak innermost_framework_iff irstep_def)
-  then show ?thesis using trs_innermost_terminates_iff[OF problem] by blast
+  then show ?thesis using trs_innermost_terminates_iff[OF problem infinite_UNIV_listI] by blast
 qed
 
 theorem trs_innermost_checker_NO:
@@ -43,7 +43,7 @@ proof -
     by (rule check_trs_nontermination_proof[OF I J accepted])
   then have "\<not> SN (irstep False (to_rules R))"
     by (simp add: tp_spec.rules_sound[OF I] mode Q strict weak irstep_def)
-  then show ?thesis using trs_innermost_nonterminates_iff[OF problem] by blast
+  then show ?thesis using trs_innermost_nonterminates_iff[OF problem infinite_UNIV_listI] by blast
 qed
 
 text \<open>The build rejects admitted proofs, including admissions inherited

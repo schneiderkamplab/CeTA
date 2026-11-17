@@ -16,7 +16,7 @@ composes `certify_integrated_cert_problem_sound` with the canonical ranked
 Standard equivalence. The concrete integrated checker supplies its module
 correctness proofs. The resulting decision theorem has these premises:
 
-- `trs_problem A R`: finite, signature-correct rules and infinitely many variables;
+- `trs_problem A R`: finite, signature-correct rules;
 - the parsed rule list represents exactly `to_rules R`;
 - the integrated checker, with assumptions disabled, returns `Certified` for
   `Inn_TRS_input No_Strategy Rs []`, `Termination`, and `Decision b`.

@@ -19,11 +19,14 @@ subterm of that instance is irreducible. Irreducibility means no instance of any
 left side occurs anywhere in the term. Other branches may contain redexes;
 there is no left-to-right strategy. Substitutions can be nonground.
 
-`trs_problem A R` requires infinitely many variables, finitely many rules
+`trs_problem A R` requires finitely many rules
 and signature-correct rule sides. Variable left sides and extra right variables
 are allowed. Signatures need not contain constants. `trs_innermost_terminates`
 is absence of an infinite sequence of these steps. Input validity is separate.
 Its negation is exposed by `trs_innermost_nontermination_iff`.
+For a valid problem, correct substitutions and contexts imply correct endpoints
+by `trs_problem_instance_arity_correct`. The step definition therefore omits
+redundant endpoint checks; `innermost_step_arity_correct` proves their consequence.
 
 ## Correspondence statements
 
@@ -31,17 +34,18 @@ Its negation is exposed by `trs_innermost_nontermination_iff`.
   term, irreducibility is exactly absence of an ordinary step.
 - `normal_iff`: for a signature-correct term, irreducibility iff its translation
   belongs to `NF_terms (lhss (to_rules R))`.
-- `innermost_step_iff`: the canonical step iff the translated pair belongs to
+- `innermost_step_iff`: for a valid problem, the canonical step iff the translated pair belongs to
   `sig_step (to_signature A) (irstep False (to_rules R))`.
-- `trs_innermost_terminates_iff_signature`: the canonical property iff
+- `trs_innermost_terminates_iff_signature`: for a valid problem, the canonical property iff
   `SN (sig_step (to_signature A) (irstep False (to_rules R)))`.
 - `trs_innermost_terminates_iff_injection`: assuming a valid problem and an
   injection from IsaFoR terms into variables, the canonical property iff
   `SN (irstep False (to_rules R))`.
 - `trs_innermost_terminates_iff`: discharges that injection for countable
   symbols and countably infinite variables. The infinite-variable assumption
-  comes from `trs_problem`; no additional rule restrictions are imposed.
-- `trs_innermost_terminates_iff_on`: under those same assumptions, equivalence
+  is explicit in this bridge theorem, not in `trs_problem`; strings satisfy it.
+  No additional rule restrictions are imposed.
+- `trs_innermost_terminates_iff_on`: for a valid problem, with no cardinality restriction, equivalence
   with `SN_on` on signature-correct initial terms.
 - `trs_innermost_nonterminates_iff`: the negated global equivalence.
 

@@ -11,7 +11,7 @@ theorem trs_context_sensitive_bound_decision:
     and rules: "set Rs = to_rules R"
     and accepted: "certify_integrated_cert_problem False
       (FP_TRS_input (Context_Sensitive mu) Rs) Termination (Decision b) certificate = Certified"
-  shows "b \<longleftrightarrow> trs_context_sensitive_terminates A (mu_of mu) R"
+  shows "b \<longleftrightarrow> trs_context_sensitive_terminates A (from_replacement_map A (mu_of mu)) R"
 proof -
   have valid: "funas_trs (to_rules R) \<subseteq> to_signature A"
     by (rule correct_rules[OF problem])
@@ -28,14 +28,14 @@ proof -
       using csr_integrated_global_sound[OF accepted_true] by (simp add: rules)
     have "SN (sig_step (to_signature A) (csstep (mu_of mu) (to_rules R)))"
       by (rule SN_subset[OF global]) (auto simp: sig_step_def)
-    then show ?thesis using True trs_context_sensitive_terminates_iff by blast
+    then show ?thesis using True trs_context_sensitive_terminates_iff[OF problem] by blast
   next
     case False
     have subset: "sig_step (funas_trs (to_rules R)) (csstep (mu_of mu) (to_rules R))
       \<subseteq> sig_step (to_signature A) (csstep (mu_of mu) (to_rules R))"
       using valid by (auto simp: sig_step_def)
     show ?thesis using SN_subset[OF _ subset] restricted False
-      by (auto simp: trs_context_sensitive_terminates_iff)
+      by (auto simp: trs_context_sensitive_terminates_iff[OF problem])
   qed
 qed
 
@@ -43,14 +43,14 @@ corollary trs_context_sensitive_bound_YES:
   assumes "trs_problem A R" "set Rs = to_rules R"
     "certify_integrated_cert_problem False (FP_TRS_input (Context_Sensitive mu) Rs)
       Termination (Decision True) certificate = Certified"
-  shows "trs_context_sensitive_terminates A (mu_of mu) R"
+  shows "trs_context_sensitive_terminates A (from_replacement_map A (mu_of mu)) R"
   using trs_context_sensitive_bound_decision[OF assms] by simp
 
 corollary trs_context_sensitive_bound_NO:
   assumes "trs_problem A R" "set Rs = to_rules R"
     "certify_integrated_cert_problem False (FP_TRS_input (Context_Sensitive mu) Rs)
       Termination (Decision False) certificate = Certified"
-  shows "\<not> trs_context_sensitive_terminates A (mu_of mu) R"
+  shows "\<not> trs_context_sensitive_terminates A (from_replacement_map A (mu_of mu)) R"
   using trs_context_sensitive_bound_decision[OF assms] by simp
 
 theorem trs_context_sensitive_serialized_decision:
@@ -58,7 +58,7 @@ theorem trs_context_sensitive_serialized_decision:
     and parsed: "parse_combined_integrated_cert_problem None None None text =
       Right (FP_TRS_input (Context_Sensitive mu) Rs, Termination, Decision b, certificate)"
     and accepted: "certify_proof_integrated False None None None text = Certified"
-  shows "b \<longleftrightarrow> trs_context_sensitive_terminates A (mu_of mu) R"
+  shows "b \<longleftrightarrow> trs_context_sensitive_terminates A (from_replacement_map A (mu_of mu)) R"
 proof -
   have "certify_integrated_cert_problem False (FP_TRS_input (Context_Sensitive mu) Rs)
     Termination (Decision b) certificate = Certified"

@@ -50,8 +50,9 @@ The concrete checker soundness theorem discharges module correctness. No
 left for the caller. Certificate assumptions are disabled. No new axiom or
 admitted proof is introduced.
 
-The mathematical equivalence uses countable symbols and countably infinite
-variables. The concrete string/label representation satisfies the countability
+The unrestricted mathematical equivalence explicitly uses countable symbols
+and countably infinite variables. The specification and the signature-restricted
+(including `SN_on`) equivalences have no variable-cardinality requirement. The concrete string/label representation satisfies the countability
 requirements; string variables provide the infinite supply. These are not
 restrictions on finite ARI problems. Finiteness and arity correctness are input
 validity conditions. Rule equality and parser agreement identify the problem

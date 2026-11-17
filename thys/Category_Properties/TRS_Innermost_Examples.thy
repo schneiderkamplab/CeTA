@@ -2,17 +2,21 @@ theory TRS_Innermost_Examples
   imports TRS_Innermost_Properties TRS_Standard_Examples
 begin
 lemma innermost_is_standard:
-  "innermost_step A R s t \<Longrightarrow> fo_step A R s t"
+  assumes "trs_problem A R" "innermost_step A R s t"
+  shows "fo_step A R s t"
+  using assms(2) innermost_step_arity_correct[OF assms]
   unfolding innermost_step_def fo_step_def by blast
 lemma standard_termination_implies_innermost:
-  "trs_standard_terminates A R \<Longrightarrow> trs_innermost_terminates A R"
+  "trs_problem A R \<Longrightarrow> trs_standard_terminates A R \<Longrightarrow> trs_innermost_terminates A R"
   unfolding trs_standard_terminates_def no_infinite_steps_def trs_innermost_terminates_def no_infinite_steps_def
   using innermost_is_standard by blast
 lemma empty_innermost: "trs_innermost_terminates A {}"
-  by (rule standard_termination_implies_innermost, rule empty_terminates)
+  by (rule standard_termination_implies_innermost) (simp_all add: trs_problem_def empty_terminates)
 lemma reduction_innermost:
-  "trs_innermost_terminates A {(SFun f [SVar (0::nat)], SVar 0)}"
-  by (rule standard_termination_implies_innermost, rule reduction_terminates)
+  assumes "A f = 1"
+  shows "trs_innermost_terminates A {(SFun f [SVar (0::nat)], SVar 0)}"
+  by (rule standard_termination_implies_innermost)
+    (use assms in \<open>simp_all add: trs_problem_def reduction_terminates\<close>)
 
 lemma plug_function_not_variable:
   "fo_plug C (SFun f ts) \<noteq> SVar x"
@@ -27,9 +31,6 @@ lemma innermost_below_root_nonground:
   "innermost_step unary {(SFun () [SVar (0::nat)], SVar 0)}
     (SFun () [SFun () [SVar 7]]) (SFun () [SVar 7])"
   unfolding innermost_step_def
-  apply (intro conjI)
-    apply (simp add: unary_def)
-   apply (simp add: unary_def)
   apply (rule exI[of _ "SFun () [SVar (0::nat)]"])
   apply (rule exI[of _ "SVar (0::nat)"])
   apply (rule exI[of _ "SMore () [] SHole []"])
@@ -58,9 +59,6 @@ proof -
   let ?t = "SFun () [SVar (0::nat)]"
   have "innermost_step unary {(?t,?t)} ?t ?t"
     unfolding innermost_step_def
-    apply (intro conjI)
-      apply (simp add: unary_def)
-     apply (simp add: unary_def)
     apply (rule exI[of _ ?t], rule exI[of _ ?t])
     apply (rule exI[of _ SHole], rule exI[of _ SVar])
     by (simp add: unary_def correct_substitution_def variable_normal)
@@ -68,6 +66,11 @@ proof -
     by (intro exI[of _ "\<lambda>_. ?t"]) simp
 qed
 lemma innermost_arity_mismatch:
-  "\<not> innermost_step unary R (SFun () []) t"
-  by (simp add: innermost_step_def unary_def)
+  assumes "trs_problem unary R"
+  shows "\<not> innermost_step unary R (SFun () []) t"
+proof
+  assume step: "innermost_step unary R (SFun () []) t"
+  from innermost_step_arity_correct(1)[OF assms step]
+  show False by (simp add: unary_def)
+qed
 end

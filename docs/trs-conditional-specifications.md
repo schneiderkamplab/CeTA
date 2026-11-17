@@ -41,8 +41,7 @@ Those are distinct mathematical objects, not alternative first-order encodings.
 
 ## Canonical semantics
 
-`conditional_problem A R` requires finite signature-correct rules and an
-infinite variable type. Each rule contains a left side, a right side and an
+`conditional_problem A R` requires finite signature-correct rules. Each rule contains a left side, a right side and an
 ordered list of pairs whose interpretation is reachability. It does not silently
 require determinism, nonvariable left sides, a constant symbol or restrictions
 on extra variables. Checker-family restrictions must be proved or checked
@@ -168,7 +167,7 @@ new combined replay of all earlier categories or a completeness claim.
 
 There are no open semantic-equivalence, signature-extension or checker-module
 premises in these reviewed YES/NO paths. The input-domain conventions remain
-finite signature-correct rules and an infinite variable supply. Finite witness
+finite signature-correct rules. Finite witness
 checks and proof-family coverage restrictions are explicit above.
 
 Trust still includes Isabelle/HOL and its kernel, the inherited

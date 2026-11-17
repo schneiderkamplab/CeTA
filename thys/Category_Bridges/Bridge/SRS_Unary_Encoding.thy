@@ -3,7 +3,7 @@ theory SRS_Unary_Encoding
 begin
 text \<open>A word is a chain of unary function symbols ending in one variable.
 The same variable ends both sides of each encoded rule, including empty words.\<close>
-definition word_rules where
+definition word_rules :: "'v \<Rightarrow> 'f string_rewriting_rules \<Rightarrow> ('f, 'v) trs" where
   "word_rules x R = {(string_to_term (Var x) l,string_to_term (Var x) r) | l r. (l,r) \<in> R}"
 lemma word_roundtrip [simp]:
   "term_to_string (string_to_term (Var x) w) = w"

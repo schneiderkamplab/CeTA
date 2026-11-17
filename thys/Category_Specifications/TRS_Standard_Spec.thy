@@ -6,7 +6,7 @@ text \<open>Termination means that no infinite sequence of rewrite steps exists.
 For the ranked TRS Standard category, use this predicate with trs_problem.
 The sequence ranges over arbitrary terms, not just ground terms.\<close>
 definition trs_standard_terminates ::
-  "'f ranked_signature \<Rightarrow> (('f,'v) fo_term \<times> ('f,'v) fo_term) set \<Rightarrow> bool"
+  "'f arity \<Rightarrow> ('f,'v) rewriting_rules \<Rightarrow> bool"
 where
   "trs_standard_terminates A R \<longleftrightarrow>
     no_infinite_steps (fo_step A R)"

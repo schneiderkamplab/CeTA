@@ -15,7 +15,7 @@ no completed rewrites, although evaluation can repeatedly call itself.\<close>
 abbreviation ca :: "(bool,nat) fo_term" where "ca \<equiv> SFun False []"
 abbreviation cb :: "(bool,nat) fo_term" where "cb \<equiv> SFun True []"
 definition circular_rules where "circular_rules = {((ca,cb),[(ca,cb)])}"
-definition constants :: "bool ranked_signature" where "constants f = Some 0"
+definition constants :: "bool arity" where "constants f = 0"
 lemma circular_success:
   assumes "conditional_success constants circular_rules g"
   shows "case g of CRewrite s t \<Rightarrow> False | CReach s t \<Rightarrow> s=t"

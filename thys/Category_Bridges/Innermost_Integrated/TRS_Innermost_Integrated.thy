@@ -14,7 +14,7 @@ theorem trs_innermost_integrated_decision:
   shows "b \<longleftrightarrow> trs_innermost_terminates A R"
   using certify_integrated_cert_problem_sound[OF accepted]
   by (simp add: desired_property_def SN_qrel_def rules
-      trs_innermost_terminates_iff[OF problem] irstep_def)
+      trs_innermost_terminates_iff[OF problem infinite_UNIV_listI] irstep_def)
 
 corollary trs_innermost_integrated_YES:
   "trs_problem A R \<Longrightarrow> set Rs = to_rules R \<Longrightarrow>

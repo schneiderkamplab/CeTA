@@ -31,13 +31,27 @@ proof -
   show ?thesis by (simp only: trs_relative_terminates_def termination_iff SN_rel_defs)
 qed
 
+text \<open>A nonterminating ranked run remains a run when more symbols are
+admitted. This direction needs no signature-extension condition.\<close>
+lemma relative_signature_nontermination_mono:
+  assumes inclusion: "F \<subseteq> G"
+    and nontermination: "\<not> SN_rel (sig_step F (rstep R)) (sig_step F (rstep S))"
+  shows "\<not> SN_rel (sig_step G (rstep R)) (sig_step G (rstep S))"
+proof
+  assume sn: "SN_rel (sig_step G (rstep R)) (sig_step G (rstep S))"
+  have strict: "sig_step F (rstep R) \<subseteq> sig_step G (rstep R)"
+    and weak: "sig_step F (rstep S) \<subseteq> sig_step G (rstep S)"
+    using inclusion unfolding sig_step_def by auto
+  from SN_rel_mono[OF strict weak sn] nontermination show False by contradiction
+qed
+
 text \<open>Relative termination is not generally invariant under signature
 extension. Either a symbol of arity at least two, or the variable condition on
 weak rules, suffices. These are hypotheses of the bridge, not hidden changes
 to the category definition.\<close>
 definition relative_extension_condition where
   "relative_extension_condition A S \<longleftrightarrow>
-    (\<exists>f n. A f = Some n \<and> n > 1) \<or>
+    (\<exists>f. A f > 1) \<or>
     (\<forall>l r. (l,r) \<in> to_rules S \<longrightarrow> vars_term r \<subseteq> vars_term l)"
 
 lemma ordinary_relative_implies_ranked:
@@ -69,7 +83,7 @@ proof
   from extension show "SN_rel (rstep (to_rules R)) (rstep (to_rules S))"
     unfolding relative_extension_condition_def
   proof
-    assume "\<exists>f n. A f = Some n \<and> n > 1"
+    assume "\<exists>f. A f > 1"
     then have "\<exists>f n. (f,n) \<in> to_signature A \<and> n > 1"
       by (auto simp: to_signature_def)
     then show ?thesis by (rule sig_ext_relative_rewriting_non_unary[OF _ F restricted])

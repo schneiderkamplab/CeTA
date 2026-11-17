@@ -1,0 +1,45 @@
+{
+  "change": "Replace optional ranked_signature with total arity and verify TRS Standard bridges",
+  "base_commit": "58bd3cd20c357a856ac781f20bb14ac7015f8cef",
+  "command": "USER_HOME=\"$PWD/target/trs-standard/user\" ISABELLE_IDENTIFIER=trs_standard AFP=\"$PWD/../CeTA-consolidated/target/consolidation-build/afp-source/thys\" ../ferrum/.tools/Isabelle2025-2/bin/isabelle build -j4 -o quick_and_dirty=false -d ../CeTA-consolidated/target/consolidation-build/afp-source/thys -d thys -D thys/Category_Bridges/Integrated",
+  "exit_code": 0,
+  "sessions": [
+    "Category_Specifications",
+    "Category_Properties",
+    "Category_Specification_Bridges",
+    "Category_Standard_Integrated"
+  ],
+  "build_log": "trs-standard-total-arity-20261117-build.log.gz",
+  "build_log_uncompressed_sha256": "e148d469b3c4d249125d739c23bc40981abf194b01283d7db3c13ec8094c13ef",
+  "changed_theory_and_package_files": {
+    "thys/Category_Bridges/Bridge/TRS_Relative_Equivalence.thy": "2f6c7e600422f934276c183802595bef03e0be54b3d76cfedc6d738a452adb3e",
+    "thys/Category_Bridges/Bridge/TRS_Representation.thy": "150de1063fd20aa6135cd8e3a8193e9a33127723e5939af07fe275b5fb26407e",
+    "thys/Category_Properties/TRS_Conditional_Examples.thy": "9f6b4063910c16c99ddafea747f26ae08ce50358a3910bb56a0c8c924cd046e9",
+    "thys/Category_Properties/TRS_Context_Sensitive_Examples.thy": "a68f744962d8857c573c968aac099dddbc2dee71b243d75da711becda11c5062",
+    "thys/Category_Properties/TRS_Equational_Examples.thy": "61af02856f311481a4262d79d01a3d53effde95c96b34d9a53ceb77a5b19f4e5",
+    "thys/Category_Properties/TRS_Outermost_Examples.thy": "2feaa50a9148e3d9ac9f85b8fa8d35f587f0aebec31e907ffb84b798c61a4d8f",
+    "thys/Category_Properties/TRS_Standard_Examples.thy": "263a98ad9819a0f2774c89cda71651e87f134de3355fe5ff0f685831bd1a1045",
+    "thys/Category_Specifications/README.md": "8cdb786dd33814fbf3885dfdafbe341af70368e4184b5ebbe89b6bb9b90e877c",
+    "thys/Category_Specifications/TRS_Conditional_Spec_Base.thy": "44062f7240c1c607edd47b7e3fd6ef05905fcb2947d8a23076cbfb43c3e5b805",
+    "thys/Category_Specifications/TRS_Equational_Spec.thy": "bda3aff01ebe14a94e960c530156f40f566a1da76821816a5f084ab811783618",
+    "thys/Category_Specifications/TRS_Innermost_Spec.thy": "7ea3b2032e65a1c033e2143d4c170b2af00d9563422e3b199037fcd7f1af8e80",
+    "thys/Category_Specifications/TRS_Outermost_Spec.thy": "e292303bba12c3d12260bb5bec8aeeba9bcf3030a8a4742a5f3be114ab387243",
+    "thys/Category_Specifications/TRS_Spec_Base.thy": "c823462dc2262f90974cb8d88c97deff5405369cfef34b0109cf359abb3e75ba",
+    "thys/Category_Specifications/TRS_Standard_Spec.thy": "7b9cdd960799e81fe2e187745aea312cd06144356bd427d96b04ad20cd051bab",
+    "thys/Category_Specifications/notes.txt": "7435b2c5e5ad095d97f5707f93432a2becc216575eb66ab72f385213e121f9b3"
+  },
+  "theorems": [
+    "standard_step_iff",
+    "trs_standard_terminates_iff_signature",
+    "trs_standard_terminates_iff",
+    "trs_standard_terminates_iff_on",
+    "trs_standard_nonterminates_iff",
+    "trs_standard_checker_YES",
+    "trs_standard_checker_NO",
+    "trs_standard_integrated_decision",
+    "trs_standard_integrated_YES",
+    "trs_standard_integrated_NO",
+    "trs_standard_serialized_decision"
+  ],
+  "admission_checks": "Existing Thm_Deps.has_skip_proof checks passed in checker and integrated theories."
+}

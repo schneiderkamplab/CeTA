@@ -7,7 +7,8 @@ certificate assumptions disabled. NO below uses direct loop certificates with
 finite signature checks on every witness component. No unrestricted
 signature-extension claim is needed for either result.\<close>
 theorem trs_outermost_integrated_YES:
-  assumes rules: "set Rs = to_rules R"
+  assumes problem: "trs_problem A R"
+    and rules: "set Rs = to_rules R"
     and accepted: "certify_integrated_cert_problem False
       (FP_TRS_input Outermost Rs) Termination (Decision True) certificate = Certified"
   shows "trs_outermost_terminates A R"
@@ -17,7 +18,7 @@ proof -
     by (simp add: desired_property_def rules)
   have "SN (sig_step (to_signature A) (ostep (fst ` to_rules R) (to_rules R)))"
     by (rule SN_subset[OF sn]) auto
-  then show ?thesis by (simp add: trs_outermost_terminates_iff_signature)
+  then show ?thesis by (simp add: trs_outermost_terminates_iff_signature[OF problem])
 qed
 
 lemma outermost_integrated_loop_acceptance:
@@ -32,7 +33,8 @@ lemma outermost_integrated_loop_acceptance:
       del: check_fploop.simps split: sum.splits if_splits)
 
 theorem trs_outermost_integrated_NO:
-  assumes rules: "set Rs = to_rules R"
+  assumes problem: "trs_problem A R"
+    and rules: "set Rs = to_rules R"
     and accepted: "certify_integrated_cert_problem False (FP_TRS_input Outermost Rs)
       Termination (Decision False)
       (Inl (TRS_Nontermination_Proof (TRS_Loop (TRS_loop_prf t w_seq mu C)))) = Certified"
@@ -41,11 +43,12 @@ theorem trs_outermost_integrated_NO:
     and start: "funas_term t \<subseteq> to_signature A"
     and terms: "\<And>p r u. (p,r,u) \<in> set w_seq \<Longrightarrow> funas_term u \<subseteq> to_signature A"
   shows "\<not> trs_outermost_terminates A R"
-  by (rule trs_outermost_loop_checker_NO[OF rules
+  by (rule trs_outermost_loop_checker_NO[OF problem rules
     outermost_integrated_loop_acceptance[OF accepted] ctxt subst start terms])
 
 theorem trs_outermost_serialized_YES:
-  assumes rules: "set Rs = to_rules R"
+  assumes problem: "trs_problem A R"
+    and rules: "set Rs = to_rules R"
     and parsed: "parse_combined_integrated_cert_problem None None None text =
       Right (FP_TRS_input Outermost Rs, Termination, Decision True, certificate)"
     and accepted: "certify_proof_integrated False None None None text = Certified"
@@ -54,11 +57,12 @@ proof -
   have "certify_integrated_cert_problem False (FP_TRS_input Outermost Rs)
       Termination (Decision True) certificate = Certified"
     by (rule integrated_serialized_acceptance[OF parsed accepted])
-  then show ?thesis by (rule trs_outermost_integrated_YES[OF rules])
+  then show ?thesis by (rule trs_outermost_integrated_YES[OF problem rules])
 qed
 
 theorem trs_outermost_serialized_NO:
-  assumes rules: "set Rs = to_rules R"
+  assumes problem: "trs_problem A R"
+    and rules: "set Rs = to_rules R"
     and parsed: "parse_combined_integrated_cert_problem None None None text =
       Right (FP_TRS_input Outermost Rs, Termination, Decision False,
         Inl (TRS_Nontermination_Proof (TRS_Loop (TRS_loop_prf t w_seq mu C))))"
@@ -73,7 +77,7 @@ proof -
       Termination (Decision False)
       (Inl (TRS_Nontermination_Proof (TRS_Loop (TRS_loop_prf t w_seq mu C)))) = Certified"
     by (rule integrated_serialized_acceptance[OF parsed accepted])
-  show ?thesis by (rule trs_outermost_integrated_NO[OF rules ok ctxt subst start terms])
+  show ?thesis by (rule trs_outermost_integrated_NO[OF problem rules ok ctxt subst start terms])
 qed
 
 ML \<open>

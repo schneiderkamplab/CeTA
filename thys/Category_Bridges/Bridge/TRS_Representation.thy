@@ -3,7 +3,7 @@ theory TRS_Representation
 begin
 
 text \<open>The translations are structural bijections. The signature graph
-forgets only the option encoding, not arities.\<close>
+records the arity of every function symbol.\<close>
 fun to_term :: "('f,'v) fo_term \<Rightarrow> ('f,'v) term" where
   "to_term (SVar x) = Var x"
 | "to_term (SFun f ts) = Fun f (map to_term ts)"
@@ -16,7 +16,7 @@ lemma to_from [simp]: "to_term (from_term t) = t"
   by (induct t) (auto simp: map_idI)
 lemma to_term_inj [simp]: "to_term s = to_term t \<longleftrightarrow> s = t"
   by (metis from_to)
-definition to_signature where "to_signature A = {(f,n). A f = Some n}"
+definition to_signature :: "'f arity \<Rightarrow> ('f \<times> nat) set" where "to_signature A = {(f,n). A f = n}"
 definition to_rules where "to_rules R = {(to_term l, to_term r) | l r. (l,r) \<in> R}"
 definition from_rules where "from_rules R = {(from_term l, from_term r) | l r. (l,r) \<in> R}"
 definition to_substitution where "to_substitution sigma = to_term \<circ> sigma"

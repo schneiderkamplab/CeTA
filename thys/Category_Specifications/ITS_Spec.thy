@@ -23,15 +23,19 @@ record ('l,'v) integer_system =
   its_rules :: "('l,'v) integer_transition set"
   its_allowed :: "'l \<Rightarrow> 'v integer_store \<Rightarrow> bool"
 
-definition its_problem where
+definition its_problem ::
+  "('l, 'v, 'more) integer_system_scheme \<Rightarrow> bool" where
   "its_problem P \<longleftrightarrow> (\<exists>l. its_entries P = {l}) \<and> finite (its_rules P)"
 
 text \<open>A state is a location and a store. Initial stores are arbitrary
 permitted stores at entry locations; termination is not required at unreachable
 states. Both endpoints of a step must satisfy their location assertions.\<close>
-definition its_initial where
+definition its_initial ::
+  "('l, 'v, 'more) integer_system_scheme \<Rightarrow> 'l \<times> 'v integer_store \<Rightarrow> bool" where
   "its_initial P s \<longleftrightarrow> fst s \<in> its_entries P \<and> its_allowed P (fst s) (snd s)"
-definition its_step where
+definition its_step ::
+  "('l, 'v, 'more) integer_system_scheme \<Rightarrow> 'l \<times> 'v integer_store \<Rightarrow> 'l
+    \<times> 'v integer_store \<Rightarrow> bool" where
   "its_step P s t \<longleftrightarrow>
     its_allowed P (fst s) (snd s) \<and> its_allowed P (fst t) (snd t) \<and>
     (\<exists>g z. (fst s, fst t, g) \<in> its_rules P \<and> g (snd s) (snd t) z)"
@@ -39,7 +43,8 @@ definition its_step where
 text \<open>Termination excludes an infinite execution from any initial state.
 Nontermination is its negation, hence requires an initial state and one infinite
 execution. The final property does not assert that every state is reachable.\<close>
-definition its_terminates where
+definition its_terminates ::
+  "('l, 'v, 'more) integer_system_scheme \<Rightarrow> bool" where
   "its_terminates P \<longleftrightarrow>
     \<not> (\<exists>s. its_initial P (s 0) \<and> (\<forall>n. its_step P (s n) (s (Suc n))))"
 

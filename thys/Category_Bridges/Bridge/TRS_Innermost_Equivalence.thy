@@ -100,11 +100,12 @@ proof -
 qed
 
 lemma innermost_step_iff:
-  "innermost_step A R s t \<longleftrightarrow>
+  assumes problem: "trs_problem A R"
+  shows "innermost_step A R s t \<longleftrightarrow>
     (to_term s, to_term t) \<in> sig_step (to_signature A) (irstep False (to_rules R))"
 proof
-  assume "innermost_step A R s t"
-  then obtain l r C sigma where
+  assume step: "innermost_step A R s t"
+  from step innermost_step_arity_correct[OF problem step] obtain l r C sigma where
     wf: "arity_correct A s" "arity_correct A t" and lr: "(l,r) \<in> R"
     and nf: "\<forall>u\<in>proper_subterms (fo_subst sigma l). innermost_normal A R u"
     and eq: "s = fo_plug C (fo_subst sigma l)"
@@ -153,7 +154,8 @@ next
     unfolding innermost_step_def using wf' ctxt subst lr se te nf' by blast
 qed
 lemma trs_innermost_terminates_iff_signature:
-  "trs_innermost_terminates A R \<longleftrightarrow> SN (sig_step (to_signature A) (irstep False (to_rules R)))"
+  assumes problem: "trs_problem A R"
+  shows "trs_innermost_terminates A R \<longleftrightarrow> SN (sig_step (to_signature A) (irstep False (to_rules R)))"
 proof -
   have chains: "(\<exists>ts. \<forall>i. innermost_step A R (ts i) (ts (Suc i))) \<longleftrightarrow>
     (\<exists>ts. \<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (irstep False (to_rules R)))"
@@ -161,12 +163,12 @@ proof -
     assume "\<exists>ts. \<forall>i. innermost_step A R (ts i) (ts (Suc i))"
     then obtain ts where "\<forall>i. innermost_step A R (ts i) (ts (Suc i))" by blast
     then show "\<exists>ts. \<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (irstep False (to_rules R))"
-      by (intro exI[of _ "to_term \<circ> ts"]) (simp add: innermost_step_iff)
+      by (intro exI[of _ "to_term \<circ> ts"]) (simp add: innermost_step_iff[OF problem])
   next
     assume "\<exists>ts. \<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (irstep False (to_rules R))"
     then obtain ts where "\<forall>i. (ts i, ts (Suc i)) \<in> sig_step (to_signature A) (irstep False (to_rules R))" by blast
     then show "\<exists>ts. \<forall>i. innermost_step A R (ts i) (ts (Suc i))"
-      by (intro exI[of _ "from_term \<circ> ts"]) (simp add: innermost_step_iff)
+      by (intro exI[of _ "from_term \<circ> ts"]) (simp add: innermost_step_iff[OF problem])
   qed
   show ?thesis unfolding trs_innermost_terminates_def no_infinite_steps_def SN_defs using chains by blast
 qed
@@ -178,7 +180,7 @@ variables. We expose that assumption, then discharge it for countable symbols
 and countably infinite variables. The signature-restricted theorem above has
 no cardinality restriction.\<close>
 theorem trs_innermost_terminates_iff_injection:
-  fixes R :: "(('f,'v) fo_term \<times> ('f,'v) fo_term) set"
+  fixes R :: "('f,'v) rewriting_rules"
   assumes problem: "trs_problem A R"
     and injection: "inj (c :: ('f,'v) term \<Rightarrow> 'v)"
   shows "trs_innermost_terminates A R \<longleftrightarrow> SN (irstep False (to_rules R))"
@@ -188,7 +190,7 @@ proof -
   proof
     assume "trs_innermost_terminates A R"
     then have sn: "SN (sig_step (to_signature A) (irstep False (to_rules R)))"
-      by (simp add: trs_innermost_terminates_iff_signature)
+      by (simp add: trs_innermost_terminates_iff_signature[OF problem])
     have F: "funas_trs (to_rules R) \<subseteq> to_signature A" by (rule correct_rules[OF problem])
     have wwf: "wwf_qtrs (lhss (to_rules R)) (to_rules R)"
       using SN_sig_qrstep_imp_wwf_trs[OF sn[unfolded irstep_def] F] by simp
@@ -202,16 +204,16 @@ proof -
     then have "SN (sig_step (to_signature A) (irstep False (to_rules R)))"
       by (rule SN_subset) (auto simp: sig_step_def)
     then show "trs_innermost_terminates A R"
-      by (simp add: trs_innermost_terminates_iff_signature)
+      by (simp add: trs_innermost_terminates_iff_signature[OF problem])
   qed
 qed
 
 theorem trs_innermost_terminates_iff:
-  fixes R :: "(('f::countable,'v::countable) fo_term \<times> ('f,'v) fo_term) set"
+  fixes R :: "('f::countable,'v::countable) rewriting_rules"
   assumes problem: "trs_problem A R"
+    and infinite_V: "infinite (UNIV :: 'v set)"
   shows "trs_innermost_terminates A R \<longleftrightarrow> SN (irstep False (to_rules R))"
 proof -
-  have infinite_V: "infinite (UNIV :: 'v set)" using problem unfolding trs_problem_def by simp
   from ex_inj obtain tn :: "('f,'v) term \<Rightarrow> nat" where tn: "inj tn" by auto
   from infinite_countable_subset[OF infinite_V] obtain nv :: "nat \<Rightarrow> 'v" where nv: "inj nv" by blast
   have "inj (nv \<circ> tn)" using nv tn by (rule inj_compose)
@@ -219,27 +221,49 @@ proof -
 qed
 
 theorem trs_innermost_terminates_iff_on:
-  fixes R :: "(('f::countable,'v::countable) fo_term \<times> ('f,'v) fo_term) set"
   assumes problem: "trs_problem A R"
   shows "trs_innermost_terminates A R \<longleftrightarrow>
     SN_on (irstep False (to_rules R)) {t. funas_term t \<subseteq> to_signature A}"
 proof
   assume "trs_innermost_terminates A R"
-  then have "SN (irstep False (to_rules R))"
-    using trs_innermost_terminates_iff[OF problem] by blast
-  then show "SN_on (irstep False (to_rules R)) {t. funas_term t \<subseteq> to_signature A}"
-    unfolding SN_defs by blast
+  then have sn: "SN (sig_step (to_signature A) (irstep False (to_rules R)))"
+    by (simp add: trs_innermost_terminates_iff_signature[OF problem])
+  have F: "funas_trs (to_rules R) \<subseteq> to_signature A"
+    by (rule correct_rules[OF problem])
+  have wwf: "wwf_qtrs (lhss (to_rules R)) (to_rules R)"
+    using SN_sig_qrstep_imp_wwf_trs[OF sn[unfolded irstep_def] F] by simp
+  show "SN_on (irstep False (to_rules R)) {t. funas_term t \<subseteq> to_signature A}"
+  proof (unfold SN_on_def, clarify)
+    fix ts
+    assume start: "funas_term (ts 0) \<subseteq> to_signature A"
+      and steps: "\<forall>i. (ts i, ts (Suc i)) \<in> irstep False (to_rules R)"
+    have closed: "\<And>i. funas_term (ts i) \<subseteq> to_signature A"
+    proof -
+      fix i
+      show "funas_term (ts i) \<subseteq> to_signature A"
+      proof (induct i)
+        case 0
+        show ?case by (rule start)
+      next
+        case (Suc i)
+        show ?case
+          by (rule qrstep_funas_term[OF wwf F Suc, where nfs=False])
+            (use steps in \<open>simp add: irstep_def\<close>)
+      qed
+    qed
+    show False using sn steps closed unfolding SN_defs sig_step_def by blast
+  qed
 next
   assume "SN_on (irstep False (to_rules R)) {t. funas_term t \<subseteq> to_signature A}"
   then have "SN (sig_step (to_signature A) (irstep False (to_rules R)))"
     unfolding SN_defs sig_step_def by blast
   then show "trs_innermost_terminates A R"
-    by (simp add: trs_innermost_terminates_iff_signature)
+    by (simp add: trs_innermost_terminates_iff_signature[OF problem])
 qed
 
 corollary trs_innermost_nonterminates_iff:
-  fixes R :: "(('f::countable,'v::countable) fo_term \<times> ('f,'v) fo_term) set"
-  assumes "trs_problem A R"
+  fixes R :: "('f::countable,'v::countable) rewriting_rules"
+  assumes "trs_problem A R" "infinite (UNIV :: 'v set)"
   shows "(\<not> trs_innermost_terminates A R) \<longleftrightarrow> \<not> SN (irstep False (to_rules R))"
   using trs_innermost_terminates_iff[OF assms] by blast
 end

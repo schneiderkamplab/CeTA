@@ -48,8 +48,12 @@ a rejected certificate is not a YES result or a completeness claim.
 
 `relative_no_guard F Ss` is the finite-input guard above.
 `relative_no_guard_sound` derives `relative_extension_condition A S` from the
-checked guard and exact signature/rule representation. `F` represents all of
-`to_signature A`, not just symbols used in rules.
+checked guard, exact weak-rule representation, and `set F ⊆ to_signature A`.
+Each listed declaration must agree with the total arity function. The finite
+list may include unused declarations, but need not enumerate the whole arity
+graph (which may be infinite). A ranked loop over `F` also remains a loop in
+`to_signature A`; `relative_signature_nontermination_mono` proves this direction
+without assuming unrestricted signature extension.
 
 `trs_relative_integrated_YES` requires exact strict/weak rule lists and acceptance
 by `certify_integrated_cert_problem False (Inn_TRS_input No_Strategy Rs Ss)
@@ -65,8 +69,8 @@ imply closure of every iterated context/substitution instance, proved in
 `ranked_check_rel_loop_sound` proves ranked relative nontermination directly;
 `relative_integrated_ranked_loop` connects it to concrete checker acceptance.
 `trs_relative_bound_decision` assumes `relative_problem A R S`, exact representation
-of signature and both rule lists, and this bound acceptance. Its conclusion is
-`b` iff `trs_relative_terminates A R S`. `trs_relative_bound_NO` specializes NO.
+of both rule lists, containment of `set F` in the arity graph, and this bound
+acceptance. Its conclusion is `b` iff `trs_relative_terminates A R S`. `trs_relative_bound_NO` specializes NO.
 The concrete module correctness obligations are discharged by integrated soundness.
 The category property and existing conditional equivalences are unchanged.
 
@@ -175,3 +179,23 @@ introduced. Native parsing/witness comparison, inherited Isabelle mechanisms,
 code generation, compilers, runtime and artifact provenance remain trusted.
 This is a focused retention gate, not checker completeness, production promotion
 or the independent two-checker release.
+
+
+## Total arity verification (November 17)
+
+The arity graph now comes from the total function `A : 'f ⇒ nat`. The integrated
+and serialized theorems require `set F ⊆ to_signature A` rather than equality
+with that graph. This permits an infinite symbol type without an impossible
+finite-enumeration premise. The new monotonicity proof transfers a checked
+ranked loop from `F` to the canonical term universe. It does not turn
+unrestricted relative nontermination into ranked nontermination.
+
+Regression lemmas cover a finite binary guard in an infinite alphabet, rejection
+of the extension guard for the constants-only weak rule `a → x`, and rejection
+of a binary declaration against an all-zero arity function. The bound and
+serialized decision theorems and their inherited-admission audit compile with
+`quick_and_dirty=false`. See the [verification record](data/trs-relative-total-arity-20261117.json)
+and [build log](data/trs-relative-total-arity-20261117-build.log.gz).
+
+The runtime acceptance checks, certificate format, parser-correspondence trust
+boundary and conditional unrestricted equivalence remain as described above.

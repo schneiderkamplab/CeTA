@@ -18,7 +18,22 @@ qed
 
 text \<open>The unary signature has no constants, yet has variables and compound
 nonground terms. Arity errors are rejected.\<close>
-definition unary :: "unit ranked_signature" where "unary f = Some 1"
+definition unary :: "unit arity" where "unary f = 1"
+lemma constant_arity_zero:
+  "arity_correct (\<lambda>_::unit. 0) (SFun () [])"
+  by simp
+lemma wrong_arity_rule_rejected:
+  "\<not> trs_problem unary {(SFun () [], SVar (0::nat))}"
+  by (simp add: trs_problem_def unary_def)
+text \<open>Problem validity does not constrain the cardinality of the variable type.\<close>
+lemma finite_variable_problem:
+  "trs_problem unary {(SFun () [SVar ()], SVar ())}"
+  by (simp add: trs_problem_def unary_def)
+
+lemma finite_variable_self_loop:
+  "\<not> trs_standard_terminates unary {(SVar (), SVar ())}"
+  by (rule self_loop) simp
+
 lemma no_constants: "\<not> arity_correct unary (SFun f [])"
   by (simp add: unary_def)
 lemma wrong_arity: "\<not> arity_correct unary (SFun () [SVar (0::nat), SVar (1::nat)])"

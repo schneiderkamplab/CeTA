@@ -3,6 +3,7 @@ theory TRS_Conditional_Ordinary_Spec
 begin
 text \<open>Ordinary termination excludes infinite sequences of completed
 conditional rewrites on arbitrary signature-correct terms, including open terms.\<close>
-definition trs_conditional_terminates where
+definition trs_conditional_terminates ::
+  "'f arity \<Rightarrow> ('f,'v) conditional_rule set \<Rightarrow> bool" where
   "trs_conditional_terminates A R \<longleftrightarrow> no_infinite_steps (conditional_step A R)"
 end
