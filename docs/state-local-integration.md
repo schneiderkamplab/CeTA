@@ -3815,3 +3815,28 @@ finds both univ acquisitions with argument-spine evidence, still 69 projected
 states, zero open projections, and two frame-local functor relations. This is
 conditional acquisition evidence. Complete module context reconstruction and
 source/residual assembly remain open; no benchmark verdict changed.
+
+`LP_Prolog_Spine_Shape.thy` identifies proper-spine observations exactly with the
+existing one-node return grammar (nil, or cons with Any element and recursive
+tail). It supplies functor-acquisition and actual-return corollaries in the
+shared return-shape representation; no separate context/state format is needed.
+The Any field still admits rational elements. Checks 1944–1947 corrected list
+case/induction proof scripting; 1948 passes equivalence. Attempt 1949 needed
+explicit pointwise list predicates. Final 1950 passes all three exported lemmas
+and the inherited-oracle/no-skip audit in 1.650 seconds, in resident log 1544.
+
+Native 2691 reuses shape histories and the existing contextual region builder.
+A descending candidate-interface analysis checks every established incoming
+boundary and both Split routes, preserving incoming spine facts across actual
+helper-return interfaces rather than inferring new facts from termination.
+The first inventory lost all acquisitions because univ receipt discovery ran
+after ordinary history annotation had changed its exact successor. Discovery
+now precedes annotation; the original graph is unchanged. Corrected inventory
+retains tail V3 at both Split entries 30/44 and list V0 at module 35; both
+previously unsupported list-head states are supported. Module root 0 has no
+assumed spine facts. The renamed recursive fixture passes, while removing the
+univ acquisition removes the inferred spine interfaces and head support. All
+nine existing context/backtracking tests pass. These are candidate reconstructions:
+full source-table checking, finite-entry invariant assembly, structural residual
+discharge and strict root replay remain outstanding. No installed checker change
+or benchmark gain is claimed.
