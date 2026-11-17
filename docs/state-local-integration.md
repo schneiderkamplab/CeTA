@@ -4107,3 +4107,32 @@ premises into the checked local-table representation and complete source/Split
 assembly and residual discharge. Separation must never use the generic
 substitution-stability rule for ordinary functor facts. Next Isabelle 2017;
 priority 1 remains active.
+
+
+## Node-local separation table composition (resident 2017–2018)
+
+`LP_Prolog_Functor_Premised_Table` extends the existing functor table contract
+with conditions indexed by node and valuation. Shared `lp_answer_contract_modular`
+still performs assembly; root conditions and every child condition remain explicit
+obligations. Scope restoration uses the same valuation witness as state, context
+and residual representation. The True specialization is proved equal to the
+previous representation, module interface and node contract. False premises exclude
+representation; a missing separation-context entry is rejected, not interpreted
+as an empty context. No substitution stability is assumed for separation.
+
+`LP_Prolog_Separation_Functor_Link` combines ordinary checked links with exact
+separation transport under the same interface substitution. Its witness theorem
+establishes both sets of facts for one target valuation, rather than joining
+unrelated existential witnesses. Resident 2017 passes in 4.373 seconds and 2018
+in 2.837 seconds, with strict zero-oracle/zero-skip checks. Existing Split invariant
+and spine-head contracts load successfully. Evidence, including earlier rejected
+2017 attempts (ambiguous instantiation and reserved/global identifiers), is retained
+in `target/prolog-domain-graph-resident-1544.log`; the final checked loads are also
+in `target/prolog-premised-table-2017-2018-resident.log`.
+
+Ferrum 2703 binds these node contexts to both complete acquisition traces and the
+refined residual table. This remains unexported producer/theory work: no accepting
+source constructor, executable regeneration or new benchmark certificate. Next
+instantiate local action contracts with these separation-aware link obligations,
+then finish referenced Split/return assembly and residual discharge. Next resident
+number: 2019. Priority 1 and numbervars remain unfinished.
