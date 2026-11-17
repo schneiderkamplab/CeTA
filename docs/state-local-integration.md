@@ -3725,3 +3725,25 @@ changing production projection or certification. Both Split prefixes receive
 ground V1 and return ground V2. Finite-entry/spine invariants, complete module
 serialization, structural residual proof and strict replay remain outstanding.
 No benchmark verdict, installed checker change or full rebuild is claimed.
+
+
+`LP_Prolog_Functor_Spine_Return.thy` connects successful univ decomposition to
+exact argument-list length and lifts that observation through actual helper
+returns for arbitrary source templates. It reuses the existing list-length
+relation and generic substitution/actual-answer theorem. A nonempty list's
+returned tail retains its predecessor length, supplying strict spine descent.
+Every incoming frame must initialize the observation. The proof neither assumes
+helper termination nor infers finite elements from a finite spine.
+
+Check 1927 passes four theorems and the inherited-oracle/no-skip audit in 0.911
+seconds, including a cyclic-element control that has a finite spine but no finite
+tree. Resident log 1544 retains the evidence. SWI control 2687 independently
+confirms that binding an element cyclically preserves a two-cell list spine,
+while a cyclic spine is not a proper list. This is semantic control evidence,
+not a benchmark termination result.
+
+The remaining recursive-child argument must still establish finite term entries
+and relate constructor traversal to the structural residual. Spine descent alone
+covers the tail continuation, not recursion into each element. Complete native
+module/context serialization and residual certification remain open; no installed
+checker or root verdict changed and no rebuild was needed.
