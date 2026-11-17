@@ -4555,3 +4555,39 @@ the result as another proved free-set choice. Keep the old conservative choice
 and every other link requirement. Module/return contracts, residual proofs,
 source/query binding and strict unified replay still follow. No root gain,
 native rebuild or unified export. Next resident 2074; native remains 2714.
+
+## All original local tables checked (2074–2078)
+
+`LP_Prolog_Reflexive_Free` proves preservation of free variables occurring in
+continuation templates when the actual operand values are equal. It instantiates
+the shared `lpc_mgu_unify_context_factor` with identity comparison, then proves
+variablehood and injectivity after substitution and the existing resolution
+refresh. Runtime terms need not be finite. The executable choice uses a checked
+source-context equation and explicit occurrence/namespace bounds; otherwise it
+uses the previous untouched-free choice. Successful and failed branches retain
+their separate environments.
+
+The functor equality checker and its evaluation, stable and separation proofs
+use this result. The complete affected dependency chain passes at 2077. The new
+proof group has no oracles or skipped proofs; initial spacing syntax errors are
+retained in `target/prolog-reflexive-free-2074-2078-resident.log`.
+
+Incremental export 2078 takes 44.518 seconds (531,908 bytes). Unmodified generated
+SML now passes all 38 local side checks and all 38 source-action checks on unchanged
+native 2713 xml-fixed evidence. The complete `lpp_check_separation_control` also
+accepts all five local tables (68 rows total). Removing an action, context or
+witness row rejects in every table. Removing the reflexive source equation rejects
+both its side check and source action at rows 0:10 and 47:10. Prior univ and
+relation-transport controls still pass. Evidence:
+`target/prolog-reflexive-free-check-2078/{Reflexive_Free_Export.thy,Check.ML,check.log}`.
+No native rebuild, full rebuild or unified export.
+
+This completes actual local table checking, not a source certificate. The 30
+absent rows still comprise 23 exhausted states and seven explicit module-boundary
+obligations; acceptance of a local table does not discharge nonempty absent rows.
+Next bind these five established regions and nested Splits into a referenced
+module proof graph, check every boundary interface and actual-success return
+contract, then solve its exact residuals and bind source/profile/query before
+strict unified replay. Reuse the existing shared actual-return Split theorem;
+do not switch to the independent source-composed graph builder or reset contexts.
+Priority 1 remains unfinished. Next resident 2079; native 2714.

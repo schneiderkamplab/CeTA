@@ -67,7 +67,7 @@ proof -
     have payload: "lpc_check_return_values fuel k ?G ?eqs active (concat (map snd saved)) outputs"
       and short: "lpc_return_short k saved"
       and link: "lpp_check_evaluation_functor_link_free_choices T yes_facts fuel Q nds states contexts Fs functor_contexts nd ((LPCGoals next,outputs)#saved) ?G
-        (?K@lpc_negative_guards k (set ?G) ?K@[LPCEqGuard a b True]) ?eqs (lpc_unify_untouched_free F ?G a b gs k) (lpp_saved_free k F) (lpp_context_with_equations (lpp_evaluation_fork_context source_context k (set ?G)) ?eqs) (lpp_functor_fork_context source_functors k (set ?G)) yes"
+        (?K@lpc_negative_guards k (set ?G) ?K@[LPCEqGuard a b True]) ?eqs (lpp_context_unify_free source_context F ?G a b gs k) (lpp_saved_free k F) (lpp_context_with_equations (lpp_evaluation_fork_context source_context k (set ?G)) ?eqs) (lpp_functor_fork_context source_functors k (set ?G)) yes"
       using checked possible by (auto simp: lpp_check_functor_equality_node_def)
     let ?env = "lp_cut_resolution_env k l eta sigma eta"
     have same: "tt=lpc_return_eval ?env ((LPCGoals next,outputs)#saved)"
@@ -101,8 +101,9 @@ proof -
     have initialized: "lpp_stable_context_holds operation SP
       (lpp_context_with_equations (lpp_evaluation_fork_context source_context k (set ?G)) ?eqs) ?env"
       by (rule lpp_stable_functor_equations[OF facts equations])
-    have preserved: "lpc_free_knowledge (set (lpc_unify_untouched_free F ?G a b gs k)) ?env"
-      by (rule lpc_unify_untouched_free_sound[OF mgu ground free bounds])
+    have preserved: "lpc_free_knowledge (set (lpp_context_unify_free source_context F ?G a b gs k)) ?env"
+      by (rule lpp_context_unify_free_sound[where E="lpp_stable_scalar_evaluation operation" and SP=SP,
+        OF mgu ground free bounds]) (use observed in \<open>simp add: lpp_stable_context_holds_def\<close>)
     have saved_free: "lpc_free_knowledge (set (lpp_saved_free k F)) ?env"
       by (rule lpp_saved_free_sound[OF free]) (use bounds in arith)
     show ?thesis using lpp_stable_functor_link_free_choices_sound[OF compatible program link equations old knowledge preserved saved_free initialized forked] event same by simp
