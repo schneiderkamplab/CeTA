@@ -4084,3 +4084,26 @@ theories were loaded. No checker executable rebuild/export or benchmark gain.
 Next address explicit separation acquisition/transport for the normalized pair
 equalities and finish source serialization, referenced Split assembly and
 residual proofs. Next Isabelle 2016; priority 1 remains active.
+
+
+Univ separation transport and complete pair steps (resident 2016):
+`LP_Prolog_Separation_Univ_Transport` proves equality of runtime-variable support
+between a constructor value and its observed argument list. With the actual
+initialization equation and the two acquired input/output separation facts, it
+establishes separation of the normalized requested/observed pair. This uses the
+actual observation, not injectivity of constructor names or syntactic freeness.
+It then lifts reflexive-MGU separation preservation to symbolic context terms,
+requiring that both terms occur in the actual continuation. Finally it lifts the
+separated-pair finite-goals theorem to complete source states, retaining saved
+alternatives. All finite, distinctness and runtime-support premises remain.
+
+Resident 2016 passes in 4.325 seconds with no skipped proofs or oracles. Evidence:
+`target/prolog-univ-separation-2016-resident.log`, also retained in the full
+resident log. No executable export/rebuild. Native 2702 reconstructs both actual
+fresh-resolution/univ/reflexive/pair paths and checks that the three intermediate
+nodes have only their expected incoming local edge and are not module boundaries.
+This is not yet acceptance of a source root. Next integrate these separation
+premises into the checked local-table representation and complete source/Split
+assembly and residual discharge. Separation must never use the generic
+substitution-stability rule for ordinary functor facts. Next Isabelle 2017;
+priority 1 remains active.
