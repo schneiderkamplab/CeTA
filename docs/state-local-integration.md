@@ -3301,3 +3301,31 @@ and the dependency audit in 4.723 seconds. Attempts 1842–1845 retain a reserve
 proof-label correction and explicit theorem-instantiation fixes. Attempts
 1847–1848 correct definition parameters and the shared machine's runtime-variable
 type. No oracle or skipped proof is present, and no full rebuild was performed.
+
+
+Checked local univ action: `LP_Prolog_Univ_Context.thy` combines source shape and
+domain checking, fresh observation initialization, exact two-equality successor
+representation, knowledge preservation and a checked child link into an answer
+contract for the original source operation. Its lower-contract premise requires
+the actual residual edge, target state and all target ground/free/context/functor
+facts. Terminal variable-input errors and normal unification failure retain the
+previously proved coverage. The rule uses the shared answer machine throughout.
+
+`LP_Prolog_Functor_Free_Link.thy` layers the existing normalized freeness check
+onto the functor link. The base link now exposes its exact target environment,
+so the freeness and observation proofs cannot choose different witnesses. Check
+1851 passes this extension. Check 1853 verifies the initialized successor state;
+1858 verifies the full local contract; 1859 adds rejection controls for missing
+domain evidence, aliased observations, missing child states and saved-answer
+capture. The final check takes 10.876 seconds and passes the clean dependency
+audit. Attempts 1852 and 1854–1857 preserve controlled rewriting, lexical spacing,
+groundness instantiation and root-state unfolding corrections.
+
+These local rules are not yet a table constructor or exported source certificate.
+The current context theorem uses the established integer-context interpretation;
+wiring into the stable source route must also use its parameterized evaluation
+context/link infrastructure wherever numeric observations require binary64
+coverage. Integer evaluation assumptions cannot be substituted for that coverage.
+Source profile/name correspondence, finite invariants, helper return/Split
+assembly and complete residual discharge remain open. No benchmark gain or
+unified checker rebuild is claimed.

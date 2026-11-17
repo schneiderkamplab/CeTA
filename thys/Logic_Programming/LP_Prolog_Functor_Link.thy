@@ -31,7 +31,8 @@ lemma lpp_return_functor_link_sound:
  and known: "lp_cut_knowledge (set G) guards eta'"
  and source: "lpp_source_context_holds P source_context eta'"
  and functors: "list_all (lpp_functor_fact_holds names eta') source_functors"
- shows "\<exists>nu. lpc_return_scope_word (rev (lpcl_swaps link)) (lpc_return_eval eta' ss) =
+ shows "\<exists>nu. nu=(\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings link) x) eta') \<and>
+   lpc_return_scope_word (rev (lpcl_swaps link)) (lpc_return_eval eta' ss) =
    lpc_return_eval nu (states!lpcl_target link) \<and>
    lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target link))) (lpcn_guards (nds!lpcl_target link)) nu \<and>
    lpp_source_context_holds P (contexts!lpcl_target link) nu \<and>
