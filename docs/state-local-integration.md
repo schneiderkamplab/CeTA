@@ -2825,3 +2825,30 @@ packaged fixture replays, and 701 passing shared native tests (26 ignored).
 The [pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-head-failure-20261117.json)
 binds original sources, reconstruction receipts, binaries and guidance.
 Protected-category production promotion and matched superiority remain gated.
+
+## Complete scalar disjunction failure (2026-11-17)
+
+Proof commit `d34eb88` and export integration `cbe2375` on
+`codex/prolog-production-integration` extend the existing recurrent source
+checker with complete failed-choice trees. Both alternatives, identity-success
+prefixes, the original clause head/body and restored saved stack are checked.
+No soundness dependency uses skipped proofs or oracles. Source semantics and
+the established SEG are unchanged; previous failure receipts remain replayable.
+
+Unified checker SHA-256
+`530ca389d5ecbf1f83c4d62fb2091a5bb19f168ef0d0b117e81968fd20100a11`
+is frozen at `target/installed-prolog-failed-choice-1619/ceta`. Export 1617,
+installation 1618 and LP-only build 1619 retain source identities and reuse
+seven category libraries. Subsequent verified finite-input transport foundations
+are retained in heap `target/prolog-finite-goals-1624-verified.heap`; they are not
+yet a complete termination source bridge.
+
+Ferrum `863f59eb` certifies the additional `factorial_or.pl` NO and retains all
+previous results at **86 YES + 97 NO** over 221 roots. LP-with-cut retains
+**84 YES + 9 NO**. Every solved root has original-source audit, two checks,
+strict replay and authorized reconstruction. Validation includes 486 mutation
+checks, 42 packaged fixture replays, three native/strict family proofs,
+11 controls and 702 passing shared native tests (26 ignored). See the
+[pinned Ferrum audit](../../ferrum-prolog-release/docs/data/prolog-failed-choice-20261117.json).
+Priority 1 remains active. Matched superiority and protected-category production
+promotion remain gated.
