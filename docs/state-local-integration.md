@@ -3041,3 +3041,22 @@ Runtime 1744 accepts all source-assembly checks for division, list length and
 gcd using the exact original native 2601 artifacts. These are source checks
 only, with residual backends deliberately absent. Export 1745 is underway;
 no installed checker or certified benchmark count has changed.
+
+
+## Observed row composition foundation — 2026-11-17
+
+Resident check 1762 verifies complete Cartesian row-pair coverage and termination
+transfer in `LP_Prolog_Stable_Row_Composition.thy`. Every two consecutive observed
+calls is covered by a composed row. Termination of the composed relation implies
+termination of the original relation by sampling alternate elements of any infinite
+chain. Both successful prefixes, guards, observations and rational interface
+equations are retained. Variable-prefix freshness is checked for every input row.
+All new soundness dependencies pass the no-oracle/no-skipped-proof audit.
+
+Attempts 1755–1761 are retained in the resident log: automatic existential proofs,
+a missing singleton lemma, and union instantiation were replaced with explicit
+membership witnesses. Attempt 1758's broad search was interrupted after 29.205
+seconds. Check 1762 completes in 3.268 seconds in the resident heap.
+This foundation is not yet exported or connected to common component routing.
+The latest exported integration remains 14130e9 (89 YES + 97 NO in Ferrum's
+complete strict replay); division and numbervars remain open priority-1 roots.

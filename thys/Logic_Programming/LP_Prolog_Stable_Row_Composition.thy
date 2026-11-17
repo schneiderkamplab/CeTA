@@ -101,8 +101,87 @@ proof -
       lpp_evaluation_context_holds_def list_all_iff)
 qed
 
+
+fun lpp_observed_row_short where
+ "lpp_observed_row_short k ((h,ps,b,gs),os) = lpp_context_short k (h#b#ps,gs,os)"
+
+definition lpp_compose_observed_rows where
+ "lpp_compose_observed_rows k D = concat (map (\<lambda>r. map (lpp_compose_observed_row k r) D) D)"
+
+lemma lpp_stable_observed_calls_mono:
+ "D \<subseteq> E \<Longrightarrow> lpp_stable_observed_calls operation D P \<subseteq>
+   lpp_stable_observed_calls operation E P"
+ unfolding lpp_stable_observed_calls_def by blast
+
+lemma lpp_compose_observed_rows_square:
+ assumes short: "list_all (lpp_observed_row_short k) D"
+ shows "lpp_stable_observed_calls operation (set D) P O
+   lpp_stable_observed_calls operation (set D) P \<subseteq>
+   lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P"
+proof
+ fix pair assume "pair \<in> lpp_stable_observed_calls operation (set D) P O
+   lpp_stable_observed_calls operation (set D) P"
+ then obtain a middle z where pair: "pair=(a,z)"
+  and first: "(a,middle)\<in>lpp_stable_observed_calls operation (set D) P"
+  and second: "(middle,z)\<in>lpp_stable_observed_calls operation (set D) P" by auto
+ obtain h ps b gs os where r: "((h,ps,b,gs),os)\<in>set D"
+  and edge: "(a,middle)\<in>lpp_stable_observed_calls operation {((h,ps,b,gs),os)} P"
+  using first unfolding lpp_stable_observed_calls_def by blast
+ obtain h2 ps2 b2 gs2 os2 where r2: "((h2,ps2,b2,gs2),os2)\<in>set D"
+  and edge2: "(middle,z)\<in>lpp_stable_observed_calls operation {((h2,ps2,b2,gs2),os2)} P"
+  using second unfolding lpp_stable_observed_calls_def by blast
+ have small: "lpp_context_short k (h#b#ps,gs,os)"
+  using short r by (auto simp: list_all_iff)
+ have composed: "(a,z)\<in>lpp_stable_observed_calls operation
+   {lpp_compose_observed_row k ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2)} P"
+  by (rule lpp_compose_observed_row_sound[OF small edge edge2])
+ have subset: "{lpp_compose_observed_row k ((h,ps,b,gs),os) ((h2,ps2,b2,gs2),os2)}
+   \<subseteq> set (lpp_compose_observed_rows k D)"
+  proof -
+  let ?r = "((h,ps,b,gs),os)"
+  let ?s = "((h2,ps2,b2,gs2),os2)"
+  have inner: "lpp_compose_observed_row k ?r ?s \<in> set (map (lpp_compose_observed_row k ?r) D)"
+   using r2 by (simp only: set_map; rule imageI)
+  have outer: "map (lpp_compose_observed_row k ?r) D \<in>
+    set (map (\<lambda>r. map (lpp_compose_observed_row k r) D) D)"
+   using r by (simp only: set_map; rule imageI)
+  have member: "lpp_compose_observed_row k ?r ?s \<in> set (lpp_compose_observed_rows k D)"
+   unfolding lpp_compose_observed_rows_def set_concat
+   by (rule UN_I[where B=set, OF outer inner])
+  show ?thesis using member by blast
+ qed
+ show "pair\<in>lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P"
+  using subsetD[OF lpp_stable_observed_calls_mono[OF subset] composed] pair by simp
+qed
+
+lemma lpp_SN_of_square:
+ assumes sn: "SN R" and square: "A O A \<subseteq> R"
+ shows "SN A"
+proof (unfold SN_on_def, intro notI)
+ assume "\<exists>f. f 0 \<in> UNIV \<and> chain A f"
+ then obtain f where chain: "chain A f" by auto
+ have "chain R (\<lambda>n. f (2*n))"
+ unfolding chain_def
+ proof
+  fix n
+  have "(f (2*n), f (Suc (2*n)))\<in>A"
+   and "(f (Suc (2*n)), f (Suc (Suc (2*n))))\<in>A"
+   using chain unfolding chain_def by blast+
+  then have "(f (2*n), f (Suc (Suc (2*n))))\<in>R" using square by blast
+  then show "(f (2*n), f (2*Suc n))\<in>R" by simp
+ qed
+ then have "\<not>SN R" by (rule not_SN_onI[OF UNIV_I])
+ with sn show False by contradiction
+qed
+
+theorem lpp_compose_observed_rows_SN:
+ assumes short: "list_all (lpp_observed_row_short k) D"
+ and sn: "SN (lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P)"
+ shows "SN (lpp_stable_observed_calls operation (set D) P)"
+ by (rule lpp_SN_of_square[OF sn lpp_compose_observed_rows_square[OF short]])
+
 ML \<open>
-val checked = [@{thm lpp_compose_observed_row_sound}];
+val checked = [@{thm lpp_compose_observed_row_sound}, @{thm lpp_compose_observed_rows_SN}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted observed row composition" else ();
 \<close>
