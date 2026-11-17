@@ -3143,3 +3143,29 @@ obligation. No new benchmark result is claimed by these observation lemmas.
 Export 1790 passed in 444.823 seconds; LP-only unified build 1792 reuses seven
 unchanged category libraries. The original source/composition runtime checks
 passed at 1789. Complete backend checking and strict replay remain pending.
+
+
+## Checked row composition unified integration — 2026-11-17
+
+Export 1790 and LP-only build 1792 integrate complete compatible row composition,
+checked normalization/endpoint rewriting and observed truncating-quotient
+evidence. Proof baseline is `79b62b8`; the later constructor-argument theory
+is not exported. The unified checker SHA-256 is
+`9544310fafd19a83aedc889f42bc9beb1258f865e22aad0bab7382f828b3b0b2`.
+Build 1792 takes 525.7 seconds for LP and reuses seven category libraries.
+No generated checking logic was edited manually.
+
+Ferrum native `dff72065`, frozen build 2656, strictly replays all 221 Prolog
+roots to **90 YES + 97 NO + 34 UNKNOWN**, preserving all 186 previous verdicts.
+The new YES is `Weinert_15/division.pl`. All 187 solved roots have original-source
+audits, authorized complete reconstruction receipts and two passes by this
+checker. The same executable preserves **84 YES + 9 NO** LP-with-cut results.
+Family 2653 includes the original division source and a renamed divisor-three
+fixture, strict replay, missing/conflicting guidance and seven divergent controls.
+Checks 2655, 2659, 2662 and 2663 pass all 652 mutations; 2660 passes 46 packaged
+fixture replays. A fresh Split fixture also passes native/strict replay.
+
+The integration is recorded in `scripts/unified-exports.json`; full evidence
+will be pinned in Ferrum's `docs/data/prolog-composed-20261117.json`. Priority 1
+still includes numbervars. Protected-category production promotion and matched
+superiority remain separate gates, not claims of this category integration.
