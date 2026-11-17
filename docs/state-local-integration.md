@@ -4720,3 +4720,29 @@ and transport these structural templates in the residual relation, including
 univ and observed-spine head cases, before finishing return/Split assembly and
 strict source replay. Numbervars remains UNKNOWN. Next resident 2099, native
 2719; priority 1 is active.
+
+
+### Finite structural observations (Isabelle 2099–2100)
+
+`LP_Prolog_Structural_Observation` gives finite runtime templates a ground
+structural encoding: constructor labels and children remain; runtime variable
+names become a distinguished leaf. This additional observation does not replace
+runtime sharing, rational equations or source contexts. Matching-head MGU
+resolution preserves the observation under variable renaming. A finite
+constructor-argument observation exposes the same actual child templates for
+univ, and each child has its corresponding structural observation. Cyclic
+runtime terms cannot initialize this finite observation.
+
+All eight lemmas pass Isabelle with zero inherited oracles and no skipped
+proofs. Final incremental load took 0.748 seconds; no native or unified rebuild.
+Resident-written evidence is in CeTA
+`target/prolog-structural-observation-2099-2100/proofs.log`. The initial edit's
+malformed equation separator was corrected before verification.
+
+This does not yet strengthen the native residual: the recorded 11-step cycle
+remains a required negative regression. Native transport must consume these
+observations, including observed-spine resolution and helper substitutions;
+matching-head preservation is not arbitrary-substitution preservation. Complete
+return/Split assembly, residual discharge and original-source strict replay
+remain outstanding. The certified total stays 90 YES + 97 NO; numbervars is
+UNKNOWN. Priority 1 remains active. Next resident 2101, native 2719.
