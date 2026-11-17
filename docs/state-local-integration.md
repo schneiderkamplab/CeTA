@@ -3670,3 +3670,30 @@ receipts at nodes 12, 19 and 67. Node 60 lacks right-side groundness, and nodes 
 and 58 require their existing functor projection. The next concrete gap is the
 helper counter's conditional ground-return fact across the recursive Split.
 All 69 states still project; no root certificate or new verdict is claimed.
+
+
+The shared guarded ground-return theorem is now parameterized over builtin and
+domain interpretations, with explicit successful-builtin coverage, control-outcome
+exclusions, substitution stability and ground-evaluation premises. Its previous
+finite-source theorem remains an unchanged compatibility corollary. Check 1921
+passes this refactoring and dependency audit in 2.172 seconds.
+
+`LP_Prolog_Univ_Ground_Return.thy` discharges those premises for the extended univ
+interpretation. Existing unconditional builtin success clauses cover actual univ
+returns; the actual source execution still checks decomposition and all outcomes.
+The proof reuses the same source-clause cover, guarded ground-mode checker and
+scoped actual-answer theorem. It does not introduce another operational model or
+assume integer counters. Missing reachable univ clauses are explicitly rejected.
+Check 1923 passes the source bridge, compatibility dependencies and rejection
+lemma in 7.502 seconds (composition alone passed 1922 in 3.198 seconds).
+Evidence remains in resident log 1544; only affected theories were reloaded.
+
+Native inventory 2682 confirms the existing return inference already proves
+numvars' conditional counter-groundness: Split 30's ground V1 gives ground V2;
+Split 44's empty input ground set yields no such fact, while ground V1 again
+gives ground V2. This is a context-transport gap, not missing ground-mode search.
+Native regression 2683 passes a renamed recursive functor/counter example,
+missing-input and removed-output-contract controls, and refuses to infer tree
+output groundness from the model's erased source equality. Actual module-return
+interface transport and finite recursive-entry invariants still need assembly.
+No root verdict, native certificate, checker export or full rebuild is claimed.

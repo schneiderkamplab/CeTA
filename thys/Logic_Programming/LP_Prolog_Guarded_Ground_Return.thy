@@ -80,20 +80,26 @@ proof (induct rule: lpp_guarded_success.induct)
   qed
 qed
 
-theorem lpp_inline_guarded_ground_return:
+theorem lpp_inline_guarded_ground_return_parameterized:
   fixes P :: "(string,string) lp_cut_program"
     and eta :: "string \<Rightarrow> (string lp_cut_symbol,string) lp_iterm"
   assumes program: "lpp_inline_return_program_check P F SP"
-    and builtins: "lpp_inline_builtin_check F SP"
+    and builtin: "\<And>f ts sigma. f\<in>F \<Longrightarrow> U f ts (LPPBuiltinSuccess sigma) \<Longrightarrow>
+      lpp_inline_return_model SP E (lp_isubst (LPIFun (LPCUser f) ts) sigma)"
+    and no_probe: "\<And>f ts a keep. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinProbe a keep)"
+    and no_call: "\<And>f ts a. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinCall a)"
+    and no_branch: "\<And>f ts cs ys ns. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinBranch cs ys ns)"
+    and no_choice: "\<And>f ts left right. f\<in>F \<Longrightarrow> \<not>U f ts (LPPBuiltinChoice left right)"
+    and stable: "\<And>e t sigma. E e t \<Longrightarrow> E (lp_isubst e sigma) (lp_isubst t sigma)"
+    and evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
     and selected: "f\<in>F" and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
     and modes: "lpp_guarded_ground_check SP contracts"
     and known: "\<forall>x\<in>G. lp_seg_ground (eta x)"
-    and actual: "lp_actual_answer (lpp_domain_answers P lpp_builtin_signature
-      lpp_finite_source_builtin lpp_finite_source_domain)
+    and actual: "lp_actual_answer (lpp_domain_answers P B U D)
       [(LPCGoals [LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)],eta)] rho"
   shows "\<forall>x\<in>lp_ground_flow contracts [(LPCUser f,ts)] G. lp_seg_ground (rho x)"
 proof -
-  let ?M = "lpp_inline_return_model SP lpp_finite_evaluation_result :: (string lp_cut_symbol,string) lp_iterm \<Rightarrow> bool"
+  let ?M = "lpp_inline_return_model SP E :: (string lp_cut_symbol,string) lp_iterm \<Rightarrow> bool"
   let ?gs = "[LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)]"
   let ?H = "lp_ground_flow contracts [(LPCUser f,ts)] G"
   let ?property = "\<lambda>nu. \<forall>x\<in>?H. lp_seg_ground (nu x)"
@@ -106,14 +112,14 @@ proof -
     fix sigma assume model: "list_all (lpc_model_goal ?M)
       (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) ?gs)"
     let ?nu = "\<lambda>x. lp_isubst (eta x) sigma"
-    have success: "lpp_guarded_success SP lpp_finite_evaluation_result
+    have success: "lpp_guarded_success SP E
       (lpp_success_atom_eval (f,ts) ?nu)"
       using model by (simp add: ordinary lpp_success_atom_eval_def lp_ieval_subst map_map o_def)
     have valid: "list_all lp_ground_valid_mode contracts"
       using modes by (simp add: lpp_guarded_ground_check_def)
     have contracts: "\<forall>a\<in>set [(LPCUser f,ts)]. \<forall>m\<in>set contracts.
       lp_ground_contract m (lp_atom_eval a ?nu)"
-      using lpp_guarded_ground_check_model[OF modes lpp_finite_evaluation_ground success]
+      using lpp_guarded_ground_check_model[OF modes evaluation success]
       by (simp add: lpp_lift_iatom_def lpp_success_atom_eval_def lp_atom_eval_def)
     have preserved: "\<forall>x\<in>G. lp_seg_ground (?nu x)"
       using known by (simp add: lp_seg_ground_subst)
@@ -122,11 +128,29 @@ proof -
   have frames: "list_all (lpc_scoped_model_frame F ?M ?property) [(LPCGoals ?gs,eta)]"
     using selected initial by simp
   show ?thesis by (rule lpp_scoped_model_actual_return_without_probe[OF modeled
-    lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins] lpp_inline_no_call[OF builtins] lpp_inline_no_branch[OF builtins] lpp_inline_no_choice[OF builtins] lpp_inline_return_model_subst[where E=lpp_finite_evaluation_result, OF lpp_finite_evaluation_subst] frames actual])
+    builtin no_probe no_call no_branch no_choice lpp_inline_return_model_subst[where E=E, OF stable] frames actual])
 qed
 
+theorem lpp_inline_guarded_ground_return:
+  fixes P :: "(string,string) lp_cut_program"
+    and eta :: "string \<Rightarrow> (string lp_cut_symbol,string) lp_iterm"
+  assumes program: "lpp_inline_return_program_check P F SP"
+    and builtins: "lpp_inline_builtin_check F SP"
+    and selected: "f\<in>F" and ordinary: "f\<noteq>''2:is''" "f\<noteq>''1:integer''"
+    and modes: "lpp_guarded_ground_check SP contracts"
+    and known: "\<forall>x\<in>G. lp_seg_ground (eta x)"
+    and actual: "lp_actual_answer (lpp_domain_answers P lpp_builtin_signature
+      lpp_finite_source_builtin lpp_finite_source_domain)
+      [(LPCGoals [LPCAtom (lp_ieval (Fun (LPCUser f) ts) eta)],eta)] rho"
+  shows "\<forall>x\<in>lp_ground_flow contracts [(LPCUser f,ts)] G. lp_seg_ground (rho x)"
+  by (rule lpp_inline_guarded_ground_return_parameterized[OF program
+    lpp_inline_builtin_model[OF builtins] lpp_inline_no_probe[OF builtins]
+    lpp_inline_no_call[OF builtins] lpp_inline_no_branch[OF builtins]
+    lpp_inline_no_choice[OF builtins] lpp_finite_evaluation_subst
+    lpp_finite_evaluation_ground selected ordinary modes known actual])
+
 ML \<open>
-val checked = [@{thm lpp_guarded_ground_check_model}, @{thm lpp_inline_guarded_ground_return}];
+val checked = [@{thm lpp_inline_guarded_ground_return_parameterized}, @{thm lpp_guarded_ground_check_model}, @{thm lpp_inline_guarded_ground_return}];
 val oracles = map (fst o fst) o Thm_Deps.all_oracles;
 val inherited = oracles [@{thm check_trs_termination_proof}];
 val _ = if Thm_Deps.has_skip_proof checked orelse
