@@ -4237,3 +4237,29 @@ reconstruct; removing initialization or clause facts is rejected by reconstructi
 No new checker export or benchmark certificate. Next integrate univ initialization
 with separation-aware node conditions, then complete source/module assembly,
 residual discharge and strict certified replay. Next resident 2030.
+
+
+## Univ initialization in separation-aware node contracts (2030–2033)
+
+`LP_Prolog_Univ_Separation_Context` extends the existing normalized univ return
+contract with separation transport. Ordinary context/functor facts and separation
+use one checked target valuation. `LP_Prolog_Univ_Separation_Initialization` proves
+pair separation from the incoming input/output separation facts, preserving the
+original evaluated state under fresh observation initialization.
+
+The control and node contract theories integrate this into the premised table
+interface. The finite node theorem discharges initialization and finite normalized
+execution from checked source-action conditions and incoming fact inclusion; it
+does not assume the initialized separation conclusion. Existing univ domain,
+error/return behavior and shared normalized answer composition remain in use.
+Resident 2030–2033 pass in 1.430, 0.293, 5.236 and 0.892 seconds, with zero
+oracles/skips. All attempts, including corrected type annotations and theorem
+instantiations, are retained in `target/prolog-univ-separation-2030-2033-resident.log`.
+
+Ferrum 2708 binds both original univ nodes and their four alternatives. Only the
+initialized successor carries its acquired pair fact. Missing initialization,
+branch, trace and facts are rejected by reconstruction. No checker export or
+new certified root. Next assemble action coverage for the premised table, including
+ordinary actions with empty successor separation contexts and explicit Split
+boundaries; then finish source constructor, residual discharge and strict replay.
+Next resident 2034.
