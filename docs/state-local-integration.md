@@ -3937,3 +3937,23 @@ dependency audit in 6.045 seconds, retained in resident log 1544. This is not
 blanket runtime-substitution transport. Carrying the facts through synthetic
 normalization links and integrating complete source assembly remain required.
 No checker export or certified benchmark change. Next Isabelle 1982.
+
+Reflexive normalization transport (resident 1982–1993):
+`LP_Prolog_Separation_Reflexive` proves support separation survives an actual
+reflexive MGU on finite terms present in the continuation. Most-generality
+provides a shared inverse on those terms; a finite inverse implies that variable
+images remain variables, with distinct original variables having distinct
+images. Companion lemmas prove finite continuation and free-knowledge transport
+for explicitly covered variables. This does not apply to arbitrary substitutions
+or captured variables absent from the continuation.
+
+Attempts 1982–1983 corrected the finite-term induction case name; 1984–1988
+made map identity, child induction and existential reasoning explicit. 1989
+passes separation (0.522 seconds); 1990 adds finite continuation and inverse
+variable images (0.635 seconds). Attempt 1991 was interrupted after 18.508 seconds
+in broad membership search; 1992 showed the needed explicit subset elimination.
+Final 1993 uses that elimination and passes all six dependency-audited lemmas
+in 0.842 seconds, without oracles or skipped proofs. All attempts remain in
+resident log 1544. No native/checker rebuild, source acceptance or root gain.
+Next instantiate these rules on the paired normalized univ equalities and
+thread the facts through source table links. Next Isabelle 1994, native 2694.
