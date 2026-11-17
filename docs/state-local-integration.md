@@ -3899,3 +3899,21 @@ operation theory in 2.773 seconds. Dependency audits reject skipped proofs and
 oracles. All attempts remain in `target/prolog-domain-graph-resident-1544.log`.
 No unified checker export or new certified benchmark is claimed. Reachable
 node coverage, source assembly, residual certification and replay remain open.
+
+Finite functor table specialization (resident checks 1974–1977):
+`LP_Prolog_Finite_Functor_Normalization` discharges the finite-execution
+normalization premises for arithmetic `is` and constructor-view `=..`, retaining
+the complete saved stack. These are pre-unification normalization results;
+subsequent equalities still require their own checked contracts. Both results
+are instantiated into the existing functor node contracts. The finite table
+specialization also discharges scope equivariance using the checked scope-word
+preservation theorem. It retains complete local/boundary coverage, source
+program checks, initialized knowledge/context/functor facts and residual SN.
+
+Check 1974 passes both normalization lemmas in 1.661 seconds. Attempt 1975 needed
+explicit rewriting of the node-state shape before instantiation; 1976 passes
+both node instances in 2.463 seconds. Final 1977 checks the table specialization
+and all dependency audits in 2.472 seconds. Normalization lemmas have no oracles;
+node/table contracts inherit only the existing checker dependencies. Evidence
+remains in resident log 1544. No native or unified checker rebuild was needed.
+This does not yet assemble or certify a source root. Next Isabelle 1978.
