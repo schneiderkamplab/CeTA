@@ -4190,3 +4190,29 @@ proof rather than inheriting this rule. All five tables still reconstruct. No
 export, source certificate or root gain. Next fresh-resolution acquisition and
 univ initialization action contracts, then complete source/module assembly,
 residual discharge and strict certified replay. Next resident 2024.
+
+
+## Resolution separation and fresh matching clause contracts (2024–2027)
+
+The separation-aware resolution action and node contract retain the existing
+checked source operation, contexts, saved alternatives, return interface and
+strict residual links. Success uses the actual clause MGU; failure uses its
+original valuation and a separate separation transport obligation.
+
+Fresh-univ acquisition now transports clause-local separation into the actual
+resolution environment. The matching-head instance theorem proves the instantiated
+call finite, and the fresh matching node contract derives both acquisition and
+full-state finite preservation from these checked conditions. No unconditional
+freeness-to-separation inference is introduced. Resident 2024–2027 reach their OK
+markers with strict zero-oracle/zero-skip checks. All attempts, including corrected
+proof instantiation and the reserved `instance` identifier, are retained in
+`target/prolog-separation-resolution-2024-2027-resident.log`.
+
+Native 2706 reconstructs all eight actual resolution actions and twelve branches,
+including the two fresh acquisition sites. An initial inventory mistakenly included
+four stack-split actions because they had clause-shaped states; the action receipt
+now requires actual `SymbolicAction::Clause`. Earlier and corrected attempts are
+retained. This remains unexported work, not a source certificate or root gain.
+Next bind clause-prefixed acquired facts to normalized source facts, integrate
+univ initialization contracts, then complete source/module assembly, structural
+residual discharge and strict certified replay. Next resident 2028.
