@@ -4453,3 +4453,30 @@ This checks serialization only. Actual action/link checks, source/query
 initialization, explicit module return contracts, residual discharge and unified
 strict replay remain necessary. No unified export or new certified gain.
 Next native 2713, resident 2057.
+
+## Original local action checks (2713; resident 2057–2059)
+
+Added shared-parser integration for complete per-node links, functor actions and
+local source/residual subjects. Native ordinary action serialization reuses the
+LP-with-cut return serializer, supplied with freshly reconstructed projected links.
+All witnesses, states, links, actions and subjects parse in one generated module.
+This remains diagnostic assembly: no query/profile binding, module boundary
+proof or residual termination is implied by parsing or a local side check.
+
+Actual generated checks found a producer encoding mismatch in anchored/spine-head
+symbols. After correction all 38 local separation side checks pass; 32 source
+checks pass. Six remaining source failures: region 0 nodes 6,10,22,23 and region
+47 nodes 6,10. For both univ rows, diagnostic removal of only the target argument
+spine observation changes rejection to success; the actual graph/evidence retains
+that fact. The general functor-context checker needs checked spine acquisition.
+Other failures survive removal of target observations and require further
+resolution/refresh link diagnosis. No rule was weakened to accept these rows.
+
+Parser generation 2057/2058 takes 14.943/15.526 seconds. Combined local checker
+2059 takes 45.226 seconds, 524,984 bytes; unmodified generated SML executes against
+all original regions. `target/prolog-separation-local-check-2059/Check-Fixed.ML`
+asserts exactly 38 local successes and 32 source successes; check-fixed.log and
+Diagnose.ML/diagnose.log retain details. Initial harness type/indexing errors are
+saved separately. Native evidence is Ferrum `target/prolog-link-serialization-2713/`.
+The renamed fixture and four shared return serializer tests pass. No unified
+checker rebuild/export and no certified root gain. Next native 2714, resident 2060.
