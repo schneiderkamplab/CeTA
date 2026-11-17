@@ -3396,3 +3396,30 @@ projection must account for reserved names at arity zero as well as at the input
 arity. Existing source strategies/exports are unchanged. Complete graph action
 transport, module/Split interfaces, finite structural measures and residual
 proofs remain required before a benchmark certificate can be claimed.
+
+
+Functor transport through shared unification and resolution is now formalized.
+`LP_Prolog_Functor_Fork.thy` proves that the existing resolution environment
+simultaneously preserves original observations for saved alternatives and
+refreshed observations after successful substitution, with explicit variable
+bounds. `LP_Prolog_Functor_Representation.thy` binds these facts to the same
+state index, valuation, arithmetic context, free knowledge and residual edge.
+The link retains the existing alternatives for active and saved freeness.
+
+`LP_Prolog_Functor_Equality.thy` and `LP_Prolog_Functor_Resolution.thy` extend the
+existing local action checks with that representation. They use the shared MGU,
+return payload and scope machinery; failure resumes the old context, not the
+successful fork. The Boolean checks require both branches unless the existing
+coverage rule discharges one. Missing functor tables and unbounded source facts
+are rejected. Check 1876 passes equality, 1878 resolution, and 1879 both actions
+with controls and dependency audits (resolution 2.499 seconds). Attempts
+1873–1875 preserve lexical spacing, an overbroad argument replacement and
+explicit higher-order proof-premise corrections; 1877 records a missing functor
+argument in an intermediate proof statement. Evidence is retained in the
+resident 1544 log. No oracle admission, generated checker edit or full rebuild
+was introduced.
+
+These remain unexported proof components. Remaining graph work includes other
+local actions, normalized functor transport where required, initialization and
+complete table coverage, module/Split interfaces and finite structural residual
+measures. No new root certificate or benchmark gain is claimed.
