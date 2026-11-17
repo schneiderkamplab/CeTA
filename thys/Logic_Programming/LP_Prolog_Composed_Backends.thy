@@ -1,9 +1,9 @@
 theory LP_Prolog_Composed_Backends
- imports LP_Prolog_Observed_Equation_Rewrite LP_Prolog_Stable_Backend_Routing LP_Prolog_Stable_Row_Composition
+ imports LP_Prolog_Observed_Endpoint_Rewrite LP_Prolog_Stable_Backend_Routing LP_Prolog_Stable_Row_Composition
 begin
 
 definition lpp_composition_step where
- "lpp_composition_step k fuel D = map (lpp_normalize_observed_row fuel) (lpp_compose_observed_rows k D)"
+ "lpp_composition_step k fuel D = map (lpp_rewrite_endpoints fuel) (map (lpp_normalize_observed_row fuel) (lpp_compose_observed_rows k D))"
 
 fun lpp_composition_rows where
  "lpp_composition_rows [] D = D"
@@ -33,8 +33,11 @@ next
   using Cons.prems(2) by (simp add: step)
  have normalized: "SN (lpp_stable_observed_calls operation (set (lpp_composition_step k fuel D)) P)"
   by (rule Cons.IH[OF rest child])
+ have before_endpoints: "SN (lpp_stable_observed_calls operation
+   (set (map (lpp_normalize_observed_row fuel) (lpp_compose_observed_rows k D))) P)"
+  by (rule SN_subset[OF normalized[unfolded lpp_composition_step_def] lpp_rewrite_endpoints_sound])
  have sn: "SN (lpp_stable_observed_calls operation (set (lpp_compose_observed_rows k D)) P)"
-  by (rule SN_subset[OF normalized[unfolded lpp_composition_step_def] lpp_normalize_observed_calls])
+  by (rule SN_subset[OF before_endpoints lpp_normalize_observed_calls])
  show ?case by (rule lpp_compose_observed_rows_SN[OF short sn])
 qed
 

@@ -3085,3 +3085,12 @@ Each stage records freshness and normalization fuel; the full source/XML theorem
 and inherited-oracle audit pass at 1777. Attempts 1772–1774 retain an unconstrained
 runtime-type witness and an image-membership proof correction. No checker export
 or benchmark gain is claimed from these proof checks alone.
+
+
+Resident check 1778 adds the existing checked endpoint rewrite after observation
+normalization in each composition stage. Both transformations use the recorded
+fuel and preserve the observed-call relation by inclusion; the complete source
+and XML soundness theorem passes. This exposes interface-equal values at the
+actual residual head/call rather than only as side observations. Existing
+rational-equation semantics and all helper/return premises are retained. This
+proof change is not yet exported to the unified checker.
