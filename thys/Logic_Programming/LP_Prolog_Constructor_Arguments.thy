@@ -96,8 +96,41 @@ lemma lpp_cyclic_child_finite_spine_only:
  by (auto simp: lpp_constructor_arguments_def lpp_argument_list_finite
    intro: lpp_list_length.intros)
 
+text \<open>The external name encoding is explicit. A source bridge must
+instantiate it with the profile's checked constructor-name translation; this
+relation does not assume that two different encoded labels are interchangeable.\<close>
+definition lpp_functor_observation where
+ "lpp_functor_observation constructor_name_encoding value name_term arglist =
+   (\<exists>f. lpp_constructor_arguments value f arglist \<and> name_term=LPIFun (constructor_name_encoding f) [])"
+
+lemma lpp_functor_observation_exact:
+ "lpp_functor_observation constructor_name_encoding (LPIFun f ts) name_term arglist \<longleftrightarrow>
+   name_term=LPIFun (constructor_name_encoding f) [] \<and> arglist=lpp_argument_list ts"
+ by (auto simp: lpp_functor_observation_def lpp_constructor_arguments_exact)
+
+lemma lpp_functor_observation_subst:
+ "lpp_functor_observation constructor_name_encoding value name_term arglist \<Longrightarrow>
+  lpp_functor_observation constructor_name_encoding (lp_isubst value sigma)
+    (lp_isubst name_term sigma) (lp_isubst arglist sigma)"
+ by (auto simp: lpp_functor_observation_def intro: lpp_constructor_arguments_subst)
+
+lemma lpp_functor_observation_name_ground:
+ "lpp_functor_observation constructor_name_encoding value name_term arglist \<Longrightarrow> lp_seg_ground name_term"
+ by (auto simp: lpp_functor_observation_def intro: lp_seg_ground.intros)
+
+lemma lpp_functor_observation_finite:
+ "lpp_functor_observation constructor_name_encoding value name_term arglist \<Longrightarrow>
+   lpp_finite_term arglist = lpp_finite_term value"
+ by (auto simp: lpp_functor_observation_def dest: lpp_constructor_arguments_finiteness)
+
+lemma lpp_functor_observation_spine:
+ "lpp_functor_observation constructor_name_encoding value name_term arglist \<Longrightarrow> \<exists>n. lpp_list_length arglist n"
+ by (auto simp: lpp_functor_observation_def dest: lpp_constructor_arguments_spine)
+
 ML \<open>
-val checked = [@{thm lpp_constructor_arguments_subst},
+val checked = [@{thm lpp_functor_observation_subst}, @{thm lpp_functor_observation_exact},
+ @{thm lpp_functor_observation_name_ground}, @{thm lpp_functor_observation_finite},
+ @{thm lpp_constructor_arguments_subst},
  @{thm lpp_constructor_arguments_exact}, @{thm lpp_constructor_arguments_finiteness},
  @{thm lpp_constructor_arguments_arity}, @{thm lpp_cyclic_child_finite_spine_only}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))

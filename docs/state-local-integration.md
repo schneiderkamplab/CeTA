@@ -3169,3 +3169,13 @@ The integration is recorded in `scripts/unified-exports.json`; full evidence
 will be pinned in Ferrum's `docs/data/prolog-composed-20261117.json`. Priority 1
 still includes numbervars. Protected-category production promotion and matched
 superiority remain separate gates, not claims of this category integration.
+
+
+Check 1800 extends constructor arguments with the explicit named functor
+observation used by native projection candidates. It proves substitution
+transport, ground names, finite argument spines, and equivalence of whole
+argument-list/term finiteness. Constructor-name encoding is an explicit parameter
+that still requires profile-specific instantiation; these lemmas do not assert
+source `=..` coverage. The no-oracle/no-skipped-proof audit passes. Attempt 1799
+collided with the existing `name_of` constant and is preserved. No export or
+checker rebuild includes this unfinished source integration.
