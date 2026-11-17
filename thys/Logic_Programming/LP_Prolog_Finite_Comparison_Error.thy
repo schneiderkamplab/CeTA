@@ -96,7 +96,8 @@ proof -
   have error: "lpp_finite_compare_error (lp_ieval a eta) (lp_ieval b eta)"
     using checked free lpp_checked_free_operand_sound[of F a eta]
       lpp_checked_free_operand_sound[of F b eta] ground
-    by (auto simp: lpp_check_finite_comparison_error_def lpp_finite_compare_error_def)
+    by (auto simp: lpp_check_finite_comparison_error_def
+      intro: lpp_finite_compare_error_legacy)
   have empty: "lp_answer_contract ?T [] R t ret"
   proof (rule lp_answer_contract_intro)
     fix ev :: "(nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm) option" and us

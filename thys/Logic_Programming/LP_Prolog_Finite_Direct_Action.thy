@@ -1,5 +1,6 @@
 theory LP_Prolog_Finite_Direct_Action
  imports LP_Prolog_Finite_Direct_Observed_Is LP_Prolog_Stable_Module_Action
+   LP_Prolog_Finite_Direct_Comparison
 begin
 
 fun lpp_check_finite_direct_action where
@@ -16,6 +17,9 @@ fun lpp_check_finite_direct_action where
    (LPPESubtractLibrary e s a gs active saved middle fs) = False"
 | "lpp_check_finite_direct_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity
    (LPPEConstantIs evidence a e gs active saved middle fs) = False"
+| "lpp_check_finite_direct_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity
+   (LPPEPrimitive prim) =
+    lpp_check_finite_direct_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity prim"
 | "lpp_check_finite_direct_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity action =
     lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity action"
 
@@ -118,19 +122,19 @@ next
   then show ?thesis using checked by simp
 next
   case (LPPEPrimitive primitive)
-  have check: "lpp_check_evaluation_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity primitive"
+  have check: "lpp_check_finite_direct_primitive T fuel P Q nds states contexts Fs nd F ss source_context returned arity primitive"
     using checked LPPEPrimitive by simp
   show ?thesis
   proof (rule lp_answer_contract_intro)
     fix event tt
     assume step: "lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain (lpc_return_eval eta ss) event tt"
     have supported: "\<not>lpp_builtin_domain_bad lpp_builtin_signature lpp_finite_source_domain (map fst (lpc_return_eval eta ss))"
-      by (rule lpp_stable_primitive_domain[OF compatible transfer check known observed])
+      by (rule lpp_finite_direct_primitive_domain[OF compatible transfer check known observed invariant])
     have actual: "lpp_answer_transition P lpp_builtin_signature (lpp_stable_source_builtin operation) (lpc_return_eval eta ss) event tt"
       using step supported by (simp add: lpp_domain_answers_def)
     obtain u swaps where strict: "([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+"
       and rep: "lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps tt) u"
-      using lpp_stable_primitive_sound[OF compatible transfer check known free observed actual] by blast
+      using lpp_finite_direct_primitive_sound[OF compatible transfer check known free observed actual] by blast
     have child: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) tt R t ret"
       by (rule lower[OF strict _ stable[OF step invariant]])
         (use rep in \<open>auto simp: lpp_stable_module_rep_def\<close>)

@@ -8,11 +8,10 @@ lemma lpp_add_evaluation_numeric_holds:
    lpp_evaluation_context_holds E SP (lpp_add_numeric_observation observation source_context) eta"
   by (cases source_context) (auto simp: lpp_evaluation_context_holds_def)
 
-definition lpp_check_evaluation_comparison where
-  "lpp_check_evaluation_comparison T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge =
+definition lpp_check_comparison_links where
+  "lpp_check_comparison_links T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge =
     (ss=(LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs),active)#saved \<and>
      lpp_comparison_descriptor f comparison reversed \<and>
-     vars_term a \<union> vars_term b \<subseteq> set (lpcn_ground nd) \<union> lpp_source_context_ground source_context \<and>
      lpp_check_evaluation_link T yes_facts fuel Q nds states contexts Fs nd ((LPCGoals gs,active)#saved)
        (lpcn_ground nd) (lpcn_guards nd) [] F
        (lpp_add_numeric_observation (LPPOComparison comparison (if reversed then b else a) (if reversed then a else b)) source_context) yes \<and>
@@ -23,6 +22,11 @@ definition lpp_check_evaluation_comparison where
        (lpp_add_numeric_observation (LPPOComparison (lpp_comparison_complement comparison) (if reversed then a else b) (if reversed then b else a)) source_context) no) \<and>
      lpp_check_evaluation_link T error_facts fuel Q nds states contexts Fs nd []
        (lpcn_ground nd) (lpcn_guards nd) [] F source_context error_edge)"
+
+definition lpp_check_evaluation_comparison where
+  "lpp_check_evaluation_comparison T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge =
+    (vars_term a \<union> vars_term b \<subseteq> set (lpcn_ground nd) \<union> lpp_source_context_ground source_context \<and>
+     lpp_check_comparison_links T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge)"
 
 lemma lpp_evaluation_comparison_domain:
   fixes SP :: "string lpp_success_clause list"
@@ -39,7 +43,7 @@ proof -
     and name: "lpp_comparison_descriptor f comparison reversed"
     and finite: "lp_seg_ground (lp_ieval a eta)" "lp_seg_ground (lp_ieval b eta)"
     using checked known lpp_evaluation_context_ground_sound[OF evaluation observed]
-    by (auto simp: lpp_check_evaluation_comparison_def lp_cut_knowledge_def lp_seg_ground_eval)
+    by (auto simp: lpp_check_evaluation_comparison_def lpp_check_comparison_links_def lp_cut_knowledge_def lp_seg_ground_eval)
   have ni: "f\<noteq>''1:integer''" and ne: "f\<noteq>''2:is''"
     using name by (cases comparison; cases reversed; auto)+
   have descriptor: "lpp_source_comparison f=Some (comparison,reversed)"
@@ -69,7 +73,7 @@ proof -
   let ?negative = "LPPOComparison (lpp_comparison_complement comparison) (if reversed then a else b) (if reversed then b else a)"
   have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs),active)#saved"
     and name: "lpp_comparison_descriptor f comparison reversed"
-    using checked by (auto simp: lpp_check_evaluation_comparison_def)
+    using checked by (auto simp: lpp_check_evaluation_comparison_def lpp_check_comparison_links_def)
   have raw: "lpp_answer_transition P lpp_builtin_signature lpp_finite_source_builtin
     ((LPCGoals (LPCAtom (LPIFun (LPCUser f) [lp_ieval a eta,lp_ieval b eta]) #
        map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),lpc_return_env active eta)#lpc_return_eval eta saved) event tt"
@@ -88,7 +92,7 @@ proof -
     (lpcn_ground nd) (lpcn_guards nd) [] F (lpp_add_numeric_observation ?negative source_context) no"
     and error_link: "lpp_check_evaluation_link T error_facts fuel Q nds states contexts Fs nd []
     (lpcn_ground nd) (lpcn_guards nd) [] F source_context error_edge"
-    using checked by (auto simp: lpp_check_evaluation_comparison_def)
+    using checked by (auto simp: lpp_check_evaluation_comparison_def lpp_check_comparison_links_def)
   have yes_step: "lpp_evaluation_observation_holds E eta ?observation \<Longrightarrow>
     \<exists>u swaps. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
       lpp_evaluation_rep E SP nds states contexts Fs (lpc_return_scope_word swaps (lpc_return_eval eta ((LPCGoals gs,active)#saved))) u"

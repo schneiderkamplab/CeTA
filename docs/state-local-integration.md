@@ -2881,3 +2881,30 @@ There are 184 authorized Prolog receipts, 524 mutation checks and 43 packaged
 fixture replays. Source semantics and the established graph are unchanged.
 Priority 1 remains active for checked module/Split assembly and its remaining
 candidates. Protected-category promotion and matched superiority remain gated.
+
+## Finite nonground comparison coverage (2026-11-17, export pending)
+
+The comparison envelope now covers finite nonground compound operands as finite
+errors, requiring both operands finite. This resolves the concrete unsupported
+domain witness in resident attempt 1662 and SWI probe 2590 in Ferrum. Cyclic
+operands remain excluded; groundness does not imply integer values. Existing
+integer and binary64 operations are unchanged. The old comparison constructor
+retains its ground-domain check.
+
+The shared branch-link proof is factored from domain discharge. The finite-direct
+source constructor supplies the checked finite-state invariant and retains all
+success/failure/error links and saved contexts. Attempt 1665 verifies primitive
+soundness and domain coverage. Attempt 1666 passes cyclic-term and compound
+regressions but exposes an imported-constant collision in a new pattern variable;
+1667 fixes it and verifies the complete original-query/XML soundness theorem.
+No soundness dependency uses skipped proofs or oracles. The generated ML checker
+accepts the generalized native fixture and rejects all five mutations (missing
+success/failure/error links, wrong comparison direction, initial free fact).
+Runtime generation/checking takes 57.990 seconds. The resident log and
+`target/prolog-finite-comparison-runtime-1667/cases.json` retain every case.
+
+No new unified export or benchmark gain is claimed. Installed checker 1657 and
+its 87 YES + 97 NO preservation audit remain frozen. Priority 1 continues with
+checked module/Split assembly and finite-state transport through more general
+heads. Native integration and seven focused tests are in the adjacent Ferrum
+checkout; its mechanism contract records attempts 2591–2595.

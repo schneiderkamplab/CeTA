@@ -2,11 +2,11 @@ theory LP_Prolog_Stable_Comparison_Node
  imports LP_Prolog_Stable_Representation
 begin
 
-theorem lpp_stable_comparison_node_sound:
+theorem lpp_stable_comparison_links_sound:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
     and program: "lpp_check_transfer_program T SP receipts"
-    and checked: "lpp_check_evaluation_comparison T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge"
+    and checked: "lpp_check_comparison_links T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge"
     and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
     and free: "lpc_free_knowledge (set F) eta"
     and observed: "lpp_stable_context_holds operation SP source_context eta"
@@ -19,7 +19,7 @@ proof -
   let ?negative = "LPPOComparison (lpp_comparison_complement comparison) (if reversed then a else b) (if reversed then b else a)"
   have shape: "ss=(LPCGoals (LPCAtom (Fun (LPCUser f) [a,b])#gs),active)#saved"
     and name: "lpp_comparison_descriptor f comparison reversed"
-    using checked by (auto simp: lpp_check_evaluation_comparison_def)
+    using checked by (auto simp: lpp_check_comparison_links_def)
   have raw: "lpp_answer_transition P lpp_builtin_signature (lpp_stable_source_builtin operation)
     ((LPCGoals (LPCAtom (LPIFun (LPCUser f) [lp_ieval a eta,lp_ieval b eta]) #
        map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs),lpc_return_env active eta)#lpc_return_eval eta saved) event tt"
@@ -38,7 +38,7 @@ proof -
     (lpcn_ground nd) (lpcn_guards nd) [] F (lpp_add_numeric_observation ?negative source_context) no"
     and error_link: "lpp_check_evaluation_link T error_facts fuel Q nds states contexts Fs nd []
     (lpcn_ground nd) (lpcn_guards nd) [] F source_context error_edge"
-    using checked by (auto simp: lpp_check_evaluation_comparison_def)
+    using checked by (auto simp: lpp_check_comparison_links_def)
   have yes_step: "lpp_stable_observation_holds operation eta ?observation \<Longrightarrow>
     \<exists>u swaps. ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
       lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps (lpc_return_eval eta ((LPCGoals gs,active)#saved))) u"
@@ -67,6 +67,22 @@ proof -
 qed
 
 
+theorem lpp_stable_comparison_node_sound:
+  fixes SP :: "string lpp_success_clause list"
+  assumes compatible: "lpp_stable_integer_operations operation"
+    and program: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_evaluation_comparison T yes_facts no_facts error_facts fuel Q nds states contexts Fs nd F ss source_context f comparison reversed a b gs active saved yes no error_edge"
+    and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
+    and free: "lpc_free_knowledge (set F) eta"
+    and observed: "lpp_stable_context_holds operation SP source_context eta"
+    and step: "lpp_answer_transition P lpp_builtin_signature (lpp_stable_source_builtin operation) (lpc_return_eval eta ss) event tt"
+  shows "event=None \<and> (\<exists>u swaps.
+    ([(lpcn_pred nd,map eta (lpcn_vars nd))],u)\<in>(lp_ild Q)\<^sup>+ \<and>
+    lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps tt) u)"
+ by (rule lpp_stable_comparison_links_sound[OF compatible program _ known free observed step])
+   (use checked in \<open>auto simp: lpp_check_evaluation_comparison_def\<close>)
+
+
 lemma lpp_stable_comparison_node_domain:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
@@ -86,7 +102,7 @@ proof -
 qed
 
 ML \<open>
-val checked = [@{thm lpp_stable_comparison_node_sound}, @{thm lpp_stable_comparison_node_domain}];
+val checked = [@{thm lpp_stable_comparison_links_sound}, @{thm lpp_stable_comparison_node_sound}, @{thm lpp_stable_comparison_node_domain}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
   then error "Untrusted stable comparison node dependency" else ();
 \<close>
