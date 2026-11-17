@@ -3448,3 +3448,32 @@ The candidate still requires arithmetic actions with functor preservation,
 normalized fact projection where needed, complete table and module/Split
 composition, finite structural measures and residual discharge. These checks
 are not benchmark certificates and do not change the certified baseline.
+
+
+Arithmetic observation with functor facts now preserves the full stable context.
+`LP_Prolog_Stable_Link.thy` exposes an auxiliary-observation witness at the exact
+checked child valuation; the old theorem remains a compatibility corollary with
+its unchanged statement. `LP_Prolog_Stable_Functor_Link.thy` uses this witness so
+stronger stable comparison observations are retained along with functor facts.
+Attempt 1885 exposed that the generic evaluation-context witness alone does not
+establish those stronger observations; the implementation uses the existing
+stable transport proof instead of weakening the target context.
+
+`LP_Prolog_Functor_Observed_Is.thy` checks fresh scalar-result initialization,
+including freshness against every prior functor fact, and transports the
+synthetic equality child with full stable context and functor evidence. Missing
+fact tables and result capture are rejected. Check 1886 passes the observation
+proof and controls. `LP_Prolog_Univ_Arithmetic_Normalization.thy` connects the
+extended interpretation's is/2 operation to the existing stable arithmetic and
+shared equality transition. It retains unification failure and terminal errors.
+The resulting full local answer contract passes in check 1887 (3.567 seconds
+for the observed-is theory), with dependency audits. The source-domain premise
+is still explicit; groundness is not used as an integer assumption.
+
+No exported source constructor or benchmark gain is claimed. Complete table and
+Split composition, stable-context preservation across the other action wrappers,
+finite structural invariants and residual discharge remain open. These generic
+and stable context variants must not be interchanged without their correspondence
+proof. Only affected theories and invalidated resident dependencies were checked;
+no full build or generated checker edit occurred. Evidence remains in the
+resident 1544 log.

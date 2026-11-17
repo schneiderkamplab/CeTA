@@ -2,7 +2,7 @@ theory LP_Prolog_Stable_Link
  imports LP_Prolog_Stable_Transport
 begin
 
-lemma lpp_stable_link_witness:
+lemma lpp_stable_link_witness_with_observation:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
     and program: "lpp_check_transfer_program T SP receipts"
@@ -12,11 +12,12 @@ lemma lpp_stable_link_witness:
     and known: "lp_cut_knowledge (set G) K eta'"
     and free: "lpc_free_knowledge (set F) eta'"
     and observed: "lpp_stable_context_holds operation SP source_context eta'"
+    and extra: "J (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta')"
   shows "\<exists>nu. lpc_return_eval eta' ss=lpc_return_scope_word (lpcl_swaps e) (lpc_return_eval nu (states!lpcl_target e)) \<and>
     lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target e))) (lpcn_guards (nds!lpcl_target e)) nu \<and>
     lpc_free_knowledge (set (Fs!lpcl_target e)) nu \<and>
     lpp_stable_context_holds operation SP (contexts!lpcl_target e) nu \<and>
-    ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q"
+    ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q \<and> J nu"
 proof -
   let ?j = "lpcl_target e"
   let ?nu = "\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'"
@@ -76,11 +77,29 @@ proof -
     using checked by (auto simp: lpp_check_evaluation_link_def)
   have child_context: "lpp_stable_context_holds operation SP (contexts!?j) ?nu"
     by (rule lpp_stable_existing_transport_sound[OF compatible program transport normalized])
-  show ?thesis using same child_known child_free child_context edge by blast
+  show ?thesis using same child_known child_free child_context edge extra by blast
 qed
 
+lemma lpp_stable_link_witness:
+  fixes SP :: "string lpp_success_clause list"
+  assumes compatible: "lpp_stable_integer_operations operation"
+    and program: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e"
+    and equations: "lp_equations eqs eta'"
+    and old: "map eta' (lpcn_vars nd)=map eta (lpcn_vars nd)"
+    and known: "lp_cut_knowledge (set G) K eta'"
+    and free: "lpc_free_knowledge (set F) eta'"
+    and observed: "lpp_stable_context_holds operation SP source_context eta'"
+  shows "\<exists>nu. lpc_return_eval eta' ss=lpc_return_scope_word (lpcl_swaps e) (lpc_return_eval nu (states!lpcl_target e)) \<and>
+    lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target e))) (lpcn_guards (nds!lpcl_target e)) nu \<and>
+    lpc_free_knowledge (set (Fs!lpcl_target e)) nu \<and>
+    lpp_stable_context_holds operation SP (contexts!lpcl_target e) nu \<and>
+    ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q"
+ using lpp_stable_link_witness_with_observation[where J="\<lambda>_. True",
+   OF compatible program checked equations old known free observed] by auto
+
 ML \<open>
-val checked = [@{thm lpp_stable_link_witness}];
+val checked = [@{thm lpp_stable_link_witness}, @{thm lpp_stable_link_witness_with_observation}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
   then error "Untrusted stable link dependency" else ();
 \<close>
