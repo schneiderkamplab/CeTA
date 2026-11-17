@@ -4286,3 +4286,44 @@ node-contract assembly, trim/parallel and arithmetic normalization integration,
 explicit Split contracts and the accepting source constructor remain. Structural
 residual discharge and strict replay are still required; no export or gain is
 claimed. Next resident 2036.
+
+## Checked ordinary actions in premised tables (2036–2042)
+
+`LP_Prolog_Premised_Base_Contract` assembles actual base-semantics steps into
+node contracts, retaining represented strict successors, actual return coverage
+and the runtime invariant. Its exhausted-state instance requires a literal empty
+state; it does not discharge module boundaries. Administrative and clause-selection
+instances preserve finite execution. Trim and parallel instances retain barrier
+checks and every alternative through the existing source-action checker.
+
+The builtin instances cover every admitted term-test outcome and existing observed
+arithmetic normalization. Arithmetic keeps the existing source domain and scalar
+evaluation, including error and binary64 behavior; no integer-only replacement is
+introduced. The additional separation conditions must be proved empty at each
+used target. Ordinary contexts, equations, functor facts and return observations
+remain checked in the same target valuation.
+
+`LP_Prolog_Separation_Ordinary_Check` now gives an executable additional side
+check and a sound finite node-contract dispatcher for these ordinary actions.
+Its term-test instance conservatively checks both targets, including any branch
+that an earlier source check might exclude. Equality, resolution, univ and
+module boundaries retain their dedicated obligations. This additional check alone
+is not a source-action certificate. Twelve generalized positive/rejection lemmas
+cover missing contexts, undischarged facts, missing failure targets/alternatives,
+nonempty terminal states, wrong test arity/arithmetic name and retained specialized
+obligations.
+
+Final resident loads take 0.465/1.993 seconds (base/simple), 2.062 (reductions),
+4.070 (builtin contracts), 1.468 (finite instances), 3.530 (dispatcher) and 0.336
+(regressions). All new checked theorem groups have zero oracles and skips.
+`target/prolog-separation-ordinary-2036-2042-resident.log` retains successful loads
+and failed/corrected attempts, including interrupted broad proof searches.
+No native rebuild, full Isabelle rebuild, checker export or benchmark gain.
+
+Remaining work: discharge the finite matching, anchored and observed-spine
+resolution instances and ground equality under premised tables; assemble these
+with the existing fresh/reflexive/pair/univ contracts into the complete executable
+local checker. Then bind the source constructor and explicit Split return/module
+dependencies, discharge structural residuals and run strict source-certified
+replay. The full campaign remains 90 YES + 97 NO; numbervars is still UNKNOWN.
+Next native 2710, resident 2043.
