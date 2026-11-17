@@ -3278,3 +3278,26 @@ univ receipts remain present. This is native candidate coverage, not checked
 local-table initialization, source acceptance or a new benchmark verdict.
 The new link is not yet exported; source action initialization, freshness
 transport, Split/return contracts and parent residual assembly remain required.
+
+
+Univ initialization: resident check 1850 verifies
+`LP_Prolog_Univ_Initialization.thy`. Fresh projected value/name/argument variables
+are interpreted using the actual constructor input, establishing the precise
+functor relation and the first equality. The full original saved state, old
+source context and earlier functor facts are preserved. Capture checks reject
+aliased observation names, saved-answer capture and capture of prior facts.
+The shared equality identity step connects the established two-equality view
+to the source answer contract; it does not delete an unchecked failure branch.
+
+The initialization also preserves existing ground/free knowledge and guards.
+The name becomes ground; arguments become ground only with an explicit ground
+input premise. No integer fact follows. The existing source-domain and outcome
+coverage premises, name interpretation, local-table wiring and Split assembly
+remain outstanding integration obligations. The source theories are not exported.
+
+Check 1846 passes initialization, two-equality composition and capture controls;
+1849 adds knowledge preservation; 1850 verifies conditional argument groundness
+and the dependency audit in 4.723 seconds. Attempts 1842–1845 retain a reserved
+proof-label correction and explicit theorem-instantiation fixes. Attempts
+1847–1848 correct definition parameters and the shared machine's runtime-variable
+type. No oracle or skipped proof is present, and no full rebuild was performed.
