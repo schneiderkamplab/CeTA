@@ -4,7 +4,7 @@ begin
 
 datatype lpp_domain_module = LPPDomainModule string "lpp_recurrent_scalar_domain option list"
  nat "string list" "lpp_domain_prefix list" "(string lp_cut_symbol,string) term list"
- "lpp_scalar_template option list" "(string list * lpp_scalar_guard list * lpp_scalar_guard) list" nat
+ "lpp_scalar_template option list" "lpp_head_failure list" nat
 fun lpp_domain_module_q where
  "lpp_domain_module_q (LPPDomainModule q obs sel H actions outputs recipes failures dest) = q"
 fun lpp_domain_module_observations where

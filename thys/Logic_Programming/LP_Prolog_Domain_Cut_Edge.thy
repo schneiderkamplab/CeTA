@@ -1,5 +1,5 @@
 theory LP_Prolog_Domain_Cut_Edge
- imports LP_Prolog_Domain_Cut_Iteration LP_Prolog_Scalar_Domain_Failure LP_Source_Recurrent_Simulation
+ imports LP_Prolog_Domain_Cut_Iteration LP_Prolog_Scalar_Domain_Failure LP_Source_Recurrent_Simulation LP_Prolog_Head_Failure_Check
 begin
 
 definition lpp_domain_cut_edge_check where
@@ -18,7 +18,7 @@ definition lpp_domain_cut_edge_check where
        lpp_domain_prefix_check H [] value_table (concat segments @ actions) \<and>
        lpp_domain_outputs_check (lpp_domain_prefix_domains value_table (concat segments @ actions)) target_observations outputs recipes \<and>
        length failures=selection \<and>
-       list_all (\<lambda>i. lpp_check_scalar_failure P q (map lpp_domain_fixed_observation observations) (clauses!i) (failures!i)) [0..<selection])"
+       list_all (\<lambda>i. lpp_check_head_failure P q (map lpp_domain_fixed_observation observations) (clauses!i) (failures!i)) [0..<selection])"
 
 lemma lpp_domain_cut_edge_progress:
  assumes checked: "lpp_domain_cut_edge_check P q observations selection H segments actions outputs recipes failures dest_q target_observations"
@@ -70,9 +70,9 @@ proof -
  proof -
   obtain i where bound: "i < selection" and same: "d= ?clauses!i"
     using member selected by (auto simp: in_set_conv_nth)
-  have failure_checked: "lpp_check_scalar_failure P q (map lpp_domain_fixed_observation observations) (?clauses!i) (failures!i)"
+  have failure_checked: "lpp_check_head_failure P q (map lpp_domain_fixed_observation observations) (?clauses!i) (failures!i)"
     using checked bound by (auto simp: lpp_domain_cut_edge_check_def Let_def list_all_iff)
-  show ?thesis using lpp_check_scalar_failure_sound[OF failure_checked fixed_observed,
+  show ?thesis using lpp_check_head_failure_sound[OF failure_checked fixed_observed,
       where gs=gs and mark=mark and saved=saved] head same by simp
  qed
  have step_exists: "\<exists>scalar_values pending saved.

@@ -16,7 +16,7 @@ definition graph_test_program where
 definition graph_test_first where
  "graph_test_first dest = LPPDomainModule graph_test_q domain_test_observations 1 [''x'',''c'']
  [LPPDomainGuard (scalar_test_guard ''2:>'')] [Var ''x'',Var ''c'']
- [Some (LPPScalarParameter ''x''),Some (LPPScalarParameter ''c'')] domain_test_failures dest"
+ [Some (LPPScalarParameter ''x''),Some (LPPScalarParameter ''c'')] (map LPPVariableFailure domain_test_failures) dest"
 definition graph_test_second where
  "graph_test_second obs recipes dest = LPPDomainModule graph_test_r obs 0 [''x'',''c'']
  graph_test_actions domain_test_outputs recipes [] dest"

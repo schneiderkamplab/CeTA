@@ -2,6 +2,24 @@ theory LP_Prolog_Domain_Graph_XML
  imports LP_Prolog_Domain_Graph_NO LP_Prolog_Scalar_Domain_XML
 begin
 
+definition lpp_head_failure_parser where
+ "lpp_head_failure_parser =
+ (XMLdo (STR ''failure'') {
+   V\<leftarrow>xml_many (STR ''variables'') (xml_text (STR ''var'')) id;
+   guards\<leftarrow>xml_many (STR ''guards'') lpp_scalar_guard_parser id;
+   failed\<leftarrow>xml_singleton (STR ''failed'') lpp_scalar_guard_parser id;
+   xml_return (LPPVariableFailure (V,guards,failed))}) XMLor
+ (XMLdo (STR ''headApart'') {
+   i\<leftarrow>xml_nat (STR ''left''); j\<leftarrow>xml_nat (STR ''right'');
+   xml_return (LPPHeadApart i j)}) XMLor
+ (XMLdo (STR ''patternFailure'') {
+   V\<leftarrow>xml_many (STR ''variables'') (xml_text (STR ''var'')) id;
+   constants\<leftarrow>xml_many (STR ''constants'')
+     (xml_leaf (STR ''variable'') None XMLor xml_singleton (STR ''constant'') (xml_text (STR ''symbol'')) Some) id;
+   guards\<leftarrow>xml_many (STR ''guards'') lpp_scalar_guard_parser id;
+   failed\<leftarrow>xml_singleton (STR ''failed'') lpp_scalar_guard_parser id;
+   xml_return (LPPPatternFailure V constants guards failed)})"
+
 definition lpp_domain_module_parser where
  "lpp_domain_module_parser = XMLdo (STR ''module'') {
  q\<leftarrow>xml_text (STR ''predicate'');
@@ -11,11 +29,7 @@ definition lpp_domain_module_parser where
  actions\<leftarrow>xml_many (STR ''actions'') lpp_domain_prefix_parser id;
  outputs\<leftarrow>xml_many (STR ''outputs'') lpc_term_parser id;
  recipes\<leftarrow>xml_many (STR ''recipes'') lpp_scalar_recipe_parser id;
- failures\<leftarrow>xml_many (STR ''failures'') (XMLdo (STR ''failure'') {
-   V\<leftarrow>xml_many (STR ''variables'') (xml_text (STR ''var'')) id;
-   guards\<leftarrow>xml_many (STR ''guards'') lpp_scalar_guard_parser id;
-   failed\<leftarrow>xml_singleton (STR ''failed'') lpp_scalar_guard_parser id;
-   xml_return (V,guards,failed)}) id;
+ failures\<leftarrow>xml_many (STR ''failures'') lpp_head_failure_parser id;
  dest\<leftarrow>xml_nat (STR ''destination'');
  xml_return (LPPDomainModule q observations selection H actions outputs recipes failures dest)}"
 
