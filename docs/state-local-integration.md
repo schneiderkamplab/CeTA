@@ -2908,3 +2908,34 @@ its 87 YES + 97 NO preservation audit remain frozen. Priority 1 continues with
 checked module/Split assembly and finite-state transport through more general
 heads. Native integration and seven focused tests are in the adjacent Ferrum
 checkout; its mechanism contract records attempts 2591–2595.
+
+## Local finite head transport (2026-11-17, assembly pending)
+
+Resident checks 1670, 1679–1680 prove finite transport through actual most-general
+resolution, for fully ground selected calls with arbitrary heads and for partial
+ground calls whose constructor positions are ground and standalone head variables
+are separated from every other head argument. Fresh body-only variables remain
+finite in the comparison unifier. Neither arbitrary rational substitution nor
+an unconstrained input mode supplies finiteness or freeness evidence.
+
+Checks 1685–1686 verify the executable head predicate, complete body/continuation
+goal transport and six positive/negative regressions. Missing ground evidence,
+sharing with a constructor position and repeated unconstrained head arguments
+are rejected. Check 1695 verifies the local resolution-state checker against
+all ordinary answer transitions, including saved alternatives and scalar
+unification. The source program and actual clause indices remain explicit.
+
+The shared finite action/control contracts now admit state-local stability
+premises. Their previous globally stable forms remain proved compatibility
+wrappers. Checks 1687 and 1690 verify both forms and recheck the complete existing
+source/XML theorem. These changes have no skipped-proof or oracle dependencies.
+They do not yet change the source root constructor or claim a benchmark gain.
+Next assembly must discharge local static-signature and builtin-domain transport,
+then retain all referenced module/Split and return-contract obligations.
+
+Failed/interrupted attempts 1671–1678, 1681–1684, 1688–1689 and 1691–1694
+remain in `target/prolog-domain-graph-resident-1544.log`: explicit type parameters,
+quantifier instantiation, syntax/constant collisions and compatibility-wrapper
+premises were corrected. Automated proof search in 1681 was interrupted after
+43.617 seconds and replaced by a short structured proof. Only affected theories
+were rechecked in the resident process; no unified checker was rebuilt.

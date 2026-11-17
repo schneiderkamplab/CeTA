@@ -23,7 +23,7 @@ fun lpp_check_finite_direct_action where
 | "lpp_check_finite_direct_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity action =
     lpp_check_evaluation_module_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity action"
 
-theorem lpp_finite_direct_control_action:
+theorem lpp_finite_direct_control_action_local:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
     and transfer: "lpp_check_transfer_program T SP receipts"
@@ -32,7 +32,7 @@ theorem lpp_finite_direct_control_action:
     and free: "lpc_free_knowledge (set F) eta"
     and observed: "lpp_stable_context_holds operation SP source_context eta"
     and invariant: "lpp_finite_direct_invariant A (lpc_return_eval eta ss)"
-    and stable: "\<And>(xs::((string lp_cut_symbol,string) lp_iterm lp_cut_entry \<times> (nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm)) list) ev ys. lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain xs ev ys \<Longrightarrow> lpp_finite_direct_invariant A xs \<Longrightarrow> lpp_finite_direct_invariant A ys"
+    and stable: "\<And>ev ys. lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain (lpc_return_eval eta ss) ev ys \<Longrightarrow> lpp_finite_direct_invariant A ys"
     and subset: "\<And>(xs::((string lp_cut_symbol,string) lp_iterm lp_cut_entry \<times> (nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm)) list) ys. set xs\<subseteq> set ys \<Longrightarrow> lpp_finite_direct_invariant A ys \<Longrightarrow> lpp_finite_direct_invariant A xs"
     and lower: "\<And>vs v. ([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
       lpp_stable_module_rep operation SP nds states contexts Fs vs v \<Longrightarrow> lpp_finite_direct_invariant A vs \<Longrightarrow> lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) vs R t ret"
@@ -136,7 +136,7 @@ next
       and rep: "lpp_stable_rep operation SP nds states contexts Fs (lpc_return_scope_word swaps tt) u"
       using lpp_finite_direct_primitive_sound[OF compatible transfer check known free observed actual] by blast
     have child: "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) tt R t ret"
-      by (rule lower[OF strict _ stable[OF step invariant]])
+      by (rule lower[OF strict _ stable[OF step]])
         (use rep in \<open>auto simp: lpp_stable_module_rep_def\<close>)
     show "(\<forall>rho. event=Some rho \<longrightarrow> (t,ret rho)\<in>R\<^sup>*) \<and>
       lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) tt R t ret"
@@ -181,8 +181,27 @@ next
     using checked LPPERefuted by simp
   then show ?thesis using lp_cut_checked_refuted_guard[OF _ known] by blast
 qed
+theorem lpp_finite_direct_control_action:
+  fixes SP :: "string lpp_success_clause list"
+  assumes compatible: "lpp_stable_integer_operations operation"
+    and transfer: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_finite_direct_action T fuel P Q nds states contexts Fs nd F ss source_context returned arity action"
+    and known: "lp_cut_knowledge (set (lpcn_ground nd)) (lpcn_guards nd) eta"
+    and free: "lpc_free_knowledge (set F) eta"
+    and observed: "lpp_stable_context_holds operation SP source_context eta"
+    and invariant: "lpp_finite_direct_invariant A (lpc_return_eval eta ss)"
+    and stable: "\<And>(xs::((string lp_cut_symbol,string) lp_iterm lp_cut_entry \<times> (nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm)) list) ev ys. lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain xs ev ys \<Longrightarrow> lpp_finite_direct_invariant A xs \<Longrightarrow> lpp_finite_direct_invariant A ys"
+    and subset: "\<And>(xs::((string lp_cut_symbol,string) lp_iterm lp_cut_entry \<times> (nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm)) list) ys. set xs\<subseteq> set ys \<Longrightarrow> lpp_finite_direct_invariant A ys \<Longrightarrow> lpp_finite_direct_invariant A xs"
+    and lower: "\<And>vs v. ([(lpcn_pred nd,map eta (lpcn_vars nd))],v)\<in>(lp_ild Q)\<^sup>+ \<Longrightarrow>
+      lpp_stable_module_rep operation SP nds states contexts Fs vs v \<Longrightarrow> lpp_finite_direct_invariant A vs \<Longrightarrow> lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) vs R t ret"
+    and emit: "\<And>rho tt. lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain (lpc_return_eval eta ss) (Some rho) tt \<Longrightarrow> (t,ret rho)\<in>R\<^sup>*"
+  shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) (lpc_return_eval eta ss) R t ret"
+ by (rule lpp_finite_direct_control_action_local[OF compatible transfer checked known free observed invariant _ subset lower emit])
+   (rule stable[OF _ invariant], assumption)
+
 ML \<open>
-val checked = [@{thm lpp_finite_direct_control_action}];
+val checked = [@{thm lpp_finite_direct_control_action},
+ @{thm lpp_finite_direct_control_action_local}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted finite direct action" else ();
 \<close>

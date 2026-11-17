@@ -65,7 +65,7 @@ definition lpp_check_finite_direct_control_contexts where
        lpp_check_finite_direct_action T fuel P Q nds states contexts Fs (nds!i) (Fs!i) (states!i)
          (local_contexts!i) returned arity action)) [0..<length nds])"
 
-theorem lpp_finite_direct_control_contract_contexts:
+theorem lpp_finite_direct_control_local_contract_contexts:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
     and checked: "lpp_check_finite_direct_control_contexts fuel P Q nds states contexts local_contexts Fs T returned arity actions"
@@ -77,7 +77,13 @@ theorem lpp_finite_direct_control_contract_contexts:
     and transfer: "lpp_check_transfer_program T SP receipts"
     and program: "lp_cut_source_program P"
     and invariant: "lpp_finite_direct_invariant A ss"
-    and stable: "\<And>(xs::((string lp_cut_symbol,string) lp_iterm lp_cut_entry \<times> (nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm)) list) ev ys. lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain xs ev ys \<Longrightarrow> lpp_finite_direct_invariant A xs \<Longrightarrow> lpp_finite_direct_invariant A ys"
+    and stable: "\<And>i eta ev ys. i<length nds \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_stable_context_holds operation SP (local_contexts!i) eta \<Longrightarrow>
+      lpc_free_knowledge (set (Fs!i)) eta \<Longrightarrow>
+      lpp_finite_direct_invariant A (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain
+        (lpc_return_eval eta (states!i)) ev ys \<Longrightarrow> lpp_finite_direct_invariant A ys"
     and represented: "lpp_stable_module_rep operation SP nds states contexts Fs ss a"
     and boundary: "\<And>i eta. i<length nds \<Longrightarrow> actions!i=None \<Longrightarrow>
       lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
@@ -115,7 +121,8 @@ proof (rule lpp_stable_control_local_contracts[where J="lpp_finite_direct_invari
       have observed_local: "lpp_stable_context_holds operation SP (local_contexts!i) eta"
         by (rule enrich[OF index known observed])
       show ?thesis
-      proof (rule lpp_finite_direct_control_action[OF compatible transfer check known free observed_local current stable lpp_finite_direct_subset])
+      proof (rule lpp_finite_direct_control_action_local[OF compatible transfer check known free observed_local current
+        stable[OF index known observed_local free current] lpp_finite_direct_subset])
         fix vs c assume edge: "([(lpcn_pred (nds!i),map eta (lpcn_vars (nds!i)))],c)\<in>(lp_ild Q)\<^sup>+"
           and child: "lpp_stable_module_rep operation SP nds states contexts Fs vs c"
           and inv_child: "lpp_finite_direct_invariant A vs"
@@ -127,8 +134,38 @@ proof (rule lpp_stable_control_local_contracts[where J="lpp_finite_direct_invari
       qed
     qed
 qed
+theorem lpp_finite_direct_control_contract_contexts:
+  fixes SP :: "string lpp_success_clause list"
+  assumes compatible: "lpp_stable_integer_operations operation"
+    and checked: "lpp_check_finite_direct_control_contexts fuel P Q nds states contexts local_contexts Fs T returned arity actions"
+    and enrich: "\<And>i eta. i<length nds \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_stable_context_holds operation SP (contexts!i) eta \<Longrightarrow>
+      lpp_stable_context_holds operation SP (local_contexts!i) eta"
+    and ranked: "lpc_seg_ranked_control rank_of Q"
+    and transfer: "lpp_check_transfer_program T SP receipts"
+    and program: "lp_cut_source_program P"
+    and invariant: "lpp_finite_direct_invariant A ss"
+    and stable: "\<And>(xs::((string lp_cut_symbol,string) lp_iterm lp_cut_entry \<times> (nat \<Rightarrow> (string lp_cut_symbol,string) lp_iterm)) list) ev ys. lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain xs ev ys \<Longrightarrow> lpp_finite_direct_invariant A xs \<Longrightarrow> lpp_finite_direct_invariant A ys"
+    and represented: "lpp_stable_module_rep operation SP nds states contexts Fs ss a"
+    and boundary: "\<And>i eta. i<length nds \<Longrightarrow> actions!i=None \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_stable_context_holds operation SP (contexts!i) eta \<Longrightarrow>
+      lpc_free_knowledge (set (Fs!i)) eta \<Longrightarrow>
+      lpp_finite_direct_invariant A (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) (lpc_return_eval eta (states!i)) R t ret"
+    and emit: "\<And>i eta rho tt. i<length nds \<Longrightarrow>
+      lpp_finite_direct_invariant A (lpc_return_eval eta (states!i)) \<Longrightarrow>
+      lp_cut_knowledge (set (lpcn_ground (nds!i))) (lpcn_guards (nds!i)) eta \<Longrightarrow>
+      lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain (lpc_return_eval eta (states!i)) (Some rho) tt \<Longrightarrow>
+      (t,ret rho)\<in>R\<^sup>*"
+  shows "lp_answer_contract (lpp_domain_answers P lpp_builtin_signature (lpp_stable_source_builtin operation) lpp_finite_source_domain) ss R t ret"
+ by (rule lpp_finite_direct_control_local_contract_contexts[OF compatible checked enrich ranked transfer program invariant _ represented boundary emit];
+   (assumption | (rule stable; assumption)))
+
 ML \<open>
-val checked = [@{thm lpp_finite_direct_control_contract_contexts}, @{thm lpp_finite_direct_arithmetic_stable}];
+val checked = [@{thm lpp_finite_direct_control_local_contract_contexts},
+ @{thm lpp_finite_direct_control_contract_contexts}, @{thm lpp_finite_direct_arithmetic_stable}];
 val _ = if Thm_Deps.has_skip_proof checked orelse not (null (Thm_Deps.all_oracles checked))
  then error "Untrusted finite direct control" else ();
 \<close>
