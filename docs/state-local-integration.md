@@ -3329,3 +3329,27 @@ coverage. Integer evaluation assumptions cannot be substituted for that coverage
 Source profile/name correspondence, finite invariants, helper return/Split
 assembly and complete residual discharge remain open. No benchmark gain or
 unified checker rebuild is claimed.
+
+
+Parameterized evaluation and functor evidence: the shared evaluation-link
+witness now admits an auxiliary predicate proved at its exact instance valuation.
+The original theorem remains a compatibility corollary with the same statement.
+`LP_Prolog_Evaluation_Functor_Link.thy` uses this hook to check functor transport
+alongside the existing evaluation context, free knowledge, scope swaps and
+residual edge. Missing functor tables/facts and changed arguments are rejected;
+an empty extension reduces to the existing link plus explicit table bounds.
+Check 1860 verifies the generalized witness; 1862 verifies the extension and its
+controls in 2.176 seconds. Attempt 1861 needed an explicit predicate instantiation.
+
+`LP_Prolog_Univ_Evaluation_Initialization.thy` reuses the existing state/functor
+initialization proof and separately preserves the full parameterized evaluation
+context by checked freshness. The empty context in the auxiliary reuse only
+extracts context-independent conclusions; the actual source context is retained
+and proved unchanged. No integer interpretation is imposed on evaluation.
+Check 1866 passes all four conclusions and the no-oracle/no-skip audit in 1.683
+seconds. Attempts 1863–1865 record empty-context unfolding and theorem-bundle
+audit syntax corrections. Evidence remains in
+`target/prolog-domain-graph-resident-1544.log`. Only affected theories were loaded;
+no export, executable rebuild or benchmark gain is claimed. The local action's
+parameterized-context assembly, source table/profile connection and residual
+proof remain open.

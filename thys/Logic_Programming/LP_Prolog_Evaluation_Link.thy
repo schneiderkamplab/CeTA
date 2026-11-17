@@ -55,7 +55,7 @@ definition lpp_check_evaluation_link where
        (lpp_source_context_subst (lpp_context_add_ground source_context G) (lp_cut_instance_subst (zip (lpcl_vars e) (lpcl_terms e))))
        (contexts!lpcl_target e) (lpcl_bindings e))"
 
-lemma lpp_evaluation_link_witness:
+lemma lpp_evaluation_link_witness_with_observation:
   fixes SP :: "string lpp_success_clause list"
   assumes contract: "lpp_eval_integer_contract TYPE(string) E"
     and evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
@@ -66,11 +66,12 @@ lemma lpp_evaluation_link_witness:
     and known: "lp_cut_knowledge (set G) K eta'"
     and free: "lpc_free_knowledge (set F) eta'"
     and observed: "lpp_evaluation_context_holds E SP source_context eta'"
+    and extra: "J (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta')"
   shows "\<exists>nu. lpc_return_eval eta' ss=lpc_return_scope_word (lpcl_swaps e) (lpc_return_eval nu (states!lpcl_target e)) \<and>
     lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target e))) (lpcn_guards (nds!lpcl_target e)) nu \<and>
     lpc_free_knowledge (set (Fs!lpcl_target e)) nu \<and>
     lpp_evaluation_context_holds E SP (contexts!lpcl_target e) nu \<and>
-    ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q"
+    ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q \<and> J nu"
 proof -
   let ?j = "lpcl_target e"
   let ?nu = "\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'"
@@ -121,11 +122,31 @@ proof -
   have child_context: "lpp_evaluation_context_holds E SP (contexts!?j) ?nu"
     using lpp_evaluation_context_transport_sound[OF contract evaluation program] transport normalized
     by (cases "lpp_source_context_subst (lpp_context_add_ground source_context G) ?norm"; cases "contexts!?j") auto
-  show ?thesis using same child_known child_free child_context edge by blast
+  show ?thesis using same child_known child_free child_context edge extra by blast
 qed
 
+lemma lpp_evaluation_link_witness:
+  fixes SP :: "string lpp_success_clause list"
+  assumes contract: "lpp_eval_integer_contract TYPE(string) E"
+    and evaluation: "\<And>e t. E e t \<Longrightarrow> lp_seg_ground e \<and> lp_seg_ground t"
+    and program: "lpp_check_transfer_program T SP receipts"
+    and checked: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e"
+    and equations: "lp_equations eqs eta'"
+    and old: "map eta' (lpcn_vars nd)=map eta (lpcn_vars nd)"
+    and known: "lp_cut_knowledge (set G) K eta'"
+    and free: "lpc_free_knowledge (set F) eta'"
+    and observed: "lpp_evaluation_context_holds E SP source_context eta'"
+  shows "\<exists>nu. lpc_return_eval eta' ss=lpc_return_scope_word (lpcl_swaps e) (lpc_return_eval nu (states!lpcl_target e)) \<and>
+    lp_cut_knowledge (set (lpcn_ground (nds!lpcl_target e))) (lpcn_guards (nds!lpcl_target e)) nu \<and>
+    lpc_free_knowledge (set (Fs!lpcl_target e)) nu \<and>
+    lpp_evaluation_context_holds E SP (contexts!lpcl_target e) nu \<and>
+    ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q"
+  using lpp_evaluation_link_witness_with_observation[where J="\<lambda>_. True",
+    OF contract evaluation program checked equations old known free observed] by auto
+
+
 ML \<open>
-val checked = [@{thm lpp_evaluation_link_witness}];
+val checked = [@{thm lpp_evaluation_link_witness}, @{thm lpp_evaluation_link_witness_with_observation}];
 val oracles = map (fst o fst) o Thm_Deps.all_oracles;
 val inherited = oracles [@{thm check_trs_termination_proof}];
 val _ = if Thm_Deps.has_skip_proof checked orelse
