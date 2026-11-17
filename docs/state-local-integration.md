@@ -3256,3 +3256,25 @@ explicit name parameter. Final check 1839 passes in 2.975 seconds with a clean
 no-oracle/no-skipped-proof dependency audit. These proofs are not exported and
 no new root verdict is claimed. Native discovery of the established view must
 retain both equalities, all frames/answers and the terminal error branch.
+
+
+Shared return links with functor evidence: resident check 1841 verifies
+`LP_Prolog_Functor_Link.thy`. The extended checker uses the existing return-table
+link, old context transport and explicit functor transport under exactly the
+same binding substitution. Its target context and functor evidence are selected
+by the checked state's target index. The soundness theorem retains state equality,
+knowledge, prior source facts, functor facts and the original residual edge.
+Missing contexts, out-of-bounds targets, missing facts and changed argument facts
+reject. An empty-extension equivalence retains the old link/context obligations.
+Check 1840 passes the main theorem; 1841 passes controls and the dependency audit
+in 0.603 seconds. No oracles or skipped proofs occur.
+
+Ferrum's complete-state projection candidates now retain a separate observation
+record for each saved frame and guard namespace. Focused 2674 and all 13 native
+projection tests 2676 pass (one manifest diagnostic intentionally ignored).
+Original-source diagnostic 2675 projects all 69 established numbervars states
+without an unsupported projection, with two frame-local functor relations; both
+univ receipts remain present. This is native candidate coverage, not checked
+local-table initialization, source acceptance or a new benchmark verdict.
+The new link is not yet exported; source action initialization, freshness
+transport, Split/return contracts and parent residual assembly remain required.
