@@ -3210,3 +3210,30 @@ post-state finiteness. These theories are not exported and do not change the
 90 YES + 97 NO certified baseline. Complete source-profile coverage, per-frame
 assembly, finite-domain preservation and Split contracts remain integration
 obligations for numbervars.
+
+
+Finite univ follow-up: `LP_Prolog_Finite_Univ.thy` passes resident check 1825
+with no oracles or skipped proofs. A finite constructor input and two distinct
+output variables absent from its runtime support admit a finite comparison
+unifier. Shared MGU factorization then preserves all finite active continuation
+terms. The runtime-support assumption rejects the SWI aliasing counterexample;
+input finiteness or output freeness alone is insufficient.
+
+`LP_Prolog_Finite_Fresh_Body.thy` connects this condition to source resolution.
+A body-only variable cannot occur inside the finite instantiated head under the
+shared most-general-resolution semantics. The executable clause-side check
+requires the input variable in the head and two distinct body-only outputs;
+its theorem establishes free, distinct runtime outputs absent from the input.
+Check 1834 passes in 1.295 seconds, including a generic positive clause and
+missing-output, input-alias and output-alias rejection lemmas. This evidence is
+at clause entry; it must not be assumed preserved by arbitrary intervening
+unification. Source-node transport and parent assembly still require integration.
+
+Attempts 1819–1824 retain induction, binder/definition and theorem-instantiation
+failures; 1825 completes finite-univ verification. Attempts 1825–1827 then expose
+fixed-variable and environment-instantiation proof gaps, corrected at 1828.
+Clause-side checks 1829–1832 retain existential proof and lexical corrections;
+1830's broad proof search was interrupted after 13.526 seconds and replaced
+with explicit witnesses. Checks 1833–1834 pass the full fresh-body theory and
+dependency audit. No export or unified checker rebuild was performed, and no
+new benchmark verdict is claimed.
