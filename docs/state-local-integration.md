@@ -3353,3 +3353,23 @@ audit syntax corrections. Evidence remains in
 no export, executable rebuild or benchmark gain is claimed. The local action's
 parameterized-context assembly, source table/profile connection and residual
 proof remain open.
+
+
+The parameterized local univ contract is now checked in
+`LP_Prolog_Univ_Evaluation_Context.thy`. It combines the existing projected
+successor, initialization and evaluation/functor child link while retaining the
+source domain, outcome coverage, free knowledge, guards, saved answers and lower
+answer-contract obligations. Check 1867 passes the full contract, initialized
+state correspondence, missing-domain/aliased-observation/missing-child/saved-
+capture rejection controls and dependency audit in 12.778 seconds. The resident
+session completed before a subsequent interrupt; the success marker is present
+in `target/prolog-domain-graph-resident-1544.log`. No export or full rebuild ran.
+
+Integration remains incomplete: `lpp_stable_source_builtin` currently delegates
+univ to the finite/legacy interpretation, which has no univ-domain coverage.
+The new local contract's coverage premise therefore still needs an explicit
+source interpretation extension and original-source audit. The constructor-name
+map must respect arity-dependent reserved builtin encoding in native
+`static_source::encode_symbol`; removing an arity prefix is insufficient.
+The existing graph/table representation must also carry the new observations
+through all intervening actions and Split contracts before residual certification.
