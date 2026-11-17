@@ -4006,3 +4006,26 @@ theories were reloaded in the resident Isabelle process. No unified executable
 was rebuilt or exported, and no new root was accepted. Source serialization,
 resolution/equality invariant coverage and referenced Split assembly remain.
 Next Isabelle 2005; priority 1 remains active.
+
+
+Context-qualified finite unification contracts (resident 2005–2007):
+`LP_Prolog_Functor_Finite_Unification` adds a node-contract lifting rule whose
+finite-preservation premise can use that node's incoming ground/free/context
+and functor knowledge. This avoids demanding an unconditional invariant when a
+local ground-side premise is known only from a checked helper return. It proves
+full-state ground-equality and matching-head resolution preservation and lifts
+both to the stable functor node answer contract. Ground equality uses the union
+of state groundness and checked source-context groundness; it makes no integer
+assumption. Saved alternatives remain part of the full state.
+
+Resident 2005 found a missing import for the context groundness theorem. After
+adding the existing Stable_Builtins dependency, 2006 exposed an inappropriate
+unfolding of the generated function definition for no-builtin frames. Using the
+function's simplification equations fixes that proof. Resident 2007 passes in
+4.238 seconds, including the dependency audit (no skips or added oracles).
+Evidence: `target/prolog-functor-finite-unification-2007-resident.log`; all attempts
+remain in `target/prolog-domain-graph-resident-1544.log`. Only affected resident
+theories were loaded. No checker export/rebuild or accepted benchmark gain.
+Remaining cases include ground-anchored/list-spine heads and normalized univ
+reflexive/separated equalities, as well as full source/Split assembly.
+Next Isabelle 2008.
