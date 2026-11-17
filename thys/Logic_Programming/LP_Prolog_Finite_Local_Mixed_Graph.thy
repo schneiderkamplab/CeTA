@@ -1,5 +1,5 @@
 theory LP_Prolog_Finite_Local_Mixed_Graph
- imports LP_Prolog_Stable_Backend_Routing LP_Prolog_Finite_Local_Graph
+ imports LP_Prolog_Composed_Backends LP_Prolog_Finite_Local_Graph
 begin
 
 definition lpp_check_finite_local_mixed_graph where
@@ -7,7 +7,7 @@ definition lpp_check_finite_local_mixed_graph where
       OD descents route_rank backends =
     (lpp_check_transfer_program T SP transfers \<and>
       lpp_check_finite_local_graph A fuel P D Q T roots contexts blocks q modes chain_pred OD descents \<and>
-      lpp_check_stable_backend_routing I J T SP route_rank OD backends)"
+      lpp_check_composed_backend_routing I J T SP route_rank OD backends)"
 
 theorem lpp_check_finite_local_mixed_graph_sound:
   fixes ts :: "(string lp_cut_symbol,string) lp_iterm list"
@@ -23,10 +23,10 @@ theorem lpp_check_finite_local_mixed_graph_sound:
 proof -
   have transfer: "lpp_check_transfer_program T SP transfers"
     and graph: "lpp_check_finite_local_graph A fuel P D Q T roots contexts blocks q modes chain_pred OD descents"
-    and routed: "lpp_check_stable_backend_routing I J T SP route_rank OD backends"
+    and routed: "lpp_check_composed_backend_routing I J T SP route_rank OD backends"
     using checked by (auto simp: lpp_check_finite_local_mixed_graph_def)
   have calls: "SN (lpp_stable_observed_calls operation (set OD) SP :: string lpp_success_iatom rel)"
-    by (rule lpp_check_stable_backend_routing_sound[OF I J compatible routed transfer])
+    by (rule lpp_check_composed_backend_routing_sound[OF I J compatible routed transfer])
   have lifted: "SN (inv_image (lpp_stable_observed_calls operation (set OD) SP) lpp_unlift_atom ::
       (string lp_cut_symbol,string) lp_iatom rel)"
     by (rule SN_inv_image[OF calls])

@@ -3060,3 +3060,16 @@ seconds. Check 1762 completes in 3.268 seconds in the resident heap.
 This foundation is not yet exported or connected to common component routing.
 The latest exported integration remains 14130e9 (89 YES + 97 NO in Ferrum's
 complete strict replay); division and numbervars remain open priority-1 roots.
+
+
+Resident checks 1763–1771 integrate finite sequences of checked compositions
+with common numeric/structural backends and finite-local source/XML assembly.
+The `composedBackend` wrapper records freshness stages and its explicit child
+rows. A checked row-wise equality preserves endpoint atoms and the sets of all
+helper premises, guards and observations; it permits serialization reordering
+without dropping assumptions. Legacy backends decode with an empty stage list.
+The complete source soundness and inherited-oracle audits pass at 1771.
+Attempts 1765–1770 retain proof automation, list lemma, reserved `rows` binder
+and type-instantiation corrections. No export or unified rebuild has run yet.
+Native residual probes will determine whether the composed abstraction is
+precise enough before generating another checker.

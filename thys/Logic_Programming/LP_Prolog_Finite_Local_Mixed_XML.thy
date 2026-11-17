@@ -2,6 +2,23 @@ theory LP_Prolog_Finite_Local_Mixed_XML
  imports LP_Prolog_Finite_Local_Mixed_Graph LP_Prolog_Stable_Mixed_XML
 begin
 
+definition lpp_composed_backend_parser where
+ "lpp_composed_backend_parser =
+  (xml_change lpp_mixed_backend_parser (\<lambda>x. xml_return ([],None,x))) XMLor
+  (XMLdo (STR ''composedBackend'') {
+   ks\<leftarrow>xml_many (STR ''stages'') (xml_nat (STR ''freshPrefixLength'')) id;
+   child_rows\<leftarrow>xml_many (STR ''observedTriples'') lpp_observed_triple_parser id;
+   child\<leftarrow>lpp_mixed_backend_parser;
+   xml_return (ks,Some child_rows,child)})"
+
+definition lpp_decode_composed_backends where
+ "lpp_decode_composed_backends transfer OD ranks raw = map (\<lambda>n.
+  let D=lpp_stable_rank_row_list (lpp_mixed_rank_lookup ranks) n OD in
+   case raw!n of (ks,row_meta,backend) \<Rightarrow>
+    let child_rows=the_default D row_meta in
+     map_option (\<lambda>child. (ks,child_rows,child))
+      (lpp_decode_mixed_backend transfer child_rows backend)) [0..<length raw]"
+
 definition lpp_established_finite_local_mixed_parser where
   "lpp_established_finite_local_mixed_parser = XMLdo (STR ''prologEstablishedFiniteLocalSEGMixedProof'') {
     profile\<leftarrow>xml_text (STR ''profile'');
@@ -29,13 +46,13 @@ definition lpp_established_finite_local_mixed_parser where
     descents\<leftarrow>xml_many (STR ''guardedDescents'') lpp_finite_guarded_descent_parser id;
     ranks\<leftarrow>xml_many (STR ''routing'') (XMLdo (STR ''entry'') {
       p\<leftarrow>xml_text (STR ''predicate''); n\<leftarrow>xml_nat (STR ''rank''); xml_return (p,n)}) id;
-    backends\<leftarrow>xml_many (STR ''backends'') lpp_mixed_backend_parser id;
+    backends\<leftarrow>xml_many (STR ''backends'') lpp_composed_backend_parser id;
     xml_return (profile,P,q,modes,signatures,fuel,chain_pred,D,Q,transfer,contexts,roots,blocks,OD,descents,ranks,backends)}"
 
 definition check_lpp_established_finite_local_mixed_xml where
   "check_lpp_established_finite_local_mixed_xml xml = (case parse_xml_string lpp_established_finite_local_mixed_parser xml of
     Right (profile,P,q,modes,signatures,fuel,chain_pred,D,Q,(summaries,SP,receipts),contexts,roots,blocks,OD,descents,ranks,raw) \<Rightarrow>
-      (let candidates=lpp_decode_mixed_backends (summaries,SP,receipts) OD ranks raw in
+      (let candidates=lpp_decode_composed_backends (summaries,SP,receipts) OD ranks raw in
         profile=''iso-rational-libraries-v1'' \<and>
         lpp_check_transfer_contract summaries SP receipts \<and>
         list_all (lpp_established_finite_component_header P fuel (summaries,SP,receipts)) blocks \<and>
@@ -58,7 +75,7 @@ theorem check_lpp_established_finite_local_mixed_xml_sound:
 proof -
   have checked: "lpp_check_finite_local_mixed_graph tp_rbt_impl dpp_rbt_impl (set signatures) fuel P D Q (lpp_transfer_lookup summaries) SP receipts
       roots contexts (map snd blocks) q modes chain_pred OD descents (lpp_mixed_rank_lookup ranks)
-      (map the (lpp_decode_mixed_backends (summaries,SP,receipts) OD ranks raw))"
+      (map the (lpp_decode_composed_backends (summaries,SP,receipts) OD ranks raw))"
     using parsed ok by (auto simp: check_lpp_established_finite_local_mixed_xml_def Let_def)
   show ?thesis
   proof (rule lpp_check_finite_local_mixed_graph_sound[OF tp_rbt_impl dpp_rbt_impl lpp_stable_profile_integer_compatible checked])
