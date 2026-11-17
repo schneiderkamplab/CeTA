@@ -2955,3 +2955,45 @@ transport and the observed-evaluation normalization interface. Then instantiate
 existing connection, return and Split contracts rather than introducing another
 operational semantics or erasing incoming contexts. Neither these local proofs
 nor checked child residuals count as additional certified benchmark roots.
+
+## Finite local referenced assembly (2026-11-17, source integration pending)
+
+Resident checks 1704, 1707–1710 generalize the existing observed-evaluation,
+local action and control contracts with an additional invariant. The previous
+forms remain compatibility wrappers. Instantiation retains both finite current
+and saved goals and the existing triple-input instance invariant. Connections
+transport finiteness through their checked substitution/scope equality; they
+make no claim about finiteness of unobserved answer-interface values.
+
+Checks 1712–1713 verify region assembly and referenced graph composition.
+Check 1717 verifies child and Split assembly, retaining complete interfaces,
+actual-return coverage and both descent obligations. Its continuation requires
+finite-state evidence for actual successful returns, separately from helper
+termination. Check 1719 supplies an executable dependency predicate for such
+continuations; finite or ground facts must cover every used term variable and
+the static signature must cover each called predicate. Existing source return
+contracts still need to discharge these facts in the complete root constructor.
+
+Check 1720 passes five return-dependency regressions and the complete existing
+source/XML soundness theorem. Missing dependencies, missing signatures and
+unrestricted dynamic calls are rejected; unused answer values stay unrestricted.
+Every new soundness theorem passes the no-oracle/no-skipped-proof audit. All
+checking used the resident process; no unified rebuild or new benchmark verdict
+is claimed. The installed 1657 checker and 87 YES + 97 NO audit remain unchanged.
+
+Failed attempts are preserved in `target/prolog-domain-graph-resident-1544.log`:
+1705–1706 fix syntax/explicit invariant instantiation, 1711 fixes a definition
+name, 1714–1716 diagnose an accidental extra local premise in the Split proof,
+and 1718 replaces unsuccessful automation with explicit per-goal instantiation.
+The verified Split theorem does not contain the accidental premise. Next wire
+checked return facts and local region checks into source graph/root assembly,
+then native emission, residual discharge and strict benchmark replay.
+
+Verified heap `target/prolog-local-assembly-1721-verified.heap` saves assembly
+through 1720. Follow-up 1723 also derives continuation finiteness directly from
+checked outgoing ground/context facts and the executable dependency predicate,
+allowing existing actual-return contracts to discharge that obligation. Attempt
+1722 used the reserved keyword `context` as a fact label; renaming the label
+fixes parsing without changing the theorem. Five continuation regressions pass
+again. Concrete preserved/integer/ground return-family adapters and the root
+constructor remain the next integration work.
