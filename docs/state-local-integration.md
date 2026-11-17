@@ -4058,3 +4058,29 @@ verdict change. Next connect the separated pair-equality and remaining head
 contracts, materialize the refined native equation contexts in source assembly,
 and complete referenced Split assembly and residual discharge. Next Isabelle
 2014; priority 1 remains active.
+
+
+Ground-anchored and observed-spine node contracts (resident 2014–2015):
+`LP_Prolog_Functor_Anchored_Contract` lifts the existing anchored-head theorem
+through complete source steps to the finite functor node contract. It explicitly
+checks the selected source head, arity and variable coverage, and allows ground
+inputs justified by the current source context. The repeated-head example passes;
+removing its ground premise is rejected. No integer typing is inferred.
+Resident 2014 passes in 2.269 seconds.
+
+`LP_Prolog_Functor_Spine_Head_Contract` performs the corresponding lift for a
+linear cons head using the existing proper-spine shape grammar. The checked
+context must contain the exact argument shape observation. Finite execution,
+distinct head variables and arity remain separate premises; proper spines do not
+prove finite elements. Saved alternatives remain part of the full state.
+Resident 2015 passes in 5.796 seconds, including the missing-observation control
+and dependency audit. No skipped proofs or added oracles. These provide the two
+remaining head-contract families found in the original projected numbervars
+inventory; they do not themselves assemble a root certificate.
+
+Evidence: `target/prolog-functor-head-contracts-2015-resident.log`; all attempts
+remain in `target/prolog-domain-graph-resident-1544.log`. Only required resident
+theories were loaded. No checker executable rebuild/export or benchmark gain.
+Next address explicit separation acquisition/transport for the normalized pair
+equalities and finish source serialization, referenced Split assembly and
+residual proofs. Next Isabelle 2016; priority 1 remains active.
