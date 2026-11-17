@@ -25,7 +25,10 @@ lemma lpp_separation_functor_link_sound:
     lpp_premised_functor_rep names operation SP nds states contexts Fs functor_contexts (lpp_separation_node_conditions separation_contexts) (lpc_return_scope_word swaps (lpc_return_eval eta' ss)) u"
 proof -
   let ?j="lpcl_target e"
-  have base: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e"
+  have enriched: "lpp_stable_context_holds operation SP (lpp_functor_shape_context source_context source_functors) eta'"
+    by (rule lpp_functor_shape_context_stable[OF observed functors])
+  have base: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F
+    (lpp_functor_shape_context source_context source_functors) e"
     using checked by (simp add: lpp_check_evaluation_functor_link_def)
   have transported: "list_all (lpp_functor_fact_holds names
       (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta')) (functor_contexts!?j)"
@@ -44,7 +47,7 @@ proof -
     using lpp_stable_link_witness_with_observation[where J="\<lambda>nu.
         list_all (lpp_functor_fact_holds names nu) (functor_contexts!?j) \<and>
         lpp_separation_node_conditions separation_contexts ?j nu",
-      OF compatible program base equations old known free observed conjI[OF transported separated]] by blast
+      OF compatible program base equations old known free enriched conjI[OF transported separated]] by blast
   have bounds: "?j<length nds" "?j<length states" "?j<length contexts" "?j<length Fs" "?j<length functor_contexts"
     using checked by (auto simp: lpp_check_evaluation_functor_link_def lpp_check_evaluation_link_def lpc_check_return_table_link_def
       lpc_check_return_link_def lpc_check_link_def)

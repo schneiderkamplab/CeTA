@@ -1,10 +1,6 @@
 theory LP_Prolog_Spine_Shape
- imports LP_Prolog_Spine_Context LP_Return_Shapes
+ imports LP_Prolog_Spine_Context LP_Prolog_Functor_Shape_Context
 begin
-
-definition lpp_spine_grammar where
- "lpp_spine_grammar = [[(LPCUser ''0:prolog_data_5b5d'', []),
-   (LPCUser ''2:prolog_data_2e'', [LPReturnAny,LPReturnShape 0])]]"
 
 lemma lpp_list_length_return_shape:
  "lpp_list_length t n \<Longrightarrow>
@@ -59,11 +55,6 @@ lemma lpp_spine_shape_exact:
  unfolding lpp_spine_holds_def
  using lpp_list_length_return_shape lpp_return_shape_list_length by blast
 
-
-lemma lpp_functor_argument_return_shape:
- assumes fact: "lpp_functor_fact_holds names eta (LPPFunctorFact value_term name_term arglist)"
- shows "lp_return_shape_holds lpp_spine_grammar (LPReturnShape 0) (lp_ieval arglist eta)"
- using lpp_functor_argument_spine[OF fact] by (simp add: lpp_spine_shape_exact)
 
 lemma lpp_actual_return_spine_shapes:
  assumes actual: "lp_actual_answer (lpp_domain_answers P B U D) ss eta"

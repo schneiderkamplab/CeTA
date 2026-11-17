@@ -2,6 +2,18 @@ theory LP_Prolog_Stable_Functor_Link
  imports LP_Prolog_Evaluation_Functor_Link LP_Prolog_Stable_Fresh_Context
 begin
 
+lemma lpp_functor_shape_context_stable:
+ assumes observed: "lpp_stable_context_holds operation SP ctx eta"
+ and functors: "list_all (lpp_functor_fact_holds names eta) fs"
+ shows "lpp_stable_context_holds operation SP (lpp_functor_shape_context ctx fs) eta"
+proof -
+ have "lpp_stable_observation_holds operation eta (lpp_functor_shape_observation f)"
+   if "f\<in>set fs" for f
+   using functors that by (cases f) (auto simp: list_all_iff intro: lpp_functor_argument_return_shape)
+ then show ?thesis using observed
+   by (cases ctx) (auto simp: lpp_stable_context_holds_def lpp_evaluation_context_holds_def list_all_iff dest: lpp_stable_observation_refines)
+qed
+
 lemma lpp_stable_functor_link_witness:
   fixes SP :: "string lpp_success_clause list"
   assumes compatible: "lpp_stable_integer_operations operation"
@@ -20,7 +32,10 @@ lemma lpp_stable_functor_link_witness:
     ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q \<and>
     list_all (lpp_functor_fact_holds names nu) (functor_contexts!lpcl_target e)"
 proof -
- have base: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e"
+ have enriched: "lpp_stable_context_holds operation SP (lpp_functor_shape_context source_context source_functors) eta'"
+  by (rule lpp_functor_shape_context_stable[OF observed functors])
+ have base: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F
+    (lpp_functor_shape_context source_context source_functors) e"
   using checked by (simp add: lpp_check_evaluation_functor_link_def)
  have transported: "list_all (lpp_functor_fact_holds names
     (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'))
@@ -29,7 +44,7 @@ proof -
    (use checked in \<open>simp add: lpp_check_evaluation_functor_link_def\<close>)
  show ?thesis
   by (rule lpp_stable_link_witness_with_observation[where J="\<lambda>nu. list_all (lpp_functor_fact_holds names nu) (functor_contexts!lpcl_target e)",
-    OF compatible program base equations old known free observed transported])
+    OF compatible program base equations old known free enriched transported])
 qed
 
 ML \<open>

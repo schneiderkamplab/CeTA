@@ -96,9 +96,13 @@ proof -
    by (cases source_context) (auto simp: lpp_stable_context_holds_def lpp_evaluation_context_holds_def)
   have observed_extended: "list_all (lpp_functor_fact_holds names ?nu) ?observed"
    by (rule lpp_univ_stable_initialization_sound(3)[OF init input context_held functors])
+  have enriched_context: "lpp_stable_context_holds operation SP (lpp_functor_shape_context
+    (lpp_context_with_equations source_context [(input_template,Var value_variable)]) ?observed) ?nu"
+    by (rule lpp_functor_shape_context_stable[OF initialized_context observed_extended])
   have equations: "lp_equations [] ?nu" by (simp add: lp_equations_def)
   have base_link: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ?synthetic ?G
-    (lpcn_guards nd) [] F (lpp_context_with_equations source_context [(input_template,Var value_variable)]) middle"
+    (lpcn_guards nd) [] F (lpp_functor_shape_context
+      (lpp_context_with_equations source_context [(input_template,Var value_variable)]) ?observed) middle"
     using link by (simp add: lpp_check_evaluation_functor_link_def)
   have transported_functors: "list_all (lpp_functor_fact_holds names
       (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings middle) x) ?nu))
@@ -119,7 +123,7 @@ proof -
    using lpp_stable_link_witness_with_observation[where J="\<lambda>rho.
       list_all (lpp_functor_fact_holds names rho) (functor_contexts!lpcl_target middle) \<and>
       lpp_separation_node_conditions separation_contexts (lpcl_target middle) rho",
-      OF compatible program base_link equations old extended_known base_free initialized_context
+      OF compatible program base_link equations old extended_known base_free enriched_context
         conjI[OF transported_functors transported_separation]]
    by (simp add: swaps) blast
   have represented: "lpc_return_eval ?nu ?synthetic =

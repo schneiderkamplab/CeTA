@@ -4480,3 +4480,40 @@ Diagnose.ML/diagnose.log retain details. Initial harness type/indexing errors ar
 saved separately. Native evidence is Ferrum `target/prolog-link-serialization-2713/`.
 The renamed fixture and four shared return serializer tests pass. No unified
 checker rebuild/export and no certified root gain. Next native 2714, resident 2060.
+
+## Checked functor-to-spine context acquisition (2060–2065)
+
+`LP_Prolog_Functor_Shape_Context` now derives the existing argument-spine shape
+from an actual functor observation. The shared evaluation functor link augments
+its source context with precisely these proved shape facts before using the
+existing context transport checker. The observation requires neither integer
+inputs nor finite elements. Existing source observations remain required. The
+spine grammar and argument-shape lemma moved to this lower dependency layer to
+avoid importing the later module/return development into local link checking.
+
+Both evaluation and stable context augmentation are proved; their shared link,
+separation and univ witnesses use the same enriched source valuation. Empty
+functor extensions keep the old checker equation. The full affected dependency
+chain through `LP_Prolog_Separation_Subject_XML` passes (resident 2064), including
+all existing missing-fact/changed-argument and spine distinctions. New acquisition
+lemmas have no oracles or skipped proofs. Initial proof-method and stable-context
+refinement errors were fixed and retained in
+`target/prolog-functor-shape-2060-2065-resident.log`.
+
+Incremental export 2065 takes 44.562 seconds, 525,565 bytes. Unmodified generated
+SML checks the exact native 2713 xml-fixed inputs: all 38 local checks still pass,
+and source-action successes improve from 32 to 34. Both original univ rows now
+pass with their argument-spine observations intact. Fresh-variable collision and
+unjustified target-shape mutations reject in both regions. Evidence:
+`target/prolog-functor-shape-check-2065/{Functor_Shape_Export.thy,Check.ML,check.log}`.
+No native rebuild was needed; no unified export or root gain is claimed.
+
+Four source failures remain: region 0 nodes 10,22,23 and region 47 node 10.
+Further generated-checker diagnostics in 2059 establish that the reflexive rows
+pass base equality, bounds, return values, ordinary return links, context transport
+and functor transport; their free-variable link check fails. The two resolution
+rows pass when only the target functor facts are removed in diagnostic copies,
+so their exact functor transport requires strengthening. The real tables retain
+all facts. Next: checked equation-aware functor transport and context-justified
+reflexive free-variable preservation, then module contracts/residual discharge.
+Next resident 2066; native remains 2714.

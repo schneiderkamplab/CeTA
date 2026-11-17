@@ -1,5 +1,5 @@
 theory LP_Prolog_Evaluation_Functor_Link
- imports LP_Prolog_Evaluation_Link LP_Prolog_Functor_Context
+ imports LP_Prolog_Evaluation_Link LP_Prolog_Functor_Shape_Context
 begin
 
 text \<open>Functor observations extend the existing parameterized evaluation
@@ -9,7 +9,8 @@ no integer restriction is added to the evaluation relation.\<close>
 definition lpp_check_evaluation_functor_link where
  "lpp_check_evaluation_functor_link T fs fuel Q nds states contexts Fs functor_contexts
    nd ss G K eqs F source_context source_functors e =
-  (lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e \<and>
+  (lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F
+     (lpp_functor_shape_context source_context source_functors) e \<and>
    lpcl_target e<length functor_contexts \<and>
    lpp_check_functor_transport source_functors (functor_contexts!lpcl_target e)
     (lp_cut_instance_subst (lpcl_bindings e)))"
@@ -33,7 +34,10 @@ lemma lpp_evaluation_functor_link_witness:
     ([(lpcn_pred nd,map eta (lpcn_vars nd))],[(lpcn_pred (nds!lpcl_target e),map nu (lpcn_vars (nds!lpcl_target e)))])\<in>lp_ild Q \<and>
     list_all (lpp_functor_fact_holds names nu) (functor_contexts!lpcl_target e)"
 proof -
- have base: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F source_context e"
+ have enriched: "lpp_evaluation_context_holds E SP (lpp_functor_shape_context source_context source_functors) eta'"
+  by (rule lpp_functor_shape_context_evaluation[OF observed functors])
+ have base: "lpp_check_evaluation_link T fs fuel Q nds states contexts Fs nd ss G K eqs F
+    (lpp_functor_shape_context source_context source_functors) e"
   using checked by (simp add: lpp_check_evaluation_functor_link_def)
  have transported: "list_all (lpp_functor_fact_holds names
     (\<lambda>x. lp_ieval (lp_cut_instance_subst (lpcl_bindings e) x) eta'))
@@ -42,7 +46,7 @@ proof -
    (use checked in \<open>simp add: lpp_check_evaluation_functor_link_def\<close>)
  show ?thesis
   by (rule lpp_evaluation_link_witness_with_observation[where J="\<lambda>nu. list_all (lpp_functor_fact_holds names nu) (functor_contexts!lpcl_target e)", OF contract evaluation program
-    base equations old known free observed transported])
+    base equations old known free enriched transported])
 qed
 
 lemma lpp_evaluation_functor_missing_table_rejected:
