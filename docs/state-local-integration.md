@@ -3237,3 +3237,22 @@ Clause-side checks 1829–1832 retain existential proof and lexical corrections;
 with explicit witnesses. Checks 1833–1834 pass the full fresh-body theory and
 dependency audit. No export or unified checker rebuild was performed, and no
 new benchmark verdict is claimed.
+
+
+Univ source normalization: check 1839 verifies
+`LP_Prolog_Univ_Normalization.thy`. The existing answer machine's constructor
+view reduces to its shared equality step, preserving the exact continuation and
+saved answers on success/failure and discarding the stack on uncaught errors.
+The theorem lifts the equality child's full answer contract to the source call;
+variable-input view outcomes are checked terminal errors. Builtin selection,
+source-domain membership and source-outcome coverage remain explicit premises.
+No new machine or SEG is introduced. Named constructor interpretation still
+needs its profile-specific correspondence before source acceptance.
+
+Check 1836 completes transition coverage, 1837 adds the return contract and
+1839 covers unknown inputs. Attempt 1835 needed explicit specialization of
+outcome coverage; 1838 had ambiguous theorem instantiation, fixed with an
+explicit name parameter. Final check 1839 passes in 2.975 seconds with a clean
+no-oracle/no-skipped-proof dependency audit. These proofs are not exported and
+no new root verdict is claimed. Native discovery of the established view must
+retain both equalities, all frames/answers and the terminal error branch.
