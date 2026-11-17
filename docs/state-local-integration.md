@@ -3373,3 +3373,26 @@ map must respect arity-dependent reserved builtin encoding in native
 `static_source::encode_symbol`; removing an arity prefix is insufficient.
 The existing graph/table representation must also carry the new observations
 through all intervening actions and Split contracts before residual certification.
+
+
+`LP_Prolog_Univ_Source.thy` now extends the builtin/domain interpretation of the
+same shared source machine with univ view outcomes. It proves exact agreement
+on every old finite-source domain, preserves all other operations, checks the
+fixed builtin signature and rejects wrong arities. Construction from a known
+functor with variable input remains outside the admitted domain. The local
+contract is instantiated with these actual domain/outcome definitions, discharging
+its former abstract coverage premises. Check 1872 passes the interpretation,
+compatibility, local contract and inherited-dependency audit in 5.994 seconds.
+Check 1870 verified the interpretation alone; 1868–1869 record a broad signature
+simplification replaced by explicit cases and concrete character evaluation;
+1871 records an explicit higher-order premise discharge. No full rebuild ran.
+
+The name map stays universally parameterized, not certificate-supplied. A future
+root theorem valid for every map can be instantiated with the original-source
+encoding without choosing a convenient witness or discarding names. This does
+not itself complete that root theorem or original-source correspondence audit.
+The native arity-dependent encoding remains authoritative; any concrete name
+projection must account for reserved names at arity zero as well as at the input
+arity. Existing source strategies/exports are unchanged. Complete graph action
+transport, module/Split interfaces, finite structural measures and residual
+proofs remain required before a benchmark certificate can be claimed.
