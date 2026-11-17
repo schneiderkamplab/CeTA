@@ -3840,3 +3840,40 @@ nine existing context/backtracking tests pass. These are candidate reconstructio
 full source-table checking, finite-entry invariant assembly, structural residual
 discharge and strict root replay remain outstanding. No installed checker change
 or benchmark gain is claimed.
+
+Finite continuation assembly exposed a concrete limitation of standalone prefix
+answers. `LP_Prolog_Finite_Return_Control` proves that resolving a ground fact
+with an empty continuation admits an arbitrary substitution on an unobserved
+captured slot under the existing MGU relation, including a cyclic image of a
+finite variable. This is an over-approximation in the proof semantics, not a
+claim that SWI creates such a binding. The positive control proves that an
+occurrence in the attached finite continuation prevents this change. The source
+semantics and every established construction rule remain unchanged.
+
+`LP_Scoped_Answer_Invariant_Composition` extends shared LP-with-cut composition:
+an invariant is initialized at the prefix state, preserved by actual attached
+steps at reachable prefix states, and retained when a completed prefix frame is
+removed. The continuation receives that invariant alongside its actual prefix
+answer. Specializing the invariant to True recovers unrestricted composition.
+`LP_Prolog_Domain_Invariant_Composition` instantiates the same theorem for the
+existing builtin/domain answer semantics. `LP_Prolog_Finite_Continuation_Composition`
+extracts finite continuation goals from a finite attached execution, retaining
+an explicit preservation premise. `LP_Prolog_Functor_Split_Invariant` applies this
+to the existing checked Split shape, routes and return projection. Standalone
+actual-return contracts remain separate; no finite return claim is assumed.
+
+Resident checks: 1951–1953 corrected explicit MGU/transition instantiation;
+1954 passes the initial counterexample. 1955 passes generic composition; 1956
+needed explicit I/rest instantiation; 1957 passes the domain instance and cyclic
+control. 1958 passes finite-continuation specialization; 1959 adds reachable-state
+preservation and the True compatibility specialization (final finite theory
+2.247 seconds). 1960 was interrupted after 30.890 seconds: a newly quantified
+saved-tail variable shadowed the fixed interface variable list. Renaming it and
+making composition premises explicit fixed the statement; 1961 corrected quoted
+term syntax and 1962 passes the Split theorem in 2.287 seconds. Attempts 1963–1965
+needed explicit list-membership introduction; final counterexample/positive
+control 1966 passes four theorems in 0.334 seconds. All dependency audits pass,
+with inherited checker oracles only for the functor Split theorem. All attempts
+remain in resident log 1544. No native build or checker export was necessary.
+The root still requires discharge of the reachable invariant-preservation premise,
+complete native source assembly, structural residual certification and replay.
