@@ -4624,3 +4624,36 @@ Concrete interface maps, actual-return bridges, the two Split contracts, global
 residual discharge, source initialization and unified strict replay are still
 required. Numbervars remains UNKNOWN; priority 1 is unfinished. Next resident
 2083, native 2716.
+
+
+### Shared caller/callee return interfaces (2083–2086)
+
+Concrete boundary inspection shows that neither side's answer tuple necessarily
+determines the other. The new shared interface concatenates caller outputs and
+instantiated callee outputs per saved frame. Independent coordinate projections
+recover each original tuple. This retains shared and caller-only terms under
+runtime substitution; it does not assume that missing coordinates stay constant.
+
+`lpp_domain_shared_interface_boundary` composes the two commuting projections
+with the separately required actual-success bridge. Its checked specialization
+uses the existing `lpc_check_return_projection` on both sides. There is no new
+execution semantics or finite-term assumption. Both new theorems pass the
+inherited-oracle and skip-proof checks. Two initial attempts to instantiate the
+checked theorem produced ambiguous higher-order unification; explicit projection
+functions and sequential proof premises resolve it.
+
+Incremental export 2086 takes 20.504 seconds and produces 90,215 bytes. The
+unmodified generated checker accepts all five numbervars local-module boundary
+interfaces decoded from native 2713 xml-fixed, and rejects erased shared tuples
+and invalid caller/callee projection indices at every connection. The test
+harness supplies ordinary structural SML equality for the generic checker;
+its first attempt incorrectly supplied string equality and is retained.
+Evidence: `target/prolog-shared-return-interface-2084/`, especially `Check.ML`,
+`check-fixed.log` and resident-written `proofs-2086.log`. Native 2716 constructs
+all seven shared interfaces and checks full reconstruction and bound callee
+return variables. The two Split interfaces retain their separate contracts.
+
+A shared interface is not the actual-success residual bridge. Concrete return
+relations, nested Split contracts, the referenced module assembly, global
+residual discharge and source/unified replay remain unfinished. No new root
+verdict or unified export. Next resident 2087; native 2717.
