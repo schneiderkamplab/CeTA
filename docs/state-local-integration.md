@@ -4687,3 +4687,36 @@ The successful-return relation is now preserved in the shared coordinates, but
 its concrete residual bridge, nested Split contracts, full referenced assembly,
 residual termination and original-source/unified replay remain required.
 Priority 1 is active. Next resident 2091; native 2718.
+
+
+### Matching-head structural preservation (2091–2098)
+
+The 2718 native audit found an 11-step cycle in the unconstrained local-control
+residual. The first loss disconnects a finite call from its refreshed matching
+head. `LP_Prolog_Matching_Structure` now derives a stronger observation from the
+shared MGU variant theorem: every finite runtime call has a finite template,
+and matching-head resolution preserves that template up to one injective
+variable renaming. Both constructor structure and sharing survive. Runtime
+variable identities need not remain equal, so this does not justify inserting
+old/refreshed runtime equations into existing links.
+
+The checked specialization consumes the existing `lp_cut_check_match` receipt,
+actual MGU and finite-call premises. A companion constructor-argument theorem
+retains the actual child templates in a finite univ observation. Negative
+lemmas exclude constructing a node by variable renaming, merging distinct
+variables under an injective renaming, and representing a cyclic runtime term
+by a finite template. No new operational semantics or graph constructor.
+
+All seven theorems pass with zero oracles and no skipped proofs; resident 2098
+loads the theory in 1.725 seconds. No export, native rebuild or unified build.
+Evidence is `target/prolog-matching-structure-2091-2098/{proofs.log,resident.log}`.
+Attempts retain the reserved-name/type-inference errors and explicit list
+instantiation corrections; one unconstrained negative-control blast proof was
+interrupted after 19.077 seconds and replaced by a direct finite-term argument.
+
+This proves the semantic preservation needed by a stronger residual encoding;
+the current native residual and its spurious cycle are unchanged. Next expose
+and transport these structural templates in the residual relation, including
+univ and observed-spine head cases, before finishing return/Split assembly and
+strict source replay. Numbervars remains UNKNOWN. Next resident 2099, native
+2719; priority 1 is active.
