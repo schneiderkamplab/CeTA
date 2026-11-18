@@ -6652,3 +6652,21 @@ Four conclusions pass without oracles or skipped proofs in
 ordinary-dispatch rejection, and rejection of a saved alternative by the
 singleton rule. No full rebuild, export or root gain. Concrete assembly must
 supply these two continuation contracts as well as module links and Splits.
+
+
+### Referenced return-node integration — 2026-11-18
+
+The successful-return bridge now retains the helper's exact return environment
+in the joint observation. Its referenced-node wrapper preserves node conditions,
+groundness/guards, freeness, arithmetic contexts and functor facts as premises
+for the actual caller continuation. It uses the existing canonical scope bridge
+and plugs into finite module-family node contracts. Continuation termination
+and answer contracts remain required; the helper's return is not a terminal
+proof for the attached execution.
+
+Six conclusions, including the previous return controls, passed without oracles
+or skipped proofs in `target/prolog-observer-return-node-2572/`. Only affected
+Isabelle theories were reloaded. No native rebuild, unified export or root gain.
+Next: instantiate continuation contracts for the reconstructed Split interfaces
+and retain caller/helper coordinate relations through family assembly, then
+discharge the open residual and run unified original-source checks and replay.
