@@ -6314,3 +6314,36 @@ Next: instantiate the fresh-univ block with its real caller-separation evidence,
 finish arithmetic/local assembly, then nested Split/forest descent and the open
 residual, reconstruction, unified integration and strict replay. The baseline
 remains 90 YES + 97 NO + 34 UNKNOWN and LP-cut 84 YES + 9 NO.
+
+
+### Fresh-univ caller contract and equality simulation — 2026-11-18
+
+The fresh-resolution/univ block now has a checked actual-execution caller
+contract. It derives protection of caller leaves from the preceding resolution
+MGU over the complete attached continuation, then preserves finite execution
+and caller observations through the actual univ outcome. Intermediate caller
+protection is derived, not assumed from the weaker finite-plus-leaf invariant.
+The resulting contract still requires the block's source-graph descent and
+representation, plus contracts for strict descendants.
+
+Actual univ execution now connects to the normalized reflexive/pair equality
+path. A new one-step simulation interface reuses the existing separation-aware
+equality checks, preserves finite execution, and retains both success and
+failure transports. Reflexive, separated-pair and ground-equality instances are
+verified. Scope lifting preserves the complete module representation, and the
+univ module block uses coverage of all represented equality nodes. This is a
+conditional theorem: concrete graph coverage and the preceding resolution's
+source simulation still have to be assembled. The existing native
+`NormalizedSeparationTrace` supplies the candidate path and incoming-edge
+receipts; no new graph, context reset or benchmark-specific rule was added.
+
+Eighteen theorem conclusions passed the no-oracle/no-skipped-proof receipt in
+`target/prolog-observer-univ-block-2466/`, with source hashes, available timings
+and failed attempts retained. Only affected theories were loaded in the hot
+resident process. Existing pair-check rejection lemmas remain dependencies of
+the verified module block; no new certificate mutation or root replay is
+claimed. No native/unified rebuild or new certified root. Remaining gates:
+concrete source-block/parent assembly, arithmetic and nested Split/forest-rank
+composition, the open residual, native reconstruction and unified integration,
+then original-source strict replay with two checks. The pinned baseline remains
+90 YES + 97 NO + 34 UNKNOWN and LP-cut 84 YES + 9 NO.
