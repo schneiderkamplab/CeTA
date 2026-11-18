@@ -5716,3 +5716,24 @@ path proof. Next use checked fresh-clause acquisition to discharge its runtime
 premises throughout reachable helper execution, finish nested Split/rank
 assembly and parent residual discharge, then strictly replay the source result.
 No root gain; baseline 90 YES + 97 NO. Next resident 2335; native evidence 2740.
+
+
+## Checked fresh clause to actual univ step — 2336
+
+The checked clause/head acquisition now discharges caller-protection premises
+of the actual univ step for every tracked slot. Constructor argument finiteness
+is derived from the finite resolved head and checked input occurrence. Variable
+inputs use the existing variable-domain step theorem. Actual resolution,
+source knowledge/context and caller continuation coverage remain bound.
+
+The post-resolution stack invariant remains explicit, including saved frames;
+no successful-call facts are transferred to resumed alternatives. The preceding
+checked resolution step theorem supplies this invariant once actual successor
+routing is established. Complete reachable-state coverage and nested helper
+assembly remain open.
+
+Verification passes in 2.625 seconds without oracles/skips; evidence is CeTA
+`target/prolog-checked-fresh-step-2336/`. One redundant proof method was removed.
+No native/full rebuild or unified export. No root gain: 90 YES + 97 NO.
+Next resident 2337; native evidence 2740. Continue with complete source routing,
+Split invariants/rank assembly and residual discharge before strict root replay.
