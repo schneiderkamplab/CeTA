@@ -5693,3 +5693,26 @@ explicit type to avoid an imported constant. No native/full rebuild or unified
 export. No source gain; baseline 90 YES + 97 NO. Next resident identifier 2333;
 native evidence remains 2740. Continue with complete trace dispatch and nested
 Split assembly, followed by parent residual discharge and strict source replay.
+
+
+## Actual univ builtin caller preservation — 2334
+
+The existing `lpp_univ_decompose_outcome` requires a successful unifier to be
+most general for every continuation. Instantiating this quantified premise with
+an observer goal proves caller leaf preservation for fresh separated outputs.
+The observer is a logical proof context, not an inserted source goal or a new
+operational rule. No semantics or established graph is changed.
+
+The full shared-domain step theorem covers success, failure, errors and saved
+alternatives with arbitrary pending goals. A separate variable-input step
+preserves the invariant under the existing error/domain envelope. Unsupported
+self-loops are retained and still prevent a termination proof; invariant
+preservation does not discharge the domain obligation.
+
+Three lemmas pass in 0.627 seconds without oracles/skipped proofs; evidence:
+CeTA `target/prolog-actual-univ-2334/`. No native/full rebuild or unified export.
+This supplies direct actual-step preservation alongside the normalized source
+path proof. Next use checked fresh-clause acquisition to discharge its runtime
+premises throughout reachable helper execution, finish nested Split/rank
+assembly and parent residual discharge, then strictly replay the source result.
+No root gain; baseline 90 YES + 97 NO. Next resident 2335; native evidence 2740.
