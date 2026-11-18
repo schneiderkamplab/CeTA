@@ -5406,3 +5406,31 @@ its full payload/interface is retained. These results are conditional node
 contracts, not a completed source certificate. Remaining work includes univ
 normalization, administrative/builtin invariant integration and attached
 Split/rank assembly. No unified export or source verdict changed.
+
+
+## Leaf invariant through normalization and ordinary controls — 2282
+
+The established `=..` separation node now carries finite execution and the
+return-leaf invariant together. Normalization inserts the actual equality
+sequence without changing active or saved return environments. It does not
+perform the equalities: their reflexive/pair contracts remain required.
+The same distinction applies to arithmetic normalization; the checked source
+profile and its error/domain branches remain unchanged.
+
+The ordinary action dispatcher now consumes this combined invariant for
+administration, clause allocation, variable tests, arithmetic normalization,
+trimming and parallel alternatives. Scope renaming preserves the invariant.
+Existing source-action and separation checks retain every represented branch
+and target condition; no graph/context reconstruction was weakened.
+
+Eighteen lemmas pass resident Isabelle with zero oracles/skipped proofs,
+including missing-context and missing-successor controls. Receipts and hashes:
+`target/prolog-leaf-control-2282/`. Attempt 2280 required explicit conjunction
+instantiation in the test-node proof, fixed in 2281. Only new theories and their
+missing imports were checked; no native/full rebuild or unified export.
+
+No source verdict is added. Next connect the remaining local unification
+witness dispatch, actual attached Split return invariants and tree/forest rank
+to complete parent assembly, then discharge residuals and strictly replay.
+The two pair-row result slots still lack checked protection; no payload was
+removed to bypass that obligation. Next resident identifier: 2283.
