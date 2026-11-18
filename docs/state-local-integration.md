@@ -6570,3 +6570,26 @@ residual/forest descent; these references are not assumed contracts. Concrete
 block and entry initialization, both Split return interfaces, open residual
 discharge, unified integration and original-source replay remain required.
 No gain: 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
+
+
+### Strict descent across a finite observer family — 2026-11-18
+
+A referenced-node contract now permits children represented in another module.
+Existing local contracts lift by checked representation inclusion. Family
+assembly uses the shared answer-contract induction with strict residual descent
+for every child, and requires full source-table checks and node contracts for
+every member. Recursive references therefore cannot supply assumed contracts.
+
+The canonical boundary node now connects the checked module link and helper
+interface change to this referenced child relation. Caller environments remain
+unchanged. Targets retain their node-local contexts and frontier membership.
+The family representation rejects empty populations, absent representations and
+missing node premises. Nine conclusions passed without oracles or skipped
+proofs in CeTA `target/prolog-observer-family-2548/`; only affected theories
+were loaded. No native/unified rebuild or new campaign.
+
+Next: instantiate the ordinary boundary links in the concrete family, integrate
+the two Split nodes with actual successful-return and forest-descent contracts,
+and discharge block/entry initialization. The open residual and unified
+original-source reconstruction/replay remain mandatory. Baseline remains
+90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
