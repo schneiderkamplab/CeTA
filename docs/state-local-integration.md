@@ -4746,3 +4746,40 @@ matching-head preservation is not arbitrary-substitution preservation. Complete
 return/Split assembly, residual discharge and original-source strict replay
 remain outstanding. The certified total stays 90 YES + 97 NO; numbervars is
 UNKNOWN. Priority 1 remains active. Next resident 2101, native 2719.
+
+
+### Structural equations and executable univ relation (Isabelle 2101–2108)
+
+`LP_Prolog_Structural_Projection` proves unique finite structural observations
+and compositional evaluation of source terms in a separate structural
+environment. The existing checked matching receipt now yields an equation
+between projected pre/post terms, without equating their runtime environments.
+The observed-list-head variant derives the same equation from a proper spine,
+actual successful MGU, distinct head fields and complete argument coverage.
+Arbitrary successful instantiation is explicitly not structure preservation.
+
+`LP_Prolog_Structural_Univ` connects the actual constructor-argument observation
+to an executable finite relation retaining constructor identity, ordered child
+structure and the corresponding list. Its premise requires initialized finite
+observations; a rational cyclic graph cannot supply them. All nine new lemmas
+pass with zero inherited oracles and no skipped proofs. Projection load 2104
+took 1.573 seconds; univ load 2107 took 1.244 seconds. Earlier attempts exposed
+reserved identifiers tau/args and an induction fact naming error; corrected.
+
+Local export 2108 took 1.492 seconds and produced 19,864 bytes. Unmodified
+generated SML passes 24 controls over three constructor names, including changed
+labels, dropped/reordered children, variable sources, renamed variables,
+structure-changing instantiation and nullary constructors. Evidence is CeTA
+`target/prolog-structural-projection-2101-2108/{proofs.log,Check.ML,check.log}`.
+No native or unified rebuild; no new benchmark verdict.
+
+The remaining integration must encode these relations in the actual residual,
+retain runtime facts independently, and transport observations through module
+interfaces and actual helper returns. The present structural univ relation is
+an executable check on finite values, not yet a finite common-LP/TRS encoding
+of arbitrary constructor labels and arities. Do not silently enumerate only
+source-mentioned constructors or claim that symbolic runtime variables are
+constant structural leaves. The 2718 cycle remains unchanged until that
+integration is checked. Return/Split assembly, residual discharge and strict
+source replay remain required. Total: 90 YES + 97 NO; priority 1 active.
+Next resident 2109; native 2719.
