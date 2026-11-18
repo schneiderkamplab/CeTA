@@ -5232,3 +5232,25 @@ Three lemmas check without oracles/skips in 0.773 seconds; receipt/hashes:
 Local composition is proved; operation-dispatch coverage and attached invariant
 assembly over the complete source module graph remain open. No new source
 verdict. Next resident identifier: 2226.
+
+
+## Leaf invariant over shared answer-stack operations — 2229
+
+`LP_Prolog_Leaf_Stack_Steps` lifts local environment transport obligations over
+the complete existing `lpc_answer_transition`, `lpp_answer_transition` and
+domain-envelope relations. The case proofs cover clause dispatch, resolution,
+unification, cut pruning, backtracking, success, failure, errors, meta calls,
+builtin branches, choices and probes. Saved alternatives keep their own
+environments. Unsupported-domain self-loops preserve the invariant but remain
+termination obligations; no stuck-state shortcut is introduced.
+
+Local lemmas instantiate environment transport for matching resolution, stable
+arithmetic, allowed ground binding and reflexive equality. Their source and
+MGU-coverage conditions remain explicit. This is the assembly layer for the
+attached-call invariant, not a proof that arbitrary source rows satisfy those
+conditions. Ten lemmas check without oracles/skips in 5.848 seconds; receipts
+and hashes: `target/prolog-leaf-stack-2229/`. No export or rebuild.
+
+Next instantiate these conditions for the established graph's source rows,
+including acquired separation for the normalized pair sequence, and connect
+complete module/rank coverage. No root verdict added. Next resident: 2230.
