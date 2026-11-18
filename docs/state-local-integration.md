@@ -5077,3 +5077,13 @@ Isabelle kernel audit without oracles or skipped proofs. Receipt and theory hash
 (0.408 seconds); receipt retrieval corrected the qualified `Draft` theory name.
 No checker export/build or source verdict was added. Actual-state initialization
 and transport remain premises of the eventual source assembly.
+
+
+Ground runtime values also preserve their structural observations under
+substitution. `lpp_ground_structural_observation_substitute` passes resident
+2186 in 0.360 seconds, with zero oracles/skipped proofs; evidence/hash in
+`target/prolog-ground-observation-2186/`. The substitution uses one runtime
+variable type. Attempts 2184/2185 corrected the type and reserved identifier.
+Native diagnostic projection retains these conditional observations only on
+successful resolution branches. This removes its immediate separating-filter
+failure, but the DP child search times out: no source verdict is established.

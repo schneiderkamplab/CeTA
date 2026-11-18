@@ -89,11 +89,17 @@ lemma lpp_free_knowledge_observed_leaf:
  shows "observed_tree = Fun (Inr ()) []"
  by (rule lpp_runtime_structure_unique[OF observed lpp_free_knowledge_structural_observation[OF free member]])
 
+lemma lpp_ground_structural_observation_substitute:
+ fixes runtime_value :: "('f,'v) lp_iterm" and sigma :: "'v \<Rightarrow> ('f,'v) lp_iterm"
+ assumes ground: "lp_seg_ground runtime_value" and observed: "lpp_runtime_structure runtime_value observed_tree"
+ shows "lpp_runtime_structure (lp_isubst runtime_value sigma) observed_tree"
+ using observed by (simp add: lp_seg_ground_subst[OF ground])
+
 ML \<open>
 val checked = @{thms lpp_runtime_structure_ground lpp_finite_structural_environment
  lpp_query_structural_environment lpp_free_argument_has_ground_observation
  lpp_actual_univ_reified_program_success lpp_free_knowledge_structural_observation
- lpp_free_knowledge_observed_leaf};
+ lpp_free_knowledge_observed_leaf lpp_ground_structural_observation_substitute};
 val _ = if Thm_Deps.has_skip_proof checked orelse not(null(Thm_Deps.all_oracles checked))
  then error "Untrusted structural initialization" else ();
 \<close>
