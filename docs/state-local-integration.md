@@ -6048,3 +6048,28 @@ reflexive-plus-pair equality, with its initialized separation and exact child
 context; recursive Split/forest-rank assembly remains outstanding.
 Numbervars remains unproven, totals stay 90 YES + 97 NO, and the unified checker
 is unchanged.
+
+
+### Attached univ normalization — 2026-11-18
+
+The checked observer univ witness now exposes the exact normalized child
+valuation, residual edge, ground/guard knowledge, freeness, arithmetic context,
+functor facts and initialized separation together. The attached univ contract
+uses that witness with the caller's independent observation environment and
+saved alternatives. Both normalized equalities remain in the child contract;
+the existing reflexive-equality theorem justifies its normalization step.
+Actual univ coverage and domain premises remain explicit, including variable
+input error behavior. Termination alone does not discharge the return contract.
+
+CeTA `LP_Prolog_Observer_Univ_Witness` and
+`LP_Prolog_Observer_Univ_Contract` pass in the retained Isabelle process with no
+oracles or skipped proofs. The witness check took 1.206 seconds; the final
+contract check took 1.068 seconds. Receipts, source hashes and failed-attempt
+classifications are in CeTA `target/prolog-observer-univ-2383/`.
+No native build or unified checker generation was required.
+
+Next are actual equality substitution and finite-observation/separation
+transport, followed by recursive Split/forest-rank assembly and native/unified
+integration. Numbervars remains unproven. Certified totals remain 90 YES +
+97 NO; this proof development is not a new source certificate and does not
+change the installed unified checker.
