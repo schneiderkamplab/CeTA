@@ -6616,3 +6616,20 @@ Still required: instantiate independent return safety and all concrete module
 contracts, discharge the open residual, integrate reconstruction and perform
 unified original-source checks and strict replay. No benchmark gain; baseline
 remains 90 YES + 97 NO + 34 UNKNOWN, LP-cut 84 YES + 9 NO.
+
+
+### Independent checked-block answer safety — 2026-11-18
+
+Fresh resolution followed by univ now has an answer-safety wrapper using the
+existing actual execution/product proof and checked frontier simulation. Its
+successor premise is answer coverage, not a termination contract. Checked
+source coverage, acquired separation, actual caller environments and all
+alternatives remain required. This is a conditional local rule; successor
+safety and concrete family coverage are not discharged merely by referencing it.
+
+Five conclusions passed in resident Isabelle with no oracles or skipped proofs;
+receipt `target/prolog-observer-safety-2567/`. Controls accept vacuous safety for
+a silent self-loop, reject a bad later answer and reject an answering internal
+phase. Thus answer safety remains distinct from termination. Only affected
+theories were loaded; no native rebuild, unified export or root gain. Concrete
+family safety assembly, residual discharge and original-source replay remain.
