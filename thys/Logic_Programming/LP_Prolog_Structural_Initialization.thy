@@ -72,10 +72,28 @@ proof -
       arg_shape lpp_reify_argument_list lpp_reified_arguments_map lpp_reified_argument_program_success)
 qed
 
+
+lemma lpp_free_knowledge_structural_observation:
+ assumes free: "lpc_free_knowledge F rho" and member: "x\<in>F"
+ shows "lpp_runtime_structure (rho x) (Fun (Inr ()) [])"
+proof -
+ obtain y where variable: "rho x = LPIVar y"
+  using free member unfolding lpc_free_knowledge_def by blast
+ show ?thesis using lpp_free_argument_has_ground_observation[of y]
+  by (simp add: variable)
+qed
+
+lemma lpp_free_knowledge_observed_leaf:
+ assumes free: "lpc_free_knowledge F rho" and member: "x\<in>F"
+ and observed: "lpp_runtime_structure (rho x) observed_tree"
+ shows "observed_tree = Fun (Inr ()) []"
+ by (rule lpp_runtime_structure_unique[OF observed lpp_free_knowledge_structural_observation[OF free member]])
+
 ML \<open>
 val checked = @{thms lpp_runtime_structure_ground lpp_finite_structural_environment
  lpp_query_structural_environment lpp_free_argument_has_ground_observation
- lpp_actual_univ_reified_program_success};
+ lpp_actual_univ_reified_program_success lpp_free_knowledge_structural_observation
+ lpp_free_knowledge_observed_leaf};
 val _ = if Thm_Deps.has_skip_proof checked orelse not(null(Thm_Deps.all_oracles checked))
  then error "Untrusted structural initialization" else ();
 \<close>

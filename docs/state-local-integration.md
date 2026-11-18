@@ -5064,3 +5064,16 @@ successful residual execution pass again in 2180 (0.409/1.725 seconds for the tw
 theories); receipt/hashes: `target/prolog-copied-parameter-leaf-2180/`. Actual
 source row coverage, attached finite/leaf invariants and complete assembly remain
 open. The native eight-clause child is certified independently, not as a root.
+
+
+### Checked free-variable structural initialization
+
+`LP_Prolog_Structural_Initialization` derives a concrete structural leaf from
+`lpc_free_knowledge F rho` and membership in `F`. Uniqueness identifies any
+existing observation with that leaf. Runtime coordinates remain unrestricted;
+query output modes alone do not establish freeness. Both lemmas pass the resident
+Isabelle kernel audit without oracles or skipped proofs. Receipt and theory hash:
+`target/prolog-free-initialization-2183/`. Initial loading passed in 2182
+(0.408 seconds); receipt retrieval corrected the qualified `Draft` theory name.
+No checker export/build or source verdict was added. Actual-state initialization
+and transport remain premises of the eventual source assembly.
