@@ -4909,3 +4909,17 @@ reasoning. The restored resident loaded the required existing control theories;
 no unified export/build occurred. Native Split receipts now retain the exact
 returned continuation-finiteness obligations. Complete source invariant coverage
 and return/residual assembly remain outstanding; no new source verdict.
+
+
+### Actual-call composition with separate return properties
+
+`LP_Prolog_Actual_Call_Composition` proves that a constant residual return contract
+carries exactly termination, then instantiates finite continuation composition
+with independently justified actual-answer properties. It supplies no returned
+value facts from termination alone. Both theorems pass in resident 2135 with
+zero oracles/skipped proofs (0.387 seconds); evidence:
+`target/prolog-actual-calls-2135/proofs.log`. No unified export/build.
+Ferrum's all-calls diagnostic includes both Split continuations (78 clauses);
+the common triples processor now reports `no separating triple filter`.
+Input/output structural return relations and complete source certification
+remain open; no benchmark verdict is added.
