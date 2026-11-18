@@ -5118,3 +5118,36 @@ with zero oracles/skipped proofs; receipt/hash in
 elimination of the impossible ground-variable case. This supplies the local
 source premise for the recognizer; complete state transport and root assembly
 are still outstanding.
+
+
+### Leaf-count and argument-forest return order
+
+`LP_Prolog_Leaf_Lexicographic_Return` proves that ground leaf replacements
+never increase variable-leaf count; equality of the counts forces the entire
+observation to remain identical. This yields a well-founded lexicographic
+order with structural size as its second component, without a uniform bound on
+replacement size. A nonground replacement counterexample keeps the leaf count
+but changes structure, so groundness remains an explicit premise.
+
+`LP_Prolog_List_Leaf_Effect` characterizes leaf effects on proper observed list
+spines exactly as componentwise element effects, preserving spine length.
+`LP_Prolog_Forest_Return_Order` connects a constructor observation with its
+argument forest, an argument forest with its head, and a caller forest with
+its returned tail. Tree and forest phases use different size offsets; list
+encoding nodes are not counted as source traversal work. The runtime bridge
+extracts the ordered returned tail from the existing runtime leaf invariant.
+It does not infer that invariant from helper termination.
+
+Seventeen theorems pass resident audits without oracles/skipped proofs. Verified
+phases: 2197 (1.075 seconds), 2202 (1.361 seconds), 2205 (1.974 seconds). Receipt
+and hashes: `target/prolog-forest-return-order-2205/`. Attempt 2198 was interrupted
+after a schematic existential rule caused unification-bound warnings; explicit
+list witnesses fixed it. Other attempts corrected sum membership, list-length
+witnesses and the `*s` token ambiguity. The resident was reused throughout.
+
+The native proper-list diagnostic has nine of ten checked DP children, with
+two unified checks per successful child. The ordinary main component remains
+open; three existing constructor-triples alternatives also time out. Next bind
+the tree/forest views and return-order premises to the original module/Split
+interfaces and discharge attached source invariants. No source certificate,
+checker export, root gain or production promotion is claimed.
