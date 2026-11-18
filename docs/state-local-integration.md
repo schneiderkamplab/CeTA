@@ -6273,3 +6273,44 @@ separation and finite initialization, recursive Split/forest-rank assembly,
 the open residual, certificate reconstruction and unified integration, followed
 by original-source strict replay and two checks. The pinned baseline remains
 90 YES + 97 NO + 34 UNKNOWN; LP-cut remains 84 YES + 9 NO.
+
+
+### Special observer nodes and caller-protection gap — 2026-11-18
+
+Concrete observer parent contracts now cover resolution (matching, anchored and
+observed-spine heads), checked fresh-clause separation acquisition, ground
+equality and term tests. The existing unification checker is connected to these
+contracts. Actual substitutions preserve the finite attached continuation and
+caller leaf observations; failed branches retain their own context obligations.
+The empty-target specialization requires already-empty target separation facts;
+it does not clear an existing context. Fresh resolution retains checked nonempty
+facts and normalization receipts.
+
+A verified counterexample in `LP_Prolog_Observer_Protection_Control` shows why
+these components do not yet suffice for univ/pair assembly: the finite-plus-leaf
+invariant can hold while the caller aliases a helper output. A valid pair MGU
+then turns that caller leaf into a nonground constructor, violating the promised
+return relation. This is a counterexample to the proposed invariant sufficiency,
+not to an exported checker rule or to numbervars termination. The existing
+fresh-clause theorem proves the required caller separation, but assembly must
+carry that acquired evidence to the subsequent univ/equality steps.
+
+`LP_Prolog_Observer_Block_Contract` supplies a two-actual-step composition rule
+that keeps acquired intermediate evidence scoped to that execution. Every
+outcome must still be covered and the endpoint must satisfy checked residual
+descent, full representation and the caller invariant. It is not yet the
+concrete fresh-univ block certificate. Read-only inspection of original and
+renamed saved tables identifies the same sequence in regions 0 and 47:
+local 3 (fresh resolution), 6 (univ), 10 (reflexive equality), 13 (pair equality).
+Ferrum `target/prolog-observer-block-diagnosis-2746/manifest.json` pins the tables,
+all encoded targets and branch modes; no failure target was removed.
+
+Seventeen conclusions, including the three-part protection counterexample and
+retained missing-head, failure-context and return-slot controls, checked without
+oracles or skipped proofs. CeTA `target/prolog-observer-special-2445/` retains
+source hashes, receipts, timings and failed attempts. Only affected theories
+were loaded in the resident process. No native or unified rebuild; no new root.
+Next: instantiate the fresh-univ block with its real caller-separation evidence,
+finish arithmetic/local assembly, then nested Split/forest descent and the open
+residual, reconstruction, unified integration and strict replay. The baseline
+remains 90 YES + 97 NO + 34 UNKNOWN and LP-cut 84 YES + 9 NO.

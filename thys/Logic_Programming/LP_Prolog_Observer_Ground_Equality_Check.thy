@@ -1,0 +1,32 @@
+theory LP_Prolog_Observer_Ground_Equality_Check
+ imports LP_Prolog_Observer_Ground_Equality_Node
+begin
+
+theorem lpp_checked_observer_ground_equality_node_contract:
+ fixes SP :: "string lpp_success_clause list"
+ and rest :: "(string lp_cut_symbol,nat) term lp_cut_goal list"
+ assumes program: "lp_cut_source_program P"
+ and scope_free: "lpc_rest_scopes rest={}"
+ and covered: "lpp_check_attached_leaf_slots (map fst specs) rest"
+ and compatible: "lpp_stable_integer_operations operation"
+ and transfer: "lpp_check_transfer_program T SP receipts"
+ and checked: "lpp_check_functor_equality_node T yes_facts no_facts fuel P Q nds states contexts Fs functor_contexts
+   (nds!i) (Fs!i) a b gs active saved k l next mode outputs (contexts!i) (functor_contexts!i) yes no"
+ and shape: "states!i=((LPCGoals (LPCUnify a b#gs),active)#saved)"
+ and ground: "vars_term b \<subseteq> set (lpcn_ground (nds!i)) \<union> lpp_source_context_ground (contexts!i)"
+ and success_target: "mode\<noteq>LPCAlwaysFailure \<Longrightarrow> lpp_empty_separation_target separation_contexts yes"
+ and failure_target: "mode\<noteq>LPCAlwaysSuccess \<Longrightarrow> lpp_empty_separation_target separation_contexts no"
+ shows "lpp_observer_node_contract names operation SP P lpp_builtin_signature
+   (lpp_univ_source_builtin names operation) lpp_univ_source_domain Q nds states contexts Fs functor_contexts
+   (lpp_separation_node_conditions separation_contexts) (lpp_observer_invariant {v. vars_term v={}} specs rest) rest returned i"
+ apply (rule lpp_observer_ground_equality_node_contract[where yes_separation="[]" and no_separation="[]",
+   OF program scope_free compatible transfer checked shape ground _ _ _ _ covered])
+ using success_target failure_target
+ by (auto simp: lpp_empty_separation_target_def lpp_check_separation_transport_def)
+
+ML \<open>
+val checked = @{thms lpp_checked_observer_ground_equality_node_contract};
+val _ = if Thm_Deps.has_skip_proof checked orelse not(null(Thm_Deps.all_oracles checked))
+ then error "Untrusted checked observer ground equality" else ();
+\<close>
+end
