@@ -6670,3 +6670,23 @@ Isabelle theories were reloaded. No native rebuild, unified export or root gain.
 Next: instantiate continuation contracts for the reconstructed Split interfaces
 and retain caller/helper coordinate relations through family assembly, then
 discharge the open residual and run unified original-source checks and replay.
+
+
+### Actual-answer coordinate equalities — 2026-11-18
+
+The shared answer semantics now proves that initialized coordinate equalities
+are preserved by ordered resolution, cut, unification, builtins, backtracking
+and domain self-loops, and therefore hold at every actual successful return.
+The invariant is frame-local: every saved alternative must independently
+satisfy the coordinate relation. No termination, finite-tree or integer-input
+assumption is used. Changing helper observation coordinates still requires
+explicit transport; this theorem does not justify arbitrary rebasing.
+
+The actual native product layouts yield equalities (1,3)/(2,4) for Split 30
+and (2,3) for Split 44. Their actual-return instantiations and negative controls
+for changed output coordinates and mismatched saved frames pass. Eleven
+conclusions have no oracles or skipped proofs; receipt and pinned native logs
+are in `target/prolog-answer-coordinates-2580/`. Only affected theories loaded.
+No unified export or source gain. Remaining work includes coordinate transport
+through module interfaces, concrete continuation/family assembly, open residual
+discharge and unified original-source replay.
