@@ -5832,3 +5832,31 @@ certificate. The native receipt still needs certificate serialization/checker
 integration together with the complete parameterized helper contract and all
 residual children. No CeTA code/export or unified executable change this turn;
 no root gain, baseline 90 YES + 97 NO. Next native evidence 2742; resident 2342.
+
+
+## Serialized observer-entry instance checks — 2342 / 2742
+
+The ignored native inspector now exports each observer entry's caller node,
+helper node, instance bindings and complete caller return state through the
+shared serializers. The existing Isabelle-generated diagnostic module already
+exports `lp_cut_check_instance` and the parsers; no code generation was needed.
+A separate harness parses the receipts and invokes that generated checker.
+
+Original and renamed sources each pass both entry checks and reject eight
+mutations: missing helper goals, missing caller goals, invented ground facts
+and wrong instance bindings for each Split. Caller payload arities 4/3 and goal
+alignment are checked separately by the harness. These arities are external
+regression expectations, not production dispatch. This verifies the exact
+instance premise; it is not a unified root certificate or complete parent proof.
+
+Native evidence: Ferrum `target/prolog-observer-xml-2742/`; generated-checker
+harness/logs/hashes: CeTA `target/prolog-observer-check-2342/`. Incremental build
+29.49 seconds; generalized regression 0.10 seconds; original/renamed export
+2.279/2.289 seconds. One Rust module path and one tool executable path were
+corrected; failed logs are retained. No full rebuild, checker regeneration or
+unified executable change. Baseline stays 90 YES + 97 NO; no source gain.
+
+Next discharge the complete parameterized attached-helper contract, integrate
+it with nested Split/rank assembly and parent residual proofs, then perform
+strict original-source replay. Next native evidence 2743; resident 2343 (2342
+identifies the standalone checker diagnostic, not an Isabelle theory load).
