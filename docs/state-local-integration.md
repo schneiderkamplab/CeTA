@@ -6536,3 +6536,37 @@ all seven nonempty boundary occurrences, including recursive Splits and forest
 descent. Then close the residual and complete original-source reconstruction,
 unified export and strict replay. No root gain: 90 YES + 97 NO + 34 UNKNOWN;
 LP-cut 84 YES + 9 NO.
+
+
+### Caller-preserving module interface transport — 2026-11-18
+
+Module links can now replace the helper observation while preserving the
+actual caller projection exactly, including all saved environments and runtime
+aliasing. The new helper representation remains a separate checked premise.
+The cross-module contract consumes the existing checked functor/context link,
+separation transport, target frontier and strict residual step; it still requires
+the target contract. It never obtains a return fact from changing coordinates.
+The shared empty-node theorem separately discharges empty boundary states.
+
+11 conclusions passed without oracles or skipped proofs in CeTA
+`target/prolog-observer-boundary-2542/`. Controls preserve distinct saved
+caller values and existing helper/caller aliasing. Incremental checking only;
+no unified export. Two native original/renamed reconstruction inspections pass
+without rebuilding in Ferrum `target/prolog-observer-boundaries-2748/`. Both
+retain these seven boundary occurrences:
+
+| Source region:row | Target | Obligation |
+| --- | --- | --- |
+| 0:19 | 19 | Arithmetic equality module |
+| 0:25 | 28 | Cut/return module |
+| 0:27 | 30 | Recursive Split |
+| 35:5 | 28 | Cut/return module |
+| 35:7 | 44 | Recursive Split |
+| 47:17 | 35 | List traversal module |
+| 47:19 | 19 | Arithmetic equality module |
+
+The next assembly must use a finite referenced module family with strict
+residual/forest descent; these references are not assumed contracts. Concrete
+block and entry initialization, both Split return interfaces, open residual
+discharge, unified integration and original-source replay remain required.
+No gain: 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
