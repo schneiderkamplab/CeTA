@@ -6139,3 +6139,36 @@ Finite-observation and fresh caller-separation transport through the local
 rows, recursive Split/forest-rank assembly, native integration and original-root
 strict replay remain. No native build or unified export was performed;
 numbervars remains unproven and certified totals remain 90 YES + 97 NO.
+
+
+### Actual attached finite execution — 2026-11-18
+
+`LP_Prolog_Checked_Attached_Finite` discharges finite resolved-head and
+attached-continuation obligations using the existing separation-head checker.
+Matching, anchored-ground and observed-spine witnesses share the same proof.
+The finite call is retained as an input premise: arbitrary rational unification
+is not treated as finite. The combined resolution theorem preserves both
+finite execution and caller leaf observations, including saved alternatives.
+The fresh-univ caller theorem now derives resolved finiteness from that checked
+head, eliminating the earlier explicit resolved-finiteness premise.
+
+`LP_Prolog_Attached_Univ_Finite_Steps` proves finite intermediate and final
+execution for the two actual normalized univ equalities. It uses their real
+MGUs over the full attached continuation. The domain-aware combined theorem
+also retains caller leaf observations. Distinct fresh outputs and caller
+separation remain explicit; finite list spines are not substituted for finite
+argument elements.
+
+Six new conclusions and two existing controls pass without oracles or skipped
+proofs. The controls demonstrate that finite helper execution alone does not
+cover a suspended caller value, including values in saved alternatives.
+Checked-head proofs took 0.684 seconds; final finite-univ proofs took 1.946
+seconds. Evidence/hashes: CeTA `target/prolog-observer-finite-2407/`.
+All four incremental proof loads succeeded without a native build or full
+checker rebuild.
+
+Remaining work is assembling these local invariants with graph context and
+fresh-separation evidence, then recursive Split/forest-rank assembly, native
+integration and original-root strict replay. Numbervars remains unproven,
+certified totals remain 90 YES + 97 NO, and the installed unified checker is
+unchanged.
