@@ -6020,3 +6020,31 @@ observation and separation transport, and recursive Split return/rank contracts.
 Numbervars remains unproven. Certified totals stay 90 YES + 97 NO; the unified
 CeTA executable is unchanged. These checked source-step families are not counted
 as benchmark gains.
+
+
+## Attached arithmetic normalization contract — 2372
+
+`LP_Prolog_Observer_Arithmetic_Normalization` exposes the existing checked
+`is/2` normalization as an exact helper context witness, then composes it with
+an independent caller observation. The normalized equality has the same active
+and saved environments as the actual source call. The checked child valuation
+supplies the residual descent, ground/guard knowledge, freeness, stable
+arithmetic context and functor observations. Caller leaf invariance holds at
+normalization because its observation environments have not changed; actual
+equality substitution remains the child's checked obligation.
+
+The new attached contract requires the normalized child's complete answer
+contract. It reuses `lpp_univ_evaluation_domain_contract` to cover actual `is/2`
+execution, including errors and failed equality, with the fixed source-domain
+and stable-operation premises. No integer-only restriction is introduced and
+no return contract is inferred from termination alone. The caller environment
+is not rebuilt through the helper's fresh result-variable assignment.
+
+Two theorem conclusions pass without skipped proofs or oracles in 0.686s of
+retained-process checking. Evidence/hashes and the failed proof attempt are in
+CeTA `target/prolog-observer-arithmetic-2372/`. No native rebuild or checker
+generation was performed. The next normalization obligation is univ's
+reflexive-plus-pair equality, with its initialized separation and exact child
+context; recursive Split/forest-rank assembly remains outstanding.
+Numbervars remains unproven, totals stay 90 YES + 97 NO, and the unified checker
+is unchanged.
