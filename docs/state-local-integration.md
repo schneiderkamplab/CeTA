@@ -5434,3 +5434,35 @@ witness dispatch, actual attached Split return invariants and tree/forest rank
 to complete parent assembly, then discharge residuals and strictly replay.
 The two pair-row result slots still lack checked protection; no payload was
 removed to bypass that obligation. Next resident identifier: 2283.
+
+
+## Complete local leaf-table checking — 2283–2289
+
+The stronger leaf contracts now use the existing head, unification, fresh,
+reflexive, pair and ordinary witness dispatch. `lpp_check_leaf_control` checks
+every retained action and its coverage together with the complete established
+source table. Its theorem retains initial knowledge, finiteness, leaf invariant,
+residual termination and all nonempty boundary contracts as explicit premises.
+Absent actions cannot discharge Split obligations.
+
+Fourteen lemmas pass resident Isabelle without oracles/skipped proofs, including
+missing row/context/witness and orphan witness rejection. Diagnostic generation
+first failed because nested set union demanded an operational-goal comparison
+instance (2288, 49.614 seconds). Proved equivalent finite-list traversal code
+equations fix this without changing the check; export 2289 took 47.796 seconds.
+Only this diagnostic module was generated; the unified checker is unchanged.
+
+Fresh original and renamed source exports each pass all 38 retained source and
+separation action checks and all five local tables for slot 0. Each rejects 15
+invalid return-slot checks, two missing-pair-separation mutations and 15 table
+mutations. The pair-row slot 2 remains unprotected; region 19's slot 2 is outside
+its return arity. The full payloads and interfaces remain intact. Evidence and
+hashes: `target/prolog-leaf-table-2288/`; native source exports: Ferrum
+`target/prolog-leaf-table-2738/`. No native rebuild was needed.
+
+These are actual local table checks, not root certificates or attached-caller
+return proofs. Slot 0's local success does not establish the caller-tail contract.
+Next bind the initial invariant, actual Split interfaces and attached return
+facts to the tree/forest rank, finish parent assembly and residual discharge,
+and perform strict replay with two unified checks. No new root verdict.
+Next resident identifier: 2290; native evidence: 2739.
