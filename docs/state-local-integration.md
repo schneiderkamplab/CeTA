@@ -5337,3 +5337,25 @@ Only missing imported dependencies were loaded; no native/full rebuild or
 unified export. No new root verdict. Remaining work includes other source
 operations, relational coverage integration, attached Split/rank composition,
 source certificates and strict replay.
+
+## Relational coverage consumed by head contracts — 2257
+
+`LP_Prolog_Relational_Return_Leaf` consumes the finite functor-support closure
+inside return-slot coverage and the anchored-head node contract.
+`LP_Prolog_Relational_Matching_Leaf` and `LP_Prolog_Relational_Spine_Leaf` add
+matching and observed proper-list head contracts with the same combined finite
+execution/leaf-stack invariant. Actual runtime matching is derived from the
+successful list-head resolution; list length never supplies finite elements.
+Source/context checks, failure links and saved alternatives stay explicit.
+
+Twelve lemmas check with no skipped proofs or oracles. Resident check times:
+4.961, 4.034 and 0.722 seconds. Receipt and hashes are retained under
+`target/prolog-relational-leaf-2257/`. Ferrum adds a conditional coverage receipt
+bound to the entire projected state and active-frame functor facts. Original
+and renamed source reconstruction both cover all 12 resolution payloads; this
+is coverage evidence, not certification of every source node or the root.
+
+No unified export or new source verdict. Next integrate the nonempty separation
+contracts for fresh outputs, equality/univ operations and the complete attached
+Split/rank assembly. The existing empty-target head contracts do not discharge
+fresh-output acquisition or replace any module dependency.
