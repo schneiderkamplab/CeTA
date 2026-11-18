@@ -5784,3 +5784,25 @@ unified executable change. No root gain: 90 YES + 97 NO.
 Next implement the attached-observer module-entry connection using the actual
 step preservation proofs; then complete nested Split/rank assembly, residual
 discharge and strict source replay. Next native evidence 2741; resident 2338.
+
+
+## Attached observer module entry — 2341
+
+The existing instance checker now supplies an entry theorem that instantiates
+helper executable goals while retaining an arbitrary independent caller return
+environment and the exact saved stack. Caller-only observations need not occur
+in the helper payload or binding domain. This addresses the interface mismatch
+confirmed at both actual Splits without changing graph contexts or payloads.
+
+The contract-transfer theorem requires an attached-execution helper contract;
+it does not derive one from isolated helper termination. Entry equality alone
+also establishes no leaf effect or continuation termination. Scope permutations
+are not included in this single-goal-frame entry specialization (empty swaps).
+
+Two lemmas pass in 0.284 seconds without oracles/skipped proofs; evidence:
+CeTA `target/prolog-observer-entry-2341/`. Development corrections involved
+explicit valuation types and an imported identifier. No native/full rebuild
+or unified export. Baseline 90 YES + 97 NO; no new root certificate.
+Next assemble the parameterized attached-helper contract from actual-step
+preservation and complete source dispatch, then nested Splits/rank and residual
+proofs. Next resident 2342; native evidence 2741.
