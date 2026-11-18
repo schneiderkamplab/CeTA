@@ -5494,3 +5494,32 @@ helper calls, then connect the complete attached invariant to the actual Split
 interfaces/rank and discharge parent residuals. Existing source-variable univ
 lemmas alone do not instantiate numeric caller return slots. No root gain;
 next resident identifier 2296, native evidence identifier remains 2739.
+
+
+## Normalized univ on actual return slots — 2307
+
+A proof-only template reindexing bridges numeric return slots to the established
+string-template univ theorem. Evaluation and variable support are proved exact,
+and distinct slots cannot collide. Runtime terms, actual MGUs, clause variables,
+source states and graph contexts are unchanged.
+
+The shared MGU continuation-subset lemma projects a consequence of the same
+actual unifier. This permits the attached univ theorem to retain arbitrary helper
+pending goals alongside the caller continuation. Both actual unifications
+preserve protected live return-slot leaf effects; the full-stack version keeps
+saved alternatives' environments. It does not delete goals from execution.
+
+An actual pair-MGU counterexample binds an observed output to a nonground
+constructor and violates the ground-leaf contract. The separation premise is
+therefore material even with finite inputs and live continuation coverage.
+Twelve lemmas pass without oracles/skips; receipt/hashes:
+`target/prolog-return-slot-univ-2307/`. Univ checks in 3.302 seconds, controls in
+1.452 seconds. Failed development attempts and two interrupted automation
+attempts (37.935/19.877 seconds) are recorded; explicit instantiation/type
+annotations fix them. The hot resident was retained, with no native/full rebuild
+or checker export.
+
+Next complete attached invariant preservation through the remaining operations
+and nested helpers, bind both actual Split interfaces to the return rank, and
+finish parent residual/source certification and strict replay. No source verdict
+added. Next resident identifier 2308; native evidence remains 2739.
