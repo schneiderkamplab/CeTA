@@ -5756,3 +5756,31 @@ No native/full rebuild or unified export; no root gain. Baseline 90 YES + 97 NO.
 Complete reachable helper coverage, nested Split/rank assembly and the parent
 residual remain necessary before strict source replay. Next resident identifier
 2338; native evidence identifier 2740.
+
+
+## Caller-only observation gap confirmed — native 2740
+
+Fresh original and renamed inspections show that both Split tails contain V3,
+while their helper execution bindings cover only V0, V1 and V2. Split 30 retains
+V3 at caller payload slot 2; Split 44 retains it at slot 1. Both complete caller
+payloads remain intact. `ForestReturnBinding::caller_only_tail_variables` now
+exposes observation variables absent from helper entry bindings, with a targeted
+regression. This is syntactic interface coverage, not runtime non-sharing.
+
+The result limits the applicability of the checked return-link leaf theorem:
+it transports observations already present in the annotated link interface.
+It cannot introduce the caller-only tail into an isolated helper payload.
+Likewise, the earlier local-table slot 0 checks are not proofs about that tail.
+The required assembly must carry the caller observer through a parameterized
+attached execution contract, retaining the complete module and caller contexts.
+Do not substitute a same-numbered helper slot or reset contexts to bypass this.
+
+Incremental native build took 18.66 seconds; the generalized Split regression
+passed in 0.10 seconds. Original/renamed inspections passed in 2.318/2.308
+seconds. Evidence and hashes: Ferrum `target/prolog-caller-coverage-2740/`;
+build log `target/prolog-caller-coverage-build-2740.log`. No CeTA code/export or
+unified executable change. No root gain: 90 YES + 97 NO.
+
+Next implement the attached-observer module-entry connection using the actual
+step preservation proofs; then complete nested Split/rank assembly, residual
+discharge and strict source replay. Next native evidence 2741; resident 2338.
