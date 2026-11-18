@@ -5108,3 +5108,13 @@ With it seven of eight native DP children close and pass two checks each using
 the unchanged pinned unified checker. The main Split-continuation child remains
 open, as do actual-source invariant coverage and parent reconstruction. These
 results do not add a Prolog verdict.
+
+
+The actual-runtime bridge is also checked: finite runtime groundness plus an
+existing structural observation entails the leaf-free property and successful
+recognizer execution. These two lemmas pass in resident 2194 (1.686 seconds),
+with zero oracles/skipped proofs; receipt/hash in
+`target/prolog-ground-runtime-observation-2194/`. Attempt 2193 needed explicit
+elimination of the impossible ground-variable case. This supplies the local
+source premise for the recognizer; complete state transport and root assembly
+are still outstanding.

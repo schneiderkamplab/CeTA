@@ -102,6 +102,26 @@ lemma lpp_ground_template_observation_success:
  shows "((lpp_ground_tree_goal p (lpp_structure_template u)#rest,env),(rest,env))\<in>(lp_seg_answer_step P)\<^sup>*"
  by (rule lpp_ground_observation_success[OF core lpp_ground_template_no_variable_leaf[OF ground]])
 
+lemma lpp_ground_runtime_observation_leaf_free:
+ assumes ground: "lp_seg_ground runtime_value"
+ and observed: "lpp_runtime_structure runtime_value observed_tree"
+ shows "lpp_no_variable_leaf observed_tree"
+proof -
+ obtain u where runtime: "runtime_value = lp_ieval u LPIVar"
+  and shape: "observed_tree = lpp_structure_template u"
+  using observed unfolding lpp_runtime_structure_def by blast
+ have template_ground: "vars_term u = {}"
+  using ground runtime by (auto simp: lp_seg_ground_eval elim: lp_seg_ground.cases)
+ show ?thesis using lpp_ground_template_no_variable_leaf[OF template_ground] shape by simp
+qed
+
+lemma lpp_ground_runtime_observation_success:
+ assumes core: "set (lpp_ground_observation_program p q) \<subseteq> set P"
+ and ground: "lp_seg_ground runtime_value"
+ and observed: "lpp_runtime_structure runtime_value observed_tree"
+ shows "((lpp_ground_tree_goal p observed_tree#rest,env),(rest,env))\<in>(lp_seg_answer_step P)\<^sup>*"
+ by (rule lpp_ground_observation_success[OF core lpp_ground_runtime_observation_leaf_free[OF ground observed]])
+
 lemma lpp_ground_observation_rejects_leaf:
  assumes distinct: "p\<noteq>q"
  shows "\<not> (((p,[LPIFun LPPStructureLeaf []])#rest,env),next_state)
@@ -114,7 +134,7 @@ lemma lpp_ground_observation_rejects_leaf:
 ML \<open>
 val checked = @{thms lpp_ground_observation_node_step lpp_ground_observation_nil_step
  lpp_ground_observation_cons_step lpp_ground_observation_spine_success
- lpp_ground_observation_success lpp_ground_template_observation_success lpp_ground_observation_rejects_leaf};
+ lpp_ground_observation_success lpp_ground_template_observation_success lpp_ground_observation_rejects_leaf lpp_ground_runtime_observation_leaf_free lpp_ground_runtime_observation_success};
 val _ = if Thm_Deps.has_skip_proof checked orelse not(null(Thm_Deps.all_oracles checked))
  then error "Untrusted ground observation program" else ();
 \<close>
