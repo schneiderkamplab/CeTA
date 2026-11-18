@@ -4923,3 +4923,29 @@ Ferrum's all-calls diagnostic includes both Split continuations (78 clauses);
 the common triples processor now reports `no separating triple filter`.
 Input/output structural return relations and complete source certification
 remain open; no benchmark verdict is added.
+
+### Bounded leaf instantiation and structural descent
+
+`LP_Prolog_Bounded_Instantiation` connects finite runtime substitution images to
+an inductive structural return relation. Existing constructors are retained;
+variable leaves may stay free or become an explicitly allowed finite template.
+Composition tracks the runtime support of the first substitution and requires
+ground replacement templates. This is a conditional source-return theorem, not
+an assumption inferred from helper termination.
+
+A weighted structural measure reserves a bound at each free leaf. Checked
+replacement does not increase this measure, and descent to a constructor child
+remains strict after replacement. Binary constructors with two atomic children
+have weight three regardless of their labels. Controls reject cyclic images,
+unapproved constructor introduction, changed constructor identity and an
+insufficient leaf budget. Template sets need not be finite; a uniform budget is
+an explicit independent premise.
+
+All 13 theorems pass in resident 2148 (1.208 seconds), with zero oracles and no
+skipped proofs. The resident-written receipt and theory hash are in
+`target/prolog-bounded-instantiation-2148/`. Attempts 2141–2147 corrected explicit
+disjunction/membership reasoning, a lexical signed-comparison ambiguity and
+higher-order premise instantiation; 2141 was interrupted without restarting the
+resident. No unified export or rebuild. Actual source return-bound synthesis,
+relational residual emission and full source assembly remain open. No benchmark
+verdict or checker acceptance changed.
