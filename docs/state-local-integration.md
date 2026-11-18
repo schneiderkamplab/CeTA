@@ -4874,3 +4874,22 @@ after interruption. The resident was restored from the existing verified 1748
 heap. No export or checker rebuild. Ferrum's weaker diagnostic child query
 requires only ground structural coordinates and still passes two checks with
 the pinned composed-1792 unified checker. Full source/Split assembly is pending.
+
+
+### Checked Split composition with finite actual continuations
+
+`LP_Prolog_Checked_Split_Composition` combines the existing executable Split
+shape check with the shared Prolog domain-answer semantics, finite continuation
+composition and actual-return projection. It retains explicit child-contract,
+finite-state preservation and actual-return bridge premises. Resident 2125
+passes without oracles/skipped proofs (2.284 seconds); 2124's local-definition
+error was corrected with explicit interface equalities.
+
+Native serialized Split shapes for both numbervars sites and a renamed unary
+counter-marker fixture pass 24 kernel-replayed checks, including missing routing,
+invalid projection, changed prefix, missing continuation and missing interface.
+Generated theories/manifests and `verified-2125-2129.log` are in
+`target/prolog-checked-split-2125/`. Checks 2128/2129 take 9.124/8.982 seconds;
+2126/2127 needed concrete symbol types for otherwise polymorphic answer lists.
+The checked data is a local composition premise, not a whole source certificate.
+No unified export/build; actual-return discharge and complete assembly remain.
