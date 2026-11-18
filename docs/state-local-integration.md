@@ -6473,3 +6473,37 @@ Source integration still needs resolution, term tests, arithmetic and complete
 frontier dispatch/initialization, then nested Split/forest descent, residual
 discharge and original-source reconstruction/replay. No new certified root:
 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
+
+
+### Resolution, term tests and arithmetic observer nodes — 2026-11-18
+
+Resolution now transports actual successful MGU contexts and original failure
+contexts to separately checked frontier destinations. The head-check wrapper
+and unification dispatch preserve the original source checks and require each
+possible branch destination. Controls reject omission of either branch under
+Both coverage; only a separately checked source coverage mode can make a
+placeholder inactive.
+
+Term tests now support nonempty separation contexts: both outcomes transport
+the incoming facts through their own checked link. No target context is reset.
+Arithmetic normalization has a general observer contract and canonical node
+contract. Finite execution proves its source-domain premise; replacing the
+arithmetic call with its actual scalar-result equality preserves the observer
+invariant and joint environments. The normalized child must have its own
+representation and contract. This uses the existing scalar operation profile,
+including binary64 and error behavior, without an integer-input assumption.
+The frontier arithmetic specialization checks an actually empty target
+separation context; extending it to nonempty normalized contexts remains a
+separate transport obligation.
+
+20 conclusions passed without oracles or skipped proofs, including five branch
+controls. CeTA `target/prolog-observer-source-nodes-2530/` pins source hashes,
+proof receipts, available timings and failed attempts. Only affected theories
+were loaded in the resident; no native/unified rebuild or new root campaign.
+
+Next: assemble complete module dispatch using these source-node contracts and
+the acquired univ blocks, validate original/renamed graph coverage and entry
+initialization, then finish nested Split/forest descent, residual discharge and
+original-source reconstruction/replay. No certified gain yet: 90 YES + 97 NO +
+34 UNKNOWN; LP-cut 84 YES + 9 NO. The grouped gap overview remains in Ferrum
+`docs/prolog-remaining-gaps.md`.
