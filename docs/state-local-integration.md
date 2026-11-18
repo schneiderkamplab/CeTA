@@ -5193,3 +5193,23 @@ decomposed input and fresh outputs. Source assembly must extend acquisition
 and transport to the protected caller coordinate before applying this theorem.
 A syntactic name comparison is insufficient. The full source invariant and
 module parent certificate remain open; no new root verdict. Next resident: 2219.
+
+
+## Fresh-output separation from attached callers — 2220
+
+`LP_Prolog_Fresh_Continuation_Separation` extends the existing finite-head
+freshness proof to individual live caller variables. Most-generality of the
+same actual resolution covers both the caller continuation and clause body;
+a body-only runtime variable cannot occur in a finite instantiated caller
+value. The matching specialization simultaneously preserves the caller's
+runtime leaf invariant and acquires separation, so it does not require an
+unexplained post-resolution finiteness assumption.
+
+Three lemmas pass without oracles/skips in 0.642 seconds; receipt/hashes:
+`target/prolog-fresh-continuation-2220/`. Unified export unchanged.
+The integration must carry these caller premises through attached composition:
+a standalone helper region may omit the protected caller value. Do not insert
+an invented caller into the established graph or infer MGU coverage from an
+answer tuple. Next connect acquisition to the normalized reflexive/pair
+sequence under that attached invariant, preserving all module obligations.
+No source verdict yet; next resident identifier 2221.
