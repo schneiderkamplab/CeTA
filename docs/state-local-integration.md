@@ -5606,3 +5606,27 @@ Next focus on the normalized-univ intermediate states and propagation of caller
 separation from fresh clause variables. Do not replace this obligation with a
 macro proof that assumes its intermediate facts. Next resident identifier 2325;
 native evidence identifier remains 2740.
+
+
+## Attached pair intermediate preservation — 2327
+
+The first reflexive MGU now yields a common inverse on the pending pair and
+an observed numeric caller slot, with arbitrary helper pending goals retained.
+Finite inverse transport preserves the caller observation, finiteness of the
+pair RHS, pair separation and caller protection at the intermediate state.
+The stack theorem preserves every observed slot and leaves saved environments
+unchanged. It does not assume the reflexive MGU itself is identity.
+
+Three lemmas pass in 2.279 seconds without oracles/skipped proofs; receipt and
+hashes are in CeTA `target/prolog-attached-intermediate-2327/`. An initial proof
+needed explicit slot specialization before simplifying the coordinate name.
+No native/full rebuild or checker export. Baseline remains 90 YES + 97 NO;
+no source verdict added.
+
+The algebraic intermediate-state transport is now available. The remaining
+source connection must initialize its separation from fresh clause variables,
+identify each actual reachable univ normalization transition and dispatch the
+second pair step with these transported facts. Full caller-invariant coverage,
+initial observations, nested Split assembly and parent residual discharge are
+still required before original-source certification and strict replay.
+Next resident identifier 2328; native evidence remains 2740.
