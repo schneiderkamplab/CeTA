@@ -4858,3 +4858,19 @@ scheduler. The existing unified composed-1792 executable checks that child
 twice and rejects missing proof components. This does not check a complete
 Prolog source assembly: observation initialization, source connection and
 Split/actual-return coverage remain required. No benchmark verdict is added.
+
+
+### Structural initialization and actual converter success
+
+`LP_Prolog_Structural_Initialization` adds five checked lemmas: observation
+groundness, a shared finite-observation environment, initialization through the
+existing query environment, the free-variable case, and successful relational
+conversion for actual source constructor arguments. Finiteness remains an
+explicit premise; runtime groundness is not required. Attempt 2123 passes with
+zero oracles/no skipped proofs (0.384 seconds for the new theory); receipt:
+`target/prolog-reified-lp-2118-2120/initialization-2123.log`.
+Attempt 2122's broad metis proof was replaced by explicit membership reasoning
+after interruption. The resident was restored from the existing verified 1748
+heap. No export or checker rebuild. Ferrum's weaker diagnostic child query
+requires only ground structural coordinates and still passes two checks with
+the pinned composed-1792 unified checker. Full source/Split assembly is pending.
