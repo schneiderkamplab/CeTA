@@ -4783,3 +4783,56 @@ constant structural leaves. The 2718 cycle remains unchanged until that
 integration is checked. Return/Split assembly, residual discharge and strict
 source replay remain required. Total: 90 YES + 97 NO; priority 1 active.
 Next resident 2109; native 2719.
+
+
+### Finite constructor encoding and native structural receipts (2719 / 2109–2117)
+
+`LP_Prolog_Reified_Structure` represents constructor labels as data under fixed
+node/list constructors. Two generic rewrite rules convert the encoded child
+sequence into the encoding of the actual Prolog argument list. The theorem
+`lpp_actual_univ_reified_conversion` connects this ordinary `Trs.rstep` path to
+the actual constructor-argument relation and initialized finite observations;
+it does not enumerate source-mentioned labels or bound input arities. Reification
+commutes with structural substitution and preserves the previously checked
+structural equations. This is a residual encoding, not a new source semantics.
+
+Eight theorems pass with zero inherited oracles and no skipped proofs. Final
+resident load 2117 took 6.093 seconds; resident-written evidence is CeTA
+`target/prolog-reified-2109-2115/proofs-2117.log`. Attempts retain corrections
+for the imported parser's rstep name, tuple-shaped function cases, reserved
+output identifier, and an explicit map-congruence proof. No unified export.
+
+Native `source_reified` implements separate expression/template encoders:
+symbolic variables retain structural-environment obligations; only concrete
+finite templates erase variable names to leaves. Recognized integer/binary64
+atoms remain constructor data, without asserting integer arithmetic coverage.
+Rational graphs and unresolved dynamic applications reject. The same two
+conversion rules work for arbitrary labels and arities. Tests use the existing
+shared outermost rewrite enumerator; only a test-only re-export was added.
+
+ResolutionContext now retains a separately typed conditional structural equation
+for matching and observed-spine heads. It reconstructs from the original
+incoming context, source clause and resolution namespaces, with the caller's
+fuel. It is never inserted as a runtime SourceContext equation. Ground-anchored
+resolution does not automatically get this stronger contract. The equation
+still requires finite observations, actual source resolution and the appropriate
+matching/spine side conditions before a source checker can use it.
+
+Native 2719 passes three focused tests, including twelve label/arity cases,
+removed converter rules, rational rejection, leaf/instantiation distinctions,
+numeric atoms, and erased/changed structural receipt controls. The generalized
+Split/spine fixture passes in 12.80 seconds; saved-context/failure transport also
+passes. Incremental final build took 24.35 seconds. First builds exposed a
+private test-helper import and a test lowering path typo; both are fixed.
+Evidence: `target/prolog-reified-2719/`.
+
+The actual numbervars diagnostic passes in 2.41 seconds and reconstructs six
+conditional structural equations: matching at 0:2, 0:3, 47:2, 47:3 and observed
+spines at 0:23, 35:3. This includes the first known structural disconnect.
+The unmodified control residual still validates its 11-step loop; no strengthened
+residual or source verdict is claimed. Next consume the structural coordinates
+and converter paths in complete residual generation, bind them in the source
+checker, and handle actual helper returns/Splits before residual discharge and
+strict replay. No strategy, guidance format or accepting state representation
+changed here. Total remains 90 YES + 97 NO; priority 1 active.
+Next native 2720; resident 2118.
