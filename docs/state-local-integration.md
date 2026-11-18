@@ -4836,3 +4836,25 @@ checker, and handle actual helper returns/Splits before residual discharge and
 strict replay. No strategy, guidance format or accepting state representation
 changed here. Total remains 90 YES + 97 NO; priority 1 active.
 Next native 2720; resident 2118.
+
+
+## Reified structural control contracts — 2026-11-18
+
+`LP_Prolog_Reified_Argument_Program` proves successful execution of the two
+relational converter clauses in the existing LP answer semantics.
+`LP_Prolog_Reflexive_Structure` proves finite observation preservation from
+an inverse substitution, then specializes it to initialized reflexive unification
+on variables covered by the active continuation.
+`LP_Prolog_Separated_Pair_Structure` proves the analogous result for binding
+two distinct fresh variables to a finite pair, requiring actual runtime support
+separation. Syntactic variable disjointness alone is insufficient.
+
+Resident checks 2118/2120/2121 pass without oracles or skipped proofs; logs are
+`target/prolog-reified-lp-2118-2120/`. Attempt 2119 needed an explicit string
+variable-environment annotation. No unified export/rebuild was performed.
+Ferrum attempt 2720 uses these conditional relationships in a diagnostic
+76-clause control fragment and obtains a triples/PiDP child through the shared
+scheduler. The existing unified composed-1792 executable checks that child
+twice and rejects missing proof components. This does not check a complete
+Prolog source assembly: observation initialization, source connection and
+Split/actual-return coverage remain required. No benchmark verdict is added.
