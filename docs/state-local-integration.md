@@ -6202,3 +6202,27 @@ Numbervars remains unproven. Remaining work includes concrete observer node
 contracts, recursive Split/forest-rank assembly, residual discharge, native and
 unified integration, and original-source strict replay. Certified totals remain
 90 YES + 97 NO, and the installed unified checker is unchanged.
+
+
+### Canonical observer node bridge — 2026-11-18
+
+`LP_Prolog_Observer_Canonical_Node` proves that continuations with no cut or
+expansion scopes are fixed by every graph scope renaming. It lifts canonical
+local contracts to the observer table's scope-aware node contract, provided
+the joint invariant is preserved by scope renaming. Complete lower contracts
+and all source context facts remain explicit. This discharges a shared scope
+side condition for scope-free continuations, rather than changing any source
+cut semantics. The affected-caller-cut counterexample is retained as a control.
+
+Two new conclusions plus that existing control pass without oracles or skipped
+proofs in 0.604 seconds. Receipt/source hashes are in CeTA
+`target/prolog-observer-canonical-2417/`. No native or checker rebuild was run.
+Numbervars still needs concrete local node instantiations, recursive Split
+assembly, the remaining residual, integration and strict replay.
+
+The new goal also requests a grouped overview of all remaining gaps. Ferrum
+`docs/prolog-remaining-gaps.md` and its JSON inventory cover all 34 unresolved
+roots exactly once, binding the pinned 90 YES + 97 NO campaign to the historical
+finite-direct diagnosis. Its 25 Split, six module, two local-step and one parser
+groups are explicitly historical first failures, not claims about established
+SEG closure or future verdicts. The inventory must be refreshed after a gain.
