@@ -5170,3 +5170,26 @@ oracles or skipped proofs. Receipt and hashes:
 This closes the previously recorded wrapper execution correspondence, while
 source-operation invariant coverage and complete module assembly remain open.
 No source verdict is added. Next resident identifier: 2213.
+
+
+## Fresh pair bindings and protected continuation values — 2218
+
+`LP_Prolog_Separated_Context_Structure` proves preservation of finite structural
+observations and the runtime leaf invariant through a separated fresh pair
+binding. The general comparison-unifier lemma covers live continuation terms;
+a second form covers individual source variables occurring within those terms.
+The pair specialization requires distinct outputs, runtime separation from
+the bound values and the protected value, finite bound values, and actual
+continuation coverage. It does not cover arbitrary answer-only variables.
+
+An actual-MGU counterexample proves that the bound output itself changes its
+structural observation, even when it occurs in the continuation. This prevents
+dropping the protected-value separation premise. Six theorems pass without
+oracles/skips in 1.779 seconds; receipt/hashes are in
+`target/prolog-separated-context-2218/`. No unified export or rebuild.
+
+Native `FreshDecompositionConnection` currently acquires separation between the
+decomposed input and fresh outputs. Source assembly must extend acquisition
+and transport to the protected caller coordinate before applying this theorem.
+A syntactic name comparison is insufficient. The full source invariant and
+module parent certificate remain open; no new root verdict. Next resident: 2219.
