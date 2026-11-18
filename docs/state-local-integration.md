@@ -6347,3 +6347,38 @@ concrete source-block/parent assembly, arithmetic and nested Split/forest-rank
 composition, the open residual, native reconstruction and unified integration,
 then original-source strict replay with two checks. The pinned baseline remains
 90 YES + 97 NO + 34 UNKNOWN and LP-cut 84 YES + 9 NO.
+
+
+### Assembled fresh-univ source block — 2026-11-18
+
+The fresh-resolution simulation now derives residual descent, finite helper
+execution and full child representation using the existing checked separation
+acquisition and normalization. The univ source-step theorem derives its domain
+and initialization from the existing source-action and separation checks.
+Scope lifting retains the complete representation and handles actual empty
+results. The fresh-clause shape theorem establishes that the next actual state
+is a univ frame; it does not assume away a failure branch.
+
+`lpp_checked_fresh_univ_source_block` composes these steps under explicit
+coverage of represented univ and equality nodes. The attached-caller theorem
+`lpp_assembled_fresh_univ_observer_contract` now discharges the previous opaque
+source-block premise and combines source descent with actual caller protection.
+Its premises still require finite helper execution, finite attached caller
+execution, exact helper projection, leaf-slot coverage, checked head and clause,
+all incoming contexts and contracts for strict descendants. Neither termination
+of a child alone nor the weaker caller invariant supplies those premises.
+
+The next integration step must establish these coverage and initialization
+premises from the actual graph receipts and connect the block to observer-table
+assembly. In particular, the current observer invariant records finite attached
+caller execution but does not explicitly record finite helper interfaces; that
+additional premise must be justified or carried, not inferred silently. Remaining
+work also includes arithmetic, nested Splits/forest descent, the open residual,
+certificate reconstruction and unified export/replay.
+
+12 conclusions passed without oracles or skipped proofs in CeTA
+`target/prolog-observer-assembled-block-2482/`; the manifest retains hashes,
+available timings and failed attempts. Only affected theories were loaded in
+the live resident. No native/unified rebuild, new mutation campaign, original
+root certificate or gain is claimed. Baseline: 90 YES + 97 NO + 34 UNKNOWN;
+LP-cut: 84 YES + 9 NO.
