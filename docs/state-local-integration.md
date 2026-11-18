@@ -5888,3 +5888,46 @@ Next assemble checked local preservation and recursive Split return/rank
 obligations over these complete referenced populations, then discharge parent
 residuals and strictly replay the source certificate. Next native evidence 2744;
 resident identifier remains 2343.
+
+
+## Synchronized helper and caller observations — 2350 / 2744–2745
+
+The shared resolution projection already exists in `LP_Cut_Return_Sequence`;
+no new MGU semantics or duplicate projection rule was needed. The new
+`LP_Prolog_Attached_Observer_Product` uses the existing answer instrumentation
+and interface reflection to retain both helper and caller observations on one
+execution. Every active attached caller step lifts to a combined-interface step,
+reflects to a helper-prefix step, and projects to the helper's original answer
+semantics. The caller projection is exactly the actual successor. Both
+projections therefore use the same underlying execution, including saved
+alternatives, cuts, failure, builtin errors and unsupported-domain self-loops.
+No runtime nonsharing or termination claim is inferred from interface separation.
+
+The theory also proves caller leaf-invariant projection and that concatenating
+finite helper/caller payloads satisfies both existing return-projection checks.
+Nine theorem conclusions checked in the retained Isabelle process in 0.633s,
+without skipped proofs or oracles. Evidence and failed-attempt classifications:
+CeTA `target/prolog-observer-product-2350/`; earlier successful step receipts are
+retained in `target/prolog-observer-product-2349/`. No checker generation or
+full rebuild was performed.
+
+Native `attached_observer_product` binds the complete helper payload through
+the checked entry substitution, concatenates it with the independent caller
+payload, and retains both projections. Unbound helper observations reject
+construction. It preserves runtime variable sharing; it does not rename shared
+values or reset contexts. On original and renamed numbervars, Split 30 retains
+helper coordinates `[0,1,2]` and caller `[3,4,5,6]`; Split 44 retains helper
+`[0,1,2]` and caller `[3,4,5]`. The caller-only tail remains represented in both.
+Native evidence is Ferrum `target/prolog-observer-product-2744/`; original and
+renamed graph checks took 2.299s and 2.308s. The incremental native build took
+35.63s and the generalized fixture passed in 0.12s. Additional controls retain
+shared values and reject an unbound helper payload, missing payloads, missing
+projections and swapped projections; their log is
+`target/prolog-observer-product-controls-2745.log`.
+
+This closes the synchronization/interface-representation subproblem, not the
+parameterized helper contract. Next, connect the helper projection to each
+checked local row/context transition, prove the caller invariant on the actual
+combined step, and cover every referenced boundary and nested Split. The full
+source/rank assembly and residual discharge remain required. Certified totals
+remain 90 YES + 97 NO; the unified CeTA executable is unchanged.
