@@ -5986,3 +5986,37 @@ Remaining work is to lift the other local actions into this same synchronized
 interface, retain finite observations and fresh-output separation across their
 steps, then assemble the complete nested Split contracts and forest rank.
 Numbervars remains unproven; certified totals remain 90 YES + 97 NO.
+
+
+## Shared observer-step composition and ordinary actions — 2363–2369
+
+`LP_Prolog_Observer_Step` provides one composition rule for the existing helper
+source simulation and caller preservation on the same actual successor. The
+rule retains the helper's related residual subject, target context, scope
+renaming and the caller's leaf invariant. It does not infer either local premise
+from termination, and does not discharge recursive module dependencies.
+
+`LP_Prolog_Observer_Term_Test` instantiates this rule with the existing checked
+term-test/domain proof and actual caller-invariant preservation. The control
+lifting in `LP_Prolog_Observer_Control` reuses builtin exclusion and active-prefix
+attachment; `LP_Prolog_Observer_Checked_Control` instantiates it for checked
+administrative and clause-selection actions. Empty target separation conditions
+are checked where those existing rules require them; incoming contexts and
+saved environments are not reset. Exhausted helpers cannot use the control
+rule to execute their suspended caller because active-prefix coverage is an
+explicit premise.
+
+Eight theorem conclusions pass without skipped proofs or oracles. Retained
+resident checking took 0.353s for shared composition, 0.667s for term tests,
+1.911s for generic control, and 1.004s for checked control. Evidence/hashes and
+failed-attempt classifications: CeTA `target/prolog-observer-control-2369/`.
+An overly broad elimination proof was interrupted after 31.567s and replaced
+with explicit list/frame cases; the Isabelle resident was preserved. The frame
+shape lemma uses an explicit generic frame name, avoiding an imported constant.
+No native rebuild or checker generation was needed.
+
+The remaining source assembly includes arithmetic/univ normalization, finite
+observation and separation transport, and recursive Split return/rank contracts.
+Numbervars remains unproven. Certified totals stay 90 YES + 97 NO; the unified
+CeTA executable is unchanged. These checked source-step families are not counted
+as benchmark gains.
