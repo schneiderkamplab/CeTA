@@ -5359,3 +5359,28 @@ No unified export or new source verdict. Next integrate the nonempty separation
 contracts for fresh outputs, equality/univ operations and the complete attached
 Split/rank assembly. The existing empty-target head contracts do not discharge
 fresh-output acquisition or replace any module dependency.
+
+## Fresh outputs and ground equality preserve return leaves — 2269
+
+`LP_Prolog_Relational_Fresh_Leaf` combines the existing normalized fresh-clause
+separation acquisition with finite execution and relational return-leaf
+preservation. Successful separation is acquired and normalized; failure retains
+its incoming facts. `LP_Prolog_Relational_Ground_Equality` reuses the existing
+most-generality theorem via a ground-head logical reduction. The source
+semantics and established graph are unchanged.
+
+`LP_Prolog_Ground_Return_Leaf_Coverage` admits payload variables absent from the
+active goals only with explicit incoming ground knowledge, whose runtime
+support is empty. `LP_Prolog_Ground_Leaf_Node_Contract` consumes this check and
+preserves both invariants through the shared equality node contract. Groundness
+here is the existing inductive finite-ground predicate, not unrestricted
+rational groundness or integer knowledge.
+
+Eleven lemmas check without oracles/skips, including removal of ground knowledge.
+Receipts, source hashes and failed development attempts are retained in
+`target/prolog-fresh-ground-leaf-2269/`. Broad automation attempts were interrupted
+at 43.023 and 38.936 seconds without restarting the resident; the explicit
+factor proof checks in 0.448 seconds. No unified export or source gain.
+Native coverage now handles all three retained ground-equality rows as well as
+all 12 resolution rows on original/renamed sources. Reflexive/pair/univ and
+remaining control invariants, attached Split/rank assembly and replay remain.
