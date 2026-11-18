@@ -5957,3 +5957,32 @@ checker generation or unchanged residual search was run. Source certification
 of numbervars remains open, and totals stay 90 YES + 97 NO; the unified checker
 is unchanged. Next connect actual local action steps to this successor-context
 interface, then assemble the complete recursive dependency population and rank.
+
+
+## Actual resolution and ground-equality observer steps — 2360–2361
+
+`LP_Prolog_Observer_Resolution` and `LP_Prolog_Observer_Ground_Equality` now
+combine actual attached execution with existing source-row context proofs and
+caller leaf preservation. Each conclusion supplies the same joint successor,
+its exact caller-result projection, a strict residual path, the helper's next
+checked context (including separation), and the preserved caller invariant.
+The helper and caller conclusions cannot come from different executions.
+Success and failure transport obligations remain separate. Clause selection
+and equality retain their original source semantics and saved alternatives.
+
+Resolution consumes the existing checked head witness; ground equality uses
+ground facts from the current checked node/context. Neither treats groundness
+as integrality. Finite call/continuation observations and live caller-slot
+coverage remain explicit premises. These lemmas do not infer finiteness from
+an arbitrary rational term or discharge a recursive module by themselves.
+
+Four theorem conclusions passed in the retained Isabelle process without
+oracles or skipped proofs. Resolution took 1.247s; ground equality 1.204s.
+Evidence, source hashes and failed-attempt classifications are in CeTA
+`target/prolog-observer-actions-2361/`. No native rebuild, checker generation or
+unchanged residual campaign was run. The unified executable remains unchanged.
+
+Remaining work is to lift the other local actions into this same synchronized
+interface, retain finite observations and fresh-output separation across their
+steps, then assemble the complete nested Split contracts and forest rank.
+Numbervars remains unproven; certified totals remain 90 YES + 97 NO.
