@@ -5737,3 +5737,22 @@ Verification passes in 2.625 seconds without oracles/skips; evidence is CeTA
 No native/full rebuild or unified export. No root gain: 90 YES + 97 NO.
 Next resident 2337; native evidence 2740. Continue with complete source routing,
 Split invariants/rank assembly and residual discharge before strict root replay.
+
+
+## Checked instance transport of attached leaf invariants — 2337
+
+The shared return-link soundness theorem now transports the attached caller
+leaf invariant across instance substitution and scope renaming. Its equality
+covers the whole annotated stack and every payload, including saved frames.
+The child knowledge facts and residual dependency edge remain explicit outputs.
+No context is emptied and no saved environment is replaced.
+
+One theorem with three conclusions passes in 0.240 seconds without oracles or
+skipped proofs. Evidence: CeTA `target/prolog-attached-leaf-link-2337/`. This
+transports an existing invariant; it does not establish initial observations,
+prove a child residual or permit omission of a module dependency.
+
+No native/full rebuild or unified export; no root gain. Baseline 90 YES + 97 NO.
+Complete reachable helper coverage, nested Split/rank assembly and the parent
+residual remain necessary before strict source replay. Next resident identifier
+2338; native evidence identifier 2740.
