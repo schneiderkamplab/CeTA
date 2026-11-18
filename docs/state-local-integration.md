@@ -5630,3 +5630,25 @@ second pair step with these transported facts. Full caller-invariant coverage,
 initial observations, nested Split assembly and parent residual discharge are
 still required before original-source certification and strict replay.
 Next resident identifier 2328; native evidence remains 2740.
+
+
+## Checked head acquisition of caller separation — 2328
+
+The existing checked matching, anchored and proper-spine head witnesses now
+establish caller leaf preservation and separation from any fresh body variable
+in the actual successful resolution. Source knowledge/context and numeric caller
+return environments remain distinct. The ground-head case uses finite ground
+transport; neither ordinary groundness nor a proper spine alone implies finite
+elements. Actual continuation coverage and finite-call/rest premises remain.
+
+The theorem passes in 0.524 seconds without oracles/skipped proofs, recorded in
+CeTA `target/prolog-checked-caller-2328/`. No native/full rebuild or unified
+export. This closes the checked-head acquisition step needed before univ's
+intermediate separation transport; it does not itself enumerate reachable
+states or establish all later substitutions preserve those facts.
+
+Next connect acquisition and intermediate pair preservation to the actual
+reachable source dispatch, including both fresh outputs and failure branches,
+then complete nested Split invariants, parent residual discharge and original
+source replay. Baseline remains 90 YES + 97 NO; no root gain. Next resident
+identifier 2329; native evidence remains 2740.
