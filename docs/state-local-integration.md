@@ -5384,3 +5384,25 @@ factor proof checks in 0.448 seconds. No unified export or source gain.
 Native coverage now handles all three retained ground-equality rows as well as
 all 12 resolution rows on original/renamed sources. Reflexive/pair/univ and
 remaining control invariants, attached Split/rank assembly and replay remain.
+
+## Reflexive and protected-pair leaf node contracts — 2277
+
+`LP_Prolog_Relational_Reflexive_Leaf` strengthens the existing reflexive
+separation contract with the finite/leaf invariant, using the checked source
+equation rewrite and actual return-slot coverage. `LP_Prolog_Pair_Leaf_Images`
+proves that a pair binding preserves variable images outside the bound outputs
+when covered by the actual right-hand side or continuation.
+
+`LP_Prolog_Pair_Leaf_Protection` checks payload separation through existing
+separation facts, incoming ground knowledge and functor-support closure.
+`LP_Prolog_Pair_Leaf_Node_Contract` consumes these checks with the shared pair
+and equality node rules. Missing separation and bound-output observations are
+rejected. Fifteen lemmas pass without oracles/skips; receipt/hashes:
+`target/prolog-reflexive-pair-leaf-2277/`.
+
+Native original/renamed audits cover slots 0 and 1 at both retained pair rows.
+Slot 2 lacks a checked separation fact and remains open for this invariant;
+its full payload/interface is retained. These results are conditional node
+contracts, not a completed source certificate. Remaining work includes univ
+normalization, administrative/builtin invariant integration and attached
+Split/rank assembly. No unified export or source verdict changed.
