@@ -5575,3 +5575,34 @@ observations or the complete reachable-step invariant. Those remain required
 before parent assembly, residual discharge and strict source replay. No unified
 export or full rebuild; no root gain. Baseline remains 90 YES + 97 NO.
 Next resident identifier 2320; native evidence 2740.
+
+
+## Actual arithmetic and term-test preservation — 2324
+
+Four lemmas now cover scalar arithmetic and term tests directly on the shared
+answer machine, including arbitrary caller environments and attached pending
+goals. Arithmetic success uses the existing stable evaluator's bounded atomic
+substitution, covering its integer and binary64 interpretations. Failure, error,
+saved alternatives and unsupported-domain self-loops remain in the relation.
+An invariant preserved by a self-loop is not a termination proof.
+
+Resident verification passes in 0.542 seconds without oracles/skipped proofs;
+receipt/hashes: CeTA `target/prolog-attached-arithmetic-2324/`. Early attachment
+applications needed explicit map normalization. No native/full rebuild or unified
+export. Baseline remains 90 YES + 97 NO; no new root certificate.
+
+The remaining assembly obligations are distinct:
+
+| Operation or interface | Available proof | Still required for the root |
+| --- | --- | --- |
+| Actual payload slots | Checked equality and bounds; original/renamed Splits 30:2 and 44:1 | Initial finite tree/list observations |
+| Resolution and ground equality | Actual attached-step preservation from checked heads/source facts | Reachable source contexts and caller coverage at each use |
+| Arithmetic and term tests | Actual answer-step preservation with arbitrary pending goals | Reachable dispatch coverage and termination/domain obligations |
+| Normalized univ | Two-actual-MGU caller-slot preservation | Intermediate-state invariant and fresh-output separation transport |
+| Nested helpers | Conditional actual-return forest composition | Complete dependencies, invariant preservation and rank/interface binding |
+| Parent residual | Nine diagnostic children previously checked | Remaining child and complete original-source assembly/replay |
+
+Next focus on the normalized-univ intermediate states and propagation of caller
+separation from fresh clause variables. Do not replace this obligation with a
+macro proof that assumes its intermediate facts. Next resident identifier 2325;
+native evidence identifier remains 2740.
