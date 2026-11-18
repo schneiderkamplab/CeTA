@@ -5806,3 +5806,29 @@ or unified export. Baseline 90 YES + 97 NO; no new root certificate.
 Next assemble the parameterized attached-helper contract from actual-step
 preservation and complete source dispatch, then nested Splits/rank and residual
 proofs. Next resident 2342; native evidence 2741.
+
+
+## Native attached-observer entries — 2741
+
+`Modules::attached_observer_entry` reconstructs the exact helper entry from its
+retained local table and checks the proposed source instance bindings against
+the Split prefix goals, ground facts and guards. The receipt retains the full
+Split interface independently of the helper execution state. Validation freshly
+reconstructs it, rejecting removed caller payloads, helper goals and bindings.
+The generalized Split regression passes all these controls.
+
+Fresh original and renamed inspections pass both entries: Split 30 to module 0
+retains caller arity 4; Split 44 to module 47 retains caller arity 3. Their helper
+bindings still cover V0/V1/V2 only. Caller V3 is retained independently, not
+silently added to the isolated helper payload. No graph contexts are reset.
+
+Incremental build: 33.65 seconds; regression: 0.10 seconds; source inspections:
+2.322/2.290 seconds. Evidence/hashes: Ferrum `target/prolog-observer-entry-2741/`,
+build log `target/prolog-observer-entry-build-2741.log`. The only post-build
+source edit moved an existing documentation comment to its intended method.
+
+These are reconstructed entry premises, not an attached helper proof or a root
+certificate. The native receipt still needs certificate serialization/checker
+integration together with the complete parameterized helper contract and all
+residual children. No CeTA code/export or unified executable change this turn;
+no root gain, baseline 90 YES + 97 NO. Next native evidence 2742; resident 2342.
