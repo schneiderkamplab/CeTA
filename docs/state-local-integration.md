@@ -4990,3 +4990,25 @@ Ferrum's diagnostic relational compiler closes through the common scheduler;
 the standalone child passes twice with the pinned composed-1792 unified CeTA.
 Its missing-component mutation rejects. This does not establish recursive
 source return coverage or a complete benchmark certificate.
+
+### Successful execution of the bounded leaf relation
+
+`LP_Prolog_Leaf_Relation_Program` proves the emitted relation's execution in the
+existing `lp_seg_answer_step` semantics. Core clauses preserve the parameter
+vector, constructor labels, caller environment and arbitrary residual tail.
+Given explicit replacement-clause coverage, induction through constructor/list
+children realizes every allowed leaf effect as a successful residual path.
+Ten theorems pass in resident 2170 (2.432 seconds).
+
+`LP_Prolog_Parameter_Leaf_Program` discharges replacement coverage for copied
+initial parameters, atomic markers and plain atomic results, then specializes
+the successful-execution theorem. Both theorems pass in 2171 (1.656 seconds).
+All twelve have zero oracles/no skipped proofs; receipt and hashes:
+`target/prolog-leaf-program-2170-2171/`. Attempts 2159–2169 corrected explicit
+map reasoning, imported-name/lexical collisions, clause-instance selection and
+list induction binder order. Only the new theories were loaded; no checker build.
+
+The native seven-clause family closes through common triples solving and passes
+two pinned unified checks; missing component rejection is retained. This proves
+residual realization conditional on source effects. It does not discharge actual
+recursive helper returns, matching/univ preservation, source assembly or replay.
