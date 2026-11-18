@@ -6449,3 +6449,27 @@ complete source-table coverage from the existing acquisition traces. Then
 finish arithmetic and nested Split/forest descent, discharge the open residual,
 and complete native reconstruction, unified integration and strict original
 source replay. Baseline remains 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
+
+
+### Frontier node dispatch and equality — 2026-11-18
+
+Checked frontier destinations now lift Admin, Case, Trim and every Parallel
+child through the original context and separation transports. The fresh-univ
+block has a canonical node contract and checked source wrapper. Ground equality
+uses its actual MGU on success and the original saved valuation on failure;
+frontier membership is required separately for each possible branch. The
+general equality action retains arbitrary checked separation transport. Its
+empty-target convenience wrapper checks that the actual target context is
+empty; it does not reset any context.
+
+26 conclusions passed without oracles or skipped proofs, including controls
+rejecting missing frontier destinations, missing target contexts, failed
+separation transport, missing Parallel children and missing frame coverage.
+Evidence is in CeTA `target/prolog-observer-frontier-dispatch-2517/`, with
+source hashes and the failed proof-application attempt retained. Only affected
+theories were loaded in the resident; no full rebuild or unified export.
+
+Source integration still needs resolution, term tests, arithmetic and complete
+frontier dispatch/initialization, then nested Split/forest descent, residual
+discharge and original-source reconstruction/replay. No new certified root:
+90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
