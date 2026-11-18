@@ -5860,3 +5860,31 @@ Next discharge the complete parameterized attached-helper contract, integrate
 it with nested Split/rank assembly and parent residual proofs, then perform
 strict original-source replay. Next native evidence 2743; resident 2343 (2342
 identifies the standalone checker diagnostic, not an Isabelle theory load).
+
+
+## Complete attached-observer dependency receipts — 2743
+
+`attached_observer_dependencies` traverses the retained module graph from each
+helper entry. It retains exact local regions, contexts, Split interfaces,
+boundary references and original source identity. Each reachable Split requires
+both prefix and continuation targets. Cycles remain references, not proofs.
+A boundary marked by a source region must have a dependency entry; removing it
+causes reconstruction failure. Fresh validation rejects omitted regions,
+Splits and boundaries in a receipt.
+
+Original and renamed inspections agree. Split 30 requires local modules
+0/19/28/35/47, Splits 30/44 and seven boundary links. Split 44 requires modules
+19/28/35/47, Split 44 and four links. These populations are obligations for the
+parameterized caller contract; neither graph reachability nor closed construction
+establishes their termination or returned-value contracts.
+
+Incremental build 37.58 seconds; generalized regression 0.12 seconds;
+original/renamed inspection 2.309/2.286 seconds. Evidence/hashes: Ferrum
+`target/prolog-observer-dependencies-2743/`; build log
+`target/prolog-observer-dependencies-build-2743.log`. No CeTA proof/export or
+unified-checker change. No root gain: baseline 90 YES + 97 NO.
+
+Next assemble checked local preservation and recursive Split return/rank
+obligations over these complete referenced populations, then discharge parent
+residuals and strictly replay the source certificate. Next native evidence 2744;
+resident identifier remains 2343.
