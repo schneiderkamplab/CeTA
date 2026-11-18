@@ -4893,3 +4893,19 @@ Generated theories/manifests and `verified-2125-2129.log` are in
 2126/2127 needed concrete symbol types for otherwise polymorphic answer lists.
 The checked data is a local composition premise, not a whole source certificate.
 No unified export/build; actual-return discharge and complete assembly remain.
+
+
+### Finite execution with suspended continuations
+
+`LP_Prolog_Attached_Finite_Actions` proves the exact per-frame finiteness condition
+for `lpc_attach_answers` and transfers existing finite action rules to that full
+state. Matching resolution, ground/reflexive equality, separated pairs and
+active simple steps are covered with their existing semantic side conditions.
+Negative controls retain nonfinite suspended values and saved environments as
+obligations. Eleven theorems pass with no oracles/skipped proofs in resident 2134
+(2.672 seconds); evidence: `target/prolog-attached-finite-2134/proofs.log`.
+Attempts 2130–2133 corrected an imported-name collision and explicit case
+reasoning. The restored resident loaded the required existing control theories;
+no unified export/build occurred. Native Split receipts now retain the exact
+returned continuation-finiteness obligations. Complete source invariant coverage
+and return/residual assembly remain outstanding; no new source verdict.
