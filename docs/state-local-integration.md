@@ -5672,3 +5672,24 @@ One new lemma plus its predecessor pass in 0.603 seconds without oracles/skips;
 evidence in CeTA `target/prolog-checked-pair-caller-2330/`. A reserved fact name
 was corrected during development. No native/full rebuild or unified export.
 No root gain: 90 YES + 97 NO. Next resident 2331; native evidence 2740.
+
+
+## Checked resolution-to-univ caller path — 2332
+
+The combined local path theorem uses checked head/fresh-decomposition witnesses,
+actual clause resolution, source context and finite observations to derive
+caller leaf preservation after both normalized unifications. All three actual
+substitutions occur in order in the conclusion. Caller protection is derived
+from resolution, rather than assumed as a separate path premise.
+
+This is the successful local path only. Actual source routing to those MGU
+states, failed alternatives, complete module dependencies and residual proofs
+remain obligations. It does not convert a local successful path into a complete
+return contract or a root termination proof.
+
+The theorem passes in 1.212 seconds without oracles/skipped proofs; evidence:
+CeTA `target/prolog-checked-univ-path-2332/`. A substitution identifier needed an
+explicit type to avoid an imported constant. No native/full rebuild or unified
+export. No source gain; baseline 90 YES + 97 NO. Next resident identifier 2333;
+native evidence remains 2740. Continue with complete trace dispatch and nested
+Split assembly, followed by parent residual discharge and strict source replay.
