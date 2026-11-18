@@ -5931,3 +5931,29 @@ checked local row/context transition, prove the caller invariant on the actual
 combined step, and cover every referenced boundary and nested Split. The full
 source/rank assembly and residual discharge remain required. Certified totals
 remain 90 YES + 97 NO; the unified CeTA executable is unchanged.
+
+
+## Checked row links with independent caller observations — 2356
+
+`LP_Prolog_Observer_Row_Link` connects the synchronized observation interface
+to existing checked graph links. The helper projection supplies the exact
+annotated source row; its checked target reconstructs the combined runtime
+stack with the actual caller projection, frame by frame. Caller-only values
+never need to occur in helper bindings. Complete frame alignment is required:
+a missing saved frame cannot pass, and a stale saved caller environment still
+violates the leaf invariant even when the active environment satisfies it.
+
+The context-link theorem reuses `lpp_separation_functor_link_sound` and carries
+all existing groundness/guards, freeness, stable arithmetic observations,
+functor facts and separation conditions to the same target valuation. Scope
+renaming commutes with interface projection. Caller invariance is transported
+through the link; preservation by the preceding source operation remains a
+separate premise, not a conclusion manufactured from helper termination.
+
+11 theorem conclusions checked in the retained Isabelle process in 0.750s,
+without skipped proofs or oracles. Evidence, hashes and failed proof attempts:
+CeTA `target/prolog-observer-row-2356/`. No native code changed and no rebuild,
+checker generation or unchanged residual search was run. Source certification
+of numbervars remains open, and totals stay 90 YES + 97 NO; the unified checker
+is unchanged. Next connect actual local action steps to this successor-context
+interface, then assemble the complete recursive dependency population and rank.
