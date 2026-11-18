@@ -5151,3 +5151,22 @@ open; three existing constructor-triples alternatives also time out. Next bind
 the tree/forest views and return-order premises to the original module/Split
 interfaces and discharge attached source invariants. No source certificate,
 checker export, root gain or production promotion is claimed.
+
+
+## Proper-list leaf program correspondence — 2212
+
+`LP_Prolog_List_Leaf_Program` formalizes the two-clause proper-list wrapper
+already emitted by the native structural diagnostic. Six lemmas prove empty
+and cons steps, successful list execution from element executions, successful
+execution from the leaf-effect relation, rejection of a variable-leaf spine,
+and the combined runtime return/rank/program bridge. Parameter vectors,
+remaining goals and caller environments are preserved. The combined theorem
+requires the actual runtime leaf effect, ground replacement templates and a
+finite observed head; it does not derive them from termination children.
+
+Resident check 2212 took 2.508 seconds; all six theorem dependencies have no
+oracles or skipped proofs. Receipt and hashes:
+`target/prolog-list-leaf-program-2212/`. No checker export or full rebuild.
+This closes the previously recorded wrapper execution correspondence, while
+source-operation invariant coverage and complete module assembly remain open.
+No source verdict is added. Next resident identifier: 2213.
