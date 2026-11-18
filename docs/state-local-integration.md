@@ -5213,3 +5213,22 @@ an invented caller into the established graph or infer MGU coverage from an
 answer tuple. Next connect acquisition to the normalized reflexive/pair
 sequence under that attached invariant, preserving all module obligations.
 No source verdict yet; next resident identifier 2221.
+
+
+## Normalized univ preserves attached caller effects — 2225
+
+`LP_Prolog_Normalized_Pair_Leaf` proves that the actual reflexive-then-pair
+unification sequence preserves a protected live caller's runtime leaf effect.
+A common inverse from the first MGU transports freeness, output distinctness,
+finite observations and separation together. The second MGU uses those
+transported facts, not the original variable names. The final specialization
+uses the constructor-name/argument-list sequence emitted for source `=..`.
+
+The proof requires the existing initial runtime separation and continuation
+coverage; acquisition is supplied by 2220. It does not assume every continuation
+value is finite, only the observed protected value and the pair's bound values.
+Three lemmas check without oracles/skips in 0.773 seconds; receipt/hashes:
+`target/prolog-normalized-pair-leaf-2225/`. No checker generation or export.
+Local composition is proved; operation-dispatch coverage and attached invariant
+assembly over the complete source module graph remain open. No new source
+verdict. Next resident identifier: 2226.
