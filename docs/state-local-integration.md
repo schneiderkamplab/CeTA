@@ -6411,3 +6411,41 @@ already records unique incoming edges and rejects internal module entries and
 boundaries. Its proof integration remains required, alongside arithmetic,
 nested Splits/forest descent, the open residual and original-source certified
 replay. No new root: 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
+
+
+### Proof frontier and checked block exits — 2026-11-18
+
+Observer table induction now admits a proof frontier while retaining the full
+original source table check. Internal rows are excluded only from the induction
+representation; every initial and resumed state must have a frontier witness.
+The restricted conditions retain all prior separation facts. An empty frontier
+has no represented entry, and an external control row cannot be hidden by the
+frontier-shape check.
+
+General control-shape checks establish that actual univ outcomes leave the
+internal univ/equality sequence. Success preserves the checked continuation
+shape under its actual substitution; failure checks the saved alternative;
+actual error outcomes are handled by the source semantics. Domain coverage
+remains mandatory: unsupported-domain self-loops are not finite errors.
+The checked exit theorem lifts through scopes and module representation and
+composes with fresh resolution. The resulting attached-caller block contract
+requires frontier contracts only at verified exits; it no longer assumes an
+opaque semantic exit condition.
+
+46 conclusions passed without oracles or skipped proofs, including 20 saved
+control-state fixture conclusions from original and renamed helper regions 0
+and 47. The fixtures retain XML goal-stack shapes and free sets; environments
+are replaced by empty payloads only because these shape checks ignore them.
+They are not full-state reconstruction or root certificates. Missing free-set
+coverage is rejected. General controls also reject unknown continuation goals,
+pending univ, and saved equalities. CeTA
+`target/prolog-observer-frontier-2508/` pins input hashes, generator, fixture,
+receipts, timings and failed attempts. No native/unified rebuild or fresh
+campaign; no root gain.
+
+Next: lift ordinary observer contracts with checked frontier destinations,
+connect the frontier block contract to checked node dispatch, and validate
+complete source-table coverage from the existing acquisition traces. Then
+finish arithmetic and nested Split/forest descent, discharge the open residual,
+and complete native reconstruction, unified integration and strict original
+source replay. Baseline remains 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
