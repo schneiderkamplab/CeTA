@@ -5550,3 +5550,28 @@ Next discharge the complete attached invariant and initial observations against
 both established Split interfaces, finish parent residual/source assembly and
 strictly replay with two unified checks. Resident session is preserved; next
 resident identifier 2318, next native evidence identifier 2739.
+
+
+## Actual payload initialization coordinates — 2319 / 2739
+
+The checked interface-slot predicate requires an in-bounds payload entry equal
+to the observed source term. Its evaluation theorem connects that source value
+to the numeric return environment. The stack initialization theorem requires
+observations for every saved frame and tracked slot, not just the active frame.
+Missing slots cannot use the return environment's default constant as evidence.
+Six lemmas, including missing/wrong-slot controls, pass in 0.331 seconds without
+oracles/skipped proofs. CeTA evidence: `target/prolog-leaf-initialization-2319/`.
+
+Ferrum's forest binding now checks the same tail coordinate in both the prefix
+and continuation payloads. The existing generalized Split regression passes
+with missing-payload and mismatched-return mutations. Incremental native build:
+22.43 seconds. Fresh original and renamed source inspections pass in 2.320 and
+2.288 seconds: Split 30 has tail slot 2; Split 44 has tail slot 1. Source/binary
+hashes and logs are retained in Ferrum `target/prolog-leaf-initialization-2739/`.
+These inspect actual established graphs; no graph contexts or payloads changed.
+
+This supplies checked coordinate initialization premises, not initial finite
+observations or the complete reachable-step invariant. Those remain required
+before parent assembly, residual discharge and strict source replay. No unified
+export or full rebuild; no root gain. Baseline remains 90 YES + 97 NO.
+Next resident identifier 2320; native evidence 2740.
