@@ -5269,3 +5269,24 @@ Two lemmas pass without oracles/skips in 0.383 seconds. Receipt/hashes:
 `target/prolog-leaf-spine-head-2232/`. No checker export. Ground-anchored
 return effects and allowed parameter membership remain local gaps before
 complete module assembly. Next resident: 2233.
+
+
+## Finite ground head effects without replacement-size bounds — 2235
+
+`LP_Prolog_Ground_Head_Leaf` proves that bounded substitution images on the
+selected call extend to every covered caller value: outside the selected call,
+a restricted comparison unifier and most-generality force variable images.
+For a finite ground instantiated head, selected images are finite ground
+templates, giving leaf-effect preservation with the family of all finite
+ground templates. Finiteness and coverage remain explicit premises.
+
+This uses the already proved variable-leaf-count/size order, which does not
+require a uniform replacement-size bound. It can remove the four-pattern
+parameter-family restriction from the source rank argument. The earlier
+parameterized residual proofs remain intact; broadening their generator is
+not silently performed. Runtime-template reconstruction and source-row
+instantiation remain necessary before parent assembly.
+
+Four lemmas pass without oracles/skips in 0.732 seconds; receipt/hashes:
+`target/prolog-ground-head-leaf-2235/`. No export or source verdict.
+Next resident identifier: 2236.
