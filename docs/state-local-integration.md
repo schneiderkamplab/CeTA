@@ -5035,3 +5035,32 @@ is byte-identical to its earlier 78-clause subject and still fails triple
 filtering. These results establish local transport/composition obligations;
 actual recursive return invariants and full source assembly remain open.
 No unified checker export or full rebuild.
+
+### Runtime leaf invariants belong to attached execution
+
+`LP_Prolog_Runtime_Leaf_Invariant` relates an initial structural observation to
+an actual current runtime value. It proves initialization, finiteness, bounded
+substitution transport and transport through matching, reflexive equality,
+allowed ground binding and stable scalar arithmetic. These are conditional local
+source rules, not a completed graph invariant.
+
+`LP_Prolog_Attached_Leaf_Composition` specializes the existing shared invariant
+composition theorem to termination with caller-return facts. Preservation is
+required along attached execution; continuation facts are extracted from that
+invariant at prefix completion. A standalone prefix can overapproximate changes
+to variables absent from its active goals, so requiring a leaf bound on every
+standalone return would be too strong. A checked two-step actual-return example
+in the shared cut semantics demonstrates this issue. A separate control rejects
+stale saved-environment facts. No source transition or MGU rule was changed.
+
+All sixteen new theorems pass in resident 2179; the attached theory takes 1.642
+seconds. Attempt 2177 corrected an imported `entry` name and specialized the
+invariant explicitly. Evidence and hashes: `target/prolog-runtime-leaf-invariant-2179/`.
+Zero oracles/no skipped proofs; no checker rebuild.
+
+The parameter family additionally admits direct copies of the initial ground
+value. Groundness, the unchanged uniform bound, replacement coverage and
+successful residual execution pass again in 2180 (0.409/1.725 seconds for the two
+theories); receipt/hashes: `target/prolog-copied-parameter-leaf-2180/`. Actual
+source row coverage, attached finite/leaf invariants and complete assembly remain
+open. The native eight-clause child is certified independently, not as a root.

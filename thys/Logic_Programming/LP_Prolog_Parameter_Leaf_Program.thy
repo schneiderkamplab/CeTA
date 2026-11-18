@@ -11,7 +11,7 @@ definition lpp_leaf_marker_pattern where
 
 definition lpp_parameter_leaf_patterns where
  "lpp_parameter_leaf_patterns f g = [lpp_leaf_marker_pattern f g (Var 0),
-   lpp_leaf_marker_pattern f g lpp_leaf_atomic_pattern,lpp_leaf_atomic_pattern]"
+   lpp_leaf_marker_pattern f g lpp_leaf_atomic_pattern,lpp_leaf_atomic_pattern,Var 0]"
 
 definition lpp_parameter_leaf_program where
  "lpp_parameter_leaf_program rel spine_predicate f g = lpp_leaf_core_clauses rel spine_predicate 1 @
@@ -27,6 +27,11 @@ lemma lpp_parameter_leaf_replacement_coverage:
    lp_ieval pattern nu = lp_ieval (lpp_reify_structure (lpp_structure_template u)) LPIVar"
 proof -
  let ?initial = "lp_ieval (lpp_reify_structure (lpp_structure_template c)) LPIVar"
+ have input_case: ?thesis if "u = c"
+  apply (rule exI[of _ "Var 0"])
+  apply (rule exI[of _ "\<lambda>_. ?initial"])
+  using that by (simp add: lpp_parameter_leaf_program_def lpp_parameter_leaf_patterns_def
+    lpp_leaf_parameters_def)
  have initial_case: ?thesis if "u = Fun f [Fun g [],c]"
   apply (rule exI[of _ "lpp_leaf_marker_pattern f g (Var 0)"])
   apply (rule exI[of _ "\<lambda>_. ?initial"])
@@ -42,7 +47,7 @@ proof -
   apply (rule exI[of _ "\<lambda>i. if i=0 then ?initial else LPIFun (LPPStructureLabel h) []"])
   using that by (simp add: lpp_parameter_leaf_program_def lpp_parameter_leaf_patterns_def
     lpp_leaf_parameters_def lpp_leaf_atomic_pattern_def)
- show ?thesis using member initial_case marked_case atom_case
+ show ?thesis using member input_case initial_case marked_case atom_case
   unfolding lpp_parameter_leaf_templates_def by blast
 qed
 

@@ -14,7 +14,7 @@ lemma lpp_ground_leaf_budget_independent:
 
 definition lpp_parameter_leaf_templates where
  "lpp_parameter_leaf_templates f g c =
-   {Fun f [Fun g [],c]} \<union> {Fun f [Fun g [],Fun h []] |h. True}
+   {c,Fun f [Fun g [],c]} \<union> {Fun f [Fun g [],Fun h []] |h. True}
    \<union> {Fun h [] |h. True}"
 
 definition lpp_parameter_leaf_budget where
@@ -42,8 +42,10 @@ proof -
   by (simp add: lpp_parameter_leaf_budget_def)
  have atomic: "3 \<le> lpp_parameter_leaf_budget c"
   by (simp add: lpp_parameter_leaf_budget_def)
- show ?thesis using member copied limit atomic
-  by (auto simp only: lpp_parameter_leaf_templates_def Un_iff singleton_iff mem_Collect_eq
+ have original: "lpp_leaf_budget (lpp_parameter_leaf_budget c) (lpp_structure_template c) \<le> lpp_parameter_leaf_budget c"
+  using fixed limit by arith
+ show ?thesis using member copied limit atomic original
+  by (auto simp only: lpp_parameter_leaf_templates_def Un_iff insert_iff singleton_iff mem_Collect_eq
     lpp_binary_atomic_template_budget lpp_structure_template.simps lpp_leaf_budget.simps
     list.map sum_list_simps sum.case)
 qed
