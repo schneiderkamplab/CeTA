@@ -5466,3 +5466,31 @@ Next bind the initial invariant, actual Split interfaces and attached return
 facts to the tree/forest rank, finish parent assembly and residual discharge,
 and perform strict replay with two unified checks. No new root verdict.
 Next resident identifier: 2290; native evidence: 2739.
+
+
+## Actual attached return-slot transport — 2295
+
+`LP_Prolog_Attached_Return_Leaf` connects actual continuation coverage to numeric
+return slots. It proves that a fresh body variable is separated from any finite
+observed caller value covered by the actual MGU's continuation. The matching
+specialization preserves the caller leaf effect and acquires separation using
+the same MGU, including callers absent from the selected atom.
+
+The actual attached base-step theorem preserves the full leaf stack through
+matching resolution and its alternative cases. Attachment leaves every saved
+frame's own environment intact. An executable slot-occurrence check has a
+soundness lemma and positive/missing-slot/missing-continuation controls. The
+continuation is required; no isolated-helper coverage premise is invented.
+
+Nine lemmas pass without oracles/skipped proofs. Receipt and source hash:
+`target/prolog-attached-return-leaf-2295/`. Final check took 3.763 seconds.
+Attempt 2293's reverse invariant rewrite was interrupted after 20.813 seconds;
+an explicit attached-invariant fact fixes it. Other corrections concerned the
+runtime support map and the shared cut-symbol signature. The resident was
+preserved; no native/full rebuild or checker export.
+
+Next transport these actual caller-slot facts through normalized univ and nested
+helper calls, then connect the complete attached invariant to the actual Split
+interfaces/rank and discharge parent residuals. Existing source-variable univ
+lemmas alone do not instantiate numeric caller return slots. No root gain;
+next resident identifier 2296, native evidence identifier remains 2739.
