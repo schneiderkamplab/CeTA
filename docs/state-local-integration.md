@@ -6593,3 +6593,26 @@ the two Split nodes with actual successful-return and forest-descent contracts,
 and discharge block/entry initialization. The open residual and unified
 original-source reconstruction/replay remain mandatory. Baseline remains
 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
+
+
+### Actual-return forest Split composition — 2026-11-18
+
+The attached forest theorem now produces a full answer contract, and the Split
+bridge retains the original checked routing, interface and return projection.
+Its continuation requires an actual helper answer and a strictly smaller
+observed returned forest. Leaf initialization and preservation remain explicit
+obligations; termination alone never supplies them. A separate shared two-step
+block invariant proves answer coverage without a termination premise, including
+later alternatives. Internal phases must be silent on every outgoing step.
+
+Resident Isabelle checked 24 conclusions without oracles or skipped proofs;
+receipt and pinned inputs are in `target/prolog-forest-split-2555/`. Twenty
+controls use exact original and renamed native Split 30/44 records, rejecting
+missing routing, interface, continuation and invalid projections. Attempts
+2558–2560 exposed proof instantiation/type issues; 2561 passed after explicitly
+typing the forest sum. No full rebuild or unified export occurred.
+
+Still required: instantiate independent return safety and all concrete module
+contracts, discharge the open residual, integrate reconstruction and perform
+unified original-source checks and strict replay. No benchmark gain; baseline
+remains 90 YES + 97 NO + 34 UNKNOWN, LP-cut 84 YES + 9 NO.
