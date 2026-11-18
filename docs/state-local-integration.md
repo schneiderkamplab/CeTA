@@ -6172,3 +6172,33 @@ fresh-separation evidence, then recursive Split/forest-rank assembly, native
 integration and original-root strict replay. Numbervars remains unproven,
 certified totals remain 90 YES + 97 NO, and the installed unified checker is
 unchanged.
+
+
+### Observer parent assembly and caller scope restoration — 2026-11-18
+
+`LP_Prolog_Observer_Table_Contract` assembles full caller-attached answer
+contracts by the shared modular induction over certified residual subjects.
+Each child supplies its own joint runtime stack, invariant and complete helper
+module representation. Every represented local row and every boundary remains
+an explicit node-contract obligation. Exhausted states have a proved terminal
+case. A silent-step composition lemma connects actual local simulations to
+these answer contracts. This theorem still requires residual termination and
+all local/boundary contracts; it does not certify a root by itself.
+
+`LP_Prolog_Observer_Attached_Scopes` restores a canonical graph contract to the
+actual caller-attached state when the graph's selected scope renamings fix the
+suspended continuation. Its negative control proves that renaming only the
+helper is invalid when the caller contains an affected cut. No caller cut
+scope is erased. Instantiating canonical local rules with this scope condition
+and the finite/leaf invariant remains a required assembly step.
+
+Seven theorem conclusions pass without oracles or skipped proofs, including
+the caller-cut counterexample. Parent assembly checked in 2.184 seconds and
+scope restoration in 0.291 seconds; receipts/hashes are in CeTA
+`target/prolog-observer-table-2416/`. The pre-break resident session was verified
+live and reused; no rebuild or process restart was required.
+
+Numbervars remains unproven. Remaining work includes concrete observer node
+contracts, recursive Split/forest-rank assembly, residual discharge, native and
+unified integration, and original-source strict replay. Certified totals remain
+90 YES + 97 NO, and the installed unified checker is unchanged.
