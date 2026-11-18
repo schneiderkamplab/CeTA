@@ -4971,3 +4971,22 @@ All six theorems have zero oracles/no skipped proofs. Resident-written receipt
 and theory hashes: `target/prolog-bounded-unify-2150-2154/`. No unified export or
 full build. Actual recursive helper-return coverage, all source actions and the
 relational residual implementation remain necessary; there is no new verdict.
+
+### Bounded scalar results, including binary64
+
+`LP_Prolog_Bounded_Arithmetic` proves bounded substitution images and structural
+leaf effects for successful evaluation through the existing stable scalar
+semantics. It requires allowed atomic results, not integer-only inputs or atomic
+input expressions. Three theorems pass in resident 2158 (0.314 seconds).
+Attempts 2155–2157 needed an explicit atomic witness and a concrete template
+variable alphabet; no semantic premises were weakened.
+
+The parameter template family now also admits atomic leaf replacements, since
+an arithmetic result can share a caller-observed variable. Groundness and its
+uniform parameter-dependent bound were rechecked in 2155 (0.452 seconds).
+All five checked theorems have zero oracles/no skipped proofs; resident receipt
+and theory hashes: `target/prolog-bounded-arithmetic-2158/`. No checker build.
+Ferrum's diagnostic relational compiler closes through the common scheduler;
+the standalone child passes twice with the pinned composed-1792 unified CeTA.
+Its missing-component mutation rejects. This does not establish recursive
+source return coverage or a complete benchmark certificate.
