@@ -5290,3 +5290,25 @@ instantiation remain necessary before parent assembly.
 Four lemmas pass without oracles/skips in 0.732 seconds; receipt/hashes:
 `target/prolog-ground-head-leaf-2235/`. No export or source verdict.
 Next resident identifier: 2236.
+
+
+## Runtime instantiation of anchored-head leaf transport — 2240
+
+`LP_Prolog_Runtime_Ground_Head_Leaf` reconstructs finite runtime goal lists as
+finite templates while proving exact preservation of variable support. This
+lifts the ground-head bounded-images theorem to actual runtime calls and
+continuations, and then to the existing environment-transport interface.
+The final specialization consumes `lpp_check_anchored_head`, its actual ground
+knowledge, argument lengths, actual MGU, finite arguments/continuation and
+protected-coordinate coverage. These remain explicit source obligations.
+
+Terminology: the existing inductive `lp_seg_ground` predicate entails
+`lpp_finite_term` by `lpp_ground_finite_term`. That formal premise is stronger
+than ordinary variable-free rational-term groundness. The anchored rule uses
+the existing predicate and theorem; it does not reinterpret cyclic terms as
+finite observations or change source semantics.
+
+Five lemmas pass without oracles/skips in 0.944 seconds; receipt/hashes:
+`target/prolog-runtime-ground-head-2240/`. No checker export or rebuild.
+Next connect the complete local invariant conditions to the established source
+modules and their attached caller interfaces. No root verdict. Next resident: 2241.
