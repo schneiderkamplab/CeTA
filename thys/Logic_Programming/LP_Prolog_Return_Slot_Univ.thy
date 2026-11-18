@@ -96,7 +96,7 @@ lemma lpp_attached_normalized_univ_leaf_stack:
    (lp_isubst (lpp_argument_list (LPIFun (names f) []#ts)) sigma)
    (map (lp_cut_map (\<lambda>t. lp_isubst t sigma)) pending_goals @
      map (lp_cut_map (\<lambda>t. lp_isubst (lp_ieval t eta) sigma)) gs) tau"
- and invariant: "lpp_leaf_stack_invariant A specs ((entry,eta)#saved)"
+ and invariant: "lpp_leaf_stack_invariant A specs ((frame_entry,eta)#saved)"
  and finite: "list_all lpp_finite_term ts"
  and distinct: "x\<noteq>y"
  and fresh: "x\<notin>set2_lp_iterm (LPIFun f ts)" "y\<notin>set2_lp_iterm (LPIFun f ts)"

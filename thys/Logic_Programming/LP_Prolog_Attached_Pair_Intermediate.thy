@@ -67,7 +67,7 @@ lemma lpp_attached_pair_intermediate_stack:
  fixes eta :: "nat \<Rightarrow> ('f,string) lp_iterm"
  assumes first: "lpc_mgu_unify input_term input_term
    (LPCUnify left right#(pending_goals @ map (lp_cut_map (\<lambda>t. lp_ieval t eta)) gs)) sigma"
- and invariant: "lpp_leaf_stack_invariant A specs ((entry,eta)#saved)"
+ and invariant: "lpp_leaf_stack_invariant A specs ((frame_entry,eta)#saved)"
  and covered: "lpp_check_attached_leaf_slots (map fst specs) gs"
  and finite_left: "lpp_finite_term left"
  and finite_right: "lpp_finite_term right"

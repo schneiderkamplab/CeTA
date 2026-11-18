@@ -6073,3 +6073,38 @@ transport, followed by recursive Split/forest-rank assembly and native/unified
 integration. Numbervars remains unproven. Certified totals remain 90 YES +
 97 NO; this proof development is not a new source certificate and does not
 change the installed unified checker.
+
+
+### Actual attached univ equality transitions — 2026-11-18
+
+`LP_Prolog_Attached_Univ_Equality_Steps` now applies the caller leaf contracts
+to actual answer-machine transitions. The reflexive step preserves the caller
+observations for arbitrary MGUs on the complete pending continuation. The
+normalized univ two-step theorem retains both actual substitutions, and covers
+saved-alternative restoration on equality failure. A domain-aware wrapper
+connects the result to the source transition relation. Fresh output variables,
+finite arguments, caller separation and live return-slot coverage are explicit
+premises; they still require discharge at the graph rows.
+
+Integration exposed a concrete defect in the earlier
+`lpp_attached_pair_intermediate_stack` and
+`lpp_attached_normalized_univ_leaf_stack`: the name `entry` resolved to an
+imported constant with function type, so their checked statements could not
+instantiate real execution stacks. Both now use the general variable
+`frame_entry`. Their dependent theories were rechecked incrementally in the
+retained Isabelle process. The new actual-transition theorems exercise the
+previously unusable instantiations.
+
+Five main theorem conclusions and three return-slot controls pass without
+oracles or skipped proofs. Equality checking took 1.275 seconds; controls took
+1.533 seconds. The unprotected-output counterexample still proves that a
+caller leaf can become a nonground constructor when separation is absent.
+Evidence and failure classifications are in CeTA
+`target/prolog-observer-equality-2393/`. Prior receipts remain historical;
+the two corrected source hashes are bound by this new receipt.
+
+No native rebuild or unified export was performed. Next are graph-row transport
+of finite observations and caller separation, trim/parallel boundaries, and
+recursive Split/forest-rank assembly before native integration and strict root
+replay. Numbervars is still unproven; totals remain 90 YES + 97 NO and the
+installed unified executable is unchanged.
