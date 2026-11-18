@@ -4949,3 +4949,25 @@ higher-order premise instantiation; 2141 was interrupted without restarting the
 resident. No unified export or rebuild. Actual source return-bound synthesis,
 relational residual emission and full source assembly remain open. No benchmark
 verdict or checker acceptance changed.
+
+### Source equality and parameter-dependent leaf budgets
+
+`LP_Prolog_Bounded_Unify` derives bounded images from an actual most-general
+source equality binding a variable to an allowed finite ground template. Other
+observed variables must occur in the continuation. A kernel counterexample shows
+that an MGU can freely change an unobserved variable; coverage cannot be omitted.
+The resulting actual substitution produces the checked structural leaf effect.
+Three theorems pass in resident 2150 (1.479 seconds).
+
+`LP_Prolog_Parameter_Leaf_Budget` gives a uniform budget for a binary marker whose
+second child is either an initial finite ground parameter or any atomic result.
+The budget depends on the initial parameter's structural size. This matters:
+successful arithmetic does not imply that its input expression was atomic.
+Three theorems pass in resident 2154 (0.440 seconds). Attempt 2151 needed a
+specialized equality, 2152's broad simplification was interrupted, and 2153
+corrected a theorem name. The resident stayed running.
+
+All six theorems have zero oracles/no skipped proofs. Resident-written receipt
+and theory hashes: `target/prolog-bounded-unify-2150-2154/`. No unified export or
+full build. Actual recursive helper-return coverage, all source actions and the
+relational residual implementation remain necessary; there is no new verdict.
