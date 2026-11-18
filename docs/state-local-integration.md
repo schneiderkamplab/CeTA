@@ -6108,3 +6108,34 @@ of finite observations and caller separation, trim/parallel boundaries, and
 recursive Split/forest-rank assembly before native integration and strict root
 replay. Numbervars is still unproven; totals remain 90 YES + 97 NO and the
 installed unified executable is unchanged.
+
+
+### Checked observer trim and parallel boundaries — 2026-11-18
+
+`LP_Prolog_Observer_Boundary_Contracts` and
+`LP_Prolog_Observer_Checked_Boundaries` connect caller-attached answer contracts
+to the established graph's actual Trim and Parallel actions. Exact helper
+projection determines the runtime prefix/suffix or indexed frame. The caller's
+observation environments are retained from those actual frames; they are not
+reconstructed from helper substitutions.
+
+Trim only drops the suffix proved to consist of barriers. Parallel assembly
+requires a complete attached answer contract for every source frame, including
+saved alternatives. The existing checked links transport all source context
+facts and explicit separation evidence. Unlike the earlier empty-target
+boundary rule, these contracts can retain nonempty separation contexts when
+the existing transport checker validates them. Each lower contract is still a
+full answer contract, and strict residual reachability links its subject to
+the parent's subject. No helper termination result substitutes for it.
+
+Eight new theorem conclusions and four existing negative controls pass without
+oracles or skipped proofs. The controls cover missing alternatives, missing
+context rows, trimming a nonbarrier, and stale saved caller observations.
+Assembly checked in 0.931 seconds and the two source-action contracts in
+1.013 seconds using the retained Isabelle process. The receipt and source
+hashes are in CeTA `target/prolog-observer-boundaries-2403/`.
+
+Finite-observation and fresh caller-separation transport through the local
+rows, recursive Split/forest-rank assembly, native integration and original-root
+strict replay remain. No native build or unified export was performed;
+numbervars remains unproven and certified totals remain 90 YES + 97 NO.
