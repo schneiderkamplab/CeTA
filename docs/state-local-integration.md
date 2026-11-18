@@ -5254,3 +5254,18 @@ and hashes: `target/prolog-leaf-stack-2229/`. No export or rebuild.
 Next instantiate these conditions for the established graph's source rows,
 including acquired separation for the normalized pair sequence, and connect
 complete module/rank coverage. No root verdict added. Next resident: 2230.
+
+
+## Observed-spine heads preserve caller effects — 2232
+
+The original-source row audit identifies observed-spine and ground-anchored
+head records beyond ordinary matching. `LP_Prolog_Leaf_Spine_Head` extracts a
+matching witness for successful linear list-head resolution from an actual
+proper-spine observation, then instantiates environment leaf transport. Failed
+head alternatives and acquisition of the spine observation remain obligations;
+finite elements are not inferred from the spine.
+
+Two lemmas pass without oracles/skips in 0.383 seconds. Receipt/hashes:
+`target/prolog-leaf-spine-head-2232/`. No checker export. Ground-anchored
+return effects and allowed parameter membership remain local gaps before
+complete module assembly. Next resident: 2233.
