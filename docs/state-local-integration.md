@@ -6507,3 +6507,32 @@ initialization, then finish nested Split/forest descent, residual discharge and
 original-source reconstruction/replay. No certified gain yet: 90 YES + 97 NO +
 34 UNKNOWN; LP-cut 84 YES + 9 NO. The grouped gap overview remains in Ferrum
 `docs/prolog-remaining-gaps.md`.
+
+
+### Checked module dispatch and saved graph coverage — 2026-11-18
+
+The executable local dispatcher now combines ordinary, unification, term-test
+and arithmetic observer checks. Module assembly retains the full original
+source-table check and requires independent contracts for acquired blocks and
+every frontier boundary. Listing a block never discharges its contract. Missing
+witness/context tables and uncovered local rows are rejected; univ cannot pass
+as an ordinary local row. Nine conclusions passed without oracles or skipped
+proofs in CeTA `target/prolog-observer-module-2539/`. No unified export occurred.
+
+Ferrum `target/prolog-observer-coverage-2747/` inventories all five saved modules
+for original and renamed sources. Each variant has 30 local-dispatch candidate
+rows, two acquired block entries, six internal rows, 23 empty boundaries and
+seven nonempty boundaries. These are module-local row counts, not native
+construction-node counts or certified results. All active local candidate
+routes reach the candidate frontier. The inventory preserves input hashes and
+nonempty boundary states; it is routing diagnosis, not a source-check replay.
+Module 0's nonempty boundaries include normalized arithmetic equality, a cut
+continuation and recursive helper/continuation execution. None is silently
+closed.
+
+Next: instantiate block coverage and entry conditions from reconstructed
+module evidence; discharge empty boundaries and transport contracts across
+all seven nonempty boundary occurrences, including recursive Splits and forest
+descent. Then close the residual and complete original-source reconstruction,
+unified export and strict replay. No root gain: 90 YES + 97 NO + 34 UNKNOWN;
+LP-cut 84 YES + 9 NO.
