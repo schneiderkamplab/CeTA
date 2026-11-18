@@ -6244,3 +6244,32 @@ instantiations, recursive Split/forest-rank assembly, residual discharge,
 integration and strict replay remain. The 90 YES + 97 NO baseline and installed
 unified checker are unchanged. The grouped remaining-root inventory is in
 Ferrum `docs/prolog-remaining-gaps.md`.
+
+
+### Checked observer ordinary-node assembly — 2026-11-18
+
+The observer parent contract now has concrete Trim, Parallel, administrative
+and clause-selection node instances. `LP_Prolog_Observer_Ordinary_Check` adds an
+executable dispatch check and soundness theorem for these actions, terminal
+states and inconsistent guards. Every ordinary link checks transport from the
+actual incoming separation context to its target; nonempty facts are retained.
+The shared simple-step contract preserves finite execution of the attached
+caller and leaf observations in every saved environment through the actual step.
+Exhausted helpers cannot enter the silent administrative rule. Arithmetic,
+unification, resolution and univ retain their separate contract obligations.
+
+The incremental resident check produced 15 trusted conclusions, including
+nonempty transport, missing-initialization and missing-child controls, rejection
+of exhausted-helper and unsupported arithmetic dispatch, and the retained
+missing-frame and nonfinite-saved-environment controls. No oracles or skipped
+proofs. Receipts and source hashes are in CeTA
+`target/prolog-observer-ordinary-2430/`. Attempt 2429 caught an imported-name
+collision in a test; the final test uses unambiguous row variables. No native,
+export or unified-checker rebuild was performed.
+
+This remains conditional source-proof infrastructure: numbervars is not yet
+certified. Remaining work includes concrete special-action contracts, fresh
+separation and finite initialization, recursive Split/forest-rank assembly,
+the open residual, certificate reconstruction and unified integration, followed
+by original-source strict replay and two checks. The pinned baseline remains
+90 YES + 97 NO + 34 UNKNOWN; LP-cut remains 84 YES + 9 NO.
