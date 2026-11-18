@@ -5012,3 +5012,26 @@ The native seven-clause family closes through common triples solving and passes
 two pinned unified checks; missing component rejection is retained. This proves
 residual realization conditional on source effects. It does not discharge actual
 recursive helper returns, matching/univ preservation, source assembly or replay.
+
+### Composing leaf effects and preserving active matching contexts
+
+`LP_Prolog_Leaf_Effect_Composition` proves transitivity when replacement templates
+are ground. A concrete nonground counterexample shows that two permitted steps
+can otherwise introduce a nested constructor not allowed by the original effect.
+Six theorems pass in resident 2175 (0.771 seconds); 2172's unavailable list cases
+rule was replaced by explicit list cases in 2173.
+
+`LP_Prolog_Matching_Context_Structure` derives an inverse substitution from the
+existing MGU contract for variables in both the selected atom and the active
+continuation. Every finite observed caller value retains its structural
+observation. Saved alternatives and uncovered answer-only variables are not
+silently included. Two theorems pass in 2174 (2.769 seconds). All eight have zero
+oracles/no skipped proofs; resident receipt and theory hashes:
+`target/prolog-leaf-composition-matching-2174-2175/`.
+
+Native matching structural receipts now retain active-context equations and
+validate them by reconstruction. The complete numbervars all-calls diagnostic
+is byte-identical to its earlier 78-clause subject and still fails triple
+filtering. These results establish local transport/composition obligations;
+actual recursive return invariants and full source assembly remain open.
+No unified checker export or full rebuild.
