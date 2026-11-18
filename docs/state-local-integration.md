@@ -6690,3 +6690,22 @@ are in `target/prolog-answer-coordinates-2580/`. Only affected theories loaded.
 No unified export or source gain. Remaining work includes coordinate transport
 through module interfaces, concrete continuation/family assembly, open residual
 discharge and unified original-source replay.
+
+
+### Checked coordinate initialization and transport — 2026-11-18
+
+Executable checks now require in-range identical payload terms at initialization
+and justified coordinate pairs when reindexing. Helper rebasing by coordinate
+selection uses these checks while preserving all caller observations. Missing
+source relations, wrong routes, out-of-range coordinates and distinct payload
+values are rejected. This covers coordinate selection, not arbitrary constructed
+helper values. Eight conclusions passed without oracles or skipped proofs in
+`target/prolog-coordinate-transport-2587/`.
+
+Ferrum reconstructs equal payload coordinates in each attached observer product,
+binding the relation to the complete source product. Original/renamed native
+inspections agree on Split 30 pairs (1,3)/(2,4) and Split 44 pair (2,3); mutation
+tests reject missing and out-of-range pairs. Evidence is in Ferrum
+`target/prolog-coordinates-2752/`. One incremental native build, no unified
+export or root gain. These checks still need complete integration with module
+contract assembly, residual discharge and strict original-source replay.
