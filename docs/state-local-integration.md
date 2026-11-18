@@ -5312,3 +5312,28 @@ Five lemmas pass without oracles/skips in 0.944 seconds; receipt/hashes:
 `target/prolog-runtime-ground-head-2240/`. No checker export or rebuild.
 Next connect the complete local invariant conditions to the established source
 modules and their attached caller interfaces. No root verdict. Next resident: 2241.
+
+## Return-slot leaf coverage and node integration — 2245/2252
+
+`LP_Prolog_Return_Leaf_Coverage` checks evaluated return payload slots against
+actual selected-call/continuation support. The anchored-head stack theorem
+covers all shared base transitions, retaining saved alternatives. The new
+`LP_Prolog_Return_Leaf_Node_Contract` instantiates the existing checked node
+contract with finite execution plus leaf preservation; it keeps source context,
+branch links, residual and return obligations explicit.
+
+The original-source audit found three resolution rows whose whole-term payload
+is related to the called argument list through an existing functor fact.
+`LP_Prolog_Functor_Leaf_Support` proves exact runtime support equality and an
+ordered finite closure over those facts, including missing-fact and missing-
+argument rejection controls. This remains valid for rational children and does
+not infer finite elements from a proper spine. The closure still needs wiring
+into the coverage predicate/node constructor and native certificate export.
+
+Fifteen lemmas passed resident Isabelle with zero oracles and no skipped proofs.
+Receipts and source hashes: `target/prolog-return-leaf-node-2245/` (coverage
+3.183 seconds, node contract 3.882 seconds, support closure 1.200 seconds).
+Only missing imported dependencies were loaded; no native/full rebuild or
+unified export. No new root verdict. Remaining work includes other source
+operations, relational coverage integration, attached Split/rank composition,
+source certificates and strict replay.
