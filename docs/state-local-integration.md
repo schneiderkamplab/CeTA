@@ -6382,3 +6382,32 @@ available timings and failed attempts. Only affected theories were loaded in
 the live resident. No native/unified rebuild, new mutation campaign, original
 root certificate or gain is claimed. Baseline: 90 YES + 97 NO + 34 UNKNOWN;
 LP-cut: 84 YES + 9 NO.
+
+
+### Checked block node and finite-helper clarification — 2026-11-18
+
+The finite-helper concern in the preceding entry is resolved by proof, without
+strengthening or resetting any state. `lpp_finite_execution` concerns goal stacks;
+return-environment projection leaves those stacks unchanged. Removing the
+attached continuation preserves finite execution. Thus the existing observer
+invariant already implies finite helper execution, including saved frames.
+This does not claim that arbitrary return-slot values are finite trees.
+
+`lpp_observer_fresh_univ_node_contract` lifts the assembled block through the
+existing canonical/scope interface. Its checked specialization derives matching,
+fresh-clause acquisition and source simulation from the existing resolution and
+separation checks. Five conclusions passed without oracles or skipped proofs;
+CeTA `target/prolog-observer-block-node-2488/` pins receipts, source hashes,
+incremental timings and failed attempts. No native or unified rebuild occurred.
+
+The next issue is table assembly, not finite-helper initialization. The current
+`lpp_observer_table_contract` requires an independent caller contract for every
+local row. A checked fresh-univ block instead uses the acquired protection
+across its internal rows; the earlier aliasing counterexample still prevents
+claiming standalone contracts there from the weak invariant. Assembly must
+recognize checked blocks, retain their internal edge/context checks, and cover
+all exits and other incoming paths. The native `NormalizedSeparationTrace`
+already records unique incoming edges and rejects internal module entries and
+boundaries. Its proof integration remains required, alongside arithmetic,
+nested Splits/forest descent, the open residual and original-source certified
+replay. No new root: 90 YES + 97 NO + 34 UNKNOWN; LP-cut 84 YES + 9 NO.
