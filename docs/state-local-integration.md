@@ -5652,3 +5652,23 @@ reachable source dispatch, including both fresh outputs and failure branches,
 then complete nested Split invariants, parent residual discharge and original
 source replay. Baseline remains 90 YES + 97 NO; no root gain. Next resident
 identifier 2329; native evidence remains 2740.
+
+
+## Fresh pair output acquisition — 2330
+
+The checked fresh-decomposition predicate and checked head witness now jointly
+produce both actual runtime output variables, their distinctness, separation
+from the decomposition input and separation from the caller observation.
+The caller leaf effect is preserved. Actual resolution, source context,
+continuation coverage and finite resolved-call premises remain explicit.
+
+Native inspection confirms `FreshClauseView::discover` requires distinct
+body-only outputs and univ as the first clause goal; `NormalizedSeparationTrace`
+retains resolution/univ/reflexive/pair links and incoming-edge coverage. No new
+native dispatch or benchmark-specific rule was introduced. Connecting those
+traces to this caller-parameterized theorem remains an assembly obligation.
+
+One new lemma plus its predecessor pass in 0.603 seconds without oracles/skips;
+evidence in CeTA `target/prolog-checked-pair-caller-2330/`. A reserved fact name
+was corrected during development. No native/full rebuild or unified export.
+No root gain: 90 YES + 97 NO. Next resident 2331; native evidence 2740.
