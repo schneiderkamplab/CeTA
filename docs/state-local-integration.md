@@ -5087,3 +5087,24 @@ variable type. Attempts 2184/2185 corrected the type and reserved identifier.
 Native diagnostic projection retains these conditional observations only on
 successful resolution branches. This removes its immediate separating-filter
 failure, but the DP child search times out: no source verdict is established.
+
+
+### Ground-observation successful-prefix relation
+
+`LP_Prolog_Ground_Observation_Program` gives a three-clause recognizer for
+constructor observations without variable leaves. Seven theorems establish its
+shared-LP steps, successful traversal of every leaf-free observation/ground
+template with unchanged caller environment, and rejection of a variable leaf
+when its predicates are distinct. Resident 2192 passes in 1.674 seconds with
+zero oracles/skipped proofs; receipt/hash in
+`target/prolog-ground-observation-program-2192/`. Attempts 2187--2191 corrected
+step instantiation, induction names and product-state elimination. No new
+operational semantics or checker export.
+
+The native diagnostic now retains this prefix before parameterized return
+relations. Without it the filtered child admits an explicitly replayed cycle
+using a leaf as counter: ground reified data does not imply ground source data.
+With it seven of eight native DP children close and pass two checks each using
+the unchanged pinned unified checker. The main Split-continuation child remains
+open, as do actual-source invariant coverage and parent reconstruction. These
+results do not add a Prolog verdict.
