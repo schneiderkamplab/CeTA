@@ -5523,3 +5523,30 @@ Next complete attached invariant preservation through the remaining operations
 and nested helpers, bind both actual Split interfaces to the return rank, and
 finish parent residual/source certification and strict replay. No source verdict
 added. Next resident identifier 2308; native evidence remains 2739.
+
+
+## Checked heads and actual forest continuation — 2317
+
+The existing matching, anchored and proper-spine head witnesses now provide
+actual successful resolution effects for arbitrary pending caller goals.
+Attached ground equality and resolution preserve caller leaf facts in their
+own numeric return environment, retaining failure alternatives. Proper-spine
+matching does not assert finite elements; finite-call premises stay explicit.
+
+The forest composition theorem connects actual returned-tail observations to a
+strictly smaller forest call. It uses the shared attached-call semantics and
+retains initial invariant, every reachable attached step, saved alternatives,
+prefix termination and lower continuation obligations. It is a conditional
+composition theorem, not a completed module or root certificate.
+
+Eight lemmas pass without oracles/skipped proofs. Evidence and source hashes:
+`target/prolog-attached-forest-2317/` in the CeTA checkout. Ground, resolution,
+checked-head and composition checks took 3.331, 2.486, 0.757 and 1.346 seconds.
+Composition attempts exposed an unconstrained sum type; explicit tree/forest
+types fix it. No native/full rebuild or unified export. Baseline remains
+**90 YES + 97 NO + 34 UNKNOWN**; no new root gain.
+
+Next discharge the complete attached invariant and initial observations against
+both established Split interfaces, finish parent residual/source assembly and
+strictly replay with two unified checks. Resident session is preserved; next
+resident identifier 2318, next native evidence identifier 2739.
