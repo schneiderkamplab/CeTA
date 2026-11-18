@@ -6226,3 +6226,21 @@ roots exactly once, binding the pinned 90 YES + 97 NO campaign to the historical
 finite-direct diagnosis. Its 25 Split, six module, two local-step and one parser
 groups are explicitly historical first failures, not claims about established
 SEG closure or future verdicts. The inventory must be refreshed after a gain.
+
+
+### Joint observer invariant — 2026-11-18
+
+`LP_Prolog_Observer_Invariant` combines finite execution of the actual attached
+caller state with leaf observations in all caller environments. It proves
+scope stability for scope-free continuations and preservation under selecting
+sub-stacks. A negative control excludes a nonfinite suspended value in a saved
+alternative. The invariant supplies the scope premise of the canonical-node
+bridge; finite helper goals alone still do not suffice.
+
+Three conclusions checked without skipped proofs or oracles in 5.840 seconds;
+receipts and source hashes are in CeTA `target/prolog-observer-invariant-2419/`.
+No rebuild or new root certificate. Numbervars remains unproven; concrete node
+instantiations, recursive Split/forest-rank assembly, residual discharge,
+integration and strict replay remain. The 90 YES + 97 NO baseline and installed
+unified checker are unchanged. The grouped remaining-root inventory is in
+Ferrum `docs/prolog-remaining-gaps.md`.
