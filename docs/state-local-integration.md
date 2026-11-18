@@ -6633,3 +6633,22 @@ a silent self-loop, reject a bad later answer and reject an answering internal
 phase. Thus answer safety remains distinct from termination. Only affected
 theories were loaded; no native rebuild, unified export or root gain. Concrete
 family safety assembly, residual discharge and original-source replay remain.
+
+
+### Successful-return boundary coverage — 2026-11-18
+
+Concrete inspection corrects the observer inventory: region 19 row 1 and region
+28 row 1 are singleton successful returns, not ordinary administrative steps.
+The ordinary checker rejects them because the attached continuation becomes
+active. Ferrum `target/prolog-observer-returns-2750/` pins the original and renamed
+tables: 28 ordinary candidates, two successful returns, two acquired blocks,
+six internal rows, 23 empty boundaries and seven nonempty boundaries per variant.
+
+The new singleton-return contract extracts actual caller leaf facts and finite
+continuation observations from the joint invariant, then requires the resumed
+continuation contract. It does not prove that contract from helper termination.
+Four conclusions pass without oracles or skipped proofs in
+`target/prolog-observer-returns-2569/`: the theorem, preserved repeated payload,
+ordinary-dispatch rejection, and rejection of a saved alternative by the
+singleton rule. No full rebuild, export or root gain. Concrete assembly must
+supply these two continuation contracts as well as module links and Splits.
