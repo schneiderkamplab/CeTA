@@ -1,0 +1,47 @@
+{
+  "recorded_at_utc": "2026-11-10T18:43:20.578263+00:00",
+  "objective_status": "active; incomplete",
+  "previous_receipt": "its-lp-family-bridges-20261110.json",
+  "session": "Category_LP_Cut_MGU_Bridge",
+  "verified_endpoint": "check_lpc_mgu_constructor_xml",
+  "verified_theorems": [
+    "lp_cut_mgu_finite_yes",
+    "lp_cut_mgu_rational_yes",
+    "lp_cut_mgu_infinite_yes"
+  ],
+  "premises": "Exact parse result and actual checker acceptance; domain instances discharged.",
+  "no_admissions": "Thm_Deps.has_skip_proof audit passed for all three final theorems.",
+  "oracle_audit": "Category_LP_Cut_MGU_Bridge.LP_Cut_Domain_Precise_Checker\nCut MGU YES oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition",
+  "source_revision": "123e3aafd0def79d2f0ce7d60596b6175a4a2532",
+  "source_sha256": {
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Free_Coverage.thy": "6e58e6e85992f5e1b8b819b6190b9f88280f1552b3b8351b3a539357cb2eb503",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_MGU_Head.thy": "8b167166de60e1c611a291e223b1db6c9d2e1f25fe4880d635be58a7a89bcd1b",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_MGU_Properties.thy": "4701b018193757571b1d0cd3f7455c06f82943fbd4be77aceb4004937deb3bb0",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Answer_Split.thy": "37125907b668d315018943dcaeb5b9e0c4daa33717c849d92fec33b5e5c66d4d",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Canonical.thy": "aef55b42ed6428396ca92f3c69ec9b4cc89d008fb4c3014c545919bcb124a41f",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Certificate.thy": "5023f734bf6a4399cf275c8564ee3a4a537c512094553e2f99b0b2b6a9aa1296",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Checker.thy": "ad760d9fe73f8b6893c0b1282b69bb985b57ab408f71ba34be8066efd2e3ebd2",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Equality.thy": "7ab9572befd8d0b7f58767de5108a2ac1522ad6d231ca098cccf5460ee32d6bf",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Instance.thy": "e1d67d3f406b92e154777827562a086040c62dd608e55cc8537bd630b348a318",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Link.thy": "a8754f134bf071732a3679e135750fd627c43b8ac0ef11fc2bf6c9d9c373f2e1",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_MGU.thy": "cdbfa4c0bbb1ffa8977b6ca8aea27e2f8435a7f0468e369a171211d5edd2991e",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Resolution.thy": "61974fbf132074e9763721d009f96e076cea1ce8142b634c2fe15431c021ded3",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Source.thy": "de57fcde143b615e9e9544dab93adf89ded6acd7676aeb9eea09e177f0b5aec9",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Stack.thy": "0a737f6538be2471e18622741e4db6e7feb4793504c528bd559607a3fcd6d878",
+    "thys/Category_Bridges/LP_Bridge/MGU/LP_Cut_Domain_Precise_Table.thy": "52b5b2c48785765b392825c72a42e783e622a1f8cf4a2b765789ae2e1a1d9253",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "9502e6633e17ed710ae37e008360b71c28daf44940bf0c1ee6b4bf3dce27a35c"
+  },
+  "build_log": "target/its-lp-specifications/mgu-table-6.log",
+  "build_log_sha256": "fbb9e37c33dca0bec348c0804c1496b7fc02a9ec93a6163cc1acaaec2b481e6a",
+  "ceta_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "production_artifacts_changed": false,
+  "working_tree_changes_uncommitted": true,
+  "remaining": [
+    "return/module/composed/nested and triple cut families",
+    "segment/free/projected/triple and projected cut families",
+    "pure-LP NO families",
+    "semantic selection, complete identity and original-input binding",
+    "ITS sort and zero-arity review",
+    "focused integration tests and final completion audit"
+  ]
+}

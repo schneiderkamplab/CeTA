@@ -1,0 +1,4 @@
+session Category_Equational_Integrated = Category_Integrated_Base +
+  options [document = false, quick_and_dirty = false, timeout = 180]
+  sessions Category_Equational_Bridge Category_Standard_Integrated
+  theories TRS_Equational_Checker_Bridge

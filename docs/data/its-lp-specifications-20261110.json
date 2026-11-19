@@ -1,0 +1,183 @@
+{
+  "recorded_at_utc": "2026-11-10T15:56:23.380773+00:00",
+  "status": "partial semantic correspondence; not an end-to-end release",
+  "source_heads": {
+    "CeTA": "123e3aafd0def79d2f0ce7d60596b6175a4a2532",
+    "ferrum": "eaf6da36bb00b21ffe20fe3efe0d6fd1786ade03"
+  },
+  "working_tree_changes_uncommitted": true,
+  "scope": [
+    "ITS",
+    "definite LP",
+    "LP with cut"
+  ],
+  "excluded": [
+    "Prolog"
+  ],
+  "lp_domains": [
+    "finite terms",
+    "rational runtime trees",
+    "arbitrary infinite runtime trees"
+  ],
+  "verified": {
+    "definition_package": "28 HOL-only theories",
+    "properties": "Category_Properties passed",
+    "bridges": [
+      "Category_ITS_Bridge",
+      "Category_LP_Bridge"
+    ],
+    "its_verdicts": [
+      "YES",
+      "NO"
+    ],
+    "lp_verdicts": [
+      "TOCL09 YES for all three domains"
+    ],
+    "cut_verdicts": [],
+    "rust_frontend": {
+      "passed": 16,
+      "ignored": 0
+    },
+    "rust_certification": {
+      "passed": 10,
+      "ignored": 31
+    }
+  },
+  "oracle_dependencies": {
+    "ITS": [
+      "Regexp_Method.check_eqv"
+    ],
+    "LP": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ]
+  },
+  "no_admissions_audit": "Thm_Deps.has_skip_proof rejects admissions in all audited bridge theorem dependencies",
+  "open_obligations": [
+    "Authoritative current LP competition unification policy",
+    "Pure-LP NO to exact most-general derivations",
+    "Cut checker correspondence for each domain",
+    "LP semantic selection and original-input binding",
+    "Full ITS source parsing audit, including zero-arity grammar and Boolean argument coverage"
+  ],
+  "certificate_formats_changed": false,
+  "generated_checker_changed": false,
+  "source_changes": {
+    "ferrum/src/its/parse.rs": "reject every second source entrypoint declaration"
+  },
+  "ceta_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "source_sha256": {
+    "thys/Category_Bridges/ITS_Bridge/ITS_Checker_Bridge.thy": "2a5413800387d81b83e66fcc2e123f60e2f51a0e20dfb737ed9df9c2894af88b",
+    "thys/Category_Bridges/ITS_Bridge/ITS_Equivalence.thy": "3e0dc9291df8c373c82867c4326829006867f75c58904fd00691237176ab8d65",
+    "thys/Category_Bridges/ITS_Bridge/ROOT": "f0c4f111e486a691c3ef872b386d7328a4a7b6b6dd30818a5e03125905a3717b",
+    "thys/Category_Bridges/ITS_Bridge/ROOTS": "e9cb15127db64814ab3741c148d724cfb78295945c1fd336aba87fb2473bda89",
+    "thys/Category_Bridges/LP_Bridge/LP_Checker_Bridge.thy": "db1403b4ed55d1ce3b2d9670e68adffbd4e50965da60cdba85d1c0929dbb35db",
+    "thys/Category_Bridges/LP_Bridge/LP_Representation.thy": "a89b41379045e02575d3038a22678a171e335984dec8f07cbcba0a8e193fb496",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "d14c43ee6d92866352c48fba24994d2bed8c24a92de2e71049b09544853fb668",
+    "thys/Category_Bridges/LP_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Properties/Higher_Order_Examples.thy": "736cfa8dda2a9a45277fab28e4586b108b23cda369d2e8d3e49f11a028923f1e",
+    "thys/Category_Properties/Higher_Order_Properties.thy": "b2ad44f87f0538340e6627da66942fbdf39b756ef75254f753b588f2de1354e6",
+    "thys/Category_Properties/Higher_Order_Sorts_Properties.thy": "f94d92045c792e92b4712e7bebbdae705df77f56d28297accaa923b9f1f21704",
+    "thys/Category_Properties/ITS_Properties.thy": "7d96eaf929edff7e3194868b85f6a40a7ea2b6b78ef096a3ea409d2dfdc49cbe",
+    "thys/Category_Properties/LP_Properties.thy": "e56c7af4fc73760e9ffb6eaca1341a9dba6844f3b83d7a2de9134105c5876373",
+    "thys/Category_Properties/README.md": "f091c03d2fa2e3f2b30c8eea9b631d7a8814cf4b4067dd48e48182d07db2ab34",
+    "thys/Category_Properties/ROOT": "a67b1dc2ba96df044cb5f0777034c94fbe5092ce852c072815c89a6fd752af61",
+    "thys/Category_Properties/ROOTS": "b6b8ded6a7538197e6bf4181fa8db1eb9479fb1be799fef17d63a5918f4be899",
+    "thys/Category_Properties/Rewriting_Sequences_Properties.thy": "6c1fc97e2e8b9f38ec1b06d4cecedebed5c53dbb173169a482e5907cbbdb8084",
+    "thys/Category_Properties/SRS_Cycle_Properties.thy": "b0e5e56e4725c726b6d4878b9f949c4288e02818b585c5c0bcac07ecc02e9d3c",
+    "thys/Category_Properties/SRS_Examples.thy": "b9eb799727c068fc1ad6a0e7104103f8b70b27402bbab80d3ef9608fe77295d8",
+    "thys/Category_Properties/SRS_Relative_Properties.thy": "93c4e37fe398180ff8b0eeaae18ba8b0921409406181852f158413f64d10daf2",
+    "thys/Category_Properties/SRS_Standard_Properties.thy": "dd1eb1c65e146c09fcf9f04e4ef3bb3e785426bef12a8899dd26e096d05b2653",
+    "thys/Category_Properties/TRS_Conditional_Examples.thy": "7fb30c3ff5914a68bd6198068da2f0b0c6aacdf414b483a49b266dffd2d7d8b1",
+    "thys/Category_Properties/TRS_Conditional_Operational_Properties.thy": "1adefd9f475d241b0d3107c1f998e2b47ac7d739e130a5760fd2c2693ef9c7d2",
+    "thys/Category_Properties/TRS_Conditional_Ordinary_Properties.thy": "06d61b1e659653375c039863fea13016f24c411bdb772f0a2760058d29601042",
+    "thys/Category_Properties/TRS_Conditional_Properties_Base.thy": "d46201248598cfa3ee02874602b636c5a3cb3e3aa70df16b50c86300f9f2b11d",
+    "thys/Category_Properties/TRS_Context_Sensitive_Examples.thy": "80a8733c5fdc60b5ef8b135a804f82f48956d786b35d2efca576c9856ce27d80",
+    "thys/Category_Properties/TRS_Context_Sensitive_Properties.thy": "1c3b5810bc6931b528934925f553a0f1eca0655da0bf768e6e5ce05d8fbedc28",
+    "thys/Category_Properties/TRS_Equational_Examples.thy": "2338a9ee9a99b897d3cb927fc0d5c23ea143cf8e467c0b341559832bd6be8ab8",
+    "thys/Category_Properties/TRS_Equational_Properties.thy": "ad47409e26d704dfa67fb9d676bd3ddef571a85e622c32b762b385d66f9141fb",
+    "thys/Category_Properties/TRS_Innermost_Examples.thy": "f253759b2e8d64615b6f4670b10a81f183b38c845206a9c38241223376285293",
+    "thys/Category_Properties/TRS_Innermost_Properties.thy": "f9c1e16c134c1f8fdc4ce7490a5a57ae665e74522261dc576a262b1c9f9fd53c",
+    "thys/Category_Properties/TRS_Outermost_Examples.thy": "13c5d32f45337f2e83f1fe9eb2158986335610db77dd768e25abd9f9fded9934",
+    "thys/Category_Properties/TRS_Outermost_Properties.thy": "8027d74437b8a7158734be3e786d23ad935a368308eba5c639cfd90d8087bef2",
+    "thys/Category_Properties/TRS_Properties.thy": "7c98d1fe925fb876eca4434e42f0903e88b20fc1515e61fbc556419cfe8f7e0c",
+    "thys/Category_Properties/TRS_Relative_Examples.thy": "df8423e1e70361aa8557b19e4485f33d2de22efc41a12e47ee3b4cc1e1249d20",
+    "thys/Category_Properties/TRS_Relative_Properties.thy": "abf75c3e814c524fc0f6d676014e29ef1fe3ca50b04f945785c9b95e04c0fdc5",
+    "thys/Category_Properties/TRS_Standard_Examples.thy": "13a2d4264be515264bfc307d0977415c551b53971ffb45e3e3fa219a69abdd5d",
+    "thys/Category_Properties/TRS_Standard_Properties.thy": "eb7236a26235ab7d6d0614db0b80430297e29ff765561c47c540496e495527f4",
+    "thys/Category_Specifications/Higher_Order_Sorts_Spec.thy": "b33e5c2f598c16052250c0a241dfd3baeeaa8ad07dec48366c167514b772a21c",
+    "thys/Category_Specifications/Higher_Order_Spec.thy": "7104ac07fadb7cb1272f5b8959dea549727df0c83bda9a95f71c8d5c2c7c313c",
+    "thys/Category_Specifications/Higher_Order_Spec_Base.thy": "c4fbc00bf5007ee7942d4b8152b2cbdf391ab83213e8c70594e9fb1c6e6fee4d",
+    "thys/Category_Specifications/ITS_Spec.thy": "ab291dd80f77d8a81047ac50bd7774894c800d3c70f986677af91b895cb436a1",
+    "thys/Category_Specifications/LP_Cut_Finite_Spec.thy": "0695aa84c160d45a4a99c5a73cb140430cad87e19f5ccc4f2d47afcb5ead0ff0",
+    "thys/Category_Specifications/LP_Cut_Infinite_Spec.thy": "b407f664600616ee92602073d1921e38e9ec5ff8c53998531fad184b6025d033",
+    "thys/Category_Specifications/LP_Cut_Rational_Spec.thy": "6f702a8d7a0e702b8f65fb01ba4b07c48a700793156e06f19d09d8d7ffddf71e",
+    "thys/Category_Specifications/LP_Cut_Spec_Base.thy": "2b9d5e264701ba4b16ff2f6d2a1540b082304664f54a84385a7e7dc00a63441a",
+    "thys/Category_Specifications/LP_Finite_Spec.thy": "a26aaf9c5e7ab0b384a96e3eda07b8d50c6c20320f80ec5e2c3a80e57cad25d1",
+    "thys/Category_Specifications/LP_Infinite_Spec.thy": "bcc005b453adefca5b2b5da733db5029bbd50264c03bea4b0467e30b013d347a",
+    "thys/Category_Specifications/LP_Rational_Spec.thy": "b0885dd0462e0cfa877cba238b9e506e1159977cc831e6745e912730234315e4",
+    "thys/Category_Specifications/LP_Spec_Base.thy": "2b993217870dca270e440e3a7bc4c130b0d3a0e02e77997790f4e72a22946b90",
+    "thys/Category_Specifications/LP_Terms_Spec.thy": "fd4bb69d46b28d89814705a2e254efb26049b65433129f1c72ab17aa964d3bf1",
+    "thys/Category_Specifications/README.md": "18bcd96073c0b4299170b83233989db2ecec1ebf3b5a0dd31a23f51ed9a753a8",
+    "thys/Category_Specifications/ROOT": "2ee72b5e7ec20a4b2f7d53931d334a25e5b2b8fae2abd0f41ed6eeeda8439908",
+    "thys/Category_Specifications/Rewriting_Sequences_Spec.thy": "724386e68fa465fe1ce5f88b50cedcfad967f32e360c5f66dac1e2a534b294cc",
+    "thys/Category_Specifications/SRS_Cycle_Spec.thy": "60616f955ab7622ee10d9246166bda67d7ea5dbea79c9290aa97f51a1acf3d5e",
+    "thys/Category_Specifications/SRS_Relative_Spec.thy": "0a52f9901ab5d0cc63ae8dfd581c577cf87fa9d81eba31c64faae12a2ebfa94d",
+    "thys/Category_Specifications/SRS_Spec_Base.thy": "ebe7b51cb9b9da5a336dddef48e09a99fc8bc5da61607fb09a12f36a363258ec",
+    "thys/Category_Specifications/SRS_Standard_Spec.thy": "3667e4a1e4d47b975a785c02e19eb580f0318db439c88071eb18cd08e231f916",
+    "thys/Category_Specifications/TRS_Conditional_Operational_Spec.thy": "3ab9daf1b59b3d04290526c9e3dcdf063ef459e07645f7e6ddf084ba120bb99a",
+    "thys/Category_Specifications/TRS_Conditional_Ordinary_Spec.thy": "7ae67e52cc5721bc7604ef6129592d744d5a4c5104d97817dd1a52ff639063a3",
+    "thys/Category_Specifications/TRS_Conditional_Spec_Base.thy": "57689e43f26fb2a0f09a41e9b619b90101023c5d5577eac42fb2354337423c89",
+    "thys/Category_Specifications/TRS_Context_Sensitive_Spec.thy": "50b5501e94c8a262951d752f4d6f53a24d8cb46aa7ada78f1c9a2caa4c8a31db",
+    "thys/Category_Specifications/TRS_Equational_Spec.thy": "76e11776d779e111712536455a674e493189ef61c398208209cee98099fa5c2c",
+    "thys/Category_Specifications/TRS_Innermost_Spec.thy": "14927121ea66fc71c6f0d5785fc313c55a1aa697fcfb2b63a7945840c772f79c",
+    "thys/Category_Specifications/TRS_Outermost_Spec.thy": "41b04de616ed12a9ef9c8361e48082048ba15e3a49500a98a18a3110f3800970",
+    "thys/Category_Specifications/TRS_Relative_Spec.thy": "0c026635ded00be2770d506f01a699b30617a769fcf9c7f3430f0a76da9076a7",
+    "thys/Category_Specifications/TRS_Spec_Base.thy": "06db3e53ddc42c44d030c25b3a22709aad1ecdf26972674d2300c4849be7f66b",
+    "thys/Category_Specifications/TRS_Standard_Spec.thy": "94dc04be2a1d7b4777ce631f16bf75ceacea2b5476aa76e99454ae5c8a174411"
+  },
+  "ferrum_source_sha256": {
+    "ferrum/src/its/parse.rs": "1096ca98de81ba8f7f349abeb44cf1abfa6af786bb60bf4a60063c2c3066672d",
+    "ferrum/tests/its_frontend.rs": "c3b6f6f7d50168c9c6b8c777365ee677d81ce0005c2cb23c3a4661e87aa58d13"
+  },
+  "evidence": {
+    "target/its-lp-specifications/bridges-12.log": {
+      "sha256": "ff7010bda81feb9c5d7608f180453d66ffe6a0830934bcc5540aa6025be52157"
+    },
+    "target/its-lp-specifications/properties-9-local.log": {
+      "sha256": "a788dec290a93142a6c06f0a61f96c6b1e57a4fa42bfd91735ac99b2ecaddfa5"
+    },
+    "target/its-lp-specifications/properties-8-local.log": {
+      "sha256": "32259e617562816e8479fa5eddc2614dd08263208974f758b10d42b7bb38a51f"
+    },
+    "target/its-lp-specifications/its-frontend-2.log": {
+      "sha256": "4c556005af5c6b1a63d4edaac4cf2c7f01a13dc6dbbe156b9a0f95728b8098df"
+    },
+    "target/its-lp-specifications/its-certification.log": {
+      "sha256": "a2dfca8301872bf683a2caae4a1f17264add0e07eac9232f787065e33965176e"
+    },
+    "target/its-lp-specifications/oracle-audit.json": {
+      "sha256": "3d571d81f29e77ccbb95227d312ccc81342dca78da5b22ad2063dcf292866e67"
+    },
+    "target/its-lp-specifications/package-check.log": {
+      "sha256": "f20ae02b26e8a50a072bfe2fbcc2226357b7cadcd9fef5e5437e5905bed6a18d"
+    },
+    "target/its-lp-specifications/ceta-docs-check.log": {
+      "sha256": "3aa881762e5f28c58ef61116ad40a278004933482716484b45b2d2a8c64cb331"
+    },
+    "target/its-lp-specifications/ferrum-docs-check.log": {
+      "sha256": "b022952cac3b90c88776afe94daecf83b39dcfb5416ee70f0574aafa104bad87"
+    }
+  },
+  "build_commands": [
+    "USER_HOME=CeTA/target/its-lp-specifications/local-user ISABELLE_IDENTIFIER=spec_local isabelle build -v -D CeTA/thys/Category_Properties",
+    "USER_HOME=CeTA/target/trs-standard/user ISABELLE_IDENTIFIER=trs_standard AFP=CeTA-consolidated/target/consolidation-build/afp-source/thys isabelle build -v -j4 -d CeTA/thys -d CeTA/thys/Category_Bridges/ITS_Bridge -d CeTA/thys/Category_Bridges/LP_Bridge Category_ITS_Bridge Category_LP_Bridge"
+  ],
+  "notes": [
+    "Build environment paths above are relative to the workspace; actual environment values use absolute paths.",
+    "Failed intermediate build logs are preserved. properties-8-local used the pre-fix proof snapshot; properties-9-local verifies the final proofs.",
+    "properties-8-local built the final HOL-only specification package successfully before its properties failure.",
+    "No full corpus replay or external ignored Rust test is claimed."
+  ],
+  "production_binary_modified_by_this_work": false
+}

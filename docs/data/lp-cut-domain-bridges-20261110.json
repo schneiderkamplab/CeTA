@@ -1,0 +1,131 @@
+{
+  "recorded_at_utc": "2026-11-10T17:44:01.525422+00:00",
+  "status": "table-YES and source-NO canonical cut bridges verified; full unified-dispatch coverage is not claimed",
+  "previous_receipts": [
+    "its-lp-specifications-20261110.json",
+    "lp-cut-review-20261110.json"
+  ],
+  "source_revision": "123e3aafd0def79d2f0ce7d60596b6175a4a2532",
+  "working_tree_changes_uncommitted": true,
+  "verified": {
+    "sessions": [
+      "Category_LP_Library",
+      "Category_LP_Bridge",
+      "Category_LP_Cut_Domain_Bridge",
+      "Category_LP_Cut_Checker_Bridge",
+      "Category_LP_Cut_NO_Bridge"
+    ],
+    "yes_endpoint": "check_lpc_xml",
+    "yes_theorems": [
+      "lp_cut_table_finite_yes",
+      "lp_cut_table_rational_yes",
+      "lp_cut_table_infinite_yes"
+    ],
+    "no_endpoint": "check_lpc_no_xml",
+    "no_theorems": [
+      "lp_cut_source_finite_no",
+      "lp_cut_source_rational_no",
+      "lp_cut_source_infinite_no"
+    ],
+    "premises": "Exact certificate parse binds program and query; the actual endpoint accepts. All domain closure premises are discharged.",
+    "examples": [
+      "cut_loop_certificate",
+      "cut_loop_finite_nontermination",
+      "cut_loop_rational_nontermination"
+    ],
+    "no_admissions": "Thm_Deps.has_skip_proof checks final theorem dependencies; no new axioms or oracles introduced",
+    "definition_package": "28 HOL-only definition theories; technical proofs remain outside the specification package"
+  },
+  "oracle_audit": [
+    {
+      "theory": "Category_LP_Cut_Checker_Bridge.LP_Cut_Domain_Checker",
+      "message": "Cut finite/rational YES oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition"
+    },
+    {
+      "theory": "Category_LP_Cut_NO_Bridge.LP_Cut_Domain_NO_Checker",
+      "message": "LP_Cut_Domain_NO_Checker.lp_cut_source_finite_no oracle dependencies: "
+    },
+    {
+      "theory": "Category_LP_Cut_NO_Bridge.LP_Cut_Domain_NO_Checker",
+      "message": "LP_Cut_Domain_NO_Checker.lp_cut_source_rational_no oracle dependencies: "
+    },
+    {
+      "theory": "Category_LP_Cut_NO_Bridge.LP_Cut_Domain_NO_Checker",
+      "message": "LP_Cut_Domain_NO_Checker.lp_cut_source_infinite_no oracle dependencies: "
+    }
+  ],
+  "remaining_boundary": [
+    "Other cut YES acceptance families in the unified adapter: constructor/MGU, projected, segment, return and triples",
+    "Original-input parsing, exact certificate/source correspondence, and semantic dispatch",
+    "Pure-LP NO canonical bridge remains open; NO producers and checkers already exist",
+    "Isabelle/HOL kernel and the inherited YES oracle mechanisms, code extraction, compiler/runtime",
+    "No checker completeness or full-frontier replay claimed"
+  ],
+  "runtime_semantics": {
+    "pure_lp_cli": "RationalTrees",
+    "cut_source_records": "ordered-rational-trees-scoped-cut",
+    "competition_primary": "finite terms with occurs-check; runtime labels do not establish finite correspondence"
+  },
+  "source_sha256": {
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Answer_Split.thy": "6061a00c301867969ed327c1b9786f54ebbcaba63c8b071a08f9fa86edb5eeb1",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Answers.thy": "0a74b5bc95494ab07e87ebaa164fa8d9a29ba724dca0f6628d9d51511bf408fc",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Canonical.thy": "26c4947ad0ed80f807d8fad2782b0089b23c2a8342ebfc7ae80671ec16519342",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Checker.thy": "05e88a65556996aa9d2c4c06dcfccd321a639e28642755bdb484a88ac9c25c8e",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Control.thy": "1893105867d2ad8e31e28986807f665bed084a8cfe44be30c91a29e2a81de506",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Link.thy": "358070bc68a1da55b531cf58d5c750c2f2a237766792b111bc5447286cbd0e4b",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Nodes.thy": "64888908295108740b0d4080566f020251f5dff53da309da1520667fdb4c23b9",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Resolution.thy": "0ee5aef66680e92a4d0b471d8545462f991c5c307e4a3098a8dcdd626a53bf41",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Success.thy": "f5497cf9c171108922f652dd336e1b81a91ea7d978b72591b08080516489bfcd",
+    "thys/Category_Bridges/LP_Bridge/Checker/LP_Cut_Domain_Table.thy": "c16f2e42e58477173c6ac64f7591d79563eb0b4c16790cdc60cf4c2d06ba665a",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Instances.thy": "bd338b468bbd4db00ea69193a21ed98cb903ca17cce6a7421210aa1b1335d206",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Knowledge.thy": "15fa0cfc51ce0cad38b6e2e8832e9550ebf4ca30e0e5f28d6301b7e0770a2556",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Source.thy": "4a8aea60525f2103ce144cca6f64c3905cc1622c431eb32d017b7bd894eafa76",
+    "thys/Category_Bridges/LP_Bridge/Domain/LP_Cut_Domain_Structural.thy": "fd58961bc0432a4e47a7473c0547baffebcb896f2e441b33237353ff5a252a95",
+    "thys/Category_Bridges/LP_Bridge/LP_Checker_Bridge.thy": "db1403b4ed55d1ce3b2d9670e68adffbd4e50965da60cdba85d1c0929dbb35db",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Checker_Bridge.thy": "133276021c4e437213e088e28f17fd35bbe778452fb64777aa21219c906bfb25",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Domain_Guards.thy": "5fea653c970227762764a04b34eb5587321072c9d1d8bec3080e56ac5e93daa3",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Finite_Unification.thy": "7eafcab2ca3101a72bf2814d755965973cb849aafa57d703fbf746ced10795ad",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Representation.thy": "a15121ec3838a182a277a44dc74fb78fce248a836e9da17f150a101b9941dad9",
+    "thys/Category_Bridges/LP_Bridge/LP_Representation.thy": "616f9c5f1874a39002e9514519509d97f09e55b03bf7cba91048ac49ff3d8182",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Back_Representation.thy": "d5c0744b8490681406d0092627d71b1065fddc4deae3a6baf4269bf537b10dc7",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_MGU.thy": "855d58f352dc5bfa9b633a8ef7d3e4b7844ecd1fa21ed5b1a911f0b14771d55a",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Barriers.thy": "89832f25b7c98af93012dda4b04da2101cb94bbd298255d228edcd42cc352fe9",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Canonical.thy": "1ece275791f112d43d9e4af3bd48e89192fee1918bd86316a8b4a8323b188894",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Certificate.thy": "23a3110607264e42221b68004ff07feec2e9edbfc5e644db4a189786d7406999",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Checker.thy": "501942a1f5120470c08211998393a0ec41fcbc7b194f48f0d58638e28efa9857",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Examples.thy": "82f34d300ea92da857459d8f42e6e70b470e0203815ae9c31eab38294ca6eee7",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Pending.thy": "6057d812e5156d2b6cfcc18551ef330f8866c92781b7f03915a8273178169053",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Pumping.thy": "e79aec65103a2be5eb87d995cd5017ad6d9adb1adca4a484536c06caf28c93f8",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Renaming.thy": "2b4fec5ef282ce9d9336bbcdf33e8007330e295769cff3cf2f473069318d4b34",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Source.thy": "5bbd8640e10e0bac206457699c2230495ee24712a050feca337ecf4132875822",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Steps.thy": "3817550977890a2b820861e650f576efdf4f0073eaa204738f924f11fd83ea7a",
+    "thys/Category_Properties/LP_Cut_Examples.thy": "479d68fc212991514d1873fc381235f7eb2f3b16ebae92f1e94c642209c80460",
+    "thys/Category_Properties/LP_Cut_Execution_Properties.thy": "6fc0f9e2889d0652b49d2b3f1eadb5d2bfdfdcc552ec9f3ab7ec73b88e86fecb",
+    "thys/Category_Properties/LP_Domain_Properties.thy": "53f3fe727a32c9ac6bddf08c4d5cc1d4bbaa35042654b7d2eadd93a49c01c54e",
+    "thys/Category_Properties/LP_Properties.thy": "8247ce8346e2671454df3ea105c35342477ab06bca5d1768a7c4605b6da7460c",
+    "thys/Category_Specifications/LP_Cut_Finite_Spec.thy": "0695aa84c160d45a4a99c5a73cb140430cad87e19f5ccc4f2d47afcb5ead0ff0",
+    "thys/Category_Specifications/LP_Cut_Infinite_Spec.thy": "b407f664600616ee92602073d1921e38e9ec5ff8c53998531fad184b6025d033",
+    "thys/Category_Specifications/LP_Cut_Rational_Spec.thy": "6f702a8d7a0e702b8f65fb01ba4b07c48a700793156e06f19d09d8d7ffddf71e",
+    "thys/Category_Specifications/LP_Cut_Spec_Base.thy": "2b9d5e264701ba4b16ff2f6d2a1540b082304664f54a84385a7e7dc00a63441a",
+    "thys/Category_Specifications/LP_Finite_Spec.thy": "a26aaf9c5e7ab0b384a96e3eda07b8d50c6c20320f80ec5e2c3a80e57cad25d1",
+    "thys/Category_Specifications/LP_Infinite_Spec.thy": "bcc005b453adefca5b2b5da733db5029bbd50264c03bea4b0467e30b013d347a",
+    "thys/Category_Specifications/LP_Rational_Spec.thy": "b0885dd0462e0cfa877cba238b9e506e1159977cc831e6745e912730234315e4",
+    "thys/Category_Specifications/LP_Spec_Base.thy": "2b993217870dca270e440e3a7bc4c130b0d3a0e02e77997790f4e72a22946b90",
+    "thys/Category_Specifications/LP_Terms_Spec.thy": "fd4bb69d46b28d89814705a2e254efb26049b65433129f1c72ab17aa964d3bf1",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "635613c5d45458404274da36ce9104ae3049718dea4f1828dbecf793a210fa4d",
+    "thys/Category_Properties/ROOT": "c61db14d8118df4703f0d60327e3e486fda11e9f97c99dc845b016ec3b914a79",
+    "Makefile": "2bc352f351e6713ca44455030a94e273e626d4b591df7207bdaee6107326d136"
+  },
+  "logs_sha256": {
+    "target/its-lp-specifications/cut-no-7.log": "b918e9629e05f6bcacbbb1b1792a742034bb981a5933024a65f6bd02c4fbb255",
+    "target/its-lp-specifications/cut-no-library-1.log": "a2b7c296fb4eff3f5cee3d7cd4f47ca65f8740ae8dd72d28dcd4dbc6d89f621b",
+    "target/its-lp-specifications/cut-domain-properties-5.log": "9b2a0e840ae90f0a6619c76eada6faa9c691fcba84035dfe4cd9326a08c46036",
+    "target/its-lp-specifications/cut-completion-package.log": "f20ae02b26e8a50a072bfe2fbcc2226357b7cadcd9fef5e5437e5905bed6a18d",
+    "target/its-lp-specifications/cut-completion-okf-ceta.log": "3aa881762e5f28c58ef61116ad40a278004933482716484b45b2d2a8c64cb331",
+    "target/its-lp-specifications/cut-completion-okf-ferrum.log": "b022952cac3b90c88776afe94daecf83b39dcfb5416ee70f0574aafa104bad87",
+    "target/its-lp-specifications/cut-completion-diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "ceta_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "production_artifacts_changed": false,
+  "certificate_formats_changed": false
+}

@@ -1,0 +1,120 @@
+{
+  "milestone": "CSR signature extension and ranked Relative loops",
+  "date": "2026-11-08",
+  "ceta_formal_commits": [
+    "437e04f",
+    "e3146a7122cfb56d5827ae3d6546f06317d40f02"
+  ],
+  "ferrum_runtime_commit": "b91d7aec2969c3bfa083d9fa1de5a92aa3178d9c",
+  "checker_changed": false,
+  "generated_checker_logic_changed": false,
+  "binary_sha256": "1fdc35718db4996d75c2ddda022e3fda3efd10883398db4d2ad3d9b7d80dcd37",
+  "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+  "oracle_sha256": "42ccbba8daea6a3cc152c7a76cd5bfcd08c1193de8df5493376037cf608591e9",
+  "oracle_changed": false,
+  "artifacts": "/work/dfm/festschrift/ferrum/target/coverage-closure-reviewed-2",
+  "replay": [
+    {
+      "category": "TRS_Relative",
+      "roots": 113,
+      "attempted": 113,
+      "certified": 113,
+      "lost": [],
+      "search_exit": 0,
+      "rechecks_exit": 0,
+      "source_audit_exit": 0,
+      "receipt_failures": [],
+      "wall_seconds": 28.13269445998594,
+      "passed": true
+    },
+    {
+      "category": "TRS_Contextsensitive",
+      "roots": 110,
+      "attempted": 110,
+      "certified": 110,
+      "lost": [],
+      "search_exit": 0,
+      "rechecks_exit": 0,
+      "source_audit_exit": 0,
+      "receipt_failures": [],
+      "wall_seconds": 86.48764756205492,
+      "passed": true
+    }
+  ],
+  "formal_builds": [
+    {
+      "path": "/work/dfm/festschrift/CeTA/target/coverage-closure/csr-build-1.log",
+      "sha256": "dd7cae798d73f27c8ac5b2377c49d53bb9107ccd9a275bfe4b553b0d518428a8",
+      "passed": true
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA/target/coverage-closure/relative-build-1.log",
+      "sha256": "753431367f04a4fd4865d3d6b36480fbec004adc9209632fc01a9feb137db175",
+      "passed": true
+    }
+  ],
+  "native_gates": [
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/coverage-closure-relative-native-2/results.json",
+      "sha256": "a63041d0b2a24e0717adf1da7fabcc8cf1fa3535a37989c18ca7744e79cbc5f1",
+      "cases": 18,
+      "passed": true
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/coverage-closure-csr-native-2/results.json",
+      "sha256": "f1006a534409b25f311adf419f5c9e961bf1da1e83fb9e0ad309dc968cdaf4b1",
+      "cases": 22,
+      "passed": true
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/coverage-closure-csr-extension-native-2/results.json",
+      "sha256": "3b306199a01325a766458a275d185c34a5939d31c10855ecf3f604522c3a9f03",
+      "cases": 12,
+      "passed": true
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/coverage-closure-outermost-native-1/results.json",
+      "sha256": "5dfac1f34508a8bde622c3dd10cff96112a599d721ddeaa65f8a1d71c2303a09",
+      "cases": 25,
+      "passed": true
+    }
+  ],
+  "focused_tests": [
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/coverage-closure-rust-tests-3.log",
+      "sha256": "39b3bc670e53c9a137a5c4df6ccf5e6ecb433995666a4a4ee17d8711671768b0",
+      "passed": 5
+    },
+    {
+      "path": "/work/dfm/festschrift/ferrum/target/coverage-closure-python-tests-2.log",
+      "sha256": "80dd5bc0d27dbce8ece68596a227c7450cedb450584f77336dd8b956cc5ad286",
+      "passed": 36
+    }
+  ],
+  "proof_audit": {
+    "admissions": false,
+    "new_axioms": false,
+    "oracle_mechanisms": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ]
+  },
+  "csr_conclusion": "All integrated YES families support containing declared signatures with no extra external guard; rule conditions are discharged in checker branches.",
+  "relative_conclusion": "Direct ranked relative loops bypass the extension guard; other unrestricted NO families still require the sufficient extension condition, since unconditional transfer is false.",
+  "trust_boundary": [
+    "Human interpretation of the category semantics",
+    "Isabelle/HOL foundations and inherited oracle mechanisms",
+    "Unverified ARI/CPF parsing and correspondence/witness checks",
+    "Code generation, Haskell/Rust compilers and runtimes",
+    "Artifact identity and process/filesystem environment"
+  ],
+  "limits": [
+    "Not checker/prover completeness",
+    "Not a full-frontier or independent two-checker release",
+    "No production binaries promoted"
+  ],
+  "preserved_failed_attempts": [
+    "/work/dfm/festschrift/CeTA/target/coverage-closure",
+    "/work/dfm/festschrift/ferrum/target/coverage-closure-rust-tests.log"
+  ]
+}

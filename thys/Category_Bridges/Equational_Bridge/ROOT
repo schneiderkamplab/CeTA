@@ -1,0 +1,4 @@
+session Category_Equational_Bridge = Category_Specification_Bridges +
+  options [document = false, quick_and_dirty = false, timeout = 180]
+  sessions AC_TRS
+  theories TRS_Equational_Equivalence

@@ -1,0 +1,390 @@
+{
+  "date": "2026-11-08",
+  "scope": "Ranked TRS Relative: concrete guarded checker bridge and original-input binding",
+  "repository_heads": {
+    "CeTA": "76aaf0248d635a5c82ba62ed2af554716534d830",
+    "ferrum": "8fc7fc6ab3ee1af073cf6f382b2e384315dba251"
+  },
+  "ceta_branch": "main",
+  "working_tree_changes": true,
+  "source_files": [
+    {
+      "path": "CeTA/Makefile",
+      "sha256": "aa90a97c6a1d90048341368bdab7f55f5408792a186c4bdacbf45a085f86e2fa",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/Makefile"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/Category_Checker_Base.thy",
+      "sha256": "e5398ff1511de21cf09f2979d37bafb21ed2f2a30b17b356a86e0e2a1f5e6090",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/Category_Checker_Base.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/Higher_Order_Equivalence.thy",
+      "sha256": "d24a1679f3439b19b26ad239e2c6d04128df4981d2671b70213735141a833974",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/Higher_Order_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/ROOT",
+      "sha256": "aca4a7f2dd4504048aed366a880890a6e18f31391fde3c39664beef68de25868",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/ROOT"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/ROOTS",
+      "sha256": "5db370a4a1f3e9f406c52ae2d6fd6ee882c92f0e63ac31be7008ebffecf142c4",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/ROOTS"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/Rewriting_Sequence_Equivalence.thy",
+      "sha256": "637c728338f2f79036c4eec74fcd115b2ead5abd9c2d03c1d3a47afd0299dc73",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/Rewriting_Sequence_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/SRS_Checker_Bridge.thy",
+      "sha256": "b3a7684dee51dc18f7985a6550ec2aee015b73a5c7b5482db78624a5c45b1686",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/SRS_Checker_Bridge.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/SRS_Cycle_Checker_Bridge.thy",
+      "sha256": "83fcdad689f2c12275fb4c3b313a46e0cccef2cd1f2afa497839ac8e0106e655",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/SRS_Cycle_Checker_Bridge.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/SRS_Cycle_Equivalence.thy",
+      "sha256": "e9c1ce728ed569ccffd9616bea55953b3a0bcda12043a21c8530f55d8f2b9567",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/SRS_Cycle_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/SRS_Equivalence.thy",
+      "sha256": "99093c238b5111ccbe0613fe98eb75030a870d0869dd1916d2310220ffbd0e1b",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/SRS_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/SRS_Unary_Encoding.thy",
+      "sha256": "75e2585f877ee00f4f5829cc7efccfdddc668fb93fd52fafc958a36e058a82c7",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/SRS_Unary_Encoding.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Context_Sensitive_Checker_Bridge.thy",
+      "sha256": "85f2ef95d6dd3fe78828d83187918e6effa62f7309ec6a67e1140f67d6a8caba",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Context_Sensitive_Checker_Bridge.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Context_Sensitive_Equivalence.thy",
+      "sha256": "1f15532d3eb04640a552aa4182810bd1a846e3e9b8f38db4975d3ec21bbc4400",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Context_Sensitive_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Innermost_Checker_Bridge.thy",
+      "sha256": "a4e9f8446fe3a87743d67883944dbdfec874d20df779105f59c40465767ae3e0",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Innermost_Checker_Bridge.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Innermost_Equivalence.thy",
+      "sha256": "f2ecf62a5abd2e1f4ff0191e48b6736f1c2b867acda76e507c4492682b43c918",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Innermost_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Relative_Checker_Bridge.thy",
+      "sha256": "8258aa01210da5934762d7b0a05660c37bf4cc17fc780dd2cbbdfcaa016c5ec2",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Relative_Checker_Bridge.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Relative_Equivalence.thy",
+      "sha256": "fb20e9024724399f9457a4b5ef45f2ae3af746f0b0b080974dbe9f8994a74abf",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Relative_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Standard_Checker_Bridge.thy",
+      "sha256": "da3f30547b6c8fec8c6ac257769a06a730449cdd393a8b768b7744db45250c1f",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Standard_Checker_Bridge.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Bridge/TRS_Standard_Equivalence.thy",
+      "sha256": "ac0943a1f7060b595c0c311812406980b62c417a4365c9d8d1be60ff5ea191f2",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Bridge/TRS_Standard_Equivalence.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Innermost_Integrated/ROOT",
+      "sha256": "6e5dcfcf488e17bad1d858d76654afab30de1cf5b2393b15e5599a939f3d38b9",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Innermost_Integrated/ROOT"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Innermost_Integrated/ROOTS",
+      "sha256": "7a8b097f4e25c968424263c7d7d42b65e4e46453ce254f632fb65116514d258d",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Innermost_Integrated/ROOTS"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Innermost_Integrated/TRS_Innermost_Integrated.thy",
+      "sha256": "0b70c333b0b5ba49e7c5bc94aefcb1b8039bdb62ba4cb0015463dd9c558cbbb0",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Innermost_Integrated/TRS_Innermost_Integrated.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Integrated/ROOT",
+      "sha256": "2bbe9c8763dafdaeb2bc29b51cb160c3aa1fc17e3a1734cf2f86eaa7f23ee77e",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Integrated/ROOT"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Integrated/ROOTS",
+      "sha256": "e5dc14ae4534f71654dd58a9bf450a225b44147f8b8cba3f53356db5d3c2bfbb",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Integrated/ROOTS"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Integrated/TRS_Standard_Integrated.thy",
+      "sha256": "805a7232da54872bef90a22b8bdc53ff5edf7c73f41dd1c86e2099a4604ff42b",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Integrated/TRS_Standard_Integrated.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Integrated/TRS_Standard_Serialized.thy",
+      "sha256": "dfafaf9073ff32ff2e8d1fc7d09028d53c251644f3181e8be23d09a04ff4dad4",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Integrated/TRS_Standard_Serialized.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/ROOTS",
+      "sha256": "daef4e8e85173244bfa720a8119a3a810d86aa4997dea7b9bba928e3fb85b7c9",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/ROOTS"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Relative_Integrated/ROOT",
+      "sha256": "608387e3c8319998996f485462807bf574164492dae2b98edcc7e95c2b1afdf1",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Relative_Integrated/ROOT"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Relative_Integrated/ROOTS",
+      "sha256": "7a8b097f4e25c968424263c7d7d42b65e4e46453ce254f632fb65116514d258d",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Relative_Integrated/ROOTS"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Relative_Integrated/TRS_Relative_Integrated.thy",
+      "sha256": "af9afa908f39c2529239acb3f43f4681b2ccb665c135303ae8b7221a9014fbfa",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Relative_Integrated/TRS_Relative_Integrated.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/Higher_Order_Spec.thy",
+      "sha256": "311de8e27cb1d92634d815859b82a4dca4daf4f8ae19196040f9cd0811d7dc80",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/Higher_Order_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+      "sha256": "a2675aea90dd12070f22367cd8da51e9bb42a7c24fd3a67f35b40b994688ae61",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/ROOT",
+      "sha256": "f66051935abfea9db55691064001e5a67c51a929468a2298b17c9f85c2fc2fca",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/ROOT"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy",
+      "sha256": "e0bf2fdbda33086a6f44b1ed2447a4e85eb16728b2b4b2cbfcfd27369663d97c",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/SRS_Cycle_Spec.thy",
+      "sha256": "accfb0bbc265b2c88ee64eb678c437be62fcdfc717c7899fe29fdfc45aa7f82d",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/SRS_Cycle_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/SRS_Examples.thy",
+      "sha256": "7f4a2d346529bd1f6164133b81837bd65d1f85df3a7960195be00ea44117c05d",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/SRS_Examples.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/SRS_Relative_Spec.thy",
+      "sha256": "3efa497e4fec7d02b89cd8f04803b3a55017c7facb9c33c500c545b6477ced1f",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/SRS_Relative_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/SRS_Spec_Base.thy",
+      "sha256": "ebe7b51cb9b9da5a336dddef48e09a99fc8bc5da61607fb09a12f36a363258ec",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/SRS_Spec_Base.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/SRS_Standard_Spec.thy",
+      "sha256": "009f7d9d89a05b621281cfd281321d502f989579ee788eb9bef214c5254a85a5",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/SRS_Standard_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Context_Sensitive_Examples.thy",
+      "sha256": "552c15e1f4e76e184603279cd4ebdcc4a2e905dbf9275bb4c9d71c6f3c67f1a8",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Context_Sensitive_Examples.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Context_Sensitive_Spec.thy",
+      "sha256": "8f1382a9d293993bb03c81e2ec4449cd9f84f5aeacaf7fb025222c9ed2e71573",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Context_Sensitive_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Innermost_Examples.thy",
+      "sha256": "913c316739bbaf560a1e4794db8d6c7c09dffa8db288818689066efc2eb721e7",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Innermost_Examples.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy",
+      "sha256": "f168f425fe1baf2cafa06f118a6617a25e9c2594a97c9cce4c623ccfb789e01c",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Relative_Examples.thy",
+      "sha256": "3a1298bdb599f3bb6b981564cc9429decd72d650678b498f9577d724a4b24786",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Relative_Examples.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Relative_Spec.thy",
+      "sha256": "eec65f2538b88798f1d96c01984d84f7e74f369a919a5a0b54f96498dd26a2f2",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Relative_Spec.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+      "sha256": "d9070c95c3cd51783366f82e563bb33ef224246c85297efe325f09d623b4855c",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Spec_Base.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Standard_Examples.thy",
+      "sha256": "0c4516df7a0a2b4bbd819e7007830bba3d6a7a7dc56f0d7702f0d306b9c90ba9",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Standard_Examples.thy"
+    },
+    {
+      "path": "CeTA/thys/Category_Specifications/Spec/TRS_Standard_Spec.thy",
+      "sha256": "8e1f35f0a9a148e52003c7155e1ccb34254fe11df1fedfd4c9ac383586466bc6",
+      "snapshot": "target/trs-relative/review-source-snapshot/CeTA/thys/Category_Specifications/Spec/TRS_Standard_Spec.thy"
+    },
+    {
+      "path": "ferrum/scripts/audit_trs_root_correspondence.py",
+      "sha256": "f0da08923973f5e3dabf84f8e5272f36c306eb88f2360852f72a4f67840d434f",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/audit_trs_root_correspondence.py"
+    },
+    {
+      "path": "ferrum/scripts/check_innermost_binding_cli.py",
+      "sha256": "e17ca5301b7cfc1c8f7d1e71aeaa821b4e979a36264623399952430c01e7a634",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/check_innermost_binding_cli.py"
+    },
+    {
+      "path": "ferrum/scripts/check_relative_binding_cli.py",
+      "sha256": "6294a875adda8d640d984ceabb1abbed64cde0c5c704f8c6f7813a87d9d0c40e",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/check_relative_binding_cli.py"
+    },
+    {
+      "path": "ferrum/scripts/check_standard_binding_cli.py",
+      "sha256": "7509f20a6aebcf70ec41d8995531c74ce6d1701c4cb14fcaeb4ce1ea09604968",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/check_standard_binding_cli.py"
+    },
+    {
+      "path": "ferrum/scripts/termcomp_trs_compare.py",
+      "sha256": "612d4471457816bc0e042911ea4324c770c7cf3386c281886d126f66de03f483",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/termcomp_trs_compare.py"
+    },
+    {
+      "path": "ferrum/scripts/test_audit_trs_root_correspondence.py",
+      "sha256": "3509cd0305a00d807f278e008db67e0a14e997a440fa2e63498ccec46efbab16",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/test_audit_trs_root_correspondence.py"
+    },
+    {
+      "path": "ferrum/scripts/test_termcomp_trs_compare.py",
+      "sha256": "6d4e4818584598c27f2f09fbe249b7bcfb00067ad14d272bf14b0fb1d47565b6",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/scripts/test_termcomp_trs_compare.py"
+    },
+    {
+      "path": "ferrum/src/cert/cpf.rs",
+      "sha256": "5769d14660492ab3b1bbd8c4c4bfcab974cb03bb039cea6db2cb46d94c42c4cd",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/cert/cpf.rs"
+    },
+    {
+      "path": "ferrum/src/cert/mod.rs",
+      "sha256": "3dba8d667fb5176187196233b8c7a9df95d711a53ccf60b83d7a640e1fcf371e",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/cert/mod.rs"
+    },
+    {
+      "path": "ferrum/src/cert/rewriting_input.rs",
+      "sha256": "3b0f45d891a752a08c2d9331d4f35fd41c8f0ed067752455a9b812013c37f3f6",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/cert/rewriting_input.rs"
+    },
+    {
+      "path": "ferrum/src/cert/standard_input.rs",
+      "sha256": "e5ab25ffd02c74c9b8caf2252b8b42737c1defe0ea43b0fa7d00d9c2ddf17398",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/cert/standard_input.rs"
+    },
+    {
+      "path": "ferrum/src/cli/mod.rs",
+      "sha256": "91dcf49e34b95fe167d2dddf253eba45a20b61c5ffa54f3b3d0357b0a58b2782",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/cli/mod.rs"
+    },
+    {
+      "path": "ferrum/src/parsing/ari.rs",
+      "sha256": "13d27392471dd191f0d5601e1fa82ef3c0ff8f8adcd6b8b8827dde5dd6a3f7c3",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/parsing/ari.rs"
+    },
+    {
+      "path": "ferrum/src/parsing/mod.rs",
+      "sha256": "a82c1827b7938a8e98e8fcd2a1cbbf81b63a974310967e79326a1c903ef86131",
+      "snapshot": "target/trs-relative/review-source-snapshot/ferrum/src/parsing/mod.rs"
+    }
+  ],
+  "checker_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "checker_unchanged": true,
+  "ferrum_development_sha256": "c8274ac8a49ab8c00cd2e34a67fed32cfd07435475dd30aa3ec52b3460a5ca4e",
+  "installed_binaries_promoted": false,
+  "full_frontier_replay": false,
+  "formal": {
+    "session": "Category_Relative_Integrated",
+    "build_log": "target/trs-relative/integrated-build-4.log",
+    "build_seconds": 48,
+    "overall_seconds": 67,
+    "oracle_audit": "target/trs-relative/integrated-console-final.log",
+    "inherited_oracles": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ],
+    "skipped_proofs": false,
+    "new_axioms": false,
+    "yes_has_extension_condition": false,
+    "no_requires_checked_guard": true,
+    "unconditional_ranked_unrestricted_equivalence": false
+  },
+  "runtime": {
+    "shared_gate_tests": 5,
+    "shared_gate_log": "../ferrum/target/relative-bound-tests-final.log",
+    "parser_tests": 12,
+    "parser_log": "../ferrum/target/relative-parser-tests-final.log",
+    "dispatch_tests": 1,
+    "dispatch_log": "../ferrum/target/relative-dispatch-final.log",
+    "independent_comparison_tests": 20,
+    "comparison_log": "../ferrum/target/relative-audit-final.log",
+    "harness_tests": 11,
+    "harness_log": "../ferrum/target/relative-harness-final.log",
+    "cli_relative_cases": 13,
+    "cli_relative": "../ferrum/target/relative-binding-reviewed-final/results.json",
+    "cli_standard_cases": 6,
+    "cli_standard": "../ferrum/target/standard-after-relative-final/results.json",
+    "cli_innermost_cases": 11,
+    "cli_innermost": "../ferrum/target/innermost-after-relative-final/results.json",
+    "direct_unrestricted_counterexample": "../ferrum/target/relative-binding-reviewed-final/unrestricted-counterexample.json"
+  },
+  "broader_suite": {
+    "all_green": false,
+    "initial_log": "../ferrum/target/relative-review-tests-1.log",
+    "initial_passed": 112,
+    "initial_failed": 4,
+    "solver_experiment_log": "../ferrum/target/relative-review-tests-solvers.log",
+    "solver_experiment_passed": 110,
+    "solver_experiment_failed": 8,
+    "notes": [
+      "LP-dependent discovery failures; highspy unavailable in default Python",
+      "installed unified checker does not support rfcMatchboxAbsoluteBounds in the exercised fixture",
+      "bundled legacy Z3 experiment introduced additional solver-sensitive failures; not a release result"
+    ]
+  },
+  "guard": "For NO: declared arity > 1 OR every weak RHS variable occurs on its LHS; otherwise reject",
+  "coverage": "Full ranked NO coverage remains open; arbitrary rule pairs remain valid category inputs",
+  "certificate_assumptions_enabled": false,
+  "caller_module_correctness_assumptions": [],
+  "trust_boundary": [
+    "human specification and TPDB interpretation",
+    "unverified ARI/XML parsers, comparison and guard implementation",
+    "source-to-executable provenance and code generation/adapters/compiler/runtime/environment",
+    "Isabelle/HOL and listed inherited oracle mechanisms"
+  ],
+  "documentation_logs": [
+    "target/trs-relative/okf.log",
+    "../ferrum/target/relative-okf.log"
+  ]
+}

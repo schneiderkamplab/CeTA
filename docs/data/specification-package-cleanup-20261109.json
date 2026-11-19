@@ -1,0 +1,481 @@
+{
+  "date": "2026-11-09",
+  "base_commit": "f185d54f6ca948a6a5ff73bad7b847c06f554b70",
+  "scope": "Definition-only self-contained specification package; properties and bridges in sibling packages",
+  "verification": {
+    "isolated_specification_build": "target/spec-package-cleanup/standalone.log",
+    "properties_build": "target/spec-package-cleanup/properties-1.log",
+    "bridge_builds": [
+      "target/spec-package-cleanup/all-2.log (mathematical bridges passed; common integration base failed and was corrected)",
+      "target/spec-package-cleanup/all-3.log (all selected sessions passed)"
+    ],
+    "retained_failed_attempts": [
+      "target/spec-package-cleanup/all-1.log",
+      "target/spec-package-cleanup/all-2.log"
+    ],
+    "standalone_copy_matches": true,
+    "definition_comparison": {
+      "definitions": 78,
+      "passed": true,
+      "normalizations": {
+        "standard_term": "fo_term",
+        "standard_context": "fo_context",
+        "standard_subst": "fo_subst",
+        "standard_plug": "fo_plug",
+        "standard_problem": "trs_problem",
+        "standard_step": "fo_step"
+      },
+      "additional_normalization": "Unfold no_infinite_steps in Standard/Innermost; omit redundant explicit sequence type annotation",
+      "checked": [
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy",
+          "command": "fun higher_sort_type where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy",
+          "command": "fun higher_sort_term where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy",
+          "command": "fun higher_sort_pattern where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy",
+          "command": "definition higher_sort_rule where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy",
+          "command": "definition higher_order_declared_problem where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Sorts_Spec.thy",
+          "command": "definition higher_order_terminates_over_sorts where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec.thy",
+          "command": "definition higher_order_problem where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec.thy",
+          "command": "definition higher_order_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec.thy",
+          "command": "definition higher_order_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "datatype higher_type = SpecHBase nat | SpecHArrow higher_type higher_type"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "datatype higher_term = SpecHBound nat | SpecHFree nat | SpecHConst nat"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_lookup where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_typeof :: \"higher_type list \\<Rightarrow> higher_type list \\<Rightarrow> higher_type list"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_lift :: \"nat \\<Rightarrow> nat \\<Rightarrow> higher_term \\<Rightarrow> higher_term\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_beta_subst :: \"higher_term \\<Rightarrow> nat \\<Rightarrow> higher_term \\<Rightarrow> higher_term\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "datatype higher_pattern = SpecPBound nat | SpecPConst nat | SpecPApp higher_pattern higher_pattern"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_meta_apply :: \"higher_term \\<Rightarrow> higher_term list \\<Rightarrow> higher_term option\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_instantiate :: \"(nat \\<Rightarrow> higher_term) \\<Rightarrow> nat \\<Rightarrow> higher_pattern \\<Rightarrow> higher_term option\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_erase_pattern :: \"higher_pattern \\<Rightarrow> higher_term\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "type_synonym higher_rule = \"higher_type list \\<times> higher_pattern \\<times> higher_pattern\""
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "definition higher_rule_welltyped where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_pattern_head where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_pattern_metas where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_left_pattern where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "fun higher_right_pattern where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "definition higher_category_rule where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "definition higher_typed_subst where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Higher_Order_Spec_Base.thy",
+          "command": "inductive higher_step :: \"higher_type list \\<Rightarrow> higher_type list \\<Rightarrow> higher_rule list"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy",
+          "command": "inductive finite_steps :: \"('a \\<Rightarrow> 'a \\<Rightarrow> bool) \\<Rightarrow> 'a \\<Rightarrow> 'a \\<Rightarrow> bool\" for step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/Rewriting_Sequences_Spec.thy",
+          "command": "definition no_infinite_steps where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Cycle_Spec.thy",
+          "command": "definition cycle_string_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Cycle_Spec.thy",
+          "command": "definition srs_cycle_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Relative_Spec.thy",
+          "command": "definition relative_string_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Relative_Spec.thy",
+          "command": "definition srs_relative_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Spec_Base.thy",
+          "command": "definition string_problem :: \"('a list \\<times> 'a list) set \\<Rightarrow> bool\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Spec_Base.thy",
+          "command": "definition string_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/SRS_Standard_Spec.thy",
+          "command": "definition srs_standard_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Operational_Spec.thy",
+          "command": "definition trs_conditional_operationally_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Ordinary_Spec.thy",
+          "command": "definition trs_conditional_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "type_synonym ('f,'v) conditional_rule ="
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "definition conditional_problem ::"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "datatype ('f,'v) conditional_goal ="
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "inductive conditional_inference for A R where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "inductive definition cannot justify a rule by circular condition evaluation.\\<close>"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "inductive conditional_success for A R where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "definition conditional_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "definition conditional_evaluation_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Conditional_Spec_Base.thy",
+          "command": "fun conditional_goal_correct where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Context_Sensitive_Spec.thy",
+          "command": "fun permitted_context :: \"('f \\<times> nat \\<Rightarrow> nat set) \\<Rightarrow> ('f,'v) standard_context \\<Rightarrow> bool\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Context_Sensitive_Spec.thy",
+          "command": "definition context_sensitive_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Context_Sensitive_Spec.thy",
+          "command": "definition trs_context_sensitive_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Equational_Spec.thy",
+          "command": "definition equational_problem where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Equational_Spec.thy",
+          "command": "definition equational_axioms where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Equational_Spec.thy",
+          "command": "definition equational_conversion where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Equational_Spec.thy",
+          "command": "definition equational_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Equational_Spec.thy",
+          "command": "definition trs_equational_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy",
+          "command": "definition innermost_normal :: \"'f ranked_signature \\<Rightarrow>"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy",
+          "command": "fun proper_subterms where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy",
+          "command": "definition innermost_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy",
+          "command": "definition trs_innermost_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Outermost_Spec.thy",
+          "command": "definition outermost_root_redex :: \"'f ranked_signature \\<Rightarrow>"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Outermost_Spec.thy",
+          "command": "fun outermost_above where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Outermost_Spec.thy",
+          "command": "definition outermost_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Outermost_Spec.thy",
+          "command": "definition trs_outermost_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Relative_Spec.thy",
+          "command": "definition relative_problem where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Relative_Spec.thy",
+          "command": "definition relative_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Relative_Spec.thy",
+          "command": "definition trs_relative_terminates where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "datatype ('f, 'v) standard_term = SVar 'v | SFun 'f \"('f, 'v) standard_term list\""
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "type_synonym 'f ranked_signature = \"'f \\<Rightarrow> nat option\""
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "fun arity_correct :: \"'f ranked_signature \\<Rightarrow> ('f, 'v) standard_term \\<Rightarrow> bool\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "fun standard_subst :: \"('v \\<Rightarrow> ('f, 'v) standard_term) \\<Rightarrow> ('f, 'v) standard_term \\<Rightarrow> ('f, 'v) standard_term\" where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "definition correct_substitution where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "datatype ('f, 'v) standard_context = SHole"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "fun standard_plug where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "fun correct_context where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "definition standard_problem ::"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Spec_Base.thy",
+          "command": "definition standard_step where"
+        },
+        {
+          "old_theory": "thys/Category_Specifications/Spec/TRS_Standard_Spec.thy",
+          "command": "definition trs_standard_terminates ::"
+        }
+      ]
+    },
+    "boundary_check": "python3 scripts/check_category_package.py",
+    "documentation_check": "python3 scripts/check_okf.py docs",
+    "final_all_sessions_build": {
+      "log": "target/spec-package-cleanup/all-final.log",
+      "exit_code": 0,
+      "elapsed_seconds": 26,
+      "note": "Final dependency check; all sessions current after successful builds"
+    },
+    "changed_documentation_local_links": "all targets exist"
+  },
+  "runtime": "No certificate format, generated checker code, production executable or Ferrum change; no runtime replay required for this source refactor",
+  "sha256": {
+    "thys/Category_Bridges/Bridge/CSR_Signature_Extension.thy": "89723ae3cd36a1d303f27f7f39ea19b7261840e4ed6271f7bcc12437e7fabd5f",
+    "thys/Category_Bridges/Bridge/Category_Checker_Base.thy": "e5398ff1511de21cf09f2979d37bafb21ed2f2a30b17b356a86e0e2a1f5e6090",
+    "thys/Category_Bridges/Bridge/ROOT": "b9756dfe077bd4aebdff54ecaac76d59b542193e5bf0baa3eaf6df78811138bb",
+    "thys/Category_Bridges/Bridge/ROOTS": "57a26ba1199dd3b41d13bf635c32c5b9160ef67ec7966b7461f1635910337e62",
+    "thys/Category_Bridges/Bridge/Rewriting_Sequence_Equivalence.thy": "9043def3ea57ff39c92f7476703cad7c044c3cf5936f9bbfb9849a46814cbda0",
+    "thys/Category_Bridges/Bridge/SRS_Checker_Bridge.thy": "b3a7684dee51dc18f7985a6550ec2aee015b73a5c7b5482db78624a5c45b1686",
+    "thys/Category_Bridges/Bridge/SRS_Cycle_Checker_Bridge.thy": "9e9b2b4d31a617944a2506da6305a5147c85f9d5ca2acb8ab5ccd9f6aa088748",
+    "thys/Category_Bridges/Bridge/SRS_Cycle_Equivalence.thy": "f4bd28e781ed2929eeb49f70d182824a31d1bc6238b9dbcb9ea8b123f0a9a729",
+    "thys/Category_Bridges/Bridge/SRS_Equivalence.thy": "fdbc2dda3317bf8f7b421d28fd3cd5f666c48115fc2c74733ae8dccb9bfeb362",
+    "thys/Category_Bridges/Bridge/SRS_Unary_Encoding.thy": "75e2585f877ee00f4f5829cc7efccfdddc668fb93fd52fafc958a36e058a82c7",
+    "thys/Category_Bridges/Bridge/TRS_Context_Sensitive_Checker_Bridge.thy": "51d17eb2fdd0d461dff0896d033af5317bb32356a898237d2e5ef270ffec431b",
+    "thys/Category_Bridges/Bridge/TRS_Context_Sensitive_Equivalence.thy": "d44283dfc0cd69d1f1acb76b0b9d04b660227bb3f09542466c511f3fb2b01ac0",
+    "thys/Category_Bridges/Bridge/TRS_Innermost_Checker_Bridge.thy": "ba8592539a4d074aaf92f440e7a0893f824fd707419ce5479f188f70f85c6a7e",
+    "thys/Category_Bridges/Bridge/TRS_Innermost_Equivalence.thy": "ecc549db72cfd9223132bf800fdbac6d5c2267e075ea08ac4ee5024791db5e23",
+    "thys/Category_Bridges/Bridge/TRS_Relative_Checker_Bridge.thy": "8258aa01210da5934762d7b0a05660c37bf4cc17fc780dd2cbbdfcaa016c5ec2",
+    "thys/Category_Bridges/Bridge/TRS_Relative_Equivalence.thy": "7b818e198efe56aefcaf78380419bf61d4a7a04b682a1f945efd5355ebba510b",
+    "thys/Category_Bridges/Bridge/TRS_Representation.thy": "393e680f5ec681a5b4eb48c478424ab35f5a8f472e178540aa6dc8919fa58359",
+    "thys/Category_Bridges/Bridge/TRS_Standard_Checker_Bridge.thy": "cb372ed2b225fe7dd9c6c274262cd7682522323e3ae422bf2d3636cff6a8b039",
+    "thys/Category_Bridges/Bridge/TRS_Standard_Equivalence.thy": "f9906bfa9ebb896e618db4d16872740ac45fb81a53ef26063b5f886fa9ec7e30",
+    "thys/Category_Bridges/Common_Integrated/Category_Integrated_Base.thy": "244e313cf255c5c4f1b0de0be3b6448897cfb617107365810cad4faaee71ed04",
+    "thys/Category_Bridges/Common_Integrated/ROOT": "e649310b7462a0ace6f360af191aa9682c1b44b81754729c30d454c0f9b7f06a",
+    "thys/Category_Bridges/Common_Integrated/ROOTS": "91ffc21a816fea5aca049eb51845431d7c9208be8be1582cd660cfec1f3b2359",
+    "thys/Category_Bridges/Conditional_Bridge/ROOT": "320e019eedf3bcbc4d1ad01ab2721680f8aab7a59bda1c758cd6df491bd54f9d",
+    "thys/Category_Bridges/Conditional_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Closure.thy": "890fb2bec351e7509a7840c46b17915913952f321a6f51f25d8f8a7e0347aade",
+    "thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Embedding.thy": "a805c2eef14690345508ac7c34abb5d052edb00f407723397d6adb4bd180ee83",
+    "thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Loops.thy": "058cf61458e1596a315de805df4d6dcc029063ea6d8a0ef7cc3ef099c814ea59",
+    "thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Operational_Transfer.thy": "7abe3e625b88863af9d41a15a776db538d5fea7977df9d1ef14c7abb95690fa0",
+    "thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Ranked.thy": "d64fff5df8dc46460f5debf57064b1ef0432adcb64cfe58e02dd7de9ef8f85ae",
+    "thys/Category_Bridges/Conditional_Bridge/TRS_Conditional_Witnesses.thy": "71a3e9e2b26b358b50d114aca3b49dc6180169182585b1f7eef9dc48d158dbd8",
+    "thys/Category_Bridges/Conditional_Integrated/ROOT": "16a778538e3a801251f6abdc1950fb432daffdae0ba58bf8c210c1c32b4f4334",
+    "thys/Category_Bridges/Conditional_Integrated/ROOTS": "425517cd0c0e00e1907867e9e8b2a600ed4dafd59bd4498992d74925623f8852",
+    "thys/Category_Bridges/Conditional_Integrated/TRS_Conditional_Checker_Bridge.thy": "17140d3955f333b149aca8934bee57d2a75a5ccbda7a41d6869bb70e78456515",
+    "thys/Category_Bridges/Conditional_Integrated/TRS_Conditional_NO_Bridge.thy": "2e3ea663ff2ca5ccbfec8d613952fc9ceddd039f46e3c103083a931358a21f1f",
+    "thys/Category_Bridges/Conditional_Integrated/TRS_Conditional_Operational_NO.thy": "36a7ac841a37a1eaef0a48c370b14c40a5fd1c33716125babad497115e3491f2",
+    "thys/Category_Bridges/Context_Sensitive_Integrated/CSR_Global_Checker.thy": "0cf54898dbbde0818d0b75ee5bc88b13b79d71f60ae09b87871bcb7514533228",
+    "thys/Category_Bridges/Context_Sensitive_Integrated/ROOT": "e7bdd8dd575a410b103068e4ebfe548c3373f5491459b45c585d37615bf9f3c3",
+    "thys/Category_Bridges/Context_Sensitive_Integrated/ROOTS": "9aae342b9a54f1e212c35a42ae750a2d1afedd929597f437ae5b130210f16196",
+    "thys/Category_Bridges/Context_Sensitive_Integrated/TRS_Context_Sensitive_Integrated.thy": "8fd1d287de8dfb53ea2512bd49ba85ba266c14203ff8776cb4ad0b5ea4861cf3",
+    "thys/Category_Bridges/Equational_Bridge/ROOT": "031bf607d080f8f04fa29fb1dcfe876051cd97a46ebde6ce03b4ec1d9ac92d01",
+    "thys/Category_Bridges/Equational_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Bridges/Equational_Bridge/TRS_Equational_Equivalence.thy": "b8fe19dd772b49b7cda36e492be2b6adbd3e66c9029c3eaf7a751583d411d29a",
+    "thys/Category_Bridges/Equational_Integrated/ROOT": "53e8378998b27e64560de0a1fa9fe7d4cc5c13c4a90f620ec18627644450a710",
+    "thys/Category_Bridges/Equational_Integrated/ROOTS": "c1abad1f9aa6294e9fd7368a54246fde807237494bb8a60c60646061ca6ada0c",
+    "thys/Category_Bridges/Equational_Integrated/TRS_Equational_Checker_Bridge.thy": "37c3cf8ac0f99bb9103a68c6f70d2bd6f27abd5e70155d94e804aa88db35059e",
+    "thys/Category_Bridges/Higher_Order_Bridge/Higher_Order_Equivalence.thy": "bd48941be465c5692772432b1aa2091e1dcee328495d0490f5be58748f948a93",
+    "thys/Category_Bridges/Higher_Order_Bridge/Higher_Order_Sort_Extension.thy": "b2a3dc0ac1f1183537b4e53599ca9270d1fa45a6e2a3be10fde82082b0ca0e38",
+    "thys/Category_Bridges/Higher_Order_Bridge/ROOT": "4899b0c588e81c57a598cc1a303d9f01ee73440b1b71d27df6885b2366e0520e",
+    "thys/Category_Bridges/Higher_Order_Bridge/ROOTS": "d4a6b12f2da392f635c974015d74d3536fd096521e21f57389b8080ad207054f",
+    "thys/Category_Bridges/Higher_Order_Integrated/Higher_Order_Checker_Bridge.thy": "e7e4e64e66c9ae0df22273ba77412d6264211ac83e1ad5ace36d3a6fcd9b40e3",
+    "thys/Category_Bridges/Higher_Order_Integrated/ROOT": "e4696fbbab41c77d8ebfd85a286a7c7ceda422d652106b7e8b392d2b5cfff95d",
+    "thys/Category_Bridges/Higher_Order_Integrated/ROOTS": "101e5f3fd931a6c7260a14023447a76b7f525c9c2bcecf98ed578ba866d086b1",
+    "thys/Category_Bridges/Innermost_Integrated/ROOT": "85459a046c11365ed9b5365758b9433865cef73be3564aa0f546f296b3312b94",
+    "thys/Category_Bridges/Innermost_Integrated/ROOTS": "9aae342b9a54f1e212c35a42ae750a2d1afedd929597f437ae5b130210f16196",
+    "thys/Category_Bridges/Innermost_Integrated/TRS_Innermost_Integrated.thy": "154cec99259f0333c2fb9ec0f460a4c61998df337a4bb7a980e0bbbbcb6a7697",
+    "thys/Category_Bridges/Integrated/ROOT": "8774c86b072dd3ec2d8104c36b34bcff56b586acbcd5beb5d12bc276baee141a",
+    "thys/Category_Bridges/Integrated/ROOTS": "37cada103941d3985e679642fd98878aa56f6493b74ba1f1bf0123b14205edfa",
+    "thys/Category_Bridges/Integrated/TRS_Standard_Integrated.thy": "1c153b75fa11f6b8e3aa725709b5cc3494d29edbc8f2019bbdf5d93c8c624c09",
+    "thys/Category_Bridges/Integrated/TRS_Standard_Serialized.thy": "aa638af41f226ab1f97727726f84d2c11606acbc3a5e4bef7374713b45649e1c",
+    "thys/Category_Bridges/Outermost_Bridge/ROOT": "0e2f7b04a5e8ba3efd3206287693ece22cfd3975827cdc2aab90e3e04453013b",
+    "thys/Category_Bridges/Outermost_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Bridges/Outermost_Bridge/TRS_Outermost_Equivalence.thy": "36c1a39e6a60446c6bf94b63d44f3a698936f39b03683d34e57d6c03ed0d9077",
+    "thys/Category_Bridges/Outermost_Bridge/TRS_Outermost_Loop_Bridge.thy": "8e90557b27a7ca03d6cd24972a18a27be27eb03224a0f4ac7e441bc2c3a67e4c",
+    "thys/Category_Bridges/Outermost_Integrated/ROOT": "2029be77890b254568c2897c42109e4f2b2a9e16d8e35aceee2ea9751bccc8b2",
+    "thys/Category_Bridges/Outermost_Integrated/ROOTS": "d8a7abd20a70c517780daa541522a3e9710ba99cc6c64fe37e7611d6cf524740",
+    "thys/Category_Bridges/Outermost_Integrated/TRS_Outermost_Integrated.thy": "2e672b84ba8ef7f2387003018a69f8f16f8584056e5b878dfaadbf039a8c2f9e",
+    "thys/Category_Bridges/README.md": "c0653769f7e7503874fbcee15e3430556b923c35f925e88d960b4f8b104f81c2",
+    "thys/Category_Bridges/ROOTS": "b13d930c99d622f90057dbb9826a2f20292473031184e59804bb3130cdf2f5bc",
+    "thys/Category_Bridges/Relative_Integrated/ROOT": "9a39cadec5a6426341de1def103f7ffff56f227b33a5961482c3959378e6df23",
+    "thys/Category_Bridges/Relative_Integrated/ROOTS": "9aae342b9a54f1e212c35a42ae750a2d1afedd929597f437ae5b130210f16196",
+    "thys/Category_Bridges/Relative_Integrated/TRS_Relative_Integrated.thy": "50d0571e87b34e316735c7b4cfe583da6f16444d6bfd3273e0661d9dff72d909",
+    "thys/Category_Bridges/Relative_Integrated/TRS_Relative_Ranked_Loops.thy": "4048e1e8dcc151bcb47210b5c5d11ce31f8a05b8d6c46bf639552ca91021f31e",
+    "thys/Category_Bridges/SRS_Integrated/ROOT": "d5767c214942a265e2f5bb5f2e245aabc61f3575a531b1bdaac07c10e3417d16",
+    "thys/Category_Bridges/SRS_Integrated/ROOTS": "9aae342b9a54f1e212c35a42ae750a2d1afedd929597f437ae5b130210f16196",
+    "thys/Category_Bridges/SRS_Integrated/SRS_Relative_Integrated.thy": "ec6fa4890cc92c6a328761f8d7051135ea2e9b966cb06dc046e8f6194bb1b708",
+    "thys/Category_Bridges/SRS_Integrated/SRS_Standard_Integrated.thy": "11b5bc3d1d6b9d465f7e9744082a8b48513cbe6d427854f63158df4a73318427",
+    "thys/Category_Properties/Higher_Order_Examples.thy": "736cfa8dda2a9a45277fab28e4586b108b23cda369d2e8d3e49f11a028923f1e",
+    "thys/Category_Properties/Higher_Order_Properties.thy": "b2ad44f87f0538340e6627da66942fbdf39b756ef75254f753b588f2de1354e6",
+    "thys/Category_Properties/Higher_Order_Sorts_Properties.thy": "f94d92045c792e92b4712e7bebbdae705df77f56d28297accaa923b9f1f21704",
+    "thys/Category_Properties/README.md": "f091c03d2fa2e3f2b30c8eea9b631d7a8814cf4b4067dd48e48182d07db2ab34",
+    "thys/Category_Properties/ROOT": "2881fdd91ce80268c5aa53144635c923dbecd8997aebce5a085d22cab4b23dfb",
+    "thys/Category_Properties/ROOTS": "b6b8ded6a7538197e6bf4181fa8db1eb9479fb1be799fef17d63a5918f4be899",
+    "thys/Category_Properties/Rewriting_Sequences_Properties.thy": "6c1fc97e2e8b9f38ec1b06d4cecedebed5c53dbb173169a482e5907cbbdb8084",
+    "thys/Category_Properties/SRS_Cycle_Properties.thy": "b0e5e56e4725c726b6d4878b9f949c4288e02818b585c5c0bcac07ecc02e9d3c",
+    "thys/Category_Properties/SRS_Examples.thy": "b9eb799727c068fc1ad6a0e7104103f8b70b27402bbab80d3ef9608fe77295d8",
+    "thys/Category_Properties/SRS_Relative_Properties.thy": "93c4e37fe398180ff8b0eeaae18ba8b0921409406181852f158413f64d10daf2",
+    "thys/Category_Properties/SRS_Standard_Properties.thy": "dd1eb1c65e146c09fcf9f04e4ef3bb3e785426bef12a8899dd26e096d05b2653",
+    "thys/Category_Properties/TRS_Conditional_Examples.thy": "7fb30c3ff5914a68bd6198068da2f0b0c6aacdf414b483a49b266dffd2d7d8b1",
+    "thys/Category_Properties/TRS_Conditional_Operational_Properties.thy": "1adefd9f475d241b0d3107c1f998e2b47ac7d739e130a5760fd2c2693ef9c7d2",
+    "thys/Category_Properties/TRS_Conditional_Ordinary_Properties.thy": "06d61b1e659653375c039863fea13016f24c411bdb772f0a2760058d29601042",
+    "thys/Category_Properties/TRS_Conditional_Properties_Base.thy": "d46201248598cfa3ee02874602b636c5a3cb3e3aa70df16b50c86300f9f2b11d",
+    "thys/Category_Properties/TRS_Context_Sensitive_Examples.thy": "80a8733c5fdc60b5ef8b135a804f82f48956d786b35d2efca576c9856ce27d80",
+    "thys/Category_Properties/TRS_Context_Sensitive_Properties.thy": "1c3b5810bc6931b528934925f553a0f1eca0655da0bf768e6e5ce05d8fbedc28",
+    "thys/Category_Properties/TRS_Equational_Examples.thy": "2338a9ee9a99b897d3cb927fc0d5c23ea143cf8e467c0b341559832bd6be8ab8",
+    "thys/Category_Properties/TRS_Equational_Properties.thy": "ad47409e26d704dfa67fb9d676bd3ddef571a85e622c32b762b385d66f9141fb",
+    "thys/Category_Properties/TRS_Innermost_Examples.thy": "f253759b2e8d64615b6f4670b10a81f183b38c845206a9c38241223376285293",
+    "thys/Category_Properties/TRS_Innermost_Properties.thy": "f9c1e16c134c1f8fdc4ce7490a5a57ae665e74522261dc576a262b1c9f9fd53c",
+    "thys/Category_Properties/TRS_Outermost_Examples.thy": "13c5d32f45337f2e83f1fe9eb2158986335610db77dd768e25abd9f9fded9934",
+    "thys/Category_Properties/TRS_Outermost_Properties.thy": "8027d74437b8a7158734be3e786d23ad935a368308eba5c639cfd90d8087bef2",
+    "thys/Category_Properties/TRS_Properties.thy": "7c98d1fe925fb876eca4434e42f0903e88b20fc1515e61fbc556419cfe8f7e0c",
+    "thys/Category_Properties/TRS_Relative_Examples.thy": "df8423e1e70361aa8557b19e4485f33d2de22efc41a12e47ee3b4cc1e1249d20",
+    "thys/Category_Properties/TRS_Relative_Properties.thy": "abf75c3e814c524fc0f6d676014e29ef1fe3ca50b04f945785c9b95e04c0fdc5",
+    "thys/Category_Properties/TRS_Standard_Examples.thy": "13a2d4264be515264bfc307d0977415c551b53971ffb45e3e3fa219a69abdd5d",
+    "thys/Category_Properties/TRS_Standard_Properties.thy": "eb7236a26235ab7d6d0614db0b80430297e29ff765561c47c540496e495527f4",
+    "thys/Category_Specifications/Higher_Order_Sorts_Spec.thy": "b33e5c2f598c16052250c0a241dfd3baeeaa8ad07dec48366c167514b772a21c",
+    "thys/Category_Specifications/Higher_Order_Spec.thy": "7104ac07fadb7cb1272f5b8959dea549727df0c83bda9a95f71c8d5c2c7c313c",
+    "thys/Category_Specifications/Higher_Order_Spec_Base.thy": "c4fbc00bf5007ee7942d4b8152b2cbdf391ab83213e8c70594e9fb1c6e6fee4d",
+    "thys/Category_Specifications/README.md": "a5473c22890c1f7c09153763ccefff0a3ec2c413a803bfdb3ed69b49bc875949",
+    "thys/Category_Specifications/ROOT": "75fe10f72fd014ea2956fcced7627bc6bc5cf389abc9667528b0982c5b2a06ac",
+    "thys/Category_Specifications/Rewriting_Sequences_Spec.thy": "724386e68fa465fe1ce5f88b50cedcfad967f32e360c5f66dac1e2a534b294cc",
+    "thys/Category_Specifications/SRS_Cycle_Spec.thy": "60616f955ab7622ee10d9246166bda67d7ea5dbea79c9290aa97f51a1acf3d5e",
+    "thys/Category_Specifications/SRS_Relative_Spec.thy": "0a52f9901ab5d0cc63ae8dfd581c577cf87fa9d81eba31c64faae12a2ebfa94d",
+    "thys/Category_Specifications/SRS_Spec_Base.thy": "ebe7b51cb9b9da5a336dddef48e09a99fc8bc5da61607fb09a12f36a363258ec",
+    "thys/Category_Specifications/SRS_Standard_Spec.thy": "3667e4a1e4d47b975a785c02e19eb580f0318db439c88071eb18cd08e231f916",
+    "thys/Category_Specifications/TRS_Conditional_Operational_Spec.thy": "3ab9daf1b59b3d04290526c9e3dcdf063ef459e07645f7e6ddf084ba120bb99a",
+    "thys/Category_Specifications/TRS_Conditional_Ordinary_Spec.thy": "7ae67e52cc5721bc7604ef6129592d744d5a4c5104d97817dd1a52ff639063a3",
+    "thys/Category_Specifications/TRS_Conditional_Spec_Base.thy": "57689e43f26fb2a0f09a41e9b619b90101023c5d5577eac42fb2354337423c89",
+    "thys/Category_Specifications/TRS_Context_Sensitive_Spec.thy": "50b5501e94c8a262951d752f4d6f53a24d8cb46aa7ada78f1c9a2caa4c8a31db",
+    "thys/Category_Specifications/TRS_Equational_Spec.thy": "76e11776d779e111712536455a674e493189ef61c398208209cee98099fa5c2c",
+    "thys/Category_Specifications/TRS_Innermost_Spec.thy": "14927121ea66fc71c6f0d5785fc313c55a1aa697fcfb2b63a7945840c772f79c",
+    "thys/Category_Specifications/TRS_Outermost_Spec.thy": "41b04de616ed12a9ef9c8361e48082048ba15e3a49500a98a18a3110f3800970",
+    "thys/Category_Specifications/TRS_Relative_Spec.thy": "0c026635ded00be2770d506f01a699b30617a769fcf9c7f3430f0a76da9076a7",
+    "thys/Category_Specifications/TRS_Spec_Base.thy": "06db3e53ddc42c44d030c25b3a22709aad1ecdf26972674d2300c4849be7f66b",
+    "thys/Category_Specifications/TRS_Standard_Spec.thy": "94dc04be2a1d7b4777ce631f16bf75ceacea2b5476aa76e99454ae5c8a174411"
+  }
+}

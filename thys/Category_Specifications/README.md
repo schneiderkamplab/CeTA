@@ -1,0 +1,129 @@
+# Termination category definitions
+
+This package defines the mathematical questions. It contains definitions and
+explanatory text only: no derived properties, examples, representation proofs,
+checker connections, or proof-audit code. Its only external dependency is
+Isabelle/HOL (`Main`). Copying this directory is sufficient to build it:
+
+```sh
+isabelle build -D /path/to/Category_Specifications
+```
+
+## Common vocabulary
+
+Read [Rewriting_Sequences_Spec.thy](Rewriting_Sequences_Spec.thy) first.
+`finite_steps step s t` permits zero or more steps. `no_infinite_steps step`
+excludes a sequence indexed by all natural numbers whose consecutive elements
+are related by `step`. Nontermination means the negation of that property.
+
+For first-order syntax, read [First_Order_Terms_Spec.thy](First_Order_Terms_Spec.thy):
+
+- `fo_term`: finite variables and function applications;
+- `fo_subst`: simultaneous substitution, allowing nonground images;
+- `fo_context` and `fo_plug`: one-hole contexts and plugging.
+
+Then [TRS_Spec_Base.thy](TRS_Spec_Base.thy) adds ranked rewriting:
+
+- `arity`: a total function assigning each function symbol its number of
+  arguments; zero denotes a constant, and the symbol type supplies the alphabet;
+- `arity_correct`, `correct_substitution`, and `correct_context`: membership
+  in the chosen term universe;
+- `trs_problem`: finite, signature-correct rules;
+- `fo_step`: a rule instance in any signature-correct context.
+
+The variable type is arbitrary. Cardinality requirements of a representation
+proof belong in the bridge, not in problem validity. LP term definitions reuse
+the shared first-order syntax, arity function and finite-term arity predicate.
+
+The prefix `fo` means first-order. These objects are shared across all TRS
+categories. Signatures need not contain constants or have finite domains. Rule
+sets are finite; the source syntax may impose a finite declared signature.
+Variables and nonground terms remain in scope. Variable left sides and new
+right-side variables are allowed unless a category explicitly says otherwise.
+
+Validity and termination are separate predicates. Read a category's termination
+property together with its stated validity predicate. The definitions also give
+meaning to relations outside valid inputs; this is not additional input coverage.
+
+## Category reading order
+
+| Category | Definition | Validity and final property |
+| --- | --- | --- |
+| TRS Standard | [TRS_Standard_Spec.thy](TRS_Standard_Spec.thy) | `trs_problem`; `trs_standard_terminates` |
+| TRS Innermost | [TRS_Innermost_Spec.thy](TRS_Innermost_Spec.thy) | `trs_problem`; `trs_innermost_terminates` |
+| TRS Relative | [TRS_Relative_Spec.thy](TRS_Relative_Spec.thy) | `relative_problem`; `trs_relative_terminates` |
+| TRS Context-sensitive | [TRS_Context_Sensitive_Spec.thy](TRS_Context_Sensitive_Spec.thy) | `trs_problem`; `trs_context_sensitive_terminates` |
+| TRS Outermost | [TRS_Outermost_Spec.thy](TRS_Outermost_Spec.thy) | `trs_problem`; `trs_outermost_terminates` |
+| Conditional ordinary | [TRS_Conditional_Ordinary_Spec.thy](TRS_Conditional_Ordinary_Spec.thy) | `conditional_problem`; `trs_conditional_terminates` |
+| Conditional operational | [TRS_Conditional_Operational_Spec.thy](TRS_Conditional_Operational_Spec.thy) | `conditional_problem`; `trs_conditional_operationally_terminates` |
+| TRS Equational | [TRS_Equational_Spec.thy](TRS_Equational_Spec.thy) | `equational_problem`; `trs_equational_terminates` |
+| SRS Standard | [SRS_Standard_Spec.thy](SRS_Standard_Spec.thy) | `string_problem`; `srs_standard_terminates` |
+| SRS Relative | [SRS_Relative_Spec.thy](SRS_Relative_Spec.thy) | `relative_string_problem`; `srs_relative_terminates` |
+| SRS Cycle | [SRS_Cycle_Spec.thy](SRS_Cycle_Spec.thy) | `string_problem`; `srs_cycle_terminates` |
+| Higher-order | [Higher_Order_Sorts_Spec.thy](Higher_Order_Sorts_Spec.thy) | `higher_order_declared_problem`; `higher_order_terminates_over_sorts` |
+
+Conditional rewriting first needs [TRS_Conditional_Spec_Base.thy](TRS_Conditional_Spec_Base.thy).
+It defines ordered condition goals, successful finite derivations and evaluation
+descent. Completed rewriting and potentially nonreturning evaluation are distinct
+relations, hence two category properties.
+
+SRS uses [SRS_Spec_Base.thy](SRS_Spec_Base.thy): words are finite lists and a step
+replaces a contiguous segment. Relative rewriting requires infinitely many strict
+steps for nontermination. Cycle rewriting permits rotation around a genuine
+replacement; rotation alone is not a step.
+
+Higher-order rewriting uses [Higher_Order_Spec_Base.thy](Higher_Order_Spec_Base.thy)
+for types, binding, patterns and substitution, then
+[Higher_Order_Spec.thy](Higher_Order_Spec.thy) for typed contextual steps.
+The final declared-sort property is in `Higher_Order_Sorts_Spec.thy`:
+all terms, environments and types use the source's declared sorts.
+It includes beta reduction and designated meta-application, not arbitrary matching
+modulo beta or eta. Its typed terms are intentionally distinct from first-order terms.
+
+In Isabelle notation, `∀` and `∃` quantify, `⟷` defines logical equivalence,
+`#` prepends to a list, `@` concatenates lists, and `!` selects a zero-based
+list entry. `None` denotes a failed optional lookup; `Some A` denotes a
+successful lookup. Premises of an inductive rule precede `⟹`; its conclusion follows.
+
+## Integer transition systems and logic programs
+
+[ITS_Spec.thy](ITS_Spec.thy) defines initial-state termination of a finite
+integer transition system. It keeps pre-state, post-state and local stores
+separate. Category validity requires one entrypoint; the underlying execution
+relation also admits multiple entries. Guards are mathematical relations,
+independent of any concrete arithmetic expression syntax.
+
+For logic programs, read [LP_Terms_Spec.thy](LP_Terms_Spec.thy), then
+[LP_Spec_Base.thy](LP_Spec_Base.thy). Program clauses and initial queries use
+`fo_term`; runtime trees distinguish finite trees from rational trees (finitely
+many distinct subtrees), and arbitrary infinite trees. Variable types are
+polymorphic. `logic_subtree u t` means that `u` occurs in `t`, and
+`logic_eval s t` abbreviates `logic_subst s (logic_embed t)`. The runtime arity
+predicate uses the shared `arity` function throughout validity and execution.
+`LAtom` distinguishes predicate applications from function terms.
+`logic_mgu D a b s` requires one unifier and factorization on every variable.
+Resolution first renames the clause apart from all active goals, then applies
+the same MGU to the renamed body and caller continuation. Query modes mean
+ground or arbitrary finite arguments,
+including compound nonground arguments and shared variables.
+Use termination together with `logic_problem A P p modes` or
+`logic_cut_problem A P p modes`: validity checks clause arities and the query
+mode length independently of whether any execution exists.
+
+| Category variant | Definition | Final property |
+| --- | --- | --- |
+| ITS | [ITS_Spec.thy](ITS_Spec.thy) | `its_terminates` |
+| LP, finite terms | [LP_Finite_Spec.thy](LP_Finite_Spec.thy) | `lp_finite_terminates` |
+| LP, arbitrary infinite runtime trees | [LP_Infinite_Spec.thy](LP_Infinite_Spec.thy) | `lp_infinite_terminates` |
+| LP, rational runtime trees | [LP_Rational_Spec.thy](LP_Rational_Spec.thy) | `lp_rational_terminates` |
+| LP with cut, finite terms | [LP_Cut_Finite_Spec.thy](LP_Cut_Finite_Spec.thy) | `lp_cut_finite_terminates` |
+| LP with cut, arbitrary infinite runtime trees | [LP_Cut_Infinite_Spec.thy](LP_Cut_Infinite_Spec.thy) | `lp_cut_infinite_terminates` |
+| LP with cut, rational runtime trees | [LP_Cut_Rational_Spec.thy](LP_Cut_Rational_Spec.thy) | `lp_cut_rational_terminates` |
+
+[LP_Cut_Spec_Base.thy](LP_Cut_Spec_Base.thy) adds ordered alternatives, scoped
+cuts, unification and meta-call decoding. Successful goals resume alternatives;
+termination means exhaustion of the computation. Finite-term unification uses
+an occurs check; rational-tree unification admits cycles. They can produce
+different backtracking behavior and therefore different termination answers.
+The finite-term presentation is the primary reading; the rational-tree and arbitrary-infinite-tree variants
+are separate. The full Prolog category is outside this package's scope.

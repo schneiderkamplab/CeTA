@@ -1,0 +1,4 @@
+session Category_ITS_Bridge = ITS_Ext +
+  options [document = false, quick_and_dirty = false, timeout = 90]
+  sessions Category_Properties
+  theories ITS_Equivalence ITS_Checker_Bridge

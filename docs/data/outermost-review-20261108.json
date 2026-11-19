@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-08",
+  "category": "TRS_Outermost",
+  "formal_commit": "a1a6dd4e58165c6125200f9b16a07993ff1a3f28",
+  "runtime_commit": "f7d7e723",
+  "replay_evidence_commit": "74d39dca",
+  "formal": {
+    "sessions": [
+      "Category_Specifications",
+      "Category_Outermost_Bridge",
+      "Category_Outermost_Integrated"
+    ],
+    "passed": true,
+    "admissions": false,
+    "new_axioms": false,
+    "oracle_dependencies": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ],
+    "equivalence": "signature-restricted ostep; both polarities",
+    "unchecked_semantic_or_module_hypotheses": [],
+    "checked_NO_premises": [
+      "direct loop proof",
+      "start and sequence term signature membership",
+      "substitution image signature membership",
+      "context signature membership"
+    ],
+    "coverage": "All concrete integrated YES families; direct-loop NO only; existing loop checker rejects variable left sides"
+  },
+  "sources": {
+    "Makefile": "da93cbee9a85f4031f2c3a9bf6599e1013a96c0ca6d1efddb5eefb54aea57216",
+    "thys/Category_Specifications/Outermost_Bridge/ROOT": "0e2f7b04a5e8ba3efd3206287693ece22cfd3975827cdc2aab90e3e04453013b",
+    "thys/Category_Specifications/Outermost_Bridge/ROOTS": "3c0bb5dfc2c93b282099b86bc1bc667bf0dae75af6ccd5147c7d796b67924ebd",
+    "thys/Category_Specifications/Outermost_Bridge/TRS_Outermost_Equivalence.thy": "5df23988a565c79b6a998c5ed58341a63932a5c588df03cabe30288da06f636c",
+    "thys/Category_Specifications/Outermost_Bridge/TRS_Outermost_Loop_Bridge.thy": "8e90557b27a7ca03d6cd24972a18a27be27eb03224a0f4ac7e441bc2c3a67e4c",
+    "thys/Category_Specifications/Outermost_Integrated/ROOT": "a6e04e873c1cdc3f8a47e5f731fcf4b8bfd3c877685b564f8e2ae7736901ffa0",
+    "thys/Category_Specifications/Outermost_Integrated/ROOTS": "1ce3ee1c1d791ab1310b1d6e085775e3e67e4dd680d1d296bac63ac6730f4df1",
+    "thys/Category_Specifications/Outermost_Integrated/TRS_Outermost_Integrated.thy": "b12fb3fc2760a904c651e2169851c96f8548068bb8453f25e1171cc59f0e5902",
+    "thys/Category_Specifications/ROOTS": "4cb558bbb03f3a7c7939a1bd2b6d495822bd8300ee0e31368415f6c826ed0591",
+    "thys/Category_Specifications/Spec/ROOT": "7bfb8e0d6ada0a67085ce494891aa81bbde58a7ac4fbcec28c133b74f0c1b4c8",
+    "thys/Category_Specifications/Spec/TRS_Outermost_Examples.thy": "4dd70047d06848cee440e0b25f13c5a851a9fc8b27790011611ce21877e0a7c7",
+    "thys/Category_Specifications/Spec/TRS_Outermost_Spec.thy": "090dbfb274251314495cc5470cf29a69ff6009a7da0638cc8984aacaecf31b66"
+  },
+  "evidence": {
+    "outermost-audit-console.py.gz": "f3dc01673f74c29694b9617d8e35e7b2eed3901265c3ff2acd543390317d6a4d",
+    "outermost-formal-audit.log.gz": "3118bd4b6ab76d5c5e4dcc21a2fcaf2e3bc7ec2e967508ffb2c9223e10de557b",
+    "outermost-formal-build.log.gz": "ff78946b8178a23238bd0a78876c04af905e2bfb6167a4cc55d2809556016af3",
+    "outermost-spec-build.log.gz": "683202419257d8316ae23b33bff21988771bd9bc9b2fbe40aa663679c5907afe"
+  },
+  "spec_build_note": "integrated-4 records successful specification and bridge builds before the integrated acceptance proof was repaired; integrated-final succeeds for all requested sessions, reusing unchanged specification heap",
+  "replay": {
+    "roots": 207,
+    "yes": 27,
+    "no": 180,
+    "unresolved": 0,
+    "artifact_root": "/work/dfm/festschrift/ferrum/target/outermost-reviewed-2",
+    "checker_sha256": "5d50333bdfdccb3c143cc499162311a5846eb44ebdbfe46d493fec35c2b42d85",
+    "oracle_sha256": "1610d2312ef7c7e8ef694e36a1e0181ccd423b7e4989e92b3d071c4c7cbfa12c",
+    "ceta_executable_changed": false,
+    "oracle_changed": false
+  },
+  "scope": "Focused Outermost review; not parser verification, checker completeness, production promotion or independent two-checker release"
+}

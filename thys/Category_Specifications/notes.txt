@@ -1,0 +1,180 @@
+Rewriting_Sequences_Spec.thy
+----------------------------
+- all seems well
+
+
+First_Order_Terms_Spec.thy
+--------------------------
+- all seems well
+
+
+TRS_Spec_Base.thy
+-----------------
+- type ranked_signature
+  Change to
+    "'f \<Rightarrow> nat"
+  Argument: if we have a type S, we can always make the subtype {x:S | f x = Some n}. So all results still hold.
+  Also, shouldn't this be called "arity"? It _is_ the arity function...
+
+- there should be a type definition "'f 'v rewriting_rules" for
+    "'f 'v ((('f,'v) fo_term \<times> ('f,'v) fo_term) set)"
+  (a set of rewriting rules). This is done for conditional and equational rewriting systems
+
+- definition trs_problem
+  Remove first conjunct:
+    infinite (UNIV :: 'v set)
+  The infinity of a set of variables should be a separate hypothesis, and assumed when needed. I am also not sure about this formulation (why add UNIV?).
+
+
+TRS_Standard_Spec.thy
+---------------------
+- becomes more readable using the type "rewriting_rules"
+
+
+TRS_Innermost_Spec.thy
+----------------------
+- definition innermost_step
+  The hypotheses (arity_correct A s) and (arity_correct A t) seem superfluous. (And they do not make sense in this definition, as it could in principle apply to incorrect terms.)
+  Argument: we should be able to prove a lemma
+    trs_problem A R \<and> correct_substitution A sigma \<rightarrow> \<forall> (l,r) \<in> R. arity_correct A (fo_subst sigma l) \<and> arity_correct A (fo_subst sigma r)
+
+
+TRS_Outermost_Spec.thy
+----------------------
+- definition outermost_step
+  Same comment as on innermost_step
+
+
+TRS_Context_Sensitive_Spec.thy
+------------------------------
+- definition permitted_context
+  . Argument names have changed ("before" and "after"), confusing
+  . The type of the argument mu should be simply
+      "'f \<Rightarrow> nat set"
+    Argument: the second argument is the arity of the function, which is uniquely given by the arity function - this formulation would make sense in a setting where signatures were pairs (function,arity) and you could reuse function symbols.
+
+- definition context_sensitive_step
+  Usual comment regarding the arity hypothesis
+
+
+TRS_Equational_Spec.thy
+-----------------------
+- the intro text makes little sense
+- otherwise all seems good
+
+
+TRS_Relative_Spec.thy
+---------------------
+- all seems well
+
+
+SRS_Spec_Base.thy
+-----------------
+- definition string_problem
+  Strange definition. Why the bool, and why finite? Again, making it a type sounds much more natural.
+
+
+SRS_Standard_Spec.thy
+---------------------
+- all seems well
+
+
+SRS_Cycle_Spec.thy
+------------------
+- all seems well
+
+
+SRS_Relative_Spec.thy
+---------------------
+- definition relative_string_step
+  Type annotations are missing, so it's hard to read - I assume R and S are "string_problems".
+  Maybe add an auxiliary definition in the style of TRS_Relative_Spec?
+
+
+LP_Terms_Spec.thy
+-----------------
+- definition logic_tree
+  Not sure I understand why the codatatype
+
+- definition logic_subst
+  The first argument of the substitution is a string?!
+
+- definition logic_eval
+  This is the same as logic_subst (albeit written differently)
+
+- definition logic_subtree
+  Arguments are (intuitively) in the wrong order
+
+- definition logic_substitution
+  Not sure what this means (no types)
+
+
+LP_Spec_Base.thy
+----------------
+- definition logic_atom
+  Here we have yet a different way to deal with arities (an "atom" is a pair (name,arity).
+
+- definition logic_clause
+  Here the type of variables is hardcoded to be string (why?)
+
+- definition logic_mgu
+  "logic_subst" and "logic_eval" are used indistinctively...
+  I don't get the complexity. There should only be one substitution as argument. I would expect something like
+    logic_mgu D t1 t2 s \<longleftrightarrow>
+      logic_substitution D s \<and>
+      logic_atom_map (logic_subst s) t1 = logic_atom_map (logic_subst s) t2 \<and>
+      (\<forall>u. logic_substitution D u \<longrightarrow>
+        logic_atom_map (logic_subst u) t1 = logic_atom_map (logic_subst u) t2) \<longrightarrow>
+	(\<exists> v. logic_substitution D v \<and>
+	  [u = v \<circ> s, however this is written]))
+
+- definition logic_query
+  I don't get the variable "modes"
+
+
+LP_Finite_Spec.thy
+------------------
+- in itself, all seems well :-)
+
+
+LP_Infinite_Spec.thy
+--------------------
+- all seems well
+
+
+LP_Rational_Spec.thy
+--------------------
+- all seems well
+
+
+[oh my dear]
+
+LP_Cut_Spec_Base.thy
+
+LP_Cut_Finite_Spec.thy
+
+LP_Cut_Infinite_Spec.thy
+
+LP_Cut_Rational_Spec.thy
+
+
+[on waiting list...]
+
+TRS_Conditional_Spec_Base.thy
+-----------------------------
+- definition conditional_problem
+  Again, the hypothesis "infinite (UNIV :: 'v set) should not be included.
+
+- the whole formalization style changes radically
+
+TRS_Conditional_Ordinary_Spec.thy
+
+TRS_Conditional_Operational_Spec.thy
+
+Higher_Order_Spec_Base.thy
+
+Higher_Order_Spec.thy
+
+Higher_Order_Sorts_Spec.thy
+
+ITS_Spec.thy

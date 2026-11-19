@@ -1,0 +1,4 @@
+session Category_Outermost_Integrated = Category_Integrated_Base +
+  options [document = false, quick_and_dirty = false, timeout = 240]
+  sessions Category_Outermost_Bridge
+  theories TRS_Outermost_Integrated

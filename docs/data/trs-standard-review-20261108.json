@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-08",
+  "scope": "Source review and focused tests; not a full benchmark replay or proof of parser correctness",
+  "binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "checks": [
+    {
+      "cwd": "ferrum",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_audit_trs_root_correspondence.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.032s\n\nOK\n"
+    },
+    {
+      "cwd": "CeTA",
+      "command": [
+        "python3",
+        "tests/unified/check_dispatch.py",
+        "./ceta"
+      ],
+      "exit_code": 0,
+      "stdout": "[\n  {\n    \"category\": \"cpf\",\n    \"returncode\": 2,\n    \"stdout\": \"UNSUPPORTED\\n\",\n    \"stderr\": \"Fatal: parse error on <unknown-certificate> at []:\\nexpecting [certificationProblem]\\n\"\n  },\n  {\n    \"category\": \"cycle\",\n    \"returncode\": 1,\n    \"stdout\": \"REJECTED\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"category\": \"conditional\",\n    \"returncode\": 1,\n    \"stdout\": \"REJECTED\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"category\": \"conditional-erasure\",\n    \"returncode\": 1,\n    \"stdout\": \"REJECTED\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"category\": \"lp\",\n    \"returncode\": 1,\n    \"stdout\": \"REJECTED\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"category\": \"higher-order\",\n    \"returncode\": 1,\n    \"stdout\": \"REJECTED\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"category\": \"higher-order-delegation\",\n    \"returncode\": 1,\n    \"stdout\": \"REJECTED\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"category\": \"its\",\n    \"returncode\": 1,\n    \"stdout\": \"Fatal: parse error on <unknown-certificate> at []:\\nexpecting [certificationProblem]\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"args\": [\n      \"--category\"\n    ],\n    \"returncode\": 1\n  },\n  {\n    \"args\": [\n      \"--category\",\n      \"unknown\",\n      \"/tmp/tmp7kzfcl3a/bad\"\n    ],\n    \"returncode\": 1\n  },\n  {\n    \"args\": [\n      \"--category\",\n      \"cycle\"\n    ],\n    \"returncode\": 1\n  },\n  {\n    \"args\": [\n      \"--category\",\n      \"lp\",\n      \"/tmp/tmp7kzfcl3a/bad\",\n      \"/tmp/tmp7kzfcl3a/bad\"\n    ],\n    \"returncode\": 1\n  }\n]\n",
+      "stderr": ""
+    }
+  ]
+}

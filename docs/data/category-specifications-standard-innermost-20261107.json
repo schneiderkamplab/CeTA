@@ -1,0 +1,27 @@
+{
+  "milestone": "Shared package: TRS Standard and TRS Innermost",
+  "date": "2026-11-07",
+  "isabelle": "Isabelle2025-2",
+  "sessions": {
+    "Category_Specifications": "passed",
+    "Category_Specification_Bridges": "passed"
+  },
+  "log": "target/trs-innermost/package-build-1.log",
+  "admission_audit": "Thm_Deps.has_skip_proof checked in both checker bridge theories",
+  "sources": {
+    "thys/Category_Specifications/Bridge/ROOT": "4378b65e9aebc02771be09846c41b54ae4939795b3ac7f6159023de545abecbc",
+    "thys/Category_Specifications/Bridge/ROOTS": "3ead7e46fbc0404d09b8a7b186ec27200bc8f5623c50bb0bbd9e99ea6fd02afc",
+    "thys/Category_Specifications/Bridge/TRS_Innermost_Checker_Bridge.thy": "a4e9f8446fe3a87743d67883944dbdfec874d20df779105f59c40465767ae3e0",
+    "thys/Category_Specifications/Bridge/TRS_Innermost_Equivalence.thy": "f2ecf62a5abd2e1f4ff0191e48b6736f1c2b867acda76e507c4492682b43c918",
+    "thys/Category_Specifications/Bridge/TRS_Standard_Checker_Bridge.thy": "da3f30547b6c8fec8c6ac257769a06a730449cdd393a8b768b7744db45250c1f",
+    "thys/Category_Specifications/Bridge/TRS_Standard_Equivalence.thy": "ac0943a1f7060b595c0c311812406980b62c417a4365c9d8d1be60ff5ea191f2",
+    "thys/Category_Specifications/ROOTS": "15eeb09609b41f3c7ebafb3a1b17e6862c9b37dff27139e9e16f5a14641cb05d",
+    "thys/Category_Specifications/Spec/ROOT": "e499386c8fe9ace7eaf6000b423e61699beb94a373a6502d3381fedbd9c4da4f",
+    "thys/Category_Specifications/Spec/TRS_Innermost_Examples.thy": "913c316739bbaf560a1e4794db8d6c7c09dffa8db288818689066efc2eb721e7",
+    "thys/Category_Specifications/Spec/TRS_Innermost_Spec.thy": "f168f425fe1baf2cafa06f118a6617a25e9c2594a97c9cce4c623ccfb789e01c",
+    "thys/Category_Specifications/Spec/TRS_Spec_Base.thy": "d9070c95c3cd51783366f82e563bb33ef224246c85297efe325f09d623b4855c",
+    "thys/Category_Specifications/Spec/TRS_Standard_Examples.thy": "0c4516df7a0a2b4bbd819e7007830bba3d6a7a7dc56f0d7702f0d306b9c90ba9",
+    "thys/Category_Specifications/Spec/TRS_Standard_Spec.thy": "8e1f35f0a9a148e52003c7155e1ccb34254fe11df1fedfd4c9ac383586466bc6"
+  },
+  "scope": "Semantic correspondence only; no parser, generated code or binary changes"
+}

@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-17",
+  "session": "Category_LP_Cut_NO_Bridge",
+  "exit_code": 0,
+  "log": "lp-cut-ranked-no-20261117.log.gz",
+  "proof_checking": "quick_and_dirty=false",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Ranked_Resolution.thy": "469d138684856a5c234acef6b044129c3b0887c8c346d3b6a0d019560d68a3d8",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Ranked_NO.thy": "4e67ba6300d1b8fe0ca93e3b5770fb63d5b89c75da6db81f96e278d08b47a4a4",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Ranked_NO_Checker.thy": "0f7ca98b967e3c05b5d03225628525d9e9d0b5a0301da8d739900bdd3523d994",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Examples.thy": "11a9c0e0611cb6cfd85c95f5937562e91a39e63bc1818b5eecdef65a1db63905",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "fb29dccae4c616689fe38260ec3297091add1b697e7483ffd6aa1038ec9e02ab"
+  },
+  "audits": {
+    "oracles": [],
+    "admitted_proofs": false
+  },
+  "theorems": [
+    "cut_rank_fresh_resolution",
+    "cut_rank_resolution_step",
+    "cut_rank_backtrack_step",
+    "cut_rank_unify_step",
+    "cut_rank_unify_fail_step",
+    "cut_runtime_domain.ranked_no_step",
+    "cut_runtime_domain.ranked_no_run",
+    "cut_runtime_domain.ranked_no_checked_run",
+    "lp_cut_ranked_finite_no",
+    "lp_cut_ranked_rational_no",
+    "lp_cut_ranked_infinite_no"
+  ],
+  "boundary": "check_lpc_ranked_no_xml combines unchanged native acceptance with ordinary-predicate shape and control-arity validation. It is a formal wrapper, not an updated production executable. The final three corollaries assume only parser result and this guarded acceptance.",
+  "examples": [
+    "overloaded user predicates accepted",
+    "variable ordinary head rejected",
+    "malformed comma rejected",
+    "malformed call witness rejected",
+    "native checked pumping loop with canonical finite/rational nontermination"
+  ],
+  "remaining": [
+    "Runtime/source-correspondence integration of the strict boundary guard",
+    "Ranked cut YES execution correspondence",
+    "Precise-MGU YES correspondence",
+    "Migration and rebuild of remaining cut checker families"
+  ],
+  "unchanged": [
+    "certificate syntax",
+    "native checker representations",
+    "generated checking code",
+    "production binaries"
+  ]
+}

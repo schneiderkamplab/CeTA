@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-17",
+  "session": "LP_Cut_Canonical_Check",
+  "exit_code": 0,
+  "proof_checking": "quick_and_dirty=false",
+  "scope": "Byte-identical installed canonical inverse simulation and its native witness dependencies. Public cut NO checker corollaries and full cut sessions remain incomplete.",
+  "log": "lp-cut-inverse-simulation-20261117.log.gz",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Source.thy": "221a6bb64ab6c47bfbaca43517b7bf55b5c039a2416940e7161a39ab12e53019",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Certificate.thy": "23a3110607264e42221b68004ff07feec2e9edbfc5e644db4a189786d7406999",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Finite.thy": "7698581c1499d4980f2fbf0f88725842f56c2d466cd16940644a64dab171a8f0",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Back_Representation.thy": "792fb39368a7f585eb6c3920eb7ffec20f9682846444c78945cb7e1c53e1e217",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Shape.thy": "0aeb03404825c4a8f57846559a634345e0cf1f21d8df9af7d22345238ad0876b",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Fresh_Representation.thy": "e90f794680c2692e1f26877f64383f194d2ba86501d546b0ef3e99a0b021ae01",
+    "thys/Category_Bridges/LP_Bridge/NO/LP_Cut_Domain_NO_Canonical.thy": "a41105dd87ddd8fd5373b6a2081de42cf0c21e8a47558aaa390b6ab243a9d925"
+  },
+  "audited_theorems": [
+    "cut_runtime_domain.canonical_no_step",
+    "cut_runtime_domain.canonical_no_run",
+    "cut_runtime_domain.canonical_no_checked_run"
+  ],
+  "oracle_dependencies": [],
+  "admitted_proofs": false,
+  "explicit_intermediate_conditions": [
+    "Native ordinary-atom/program shape",
+    "Canonical source validity and initial-query arity correctness",
+    "Closure of the selected domain under arity projection"
+  ],
+  "remaining": [
+    "Ranked cut input boundary and strict control-symbol arity validation",
+    "Public cut NO checker corollaries",
+    "Precise-MGU cut YES correspondence",
+    "Full affected build, examples and conformance checks"
+  ]
+}

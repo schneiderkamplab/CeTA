@@ -1,0 +1,83 @@
+{
+  "recorded_at_utc": "2026-11-10T16:47:21.104093+00:00",
+  "status": "partial cut semantic correspondence; finite-term category review remains unfinished",
+  "supersedes_open_policy_question_in": "its-lp-specifications-20261110.json",
+  "competition_reference": {
+    "url": "https://github.com/TermCOMP/termcomp-reference/blob/48ec8cd06de690bf6d0422bdf548190c9857fa10/lp.tex",
+    "sha256": "a3c4e83b6c439b2b445b8721302ffc822c2c5349f0ddffa138ddf65531dad116",
+    "policy": "finite terms with occurs-check; no user confirmation pending"
+  },
+  "verified": {
+    "sessions": [
+      "Category_LP_Bridge",
+      "Category_Properties"
+    ],
+    "cut_checker_corollary": "lp_cut_table_infinite_yes: exact parse and actual check_lpc_xml acceptance imply lp_cut_infinite_terminates",
+    "auxiliary_proofs": [
+      "finite/rational checked solved-substitution factorization",
+      "finite/rational match, clash and equality coverage",
+      "scope-renaming preservation of canonical cut steps",
+      "empty-cut-program termination in all three domains",
+      "unbound meta-call has no successor"
+    ],
+    "no_admissions": "Thm_Deps.has_skip_proof checks audited bridge theorem dependencies"
+  },
+  "oracle_audit": [
+    {
+      "theory": "Category_LP_Bridge.LP_Checker_Bridge",
+      "message": "LP category oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition"
+    },
+    {
+      "theory": "Category_LP_Bridge.LP_Cut_Checker_Bridge",
+      "message": "LP cut category oracle dependencies: Regexp_Method.check_eqv, Types_To_Sets.cancel_type_definition"
+    },
+    {
+      "theory": "Category_LP_Bridge.LP_Cut_Domain_Guards",
+      "message": "LP cut domain oracle dependencies: "
+    }
+  ],
+  "open_obligations": [
+    "Pure-LP NO to canonical most-general derivations",
+    "Finite/rational cut YES: domain-aware guard knowledge through complete certificate table",
+    "Cut NO: checked steps, traces and suffix pumping to canonical domain-specific infinite executions",
+    "Remaining native cut YES certificate families",
+    "End-to-end LP semantic dispatch and original-input binding"
+  ],
+  "runtime_boundary": {
+    "pure_lp_cli": "Semantics::RationalTrees",
+    "cut_source_record": "ordered-rational-trees-scoped-cut",
+    "competition_finite_correspondence": "not established by these labels"
+  },
+  "source_sha256": {
+    "thys/Category_Bridges/LP_Bridge/LP_Checker_Bridge.thy": "db1403b4ed55d1ce3b2d9670e68adffbd4e50965da60cdba85d1c0929dbb35db",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Checker_Bridge.thy": "133276021c4e437213e088e28f17fd35bbe778452fb64777aa21219c906bfb25",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Domain_Guards.thy": "5fea653c970227762764a04b34eb5587321072c9d1d8bec3080e56ac5e93daa3",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Finite_Unification.thy": "7eafcab2ca3101a72bf2814d755965973cb849aafa57d703fbf746ced10795ad",
+    "thys/Category_Bridges/LP_Bridge/LP_Cut_Representation.thy": "a15121ec3838a182a277a44dc74fb78fce248a836e9da17f150a101b9941dad9",
+    "thys/Category_Bridges/LP_Bridge/LP_Representation.thy": "616f9c5f1874a39002e9514519509d97f09e55b03bf7cba91048ac49ff3d8182",
+    "thys/Category_Properties/LP_Cut_Examples.thy": "479d68fc212991514d1873fc381235f7eb2f3b16ebae92f1e94c642209c80460",
+    "thys/Category_Properties/LP_Cut_Execution_Properties.thy": "6fc0f9e2889d0652b49d2b3f1eadb5d2bfdfdcc552ec9f3ab7ec73b88e86fecb",
+    "thys/Category_Properties/LP_Properties.thy": "8247ce8346e2671454df3ea105c35342477ab06bca5d1768a7c4605b6da7460c",
+    "thys/Category_Specifications/LP_Cut_Finite_Spec.thy": "0695aa84c160d45a4a99c5a73cb140430cad87e19f5ccc4f2d47afcb5ead0ff0",
+    "thys/Category_Specifications/LP_Cut_Infinite_Spec.thy": "b407f664600616ee92602073d1921e38e9ec5ff8c53998531fad184b6025d033",
+    "thys/Category_Specifications/LP_Cut_Rational_Spec.thy": "6f702a8d7a0e702b8f65fb01ba4b07c48a700793156e06f19d09d8d7ffddf71e",
+    "thys/Category_Specifications/LP_Cut_Spec_Base.thy": "2b9d5e264701ba4b16ff2f6d2a1540b082304664f54a84385a7e7dc00a63441a",
+    "thys/Category_Specifications/LP_Finite_Spec.thy": "a26aaf9c5e7ab0b384a96e3eda07b8d50c6c20320f80ec5e2c3a80e57cad25d1",
+    "thys/Category_Specifications/LP_Infinite_Spec.thy": "bcc005b453adefca5b2b5da733db5029bbd50264c03bea4b0467e30b013d347a",
+    "thys/Category_Specifications/LP_Rational_Spec.thy": "b0885dd0462e0cfa877cba238b9e506e1159977cc831e6745e912730234315e4",
+    "thys/Category_Specifications/LP_Spec_Base.thy": "2b993217870dca270e440e3a7bc4c130b0d3a0e02e77997790f4e72a22946b90",
+    "thys/Category_Specifications/LP_Terms_Spec.thy": "fd4bb69d46b28d89814705a2e254efb26049b65433129f1c72ab17aa964d3bf1",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "82e95f4d300350cdbbb95c45b047809c72331d8aa6d08a0fbe56afd06fe51d3e",
+    "thys/Category_Properties/ROOT": "39d35239b12f6b8c848b8739ae00271a61f11443fc7a7128c699066a7b7335cd"
+  },
+  "logs_sha256": {
+    "target/its-lp-specifications/cut-bridge-17.log": "76d0584265d6e2cd879ed09f52d7f002738f5535bcf5d1d6b279212838581a6c",
+    "target/its-lp-specifications/cut-properties-7.log": "a26a4f52eda5793d37831f1fb98fce2641960df985a8b95aad1c9a8f966f1c49",
+    "target/its-lp-specifications/cut-package.log": "f20ae02b26e8a50a072bfe2fbcc2226357b7cadcd9fef5e5437e5905bed6a18d",
+    "target/its-lp-specifications/cut-docs-ceta.log": "3aa881762e5f28c58ef61116ad40a278004933482716484b45b2d2a8c64cb331",
+    "target/its-lp-specifications/cut-docs-ferrum.log": "b022952cac3b90c88776afe94daecf83b39dcfb5416ee70f0574aafa104bad87"
+  },
+  "ceta_binary_sha256": "6422b02d3edef16005b4826b7568d7979ef2ad1311905e07a0428450988a802e",
+  "production_artifacts_changed": false,
+  "working_tree_changes_uncommitted": true
+}

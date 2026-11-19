@@ -1,0 +1,32 @@
+session Category_Specifications = HOL +
+  options [document = false, quick_and_dirty = false]
+  theories
+    Rewriting_Sequences_Spec
+    First_Order_Terms_Spec
+    TRS_Spec_Base
+    TRS_Standard_Spec
+    TRS_Innermost_Spec
+    TRS_Relative_Spec
+    TRS_Context_Sensitive_Spec
+    TRS_Outermost_Spec
+    TRS_Conditional_Spec_Base
+    TRS_Conditional_Ordinary_Spec
+    TRS_Conditional_Operational_Spec
+    TRS_Equational_Spec
+    SRS_Spec_Base
+    SRS_Standard_Spec
+    SRS_Relative_Spec
+    SRS_Cycle_Spec
+    Higher_Order_Spec_Base
+    Higher_Order_Spec
+    Higher_Order_Sorts_Spec
+    ITS_Spec
+    LP_Terms_Spec
+    LP_Spec_Base
+    LP_Finite_Spec
+    LP_Rational_Spec
+    LP_Cut_Spec_Base
+    LP_Cut_Finite_Spec
+    LP_Cut_Rational_Spec
+    LP_Infinite_Spec
+    LP_Cut_Infinite_Spec

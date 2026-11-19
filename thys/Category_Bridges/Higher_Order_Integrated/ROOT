@@ -1,0 +1,4 @@
+session Category_Higher_Order_Integrated = Higher_Order_Filtered +
+  options [document = false, timeout = 180]
+  sessions Category_Higher_Order_Bridge Higher_Order_Call_Expansion Higher_Order_Prefix
+  theories Higher_Order_Checker_Bridge

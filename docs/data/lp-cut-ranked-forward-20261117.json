@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-17",
+  "session": "Category_LP_Cut_Ranked_Bridge",
+  "exit_code": 0,
+  "log": "lp-cut-ranked-forward-20261117.log.gz",
+  "proof_checking": "quick_and_dirty=false",
+  "sources": {
+    "thys/Category_Bridges/LP_Bridge/Ranked/LP_Cut_Ranked_Erasure.thy": "6933531cdb51d9be0a03536ebec56eaa549ca3bb486907196bc5b9ad8e8857de",
+    "thys/Category_Bridges/LP_Bridge/Ranked/LP_Cut_Ranked_Forward_Unification.thy": "2c95e689ef851f93e2f24d446256ec6e816d4a5f1eb5750d24e6562a43c31662",
+    "thys/Category_Bridges/LP_Bridge/Ranked/LP_Cut_Ranked_Forward.thy": "c7640d1905d0b9ba3961bcb6a292c67859b42d39b72d8d5eb38c9ff23cee072f",
+    "thys/Category_Bridges/LP_Bridge/Ranked/LP_Cut_Ranked_Table_Checker.thy": "2ee44ee65be40af4ba4ac47a0a7102411290fd74caeb7781334ff7aa671d6692",
+    "thys/Category_Bridges/LP_Bridge/ROOT": "0e61016df5d18fdab702c73ec533f633b47abaa5fcc1fc5c04efbf066bcd8765"
+  },
+  "semantic_audit": {
+    "oracles": [],
+    "admitted_proofs": false
+  },
+  "checker_audit": {
+    "allowed_inherited_oracles": [
+      "Regexp_Method.check_eqv",
+      "Types_To_Sets.cancel_type_definition"
+    ],
+    "admitted_proofs": false
+  },
+  "theorems": [
+    "cut_runtime_domain.ranked_forward_step",
+    "cut_runtime_domain.ranked_termination",
+    "lp_cut_ranked_table_finite_yes",
+    "lp_cut_ranked_table_rational_yes",
+    "lp_cut_ranked_table_infinite_yes"
+  ],
+  "boundary": "Final table corollaries require parser result and guarded acceptance only. Native checker, certificate format and production binaries unchanged. Handwritten runtime correspondence remains a trust surface.",
+  "remaining": [
+    "constructor and remaining YES families",
+    "precise-MGU YES correspondence",
+    "full downstream rebuild and audit"
+  ]
+}
