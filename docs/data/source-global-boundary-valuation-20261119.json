@@ -1,0 +1,31 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Fresh output/scalar structural valuation preserves all other coordinates and displayed source runtime representation",
+    "Global boundary strict edge for initialized valuation"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "retained_boundary_cases": 4,
+    "negative_controls": 12,
+    "native_encoding_verified": false,
+    "incoming_path_compatibility_proved": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Concrete native encoding",
+    "Compatibility with already established incoming structural coordinates; no arbitrary resets",
+    "Full global family representation preservation and source initialization",
+    "Remaining paths, actual Split returns and justified recursion"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Boundary_Valuation_Check.thy": "d4ccc89e3e6e87cb083625e1eba20c5c70e7bc31c15365ee205158a4671896b5",
+    "tests/source-contract-parameters/Global_Boundary_Observation_Check.thy": "b9caf7bdc9e432b673f0c1ed9f00274cffd3db23ffedb0518c3b38534d321397",
+    "tests/source-contract-parameters/audit_global_boundary_projection.py": "d0599cc8d83ce18a45a02815b029244f75f6cddbf71342e913a2ec4af031367c",
+    "target/source-global-boundary-valuation/kernel-receipt.txt": "ab1cfe90c23e50c70bd89907656512a5f956ee910fc7e216507480a1ac26e098",
+    "target/source-global-boundary-valuation/audit.json": "0b729c8e9534c5cca3c0df593c17219f9b54ea86fa14d7952140bc274b8e6e00"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "ground-instance variable images are parameter subterms",
+    "actual copy-head bounded images on arbitrary finite output support",
+    "shared caller leaf transport under output-support coverage"
+  ],
+  "remaining": [
+    "MGU minimality for caller variables outside output support",
+    "full copy-node integration and saved alternatives",
+    "spine preservation and complete source coverage",
+    "family initialization/preservation",
+    "helper returns and recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "positive_kernel_controls": 1,
+    "negative_kernel_controls": 1,
+    "retained_source_controls": 8,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Ground_Output_Images.thy",
+      "sha256": "a1244913a34cf2feabb878cb84178e1e4b0a46ed0737986d13ff7955ec42078a"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Parameter_Subterms.thy",
+      "sha256": "4d38670a3a53a24656cc1013dca4336fab187b3d16b8a87f2b8c476c24c0bb27"
+    },
+    {
+      "path": "tests/source-contract-parameters/Ground_Output_Images_Check.thy",
+      "sha256": "21b48940d7ae4c8235543835661ca807da2e7c8d878f741c1e4fa84e50f614fe"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Partial_Caller_Obstruction.pl",
+      "sha256": "74655a3eede3eff6fdc59528101326b9b2a8e83b753ff38e3dbf5229b74ae6de"
+    },
+    {
+      "path": "target/source-ground-output-images/kernel-receipt.txt",
+      "sha256": "52c03e364dede6dcb38348227e30a2fe509faa346c921666a8cfd9a7e4f7be90"
+    },
+    {
+      "path": "target/source-ground-output-images/source-controls.log",
+      "sha256": "c5fc552f2f940d3123e4498886e6af9e00f4da213e907bd6a9f158beca31c74f"
+    }
+  ]
+}

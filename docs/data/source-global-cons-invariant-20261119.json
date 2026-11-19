@@ -1,0 +1,43 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual cons-step joint invariant preservation, not full residual/node assembly",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Actual attached cons step yields silent joint child with exact caller projection",
+    "Caller leaf effects, finite execution and output alias preserved together",
+    "Call/caller finiteness and allowed-template groundness derived from invariant and tracking"
+  ],
+  "required_conditions": [
+    "Incoming joint invariant",
+    "Actual cons head with distinct variables",
+    "Proper finite spine and tracked parameter",
+    "Covered caller slots",
+    "Actual attached domain-answer transition"
+  ],
+  "source_rows": [
+    "0:23",
+    "35:3"
+  ],
+  "coordinate_positive_controls": 22,
+  "coordinate_negative_controls": 42,
+  "source_controls_passed": 9,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; cons preservation now covers full joint invariant",
+    "remaining_paths_boundaries": "incomplete; cons residual observations and full node/family assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Cons_Invariant_Check.thy": "4cfa7d5c9f6055fe23f32daa6dd967bd0f80838254b9bf41411fd99cd46a9472",
+    "tests/source-contract-parameters/Check_Cons_Node.ML": "c72cbe271e5d209614acd3026091eda8c4c800fd6f6a0dfa9dc2d4f3fa699388",
+    "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613",
+    "target/source-global-cons-invariant/kernel-receipt.txt": "d66a01d7b795cb76de8930747066720ae7d3990947864b545821e811d6ec2e18",
+    "target/source-global-cons-invariant/original-controls.log": "f94816b51beaf14d721850343ec52633a5811d4c670a305c130bcc336e81ab0b",
+    "target/source-global-cons-invariant/renamed-controls.log": "f94816b51beaf14d721850343ec52633a5811d4c670a305c130bcc336e81ab0b",
+    "target/source-global-cons-invariant/source-controls.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896",
+    "target/source-cons-node/Cons_Node_Check.ML": "4223c4e49441e23882cdc81af35e04462a53bbdb1ef28d03a0f516fa5bd82d1e"
+  }
+}

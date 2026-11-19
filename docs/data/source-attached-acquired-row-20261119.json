@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "theorem": "lpp_checked_attached_acquired_row",
+  "discharged": [
+    "same actual attached MGU instantiated in full checked resolution row and target valuation"
+  ],
+  "remaining": [
+    "incoming helper interface and knowledge/context initialization",
+    "normalization/product assembly",
+    "parameter invariant integration",
+    "remaining paths and boundaries",
+    "both actual helper-return contracts",
+    "justified recursive family assembly"
+  ],
+  "verification": {
+    "kernel": "Isabelle; no skipped proofs or oracles",
+    "kernel_controls": {
+      "positive": 1,
+      "negative": 1
+    },
+    "retained_sharing_controls": 6,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Joint_Row.thy",
+      "sha256": "50044895c9efe4a60619502cbdeb368a170b4911d7f51a1574ae8177a03d9715"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Joint_MGU.thy",
+      "sha256": "d46afa5781673ff453cff236e499965c3a98eb1778a5da570ea9391d58e3c8d6"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Resolution_Link.thy",
+      "sha256": "f955206865789c008c8c1810126ec2623c3e6a601c0fe346ec3dbafbc52a34dc"
+    },
+    {
+      "path": "tests/source-contract-parameters/Attached_Acquired_Row_Check.thy",
+      "sha256": "c888876bdb0cdfa3764a96e72ecd531248837d2a68a6a44e1d8f6cf197ce4c83"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Normalized_Univ_Product.pl",
+      "sha256": "63a7a167d9fd4192a54b8196960c0dc7b05215e112f34d378d4bafdb998dc077"
+    },
+    {
+      "path": "target/source-attached-acquired-row/kernel-receipt.txt",
+      "sha256": "9b015db1feb36033a389b2a0f03340c8d2dcad75edb29e095de82e9f067eb335"
+    },
+    {
+      "path": "target/source-attached-acquired-row/sharing-controls.log",
+      "sha256": "1ba3e8f6917116e9c07646b7fca1a719dd1ea8a8911ec76db407834a4c9455fa"
+    },
+    {
+      "path": "docs/data/source-acquired-joint-mgu-20261119.json",
+      "sha256": "ff81eb8a5231640a1dbd4c8e5f178e9561099976030b8dc32c8401e141e62380"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "source-conditioned-matching-review-v1",
+  "date": "2026-11-18",
+  "source_certified": false,
+  "milestone_1": "OPEN",
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Conditioned_Resolution.thy",
+      "sha256": "8567688f201379594e760437605d1d2064d60a50eabb4cb2c8dedd26ee7ea5cb"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Restricted_Matching_Leaf.thy",
+      "sha256": "d5d0aab6d8d9dfe2d78e90087aeb178f4485aeb769cc56a011074cda27a08424"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Conditioned_Matching.thy",
+      "sha256": "f1fa3797ea903ad753557343a17bfdca048ea6d6be1b76247cfcdb98e3d8de6c"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Matching_Node.thy",
+      "sha256": "04943e068a9195b9103e3b3d6dfa588b824e4d9ba3459beb674cefb9646a2b4b"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Matching_Export.thy",
+      "sha256": "d764d8356de35a556f959580c178ad71504819c94e3335f08bcafd4163eda582"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Matching.ML",
+      "sha256": "ae18edfad899ed9dc35539492f3956ce50efa05c20b37f291026708a31620589"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-matching/kernel-receipt.txt",
+      "sha256": "cc39604660b4c7bfb3b6465b4aee1d6a3acdba06128b884acd8ff82cd9cd255a"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-matching/Matching_Check.ML",
+      "sha256": "c064a3468aa690e99667a18ef5044a614ff318ea4cf3c8ed0456da79213ebd0f"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-head-successors-20261118.json",
+    "sha256": "6f56f5d6f412de3a86eca051f572ca806224f8c50137669254b58649a7b2ad3c"
+  },
+  "variants": {
+    "original": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-matching/original.log",
+        "sha256": "af4ccd95fc67fc295f7577a9be011d7d7c8a1b103b544c9b33c2b12508dbef75"
+      },
+      "positive_checks": 17,
+      "rejection_controls": 25,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-47.xml",
+          "sha256": "6d5f5379383825a2e177b9bd8b685f0ab31f7efb0246682cd9dc9823c00d82e8"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-47.xml",
+          "sha256": "686e9339b24e83398ec33a2ae2a2757075228164d1242d58ad3c6b07bcb93057"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-47.xml",
+          "sha256": "26e5f1e63ecc75799d29f27af856211ed89e75258398e07f0272e275383676e1"
+        }
+      ]
+    },
+    "renamed": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-matching/renamed.log",
+        "sha256": "af4ccd95fc67fc295f7577a9be011d7d7c8a1b103b544c9b33c2b12508dbef75"
+      },
+      "positive_checks": 17,
+      "rejection_controls": 25,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-47.xml",
+          "sha256": "7a203400a52538d002429017d215ae5d85d7d9eca143e82c6230fca36134a60b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-47.xml",
+          "sha256": "67f6809a82d4e7e640ecbfc3f2825baee3e9f741531b87c3173f879ae0e050ac"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-47.xml",
+          "sha256": "c926bc84c9b6b30f78df1e6ef0b0d4d3dfb27a6aedccca97d1bbbc9fcb466e31"
+        }
+      ]
+    }
+  },
+  "discharged_interface_obligation": "Matching resolution now has a full conditional observer node contract carrying arbitrary successor conditions and a restricted ground replacement set; the lower contract uses the same conditions and strict residual descent.",
+  "checked_operational_obligations": [
+    "Conditioned resolution transports supplied conditions in the same actual valuation as context, free knowledge and functor facts.",
+    "Matching-head resolution preserves restricted caller leaf effects under explicit attached-slot coverage and ground-template conditions.",
+    "The attached observer contract preserves finite execution and accounts for saved alternatives.",
+    "The full node theorem handles scope restoration and retains the strict-descent lower answer-contract premise."
+  ],
+  "actual_rows": [
+    "0:2",
+    "0:3",
+    "47:2",
+    "47:3"
+  ],
+  "scope_limits": [
+    "Complete success and failure initialization remain explicit premises; prior parameter/free-output facts do not prove all family conditions.",
+    "Fixtures validate structural premises, not complete runtime invariants or unconditional acceptance of these four source nodes.",
+    "Caller-slot positive and negative controls are synthetic executable examples, not production witnesses.",
+    "Repeated-parameter and recursive cons heads require their own restricted observer-node contracts.",
+    "Reuses previously pinned extraction tables; no new native extraction or production source run."
+  ],
+  "next_obligations": [
+    "Assemble repeated-parameter copy-head node contract with proper-spine and free-output premises.",
+    "Assemble recursive cons-head node contract preserving finite inputs, caller coverage and sharing.",
+    "Prove full source-family successor conditions, acquired blocks and module links.",
+    "Authenticate return rows 19:1 and 28:1, resumed continuations and both Splits through strict-descent family induction."
+  ],
+  "development_corrections": [
+    "Initial matching witness used the instance-substitution operator; corrected to the matching-substitution operator before kernel acceptance.",
+    "Initial attached-slot unfolding encountered the code-generation representation; used the existing checked slot-coverage soundness theorem."
+  ],
+  "native_code_changed": false,
+  "baseline_campaigns_run": false
+}

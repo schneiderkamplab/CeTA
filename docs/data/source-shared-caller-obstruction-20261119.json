@@ -1,0 +1,86 @@
+{
+  "schema": "source-shared-caller-obstruction-v1",
+  "date": "2026-11-19",
+  "milestone_1": "OPEN: concrete continuation invariant obstruction",
+  "source_certified": false,
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Shared_Caller_Obstruction.thy",
+      "sha256": "86ea8fc7293f48c378fedb3dcf55f39c4ecb97b042b195e639acbb6113d69ef3"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Shared_Caller.pl",
+      "sha256": "f41e3e4c3e8f9a48f6868848d68467f8eb0de0aee7a25c0824cfcea347873165"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-shared-caller-obstruction/kernel-receipt.txt",
+      "sha256": "a9f1b9cf1b3c53506ee8fdf356205e5d4404fb332b5d160de566977e7311e947"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-shared-caller-obstruction/prolog.log",
+      "sha256": "d14485fb3034f146f5605857aad16ae3b33594ab0b2eed8d89b035636c87351c"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-shared-caller-obstruction/swipl-version.txt",
+      "sha256": "3ea77e6bd4bc68319e3c43e0dd9895970f2604e191ad7e689d8188b4d8b0997e"
+    },
+    {
+      "path": "/work/dfm/festschrift/TPDB-ARI/Prolog/prolog_mixed/numbervars.pl",
+      "sha256": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7"
+    },
+    {
+      "path": "/usr/lib/swi-prolog/bin/x86_64-linux/swipl",
+      "sha256": "be0c4b8a98f6eed857ddd69543f03c02170b7a63e0cc43cf8cbb5463fcefca61"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-recursive-entry-link-20261119.json",
+    "sha256": "dcbbe944df682205fc70828ce6e42fb2aabce9fc5b2b36b0518bc749cfdd5573"
+  },
+  "checks": {
+    "prolog_assertions": 11,
+    "kernel_theorems": 4
+  },
+  "exact_obstruction": {
+    "incoming": "numberargs([X],0,X)",
+    "actual_prefix": "numvars(X,0,N1)",
+    "prefix_result": "X=var/0, N1=1",
+    "resumed_continuation": "numberargs([],1,var/0)",
+    "continuation_result": "finite failure",
+    "permitted_original_query": "numvars(f(X),0,X)",
+    "failed_premise": "Caller-output freeness at the resumed continuation cannot be inferred from recursive entry plus restricted ground replacements."
+  },
+  "kernel_evidence": [
+    "The shared-input/caller valuation satisfies the existing recursive-entry predicate.",
+    "The caller-binding template belongs to the restricted parameter replacement set.",
+    "The caller coordinate is free before substitution and not free afterward.",
+    "The returned helper parameter remains copied-or-scalar, the tail has length zero and the caller value is finite."
+  ],
+  "scope_limits": [
+    "Kernel example is a structural substitution counterexample with abstract scalar symbols, not a formal execution of the original source.",
+    "SWI-Prolog independently executes the actual original helper clause and continuation; it is a regression fixture, not a source certificate.",
+    "The result does not refute copied-or-scalar helper returns, termination, or previously checked conditional lemmas.",
+    "No unconditional preservation theorem was previously established; this blocks using the free-output entry rule to close all resumed paths."
+  ],
+  "revised_next_gate": [
+    "Develop continuation contracts covering a caller output that becomes ground through sharing, and check both successful and failing head resolution.",
+    "Prove the proposed caller-output mode invariant through actual helper steps and saved alternatives; do not assume it from groundness alone.",
+    "Keep arbitrary finite possibly nonground original query outputs as a separate initialization obligation; free-or-ground is not a sufficient root assumption.",
+    "Revisit Split-boundary assembly only after these continuation cases have checked contracts."
+  ],
+  "estimate_review": "The concrete-obstruction review point has been reached. Confidence in the previous M1 schedule remains low; no new completion estimate is justified until the continuation-mode repair passes its feasibility gate. Major integration remains deferred."
+}

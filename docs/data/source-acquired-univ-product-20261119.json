@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "theorem": "lpp_acquired_normalized_univ_product",
+  "discharged": [
+    "joint caller normalized-entry invariant from acquisition",
+    "fresh distinct outputs and caller protection from acquisition"
+  ],
+  "verification": {
+    "kernel": "Isabelle; no skipped proofs or oracles",
+    "new_projection_controls": 2,
+    "existing_negative_saved_finiteness_guard": true,
+    "executable_source_controls": 8,
+    "production_replay": false
+  },
+  "remaining": [
+    "initial helper representation from acquired normalization witness",
+    "exact helper payload and saved correspondence",
+    "coverage assembly",
+    "parameter/caller-mode integration",
+    "module boundaries",
+    "both actual helper returns",
+    "justified recursive family assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Product.thy",
+      "sha256": "52c6fcfa46de044e76c6e1696a1ad6ae3c0ebdc571ab65d407db26f9ec2bb184"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Normalized_Univ_Product.thy",
+      "sha256": "cf76b85d0085a8cf32860a3635f4b07cfa4c805d865deab8488fc3dc329e135c"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Caller.thy",
+      "sha256": "1e07c948375661a78f6996f2af8cd1a796f92418eb9d3d83130ad2b3c96587ca"
+    },
+    {
+      "path": "tests/source-contract-parameters/Acquired_Univ_Product_Check.thy",
+      "sha256": "4d7d926cc50be19d7e9db5f8ccdb0d7465b8460941e35c4d8a6c04a7378ed6e5"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Acquired_Univ_Product.pl",
+      "sha256": "67ad27c9a13dc0d1730546a68be20e2ce107ce3b19d25c354c3b8d2abaebefc5"
+    },
+    {
+      "path": "target/source-acquired-univ-product/kernel-receipt.txt",
+      "sha256": "7b181623432d4b9ca2b37b5fd92081f660dd029954ee0b6826df2df397c4e505"
+    },
+    {
+      "path": "target/source-acquired-univ-product/source-controls.log",
+      "sha256": "e03fe246eff2c2ca860dfb1820196bc61f9abb24a33953aa5e92a53e9cf296c6"
+    },
+    {
+      "path": "docs/data/source-normalized-univ-product-20261119.json",
+      "sha256": "aeb3fabb7c42e6ab57e3b6dfef340bc9064bc0110d65dc292fd1f7efa03510de"
+    },
+    {
+      "path": "docs/data/source-acquired-univ-witness-20261119.json",
+      "sha256": "2a9a68670bb3165369470dffcb38e84eb4867727bb52224c98180eaaba72d07c"
+    },
+    {
+      "path": "../TPDB-ARI/Prolog/prolog_mixed/numbervars.pl",
+      "sha256": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7"
+    }
+  ]
+}

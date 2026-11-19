@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "theorem": "lpp_acquired_univ_resolution_link",
+  "discharged": [
+    "resolution equations and old-parent agreement",
+    "success/negative guard knowledge",
+    "body/saved free alternatives",
+    "forked stable and functor context facts",
+    "source state and target correspondence for supplied MGU"
+  ],
+  "verification": {
+    "kernel": "Isabelle; no skipped proofs or oracles",
+    "namespace_controls": 4,
+    "retained_controls_per_variant": {
+      "positive": 2,
+      "negative": 8
+    },
+    "production_replay": false
+  },
+  "remaining": [
+    "static components from full acquired row",
+    "actual-step and joint block instantiation",
+    "helper/caller MGU projection agreement",
+    "global coverage",
+    "parameter/caller-mode integration",
+    "boundaries and both actual helper returns",
+    "justified recursion"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Resolution_Link.thy",
+      "sha256": "f955206865789c008c8c1810126ec2623c3e6a601c0fe346ec3dbafbc52a34dc"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Link.thy",
+      "sha256": "48121f5e41a9d9b46f559f24424b5242c35dd7f7496e32d4b71070b3d6b06901"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Stable_Refresh.thy",
+      "sha256": "5c1e91d2ebb10023c9761fc39af9f089bf9714cb67dbabd2a6cc047ddb05af9e"
+    },
+    {
+      "path": "tests/source-contract-parameters/Acquired_Resolution_Link_Check.thy",
+      "sha256": "b51662922ca44bee7a9f0294da81ac02327384feb55b526df4c2c09120c8a65b"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Acquired_Univ_Link.ML",
+      "sha256": "9786678d2ac3aee01f815d46fdca8c06721cfe0c46ccd443d831791c97ecadd4"
+    },
+    {
+      "path": "target/source-acquired-resolution-link/kernel-receipt.txt",
+      "sha256": "09f03f6f691ad19e279e081fa61e51668919dca5ff40973cbd9bd2cae0bad3bf"
+    },
+    {
+      "path": "target/source-acquired-resolution-link/original.log",
+      "sha256": "f115c1abc3d6f8fade49d100c7de60c09835d165c2ae6e9f67367dba9101d9dd"
+    },
+    {
+      "path": "target/source-acquired-resolution-link/renamed.log",
+      "sha256": "f115c1abc3d6f8fade49d100c7de60c09835d165c2ae6e9f67367dba9101d9dd"
+    },
+    {
+      "path": "target/source-acquired-univ-caller/Acquired_Univ_Caller_Check.ML",
+      "sha256": "be1549c513d58734e3e986ea0d2f5d879b180d8c0253907bd98a3c0382229bcd"
+    },
+    {
+      "path": "docs/data/source-acquired-univ-resolution-20261119.json",
+      "sha256": "76d8a929bb7d051acaebf9128b31aa1e28848744761708f0fecda97291cdaa63"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+      "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+      "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+      "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/states-47.xml",
+      "sha256": "6d5f5379383825a2e177b9bd8b685f0ab31f7efb0246682cd9dc9823c00d82e8"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/actions-47.xml",
+      "sha256": "686e9339b24e83398ec33a2ae2a2757075228164d1242d58ad3c6b07bcb93057"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/subject-47.xml",
+      "sha256": "26e5f1e63ecc75799d29f27af856211ed89e75258398e07f0272e275383676e1"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+      "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+      "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+      "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/states-47.xml",
+      "sha256": "7a203400a52538d002429017d215ae5d85d7d9eca143e82c6230fca36134a60b"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/actions-47.xml",
+      "sha256": "67f6809a82d4e7e640ecbfc3f2825baee3e9f741531b87c3173f879ae0e050ac"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/subject-47.xml",
+      "sha256": "c926bc84c9b6b30f78df1e6ef0b0d4d3dfb27a6aedccca97d1bbbc9fcb466e31"
+    }
+  ]
+}

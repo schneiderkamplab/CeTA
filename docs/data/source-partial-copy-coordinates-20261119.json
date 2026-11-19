@@ -1,0 +1,63 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "actual copy-MGU successor parameter/output equality",
+    "tracked parameter preserved at both checked coordinates",
+    "derived successor facts integrated into arbitrary-output node contract"
+  ],
+  "remaining": [
+    "other successor conditions and failure initialization",
+    "remaining node invariants and spine preservation",
+    "query initialization and whole-family coverage",
+    "helper returns and recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "coordinate_controls_per_variant": 24,
+    "source_controls": 7,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Copy_Successor.thy",
+      "sha256": "8780f1cd9f3d875e85f427c5b8af6aa3ac732e7433de879c50badba5b499bc3a"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Copy_Coordinates_Node.thy",
+      "sha256": "47e5bd610298fe24be855fdb15c97c01c4eb06c0f409bc624fa2defc126adcfa"
+    },
+    {
+      "path": "tests/source-contract-parameters/Partial_Copy_Coordinates_Check.thy",
+      "sha256": "01d800ed440cee1784febd132e80f123631ec19b9e7018595610a303018a3fae"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Caller_Copy_Node.ML",
+      "sha256": "336adf497103ca15d30d492f2c67ba376139a36dbf2e3ec6dd95d0113229c316"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Attached_Partial_Copy.pl",
+      "sha256": "2c750f60288ab75953f9c95e41d3c4dbc5c5ebe21997afc4595202944dd22f6a"
+    },
+    {
+      "path": "target/source-caller-copy-node/Caller_Copy_Node_Check.ML",
+      "sha256": "1172e019569a592bc7becb31b699b533f0eae6a197b808bfa133193d9e6d3582"
+    },
+    {
+      "path": "target/source-partial-copy-coordinates/kernel-receipt.txt",
+      "sha256": "4646b0daed574cadef8d07f235ebaafded65223bc069ac30b243b1af20fe2577"
+    },
+    {
+      "path": "target/source-partial-copy-coordinates/original.log",
+      "sha256": "a5141d44f33857cf424c73670580b79b7cd68a916e9befb7613a9821b0f1e361"
+    },
+    {
+      "path": "target/source-partial-copy-coordinates/renamed.log",
+      "sha256": "a5141d44f33857cf424c73670580b79b7cd68a916e9befb7613a9821b0f1e361"
+    },
+    {
+      "path": "target/source-partial-copy-coordinates/source-controls.log",
+      "sha256": "cb1d932d8410891f19ed7758e3b4e834c6505289048c9436eebab71179a6550c"
+    }
+  ]
+}

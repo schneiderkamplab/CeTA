@@ -1,0 +1,193 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual six-to-ten cons successful residual simulation with all five successor observations",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Exact six-to-ten residual clause instantiated with actual successor values",
+    "All five successor observations and parameter tracking retained with strict residual descent"
+  ],
+  "required_conditions": [
+    "Actual successful linear cons MGU, proper spine and finite call",
+    "Tracked parameter and authenticated incoming observations",
+    "Checked successor coordinate maps",
+    "Exact retained residual clause membership and 13 distinct variables"
+  ],
+  "residual_audit": {
+    "scope": "Full six-to-ten residual clause and empty-prefix triple; source node contract remains open",
+    "records": [
+      {
+        "variant": "original",
+        "clause": 42,
+        "distinct_formals": 13,
+        "rejected": [
+          "head_collision",
+          "body_data_collision",
+          "wrong_parameter_shadow",
+          "stale_fresh_shadow",
+          "missing_call",
+          "missing_triple"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+      },
+      {
+        "variant": "renamed",
+        "clause": 74,
+        "distinct_formals": 13,
+        "rejected": [
+          "head_collision",
+          "body_data_collision",
+          "wrong_parameter_shadow",
+          "stale_fresh_shadow",
+          "missing_call",
+          "missing_triple"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa"
+      }
+    ]
+  },
+  "coordinate_audit": {
+    "scope": "Five cons successor coordinate maps only; full row and residual assembly remain open",
+    "records": [
+      {
+        "variant": "original",
+        "region": "0",
+        "row": 23,
+        "target": 27,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        }
+      },
+      {
+        "variant": "original",
+        "region": "35",
+        "row": 3,
+        "target": 7,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "0",
+        "row": 23,
+        "target": 27,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "35",
+        "row": 3,
+        "target": 7,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; simple cons success simulation assembled",
+    "remaining_paths_boundaries": "incomplete; failure, source context/payload, larger successor and full node/family assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Cons_Residual_Check.thy": "bc8e3095c1476092f7ea3dfbb3801da9af2d3aa61243a9f9dba70f1fc17276a6",
+    "tests/source-contract-parameters/audit_cons_six_to_ten.py": "575fee6cd1b793afbb13c17b46925c0467b35372c725a3fd2b4aa13718d401a0",
+    "tests/source-contract-parameters/audit_cons_observation_split.py": "2ec7dbf88a707c96fe0d365b8ffe9f7a7b71abc46a9b93172aa1e05f6d0cd33d",
+    "tests/source-contract-parameters/audit_cons_five_coordinates.py": "5a3aee57d9f100085d03adfd52291722da5f299b6740be81ecc8d3ba65860802",
+    "target/source-global-cons-residual/kernel-receipt.txt": "48be10df9a7c9ab84b1c7c91ede5e8cfaebd2b2f389dfb6d369d78a5ae1d4de3",
+    "target/source-global-cons-residual/audit.json": "c0bf683c8c252057e80163622cdb5cddb91c443600aed05dc07d6bb836c9fd6c",
+    "target/source-global-cons-residual/coordinate-audit.json": "07434947fcc244775bad1b3984b04fac2ffae59d7e494a07c924d0688679953e"
+  }
+}

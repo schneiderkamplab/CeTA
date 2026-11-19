@@ -1,0 +1,30 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Strict global boundary projection [0,1,3,4] from six coordinates to four",
+    "Combined observer invariant and caller execution preserved alongside global projection"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "exact_boundary_cases": 4,
+    "negative_projection_controls": 8,
+    "immutable_certificate_hashes_verified": true,
+    "fresh_certification": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Relate structural valuation to restricted leaf observations",
+    "Global doubled-arity family representation and preservation across all rows",
+    "Initialization, extra helper clauses and ordered prefixes",
+    "Both Split contracts and justified recursion"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Boundary_Projection_Check.thy": "2aebca2492acc62b5026f478edfb413d259edcc4cd1c2abbc72f8a7af09ab8e0",
+    "tests/source-contract-parameters/audit_global_boundary_projection.py": "174cc4efddd2e520b695341052070c36431ab25832cc8e3e9c9d126096020683",
+    "target/source-global-boundary-projection/kernel-receipt.txt": "84fef4df3dd4c816deb1c4f8253c9d7a3839052dd392fcd734d4530fcee2d73c",
+    "target/source-global-boundary-projection/audit.json": "fd77bde2bb00f5b94836708da0b4a95c8e151531f228d55d41ca7fd5c8d6767b"
+  }
+}

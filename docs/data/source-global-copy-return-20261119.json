@@ -1,0 +1,74 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Six-to-two singleton copy and cut-to-caller contract; caller contract remains explicit",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Singleton cut yields actual caller environment and pending goals",
+    "Copied tracked parameter transferred through helper/caller alias",
+    "Caller leaf effects, output observation and finite execution supplied by joint invariant and actual copy",
+    "Six-to-two copy contract no longer assumes a successful cut-state answer contract"
+  ],
+  "required_conditions": [
+    "All copy-choice entry, MGU shape and residual clause conditions retained",
+    "Helper output coordinate equals call output",
+    "Explicit tracked parameter, not groundness alone",
+    "Caller continuation answer contract remains required"
+  ],
+  "artifact_audit": {
+    "scope": "Singleton state and clause audit; continuation contract remains an explicit premise",
+    "records": [
+      {
+        "variant": "original",
+        "region": 35,
+        "row": 2,
+        "rejected_mutations": [
+          "saved_alternative",
+          "pending_goal",
+          "different_parameter_head",
+          "missing_cut",
+          "nonempty_failure"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": 35,
+        "row": 2,
+        "rejected_mutations": [
+          "saved_alternative",
+          "pending_goal",
+          "different_parameter_head",
+          "missing_cut",
+          "nonempty_failure"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "source_controls_passed": 7,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; six-to-two copy/cut/caller composition checked",
+    "remaining_paths_boundaries": "incomplete; complete residual return boundary and ten-to-six assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Copy_Return_Check.thy": "37148ff6b46993fd8ee4ec7f47399edd9f5cc8c45f75a169c3453dc5e0afdb89",
+    "tests/source-contract-parameters/Check_Copy_Return.pl": "4c2d55a25ebfe5dac93ec1a4b3a9d175ccdac8f4d04112e8e0accc45b67a516c",
+    "tests/source-contract-parameters/audit_copy_contract_state.py": "d3e3ffc8a71533fd035de0fb249f68c880682bc2cbae65ce5ffd4ad45ddd4ce6",
+    "target/source-global-copy-return/kernel-receipt.txt": "c5a30870b95f0a132c2d1ce9c28be23dde70b2742ad20ca08f81e3b7bc500671",
+    "target/source-global-copy-return/state-audit.json": "a50dd65985d03880d5b6a60a999cb23ab3043182cef72b49ca3ac3ba51708655",
+    "target/source-global-copy-return/source-controls.log": "984d0e8f13928970334556ec7ccc404cfda34ce70810e1aa4cbc97ca9502f0a6"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual repeated-parameter copy preservation and copied-output observations for both retained global success coordinate shapes",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Actual attached copy step preserves combined observer invariant, finite execution and aliasing, including rollback.",
+    "Successful resolution copies the tracked parameter and reuses its observation with the actual output leaf history, including compound ground parameters.",
+    "Both six-to-two and ten-to-six global success steps agree with the actual copied output; the ten-coordinate case retains explicit groundness of the saved parameter."
+  ],
+  "required_conditions": [
+    "Tracked current parameter (not merely groundness)",
+    "Free-or-ground helper output mode, justified separately by the existing observed-output invariant rule",
+    "Finite list spine and pending goals",
+    "Covered caller slots, incoming combined invariant and actual source step",
+    "Actual resolution MGU, incoming parameter observation and leaf effect for success transport",
+    "Target functor coordinates and successor representation still require row assembly"
+  ],
+  "artifact_audit": {
+    "scope": "Exact copy-success clauses and triples; source MGU, mode and observer premises remain semantic proof obligations",
+    "records": [
+      {
+        "variant": "original",
+        "kind": "ten_to_six",
+        "clause": 24,
+        "triple": 25,
+        "source": "lp_in_7365675f726567696f6e5f305f3232_10",
+        "target": "lp_in_7365675f726567696f6e5f305f3235_6",
+        "source_coordinates": [
+          "V0",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "V2",
+          "V3",
+          "source_functor_4",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V0",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V2",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V3",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_functor_4"
+        ],
+        "target_coordinates": [
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "V3",
+          "$$$$$$$$$$$$$$$$$source_functor_4",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V3",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_functor_4"
+        ],
+        "negative_controls": 4,
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+      },
+      {
+        "variant": "original",
+        "kind": "six_to_two",
+        "clause": 40,
+        "triple": 41,
+        "source": "lp_in_7365675f726567696f6e5f33355f32_6",
+        "target": "lp_in_7365675f726567696f6e5f33355f35_2",
+        "source_coordinates": [
+          "V0",
+          "V1",
+          "V2",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V0",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V2"
+        ],
+        "target_coordinates": [
+          "$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N"
+        ],
+        "negative_controls": 4,
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+      },
+      {
+        "variant": "renamed",
+        "kind": "six_to_two",
+        "clause": 76,
+        "triple": 62,
+        "source": "lp_in_72656e616d65645f73796d626f6c5f30303634_6",
+        "target": "lp_in_72656e616d65645f73796d626f6c5f30303637_2",
+        "source_coordinates": [
+          "V0",
+          "V1",
+          "V2",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V0",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V2"
+        ],
+        "target_coordinates": [
+          "$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N"
+        ],
+        "negative_controls": 4,
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa"
+      },
+      {
+        "variant": "renamed",
+        "kind": "ten_to_six",
+        "clause": 92,
+        "triple": 78,
+        "source": "lp_in_72656e616d65645f73796d626f6c5f30303338_10",
+        "target": "lp_in_72656e616d65645f73796d626f6c5f30303431_6",
+        "source_coordinates": [
+          "V0",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "V2",
+          "V3",
+          "source_functor_4",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V0",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V2",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V3",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_functor_4"
+        ],
+        "target_coordinates": [
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "V3",
+          "$$$$$$$$$$$$$$$$$source_functor_4",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$N",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$V3",
+          "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$source_functor_4"
+        ],
+        "negative_controls": 4,
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa"
+      }
+    ]
+  },
+  "source_controls_passed": 17,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; repeated-parameter copy observation transport now checked",
+    "remaining_paths_boundaries": "incomplete; complete row conditions and other paths remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Copy_Observation_Check.thy": "e2474cb0e08f318d3e3627d42f358d3574328a4c4eb834444edc48f284bbc79d",
+    "tests/source-contract-parameters/audit_global_copy_observation.py": "ce0f5fa22863e16712244e78f015ec8f9f2a1769a04dbe9b03f87f47698517ee",
+    "target/source-global-copy-observation/kernel-receipt.txt": "72e2ebfe454bb6b245774f9ecaf06d46ee4cce5e97ba3e92744c8c997844b616",
+    "target/source-global-copy-observation/audit.json": "bb0a71e7c361b4b94ff35e921f626b5d058612c7c33a715a5d966e19b110ff3c",
+    "target/source-global-copy-observation/caller-controls.log": "4be1759093b453d91e4811cf490d5c09001e8a8abbac56d6a2e7f62e69e2c671",
+    "target/source-global-copy-observation/partial-controls.log": "cb1d932d8410891f19ed7758e3b4e834c6505289048c9436eebab71179a6550c"
+  }
+}

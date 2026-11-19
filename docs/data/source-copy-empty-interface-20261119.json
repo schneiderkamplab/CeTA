@@ -1,0 +1,147 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Empty-payload alias obstruction and conditional runtime-preserving copy boundary composition",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "findings": [
+    "Empty helper payload maps all coordinates to LPCTruth",
+    "Rebased output alias fails for nontruth copied parameters despite unchanged caller projection"
+  ],
+  "discharged_local_obligations": [
+    "Three-step residual copy-success to zero-argument cut-module return path",
+    "Runtime-preserving conditional composition with actual tracked cut/caller contract"
+  ],
+  "remaining": [
+    "Caller answer contract at module return",
+    "Full-family use of this boundary composition",
+    "Ten-to-six entry contract and other node obligations",
+    "Both Split return contracts and justified recursive assembly"
+  ],
+  "artifact_audit": {
+    "scope": "Exact zero-interface residual paths and empty module payload; caller contract remains unproved",
+    "records": [
+      {
+        "variant": "original",
+        "source": "seg_region_0_25",
+        "arity": 6,
+        "clauses": [
+          66,
+          33,
+          34
+        ],
+        "symbols": [
+          "lp_in_7365675f726567696f6e5f305f3235_6",
+          "lp_in_7365675f726567696f6e5f32385f30_0",
+          "lp_in_7365675f726567696f6e5f32385f31_0",
+          "lp_in_7365675f726567696f6e5f32385f72657475726e6564_0"
+        ],
+        "rejected": [
+          "missing_boundary",
+          "missing_cut",
+          "missing_return",
+          "invented_output",
+          "wrong_return_target"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-28.xml": "522b943bbef2ff556e18c88eeaa3758b3513dc586e69d4851b37466484cf150d",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/transformation.json": "71a1ce32d8c4d33e31e27796759b6a851dfa8cc9d662298eff8b526d4fc43516"
+        }
+      },
+      {
+        "variant": "original",
+        "source": "seg_region_35_5",
+        "arity": 2,
+        "clauses": [
+          68,
+          33,
+          34
+        ],
+        "symbols": [
+          "lp_in_7365675f726567696f6e5f33355f35_2",
+          "lp_in_7365675f726567696f6e5f32385f30_0",
+          "lp_in_7365675f726567696f6e5f32385f31_0",
+          "lp_in_7365675f726567696f6e5f32385f72657475726e6564_0"
+        ],
+        "rejected": [
+          "missing_boundary",
+          "missing_cut",
+          "missing_return",
+          "invented_output",
+          "wrong_return_target"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-28.xml": "522b943bbef2ff556e18c88eeaa3758b3513dc586e69d4851b37466484cf150d",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/transformation.json": "71a1ce32d8c4d33e31e27796759b6a851dfa8cc9d662298eff8b526d4fc43516"
+        }
+      },
+      {
+        "variant": "renamed",
+        "source": "seg_region_0_25",
+        "arity": 6,
+        "clauses": [
+          50,
+          83,
+          82
+        ],
+        "symbols": [
+          "lp_in_72656e616d65645f73796d626f6c5f30303431_6",
+          "lp_in_72656e616d65645f73796d626f6c5f30303538_0",
+          "lp_in_72656e616d65645f73796d626f6c5f30303539_0",
+          "lp_in_72656e616d65645f73796d626f6c5f30303631_0"
+        ],
+        "rejected": [
+          "missing_boundary",
+          "missing_cut",
+          "missing_return",
+          "invented_output",
+          "wrong_return_target"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-28.xml": "522b943bbef2ff556e18c88eeaa3758b3513dc586e69d4851b37466484cf150d",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/transformation.json": "71a1ce32d8c4d33e31e27796759b6a851dfa8cc9d662298eff8b526d4fc43516"
+        }
+      },
+      {
+        "variant": "renamed",
+        "source": "seg_region_35_5",
+        "arity": 2,
+        "clauses": [
+          48,
+          83,
+          82
+        ],
+        "symbols": [
+          "lp_in_72656e616d65645f73796d626f6c5f30303637_2",
+          "lp_in_72656e616d65645f73796d626f6c5f30303538_0",
+          "lp_in_72656e616d65645f73796d626f6c5f30303539_0",
+          "lp_in_72656e616d65645f73796d626f6c5f30303631_0"
+        ],
+        "rejected": [
+          "missing_boundary",
+          "missing_cut",
+          "missing_return",
+          "invented_output",
+          "wrong_return_target"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-28.xml": "522b943bbef2ff556e18c88eeaa3758b3513dc586e69d4851b37466484cf150d",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/transformation.json": "71a1ce32d8c4d33e31e27796759b6a851dfa8cc9d662298eff8b526d4fc43516"
+        }
+      }
+    ]
+  },
+  "production_replay": false,
+  "artifacts": {
+    "tests/source-contract-parameters/Copy_Empty_Interface_Check.thy": "46d288c208152611256e5eeaa81c1dc601c353973e837e5d3fabadf12b5ba02c",
+    "tests/source-contract-parameters/Global_Copy_Boundary_Check.thy": "6fe5912e365ad8e456143b29edd21e44b7c2249e53e15f5b841fd4aa29580891",
+    "tests/source-contract-parameters/audit_copy_zero_boundary.py": "5f5655a49b8f21a95df39ce08ac5aaec5e9b2d7ad629fbaf9e82aa530e407404",
+    "target/source-copy-empty-interface/kernel-receipt.txt": "5658893fad29f74b3904362d1b2ebd1d8dfa4e30b40a32f9f594adbbe9daa466",
+    "target/source-copy-empty-interface/boundary-kernel-receipt.txt": "31f41b16147564f7afd32f5c18bd90c61237ef39ed419b1f29d90f45e875195d",
+    "target/source-copy-empty-interface/audit.json": "3d7c96acd762ad95550fc6127e7ad16dc4ee52a0bf02cede85ee08973abca2f1"
+  }
+}

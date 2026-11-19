@@ -1,0 +1,33 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Equality of helper/caller output interface values preserved by every domain source step, including all saved frames and returned events",
+    "Initialization from equal bounded payload coordinates",
+    "Scope renaming and selected interface projection preserve equality",
+    "Represented output coordinate plus restricted invariant derives active output mode"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "kernel_controls": 3,
+    "coordinate_inventory_rows_per_variant": 7,
+    "wrong_coordinate_rejections_per_variant": 7,
+    "inventory_is_structural_only": true,
+    "production_replay": false
+  },
+  "remaining": [
+    "Integrate alias conjunction into canonical node and family invariants",
+    "Authenticate actual module boundary projections and nested Split interface changes",
+    "Complete restricted leaf preservation, parameter tracking and family initialization",
+    "Both helper return contracts and justified recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Alias.thy": "fc11a72510c70daf87c7d39fb419c763b7d94ff4d2bd15567b9617c6ab22a889",
+    "tests/source-contract-parameters/Observer_Output_Alias_Check.thy": "b37976b6d057d7171f715b825b1f0ba118d05fad1bb632670323a0c687700713",
+    "tests/source-contract-parameters/audit_output_alias.py": "f64b33db2ab9472043f04a0aa6b3163b362517542d3f7830322fd303464a6602",
+    "target/source-observer-output-alias/kernel-receipt.txt": "e85041ac3f5a417f1c05eecc9f806d851ff969e312cd9418b78ab118f42d2a35",
+    "target/source-observer-output-alias/coordinates.json": "a5b573d128abb973b126dc1096aeec4b4ca7fe8d57de960f931512e83e884a47"
+  }
+}

@@ -1,14 +1,11 @@
 theory LP_Prolog_Structural_Observation
  imports LP_Prolog_Matching_Structure
+ "Proof_Checker_Base.Forest_Return_Order"
 begin
 
 text \<open>Structural observations erase runtime variable names, not constructors.
 They are additional residual data; runtime sharing and source contexts remain
 separate. Only a finite runtime template can initialize this observation.\<close>
-
-fun lpp_structure_template :: "('f,'v) term \<Rightarrow> ('f + unit,unit) term" where
- "lpp_structure_template (Var x)=Fun (Inr ()) []"
-| "lpp_structure_template (Fun f ts)=Fun (Inl f) (map lpp_structure_template ts)"
 
 definition lpp_runtime_structure where
  "lpp_runtime_structure t structure = (\<exists>template.

@@ -1,0 +1,47 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Retained arithmetic row 15 establishes scalar condition at actual normalized row 19; target-initialization callback discharged in canonical combined-invariant contract",
+    "Scalar boundary condition implies equality-module entry condition in same valuation"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "static_and_shape_checks_per_variant": 18,
+    "variants": [
+      "original",
+      "renamed"
+    ],
+    "generated_checker_modified": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Actual incoming module-link static checking and canonical boundary assembly",
+    "Other source rows, acquired blocks, nested Splits and initialization",
+    "Complete family invariant preservation",
+    "Both actual helper-return contracts and justified recursive assembly"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Arithmetic_Boundary_Condition_Check.thy": "4805db68fbb3aa32b460841c9ad1b60bed3646b763fb170fc57126305476ba4c",
+    "tests/source-contract-parameters/Check_Arithmetic_Rows.ML": "f438edfb6b8913f387c492523fc34aaf866867f571e1d23456f228014f8a7b15",
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Arithmetic_Node.thy": "3033c06a6c4aa0e932925c63b3f9179209e5a413ffc1b75d44b518d1a55cbce8",
+    "target/source-recursive-caller/Recursive_Caller_Check.ML": "2e5b267a19e00f3b378c58a54de895bb0ebac9425ae778622be08ce3f23e2b5b",
+    "target/source-arithmetic-boundary-condition/kernel-receipt.txt": "a11a6e084e1ee7308e2cd39476e99c1e4a46ec579f73dd99a31ab0fa7d51cfbb",
+    "target/source-arithmetic-boundary-condition/original.log": "5b11fe042ff080b6d3a740b6e8c7fb66a2f1b245932807832a70fc69fbc4b216",
+    "../ferrum-prolog-release/target/source-contract-development/original/states-0.xml": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535",
+    "../ferrum-prolog-release/target/source-contract-development/original/actions-0.xml": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c",
+    "../ferrum-prolog-release/target/source-contract-development/original/subject-0.xml": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967",
+    "../ferrum-prolog-release/target/source-contract-development/original/states-47.xml": "6d5f5379383825a2e177b9bd8b685f0ab31f7efb0246682cd9dc9823c00d82e8",
+    "../ferrum-prolog-release/target/source-contract-development/original/actions-47.xml": "686e9339b24e83398ec33a2ae2a2757075228164d1242d58ad3c6b07bcb93057",
+    "../ferrum-prolog-release/target/source-contract-development/original/subject-47.xml": "26e5f1e63ecc75799d29f27af856211ed89e75258398e07f0272e275383676e1",
+    "target/source-arithmetic-boundary-condition/renamed.log": "5b11fe042ff080b6d3a740b6e8c7fb66a2f1b245932807832a70fc69fbc4b216",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/states-47.xml": "7a203400a52538d002429017d215ae5d85d7d9eca143e82c6230fca36134a60b",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/actions-47.xml": "67f6809a82d4e7e640ecbfc3f2825baee3e9f741531b87c3173f879ae0e050ac",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/subject-47.xml": "c926bc84c9b6b30f78df1e6ef0b0d4d3dfb27a6aedccca97d1bbbc9fcb466e31"
+  }
+}

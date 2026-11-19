@@ -1,0 +1,14 @@
+{
+  "source_certified": false,
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Repeated_Parameter_Head.thy": "ae88b27e02fee90af08a0509f23b6e46b6a5783d4021281f3f95371d72c4214c",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/repeated-parameter-head-kernel-receipt.txt": "8b4bedac85c719ac45d1b1a8f3743e580c9523deb564a1efd2909912a9b9b4bb",
+    "/work/dfm/festschrift/ferrum-prolog-release/target/prolog-list-leaf-return-2731/search.log": "5ee67a602e7ef40b0b9504e8b0ac5a91def5815f56abfdbb802646b0cfe8813b"
+  },
+  "kernel_checked": [
+    "lpp_repeated_parameter_head_unify",
+    "lpp_repeated_parameter_head_leaf_transport"
+  ],
+  "scope": "An actual most-general resolution against a repeated-parameter head with a ground fixed first argument and ground parameter, and a free output, entails most-general free-output equality. Bounded leaf effects transport on covered active continuation variables. Arbitrary bodies retained in premise; no saved-alternative substitution.",
+  "split_evidence": "Recorded reconstructed Split prefixes 30 and 44 both have free V2. Split 44 has no recorded ground parameter fact, which remains a source invariant obligation. This receipt does not authenticate the complete source contracts."
+}

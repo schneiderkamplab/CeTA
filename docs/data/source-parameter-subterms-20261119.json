@@ -1,0 +1,50 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "groundness of parameter subterm closure",
+    "unchanged replacement budget",
+    "copy-or-scalar parameter compatibility",
+    "leaf-effect composition for enlarged set"
+  ],
+  "remaining": [
+    "actual copy-head unifier-image coverage",
+    "nonground caller transport",
+    "whole-family initialization and preservation",
+    "source coverage and spine preservation",
+    "helper returns and recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "positive_kernel_controls": 1,
+    "negative_kernel_controls": 2,
+    "retained_source_controls": 8,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Parameter_Subterms.thy",
+      "sha256": "4d38670a3a53a24656cc1013dca4336fab187b3d16b8a87f2b8c476c24c0bb27"
+    },
+    {
+      "path": "tests/source-contract-parameters/Parameter_Subterms_Check.thy",
+      "sha256": "5151d040fb6b4c7764c558be9864068f4fd379b80024a1a706defe9f435f4647"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Partial_Caller_Obstruction.pl",
+      "sha256": "74655a3eede3eff6fdc59528101326b9b2a8e83b753ff38e3dbf5229b74ae6de"
+    },
+    {
+      "path": "target/source-parameter-subterms/kernel-receipt.txt",
+      "sha256": "e0783456c2bc1445084f6c465e993cdbcbb5b057728b519edb34b032c249b535"
+    },
+    {
+      "path": "target/source-parameter-subterms/source-controls.log",
+      "sha256": "c5fc552f2f940d3123e4498886e6af9e00f4da213e907bd6a9f158beca31c74f"
+    },
+    {
+      "path": "docs/data/source-partial-caller-obstruction-20261119.json",
+      "sha256": "9d963f5430caa0b303eb1e7fb67fab61a07dc85adafed1fa2110eb824b507676"
+    }
+  ]
+}

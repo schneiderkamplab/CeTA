@@ -1,0 +1,157 @@
+{
+  "schema": "source-copy-node-review-v1",
+  "date": "2026-11-19",
+  "source_certified": false,
+  "milestone_1": "OPEN",
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Attached_Parameter_Copy.thy",
+      "sha256": "d364e96d35d7324aa9a16cdda747e7084775df336bdef4d80925636f098cd129"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Parameter_Copy.thy",
+      "sha256": "60b66be7321e9da1d5729b443c0db97a4b05f917cb2a61a344c3733ebd1454be"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Parameter_Copy_Node.thy",
+      "sha256": "44eebd62fec25f51c4a25e8d34c2d1938cd61bf41007781b78f9601a65ceaf9d"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Copy_Node_Export.thy",
+      "sha256": "0bc4b44a88ddaa8b055c4c30011b36ce5428752d49558ea93560efb72b4fe59b"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Copy_Node.ML",
+      "sha256": "c84651b9c1fee58890fc944d8f41c314e34999cc70bf2365836a268425ff8b0a"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-copy-node/kernel-receipt.txt",
+      "sha256": "ed980c9fca54c22b2abdd25c9f4081d849c136f9c729c8b9c733784726e6ce42"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-copy-node/Copy_Node_Check.ML",
+      "sha256": "33fcb3911c669425701d5f76f48478b3e89ea8efbf43aa5622744fb29f0fd2e5"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-conditioned-matching-20261118.json",
+    "sha256": "4c6bd814bda243808d4f748cf1160298db113776fff17b7de43e0baa9faaa92e"
+  },
+  "variants": {
+    "original": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-copy-node/original.log",
+        "sha256": "2c76e38eff8986c418c2b946b6dba41ce787f0b0fa399740038356029b55f964"
+      },
+      "positive_checks": 9,
+      "rejection_controls": 15,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml",
+          "sha256": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml",
+          "sha256": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml",
+          "sha256": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      ]
+    },
+    "renamed": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-copy-node/renamed.log",
+        "sha256": "2c76e38eff8986c418c2b946b6dba41ce787f0b0fa399740038356029b55f964"
+      },
+      "positive_checks": 9,
+      "rejection_controls": 15,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml",
+          "sha256": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml",
+          "sha256": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml",
+          "sha256": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      ]
+    }
+  },
+  "discharged_interface_obligation": "Repeated-parameter copy heads have a full conditional observer node contract with parameter-specific restricted leaf effects, finite attached execution and strengthened successor conditions.",
+  "checked_operational_obligations": [
+    "Attached caller-slot coverage discharges runtime-support coverage for the restricted copy-head leaf rule.",
+    "Actual successful copied parameter makes the instantiated head finite; finite execution is preserved through the base transition including saved alternatives.",
+    "Checked successor coordinates evaluate to the incoming current parameter, retaining its relation to the initial arbitrary ground parameter.",
+    "Full conditioned node contract retains scope restoration, success/failure initialization and strict residual descent."
+  ],
+  "actual_rows": [
+    "0:22",
+    "35:2"
+  ],
+  "scope_limits": [
+    "Proper spine, free output and copied-or-scalar parameter relation remain authenticated entry premises.",
+    "Complete success and failure initialization remain premises; no full source-family invariant is instantiated.",
+    "Fixture checks validate source-action and head/map syntax, not runtime premises or unconditional node acceptance.",
+    "Caller-slot controls are synthetic executable examples, not production witnesses.",
+    "Existing pinned original and renamed extraction tables are reused; no fresh native extraction or production source certification."
+  ],
+  "next_obligations": [
+    "Assemble recursive cons-head contract preserving finite inputs, restricted caller effects, sharing and coverage.",
+    "Discharge all source-family entry and successor conditions, acquired-block rows and module links.",
+    "Authenticate return boundaries 19:1 and 28:1 and resumed continuations.",
+    "Discharge both Split contracts through strict-descent family induction."
+  ],
+  "development_events": [
+    "Corrected an Isabelle lexical ambiguity (=parameter was parsed as the polynomial =p operator) before final kernel acceptance.",
+    "Interrupting an expensive coverage proof also ended the Python-wrapped resident session. Restored the verified heap and rechecked dependencies; replaced broad proof search with an explicit coverage argument."
+  ],
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "development_snapshot": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-copy-node/verified.heap",
+    "sha256": "59b1a5894eb9ab786a2a9f42a888cf2b2a742c2771887dbe9fc6c62eb17dbd89",
+    "restored_in_fresh_process": false
+  }
+}

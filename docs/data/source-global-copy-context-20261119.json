@@ -1,0 +1,90 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual copy-success context conditions for two retained shapes; full node contracts remain open",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "35:5 ground parameter observation and nil spine shape with total return payload",
+    "0:25 ground coordinates, reflexive equation, nil spine shape and functor fact with total return payload"
+  ],
+  "required_conditions": [
+    "Actual resolution MGU, finite input spine and tracked parameter",
+    "Checked coordinate maps",
+    "Incoming functor relation and prefix bounds in the functor case"
+  ],
+  "artifact_audit": {
+    "scope": "Retained target contexts only; full row assembly remains open",
+    "records": [
+      {
+        "variant": "original",
+        "region": "0",
+        "row": 25,
+        "rejected": [
+          "missing_observation",
+          "wrong_shape_node",
+          "nonempty_nil",
+          "extra_separation",
+          "wrong_observed_coordinate"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+        "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+      },
+      {
+        "variant": "original",
+        "region": "35",
+        "row": 5,
+        "rejected": [
+          "missing_observation",
+          "wrong_shape_node",
+          "nonempty_nil",
+          "extra_separation",
+          "wrong_observed_coordinate"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml",
+        "sha256": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31"
+      },
+      {
+        "variant": "renamed",
+        "region": "0",
+        "row": 25,
+        "rejected": [
+          "missing_observation",
+          "wrong_shape_node",
+          "nonempty_nil",
+          "extra_separation",
+          "wrong_observed_coordinate"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+        "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+      },
+      {
+        "variant": "renamed",
+        "region": "35",
+        "row": 5,
+        "rejected": [
+          "missing_observation",
+          "wrong_shape_node",
+          "nonempty_nil",
+          "extra_separation",
+          "wrong_observed_coordinate"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml",
+        "sha256": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5"
+      }
+    ]
+  },
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; ordinary copy-success contexts now derived",
+    "remaining_paths_boundaries": "incomplete; recursive node conditions, failure alternatives and full row assembly remain",
+    "actual_helper_return_contracts": "both open: Splits 30 and 44",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Copy_Context_Check.thy": "2971d6392aedead78fdbe611b37da13e58d93a842948c33147ef67699a2576bc",
+    "tests/source-contract-parameters/audit_copy_contexts.py": "dbad95a61e9203cd34316d53c42ca5ff14185118b78626dfe543e66dfff2553f",
+    "target/source-global-copy-context/kernel-receipt.txt": "dbb26dd67f6b0453ea18ef73963f3d8b4c74c2c359a800d832150ab33bf2368e",
+    "target/source-global-copy-context/audit.json": "21eae9b5b4f02c83e3f94f566bf0ba01fb0d2a64eb1ee3230cd080647f3b02bc"
+  }
+}

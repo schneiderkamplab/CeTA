@@ -1,0 +1,68 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "checker": "unchanged Isabelle-generated source-action checker",
+    "checks": {
+      "original": 7,
+      "renamed": 7
+    },
+    "production_replay": false
+  },
+  "remaining": [
+    "dynamic incoming tracking and successor initialization",
+    "return coverage and family preservation",
+    "query initialization and both helper returns",
+    "recursive family assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "tests/source-contract-parameters/Check_Partial_Equality_Row.ML",
+      "sha256": "da4ff6b041a14719e6c26f7a682c482cc0142c7084b716d740d6d365c6c61f52"
+    },
+    {
+      "path": "target/source-recursive-caller/Recursive_Caller_Check.ML",
+      "sha256": "2e5b267a19e00f3b378c58a54de895bb0ebac9425ae778622be08ce3f23e2b5b"
+    },
+    {
+      "path": "tests/source-contract-parameters/Recursive_Caller_Export.thy",
+      "sha256": "a293223d1ca135fa5f6df34aff883b1ccf38e8fe02cd4639c8cef5523573dcb6"
+    },
+    {
+      "path": "docs/data/source-partial-equality-node-20261119.json",
+      "sha256": "d9feb3f9720e8a119f1e47e99d07c074da60e31dc6955be18b63a470a628c6f9"
+    },
+    {
+      "path": "target/source-partial-equality-row/original.log",
+      "sha256": "1c82b9e094cc6eb20abb01ee10775dc76725937076b876c90ba6be8548dc30d2"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/states-19.xml",
+      "sha256": "bb9fa396ed699fcff9207bd6dc8a058af57811e0407471e7640b3151c83204d1"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/actions-19.xml",
+      "sha256": "617f39b1c7dea85d93d3c77cd3d730c6837066ccc8f485d890e58bc198dba841"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/original/subject-19.xml",
+      "sha256": "d2ed9b7ba713955225d23968f9220ae822dc1b4afcedbf9605eae40e9aebe8a5"
+    },
+    {
+      "path": "target/source-partial-equality-row/renamed.log",
+      "sha256": "1c82b9e094cc6eb20abb01ee10775dc76725937076b876c90ba6be8548dc30d2"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/states-19.xml",
+      "sha256": "bb9fa396ed699fcff9207bd6dc8a058af57811e0407471e7640b3151c83204d1"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/actions-19.xml",
+      "sha256": "617f39b1c7dea85d93d3c77cd3d730c6837066ccc8f485d890e58bc198dba841"
+    },
+    {
+      "path": "../ferrum-prolog-release/target/source-contract-development/renamed/subject-19.xml",
+      "sha256": "ef97511330bf66038d652a3b631f985785ce4006db0e7d5edab8ceaee8981481"
+    }
+  ]
+}

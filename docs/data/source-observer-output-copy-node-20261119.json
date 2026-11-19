@@ -1,0 +1,30 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Combined restricted leaf/finite/output-alias invariant initialized at checked partial Split entry",
+    "Combined invariant preserved by conditioned actual copy transition into same represented child",
+    "Canonical copy node derives output mode from invariant and checked payload coordinate, retaining the combined lower premise"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "kernel_controls": 2,
+    "source_controls_passed": 9,
+    "production_replay": false
+  },
+  "remaining": [
+    "Integrate combined invariant across other local nodes and actual boundaries",
+    "Instantiate all source family node conditions including parameter tracking",
+    "Authenticate complete family initialization/preservation",
+    "Both actual helper return contracts and justified recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Copy_Node.thy": "7f6d38b0d412bb7f59a303d4e5105477aed67e63cee5fe6c5461424213b548d6",
+    "tests/source-contract-parameters/Observer_Output_Copy_Node_Check.thy": "287fc5922196b34815145a4d760502fcde5b56c5c2ae23114bec7d3186cbcf4d",
+    "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613",
+    "target/source-observer-output-copy-node/kernel-receipt.txt": "c5d26646cc93633cda947c976256562c77e4631941fed0e30f5de8ed3d064f44",
+    "target/source-observer-output-copy-node/source.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896"
+  }
+}

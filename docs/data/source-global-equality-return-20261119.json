@@ -1,0 +1,30 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Actual successful scalar MGU preserves restricted output leaf history and reuses existing scalar observation",
+    "Global equality success/return path duplicates actual substituted output and its observation"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "retained_path_cases": 2,
+    "negative_controls": 6,
+    "immutable_certificate_hashes_verified": true,
+    "production_replay": false
+  },
+  "remaining": [
+    "Source return emission and caller continuation assembly",
+    "Failure-path global representation and native encoding",
+    "Full-family invariant preservation and query initialization",
+    "Both complete helper-return contracts and justified recursion"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Equality_Return_Check.thy": "521f394d23a6dd806f7c9b65e3b2a0e8ba297e9e2e5a6904ac268b8e3ff8159c",
+    "tests/source-contract-parameters/audit_global_equality_return.py": "57e663163f2f2fa1df24e8c098f640336f6a7a9cf2070130c8da2acb360964e6",
+    "tests/source-contract-parameters/audit_global_boundary_projection.py": "d0599cc8d83ce18a45a02815b029244f75f6cddbf71342e913a2ec4af031367c",
+    "target/source-global-equality-return/kernel-receipt.txt": "c9c291e9f98ee136f758e8e86792f5af3f2004b3d26c5b63a759f26c2acee82a",
+    "target/source-global-equality-return/audit.json": "a50a2c07eb4c8eb7539f611e3423dea7cac5b4373dbc8ccf9171aeaaddc94a6c"
+  }
+}

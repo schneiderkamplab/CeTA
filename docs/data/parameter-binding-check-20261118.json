@@ -1,0 +1,11 @@
+{
+  "source_certified": false,
+  "kernel_checked": true,
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Binding_Check.thy": "1e3ec8bb7ac686fd4765b0b17797e167576d3e6bc9976aeca07a391b785556fa",
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Binding_Check_Test.thy": "39f021879abbcb06c64c5c38fdaa3b21568a5e2271b304a7b3c8234ad7ca25f1",
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Parameter_Equality_Contract.thy": "b7da7fa5c3cc15d3bde3e7c1b0d83a1bb5c2ea54ece800561231692bd552ffa0",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/parameter-binding-kernel-receipt.txt": "989d18d8da2b767a42556f4f8536bc5178657fcdc1c87caec6f9f9544c109e10"
+  },
+  "scope": "Structural binding checker soundness composed into the checked observer equality answer contract. Four accepted forms; five rejected controls. Current parameter representation and its copied-or-scalar relation to the initial parameter remain source premises."
+}

@@ -1,0 +1,36 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "refresh_controls": 2,
+    "production_replay": false
+  },
+  "remaining": [
+    "remaining successor conditions and failure initialization",
+    "whole-family preservation and query initialization",
+    "actual helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Equality_Successor.thy",
+      "sha256": "b02045f46ab83cf5943ad41b26fd6b05a1a2ceebdbacc36e54b8c427f0ed73b6"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Equality_Successor_Node.thy",
+      "sha256": "9073891678f3d69d76a62d5a39e0fb9dd1cbad18908145fb9bf2802f5d98cd24"
+    },
+    {
+      "path": "tests/source-contract-parameters/Partial_Equality_Successor_Check.thy",
+      "sha256": "582883585df34cd64c05719e39eebe7cdbda31b6e931c77cbaad9b94ea960f89"
+    },
+    {
+      "path": "target/source-partial-equality-successor/kernel-receipt.txt",
+      "sha256": "4d7b8c4743658713ae31cdfc7370dd1a9202adea3eaddc0c945c6e624797df1d"
+    },
+    {
+      "path": "docs/data/source-partial-equality-row-20261119.json",
+      "sha256": "c2b2bdbc9c033c01008507b9882008f711cf289a35b42c10e0408b817e085521"
+    }
+  ]
+}

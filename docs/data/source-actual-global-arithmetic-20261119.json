@@ -1,0 +1,29 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Actual evaluated scalar shared by source normalization and global residual path",
+    "Combined invariant preserved at normalized equality state, including saved alternatives"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "executable_source_controls": 5,
+    "production_replay": false
+  },
+  "remaining": [
+    "Post-equality successor preservation and empty-result branches",
+    "Concrete native encoding and full global family representation",
+    "Incoming observation/query initialization and other source paths",
+    "Both actual helper returns and justified recursion"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Actual_Global_Arithmetic_Check.thy": "329358dae984e866cf0097d191bee42a0b2d12fc9ca0b190bd5f495505c9d315",
+    "tests/source-contract-parameters/Global_Arithmetic_Path_Check.thy": "b772467f272ea9b03afd9e5efa86ca29643fa8dd40a38c29da991a066a1bde4c",
+    "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5",
+    "target/source-actual-global-arithmetic/kernel-receipt.txt": "86c41cb8028f25145efaf1ad56ea4747d0063b2e0f5be0f4f4519ac8d91423f3",
+    "target/source-actual-global-arithmetic/source-controls.log": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac",
+    "thys/Logic_Programming/LP_Prolog_Univ_Arithmetic_Normalization.thy": "349c747be2f331052a91adc6c08c2ccff36209721329bea29b3c1f761c22bb2d"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual cons-resolution initialization of retained Split observer slots, not full helper contracts",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Exact Split 30/44 observer slots initialize joint invariant and caller coverage",
+    "Helper output mode and leaf effect follow from initialized observed leaf",
+    "Recursive partial-entry premise derived from actual MGU and checked cons coordinate transport"
+  ],
+  "required_conditions": [
+    "Actual cons resolution and checked recursive-entry coordinate map",
+    "Incoming finite call, finite list spine and tracked parameter",
+    "Full helper-path preservation and family assembly still required"
+  ],
+  "coordinate_positive_controls": 12,
+  "coordinate_negative_controls": 48,
+  "source_controls_passed": 9,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; recursive entry initialization connected to actual cons resolution",
+    "remaining_paths_boundaries": "incomplete; all-path preservation and assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Recursive_Split_Observer_Check.thy": "cdeb118d6888971f083949d685ac8c8890b6a8e3a52d0724e08e01332b1fe3ff",
+    "tests/source-contract-parameters/audit_split_prefix_entry.py": "f10928ca90ceb52df6ee0d4902231ae87d14ec8fb7dd87a277329ce5d6b29aa9",
+    "tests/source-contract-parameters/Check_Split_Prefix_Entry.ML": "6426e4fef2e5e2dad5c0f3a5d7ce2f29bc2212378e9f531235399e4558d6ab14",
+    "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613",
+    "target/source-recursive-split-observer/kernel-receipt.txt": "c7268e82cf2ddc8ba6be53699e5c01268dbe6f67e03e6baacdea2c55b83007c7",
+    "target/source-recursive-split-observer/original-coordinate-controls.log": "6c10364226a16e58227cdd01b07280573bbf8ab1dd0a97ba9d2a667128c90363",
+    "target/source-recursive-split-observer/renamed-coordinate-controls.log": "6c10364226a16e58227cdd01b07280573bbf8ab1dd0a97ba9d2a667128c90363",
+    "target/source-recursive-split-observer/source-controls.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896",
+    "target/source-split-prefix-entry/original.audit.json": "23170e8b0730ab2cf1147aeb9bdc4e4775d137e8dcfca8b3a783d1531833bdd1",
+    "target/source-split-prefix-entry/renamed.audit.json": "23170e8b0730ab2cf1147aeb9bdc4e4775d137e8dcfca8b3a783d1531833bdd1",
+    "target/source-split-prefix-entry/original.fixtures": "6ee305df4d56986ab290ab7566ddec745b3f55ec37e814e2a8cdfaae823fee8a",
+    "target/source-split-prefix-entry/renamed.fixtures": "6ee305df4d56986ab290ab7566ddec745b3f55ec37e814e2a8cdfaae823fee8a",
+    "target/source-split-prefix-entry/Split_Prefix_Entry_Check.ML": "61375864e3affe6a481153f50fe3e8d6b644dd86c4434a38b688a83209fad7be"
+  }
+}

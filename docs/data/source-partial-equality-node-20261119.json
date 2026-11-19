@@ -1,0 +1,56 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "arbitrary finite selected output supported through attached and conditioned equality to canonical node"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "equality_controls": 5,
+    "partial_output_controls": 7,
+    "production_replay": false
+  },
+  "remaining": [
+    "actual source-boundary instantiation and successor conditions",
+    "whole-family preservation and initialization",
+    "both helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Subterm_Equality.thy",
+      "sha256": "594f81a87250ff5d0e3c5acf09825f9bd260e181ec3887ae111aded88fd0fe70"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Conditioned_Subterm_Equality.thy",
+      "sha256": "6f04e4491f59b07a50fc9499a598246b613a4e83de596b2cdc8ed110f42c9ba2"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Parameter_Equality_Node.thy",
+      "sha256": "24757bf7e176ec29810034d9eb6d33321bce098ec7be9200b15806c93e354542"
+    },
+    {
+      "path": "tests/source-contract-parameters/Partial_Equality_Node_Check.thy",
+      "sha256": "8524a1d55e3f64267a22cea35d8e17f772fdfcc69136cf07b09a26e305b002c0"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Subterm_Ground_Equality.pl",
+      "sha256": "fa7e6f390bb65782df1410725e21b051f1b1136b980c96456ad2affd0c325186"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Attached_Partial_Copy.pl",
+      "sha256": "2c750f60288ab75953f9c95e41d3c4dbc5c5ebe21997afc4595202944dd22f6a"
+    },
+    {
+      "path": "target/source-partial-equality-node/kernel-receipt.txt",
+      "sha256": "5083a5e7210a769195e5e8719537dfd93bfd18d12739fab011213b0a9720f2c7"
+    },
+    {
+      "path": "target/source-partial-equality-node/equality-controls.log",
+      "sha256": "fb7f706ee25f7a24494d647cc5067ec3c391874075f1ca6952578d682631d891"
+    },
+    {
+      "path": "target/source-partial-equality-node/partial-output-controls.log",
+      "sha256": "cb1d932d8410891f19ed7758e3b4e834c6505289048c9436eebab71179a6550c"
+    }
+  ]
+}

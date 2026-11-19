@@ -1,0 +1,74 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Six-to-two singleton copy-choice answer contract with explicit successful cut continuation",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Actual copied output and observation plus joint invariant supplied to success continuation",
+    "Singleton local failure has no answers",
+    "Retained strict six-to-two residual step composes success continuation"
+  ],
+  "required_conditions": [
+    "Incoming joint invariant, tracked parameter, finite input spine, covered caller slots",
+    "Free-or-ground helper-output mode and authenticated incoming output leaf effect and parameter observation",
+    "Exact repeated-parameter nil head, cut body, singleton frame and no pending goals",
+    "Exact residual clause with distinct variables",
+    "Successful substituted cut-state continuation answer contract"
+  ],
+  "artifact_audit": {
+    "scope": "Singleton state and clause audit; continuation contract remains an explicit premise",
+    "records": [
+      {
+        "variant": "original",
+        "region": 35,
+        "row": 2,
+        "rejected_mutations": [
+          "saved_alternative",
+          "pending_goal",
+          "different_parameter_head",
+          "missing_cut",
+          "nonempty_failure"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": 35,
+        "row": 2,
+        "rejected_mutations": [
+          "saved_alternative",
+          "pending_goal",
+          "different_parameter_head",
+          "missing_cut",
+          "nonempty_failure"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "source_controls_passed": 15,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; six-to-two copy-choice answer contract assembled conditionally",
+    "remaining_paths_boundaries": "incomplete; cut continuation, ten-to-six and complete node contracts remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Copy_Contract_Check.thy": "323ba20535991703a267127254872031ae71c00b3c198921f4cb5d035e3cd0cf",
+    "tests/source-contract-parameters/audit_copy_contract_state.py": "d3e3ffc8a71533fd035de0fb249f68c880682bc2cbae65ce5ffd4ad45ddd4ce6",
+    "target/source-global-copy-contract/kernel-receipt.txt": "9ae64d02b25e8614f6e4f24144d6b24deb53a89cbaf4e735c10afe977fe9d43a",
+    "target/source-global-copy-contract/state-audit.json": "a50dd65985d03880d5b6a60a999cb23ab3043182cef72b49ca3ac3ba51708655",
+    "target/source-global-copy-contract/caller-controls.log": "4be1759093b453d91e4811cf490d5c09001e8a8abbac56d6a2e7f62e69e2c671",
+    "target/source-global-copy-contract/successor-controls.log": "68b80f95ec5cfea7882db06f5592518006e7ee8f9f775665dc1f0c2d63705243"
+  }
+}

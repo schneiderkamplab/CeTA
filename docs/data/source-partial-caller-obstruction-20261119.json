@@ -1,0 +1,47 @@
+{
+  "status": "M1_OPEN_INVARIANT_REVISION_REQUIRED",
+  "broad_obligation_1": "active",
+  "query": "numvars(a, outer(inner(z)), outer(X))",
+  "answer": "X = inner(z)",
+  "obstruction": "Copy-or-scalar returned value does not imply whole-parameter-or-scalar images for arbitrary compound caller outputs",
+  "required_repair": [
+    "prove suitable ground subterm replacement closure budget and parameter compatibility",
+    "authenticate copy-head images for arbitrary finite output shapes",
+    "integrate sharing and spine preservation without changing query semantics"
+  ],
+  "verification": {
+    "kernel": "four facts; no skipped proofs or oracles",
+    "source_assertions": 8,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "tests/source-contract-parameters/Partial_Caller_Obstruction.thy",
+      "sha256": "7112d1411fb41713805750dc1493d3d39158cd1aefa41972bdafaf30e1a06a13"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Partial_Caller_Obstruction.pl",
+      "sha256": "74655a3eede3eff6fdc59528101326b9b2a8e83b753ff38e3dbf5229b74ae6de"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Parameter_Leaf_Budget.thy",
+      "sha256": "a6c4cb3d23b9ab402a625d834c1c4849c5c4875094e76172ef3b4d7d7d9d15d1"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Ground_Caller_Continuation.thy",
+      "sha256": "7fc08b270797ea2872085b642e04b8654f26683334e4e28f9f9e7d7bc0c2c8a8"
+    },
+    {
+      "path": "target/source-partial-caller-obstruction/kernel-receipt.txt",
+      "sha256": "a9f503a92b026f1f30df42d55bf30a63912689b83d33037cc9441abfb0858468"
+    },
+    {
+      "path": "target/source-partial-caller-obstruction/source-controls.log",
+      "sha256": "c5fc552f2f940d3123e4498886e6af9e00f4da213e907bd6a9f158beca31c74f"
+    },
+    {
+      "path": "../TPDB-ARI/Prolog/prolog_mixed/numbervars.pl",
+      "sha256": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7"
+    }
+  ]
+}

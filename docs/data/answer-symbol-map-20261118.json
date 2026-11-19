@@ -1,0 +1,10 @@
+{
+  "kernel_checked": true,
+  "source_certified": false,
+  "arbitrary_runtime_terms": true,
+  "checked_actual_symbol_map": false,
+  "files": {
+    "thys/Logic_Programming/LP_Answer_Symbol_Map.thy": "49e7899d4598145d30bc5da24e063c1ec0b35a6559264985f684d217e4561179",
+    "target/observer-family-assembly/answer-symbol-map-kernel-receipt.txt": "8a878ed2d0ded72d707c5d4fe818b25e7435b9422cafef1ab5ddaf54a0ad69c2"
+  }
+}

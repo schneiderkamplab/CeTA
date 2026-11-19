@@ -1,0 +1,124 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual copy-successor payloads and functor observations; conditional local results, not complete row contracts",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Nil-copy MGU plus incoming functor relation forces nullary original value and constructor name",
+    "Actual successor coordinate transport preserves functor fact and total helper return environment",
+    "Simple copy preserves total helper return environment",
+    "Ten-to-six residual observations use actual successor valuation and incoming name/functor observations"
+  ],
+  "required_conditions": [
+    "Actual MGU, tracked parameter and finite spine",
+    "Checked coordinate mappings and prefix bounds",
+    "Incoming functor relation for the functor case",
+    "Output mode, finite pending goals and incoming authenticated leaf effects/observations for observation transport"
+  ],
+  "artifact_audit": {
+    "scope": "Executable source-coordinate audit; kernel theorem handles actual MGU and observations; full row contract remains open",
+    "records": [
+      {
+        "variant": "original",
+        "region": "0",
+        "row": 22,
+        "target": 25,
+        "active_prefix": 17,
+        "clause_prefix": 34,
+        "complete_payload_checked": true,
+        "functor_coordinates_checked": true,
+        "rejected_mutations": [
+          "missing_parameter_binding",
+          "wrong_output_payload",
+          "wrong_clause_prefix",
+          "missing_functor_fact",
+          "stale_unrefreshed_functor"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        }
+      },
+      {
+        "variant": "original",
+        "region": "35",
+        "row": 2,
+        "target": 5,
+        "active_prefix": 3,
+        "clause_prefix": 6,
+        "complete_payload_checked": true,
+        "functor_coordinates_checked": false,
+        "rejected_mutations": [
+          "missing_parameter_binding",
+          "wrong_output_payload",
+          "wrong_clause_prefix"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "0",
+        "row": 22,
+        "target": 25,
+        "active_prefix": 17,
+        "clause_prefix": 34,
+        "complete_payload_checked": true,
+        "functor_coordinates_checked": true,
+        "rejected_mutations": [
+          "missing_parameter_binding",
+          "wrong_output_payload",
+          "wrong_clause_prefix",
+          "missing_functor_fact",
+          "stale_unrefreshed_functor"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "35",
+        "row": 2,
+        "target": 5,
+        "active_prefix": 3,
+        "clause_prefix": 6,
+        "complete_payload_checked": true,
+        "functor_coordinates_checked": false,
+        "rejected_mutations": [
+          "missing_parameter_binding",
+          "wrong_output_payload",
+          "wrong_clause_prefix"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "source_controls_passed": 5,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; copy successor payload and observation premises discharged locally",
+    "remaining_paths_boundaries": "incomplete; full row context conditions and other paths remain",
+    "actual_helper_return_contracts": "both open: Splits 30 and 44",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Copy_Successor_Check.thy": "a2132842c4d2356287cb0ff2f4f0142e7b6ecadd3989b31ea3a22f818fa12d9f",
+    "tests/source-contract-parameters/audit_copy_successor_payloads.py": "47243222e1ec0dfa369c5a03862830b2ca85861190fbd188dd53992430e3fe99",
+    "tests/source-contract-parameters/Check_Copy_Successor.pl": "f73f63767fafa0e6538355f4765ca2ecf800e5999484295ce250dd381aefb649",
+    "target/source-global-copy-successor/kernel-receipt.txt": "e08b04856710b4ceae8dd81d6c41508d67d581a0fae61eccc9d9efb78c53c993",
+    "target/source-global-copy-successor/audit.json": "193c7aacb8d810961513f22462b3d96ab27f9f0b0814cfaa9ce5e1ec3e080644",
+    "target/source-global-copy-successor/source-controls.log": "68b80f95ec5cfea7882db06f5592518006e7ee8f9f775665dc1f0c2d63705243"
+  }
+}

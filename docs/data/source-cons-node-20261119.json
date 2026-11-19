@@ -1,0 +1,161 @@
+{
+  "schema": "source-cons-node-review-v1",
+  "date": "2026-11-19",
+  "source_certified": false,
+  "milestone_1": "OPEN",
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Attached_Cons_Head.thy",
+      "sha256": "54d545a0274aedb01c3e85965e7e9e8f9dc2fd92bf309854f9487e2ec8bb3017"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Cons_Head.thy",
+      "sha256": "403b7a5b979378cd1856970cb38de1799667fd2e1a50da2567ce91e2631258b2"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Cons_Node.thy",
+      "sha256": "a1806def0844eac81376f2bd9f0e7c8c51b0d3894d59f01474421d2b8d973d0a"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Cons_Successor_Facts.thy",
+      "sha256": "55b6cd83fcbb00d4aac63e9e9983891ed76de489b02de78b0b447e9610341131"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Cons_Node_Export.thy",
+      "sha256": "e78b7c113f16934d41860923a15e488bf2c08f6469916a3fe15259b7238750f0"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Cons_Node.ML",
+      "sha256": "c72cbe271e5d209614acd3026091eda8c4c800fd6f6a0dfa9dc2d4f3fa699388"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-cons-node/kernel-receipt.txt",
+      "sha256": "349d1e43931906f9825192177fdd51b8819b9eb47d129b84fea220db5180b6e7"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-cons-node/Cons_Node_Check.ML",
+      "sha256": "4223c4e49441e23882cdc81af35e04462a53bbdb1ef28d03a0f516fa5bd82d1e"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-copy-node-20261119.json",
+    "sha256": "7775b2ae9042e5bf0c6ec67355ba19f9f7ff0d6075cbbcb3e2bc71d7ccce9098"
+  },
+  "variants": {
+    "original": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-cons-node/original.log",
+        "sha256": "f94816b51beaf14d721850343ec52633a5811d4c670a305c130bcc336e81ab0b"
+      },
+      "positive_checks": 11,
+      "rejection_controls": 21,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml",
+          "sha256": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml",
+          "sha256": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml",
+          "sha256": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      ]
+    },
+    "renamed": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-cons-node/renamed.log",
+        "sha256": "f94816b51beaf14d721850343ec52633a5811d4c670a305c130bcc336e81ab0b"
+      },
+      "positive_checks": 11,
+      "rejection_controls": 21,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml",
+          "sha256": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml",
+          "sha256": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml",
+          "sha256": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      ]
+    }
+  },
+  "discharged_interface_obligations": [
+    "Linear cons heads on an authenticated proper spine now have a full conditional observer node contract preserving a restricted ground replacement set and finite attached execution.",
+    "The recursive successor freshness rule no longer needs post-unification finiteness as an independent premise: it is derived from finite incoming call, proper spine, head linearity and arity.",
+    "The actual tail-coordinate map carries a spine length exactly one less than the incoming spine."
+  ],
+  "checked_operational_obligations": [
+    "Successful cons resolution provides an actual matching witness even when symbolic matching is unavailable.",
+    "Caller leaf effects and finite execution are preserved on attached base transitions including failure and saved alternatives.",
+    "Parameter relation and free body-only output separation hold in the same actual successor valuation.",
+    "Full node contract retains complete successor initialization, scope restoration and strict residual descent."
+  ],
+  "actual_rows": [
+    "0:23",
+    "35:3"
+  ],
+  "scope_limits": [
+    "Proper incoming spine and complete success/failure conditions remain source-family premises.",
+    "Finite spine length alone does not establish finite elements; incoming finite call and attached caller finiteness remain explicit.",
+    "Separation is established from the instantiated selected call; additional caller values still need their own coverage and finiteness facts.",
+    "Fixtures validate source actions and structural premises, not unconditional source-node acceptance or full runtime invariants.",
+    "Caller-slot controls are synthetic executable examples, not production witnesses.",
+    "Tail decrement does not replace strict residual descent or discharge recursive references.",
+    "Existing pinned extraction tables are reused; no fresh native extraction or production source certification."
+  ],
+  "next_obligations": [
+    "Instantiate concrete source-family entry and full successor conditions, beginning with recursive helper entry and saved caller output facts.",
+    "Authenticate acquired-block rows and module boundaries.",
+    "Authenticate actual returns 19:1 and 28:1 and resumed continuations.",
+    "Discharge both Split contracts through strict-descent family induction."
+  ],
+  "development_corrections": [
+    "Replaced an insufficient simplification-only elimination of the matching-witness existential with explicit existential reasoning before kernel acceptance."
+  ],
+  "native_code_changed": false,
+  "baseline_campaigns_run": false
+}

@@ -1,0 +1,22 @@
+{
+  "kernel_checked": true,
+  "source_certified": false,
+  "actual_return_premises_discharged": false,
+  "unified_source_checker": false,
+  "fixtures": [
+    "original",
+    "renamed-and-reversed"
+  ],
+  "ordered_prefixes_per_fixture": 2,
+  "clause_receipts_per_prefix": 21,
+  "missing_receipt_rejections_per_fixture": 42,
+  "files": {
+    "target/helper-prefix-composed/renamed.log": "a361be48c2587d5bcc2cb945595082f877ad757b56a6be088e827371d3f69fc1",
+    "target/helper-prefix-composed/Helper_Prefix_Composed_Export.thy": "a9f8c9c1576304780a82004679cfb7602b649bc43bc18ca02f3e3c1354b189f7",
+    "target/helper-prefix-composed/kernel-receipt.txt": "6361285ebf13d087f828625b6e2f65451f16860a5b2bdd176c15219370fd8cb4",
+    "target/helper-prefix-composed/original.log": "a361be48c2587d5bcc2cb945595082f877ad757b56a6be088e827371d3f69fc1",
+    "target/helper-prefix-composed/Helper_Prefix.ML": "8ca6e614012a2e51cabd55d51cbcb2c46fbfe628490ae46e706cb64b0e956baa",
+    "target/helper-prefix-composed/Check.ML": "a46c3bf6243eabbd4dade17f4cc710d214620c03b5598dccab85669be72c408f",
+    "thys/Logic_Programming/LP_Prolog_Parameter_Forest_Check.thy": "16c16951b0d9ee0c0781d93d977d4c136fe46412d77868291a840b000edaf035"
+  }
+}

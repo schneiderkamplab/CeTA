@@ -299,6 +299,7 @@ session Proof_Checker_Base in Proof_Checker_Base = IsaFoR_2 +
     Sparse_Tiling_Removal_Source
   directories
     "../CSR_Checker/AAECC"
+    "../Rewriting/Checkpoint_Ranking"
   theories
     AAECC_Innermost_Switch
     QDP_To_SRS_Zantema

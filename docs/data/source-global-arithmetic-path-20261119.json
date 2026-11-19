@@ -1,0 +1,29 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Global arithmetic-to-equality path carries incoming observed output unchanged and initializes only fresh scalar coordinates"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "retained_path_cases": 4,
+    "negative_controls": 12,
+    "immutable_certificate_hashes_verified": true,
+    "production_replay": false
+  },
+  "remaining": [
+    "Concrete native encoding",
+    "Integrate actual source normalization with global family representation",
+    "Initialize incoming observations and preserve them over all source rows",
+    "Both helper returns and justified recursive assembly"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Arithmetic_Path_Check.thy": "b772467f272ea9b03afd9e5efa86ca29643fa8dd40a38c29da991a066a1bde4c",
+    "tests/source-contract-parameters/audit_global_arithmetic_path.py": "2edd773a3a86a11f3f15597f0d2697a664be7af915c125b3d3f9c2e30f085460",
+    "tests/source-contract-parameters/audit_global_boundary_projection.py": "d0599cc8d83ce18a45a02815b029244f75f6cddbf71342e913a2ec4af031367c",
+    "target/source-global-arithmetic-path/kernel-receipt.txt": "c30a0cc799048f42bebf5c38bde27d45561d10362fc0c693d07bddc8eb534da4",
+    "target/source-global-arithmetic-path/audit.json": "48a75af16a299fdd90eb377b8530684ceafddea8defce45533c0e01978c07226"
+  }
+}

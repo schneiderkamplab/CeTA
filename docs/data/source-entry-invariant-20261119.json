@@ -1,0 +1,25 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "change": "Normalized entry preservation factored independently of equality coverage and reused in product proof",
+  "verification": "Isabelle kernel without skipped proofs or oracles; six retained sharing controls",
+  "remaining": [
+    "actual normalization correspondence and block composition",
+    "tracked-parameter and caller-mode integration",
+    "source-family initialization and preservation"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Product.thy",
+      "sha256": "a15953cd7a1fb16ee5560b876d0882ab128de6441dae476208320009a9847fbf"
+    },
+    {
+      "path": "target/source-entry-invariant-receipt.txt",
+      "sha256": "759100b5bea45db8288f7f295fb6400185db81632326abb6ab6b3bae33978da4"
+    },
+    {
+      "path": "target/source-entry-invariant-controls.log",
+      "sha256": "1ba3e8f6917116e9c07646b7fca1a719dd1ea8a8911ec76db407834a4c9455fa"
+    }
+  ]
+}

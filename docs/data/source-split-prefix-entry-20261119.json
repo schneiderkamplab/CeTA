@@ -1,0 +1,179 @@
+{
+  "schema": "source-split-prefix-entry-review-v1",
+  "date": "2026-11-19",
+  "milestone_1": "OPEN",
+  "source_certified": false,
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Split_Prefix_Caller_Entry.thy",
+      "sha256": "7abda852cf613abb5a96a4e7c7e58b2c59b24b8c64fc2ce1789fad225d5f8a6c"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Split_Prefix_Entry_Export.thy",
+      "sha256": "dc08de546f2e72213780dd3ec362ff96dd1539a614ae0d4d6330c3290aa775ce"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Split_Prefix_Entry.ML",
+      "sha256": "6426e4fef2e5e2dad5c0f3a5d7ce2f29bc2212378e9f531235399e4558d6ab14"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/audit_split_prefix_entry.py",
+      "sha256": "f10928ca90ceb52df6ee0d4902231ae87d14ec8fb7dd87a277329ce5d6b29aa9"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/kernel-receipt.txt",
+      "sha256": "284fa010333eb297a19c5957c47ee1e4797f67acf48b8d50e2678a1e347d449f"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/Split_Prefix_Entry_Check.ML",
+      "sha256": "61375864e3affe6a481153f50fe3e8d6b644dd86c4434a38b688a83209fad7be"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-recursive-caller-20261119.json",
+    "sha256": "7e53ee4b70d285df4612de1cadc47a19d08583f5b74ab3cc2d11e4429ca21446"
+  },
+  "retained_interface_manifest": {
+    "path": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-coverage-20261118/bound-return-contracts-manifest.json",
+    "sha256": "db54d33af90e6c1f70e8654200f632745f62dd827166097d26415c8affa49b22"
+  },
+  "variants": {
+    "original": {
+      "positive_checks": 6,
+      "rejection_controls": 24,
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/original.log",
+        "sha256": "6c10364226a16e58227cdd01b07280573bbf8ab1dd0a97ba9d2a667128c90363"
+      },
+      "fixtures": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/original.fixtures",
+        "sha256": "6ee305df4d56986ab290ab7566ddec745b3f55ec37e814e2a8cdfaae823fee8a"
+      },
+      "audit": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/original.audit.json",
+        "sha256": "23170e8b0730ab2cf1147aeb9bdc4e4775d137e8dcfca8b3a783d1531833bdd1"
+      },
+      "retained_native_log": {
+        "path": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-coverage-20261118/bound-return-contracts-original.log",
+        "sha256": "c3593cc3ed3ae855de336a8f7b779a0b2511a6e3ace7eeadd0bcae7937e2361e"
+      },
+      "development_failure_log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/original-harness-failure.log",
+        "sha256": "bc135571a8c1c941aa39baa4eaf77a3a291309fb8d0161c2adf8b200a948a948"
+      }
+    },
+    "renamed": {
+      "positive_checks": 6,
+      "rejection_controls": 24,
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/renamed.log",
+        "sha256": "6c10364226a16e58227cdd01b07280573bbf8ab1dd0a97ba9d2a667128c90363"
+      },
+      "fixtures": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/renamed.fixtures",
+        "sha256": "6ee305df4d56986ab290ab7566ddec745b3f55ec37e814e2a8cdfaae823fee8a"
+      },
+      "audit": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/renamed.audit.json",
+        "sha256": "23170e8b0730ab2cf1147aeb9bdc4e4775d137e8dcfca8b3a783d1531833bdd1"
+      },
+      "retained_native_log": {
+        "path": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-coverage-20261118/bound-return-contracts-renamed.log",
+        "sha256": "fcc9bd9805ddc2ede65fe7d14034ea1cf3a58be46866a21655c5bd9ce9803d2e"
+      },
+      "development_failure_log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-split-prefix-entry/renamed-harness-failure.log",
+        "sha256": "bc135571a8c1c941aa39baa4eaf77a3a291309fb8d0161c2adf8b200a948a948"
+      }
+    }
+  },
+  "layouts": [
+    {
+      "split": 30,
+      "payload": [
+        "V1",
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "helper_output": 1,
+      "caller_tail": 2,
+      "caller_output": 3,
+      "incoming_parameter_retained": true
+    },
+    {
+      "split": 44,
+      "payload": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "helper_output": 0,
+      "caller_tail": 1,
+      "caller_output": 2,
+      "incoming_parameter_retained": false
+    }
+  ],
+  "discharged_obligations": [
+    "Checked caller-payload slots preserve helper-output freshness, caller-output mode, tail spine and helper separation from tail/caller.",
+    "The widened recursive entry initializes a structural list observation of the finite caller tail and a structural observation of the finite caller output.",
+    "These observations initialize the joint observer invariant for the singleton prefix with its actual attached three-argument continuation: finite execution plus restricted caller leaf effects."
+  ],
+  "retained_premises": [
+    "Authenticated widened recursive entry and checked caller-payload coordinates.",
+    "Initial parameter tracking remains in the helper-entry valuation, not inferred from the caller payload; Split 44 does not return that coordinate."
+  ],
+  "scope_limits": [
+    "Initialization only: no preservation theorem through helper execution or actual successful return is proved here.",
+    "Singleton prefix initialization does not authenticate pre-existing saved frames, caller/module rebasing or full boundary reconstruction.",
+    "The helper observation environment is arbitrary in this caller-side theorem; its own module representation remains a separate obligation.",
+    "Return projection, answer bridges, incoming source facts, Split contracts and original query initialization remain open.",
+    "Fixtures are extracted from hash-validated retained diagnostic logs and pinned XML, not production proof search or complete source certificates.",
+    "Initial leaf effects are reflexive for any replacement set; later preservation still requires the appropriate restricted ground replacement conditions."
+  ],
+  "progress_by_obligation": [
+    {
+      "obligation": "Invariant integration/preservation",
+      "status": "advanced: prefix initialization checked; preservation open",
+      "completed": "Caller tail/output observations and singleton attached observer invariant initialized from widened entry.",
+      "remaining": "Actual helper-step preservation, acquired blocks and whole-family entry/preservation."
+    },
+    {
+      "obligation": "Remaining paths/boundaries",
+      "status": "interface-coordinate gate advanced; boundaries open",
+      "completed": "Both actual caller payload layouts and continuation routing audited and checked.",
+      "remaining": "Full module/Split boundary reconstruction, saved-frame representation and resumed-continuation contracts."
+    },
+    {
+      "obligation": "Both actual helper-return contracts",
+      "status": "open",
+      "completed": "Neither authenticated.",
+      "remaining": "Both actual returns and Split discharge."
+    },
+    {
+      "obligation": "Justified recursive assembly",
+      "status": "open",
+      "completed": "No recursive premise discharged by this initialization theorem.",
+      "remaining": "Complete family assembly, strict descent and original query initialization."
+    }
+  ],
+  "next_obligation": "Prove preservation of the initialized caller-tail and caller-output invariant through actual helper rows, particularly acquired argument-extraction blocks and successful-return exits.",
+  "development_corrections": [
+    "Fixed theorem definition parameter bindings and an Isabelle keyword collision before acceptance.",
+    "Replaced unavailable Poly/ML List.mapi in the test harness; initial failing logs retained, both reruns passed."
+  ]
+}

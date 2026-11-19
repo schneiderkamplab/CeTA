@@ -1,0 +1,40 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "full invariant at checked arithmetic intermediate representation",
+    "arithmetic domain derived from finite execution"
+  ],
+  "remaining": [
+    "actual row and node-condition integration",
+    "whole-family preservation and initialization",
+    "helper returns and recursive assembly"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 5,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Arithmetic_Invariant.thy",
+      "sha256": "f39583e920db6d5fef196c3308d9a51c5ee3bcba18634d470eeebeed82fd1d5f"
+    },
+    {
+      "path": "tests/source-contract-parameters/Arithmetic_Observer_Check.thy",
+      "sha256": "f69350385c51e9c23a77eafd135075a80b325c7b86d18f39a791237ebbb37fe7"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl",
+      "sha256": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5"
+    },
+    {
+      "path": "target/source-arithmetic-observer/kernel-receipt.txt",
+      "sha256": "dfff4e9c1de8927dd366584541a7b430020b26daf2d5b93780082e987ef37e86"
+    },
+    {
+      "path": "target/source-arithmetic-observer/source-controls.log",
+      "sha256": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac"
+    }
+  ]
+}

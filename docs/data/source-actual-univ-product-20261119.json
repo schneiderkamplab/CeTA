@@ -1,0 +1,60 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "actual attached constructor univ to normalized domain path",
+    "actual univ result to invariant-preserving product under coverage and representation premises"
+  ],
+  "remaining": [
+    "checked-row valuation to normalized representation composition",
+    "equality coverage",
+    "parameter and caller-mode integration",
+    "source-family initialization and preservation",
+    "both actual helper returns",
+    "recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 8,
+    "sharing_controls": 6,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Univ_Actual_Path.thy",
+      "sha256": "699df5cca0256c98cafa69e5222862e0da1515273c15035f5cb5dce5ce8dfe65"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Actual_Univ_Product.thy",
+      "sha256": "4dd3cc2d1817ac68482487267c7a45b9b5c5f0b7e0864aa8284faa234190587b"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Product.thy",
+      "sha256": "a15953cd7a1fb16ee5560b876d0882ab128de6441dae476208320009a9847fbf"
+    },
+    {
+      "path": "tests/source-contract-parameters/Actual_Univ_Product_Check.thy",
+      "sha256": "36a8d7e314328b92ae6a429359b775a13a5f9d42ae0c79fb1e91297976528699"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Acquired_Univ_Product.pl",
+      "sha256": "67ad27c9a13dc0d1730546a68be20e2ce107ce3b19d25c354c3b8d2abaebefc5"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Normalized_Univ_Product.pl",
+      "sha256": "63a7a167d9fd4192a54b8196960c0dc7b05215e112f34d378d4bafdb998dc077"
+    },
+    {
+      "path": "target/source-actual-univ-product/kernel-receipt.txt",
+      "sha256": "592a5b1afa758fa09ca8a7991a7adb4da813c8379e91db45047d821d0afac78a"
+    },
+    {
+      "path": "target/source-actual-univ-product/source-controls.log",
+      "sha256": "e03fe246eff2c2ca860dfb1820196bc61f9abb24a33953aa5e92a53e9cf296c6"
+    },
+    {
+      "path": "target/source-actual-univ-product/sharing-controls.log",
+      "sha256": "1ba3e8f6917116e9c07646b7fca1a719dd1ea8a8911ec76db407834a4c9455fa"
+    }
+  ]
+}

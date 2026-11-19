@@ -1,0 +1,195 @@
+{
+  "schema": "source-acquired-univ-caller-review-v1",
+  "date": "2026-11-19",
+  "milestone_1": "OPEN",
+  "source_certified": false,
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Acquired_Univ_Caller.thy",
+      "sha256": "1e07c948375661a78f6996f2af8cd1a796f92418eb9d3d83130ad2b3c96587ca"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Acquired_Univ_Caller_Export.thy",
+      "sha256": "d165fdd1208867db597c8152948c8d076e9b3d3fb0a039fe3bf315a2e69c8d37"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Acquired_Univ_Caller.ML",
+      "sha256": "6f6e0297f2a83161702c5198b4f63939af725f1a8332a04b75aa699e84675216"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Acquired_Univ_Caller.pl",
+      "sha256": "a08eaf906214bae897b4ac6c49d7720c7615ba40709899b0a80240d93c05c743"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-acquired-univ-caller/kernel-receipt.txt",
+      "sha256": "67e5e6e496df5bb86527da091e89f08b25f7e398453ec68e9e288cd3be20ade8"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-acquired-univ-caller/Acquired_Univ_Caller_Check.ML",
+      "sha256": "be1549c513d58734e3e986ea0d2f5d879b180d8c0253907bd98a3c0382229bcd"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-acquired-univ-caller/prolog.log",
+      "sha256": "747195e3bb70115220ab0de0ea3f16300af8af77986c482bc00d614ed11b900d"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-shared-caller-obstruction/swipl-version.txt",
+      "sha256": "3ea77e6bd4bc68319e3c43e0dd9895970f2604e191ad7e689d8188b4d8b0997e"
+    },
+    {
+      "path": "/work/dfm/festschrift/TPDB-ARI/Prolog/prolog_mixed/numbervars.pl",
+      "sha256": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7"
+    },
+    {
+      "path": "/usr/lib/swi-prolog/bin/x86_64-linux/swipl",
+      "sha256": "be0c4b8a98f6eed857ddd69543f03c02170b7a63e0cc43cf8cbb5463fcefca61"
+    }
+  ],
+  "predecessor_evidence": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-split-prefix-entry-20261119.json",
+      "sha256": "8a36d7f66446a7a204f351b4f0ddae30ea8bce4e4f6e7e5494469c2b987d1641"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-conditioned-matching-20261118.json",
+      "sha256": "4c6bd814bda243808d4f748cf1160298db113776fff17b7de43e0baa9faaa92e"
+    }
+  ],
+  "variants": {
+    "original": {
+      "positive_checks": 11,
+      "rejection_controls": 23,
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-acquired-univ-caller/original.log",
+        "sha256": "d77ed76485b69a7b905fa9b11d3fd5cad1cb719da5a43611d05582eaff824ead"
+      },
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-47.xml",
+          "sha256": "6d5f5379383825a2e177b9bd8b685f0ab31f7efb0246682cd9dc9823c00d82e8"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-47.xml",
+          "sha256": "686e9339b24e83398ec33a2ae2a2757075228164d1242d58ad3c6b07bcb93057"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-47.xml",
+          "sha256": "26e5f1e63ecc75799d29f27af856211ed89e75258398e07f0272e275383676e1"
+        }
+      ]
+    },
+    "renamed": {
+      "positive_checks": 11,
+      "rejection_controls": 23,
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-acquired-univ-caller/renamed.log",
+        "sha256": "d77ed76485b69a7b905fa9b11d3fd5cad1cb719da5a43611d05582eaff824ead"
+      },
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-47.xml",
+          "sha256": "7a203400a52538d002429017d215ae5d85d7d9eca143e82c6230fca36134a60b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-47.xml",
+          "sha256": "67f6809a82d4e7e640ecbfc3f2825baee3e9f741531b87c3173f879ae0e050ac"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-47.xml",
+          "sha256": "c926bc84c9b6b30f78df1e6ef0b0d4d3dfb27a6aedccca97d1bbbc9fcb466e31"
+        }
+      ]
+    }
+  },
+  "original_source_assertions": 11,
+  "actual_acquired_rows": [
+    "0:3",
+    "47:3"
+  ],
+  "discharged_obligations": [
+    "The fresh name and argument-list outputs acquired by actual matching resolution are separate from post-resolution live caller observations, not just from the selected input.",
+    "Post-resolution caller finiteness needed for freshness is derived from restricted leaf preservation, rather than assumed independently.",
+    "Checked attached-slot coverage supplies the runtime support premise on the full continuation.",
+    "The constructor-input extraction step preserves the restricted caller leaf-stack invariant with saved frames retained."
+  ],
+  "retained_premises": [
+    "Fresh-decomposition clause check and actual MGU matching the same call and full attached continuation.",
+    "Finite selected call and full pending continuation, incoming caller leaf-stack invariant, and ground allowed replacement templates.",
+    "A constructor-valued extraction input and an actual builtin source transition."
+  ],
+  "scope_limits": [
+    "Local leaf-stack preservation only; joint finite-execution and caller-output-mode preservation are not newly proved for the whole block.",
+    "Internal normalized equality rows, coordinate transports, continuing-block exits and failure/variable-input assembly remain open.",
+    "Structural fixtures validate source action, head matching, freshness and coordinate syntax, not complete runtime applicability or source certification.",
+    "Attached-slot coverage controls and forged-freshness source controls are synthetic examples.",
+    "No actual helper-return contract, Split discharge, whole-family assembly or root initialization is completed."
+  ],
+  "progress_by_obligation": [
+    {
+      "obligation": "Invariant integration/preservation",
+      "status": "advanced locally, incomplete",
+      "completed": "Acquired caller protection derived and used for restricted leaf preservation through actual constructor extraction.",
+      "remaining": "Joint finite/mode invariant, helper-wide preservation and actual applicability facts."
+    },
+    {
+      "obligation": "Remaining paths/boundaries",
+      "status": "constructor extraction covered conditionally; blocks and boundaries open",
+      "completed": "Both retained acquired rows pass structural regressions.",
+      "remaining": "Normalized equality paths, block exits, variable-input/failure assembly, module and Split boundaries."
+    },
+    {
+      "obligation": "Both actual helper-return contracts",
+      "status": "open",
+      "completed": "Neither authenticated.",
+      "remaining": "Both actual return contracts and Split discharge."
+    },
+    {
+      "obligation": "Justified recursive assembly",
+      "status": "open",
+      "completed": "No recursive assumption discharged.",
+      "remaining": "Complete family proof and original query initialization."
+    }
+  ],
+  "next_obligation": "Integrate acquired caller protection with the continuing block normalized equality path, finite execution and exit conditions.",
+  "development_corrections": [
+    "Added the existing matching-node theory to the test export imports so structural coordinate adapters resolve; production proof imports remain scoped to the operational lemmas."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "actual acquisition row existential witnesses composed with actual builtin witness product",
+    "resolution and normalization residual paths composed",
+    "matching runtime instance derived from checked match"
+  ],
+  "remaining": [
+    "authenticate incoming invariant and contexts",
+    "complete source row coverage",
+    "parameter/caller-mode integration including arbitrary permitted outputs",
+    "whole-family initialization/preservation",
+    "both helper returns",
+    "recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "row_controls_per_variant": 32,
+    "builtin_controls": 5,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Checked_Acquired_Block.thy",
+      "sha256": "f85fcdad0616022f0444b401df89bb112c157a184ed62f3359f5ed6e74ce57a0"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Joint_Witness_Product.thy",
+      "sha256": "477284a440678f03c0d0b3c3df7780bf9a8fbd77a6a83918e82b9aeb1a8258a8"
+    },
+    {
+      "path": "tests/source-contract-parameters/Checked_Acquired_Block_Check.thy",
+      "sha256": "8f80ce5707725ce8353fd575d3530c7ad65f318d5b4705f05314c564492b68fb"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Acquired_Block_Rows.ML",
+      "sha256": "39fac748feec69157dc5193df86329e27cce80bad1192f3ddc26a4ba6adb81c3"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Joint_Witness_Product.pl",
+      "sha256": "fdb74f99796e38e41974607172992cd4939a34aaf7d3d781f87f3c00c3bb6473"
+    },
+    {
+      "path": "target/source-acquired-block-rows/Acquired_Block_Rows_Check.ML",
+      "sha256": "08e8d0e3c0f25ac74260b8993d89f5d8f1949e5bae170d50243ae572e786f496"
+    },
+    {
+      "path": "target/source-checked-acquired-block/kernel-receipt.txt",
+      "sha256": "afbbebd4580ed59a175c248b58b5c9890b6b12e9648186123e9e797ca491d8ee"
+    },
+    {
+      "path": "target/source-checked-acquired-block/controls.log",
+      "sha256": "dfe402a1c41ee85815a8f10ed4693af8a7a9b0fda8fe4216e0ef93b5e9115756"
+    },
+    {
+      "path": "target/source-checked-acquired-block/original.log",
+      "sha256": "8b6b1c4b84f8fc2c9bce8f81c3d7ec3427fee237575fc6b6f52ec983a251542b"
+    },
+    {
+      "path": "target/source-checked-acquired-block/renamed.log",
+      "sha256": "8b6b1c4b84f8fc2c9bce8f81c3d7ec3427fee237575fc6b6f52ec983a251542b"
+    },
+    {
+      "path": "docs/data/source-actual-witness-product-20261119.json",
+      "sha256": "ce3b0ea53cb0927536d09a055cf6fc6caad7a19aaa5cc34f0e5f6c001e3e9238"
+    }
+  ]
+}

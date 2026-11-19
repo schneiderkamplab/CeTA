@@ -1,0 +1,31 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Combined observer invariant carried through conditioned and canonical arithmetic normalization",
+    "Actual ground equality preserves output alias together with finite/leaf invariants in the same child",
+    "Canonical scalar equality instantiated with original parameter leaf set, not widened subterms"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "kernel_controls": 2,
+    "source_controls_passed": 5,
+    "production_replay": false
+  },
+  "remaining": [
+    "Connect arithmetic target conditions and equality module boundary",
+    "Integrate remaining source nodes and acquired blocks with combined invariant",
+    "Complete family initialization, parameter tracking and all preservation paths",
+    "Authenticate both returns and recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Arithmetic_Node.thy": "3033c06a6c4aa0e932925c63b3f9179209e5a413ffc1b75d44b518d1a55cbce8",
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Scalar_Equality_Node.thy": "764e1d7427619db0c19469ac8d0d4c27a7bc95f5d2e23eb1e42b5f949dc92048",
+    "tests/source-contract-parameters/Observer_Output_Arithmetic_Check.thy": "700b5f96c67bd2f5b3bb8772d739571c80824fa1d11746ed84aaf2fac49d0cff",
+    "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5",
+    "target/source-observer-output-arithmetic/kernel-receipt.txt": "9a53139f02d0c64db2f7e44ee7358dff2f68ddc9c373dbce1e4a84745e18abb4",
+    "target/source-observer-output-arithmetic/source.log": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac"
+  }
+}

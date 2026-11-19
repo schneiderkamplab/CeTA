@@ -1,0 +1,31 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Conditional incoming boundary assembly supplies strict descent, full scalar-conditioned target representation, combined output invariant and unchanged caller execution in one theorem"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "structural_boundary_cases": 4,
+    "identity_coordinate_positive": true,
+    "wrong_scalar_binding_negative": true,
+    "dynamic_boundary_certification": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Actual static incoming link checks",
+    "Arithmetic path establishes source scalar and boundary conditions",
+    "Full source family initialization and invariant preservation",
+    "Both actual Split return contracts and justified recursive assembly"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Observer_Output_Rebase_Check.thy": "26929676adcce01b326775ad375fcd6e8ca3fc36939b69c38828f35de9118b02",
+    "tests/source-contract-parameters/Conditioned_Output_Link_Check.thy": "fb5148301b703227e55fa6deb4a22b90fb5c753128b00095614a04a0fc8f1735",
+    "thys/Logic_Programming/LP_Prolog_Observer_Conditioned_Output_Link.thy": "1785168812c4ce8c821ca80f416d25144c47f624823db9792fe3946be5e41baf",
+    "tests/source-contract-parameters/audit_output_rebase.py": "8cbdc200072e27bb9b8ed61723d4adbe7bf52defe0ae3e8282f727bd7da60b74",
+    "target/source-equality-incoming-boundary/kernel-receipt.txt": "5d51d6a750ea38ab50b0fca03c72dbce1639f69552a842151c06716515825f8e",
+    "target/source-equality-incoming-boundary/structural-audit.json": "fc733ae80274cedfe9645199bd297d3058a69bd984a94b508dc7c5acd0b1a578"
+  }
+}

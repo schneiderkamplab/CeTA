@@ -11,6 +11,7 @@ theory CPF_Proof_Parser
   imports
     Proof_Checker
     CPF_Input_Parser
+    Checkpoint_Certificate_Parser
     LTS.LTS_Parser
 begin
 
@@ -1150,6 +1151,9 @@ begin
 
 abbreviation "red_triple \<equiv> redtriple xml2name Sharp" 
 
+
+
+
 partial_function_mr (sum_bot)
   xml2dp_termination_proof :: "('f, 'l, string) dp_termination_proof xmlt"
   and xml2trs_termination_proof :: "('f, 'l, string) trs_termination_proof xmlt"
@@ -1166,7 +1170,9 @@ where
   xml_singleton (STR ''dpProof'') (
     XMLdo (STR ''pIsEmpty'') {
       xml_return P_is_Empty
-    } XMLor XMLdo (STR ''depGraphProc'') {
+    } XMLor xml_change (checkpoint_ranking_certificate_parser xml2name termIndexMap)
+      (\<lambda>certificate. xml_return (Checkpoint_Ranking_Proc certificate))
+    XMLor XMLdo (STR ''depGraphProc'') {
       a \<leftarrow>* XMLdo (STR ''component'') {
         dps \<leftarrow> (xml_singleton (STR ''dps'') (rules xml2name termIndexMap ruleMap) id);
         prfOpt \<leftarrow>? xml2dp_termination_proof;

@@ -1,0 +1,211 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual simple cons successor 35:3 to 7 total return payload and ordinary context",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "production_replay": false,
+  "source_yes": false,
+  "discharged_local_obligations": [
+    "Total return environment equals actual source substitution, including outside-interface coordinates",
+    "Tracked parameter preserved at checked target coordinate",
+    "Ground parameter and proper-list shape establish successor stable context",
+    "Checked fresh body-output coordinate remains a runtime variable"
+  ],
+  "required_conditions": [
+    "Actual successful cons MGU",
+    "Incoming proper list spine and tracked ground parameter",
+    "Checked head, parameter, tail and output coordinate maps",
+    "Checked fresh body-output map"
+  ],
+  "audit": {
+    "scope": "Simple cons successor total payload and ordinary contexts; conditional theorem interface only",
+    "records": [
+      {
+        "variant": "original",
+        "region": 35,
+        "source": 3,
+        "target": 7,
+        "rejected": [
+          "wrong_payload_head",
+          "wrong_payload_parameter",
+          "wrong_payload_output",
+          "wrong_ground_coordinate",
+          "wrong_shape_coordinate",
+          "growing_spine_grammar",
+          "wrong_free_coordinate",
+          "missing_output"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": 35,
+        "source": 3,
+        "target": 7,
+        "rejected": [
+          "wrong_payload_head",
+          "wrong_payload_parameter",
+          "wrong_payload_output",
+          "wrong_ground_coordinate",
+          "wrong_shape_coordinate",
+          "growing_spine_grammar",
+          "wrong_free_coordinate",
+          "missing_output"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "coordinate_audit": {
+    "scope": "Five cons successor coordinate maps only; full row and residual assembly remain open",
+    "records": [
+      {
+        "variant": "original",
+        "region": "0",
+        "row": 23,
+        "target": 27,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        }
+      },
+      {
+        "variant": "original",
+        "region": "35",
+        "row": 3,
+        "target": 7,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "0",
+        "row": 23,
+        "target": 27,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "35",
+        "row": 3,
+        "target": 7,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "source_controls": {
+    "passed": 9,
+    "log": "CeTA-prolog-release/target/source-global-cons-context/source-controls.log"
+  },
+  "broad_obligations": {
+    "invariant_integration": "Incomplete; simple cons successor payload/context discharged conditionally",
+    "remaining_paths_boundaries": "Incomplete; cons failure, larger successor and full node assembly open",
+    "actual_helper_return_contracts": "Both Splits 30 and 44 open",
+    "justified_recursive_assembly": "Open"
+  },
+  "artifacts": {
+    "CeTA-prolog-release/tests/source-contract-parameters/Global_Cons_Context_Check.thy": "801c8875428375f1de75a8609652767ac269feaecf34389687a6c7a338cb1064",
+    "CeTA-prolog-release/tests/source-contract-parameters/audit_cons_context_payload.py": "18995fe6dbf43dffddc014e27d10367ed5c36c3edd496e1565512f785334a4d7",
+    "CeTA-prolog-release/target/source-global-cons-context/audit.json": "736c244dd06e846935eb47c1c43b2b2e1be6e8adaa974a2ad60088451d9f3334",
+    "CeTA-prolog-release/target/source-global-cons-context/coordinate-audit.json": "07434947fcc244775bad1b3984b04fac2ffae59d7e494a07c924d0688679953e",
+    "CeTA-prolog-release/target/source-global-cons-context/kernel-receipt.txt": "468e365d931752b3020e5327f5fef018402b5157bf40a6306c67a5fb5fc60781",
+    "CeTA-prolog-release/target/source-global-cons-context/source-controls.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896"
+  }
+}

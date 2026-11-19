@@ -1,0 +1,95 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual cons head/tail structural observations and encoded split; full residual step remains open",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Incoming cons input tree splits into structures of actual rho x and rho y",
+    "Incoming shadow equals encoded cons constructor over authenticated child shadows"
+  ],
+  "required_conditions": [
+    "Proper list spine and actual cons MGU",
+    "Distinct linear head variables and finite selected call",
+    "Authenticated incoming input structural observation",
+    "Child histories are initialized at their current trees"
+  ],
+  "artifact_audit": {
+    "scope": "Cons shadow decomposition and child routing only; full residual step remains open",
+    "records": [
+      {
+        "variant": "original",
+        "row": "seg_region_0_23",
+        "clause": 26,
+        "rejected": [
+          "wrong_label",
+          "missing_nil",
+          "swapped_children",
+          "wrong_child_route",
+          "missing_child"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+      },
+      {
+        "variant": "original",
+        "row": "seg_region_35_3",
+        "clause": 42,
+        "rejected": [
+          "wrong_label",
+          "missing_nil",
+          "swapped_children",
+          "wrong_child_route",
+          "missing_child"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+      },
+      {
+        "variant": "renamed",
+        "row": "seg_region_0_23",
+        "clause": 90,
+        "rejected": [
+          "wrong_label",
+          "missing_nil",
+          "swapped_children",
+          "wrong_child_route",
+          "missing_child"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa"
+      },
+      {
+        "variant": "renamed",
+        "row": "seg_region_35_3",
+        "clause": 74,
+        "rejected": [
+          "wrong_label",
+          "missing_nil",
+          "swapped_children",
+          "wrong_child_route",
+          "missing_child"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa"
+      }
+    ]
+  },
+  "renaming_artifact": {
+    "path": "../ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/transformation.json",
+    "sha256": "71a1ce32d8c4d33e31e27796759b6a851dfa8cc9d662298eff8b526d4fc43516"
+  },
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; actual cons child observation split checked",
+    "remaining_paths_boundaries": "incomplete; fresh output and other successor coordinates plus full node/family assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Cons_Observation_Check.thy": "f696bb39dc14ade79a9942509608c72d8ec9e14c3a6189582e5f0af34291a021",
+    "tests/source-contract-parameters/audit_cons_observation_split.py": "2ec7dbf88a707c96fe0d365b8ffe9f7a7b71abc46a9b93172aa1e05f6d0cd33d",
+    "target/source-global-cons-observation/kernel-receipt.txt": "a5c0062bb99c142f49bee046e4498ac1a334faeab518306ae21b396df78bea06",
+    "target/source-global-cons-observation/audit.json": "98c50099b8cc8f89e648503afe431c40467e842cd9b9ac8eb5c94e197807853b"
+  }
+}

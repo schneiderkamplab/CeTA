@@ -1,0 +1,30 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Existence of encoded actual output observation with restricted leaf history from boundary invariant and covered helper slot",
+    "Projection preserves supplied observed coordinate pairs"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "variable_leaf_positive": true,
+    "constructor_leaf_negative": true,
+    "native_encoding_verified": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Instantiate native symbol encoding and allocate fresh structural valuation",
+    "Scalar observation and full doubled-arity family representation",
+    "Preservation for all source transitions and query initialization",
+    "Both actual helper returns and justified recursive assembly"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Boundary_Observation_Check.thy": "b9caf7bdc9e432b673f0c1ed9f00274cffd3db23ffedb0518c3b38534d321397",
+    "tests/source-contract-parameters/Global_Boundary_Projection_Check.thy": "2aebca2492acc62b5026f478edfb413d259edcc4cd1c2abbc72f8a7af09ab8e0",
+    "thys/Logic_Programming/LP_Prolog_Runtime_Leaf_Invariant.thy": "0557a26e9909f8da7d092fdd6d6a2062c9e6e386c7c0d2e8663c048842421a65",
+    "thys/Logic_Programming/LP_Prolog_Reified_Structure.thy": "6fc86d2fd918e85ae4f5a75bbcae286f5a2293b4a32628ed856c73a9f2e2da0f",
+    "target/source-global-boundary-observation/kernel-receipt.txt": "ad899d6fff75998afab23e9f5350e20c77bdc2628cb863731fb93b038c4935b9"
+  }
+}

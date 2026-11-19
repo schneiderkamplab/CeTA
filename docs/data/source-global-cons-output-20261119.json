@@ -1,0 +1,159 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual five-coordinate cons-successor observations; full residual step and family remain open",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Tracked parameter value and observation retained through actual cons MGU",
+    "Caller output structure and prior leaf history retained under matching renaming",
+    "All five successor observations transported through checked coordinate maps",
+    "Incoming encoded cons split retained in assembled result"
+  ],
+  "required_conditions": [
+    "Actual successful linear cons resolution, proper spine and finite call",
+    "Tracked parameter and authenticated incoming input/parameter/output observations",
+    "Checked four head-coordinate maps and body-only fresh-output map"
+  ],
+  "artifact_audit": {
+    "scope": "Five cons successor coordinate maps only; full row and residual assembly remain open",
+    "records": [
+      {
+        "variant": "original",
+        "region": "0",
+        "row": 23,
+        "target": 27,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        }
+      },
+      {
+        "variant": "original",
+        "region": "35",
+        "row": 3,
+        "target": 7,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "0",
+        "row": 23,
+        "target": 27,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": "35",
+        "row": 3,
+        "target": 7,
+        "slots": [
+          "V0",
+          "V1",
+          "V2",
+          "V3",
+          "V4"
+        ],
+        "rejected": [
+          "missing_0",
+          "wrong_0",
+          "missing_1",
+          "wrong_1",
+          "missing_2",
+          "wrong_2",
+          "missing_3",
+          "wrong_3",
+          "missing_4",
+          "wrong_4"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "source_controls_passed": 9,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; five cons successor observations assembled at actual valuation",
+    "remaining_paths_boundaries": "incomplete; extra functor/name coordinates and complete residual/node/family assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Cons_Output_Check.thy": "1752a77a83981c875b3910756f738a5bb5b3b1ffae2bbdf1e50072587c2b62dc",
+    "tests/source-contract-parameters/audit_cons_five_coordinates.py": "5a3aee57d9f100085d03adfd52291722da5f299b6740be81ecc8d3ba65860802",
+    "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613",
+    "target/source-global-cons-output/kernel-receipt.txt": "6afec0af389a6dd3f033d0bd08047f1aeace643f3fac75041f98022823e41088",
+    "target/source-global-cons-output/coordinate-audit.json": "07434947fcc244775bad1b3984b04fac2ffae59d7e494a07c924d0688679953e",
+    "target/source-global-cons-output/source-controls.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896"
+  }
+}

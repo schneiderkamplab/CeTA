@@ -1,0 +1,36 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "derive prefix initialization directly from actual cons MGU and both coordinate checks"
+  ],
+  "remaining": [
+    "full source-state shape and transport integration",
+    "remaining node invariants and whole-family initialization",
+    "helper-return spine preservation",
+    "both helper returns and recursive assembly"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "production_replay": false,
+    "executable_controls": "retained predecessor evidence; no new executable rule"
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Recursive_Partial_Prefix.thy",
+      "sha256": "1b7ae5609830091f44f25543cc8ccf86be9641bf159f11662a2d33eafca26a58"
+    },
+    {
+      "path": "tests/source-contract-parameters/Recursive_Partial_Prefix_Check.thy",
+      "sha256": "29b7add8ecd13c508cc08a85377fe89098ee7938ecc7d17fbab30f90b4998e3e"
+    },
+    {
+      "path": "target/source-recursive-partial-prefix/kernel-receipt.txt",
+      "sha256": "fc37db5152f9351288977556cca3ebf8e2070ef91c6ccf6eab4f7d9b1096ab59"
+    },
+    {
+      "path": "docs/data/source-recursive-partial-entry-20261119.json",
+      "sha256": "a30e106f65b690b77d3525bfc33783b78045cce5d9b7f345b84c2f5b3d0045b8"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "actual recursive cons entry permits arbitrary finite caller output",
+    "tracked parameter, proper tail and fresh separated helper derived from actual MGU",
+    "recursive observer node integration and checked prefix invariant initialization"
+  ],
+  "remaining": [
+    "whole-family initialization and remaining node preservation",
+    "complete source-path and boundary coverage",
+    "return-time spine preservation and both actual helper-return contracts",
+    "well-founded recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "structural_controls_per_variant": 28,
+    "source_controls": 9,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Recursive_Partial_Entry.thy",
+      "sha256": "c9991a3631cf45da48005f866b7ace82a98e5022164883ab569baab83ac4f2ae"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Recursive_Partial_Node.thy",
+      "sha256": "67eba9bab70cc89b53008e8da66958a869e8d824077631647567bbbcae5de5c9"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Split_Prefix_Partial_Entry.thy",
+      "sha256": "8b8c85c0818a35e319d7b3d9552fc717ec757d1a39304eab65f81f6dee3f16b8"
+    },
+    {
+      "path": "tests/source-contract-parameters/Recursive_Partial_Entry_Check.thy",
+      "sha256": "93f3700789e0e1c9ba2770987f3047d747bbe3c7d68fd8b2320359c38a8f2f62"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl",
+      "sha256": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Recursive_Caller.ML",
+      "sha256": "f4cbf671ca8dfc97c398812e5f39d760c3786f110f119610e32385d2d90e70c8"
+    },
+    {
+      "path": "target/source-recursive-caller/Recursive_Caller_Check.ML",
+      "sha256": "2e5b267a19e00f3b378c58a54de895bb0ebac9425ae778622be08ce3f23e2b5b"
+    },
+    {
+      "path": "target/source-recursive-partial-entry/kernel-receipt.txt",
+      "sha256": "77b320730783ae8f14e72e7a516595bc5fcea803499033d6d34859273e22255f"
+    },
+    {
+      "path": "target/source-recursive-partial-entry/original.log",
+      "sha256": "eb9477f5d0366916a83e6ca969de3812f579dcd222cbdbedc942fa9284f85d23"
+    },
+    {
+      "path": "target/source-recursive-partial-entry/renamed.log",
+      "sha256": "eb9477f5d0366916a83e6ca969de3812f579dcd222cbdbedc942fa9284f85d23"
+    },
+    {
+      "path": "target/source-recursive-partial-entry/source-controls.log",
+      "sha256": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896"
+    },
+    {
+      "path": "docs/data/source-recursive-caller-20261119.json",
+      "sha256": "7e53ee4b70d285df4612de1cadc47a19d08583f5b74ab3cc2d11e4429ca21446"
+    },
+    {
+      "path": "docs/data/source-partial-copy-coordinates-20261119.json",
+      "sha256": "7bd0163058fa8f179cb9ccb0b1ead0ed0a2882b9c27d2c2cd2ea09ed15d885e3"
+    }
+  ]
+}

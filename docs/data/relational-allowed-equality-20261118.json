@@ -1,0 +1,10 @@
+{
+  "source_certified": false,
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Relational_Allowed_Equality.thy": "ffaccf087426b683d76f298d544b55d486e9d71bc8f0d6a1cf75b00a1b2827a7",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/relational-allowed-equality-kernel-receipt.txt": "dfe5fe0d467d0831f68321fe19dc12e213cb44b3df78ed8403bb10f3f2677842"
+  },
+  "kernel_checked": true,
+  "scope": "Restricted replacement transport reuses the existing relational leaf coordinate coverage checker. Runtime equality requires a free selected value, membership in the allowed ground replacement set, and finite active continuation. Repeated-parameter resolution uses the same runtime support condition.",
+  "remaining": "Dispatch these restricted rules from authenticated local source conditions, preserve them across all observer nodes, and discharge actual successful-return and Split contracts."
+}

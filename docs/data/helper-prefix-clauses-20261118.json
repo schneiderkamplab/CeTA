@@ -1,0 +1,37 @@
+{
+  "source_certified": false,
+  "successful_return_effects_authenticated": false,
+  "unified_source_integration": false,
+  "checked_helper_clauses_per_fixture": 41,
+  "fixtures": [
+    "original",
+    "renamed-and-reversed"
+  ],
+  "groups": {
+    "argument_conversion": 2,
+    "parameter_leaf_relations": 32,
+    "list_effect_wrappers": 4,
+    "ground_recognition": 3
+  },
+  "negative_controls": [
+    "missing receipt",
+    "omitted clause",
+    "aliased variables",
+    "forged successful output",
+    "truncated variable map",
+    "wrong variable map"
+  ],
+  "scope": "Generated matcher checks explicit fixture clause correspondence; this audit is not a production discovery processor or source certificate.",
+  "files": {
+    "target/helper-prefix-audit/Helper_Prefix_Export.thy": "b89f6d0d2b39d62cd109f8f5d728dacf1d9496b0b05f5b0ec7e9f41173ab0e5e",
+    "target/helper-prefix-audit/Helper_Prefix.ML": "14da7191cb78849046d9c2601acff3bf7ec80b5e127997c21fffe12bc85038cd",
+    "target/helper-prefix-audit/Check.ML": "92a2ebba7c7d8813490002b08ed5bd054b1a0633e577fae5a03b87cb603570ef",
+    "target/helper-prefix-audit/prepare-data.py": "3cece88f191fa3476aba3d1a15934961493812ed0e62efd067f0523c2ad874e1",
+    "target/helper-prefix-audit/original-data.ML": "b8e7834e66a0c187b35e58337358de69f9b72dff9f623718486232058648120b",
+    "target/helper-prefix-audit/renamed-data.ML": "318d05e02f75a104c3a2b534b54de376018cb90d536b524cf500012aaf5503af",
+    "target/helper-prefix-audit/original-final.log": "8955d02285037705243e5dc39bbcc2606aef3c10756b23b40e254d4734af60e2",
+    "target/helper-prefix-audit/renamed-final.log": "8955d02285037705243e5dc39bbcc2606aef3c10756b23b40e254d4734af60e2",
+    "thys/Logic_Programming/LP_Answer_Clause_Rename.thy": "1ba6a7cca234cc81e13b8a6957133f7679a92dccd578e70c57d6c8866570e8b4",
+    "target/observer-family-assembly/answer-clause-rename-kernel-receipt.txt": "6a2bdd2040c15ad4f9dada15b9a4bd738e473a05c7c76b17e478bc830ebc8707"
+  }
+}

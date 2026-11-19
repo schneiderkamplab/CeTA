@@ -1,0 +1,14 @@
+{
+  "source_certified": false,
+  "query": "numvars(a,f(g(a)),f(X)), X == g(a), write_canonical(X), nl, halt",
+  "exit_code": 0,
+  "stdout": "g(a)\n",
+  "stderr": "",
+  "files": {
+    "/work/dfm/festschrift/TPDB-ARI/Prolog/prolog_mixed/numbervars.pl": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7",
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Sharing_Control.thy": "d856262d24c87bd336e4b37a5d54c0871529857099a429fb243499e9baa85947",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/parameter-sharing-kernel-receipt.txt": "2e083c67f2a8aaf5946805bad62926db35338dc0e9b1fbf03fba9d279829abdf"
+  },
+  "finding": "A successful source call can bind an output subvariable to a proper compound subterm of its ground input parameter. The narrow replacement family cannot apply to all caller variables without coordinate restrictions.",
+  "scope": "Negative control for an unrestricted environment contract. Does not refute the selected Split input/tail contracts; freshness and sharing conditions for those coordinates remain to be proved."
+}

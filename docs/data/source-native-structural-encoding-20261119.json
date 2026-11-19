@@ -1,0 +1,34 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Concrete structural symbol encoding, substitution and runtime-observation bridge, instantiated in the existing conditional arithmetic/equality contract",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "executable_checks": {
+    "eight_literal_names_match_pinned_original_residual": true,
+    "constructor_arity_collision_rejected": true
+  },
+  "kernel_controls": {
+    "symbolic_variable_preserved": true,
+    "symbolic_variable_not_observed_leaf": true
+  },
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; native structural substitution and conditional observation bridge checked",
+    "remaining_paths_boundaries": "incomplete",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "remaining": [
+    "Establish original-query initialization and native source label/signature correspondence for all permitted finite terms and scalar literals.",
+    "Integrate observed valuations, restricted replacement and parameter facts across all retained/acquired rows, saved alternatives and module boundaries.",
+    "Transport runtime data coordinates as well as structural coordinates to the encoded residual; a structural-symbol map alone does not establish full residual representation.",
+    "Discharge the arithmetic/equality contract incoming observation and caller continuation within the full observer family."
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Native_Structural_Encoding_Check.thy": "8c795ae97db3db1d07f6a9ad9dbfa2d26284a854cb92c9ec7635a01f817a4c8c",
+    "target/source-native-structural-encoding/kernel-receipt.txt": "80fbec1e9d20ae13888b47d07fcd19825b954bc500716ac588525649056295fa",
+    "target/source-native-structural-encoding/symbol-checks.txt": "39306751446db7ada06747470d33d2bd3ebd3a821d76f402facff6501865b52c"
+  },
+  "retained_certificate_sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+}

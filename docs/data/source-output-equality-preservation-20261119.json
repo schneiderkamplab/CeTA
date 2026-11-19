@@ -1,0 +1,34 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Combined invariant at actual attached equality successor, independent of residual-node representation",
+    "Scalar specialization retains old parameter replacement set",
+    "Existing equality contract and four-row module use shared preservation proof"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "caller_coverage_controls": 2,
+    "executable_source_controls": 5,
+    "existing_module_rechecked": true,
+    "prior_module_receipts_byte_identical": true,
+    "production_replay": false
+  },
+  "remaining": [
+    "Global return-coordinate correspondence and native encoding",
+    "Full-family initialization and remaining rows/acquired blocks",
+    "Both actual helper-return contracts",
+    "Justified recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Equality_Preservation.thy": "3279fb9da7e352ef0f04a75793991bb1e630929015d78db5046c75364f369ecd",
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Scalar_Equality_Node.thy": "31962655a1eab741d8285463d30722af3bc3e257633599680935ffb14b347178",
+    "tests/source-contract-parameters/Equality_Output_Preservation_Check.thy": "256c46d173d11911ed416d99720c397945ced20fa3fd1dcac2896c5730b3c514",
+    "tests/source-contract-parameters/Equality_Output_Module_Check.thy": "595e5aeac48e2cf5c18f4ff3125b1284b187323533e9c8210f82f0df2fe79f3f",
+    "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5",
+    "target/source-output-equality-preservation/kernel-receipt.txt": "2d95bb09a3f0533e34199bb7544ab2eedb5f363445666f36be6d50459f060a56",
+    "target/source-output-equality-preservation/source-controls.log": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac"
+  }
+}

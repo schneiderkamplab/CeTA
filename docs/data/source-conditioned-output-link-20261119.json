@@ -1,0 +1,38 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Full target node conditions transported with checked representation in same binding valuation",
+    "Conditioned module link carries combined output invariant",
+    "Retained equality row 19:0 instantiated with scalar entry/success/failure conditions; no abstract successor-condition callbacks remain in this fixture contract"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "generated_static_checks_per_variant": 12,
+    "generated_checker_modified": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Actual incoming module link scalar-condition instantiation and complete equality-module successful return",
+    "Integrate remaining rows/acquired blocks and nested Split interfaces",
+    "Complete parameter tracking, query/family initialization and invariant preservation",
+    "Both helper returns and justified recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Conditioned_Output_Link.thy": "1785168812c4ce8c821ca80f416d25144c47f624823db9792fe3946be5e41baf",
+    "tests/source-contract-parameters/Conditioned_Output_Link_Check.thy": "fb5148301b703227e55fa6deb4a22b90fb5c753128b00095614a04a0fc8f1735",
+    "tests/source-contract-parameters/Check_Equality_Condition_Coordinates.ML": "038e42673a8da604e4b27e1f6f175d266861da67744b882ffbb5bfe3138bc50f",
+    "target/source-recursive-caller/Recursive_Caller_Check.ML": "2e5b267a19e00f3b378c58a54de895bb0ebac9425ae778622be08ce3f23e2b5b",
+    "target/source-conditioned-output-link/kernel-receipt.txt": "037346a3d0bd16b8a685238836e9b9a60b4f28b7f1661241a271e44500403093",
+    "target/source-conditioned-output-link/original.log": "f271e6ac9094dafadf62eeb5bfcf3684157d119a8d4157009095676bd185e419",
+    "target/source-conditioned-output-link/renamed.log": "f271e6ac9094dafadf62eeb5bfcf3684157d119a8d4157009095676bd185e419",
+    "../ferrum-prolog-release/target/source-contract-development/original/states-19.xml": "bb9fa396ed699fcff9207bd6dc8a058af57811e0407471e7640b3151c83204d1",
+    "../ferrum-prolog-release/target/source-contract-development/original/actions-19.xml": "617f39b1c7dea85d93d3c77cd3d730c6837066ccc8f485d890e58bc198dba841",
+    "../ferrum-prolog-release/target/source-contract-development/original/subject-19.xml": "d2ed9b7ba713955225d23968f9220ae822dc1b4afcedbf9605eae40e9aebe8a5",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/states-19.xml": "bb9fa396ed699fcff9207bd6dc8a058af57811e0407471e7640b3151c83204d1",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/actions-19.xml": "617f39b1c7dea85d93d3c77cd3d730c6837066ccc8f485d890e58bc198dba841",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/subject-19.xml": "ef97511330bf66038d652a3b631f985785ce4006db0e7d5edab8ceaee8981481"
+  }
+}

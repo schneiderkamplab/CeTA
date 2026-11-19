@@ -6,11 +6,6 @@ text \<open>A proper observed list spine is retained by the leaf effect.
 Only element observations can change; a finite spine does not by itself
 supply finite element observations or a helper termination proof.\<close>
 
-lemma lpp_leaf_effect_constructor_iff:
- "lpp_leaf_effect A (Fun (Inl f) xs) t \<longleftrightarrow>
-   (\<exists>ys. t=Fun (Inl f) ys \<and> list_all2 (lpp_leaf_effect A) xs ys)"
- by (auto elim: lpp_leaf_effect.cases intro: lpp_leaf_effect.constructor)
-
 lemma lpp_list_leaf_effect_exact:
  "lpp_leaf_effect A (lpp_structural_argument_list xs) t \<longleftrightarrow>
    (\<exists>ys. t=lpp_structural_argument_list ys \<and> list_all2 (lpp_leaf_effect A) xs ys)"

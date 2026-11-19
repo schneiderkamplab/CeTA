@@ -1,0 +1,79 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "tracked original-parameter replacement-set transport",
+    "arbitrary finite output copy observer contract including finiteness",
+    "canonical node contract without output-mode premise"
+  ],
+  "remaining": [
+    "success/failure successor-context instantiation",
+    "remaining source node invariant integration",
+    "spine preservation and family initialization/coverage",
+    "actual helper returns and recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "coordinate_controls_per_variant": 24,
+    "source_controls": 17,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Copy_Continuation.thy",
+      "sha256": "1a0acfdd7a4cfcfa87a172bdc9ca73901e2913303308e8f8d607f5a3edaab369"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Partial_Copy.thy",
+      "sha256": "bc6ac599f3ec57bf4a90942cac47997cd64db94d1ea58aafa28ee84bf26516f3"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Partial_Copy.thy",
+      "sha256": "55b99715a164cc9c1c5afd642769241c8e467d1626716a70c6bb9be666c56c16"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Partial_Copy_Node.thy",
+      "sha256": "ece86fc359ea14aa43b25e8538711fdf1063417ebb223845de5e91b05ba8cd74"
+    },
+    {
+      "path": "tests/source-contract-parameters/Partial_Copy_Node_Check.thy",
+      "sha256": "f66282f0440f5bcec9f935d7348c46d5bf098372130830e39843a38598b6a54e"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Caller_Copy_Node.ML",
+      "sha256": "336adf497103ca15d30d492f2c67ba376139a36dbf2e3ec6dd95d0113229c316"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Caller_Copy_Node.pl",
+      "sha256": "9ad97a4685f819142275f33002dc6d4113582351ea46c31efd2f8253d520829d"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Attached_Partial_Copy.pl",
+      "sha256": "2c750f60288ab75953f9c95e41d3c4dbc5c5ebe21997afc4595202944dd22f6a"
+    },
+    {
+      "path": "target/source-caller-copy-node/Caller_Copy_Node_Check.ML",
+      "sha256": "1172e019569a592bc7becb31b699b533f0eae6a197b808bfa133193d9e6d3582"
+    },
+    {
+      "path": "target/source-partial-copy-node/kernel-receipt.txt",
+      "sha256": "f4bf452958141b2bf6da655bba1ffe9b0977ef71d699c991ecf25bdd99f31766"
+    },
+    {
+      "path": "target/source-partial-copy-node/original.log",
+      "sha256": "a5141d44f33857cf424c73670580b79b7cd68a916e9befb7613a9821b0f1e361"
+    },
+    {
+      "path": "target/source-partial-copy-node/renamed.log",
+      "sha256": "a5141d44f33857cf424c73670580b79b7cd68a916e9befb7613a9821b0f1e361"
+    },
+    {
+      "path": "target/source-partial-copy-node/partial-controls.log",
+      "sha256": "cb1d932d8410891f19ed7758e3b4e834c6505289048c9436eebab71179a6550c"
+    },
+    {
+      "path": "target/source-partial-copy-node/retained-controls.log",
+      "sha256": "4be1759093b453d91e4811cf490d5c09001e8a8abbac56d6a2e7f62e69e2c671"
+    }
+  ]
+}

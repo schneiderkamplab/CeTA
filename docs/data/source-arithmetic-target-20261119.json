@@ -1,0 +1,37 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "structural_target_mappings": 4,
+    "production_replay": false
+  },
+  "remaining": [
+    "integrate derived scalar fact into target initialization",
+    "original parameter transport and other node conditions",
+    "actual source assembly, query admission and whole-family preservation",
+    "helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Arithmetic_Target_Parameter.thy",
+      "sha256": "99a8f6e50c0199d698dce7e4697e77a7c7adf22dfc8e9e91681b1ea49dafb933"
+    },
+    {
+      "path": "tests/source-contract-parameters/Arithmetic_Target_Check.thy",
+      "sha256": "991ad5b46e46b3f2f8b9553ac17ddc3b8ddb35fbf3ede8de5150b580eec0b675"
+    },
+    {
+      "path": "tests/source-contract-parameters/audit_arithmetic_targets.py",
+      "sha256": "bc6bd5bced3c43c9aec5f6d81ca632d8f29e2b0d0b26dad2167c0de2fe84a1a6"
+    },
+    {
+      "path": "target/source-arithmetic-target/kernel-receipt.txt",
+      "sha256": "f740ae397ceef11d665a142e7566e3d484d0dcfc483cd3be686de12773dade33"
+    },
+    {
+      "path": "target/source-arithmetic-target/coordinates.json",
+      "sha256": "20f7843283b19688b5b60affa7ad2c6e2b7dd6164eb58aa20d69c526b018739e"
+    }
+  ]
+}

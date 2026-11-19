@@ -1,0 +1,143 @@
+{
+  "schema": "source-conditioned-equality-review-v1",
+  "date": "2026-11-18",
+  "source_certified": false,
+  "milestone_1": "OPEN",
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Conditioned_Equality.thy",
+      "sha256": "6dd4fad7c63f658313ce30a2eb33f08810b43f809a5982b089e8a1ae8d953240"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Conditioned_Equality.thy",
+      "sha256": "526e377a5ab2a0f344e5420cf00dd3152682b8355769811ef758991a6085cfaa"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Equality_Node.thy",
+      "sha256": "5b4b38d3f1b8b8289114ad0ee1290c25be9114634cce1ac9612e0eb2b14fdd89"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Refresh.thy",
+      "sha256": "f889559d0361ac8395cdc386f31ab0bad8e5993cacee9e09acbdf4890d94967c"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Conditioned_Export.thy",
+      "sha256": "cb74b04cf18979fa52c0fc9d4656156c86a383e10f7d19a6ef4963a9885268b9"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Conditioned.ML",
+      "sha256": "8f2c414abfb1bb59566958a5514213a83ce67aa8b9772620061d1067c8f88af6"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-equality/kernel-receipt.txt",
+      "sha256": "02196bde61dd22bdd55163d004787fb9eedc94c7a59564e0ccd8e07137020064"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-equality/Conditioned_Check.ML",
+      "sha256": "2ec46af95fafe7a63069084ac6547c445f9f43d4f62bd9e23236863847aea604"
+    }
+  ],
+  "variants": {
+    "original": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-equality/original.log",
+        "sha256": "8c8c6ac06ca62ffff02ccf73b4589370d6da56c3412eb7e4e47fd07a91d9dba4"
+      },
+      "positive_checks": 11,
+      "negative_controls": 13,
+      "input_tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-47.xml",
+          "sha256": "6d5f5379383825a2e177b9bd8b685f0ab31f7efb0246682cd9dc9823c00d82e8"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-47.xml",
+          "sha256": "686e9339b24e83398ec33a2ae2a2757075228164d1242d58ad3c6b07bcb93057"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-47.xml",
+          "sha256": "26e5f1e63ecc75799d29f27af856211ed89e75258398e07f0272e275383676e1"
+        }
+      ]
+    },
+    "renamed": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-conditioned-equality/renamed.log",
+        "sha256": "8c8c6ac06ca62ffff02ccf73b4589370d6da56c3412eb7e4e47fd07a91d9dba4"
+      },
+      "positive_checks": 11,
+      "negative_controls": 13,
+      "input_tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-47.xml",
+          "sha256": "7a203400a52538d002429017d215ae5d85d7d9eca143e82c6230fca36134a60b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-47.xml",
+          "sha256": "67f6809a82d4e7e640ecbfc3f2825baee3e9f741531b87c3173f879ae0e050ac"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-47.xml",
+          "sha256": "c926bc84c9b6b30f78df1e6ef0b0d4d3dfb27a6aedccca97d1bbbc9fcb466e31"
+        }
+      ]
+    }
+  },
+  "discharged_interface_obligation": "The parameter equality node now uses arbitrary supplied node_conditions in its actual successor representation and lower contract. This removes the separation-only lower-premise mismatch identified in source-contract-development-20261118.json. Scope restoration and strict residual descent are retained.",
+  "actual_coordinate_checks": {
+    "module_0": "Raw G contains V1; successful equality keeps V1 in the link valuation.",
+    "module_47": "Raw G is empty; successful equality uses $$$V1. Context groundness proves its value fixed under substitution without changing the syntactic refresh map.",
+    "failures": "Failure conditions use the original valuation. Both concrete equality failure destinations are empty states.",
+    "positive_unused_evidence": "Removing the redundant identity binding in module 0 is accepted; removing the nonidentity parameter binding in module 47 is rejected."
+  },
+  "semantic_limits": [
+    "Node contracts retain explicit incoming branch-freeness and parameter-relation premises.",
+    "The refresh rule establishes the parameter component of successful successor conditions; arbitrary additional conditions still need their own proofs.",
+    "No complete family invariant, recursive helper-return relation, module boundary or Split contract was authenticated.",
+    "Existing source/native extraction was reused and its exact inputs hashed; no new extraction or production proof run is claimed."
+  ],
+  "next_obligations": [
+    "Instantiate strengthened node conditions across the complete family, including positive test and cut predecessors.",
+    "Preserve free-output and parameter facts through matching and repeated-parameter heads, including the copy boundary at 19:0.",
+    "Lift restricted leaf effects through acquired blocks and all boundaries.",
+    "Prove actual successful returns at 19:1 and 28:1, resumed continuations, and both Split contracts by the existing strict-descent family induction."
+  ],
+  "baseline_campaigns_run": false,
+  "effort_estimate": "Milestone 1 remains open; this local discharge does not validate or narrow the previous low-confidence effort envelope."
+}

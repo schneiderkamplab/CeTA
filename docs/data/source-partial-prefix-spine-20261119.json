@@ -1,0 +1,36 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 5,
+    "production_replay": false
+  },
+  "remaining": [
+    "full boundary correspondence and actual-return leaf effects",
+    "query/family initialization and complete preservation",
+    "helper termination/return contracts and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Prefix_Return_Spine.thy",
+      "sha256": "066c807dac48174afc012f8b38447e694725297617dc7cac4f4109d51957c63a"
+    },
+    {
+      "path": "tests/source-contract-parameters/Partial_Prefix_Spine_Check.thy",
+      "sha256": "730520a0dbcc117772bd67c48a0fffa0e12c0ff8f193f2b7da40c6f71108738b"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Partial_Prefix_Spine.pl",
+      "sha256": "9fe7427ca5036eeefd6c84748fb0ff816b66002321134adeb0f1a0a4fb48292d"
+    },
+    {
+      "path": "target/source-partial-prefix-spine/kernel-receipt.txt",
+      "sha256": "597f5902a0f45f9cb93d93e4920c67b7d2785dea3bee9aa78faf00a6b7bf8227"
+    },
+    {
+      "path": "target/source-partial-prefix-spine/source-controls.log",
+      "sha256": "6298e719e903a00c835e6594b939349d9df52cdd7d29a4207c51fa2ae790449b"
+    }
+  ]
+}

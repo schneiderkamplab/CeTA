@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "discharged": "normalized entry finiteness from matching resolution and exact continuation, retaining finite saved alternatives",
+  "verification": {
+    "kernel": "Isabelle; no skipped proofs or oracles",
+    "executable_controls": 8,
+    "block_simulation": false,
+    "production_replay": false
+  },
+  "next_obligation": "continuing block equalities: strict residual path and target module representation on actual coordinates",
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Entry.thy",
+      "sha256": "91baed5cb1186c8dbc0b991de01c5098d3aae1bcff81586219d7fcdf83abe8fe"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Normalized.thy",
+      "sha256": "8f14c66ad180f63b12c69102609a53896767294052a345bd8f24f29f4d51ac2f"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Finite_Matching_Head.thy",
+      "sha256": "3de77bee2463a13eb17ba714bd20d0bda029510c90b204d98c1ae278fc99fd8d"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Continuing_Univ.thy",
+      "sha256": "276582a64c33b759bed57c53dc1857393493b382ea03b49626fd287f0226c300"
+    },
+    {
+      "path": "tests/source-contract-parameters/Acquired_Univ_Entry_Check.thy",
+      "sha256": "db5dcfa3333f19a5f88e96d2e6b49728a948549af6f890cdb800d2e989cdaf06"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Acquired_Univ_Entry.pl",
+      "sha256": "e75c22a070a57fbe9e9bc1924f76500b989970dd3a0a102ac5a66626d79ae46b"
+    },
+    {
+      "path": "target/source-acquired-univ-entry/kernel-receipt.txt",
+      "sha256": "5ec6da349c9fbad425977b5f82e1f81d3c4a1c4fc0a1a54920c36c8c908f1f40"
+    },
+    {
+      "path": "target/source-acquired-univ-entry/source-controls.log",
+      "sha256": "1a3c55866c75c996e4c367ff7aac71da8e111fc0941bc6ad3c6e2b1b1af59d6c"
+    },
+    {
+      "path": "docs/data/source-acquired-univ-normalized-20261119.json",
+      "sha256": "cf8c3d5a96e0f410eea716e8b3d126a0647f7ae9e290d25af4311500b05eafee"
+    }
+  ]
+}

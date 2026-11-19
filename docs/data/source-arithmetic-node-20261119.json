@@ -1,0 +1,39 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "canonical arithmetic node with full invariant and strict-descent child lifting"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 5,
+    "production_replay": false
+  },
+  "remaining": [
+    "actual source-row instantiation and target initialization",
+    "whole-family initialization and preservation",
+    "both helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Arithmetic_Node.thy",
+      "sha256": "1d65448079c2e6ef82cdfcf59b1f8fdf41dd4792035d58374780e0a729b8de91"
+    },
+    {
+      "path": "tests/source-contract-parameters/Arithmetic_Node_Check.thy",
+      "sha256": "e6c8fea2fa515052e955e6f965196cb5c93b76660bbba46faae659ac6a148060"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl",
+      "sha256": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5"
+    },
+    {
+      "path": "target/source-arithmetic-node/kernel-receipt.txt",
+      "sha256": "58915981ec1ff31cd0f60cbe294aa4ed16dedd5fb7db6f88c2c6484b06bef1cc"
+    },
+    {
+      "path": "target/source-arithmetic-node/source-controls.log",
+      "sha256": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "parameter equality contract and node preserve widened subterm invariant"
+  ],
+  "remaining": [
+    "actual source-row assembly and arithmetic integration",
+    "query-to-family representation and full preservation",
+    "actual helper returns and recursive assembly"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "accepted_binding_forms": 4,
+    "rejection_controls": 5,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Subterm_Parameter_Equality.thy",
+      "sha256": "1d81ee906d9686868a0646ea93e3d35c470e785057432bb346b7a7b9e3ce96e8"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Subterm_Parameter_Equality_Node.thy",
+      "sha256": "774ca6d0638ed523493df7ebfabc63d95be3755271e10c019fd057ad72637137"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Parameter_Binding_Check_Test.thy",
+      "sha256": "39f021879abbcb06c64c5c38fdaa3b21568a5e2271b304a7b3c8234ad7ca25f1"
+    },
+    {
+      "path": "tests/source-contract-parameters/Subterm_Equality_Check.thy",
+      "sha256": "e683c7a7507b235f1387ad5ecbc4c31e3281b64a91ce48a9a23cf2c8ae9b5cce"
+    },
+    {
+      "path": "target/source-subterm-equality/kernel-receipt.txt",
+      "sha256": "11a115ab4121c811bf36a6338e06f12c891ecde0ca4242f2bf43d63024350ef2"
+    }
+  ]
+}

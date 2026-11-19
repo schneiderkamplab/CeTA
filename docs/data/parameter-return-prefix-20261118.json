@@ -1,0 +1,10 @@
+{
+  "source_certified": false,
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Return_Prefix.thy": "0db1df6fbbb18d6f2caf5560f72d3d6b8bfbe4825ab2ea995c8055b422b42917",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/parameter-return-prefix-kernel-receipt.txt": "a007fd8e09bc220f846b8790a340b74b92c161dec9a86f6bf54b5daa5d464f89"
+  },
+  "kernel_checked": "lpp_checked_parameter_forest_return_prefix",
+  "scope": "The checked actual residual helper-family premise now composes with runtime leaf/list effects under a returned parameter. The successful residual prefix retains the original parameter coordinate and ordered ground/leaf/list goals.",
+  "remaining": "Establish the parameter-return relation and both runtime effects from the original source observer family. Existing planned-family checker uses all-ground replacement sets, which cannot itself discharge the narrower helper relation."
+}

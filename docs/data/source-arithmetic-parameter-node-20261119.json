@@ -1,0 +1,40 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "structural_target_mappings": 4,
+    "production_replay": false
+  },
+  "remaining": [
+    "payload fact integration and remaining target conditions",
+    "actual source assembly, initialization and full preservation",
+    "helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Arithmetic_Parameter_Node.thy",
+      "sha256": "82a09ba414c0d024c9e2cce7f76e9d91bfb7ab89f5c1f5fe10fa79c2fa0a9880"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Arithmetic_Target_Payload.thy",
+      "sha256": "53388ea92d0afae9cc09ac2f2b76b964793227e6e9c69faf634d67fefaa30d40"
+    },
+    {
+      "path": "tests/source-contract-parameters/Arithmetic_Parameter_Node_Check.thy",
+      "sha256": "d320513733583d7bc821a972374f78d45facd5898d4ca623127ff83ed93e47e4"
+    },
+    {
+      "path": "tests/source-contract-parameters/audit_arithmetic_payload.py",
+      "sha256": "b99875f08cc2d80eaa953823342083048d1dbac73c49a1992d09ee997d317c49"
+    },
+    {
+      "path": "target/source-arithmetic-parameter-node/kernel-receipt.txt",
+      "sha256": "72bd0953bd11e50e41345d3254bd0e0c96a4d8f1c87915edfc22dad66a2b29b3"
+    },
+    {
+      "path": "target/source-arithmetic-parameter-node/coordinates.json",
+      "sha256": "6099cb2645dc414dd65d2709bef5611014f7a643282746db08964dd38fa139ca"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "source_certified": false,
+  "full_residual_certified": true,
+  "source_status": "UNKNOWN",
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-checkpoint-triples-v2/ceta",
+  "checker_sha256": "732c063e90b47f66088d950962a2da9b9ca3305c5b06cf4667c93621c16581be",
+  "ceta_changed": true,
+  "ceta_tree": "/work/dfm/festschrift/CeTA-prolog-release",
+  "ceta_branch": "codex/prolog-production-integration",
+  "ceta_base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+  "integration": "normal make ceta; target/unified-checkpoint-triples-v2",
+  "full_residual": {
+    "triples": 104,
+    "clauses": 117,
+    "positive_checks": 6,
+    "negative_checks": 53,
+    "original_checked_twice": true,
+    "renamed_reordered_checked_twice": true
+  },
+  "component_rechecks": {
+    "positive_checks": 28,
+    "negative_checks": 13,
+    "strict_replay_complete": true,
+    "pairs": 17,
+    "support_rules": 221,
+    "minimal": false
+  },
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/target/checkpoint-lp-export-v2/full-residual-checks-v3/receipt.json": "78d2f967e92fdbc983b36dd9230d7c7e850cc207d91e1e74cb283d3b1a2c1dc8",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/checkpoint-lp-export-v2/component-rechecks/receipt.json": "37d0bb2be7a0b276c94d407e921dfd6482ce2e51224ff959f6bee66e1dbe411c",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/checkpoint-lp-export-v2/component-rechecks/strict-replay/receipt.json": "100b18d4febcc5a894ae52d3c375896614ac271400547ef32c89d3f0c2255601",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/checkpoint-lp-export-v2/check-full-residual-v3.py": "e96b086b47362b09115289cc8dc0c3f7ed4b52c05c3d68f9d1c38c18ef280b70",
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Rewriting/Checkpoint_Ranking/DP_Checkpoint_Inference.thy": "b4c6a807d0809e5f4ba7984922e7f939d2e1d2ebbf8d9b1f8c882b4cef08d713",
+    "/work/dfm/festschrift/CeTA-prolog-release/tests/unified/exports/lp-checkpoint-triples-v2.tar.gz": "547a3857a7df5d34eeaf8f64cba3cdd35c4d7765381f7a27ab2e0fbf15c88dbc"
+  },
+  "control_correction": "The initial harness incorrectly required rejection after removing an unused ground registry from the second checkpoint proof. The inference-code audit confirmed that this proof consumes only argument summaries. The corrected harness retains unused-registry removals as positive controls, rejects removal of required registries, and tests every checkpoint transition omission. The checker and original certificates were unchanged; failed harness evidence is retained.",
+  "remaining": [
+    "Original source simulation and initialization",
+    "Authenticate all observer invariants and successful returns",
+    "Discharge both Split contracts and module boundaries",
+    "Common scheduler and strict source replay",
+    "Required full baseline campaigns"
+  ]
+}

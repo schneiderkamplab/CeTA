@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "scope": "Conditional acquisition-to-normalized-equality finite/leaf preservation only",
+  "theorem": "lpp_acquired_univ_caller_normalized_steps",
+  "verification": {
+    "kernel": "resident Isabelle; no skipped proofs or oracles",
+    "executable_controls": 8,
+    "source_simulation": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "normalized entry finiteness discharge",
+    "block exits and module boundaries",
+    "parameter and caller-mode integration",
+    "both actual helper-return contracts",
+    "well-founded recursive family assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Normalized.thy",
+      "sha256": "8f14c66ad180f63b12c69102609a53896767294052a345bd8f24f29f4d51ac2f"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Caller.thy",
+      "sha256": "1e07c948375661a78f6996f2af8cd1a796f92418eb9d3d83130ad2b3c96587ca"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Univ_Finite_Steps.thy",
+      "sha256": "329f788f1d2d191222891c57b183de1f94f3f6b5207a0bb1bcff7f88268febef"
+    },
+    {
+      "path": "tests/source-contract-parameters/Acquired_Univ_Normalized_Check.thy",
+      "sha256": "1a446daab226b78025826b7374fac1a937da3d357047cb37acdc99bc090ef74f"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Acquired_Univ_Normalized.pl",
+      "sha256": "ef81b75cfc1b55edd22680d28a9b70efb1e8701e2955ff3603f0888e40b315a6"
+    },
+    {
+      "path": "target/source-acquired-univ-normalized/kernel-receipt.txt",
+      "sha256": "78c2e4ed7cd17c9cb4282d4b10b7837cd88f7e1fff70303169ada40c5607b23d"
+    },
+    {
+      "path": "target/source-acquired-univ-normalized/source-controls.log",
+      "sha256": "ec026e131ce15c8a3bbdd61a550fe2721a43870d8b4d5c1269b273f87f426c50"
+    },
+    {
+      "path": "docs/data/source-acquired-univ-caller-20261119.json",
+      "sha256": "47e173cf70392f4fe9a93a840d05f9a2ec6afd5e5167c7926576ad655fd4c2ac"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete: widened images lack the existing residual coverage bridge",
+  "verification": {
+    "kernel_checked_theorems": 3,
+    "skip_proofs": false,
+    "oracles": false,
+    "source_controls_passed": 8,
+    "production_replay": false
+  },
+  "finding": "A strict compound subterm is allowed by the widened invariant but has no instance among the four parameter leaf replacement patterns with the original parameter fixed. Whole-parameter coverage remains positive.",
+  "scope_limit": "Does not prove nonexistence of a simulation through the full retained residual or invalidate its existing certificate.",
+  "next_obligation": "Establish a context-sensitive source-to-residual relation for partial outputs, or exhibit an existing retained residual path covering the exposed subterm. Subterm budget preservation alone cannot instantiate lpp_parameter_leaf_replacement_coverage.",
+  "remaining": [
+    "family initialization and complete preservation",
+    "remaining source paths and boundaries",
+    "both actual Split return contracts",
+    "well-founded recursive family assembly"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Subterm_Residual_Obstruction.thy": "f87275729377385490dfd1b11d8a8813765946b757260f0c774ecae4e952b4e8",
+    "tests/source-contract-parameters/Check_Partial_Caller_Obstruction.pl": "74655a3eede3eff6fdc59528101326b9b2a8e83b753ff38e3dbf5229b74ae6de",
+    "target/source-subterm-residual-obstruction/kernel-receipt.txt": "a4a8e2a26c7180fad0cea177008eb01122ccf9775c95bad8f7392906ff3781c9",
+    "target/source-subterm-residual-obstruction/source.log": "c5fc552f2f940d3123e4498886e6af9e00f4da213e907bd6a9f158beca31c74f",
+    "thys/Logic_Programming/LP_Prolog_Parameter_Leaf_Program.thy": "61784d84b1303975005aa94f7a50fdb8ae7b271d28951ca42ecef7a65d84ae74",
+    "thys/Logic_Programming/LP_Prolog_Parameter_Leaf_Prefix.thy": "4832e1a74e60265296f80162831da608de2e2b20cf6e8ced1c57906340f9c294",
+    "thys/Logic_Programming/LP_Prolog_Parameter_Subterms.thy": "4d38670a3a53a24656cc1013dca4336fab187b3d16b8a87f2b8c476c24c0bb27"
+  }
+}

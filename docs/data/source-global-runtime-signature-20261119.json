@@ -1,0 +1,89 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Runtime and structural residual witness signature transport across the arithmetic/equality boundary; paired observation groundness for actual residual query positions",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Transport full residual tuples and successful/strict paths while leaving operational runtime, observer invariant and caller execution unchanged.",
+    "Instantiate the conditional native arithmetic/equality answer contract in the checker symbol type.",
+    "Lift an arbitrary string-symbol residual program through LPCUser and map it exactly to UnLab.",
+    "Derive groundness of mapped structural query positions 3,4,5 from justified observations without assuming runtime values ground."
+  ],
+  "kernel_controls": [
+    "repeated variables remain shared",
+    "distinct variables remain distinct",
+    "free runtime value has a ground observation",
+    "free structural shadow rejected"
+  ],
+  "dependency_audit": {
+    "scope": "Executable extraction coverage audit, not kernel certificate instantiation or fresh production replay",
+    "records": [
+      {
+        "variant": "original",
+        "clauses": 117,
+        "required_calls": 104,
+        "exact_dependency_triple_sets": true,
+        "exact_triple_list_order": true,
+        "query_arity": 6,
+        "ground_coordinates": [
+          3,
+          4,
+          5
+        ],
+        "reordered_triples_positive": true,
+        "unused_duplicate_removal_positive": true,
+        "rejected_mutations": {
+          "missing_call": true,
+          "missing_prefix": true,
+          "reordered_prefix": true,
+          "wrong_head": true
+        },
+        "certificate_sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21",
+        "subject_sha256": "f94e694e61b7a860602edc143ba57216d8515996b5ba502d7dd84d697a1433d0"
+      },
+      {
+        "variant": "renamed",
+        "clauses": 117,
+        "required_calls": 104,
+        "exact_dependency_triple_sets": true,
+        "exact_triple_list_order": false,
+        "query_arity": 6,
+        "ground_coordinates": [
+          3,
+          4,
+          5
+        ],
+        "reordered_triples_positive": true,
+        "unused_duplicate_removal_positive": true,
+        "rejected_mutations": {
+          "missing_call": true,
+          "missing_prefix": true,
+          "reordered_prefix": true,
+          "wrong_head": true
+        },
+        "certificate_sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa",
+        "subject_sha256": "8299d6fd6b2109585cbfbe8144e8458af2246222df6397735e534dca01ff1572"
+      }
+    ]
+  },
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; signature/boundary transport and observation groundness discharged locally",
+    "remaining_paths_boundaries": "incomplete",
+    "actual_helper_return_contracts": "both open (Splits 30 and 44)",
+    "justified_recursive_assembly": "open"
+  },
+  "remaining": [
+    "Integrate the paired observation representation across retained and acquired rows, recursive entries and saved alternatives.",
+    "Establish original-query initialization and native source label/signature correspondence for every permitted finite source term.",
+    "Instantiate the retained certificate and complete source simulation; executable extraction coverage is not a kernel certificate instantiation.",
+    "Discharge caller continuations and both actual helper returns with justified recursive assembly."
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Runtime_Signature_Check.thy": "68b65a37c86843405059586ea43255a97b1bc79c9baaf7d08cb8715d7145ee2c",
+    "tests/source-contract-parameters/audit_global_dependency_coverage.py": "9906712aeb8779e808217188e977dbcb5f4a97ee78d4b452a01aab5c24298972",
+    "target/source-global-runtime-signature/kernel-receipt.txt": "01b5fdb20bc5556c920e2815152778642ed6e2d25d578df2c6da900f095b9454",
+    "target/source-global-runtime-signature/dependency-audit.json": "c0fc9ab2f5a9d4df8768e922c74a5e6e9935b3ad750bb29d8527ec6849e07767"
+  }
+}

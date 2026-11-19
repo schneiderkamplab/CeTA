@@ -1,0 +1,36 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 5,
+    "production_replay": false
+  },
+  "remaining": [
+    "finite execution and observer node integration",
+    "source coverage and query/family initialization",
+    "actual helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Subterm_Arithmetic.thy",
+      "sha256": "9c79a4d42565cdd8746cf2d10bb2160aa00e9412cd093f5bd40bf10862c396a7"
+    },
+    {
+      "path": "tests/source-contract-parameters/Subterm_Arithmetic_Check.thy",
+      "sha256": "53fea3d4de2562fb6affdf4a942ebce018be80485364cd8130bd1521d0c4797d"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl",
+      "sha256": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5"
+    },
+    {
+      "path": "target/source-subterm-arithmetic/kernel-receipt.txt",
+      "sha256": "43c96d9dd1d3414ba8b713c6fc5f95fe230ffd1c64e1b6ef522c2aeceda43884"
+    },
+    {
+      "path": "target/source-subterm-arithmetic/source-controls.log",
+      "sha256": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac"
+    }
+  ]
+}

@@ -7,13 +7,6 @@ variable leaves. The allowed templates are parameters to be justified from
 actual source execution, never inferred from termination. Runtime sharing is
 not erased by the source semantics; this relation only observes tree shape.\<close>
 
-inductive lpp_leaf_effect :: "('f,'v) term set \<Rightarrow>
- ('f+unit,unit) term \<Rightarrow> ('f+unit,unit) term \<Rightarrow> bool" for A where
- unchanged: "lpp_leaf_effect A (Fun (Inr ()) []) (Fun (Inr ()) [])"
-| replace: "u\<in>A \<Longrightarrow> lpp_leaf_effect A (Fun (Inr ()) []) (lpp_structure_template u)"
-| constructor: "list_all2 (lpp_leaf_effect A) xs ys \<Longrightarrow>
- lpp_leaf_effect A (Fun (Inl f) xs) (Fun (Inl f) ys)"
-
 definition lpp_bounded_images where
  "lpp_bounded_images A sigma V = (\<forall>x\<in>V.
    (\<exists>y. sigma x=LPIVar y) \<or> (\<exists>u\<in>A. sigma x=lp_ieval u LPIVar))"
@@ -128,12 +121,6 @@ text \<open>The bound is an additional premise: finite replacements alone do not
 provide a uniform measure. Give each uninstantiated leaf enough weight to pay
 for any permitted replacement. Constructor descent is then strict even when
 other leaves have been instantiated by a successful helper.\<close>
-
-fun lpp_leaf_budget :: "nat \<Rightarrow> ('f+unit,unit) term \<Rightarrow> nat" where
- "lpp_leaf_budget k (Var x)=0"
-| "lpp_leaf_budget k (Fun f ts)=
-   (case f of Inl g \<Rightarrow> Suc (sum_list (map (lpp_leaf_budget k) ts))
-    | Inr u \<Rightarrow> k)"
 
 lemma lpp_leaf_budget_list_mono:
  "list_all2 (\<lambda>x y. lpp_leaf_budget k y \<le> lpp_leaf_budget k x) xs ys \<Longrightarrow>

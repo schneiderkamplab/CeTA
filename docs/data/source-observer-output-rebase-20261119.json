@@ -1,0 +1,32 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Rebase combined invariant when each new output coordinate equals old helper output",
+    "Singleton payload correspondence derives new helper representation, combined invariant and exact caller execution equality",
+    "Checked module-link contract now carries combined invariant with changed output index"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "kernel_payload_controls": 2,
+    "structural_boundary_records": 4,
+    "wrong_coordinate_rejections": 4,
+    "production_replay": false
+  },
+  "finding": "Equality scalar is not in original return tuple; full interface change is a rebase rather than projection. Output maps 2 to 0.",
+  "remaining": [
+    "Instantiate checked link and strengthened target scalar/parameter conditions at actual boundary",
+    "Integrate other local nodes/acquired blocks and nested Splits",
+    "Complete family initialization and invariant preservation",
+    "Both actual return contracts and justified recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Rebase.thy": "5d85f029726d3f00f133312e6c59a0356cf582871a81aab49cad92a710d1873a",
+    "tests/source-contract-parameters/Observer_Output_Rebase_Check.thy": "022205547bd7f61289999ff92ac534244d7398ba7fa12fd87f4193d20ecdf75d",
+    "tests/source-contract-parameters/audit_output_rebase.py": "8cbdc200072e27bb9b8ed61723d4adbe7bf52defe0ae3e8282f727bd7da60b74",
+    "target/source-observer-output-rebase/kernel-receipt.txt": "e59f651d2b9284fd4f129a38a5c96869a2cfd89109cae7dae056b3936172340a",
+    "target/source-observer-output-rebase/coordinates.json": "fc733ae80274cedfe9645199bd297d3058a69bd984a94b508dc7c5acd0b1a578"
+  }
+}

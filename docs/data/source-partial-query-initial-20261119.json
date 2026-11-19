@@ -1,0 +1,31 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged": [
+    "finite call observation and tracked ground parameter initialization without output mode or separation restrictions"
+  ],
+  "remaining": [
+    "actual source family representation and query admission",
+    "node conditions and full invariant preservation",
+    "both actual helper returns",
+    "recursive family assembly"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Query_Initial.thy",
+      "sha256": "b605e7a5fbc98576458a57edb761c26042505bdc2d9ee64558e6658d46988330"
+    },
+    {
+      "path": "tests/source-contract-parameters/Partial_Query_Initial_Check.thy",
+      "sha256": "04b976c281371f50440ce48ffc3d36482b0d99007191fc7c7ba278fe20b3e5d7"
+    },
+    {
+      "path": "target/source-partial-query-initial/kernel-receipt.txt",
+      "sha256": "f5605de2bccb9d7cf7b9cfb77f02117b05c9cd35739439b6ddb942d230fab32e"
+    }
+  ]
+}

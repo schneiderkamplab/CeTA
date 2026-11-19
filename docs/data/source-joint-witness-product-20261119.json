@@ -1,0 +1,52 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "exact acquired joint state to actual witness product",
+    "constructor and variable input cases without constructor premise",
+    "normalized runtime and selected builtin shape derived internally"
+  ],
+  "remaining": [
+    "actual acquisition row existential-witness composition",
+    "complete source row coverage",
+    "parameter/caller-mode integration",
+    "family initialization/preservation",
+    "both helper returns",
+    "recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "executable_controls": 5,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Joint_Witness_Product.thy",
+      "sha256": "477284a440678f03c0d0b3c3df7780bf9a8fbd77a6a83918e82b9aeb1a8258a8"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Actual_Witness_Product.thy",
+      "sha256": "9f0a8a4c3573dea378c11dde713e3b5c39df64d4ba20c7234705785d7a807531"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Joint_Row.thy",
+      "sha256": "75c904a85f220c775ca3427056eac3d21842c7184536fdb601c13df1b0b6fa00"
+    },
+    {
+      "path": "tests/source-contract-parameters/Joint_Witness_Product_Check.thy",
+      "sha256": "c664fa5634f071a03afaec21229b3f238a45f660a82da6223c78f2bb16dc66b3"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Joint_Witness_Product.pl",
+      "sha256": "fdb74f99796e38e41974607172992cd4939a34aaf7d3d781f87f3c00c3bb6473"
+    },
+    {
+      "path": "target/source-joint-witness-product/kernel-receipt.txt",
+      "sha256": "c6c39ad77786da377ee7aa3dcdc60ce007291095e2bbaeb5704c31a984fd9ce7"
+    },
+    {
+      "path": "target/source-joint-witness-product/controls.log",
+      "sha256": "dfe402a1c41ee85815a8f10ed4693af8a7a9b0fda8fe4216e0ef93b5e9115756"
+    }
+  ]
+}

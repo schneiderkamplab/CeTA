@@ -1,0 +1,27 @@
+{
+  "status": "M1_OPEN_ASSEMBLY_RELATION_OBSTRUCTION",
+  "broad_obligation_1": "incomplete",
+  "finding": "The strict module-link premise cannot hold for boundary predicates 0:19 and 47:19 under any retained local residual or their union",
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "retained_boundary_cases": 4,
+    "local_residual_tables_per_variant": 5,
+    "global_residual_audited": false,
+    "production_replay": false
+  },
+  "revised_next_step": "Establish the retained global residual subject connection or a justified administrative module-change composition before strict-link assembly",
+  "remaining": [
+    "Full-family invariant preservation and initialization",
+    "Remaining paths and boundaries",
+    "Both actual helper-return contracts",
+    "Justified recursive assembly"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Boundary_Residual_Obstruction_Check.thy": "1bd0cd80567c10473d2976a0526434cd52025cb65a47ab8117d30a5795122997",
+    "tests/source-contract-parameters/audit_boundary_residual.py": "3ffec909821058d37370d38080c29aab6b28d2db4f2c607b96b96f76dffcdfea",
+    "target/source-boundary-residual-obstruction/kernel-receipt.txt": "6a3355156d78e89275b3d22c46f91e0eef0aa0c25351024a44a20981c1c22561",
+    "target/source-boundary-residual-obstruction/audit.json": "18bf3d46f31ba24b893e8b21d78998ccbc08ca658e0fa0a8356f13be0c84d692"
+  }
+}

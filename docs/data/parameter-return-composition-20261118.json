@@ -1,0 +1,13 @@
+{
+  "source_certified": false,
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Parameter_Return_Composition.thy": "f192bd58af6507e0b510747830cdc43fccd645a7e82de5c6aa89c73cab788cc2",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/parameter-return-composition-kernel-receipt.txt": "6b266605a71c6b12cf5bb62fa0c1ac69c5945216599309e840e818e16d42e24c"
+  },
+  "kernel_checked": true,
+  "skip_proofs": false,
+  "oracles": false,
+  "scope": "Copied-or-scalar parameter returns compose transitively, preserve groundness, and permit composition of leaf effects under the original parameter replacement set. Successful stable scalar evaluation establishes this return relation.",
+  "remaining": "Authenticate copied-or-scalar return for every source return path, including both recursive Split prefixes. The relation is not inferred from mere output groundness.",
+  "negative_control": "A compound ground return need not satisfy the copied-or-scalar relation."
+}

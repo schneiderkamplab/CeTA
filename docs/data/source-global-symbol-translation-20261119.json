@@ -1,0 +1,66 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Exact ordered correspondence of retained JSON subjects to XML certificates under role/arity/data translation; executable audit, not a kernel theorem",
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; concrete artifact naming audited, abstract observation encoder still uninstantiated",
+    "remaining_paths_boundaries": "incomplete",
+    "actual_helper_return_contracts": "both open (Splits 30 and 44)",
+    "justified_recursive_assembly": "open"
+  },
+  "production_replay": false,
+  "kernel_proof_added": false,
+  "checks": {
+    "scope": "Ordered full JSON-to-XML role/arity/data translation only; native source encoding and semantic simulation remain open",
+    "records": [
+      {
+        "variant": "original",
+        "clauses": 117,
+        "triples": 104,
+        "nonempty_prefixes": 15,
+        "rejected_mutations": {
+          "predicate_role": true,
+          "data_symbol": true,
+          "variable_sharing": true,
+          "missing_clause": true,
+          "missing_triple": true,
+          "clause_order": true,
+          "encoded_arity": true,
+          "missing_successful_prefix": true,
+          "reordered_successful_prefix": true
+        },
+        "whitespace_positive": true,
+        "certificate": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "certificate_sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21",
+        "subject": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child-subject.json",
+        "subject_sha256": "f94e694e61b7a860602edc143ba57216d8515996b5ba502d7dd84d697a1433d0"
+      },
+      {
+        "variant": "renamed",
+        "clauses": 117,
+        "triples": 104,
+        "nonempty_prefixes": 15,
+        "rejected_mutations": {
+          "predicate_role": true,
+          "data_symbol": true,
+          "variable_sharing": true,
+          "missing_clause": true,
+          "missing_triple": true,
+          "clause_order": true,
+          "encoded_arity": true,
+          "missing_successful_prefix": true,
+          "reordered_successful_prefix": true
+        },
+        "whitespace_positive": true,
+        "certificate": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "certificate_sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa",
+        "subject": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child-subject.json",
+        "subject_sha256": "8299d6fd6b2109585cbfbe8144e8458af2246222df6397735e534dca01ff1572"
+      }
+    ]
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/audit_global_symbol_translation.py": "d2b251e32ae0ad0320e6fac4b9b662511acc6760993ccd22a43b6ec0fdb52478",
+    "target/source-global-symbol-translation/audit.json": "aa3851bd5bbca447b72421946096e8337f2cdfdb49341d5f731f993f85ef43e6"
+  },
+  "remaining_obligation": "For every permitted finite source term (including arbitrary constructor arities, scalar literals and sharing), instantiate observed_leaf_coordinate with the native escaped structural encoding and prove its compatibility with runtime structure, substitution and incoming valuations. JSON/XML correspondence alone does not establish this."
+}

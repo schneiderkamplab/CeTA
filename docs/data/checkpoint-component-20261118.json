@@ -1,0 +1,41 @@
+{
+  "component_certified": true,
+  "source_certified": false,
+  "baseline_replayed": false,
+  "pairs": 17,
+  "support_rules": 221,
+  "minimal": false,
+  "checker": "/work/dfm/festschrift/CeTA-prolog-release/target/unified-checkpoint-ranking-v2/ceta",
+  "checker_sha256": "fa22399156bb47fcfa286db09c7fe95bfe677af7cace480035864c3d487ab7bf",
+  "positive_checks": 28,
+  "negative_controls": 13,
+  "strict_replay_unified_checks": 2,
+  "missing_guidance_rejected": true,
+  "conflicting_guidance_rejected": true,
+  "ceta_changed": true,
+  "ceta_branch": "codex/prolog-production-integration",
+  "ceta_base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+  "ceta_worktree_modified": true,
+  "native_base_commit": "0270b58b4b4c3f26f1a5dd8df389fceca5c7deff",
+  "integration": "thys/Rewriting/Checkpoint_Ranking; thys/Proof_Checker_Base/Checkpoint_DP_Processor.thy; thys/Proof_Checker/Checkpoint_Certificate_Parser.thy; scripts/unified-exports.json",
+  "export_archive_sha256": "a152cc4d32c9bcdec87a48dc2de7607811f45a45b5d999a29802fc8a7f23607b",
+  "strict_replay_guidance_sha256": "0eea79808ee2aa01066c976f5be4ed42bf9d6132076d68268cfa486cca667033",
+  "evidence": {
+    "target/checkpoint-residual-proof/unified-checks-v2/receipt.json": "15dce9bc75e5f9374a2b987695aa0307d42199338302ea79e8acf8d12f4647fa",
+    "target/checkpoint-residual-proof/strict-unified-replay/receipt.json": "a3aa65ff0b4f6c4b632b332f522db2b0fe87eeff3c39fde52e3993ff05e2fb61",
+    "target/checkpoint-residual-proof/cpf-ordered-subject-build.log": "d45d5477a45fee5c9d4da2685e9e94f40722391028371400e8ffa1173e1c69aa",
+    "target/checkpoint-residual-proof/unified-ordered-build.log": "f46a9b1ace29cfca20cae2f4fbe00b95857baee9fcc77a0d778924d193543389",
+    "target/checkpoint-residual-proof/ordered-subject-kernel-receipt.txt": "44a43d698d20e7012e354cfe3c5340a613776ecc94a96927d030dde0706e9763",
+    "scripts/unified-exports.json": "66d809e82d06c966d8a6bff72a4ceb6f817e7766594acdeb44ed55f4116c0eff",
+    "../ferrum-prolog-release/target/checkpoint-coverage-20261118/exact-scc.cpf.xml": "24445ef3ac704b8d7c064c125d307fdc2b5a6d8ab12f261751c3274ad39c3add",
+    "../ferrum-prolog-release/tests/fixtures/checkpoint_forest_component.dp.xml": "1cb0c0d9458d5649b07961559722f0f21ff6d4670e5457988eb8f9ab9248ed45"
+  },
+  "remaining": [
+    "checked source-to-structural residual bridge",
+    "global source initialization and attached invariants",
+    "two successful-return contracts and seven boundary contracts",
+    "both Split compositions",
+    "common-scheduler persistence and strict source replay",
+    "unified source certification and protected baseline campaign"
+  ]
+}

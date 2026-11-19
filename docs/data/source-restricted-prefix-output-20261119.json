@@ -1,0 +1,29 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Initialize old restricted replacement invariant with fresh helper-result leaf and arbitrary finite caller output",
+    "Derive free-or-ground observed helper output in every invariant frame",
+    "Preserve old restricted leaf and finite invariants through actual attached copy step with output-coordinate equality; no separate mode premise"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "source_controls_passed": 9,
+    "production_replay": false
+  },
+  "remaining": [
+    "Preserve active output-to-observed-slot coordinate across all rows and boundaries",
+    "Keep restricted prefix invariant distinct from general query and resumed continuation invariants",
+    "Authenticate complete family initialization and preservation",
+    "Both helper-return contracts and justified recursive assembly"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Restricted_Prefix_Output.thy": "07b7c819af623e3d3b7d16c816bb46b4485d444d6d7916693fb0cb87268ad8fe",
+    "tests/source-contract-parameters/Restricted_Prefix_Output_Check.thy": "9d6e200ea175457e636241851d2563dd808137e06a14c7467b8be3a086b3fc19",
+    "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613",
+    "target/source-restricted-prefix-output/kernel-receipt.txt": "1b1da931be36125dd466014a1652fde178d3a4bdb64f0936c68923a3ebc34be9",
+    "target/source-restricted-prefix-output/source.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "coordinate_checks": {
+      "original": 34,
+      "renamed": 34
+    },
+    "production_replay": false
+  },
+  "remaining": [
+    "actual Split boundary reconstruction",
+    "incoming query initialization and full invariant coverage",
+    "actual helper return preservation",
+    "recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Recursive_Partial_Entry_Link.thy",
+      "sha256": "cd8a267a862bfe45af94e3d1753522242d5bbed564b150ef0b00a5e68a563b15"
+    },
+    {
+      "path": "tests/source-contract-parameters/Recursive_Partial_Link_Check.thy",
+      "sha256": "824506f76b11449783aa168610e8c3b7ad215616f91e62f6ca869644a93226da"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Recursive_Entry_Link.ML",
+      "sha256": "4f74d0efa582523aaa9f34acf17f07788fbb08cca10d2113a31dffad4dfcf034"
+    },
+    {
+      "path": "docs/data/source-recursive-entry-link-20261119.json",
+      "sha256": "dcbbe944df682205fc70828ce6e42fb2aabce9fc5b2b36b0518bc749cfdd5573"
+    },
+    {
+      "path": "docs/data/source-recursive-partial-prefix-20261119.json",
+      "sha256": "106cebe97c24522bf36b3d110668403bc86a39b1f14425663b5a0a07ed7e8a80"
+    },
+    {
+      "path": "target/source-recursive-partial-link/kernel-receipt.txt",
+      "sha256": "92c8a83dbecd79222f86bf0d12beaf09f1fbfcad8ced8ded6a696e0cca764530"
+    },
+    {
+      "path": "target/source-recursive-partial-link/original.log",
+      "sha256": "8a5764bd56e7ca9159a1384c9e0c5e3ae8a4aa9d6b04b289fc96e6c047cc5492"
+    },
+    {
+      "path": "target/source-recursive-partial-link/renamed.log",
+      "sha256": "8a5764bd56e7ca9159a1384c9e0c5e3ae8a4aa9d6b04b289fc96e6c047cc5492"
+    }
+  ]
+}

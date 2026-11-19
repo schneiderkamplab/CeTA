@@ -1,0 +1,199 @@
+{
+  "schema": "source-caller-copy-node-review-v1",
+  "date": "2026-11-19",
+  "milestone_1": "OPEN",
+  "source_certified": false,
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Attached_Caller_Copy.thy",
+      "sha256": "f3c3e43d83bc8212c272ba5a762afd01d83150d4dde4cf8d34998b8cb648dcb3"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Caller_Copy.thy",
+      "sha256": "81c784fea9986ed70fc1a35eaef37b70308abb5e5576572911fe4c70699b9b7d"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Caller_Copy_Node.thy",
+      "sha256": "2662e682c1db5bfcb34ca5dd972e4fb0ff9189f57a9cecb94d37c6fd50f8c0b8"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Caller_Copy_Node_Export.thy",
+      "sha256": "a2fb3b99efc484a1f478c7d19ec2221fd95658e5d10cdaa78cafd942cbae9b78"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Caller_Copy_Node.ML",
+      "sha256": "336adf497103ca15d30d492f2c67ba376139a36dbf2e3ec6dd95d0113229c316"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Caller_Copy_Node.pl",
+      "sha256": "9ad97a4685f819142275f33002dc6d4113582351ea46c31efd2f8253d520829d"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-caller-copy-node/kernel-receipt.txt",
+      "sha256": "2ac4344fd2377bc83eed1ceca162e2c2c7a4e099fecc2746a775ff1bf6495873"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-caller-copy-node/Caller_Copy_Node_Check.ML",
+      "sha256": "1172e019569a592bc7becb31b699b533f0eae6a197b808bfa133193d9e6d3582"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-caller-copy-node/prolog.log",
+      "sha256": "4be1759093b453d91e4811cf490d5c09001e8a8abbac56d6a2e7f62e69e2c671"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-shared-caller-obstruction/swipl-version.txt",
+      "sha256": "3ea77e6bd4bc68319e3c43e0dd9895970f2604e191ad7e689d8188b4d8b0997e"
+    },
+    {
+      "path": "/work/dfm/festschrift/TPDB-ARI/Prolog/prolog_mixed/numbervars.pl",
+      "sha256": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7"
+    },
+    {
+      "path": "/usr/lib/swi-prolog/bin/x86_64-linux/swipl",
+      "sha256": "be0c4b8a98f6eed857ddd69543f03c02170b7a63e0cc43cf8cbb5463fcefca61"
+    }
+  ],
+  "predecessor_evidence": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-ground-caller-20261119.json",
+      "sha256": "38e621bf6e2e55825998d2b974b1232c6cf80407632103dd010ab1939ba4a6ba"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-copy-node-20261119.json",
+      "sha256": "7775b2ae9042e5bf0c6ec67355ba19f9f7ff0d6075cbbcb3e2bc71d7ccce9098"
+    }
+  ],
+  "variants": {
+    "original": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-caller-copy-node/original.log",
+        "sha256": "a5141d44f33857cf424c73670580b79b7cd68a916e9befb7613a9821b0f1e361"
+      },
+      "positive_checks": 9,
+      "rejection_controls": 15,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml",
+          "sha256": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml",
+          "sha256": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml",
+          "sha256": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      ]
+    },
+    "renamed": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-caller-copy-node/renamed.log",
+        "sha256": "a5141d44f33857cf424c73670580b79b7cd68a916e9befb7613a9821b0f1e361"
+      },
+      "positive_checks": 9,
+      "rejection_controls": 15,
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml",
+          "sha256": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml",
+          "sha256": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml",
+          "sha256": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      ]
+    }
+  },
+  "original_source_assertions": 10,
+  "actual_rows": [
+    "0:22",
+    "35:2"
+  ],
+  "discharged_obligations": [
+    "The repeated-parameter empty-list observer node now accepts either free or ground caller outputs under the existing tracked-parameter and proper-spine premises.",
+    "Attached base transitions preserve restricted leaf effects and finite execution on both resolution outcomes, retaining saved environments.",
+    "Ground parameter/output mismatch excludes all unifiers and performs the actual backtrack transition to the unchanged saved stack."
+  ],
+  "retained_premises": [
+    "Source-family entry supplies proper spine, tracked parameter and the widened output mode.",
+    "Checked resolution-node reconstruction, transfer program, source context/free/functor facts, attached caller coverage and complete success/failure initialization.",
+    "Scope restoration, strict residual descent and complete child answer contracts."
+  ],
+  "scope_limits": [
+    "The new theorem is a full conditional node interface, not unconditional authentication of the two source rows.",
+    "Executable XML fixtures check structural syntax and coordinates, not runtime entry or successor conditions.",
+    "Source Prolog controls independently exercise success, cut, failure and saved alternatives; they are not source certificates.",
+    "No new whole-family caller-mode/separation invariant, module-boundary contract, actual helper return or Split discharge.",
+    "Original-query outputs remain arbitrary permitted finite terms; the local mode does not replace root semantics."
+  ],
+  "progress_by_obligation": [
+    {
+      "obligation": "Invariant integration and preservation",
+      "status": "advanced, incomplete",
+      "completed": "Combined free/ground empty-list node and attached-step invariant preservation.",
+      "remaining": "Recursive cons successor conditions, acquired blocks, all actual entries, and whole-family mode/separation preservation."
+    },
+    {
+      "obligation": "Remaining paths and boundaries",
+      "status": "advanced locally, incomplete",
+      "completed": "Actual mismatch backtrack and conditional copy-node failure/saved-frame handling.",
+      "remaining": "Complete source successor facts, acquired paths, module/Split boundaries and resumed continuations."
+    },
+    {
+      "obligation": "Both actual helper-return contracts",
+      "status": "open",
+      "completed": "Neither authenticated.",
+      "remaining": "Actual successful-return contracts for both Splits."
+    },
+    {
+      "obligation": "Justified recursive assembly",
+      "status": "open",
+      "completed": "Strict-descent premises retained without circular discharge.",
+      "remaining": "Complete family assembly and initialization with all child contracts."
+    }
+  ],
+  "next_obligation": "Carry the wider caller-output mode through recursive cons successor conditions while preserving fresh-helper separation independently of caller freeness."
+}

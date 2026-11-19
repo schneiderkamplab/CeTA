@@ -1,0 +1,15 @@
+{
+  "kernel_checked": true,
+  "source_certified": false,
+  "successful_return_premises_discharged": false,
+  "unified_source_integration": false,
+  "files": {
+    "thys/Logic_Programming/LP_Prolog_Parameter_Leaf_Prefix.thy": "4832e1a74e60265296f80162831da608de2e2b20cf6e8ced1c57906340f9c294",
+    "target/observer-family-assembly/parameter-forest-prefix-kernel-receipt.txt": "3878963ac1d27063a3d2b3dda336e90e96a1bce3975459581b8f4714341b504f"
+  },
+  "remaining": [
+    "Authenticate actual leaf and list effects on each Split helper",
+    "Check clause inclusion and structural coordinates against the exact residual",
+    "Compose source initialization and local structural simulation"
+  ]
+}

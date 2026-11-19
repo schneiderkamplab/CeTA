@@ -1,0 +1,37 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Actual singleton equality answer contract against global residual, with success/failure and explicit caller continuation",
+    "Arithmetic normalization, global boundary path, rebasing and equality contract composed with original restricted invariant"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "executable_source_controls": 5,
+    "arithmetic_path_cases": 4,
+    "return_path_cases": 2,
+    "negative_audit_controls": 18,
+    "production_replay": false
+  },
+  "remaining": [
+    "Discharge caller continuation within justified family assembly",
+    "Instantiate abstract native encoding and incoming observations",
+    "Query initialization and remaining source rows/acquired blocks",
+    "Both complete helper-return contracts and justified recursion"
+  ],
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Equality_Contract_Check.thy": "d3a6823788541aaa879a4240360219a05b9661432eeed628c2536a29c66c12cf",
+    "tests/source-contract-parameters/Global_Arithmetic_Contract_Check.thy": "b2b8c5d2c23ecfab63b5c756a7faf795ec8220ae43dad877d93dbd5e3040e472",
+    "tests/source-contract-parameters/audit_global_arithmetic_path.py": "2edd773a3a86a11f3f15597f0d2697a664be7af915c125b3d3f9c2e30f085460",
+    "tests/source-contract-parameters/audit_global_equality_return.py": "57e663163f2f2fa1df24e8c098f640336f6a7a9cf2070130c8da2acb360964e6",
+    "tests/source-contract-parameters/audit_global_boundary_projection.py": "d0599cc8d83ce18a45a02815b029244f75f6cddbf71342e913a2ec4af031367c",
+    "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5",
+    "target/source-global-equality-contract/kernel-receipt.txt": "50994fbe4b38b264ad7ec7e345d5476fe8cd22481ef653abeac5d83b93d5e780",
+    "target/source-global-equality-contract/arithmetic-kernel-receipt.txt": "f19ca3a02095b28b2dc077b6b75be41806d384189ee5900974798790dcd77be0",
+    "target/source-global-equality-contract/source-controls.log": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac",
+    "target/source-global-equality-contract/arithmetic-audit.json": "48a75af16a299fdd90eb377b8530684ceafddea8defce45533c0e01978c07226",
+    "target/source-global-equality-contract/return-audit.json": "a50a2c07eb4c8eb7539f611e3423dea7cac5b4373dbc8ccf9171aeaaddc94a6c"
+  }
+}

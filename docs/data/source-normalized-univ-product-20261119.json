@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "theorem": "lpp_normalized_univ_observer_product",
+  "scope": "Conditional synchronized two-equality helper simulation and restricted caller preservation",
+  "verification": {
+    "kernel": "Isabelle; no skipped proofs or oracles",
+    "kernel_controls": 3,
+    "executable_controls": 6,
+    "production_replay": false
+  },
+  "remaining": [
+    "acquired witness instantiated in same joint runtime",
+    "entry invariant and caller protection from checked coordinates",
+    "global equality coverage assembly",
+    "parameter/caller-mode integration",
+    "module boundaries",
+    "both actual helper returns",
+    "justified recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Normalized_Univ_Product.thy",
+      "sha256": "cf76b85d0085a8cf32860a3635f4b07cfa4c805d865deab8488fc3dc329e135c"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Observer_Product.thy",
+      "sha256": "dbfab7841f3f5a5a92da222f51062e4d270b5f2b736df0914cf708c4ee434748"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Univ_Finite_Steps.thy",
+      "sha256": "329f788f1d2d191222891c57b183de1f94f3f6b5207a0bb1bcff7f88268febef"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Continuing_Module.thy",
+      "sha256": "55e38027ea11edef6f44faf2a7a18ca553ea9f6e030df7091bce8e0e32f739ba"
+    },
+    {
+      "path": "tests/source-contract-parameters/Normalized_Univ_Product_Check.thy",
+      "sha256": "f4d2d47014910675f62d13a89f2a0063319d84fe02bca32f75b3704ebee3d305"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Normalized_Univ_Product.pl",
+      "sha256": "63a7a167d9fd4192a54b8196960c0dc7b05215e112f34d378d4bafdb998dc077"
+    },
+    {
+      "path": "target/source-normalized-univ-product/kernel-receipt.txt",
+      "sha256": "7c08073d3bbaeb87db4a5470835aebf521eb1b8c93377a591618182411179e2e"
+    },
+    {
+      "path": "target/source-normalized-univ-product/source-controls.log",
+      "sha256": "1ba3e8f6917116e9c07646b7fca1a719dd1ea8a8911ec76db407834a4c9455fa"
+    },
+    {
+      "path": "docs/data/source-acquired-univ-witness-20261119.json",
+      "sha256": "2a9a68670bb3165369470dffcb38e84eb4867727bb52224c98180eaaba72d07c"
+    },
+    {
+      "path": "docs/data/source-acquired-block-rows-20261119.json",
+      "sha256": "fd76f9911c8d998711b9fa830b3395385ba1e4ee0b5225c1449e42bb10efb47a"
+    }
+  ]
+}

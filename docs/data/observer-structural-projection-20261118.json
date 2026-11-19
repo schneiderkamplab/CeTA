@@ -1,0 +1,544 @@
+{
+  "structural_subject": "/work/dfm/festschrift/ferrum-prolog-release/target/prolog-list-leaf-return-2731/subject/triples.json",
+  "structural_subject_sha256": "f94e694e61b7a860602edc143ba57216d8515996b5ba502d7dd84d697a1433d0",
+  "local_subjects": {
+    "/work/dfm/festschrift/ferrum-prolog-release/target/observer-family-assembly/original/subject-0.xml": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967",
+    "/work/dfm/festschrift/ferrum-prolog-release/target/observer-family-assembly/original/subject-19.xml": "d2ed9b7ba713955225d23968f9220ae822dc1b4afcedbf9605eae40e9aebe8a5",
+    "/work/dfm/festschrift/ferrum-prolog-release/target/observer-family-assembly/original/subject-28.xml": "afe7b183dd21516fb96f8bc5c4e4cc2a13394602b0390116ef36c12f0ea067ff",
+    "/work/dfm/festschrift/ferrum-prolog-release/target/observer-family-assembly/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78",
+    "/work/dfm/festschrift/ferrum-prolog-release/target/observer-family-assembly/original/subject-47.xml": "26e5f1e63ecc75799d29f27af856211ed89e75258398e07f0272e275383676e1"
+  },
+  "runtime_projection_exact": true,
+  "source_simulation_proved": false,
+  "source_certified": false,
+  "retained_local_clauses": 65,
+  "remaining_boundary_and_helper_clauses": 52,
+  "rows": [
+    {
+      "module": 0,
+      "local_clause": 0,
+      "structural_clause": 0,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 1,
+      "structural_clause": 1,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 2,
+      "structural_clause": 2,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 3,
+      "structural_clause": 3,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 4,
+      "structural_clause": 4,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 5,
+      "structural_clause": 5,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 6,
+      "structural_clause": 6,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 7,
+      "structural_clause": 7,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 8,
+      "structural_clause": 8,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 9,
+      "structural_clause": 9,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 8,
+      "successful_prefixes": [
+        "__prolog_symbol_0070726f6c6f672e7374727563747572652e617267756d656e745f72656c6174696f6e"
+      ]
+    },
+    {
+      "module": 0,
+      "local_clause": 10,
+      "structural_clause": 10,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 11,
+      "structural_clause": 11,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 12,
+      "structural_clause": 12,
+      "head_runtime_arity": 8,
+      "continuation_runtime_arity": 7,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 13,
+      "structural_clause": 13,
+      "head_runtime_arity": 8,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 14,
+      "structural_clause": 14,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 2,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 15,
+      "structural_clause": 15,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 16,
+      "structural_clause": 16,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 17,
+      "structural_clause": 17,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 18,
+      "structural_clause": 18,
+      "head_runtime_arity": 2,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 19,
+      "structural_clause": 19,
+      "head_runtime_arity": 2,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 20,
+      "structural_clause": 20,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 7,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 21,
+      "structural_clause": 21,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 22,
+      "structural_clause": 22,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 23,
+      "structural_clause": 23,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 24,
+      "structural_clause": 24,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 25,
+      "structural_clause": 25,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 26,
+      "structural_clause": 26,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 7,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 27,
+      "structural_clause": 27,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 0,
+      "local_clause": 28,
+      "structural_clause": 28,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 19,
+      "local_clause": 0,
+      "structural_clause": 29,
+      "head_runtime_arity": 2,
+      "continuation_runtime_arity": 1,
+      "successful_prefixes": []
+    },
+    {
+      "module": 19,
+      "local_clause": 1,
+      "structural_clause": 30,
+      "head_runtime_arity": 2,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 19,
+      "local_clause": 2,
+      "structural_clause": 31,
+      "head_runtime_arity": 1,
+      "continuation_runtime_arity": 2,
+      "successful_prefixes": []
+    },
+    {
+      "module": 19,
+      "local_clause": 3,
+      "structural_clause": 32,
+      "head_runtime_arity": 1,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 28,
+      "local_clause": 0,
+      "structural_clause": 33,
+      "head_runtime_arity": 0,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 28,
+      "local_clause": 1,
+      "structural_clause": 34,
+      "head_runtime_arity": 0,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 28,
+      "local_clause": 2,
+      "structural_clause": 35,
+      "head_runtime_arity": 0,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 0,
+      "structural_clause": 36,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 1,
+      "structural_clause": 37,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 2,
+      "structural_clause": 38,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 3,
+      "structural_clause": 39,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 4,
+      "structural_clause": 40,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 1,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 5,
+      "structural_clause": 41,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 6,
+      "structural_clause": 42,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 7,
+      "structural_clause": 43,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 35,
+      "local_clause": 8,
+      "structural_clause": 44,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 0,
+      "structural_clause": 45,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 1,
+      "structural_clause": 46,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 2,
+      "structural_clause": 47,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 3,
+      "structural_clause": 48,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 4,
+      "structural_clause": 49,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 5,
+      "structural_clause": 50,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 6,
+      "structural_clause": 51,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 7,
+      "structural_clause": 52,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 8,
+      "structural_clause": 53,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 9,
+      "structural_clause": 54,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 8,
+      "successful_prefixes": [
+        "__prolog_symbol_0070726f6c6f672e7374727563747572652e617267756d656e745f72656c6174696f6e"
+      ]
+    },
+    {
+      "module": 47,
+      "local_clause": 10,
+      "structural_clause": 55,
+      "head_runtime_arity": 5,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 11,
+      "structural_clause": 56,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 12,
+      "structural_clause": 57,
+      "head_runtime_arity": 8,
+      "continuation_runtime_arity": 7,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 13,
+      "structural_clause": 58,
+      "head_runtime_arity": 8,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 14,
+      "structural_clause": 59,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 2,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 15,
+      "structural_clause": 60,
+      "head_runtime_arity": 3,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 16,
+      "structural_clause": 61,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 5,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 17,
+      "structural_clause": 62,
+      "head_runtime_arity": 7,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 18,
+      "structural_clause": 63,
+      "head_runtime_arity": 2,
+      "continuation_runtime_arity": 3,
+      "successful_prefixes": []
+    },
+    {
+      "module": 47,
+      "local_clause": 19,
+      "structural_clause": 64,
+      "head_runtime_arity": 2,
+      "continuation_runtime_arity": 0,
+      "successful_prefixes": []
+    }
+  ],
+  "audit_script": "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/audit-structural-projection.py",
+  "audit_script_sha256": "a8aca1a01c366a3313440b02b5ec6d6f9c02e4155dc6abf1f044279c261ebd12"
+}

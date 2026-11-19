@@ -1,0 +1,38 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Both copy caller contracts derive helper mode and output leaf effect from joint invariant",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Free-or-ground helper output mode derived from invariant, leaf-shaped observed slot, tracked initial groundness and helper-output coordinate",
+    "Output leaf effect derived from observed history slot and alias",
+    "Both six-to-two and ten-to-six caller contracts instantiated without independent mode/effect premises"
+  ],
+  "required_conditions": [
+    "Observed leaf slot and history slot membership",
+    "Incoming joint invariant and actual helper-output coordinate",
+    "Tracked parameter, finite spine, caller coverage and exact residual clause",
+    "Incoming parameter/name/functor observations as applicable",
+    "Caller continuation answer contract"
+  ],
+  "kernel_controls": [
+    "free helper accepted",
+    "compound ground helper accepted",
+    "partially instantiated compound helper excluded from this local mode"
+  ],
+  "source_controls_passed": 17,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; mode and leaf-effect integration closed locally for both copy shapes",
+    "remaining_paths_boundaries": "incomplete; recursive-entry slot initialization and full row/family assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Copy_Invariant_Check.thy": "daf7b62f6d57aeb8779230f88f7a6efa6eedd4a9da6e5fa5be2c89ed9a23682f",
+    "target/source-global-copy-invariant/kernel-receipt.txt": "4f7b96133cbda0a73e84a8ed67c2673a291605dc91e657233ee90aeaa263e234",
+    "target/source-global-copy-invariant/caller-controls.log": "4be1759093b453d91e4811cf490d5c09001e8a8abbac56d6a2e7f62e69e2c671",
+    "target/source-global-copy-invariant/partial-controls.log": "cb1d932d8410891f19ed7758e3b4e834c6505289048c9436eebab71179a6550c"
+  }
+}

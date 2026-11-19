@@ -1,0 +1,167 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Simple cons choice answer-contract composition, including empty failure and actual successful continuation",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "production_replay": false,
+  "source_yes": false,
+  "discharged_local_obligations": [
+    "Singleton cons failure has an empty attached state and vacuous answer contract",
+    "Actual successful cons transition preserves the joint observer invariant",
+    "Actual successor observations, strict residual descent, total payload and context are assembled into the continuation interface"
+  ],
+  "required_conditions": [
+    "Incoming joint invariant and covered caller slots",
+    "Proper spine, tracked parameter and linear cons head",
+    "Authenticated incoming observations and checked successor maps",
+    "Exact retained six-to-ten residual clause and variable freshness",
+    "Answer contract for the actual successful continuation remains explicit"
+  ],
+  "limitations": [
+    "Not a closed recursive node or family contract",
+    "No helper-return contract for Split 30 or 44",
+    "Larger ten-to-fourteen cons successor and remaining paths are open"
+  ],
+  "state_audit": {
+    "scope": "Singleton cons choice, two-call body and empty failure; continuation contract remains an explicit premise",
+    "records": [
+      {
+        "variant": "original",
+        "region": 35,
+        "row": 3,
+        "rejected_mutations": [
+          "saved_alternative",
+          "pending_goal",
+          "repeated_head_parameter",
+          "missing_recursive_call",
+          "nonempty_failure"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": 35,
+        "row": 3,
+        "rejected_mutations": [
+          "saved_alternative",
+          "pending_goal",
+          "repeated_head_parameter",
+          "missing_recursive_call",
+          "nonempty_failure"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "context_audit": {
+    "scope": "Simple cons successor total payload and ordinary contexts; conditional theorem interface only",
+    "records": [
+      {
+        "variant": "original",
+        "region": 35,
+        "source": 3,
+        "target": 7,
+        "rejected": [
+          "wrong_payload_head",
+          "wrong_payload_parameter",
+          "wrong_payload_output",
+          "wrong_ground_coordinate",
+          "wrong_shape_coordinate",
+          "growing_spine_grammar",
+          "wrong_free_coordinate",
+          "missing_output"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        }
+      },
+      {
+        "variant": "renamed",
+        "region": 35,
+        "source": 3,
+        "target": 7,
+        "rejected": [
+          "wrong_payload_head",
+          "wrong_payload_parameter",
+          "wrong_payload_output",
+          "wrong_ground_coordinate",
+          "wrong_shape_coordinate",
+          "growing_spine_grammar",
+          "wrong_free_coordinate",
+          "missing_output"
+        ],
+        "artifacts": {
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b",
+          "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        }
+      }
+    ]
+  },
+  "residual_audit": {
+    "scope": "Full six-to-ten residual clause and empty-prefix triple; source node contract remains open",
+    "records": [
+      {
+        "variant": "original",
+        "clause": 42,
+        "distinct_formals": 13,
+        "rejected": [
+          "head_collision",
+          "body_data_collision",
+          "wrong_parameter_shadow",
+          "stale_fresh_shadow",
+          "missing_call",
+          "missing_triple"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-20261118/child.xml",
+        "sha256": "b68ee3bb365e3f61bc984bda7edc52a117463923b23d0251c5d09d9a40434c21"
+      },
+      {
+        "variant": "renamed",
+        "clause": 74,
+        "distinct_formals": 13,
+        "rejected": [
+          "head_collision",
+          "body_data_collision",
+          "wrong_parameter_shadow",
+          "stale_fresh_shadow",
+          "missing_call",
+          "missing_triple"
+        ],
+        "artifact": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-full-residual-renamed-20261118/result/child.xml",
+        "sha256": "187c1f6f45c1a3618bcba629edda6fd7324b7d9f7c0a6105aa317c3c2ffe62aa"
+      }
+    ]
+  },
+  "source_controls": {
+    "passed": 6,
+    "log": "CeTA-prolog-release/target/source-global-cons-contract/source-controls.log"
+  },
+  "broad_obligations": {
+    "invariant_integration": "Incomplete; simple cons answer-contract preservation and continuation interface assembled",
+    "remaining_paths_boundaries": "Incomplete; simple cons empty failure discharged locally",
+    "actual_helper_return_contracts": "Both Splits 30 and 44 open",
+    "justified_recursive_assembly": "Open; successful continuation is an explicit premise"
+  },
+  "artifacts": {
+    "CeTA-prolog-release/tests/source-contract-parameters/Global_Cons_Contract_Check.thy": "e904836ed78ee2253bac9ad53f6145420dfd79a9c287672bab6cb9397b654ad1",
+    "CeTA-prolog-release/tests/source-contract-parameters/audit_cons_contract_state.py": "2c3d4f98ff7ff7c8e9d6ea6f3c1824b8def904d28afab89935e336ff71ebdea9",
+    "CeTA-prolog-release/tests/source-contract-parameters/Check_Cons_Contract.pl": "cf8f7da38183bc1df86558d2fc6688cb6f4118ea92608ad6cbdbce9a3007b3c7",
+    "CeTA-prolog-release/target/source-global-cons-contract/context-audit.json": "736c244dd06e846935eb47c1c43b2b2e1be6e8adaa974a2ad60088451d9f3334",
+    "CeTA-prolog-release/target/source-global-cons-contract/kernel-receipt.txt": "99aee15972b206d23498e6ff33abde0f4d145adde2594c2dcd90a2724b1fc825",
+    "CeTA-prolog-release/target/source-global-cons-contract/residual-audit.json": "c0bf683c8c252057e80163622cdb5cddb91c443600aed05dc07d6bb836c9fd6c",
+    "CeTA-prolog-release/target/source-global-cons-contract/source-controls.log": "a879016094f6d46062b89cd09316b6fec65f1c79ce676614072ce1a898b5bfc0",
+    "CeTA-prolog-release/target/source-global-cons-contract/state-audit.json": "e51bf638b793b521e020b2b1996a31e1d1dc0d27635b9bc844f7694fac498f7f"
+  }
+}

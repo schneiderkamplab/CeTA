@@ -15,12 +15,13 @@ lemma lpp_observer_family_member:
   lpp_observer_family_rep names operation SP members family_nodes states contexts frees functors premises runtime subject"
  by (auto simp: lpp_observer_family_rep_def)
 
-theorem lpp_observer_family_contract:
+text \<open>Complete node contracts suffice for family composition. In particular,
+a successful return must supply its continuation contract; an administrative
+emission check is not a substitute for that contract.\<close>
+
+theorem lpp_observer_family_contract_from_nodes:
  fixes SP :: "string lpp_success_clause list"
  assumes finite: "finite members"
- and checked: "\<And>m. m\<in>members \<Longrightarrow>
-  lpp_check_functor_control T fuel P Q (family_nodes m) (states m) (contexts m) (frees m) (functors m)
-   (return_symbols m) (arities m) (actions m)"
  and local: "\<And>m j. m\<in>members \<Longrightarrow> j<length (family_nodes m) \<Longrightarrow>
   lpp_observer_referenced_node_contract names operation SP P B U D Q
    (family_nodes m) (states m) (contexts m) (frees m) (functors m) (premises m)
@@ -75,4 +76,26 @@ proof -
  qed
 qed
 
+theorem lpp_observer_family_contract:
+ fixes SP :: "string lpp_success_clause list"
+ assumes finite: "finite members"
+ and checked: "\<And>m. m\<in>members \<Longrightarrow>
+  lpp_check_functor_control T fuel P Q (family_nodes m) (states m) (contexts m) (frees m) (functors m)
+   (return_symbols m) (arities m) (actions m)"
+ and local: "\<And>m j. m\<in>members \<Longrightarrow> j<length (family_nodes m) \<Longrightarrow>
+  lpp_observer_referenced_node_contract names operation SP P B U D Q
+   (family_nodes m) (states m) (contexts m) (frees m) (functors m) (premises m)
+   (lpp_observer_family_rep names operation SP members family_nodes states contexts frees functors premises)
+   J rest returned j"
+ and represented: "lpp_observer_family_rep names operation SP members family_nodes states contexts frees functors premises runtime subject"
+ and invariant: "J runtime"
+ and residual: "SN_on (lp_ild Q) {subject}"
+ shows "lp_answer_contract (lpp_domain_answers P B U D)
+   (lpc_attach_answers rest (lpc_reinterface (\<lambda>env x. env (Inr x)) runtime)) (lp_ild Q) subject returned"
+ by (rule lpp_observer_family_contract_from_nodes[OF finite local represented invariant residual])
+
+ML \<open>
+val thms = @{thms lpp_observer_family_contract_from_nodes lpp_observer_family_contract};
+val _ = if Thm_Deps.has_skip_proof thms orelse not(null(Thm_Deps.all_oracles thms)) then error "Untrusted observer family composition" else ();
+\<close>
 end

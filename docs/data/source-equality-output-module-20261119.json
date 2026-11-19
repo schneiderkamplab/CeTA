@@ -1,0 +1,39 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "discharged_local_obligations": [
+    "Actual scalar output and combined invariant supply caller parameter, restricted leaf and finiteness facts at singleton return",
+    "All four retained equality-module rows assembled, conditional on explicit caller continuation and static/source premises"
+  ],
+  "verification": {
+    "kernel_checked": true,
+    "skip_proofs": false,
+    "oracles": false,
+    "static_and_structural_checks_per_variant": 17,
+    "fresh_full_table_control_check": false,
+    "generated_checker_modified": false,
+    "production_replay": false
+  },
+  "remaining": [
+    "Instantiate incoming arithmetic-to-equality links",
+    "Discharge caller continuation within justified family assembly",
+    "Remaining paths, acquired blocks, query initialization and full invariant preservation",
+    "Authenticate actual returns for Splits 30 and 44"
+  ],
+  "artifacts": {
+    "thys/Logic_Programming/LP_Prolog_Observer_Output_Return.thy": "0cda10e90fac2301654e3e0f327abcc256aa89602e0ec970805dce4f5af52bff",
+    "tests/source-contract-parameters/Equality_Output_Module_Check.thy": "595e5aeac48e2cf5c18f4ff3125b1284b187323533e9c8210f82f0df2fe79f3f",
+    "tests/source-contract-parameters/Check_Equality_Output_Module.ML": "1e51c373879209d0961f97fd5956c28e7c01c874b86aa963fcfdbe92db4b8a44",
+    "tests/source-contract-parameters/Conditioned_Output_Link_Check.thy": "fb5148301b703227e55fa6deb4a22b90fb5c753128b00095614a04a0fc8f1735",
+    "target/source-recursive-caller/Recursive_Caller_Check.ML": "2e5b267a19e00f3b378c58a54de895bb0ebac9425ae778622be08ce3f23e2b5b",
+    "target/source-equality-output-module/kernel-receipt.txt": "eb2319df7e87a52582a2304af3b8f1647816a2e1355f63a06c5a89442d04ed0d",
+    "target/source-equality-output-module/original.log": "bf249e70c166551dd8b7c6308d7f8e2014306accace534d1f3911727fc08d495",
+    "../ferrum-prolog-release/target/source-contract-development/original/states-19.xml": "bb9fa396ed699fcff9207bd6dc8a058af57811e0407471e7640b3151c83204d1",
+    "../ferrum-prolog-release/target/source-contract-development/original/actions-19.xml": "617f39b1c7dea85d93d3c77cd3d730c6837066ccc8f485d890e58bc198dba841",
+    "../ferrum-prolog-release/target/source-contract-development/original/subject-19.xml": "d2ed9b7ba713955225d23968f9220ae822dc1b4afcedbf9605eae40e9aebe8a5",
+    "target/source-equality-output-module/renamed.log": "bf249e70c166551dd8b7c6308d7f8e2014306accace534d1f3911727fc08d495",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/states-19.xml": "bb9fa396ed699fcff9207bd6dc8a058af57811e0407471e7640b3151c83204d1",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/actions-19.xml": "617f39b1c7dea85d93d3c77cd3d730c6837066ccc8f485d890e58bc198dba841",
+    "../ferrum-prolog-release/target/source-contract-development/renamed/subject-19.xml": "ef97511330bf66038d652a3b631f985785ce4006db0e7d5edab8ceaee8981481"
+  }
+}

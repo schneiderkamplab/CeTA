@@ -6709,3 +6709,3849 @@ tests reject missing and out-of-range pairs. Evidence is in Ferrum
 `target/prolog-coordinates-2752/`. One incremental native build, no unified
 export or root gain. These checks still need complete integration with module
 contract assembly, residual discharge and strict original-source replay.
+
+### Residual checkpoint foundations — 2026-11-18
+
+Five new `thys/Rewriting/DP_Checkpoint_*.thy` theories pass incremental resident
+Isabelle checking. Constructor-skeleton preservation covers arbitrary residual
+terms, contexts and substitutions. Its executable rule check excludes constructor
+left-hand sides, constructor-producing right-hand sides and collapsing rules.
+Control-root stability uses the weaker, separately proved left-root exclusion.
+
+The checkpoint termination theorem separates finite internal control paths from
+strict first-return descent. Its DP corollary uses the existing `finite_dpp`
+semantics and preserves either value of minimality. Connections are arbitrary
+finite support derivations; support termination is not assumed. A checked
+control-height table supplies the internal-descent premise. All checkpoint
+returns still require a separate semantic descent proof.
+
+The exact 17-pair, 221-rule saved component passes the control and skeleton
+checks in Isabelle after injective symbol/variable renaming. The height witness
+comes from Ferrum's native discovery; the fixture serializer performs no search.
+Its complete input, symbol map, native witness and kernel receipts are retained
+in `target/checkpoint-residual-proof/`. The receipts audit 22 general/test
+conclusions and four concrete-component conclusions with no oracles or skipped
+proofs. Negative controls reject missing checkpoints, omitted control roots,
+wrong heights, rewritten control roots and disconnected cycles. A covered
+self-loop is separately proved nonterminating, demonstrating that coverage
+cannot discharge return descent.
+
+This changes the CeTA development tree on `codex/prolog-production-integration`,
+base `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`, in `thys/Rewriting/` only.
+There is no unified export or executable change. Successful-relation inversion,
+concrete return ranking, source assembly and full preservation replay remain
+open; neither the component nor numbervars is certified by these checks.
+
+### Residual successful-relation summaries — 2026-11-18
+
+The next vertical slice proves contextual successful-relation inversion using
+set-valued interpretations. Every support rule must preserve the interpretation;
+constructor-skeleton invariance handles arbitrary substitutions and rewriting
+inside data coordinates. Schema receipts instantiate proved rules and check both
+sides, with one receipt per actual support rule. Unrestricted roots receive the
+universal interpretation; merely recording a summary does not discharge it.
+
+Ground recognition and encoded argument extraction now have executable summary
+checks and soundness theorems. Successful ground recognition forces the raw input
+to be a closed constructor value, excluding opaque residual roots and variable
+leaves. Argument extraction returns precisely the encoded observed children.
+These are successful-return properties, not termination proofs.
+
+Ferrum discovers both signatures structurally and supplies receipts covering all
+221 rules of the unchanged nonminimal component. The concrete Isabelle fixtures
+check those receipts and instantiate both inversion theorems. New general and
+negative-test receipts audit 34 conclusions, plus four concrete conclusions,
+with no oracles or skipped proofs. Evidence is retained alongside the earlier
+control receipts in `target/checkpoint-residual-proof/`. Native tests also cover
+renaming every symbol and reversing rule order, missing receipts, swapped
+coordinates, forged output rules, stale versions and cancellation.
+
+CeTA development changes remain in `thys/Rewriting/` on the same branch and base
+recorded above. The unified executable is unchanged. Leaf/list effects, rigidity,
+complete return-path composition and strict descent remain open, followed by SEG
+assembly, scheduler integration and the prescribed unified replay gates.
+
+### Conditional leaf effects and proper list domains — 2026-11-18
+
+The residual layer now reuses `LP_Prolog_Forest_Return_Order` and its leaf-effect
+relation through an injective skeleton interpretation. Closed leaf-free
+replacements give nonincreasing leaf count; equality forces identical skeletons.
+Encoded proper-list effects preserve the spine and relate elements pointwise.
+A separate rank wrapper gives opaque residual atoms positive size without
+changing leaf count, so tail descent need not assume a source-valued head.
+
+The executable leaf-summary check validates arbitrary constructor replacement
+templates with only the preserved parameter as a free coordinate. Its success
+theorem explicitly requires that parameter's skeleton to be closed and leaf-free.
+Native discovery finds four leaf/spine families in the exact component; each
+receipt covers all 221 support rules and checks every producer of interpreted
+outputs. All four concrete success theorems check in Isabelle. Two independently
+discovered list-domain summaries also check against all rules: successful list
+execution requires a proper input spine, separately from element effects and
+helper termination. No source execution or integer premise is substituted.
+
+The new retained audit records 38 general/test conclusions plus eight concrete
+leaf conclusions and four concrete list-domain conclusions, without oracles or
+skipped proofs. Four additional list-effect bridge conclusions pass their inline
+audit. Evidence and native witnesses are in `target/checkpoint-residual-proof/`.
+Five native summary tests pass, including whole-component symbol renaming and
+rule reversal, ternary replacement constructors, leaf-containing replacements,
+wrong parameter references, missing receipts, swapped coordinates and stale
+versions. Native evidence is in Ferrum's
+`target/checkpoint-coverage-20261118/effect-tests.log`.
+
+The concrete list traversal still needs its output effect composed with its
+checked element-helper summaries. Complete checkpoint-return composition and
+strict descent remain open, as do SEG assembly, scheduler integration, unified
+export, strict replay and preservation campaigns. These are development-theory
+changes on the branch/base already recorded above; the unified executable has
+not changed and neither the component nor numbervars is certified.
+
+## Checked list/helper composition and residual rank bridges — 2026-11-18
+
+The combined summary now checks all producers of both helper and list output
+symbols. Native discovery finds two linked families in the unchanged 17-pair,
+221-rule component. Isabelle checks both receipts against all support rules and
+proves both conditional successful-return effects. Combining each with its
+matching list-domain receipt proves spine preservation, pointwise leaf effects
+and strict returned-tail forest descent. The closed, leaf-free replacement
+parameter remains an explicit premise; successful return does not imply helper
+termination.
+
+The constructor/argument rank bridge also checks for arbitrary residual children,
+including opaque atoms. A total forest decoder truncates malformed endpoints;
+checked head and tail inequalities use the existing forest order without a
+constructor-valued substitution assumption. Complete control-path composition
+must still establish the hypotheses and coordinate transport on every path.
+
+Five focused native tests pass in
+`../ferrum-prolog-release/target/checkpoint-coverage-20261118/composition-verified-tests.log`, including
+renamed symbols, reversed rules, cancellation, stale versions, missing receipts,
+wrong interfaces and forged output producers. The forged output passes separate
+helper/domain checks but fails the combined check. Resident Isabelle audits
+19 general/test conclusions, four total-forest conclusions, four concrete
+composition conclusions and two concrete return-rank conclusions with no oracles
+or skipped proofs. Evidence is retained under
+`target/checkpoint-residual-proof/`.
+
+CeTA development theories changed on `codex/prolog-production-integration`, base
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`; the unified executable is unchanged.
+The component termination certificate, complete SEG assembly, common scheduler
+integration, unified export, double checking and strict replay remain open.
+No certified numbervars result or fresh 90/97 and 84/9 preservation gate is
+claimed by these residual lemmas.
+
+## Shared checkpoint paths and coordinate transport — 2026-11-18
+
+The native first-return graph now distinguishes initial checkpoint arcs, shared
+internal nodes, returns and exits. Arcs retain original pair indices; validation
+reconstructs the complete graph against unchanged input pairs/support. A merge
+point carries no merged successful-return facts. Three tests pass, covering
+all 17 pairs and both returns of the exact nonminimal component, renamed and
+reversed inputs, multiple cycles, parallel arcs, missing paths/exits, wrong pair
+references, stale versions, cancellation and exponentially many shared paths.
+Path-count overflow is incomplete observation, never evidence to omit a path.
+Log: `../ferrum-prolog-release/target/checkpoint-coverage-20261118/path-verified-tests.log`.
+
+Isabelle now provides the path-annotation composition theorem: all entry and
+internal rule obligations plus strict checkpoint boundaries imply finite DP
+chains under the existing checked control coverage. An annotation explicitly
+retains its initial checkpoint. Each rule obligation includes the complete finite
+support connection. A true annotation alone does not establish descent; a false
+annotation fails actual entry obligations, as checked by the negative controls.
+Argument-level support transport, bounded coordinate projection and pending-call
+prefix composition also check. The exact component instantiation proves
+argument transport and saved constructor-skeleton equality for its full support.
+The receipt audits 16 general/test conclusions and two concrete transport
+conclusions without oracles or skipped proofs.
+
+This is still a proof interface, not an executable annotation synthesis/checker
+or a discharged termination certificate. The next residual step is to synthesize
+and discharge these annotations using the checked ground/extraction/list-effect
+summaries. Source assembly, scheduler integration, unified export, double checking
+and strict replay remain open. CeTA development theories changed on the existing
+`codex/prolog-production-integration` branch/base; its unified executable remains
+unchanged. No new certified numbervars result or 90/97 and 84/9 replay is claimed.
+Evidence: `target/checkpoint-residual-proof/`.
+
+## Acquired helper returns and ordered rank blocks — 2026-11-18
+
+Native structural discovery now binds four helper-return observations to the
+original adjacent pairs and argument coordinates. The interfaces come from the
+existing discovered ground, extraction, leaf and composed-list summaries; no
+symbol-name or pair-index dispatch was added to production code. Two native
+tests pass, including renamed/reordered inputs, wrong coordinates, reversed
+transitions, wrong output arity, stale versions and cancellation (also empty
+input). Log: `../ferrum-prolog-release/target/checkpoint-coverage-20261118/acquisition-verified-tests.log`.
+
+Isabelle checks each acquisition against the original component and its complete
+support-control proof. Each conclusion still requires the actual finite support
+connection between the two pair instances. The four checked summaries now apply
+to these acquired returns. A concrete ordered tail-block audit obtains its
+leaf-free parameter guard from the actual ground return and transports it
+through both intervening support connections before applying the list effect.
+It proves strict forest descent without assuming the guard initially. A concrete
+head-block audit proves strict forest descent from the acquired extraction
+return, including arbitrary residual children and an arbitrary remaining tail.
+
+The resident audits nine general/test conclusions, eight concrete acquisition
+conclusions, four acquired summaries and two block-rank conclusions with no
+oracles or skipped proofs. Evidence is under
+`target/checkpoint-residual-proof/`. The concrete block
+proofs are audit fixtures, not a native complete-path certificate processor.
+The missing residual step is still executable annotation synthesis and complete
+checkpoint-cycle assembly, including all administrative transitions and exits.
+SEG/scheduler integration, unified export, double checking and strict replay
+remain open. CeTA development theories changed on the previously recorded branch
+and base; the unified executable is unchanged. No certified component/numbervars
+termination or fresh 90/97 and 84/9 preservation replay is claimed.
+
+## Native conditional coordinate routes — 2026-11-18
+
+Native search now discovers ordered coordinate routes for both the replacement
+guard and saved tail between the acquired ground return and list call. The
+search keeps distinct copied expressions, so a first occurrence that disappears
+later does not hide another valid copy. Prefix search has a finite state space
+of pair indices and original argument expressions. Every returned route retains
+its exact ordered connections as premises; finding one route is not proof that
+other alternatives inherit its facts or that every checkpoint path is covered.
+
+The executable Isabelle route check validates original pair bounds, control
+roots, argument bounds, copy identities, endpoints and the complete coordinate
+sequence. Its soundness theorem preserves constructor skeletons under the
+existing all-rule control/skeleton checks and actual support connections.
+Consequently any explicitly established skeleton property transports along the
+route. The concrete tail-block proof now consumes native receipts for both its
+guard parameter and saved tail, replacing its hand-written coordinate transports.
+Its unchanged strict-descent conclusion rechecks in the resident session.
+
+Two native tests pass, including the exact 17/221 nonminimal component, renamed
+and reversed pairs, copied alternatives, missing/reordered transitions, wrong
+coordinates/targets, stale versions and cancellation of both route algorithms.
+Log: `../ferrum-prolog-release/target/checkpoint-coverage-20261118/route-final-tests.log`.
+Isabelle audits ten general/test conclusions and four concrete route conclusions
+without oracles or skipped proofs, and rechecks the ordered tail block. Receipts
+are in `target/checkpoint-residual-proof/`.
+
+Complete checkpoint-cycle annotation synthesis and assembly remain open, as do
+SEG/scheduler integration, unified export, double checking and strict replay.
+CeTA development theories changed on the previously recorded branch/base; its
+unified executable remains unchanged. These conditional route and block results
+do not establish component/numbervars termination or the 90/97 and 84/9 gates.
+
+## Exact nonminimal component finiteness audit — 2026-11-18
+
+The resident Isabelle session now proves
+`Component_Finite_Fixture.exact_component_finite_nonminimal` for the original
+17 dependency pairs and 221 support rules with `minimal=false`. The theorem
+has no premises or hypotheses, no oracles and no skipped proofs. The component
+subject is unchanged. Its annotations preserve pending successful-return
+obligations through arbitrary support rewriting, discharge the actual ground,
+argument and list returns, cover every original pair, and establish strict
+forest-rank descent at every checkpoint return. Successful-return conditions
+remain explicit; the proof does not assume helper termination or constructor-valued
+substitutions.
+
+Native coverage discovery now returns all valid singleton checkpoint candidates,
+with the full control-root set as a fallback. Five focused native tests pass,
+including renamed/reversed inputs, disconnected cycles, cancellation and invalid
+support rules. The concrete proof uses a checked native candidate receipt.
+The annotation itself is still a concrete audit fixture, not generic executable
+synthesis. This distinction prevents the mathematical audit from being counted
+as a production certificate or source gain.
+
+Evidence is retained in `target/checkpoint-residual-proof/`, especially
+`Component_Annotation_Fixture.thy`, `Component_Transitions_Fixture.thy`,
+`Component_Finite_Fixture.thy`, `component-finite-proofs.log` and `manifest.json`.
+The native test log is
+`../ferrum-prolog-release/target/checkpoint-coverage-20261118/candidate-verified-tests.log`.
+
+The next gap is generic native annotation synthesis and its executable checker,
+followed by SEG contract assembly, common-scheduler obligations, semantic state
+versioning and unified export. The unified checker is unchanged; no certified
+`numbervars.pl` result or fresh baseline preservation replay is claimed. The
+required 90 YES + 97 NO and 84 YES + 9 NO gates remain outstanding. CeTA changes
+remain development theories on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`.
+
+## Native checkpoint annotations — 2026-11-18
+
+Native Rust discovery now synthesizes a finite annotation table for the exact
+17-pair, 221-rule nonminimal component. The shared vocabulary represents exact,
+split and prefix forests, strict rank bounds, leaf-free guards, and pending
+argument, ground and list calls. Discovery uses pair patterns, constructor roles
+and validated all-rule return summaries; it contains no benchmark symbol or pair
+index dispatch. Separate incoming clauses remain alternatives. An empty clause
+or a return without strict descent remains an explicit unresolved obligation.
+
+The native receipt contains all 17 transfers and no unresolved returns. Serialized
+as data, its annotation table now establishes
+`Native_Annotation_Component_Fixture.native_component_finite_nonminimal` in
+Isabelle. This proof checks entry obligations, all original pairs, support
+preservation and checkpoint boundaries using the generated table. It has no
+premises, hypotheses, oracles or skipped proofs. It reuses checked helper-return
+lemmas; it does not use the earlier hand-written annotation table as its invariant.
+
+The shared annotation datatype and interpretation check coordinate bounds and
+root arity. Six general transport conclusions and eight controls check that
+pending calls do not imply success and that alternatives do not merge facts.
+Two native tests pass, including symbol renaming and reversed rule order,
+missing transfers, stale versions, cancellation, wrong rank coordinates,
+multiple checkpoints, missing replacement guards and wrong saved-tail transport.
+Evidence: `target/checkpoint-residual-proof/annotation-witness.json`,
+`native-annotation-proofs.log`, `annotation-proofs.log`, and `manifest.json`;
+native test log: `../ferrum-prolog-release/target/checkpoint-coverage-20261118/annotation-final-tests.log`.
+
+The remaining residual gap is a generic executable transition checker suitable
+for unified CeTA export: the present audit discharges the generated table's
+transition obligations with Isabelle proof methods. Production processor wiring,
+state/scheduler integration, full SEG assembly and `numbervars.pl` source
+certification remain open, along with the required double checking, strict replay
+and baseline preservation gates. CeTA development theories changed on the branch
+and base recorded above; the unified executable is unchanged and no source gain
+is claimed.
+
+## Executable annotation inference core — 2026-11-18
+
+The shared checkpoint development now has executable checks for canonical fact
+copying, forest decomposition, prefix weakening, pending-call acquisition and
+successful argument/ground/list returns. Soundness uses one arbitrary substitution
+for the complete pair-local derivation. Return rules require the all-rule summary
+checks; list returns additionally require the proper-spine domain certificate.
+Leaf-free conditions remain explicit dependencies.
+
+A sequential derivation checker accepts only references to already established
+facts in the same alternative. It verifies coordinate bounds, witness arities,
+rule codes, exact witness terms and return-interface membership. The inference
+soundness theorem separately requires each registered return interface's semantic
+proof: a populated registry is not a discharged summary. Unknown codes, future or
+circular references, missing interfaces, forged outputs, mismatched guards and
+wrong coordinate transport have retained negative controls.
+
+The resident session audits 34 general/control conclusions without oracles or
+skipped proofs. The inference and clause-derivation functions were generated as
+SML, compiled with Poly/ML and executed on probes yielding
+`[true, false, false, false]`. The generated file was not hand-edited. This is an
+executable core check, not a substitute for the unified production checker.
+Evidence: `target/checkpoint-residual-proof/inference-proofs.log`,
+`Checkpoint_Inference.ML`, `inference-sml-check.ML`,
+`inference-sml-compile.log` and `manifest.json`.
+
+The next work is native emission of sequential derivations, authentication of
+all summary-registry dependencies, and binding the complete entry/transition/
+boundary checker to the exact component. Its existing native-annotation Isabelle
+finiteness audit remains retained. Unified integration, SEG/source assembly,
+`numbervars.pl` certification and all requested replay/baseline gates remain open.
+Only CeTA development theories changed in this slice, on the branch/base recorded
+above; the unified executable and production results remain unchanged.
+
+## Complete executable checkpoint certificate — 2026-11-18
+
+Native annotation discovery now emits sequential inference witnesses with exact
+premise references. The version-2 receipt retains all 17 transfers and eight
+inference steps; stale version-1 receipts are rejected. Two focused native tests
+pass, including renamed/reversed inputs, missing derivation steps and invalid
+references. Alternative clauses keep separate fact environments.
+
+The shared Isabelle checker now authenticates argument, ground and list summary
+registries against the original support rules, checks every pair/clause transition,
+checks entry coverage and strict checkpoint boundaries, and applies the existing
+forest ranking theorem. Its soundness theorem has only the executable aggregate
+check as a premise. The exact 17-pair, 221-rule component passes that check and
+establishes `Native_Checked_Component_Fixture.checked_native_component_finite_nonminimal`
+with `minimal=false`, no open premises or hypotheses, no oracles and no skipped
+proofs. No constructor-valued substitution assumption was added.
+
+Generated SML compiles and accepts the aggregate component certificate. Ten
+aggregate/registry mutations are rejected: missing argument/ground/list registries,
+missing transitions or target annotations, invalid rank coordinates, constructor
+rewriting, collapsing support, an added forged output producer and omitted list
+domain evidence. The six summary probes and six earlier transition probes also
+pass their expected results. No generated checking logic was edited.
+
+Evidence is retained in `target/checkpoint-residual-proof/checked-certificate-proofs.log`,
+`native-certificate-proofs.log`, `Checkpoint_Checked.ML`, `checked-sml-check.ML`,
+`checked-sml-compile.log` and `manifest.json`. Native evidence is in
+`../ferrum-prolog-release/target/checkpoint-coverage-20261118/derivation-verified-tests.log`.
+
+This closes the generic executable residual-checker gap. Production processor
+registration, certificate parsing/export into unified CeTA, state-local scheduling,
+SEG contracts and source assembly remain open. `numbervars.pl` is still uncertified;
+the requested double checks, strict replay and baseline preservation gates have
+not been run for this change. CeTA development theories changed on
+`codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`; the unified executable is unchanged.
+
+## Checkpoint production integration in progress — 2026-11-18
+
+The shared forest mathematics now lives in
+`thys/Rewriting/Checkpoint_Ranking/Forest_Return_Order.thy`; both the source
+forest theory and the residual checker reuse it. Checkpoint theories moved into
+that directory to give the common checker session explicit ownership without a
+source-checker dependency cycle. The lower aggregate and native nonminimal
+component were rechecked after the mathematical extraction, including generated
+SML. The versioned certificate wrapper and common DP adapter have checked
+soundness lemmas. Format probes reject stale versions, duplicate map keys and
+missing checkpoint coordinates (`target/checkpoint-residual-proof/format-proofs.log`
+and `format-sml-compile.log`).
+
+Ferrum now synthesizes the complete certificate and serializes its summary
+registries, coordinate maps, alternative clauses and transition derivations.
+The dedicated `checkpoint-ranking` strategy accepts only a scalar coordinate
+search bound. Runtime and guidance tests pass for the exact nonminimal component,
+unsupported contexts, expired deadlines, scalar bounds and witness-bearing advice
+rejection. Logs are retained in
+`../ferrum-prolog-release/target/checkpoint-coverage-20261118/runtime-tests.log`
+and `guidance-tests.log`.
+
+The common CeTA proof constructor and CPF parser are implemented but their
+integration build is still pending. The unified executable is unchanged. Unresolved
+checkpoint candidates are currently diagnostic rather than independently scheduled
+children. Source contract assembly, strict replay, double checking and baseline
+gates remain open; this does not certify `numbervars.pl`.
+
+## Native XML and SCC integration checks — 2026-11-18
+
+`Checkpoint_Certificate_Parser.thy` now owns the parser used by the common CPF
+parser. Its generated SML accepts actual CLI payloads for the exact nonminimal
+17-pair/221-rule component, a renamed/reversed variant, and a 34-pair two-cycle
+variant sharing the same support rules. Eleven XML/support mutations are rejected,
+including missing registries, transitions, coordinates, proper-spine conditions
+and inference steps, stale versions, duplicate height keys, constructor rewriting
+and collapsing support. Evidence is in
+`target/checkpoint-residual-proof/xml-sml-check.log` and `manifest.json`.
+
+The multiple-cycle test exposed singleton-only checkpoint discovery. Native search
+now computes control SCCs, selects checked cuts within recurrent components and
+checks their union on the entire original graph. It prioritizes small interfaces
+and polls cancellation through discovery. The full checkpoint regression group
+passes 24 tests, with no failures and one ignored test.
+
+The current Ferrum binary produces a complete CPF for the exact component via
+strict state-local scalar guidance. Empty guidance fails without fallback;
+conflicting duplicate guidance is rejected. These are producer/replay checks,
+not certified production results. The common Isabelle build has completed
+HOL-AFP and is still building dependencies; the unified executable is unchanged.
+SEG/source assembly and the requested baseline gates remain open.
+
+## Common checkpoint checker verified — 2026-11-18
+
+The normal Isabelle `Proof_Checker_Base` build passes, including the dedicated
+checkpoint proof constructor, common DP adapter and updated termination-checker
+soundness proof. The full build took 36:06 while rebuilding HOL-AFP, IsaFoR_1 and
+IsaFoR_2; the common checker session itself took 3:33. Evidence is retained in
+`target/checkpoint-residual-proof/common-build.log`. The full `Proof_Checker`
+parser/export integration build first rejected a filesystem import of a theory
+owned by `Proof_Checker_Base`. After correcting that import, the build passed
+the common base and CSR base/core, then exposed a missing induction case in
+`CSR_Minimal_CSDP_Proofs.thy`. The added case reuses the existing soundness lemma
+for ordinary-DP continuations; checker behavior is unchanged. All CSR sessions
+then passed. `Proof_Checker` exposed another missing case in the typed CSR
+checker; its existing unsupported-constructor argument now covers checkpoint
+ranking too. The incremental build is running again (`full-checker-build-v4.log`),
+alongside independent relative-DP export dependencies. The unified executable
+is unchanged.
+
+The structural successful-return contract theory and its matching native
+receipt checker now pass their focused checks. The resident check initially
+exposed 235 Draft LP theories from another checkout; those copies were removed
+and the required source dependencies were rechecked from this worktree.
+Six soundness/transport theorems and ten formal examples pass the no-oracle,
+no-skipped-proof audit. Untouched generated SML passes three positive and twelve
+negative controls, including complete condition transport from callee outputs
+to continuation inputs, omitted conditions, forged equality, invalid references,
+wrong coordinates and saved-alternative isolation. Evidence is retained in
+`target/checkpoint-residual-proof/structural-return-kernel-receipt.txt`,
+`structural-return-sml-check.log` and `structural-return-progress.json`.
+
+These are conditional relation proofs: enclosing source/residual obligations
+must still authenticate their conditions, replacement registries and coordinate
+correspondence. They do not establish helper termination or discharge the
+observer-family ledger. No source acceptance or production verdict is claimed.
+
+## Full checkpoint parser integration verified — 2026-11-18
+
+The incremental normal `Proof_Checker` build now passes, including the checkpoint
+CPF parser and both additional CSR proof cases. The session took 7:41
+(24:13 CPU); the complete invocation exited successfully after 8:06.
+`target/checkpoint-residual-proof/full-checker-build-v4.log` records the result.
+The independent `Relative_ADP_Checker_Dev` dependency build also passed, after
+28:25. The production `Certificate_Performance_CPF_Export` build has started
+from those checked heaps; the unified executable has not yet been rebuilt.
+
+The native component CPF retains the original support-rule list, pair list and
+`minimal=false` exactly. The prepared unified-checker gate repeats this input
+audit, checks retained positive certificates twice with one immutable executable,
+and checks the eleven existing XML/support mutations. Its execution is pending
+the production export and `make ceta`; preparing this gate is not certification.
+Source assembly, strict certified replay and the protected baseline gates remain
+open.
+
+## Structural list domains retained — 2026-11-18
+
+`LP_Prolog_Structural_List_Observation.thy` now proves that an observed structural
+list of length `n` is exactly a runtime list with a proper spine of length `n`
+and finite contents. The two domain premises remain distinct. The successful
+list-effect contract consequently preserves the exact runtime spine length.
+The shared receipt checker now exposes either endpoint's proper-spine fact
+through `LPPRListSpine`, with a matching native `ListSpine` inference.
+
+The resident kernel check, no-oracle audit, thirteen formal examples, native
+receipt regression, and untouched generated-SML controls pass. The SML controls
+now comprise four positives and fifteen negatives, including rejection of a
+general leaf effect as evidence of a proper list spine, missing list effects,
+and future references. Updated evidence is in
+`target/checkpoint-residual-proof/structural-return-progress.json` and the linked
+logs. These remain conditional contracts; source assembly must establish their
+effect premises. No original-source certification is claimed.
+
+## Native conditional return composition — 2026-11-18
+
+The shared contract calculus now derives a pointwise list effect from a leaf
+effect and a proper-spine condition on its input coordinate. The kernel proof
+uses the finite structural observation already contained in the leaf effect;
+it does not infer finite elements from the spine alone. Output-spine and
+finite-tree facts cannot substitute for the required input-spine fact.
+
+Ferrum now synthesizes these conditional derivations by bounded saturation of
+the checked inference vocabulary. It retains the original conditions, polls
+cancellation, and reports unproved conclusions when the bound or available
+facts are insufficient. This supplies receipt synthesis for later source
+assembly; it is not an independent source termination processor.
+
+Two native tests pass, including changed coordinates, missing conditions,
+cancellation, a zero bound and a stale contract version. Untouched generated
+SML accepts both emitted native receipts. Sixteen formal examples and five
+positive/eighteen negative SML controls also pass. Evidence and hashes are in
+`target/checkpoint-residual-proof/structural-return-progress.json`; native
+emission checks are recorded in `native-structural-return-check.log` beside it.
+Source conditions, observer obligations and original-source certification
+remain open. The production CPF export is still running; its RFC dependency
+passed in 8:37.
+
+## Production checkpoint export verified — 2026-11-18
+
+`Certificate_Performance_CPF_Export` passes in the normal Isabelle session
+hierarchy. The final session took 6:56; the export/dependency invocation took
+31:40. The log is `target/checkpoint-residual-proof/cpf-export-build.log`.
+The untouched nine-module Haskell export passed the existing public-interface
+check and is packaged as `tests/unified/exports/cpf-checkpoint-ranking.tar.gz`
+(SHA-256 `f5e8b78bec10d1586a28881488c948cc9dedcd51b276196d0a74ad50dfd0e446`).
+`scripts/unified-exports.json` records the archive, source hashes and modified
+worktree provenance.
+
+The isolated `make ceta` build is running in
+`target/unified-checkpoint-ranking`, reusing the seven unchanged category
+libraries only after their identity/hash checks. Component/sibling double
+checks, mutation rejection and fresh strict replay are queued using the same
+resulting executable. These checks have not run yet. No original-source verdict
+or baseline improvement is claimed.
+
+## Shared return facts imply forest descent — 2026-11-18
+
+`LP_Prolog_Structural_Forest_Return.thy` connects the shared successful-return
+atoms to the existing forest order. Authenticated finite-head, input-spine,
+attached leaf-effect and leaf-free-replacement facts yield structural
+observations of both tails and strict descent from the initial head-plus-tail
+forest to the actual returned tail. Coordinates remain arbitrary, and helper
+termination remains a separate obligation. The proof uses the checked list
+observation bridge and `lpp_runtime_returned_argument_tail_decreases`.
+
+The current resident kernel checked the theorem without skipped proofs or
+oracles. The statement and audit are retained in
+`target/checkpoint-residual-proof/structural-forest-kernel-receipt.txt`, with
+source hashes in `structural-return-progress.json` beside it. This is a
+conditional composition theorem; it does not authenticate source effects,
+discharge observer rows, or certify the original source. The unified CPF
+library build is still running.
+
+## Checkpoint ordered-subject integration correction — 2026-11-18
+
+The first unified checkpoint build succeeded, but the retained exact component
+was rejected by executable `cc8bfea9aab7b9a26b6d477b4bc6eb4617abe30e0178389ceb8727283c9420a7`.
+The failed receipt remains in
+`target/checkpoint-residual-proof/unified-checks-v1-failed/receipt.json`.
+The common DP implementation reconstructs support rules from its rule map;
+positional summary receipts cannot assume the original input list order.
+
+Wire format version 2 therefore includes ordered pair and support subjects.
+The checker requires their sets to equal the current DP and support sets before
+checking any positional receipt. It retains arbitrary substitutions and
+`minimal=false`. The native producer emits these subjects from its live input;
+no generated checking code was edited. Resident Isabelle checked the revised
+soundness theorem and parser, acceptance with both subjects reversed, and
+rejection when either subject set differs. The oracle-free kernel receipt is
+`target/checkpoint-residual-proof/ordered-subject-kernel-receipt.txt`.
+Three native checkpoint tests pass in
+`../ferrum-prolog-release/target/checkpoint-coverage-20261118/ordered-subject-tests.log`.
+
+The normal production export rebuild is running in
+`target/checkpoint-residual-proof/cpf-ordered-subject-build.log`.
+These checks do not establish unified acceptance, strict replay, a source-level
+`numbervars.pl` certificate, or preservation of the campaign baseline.
+
+## Executable observer local assembly — 2026-11-18
+
+`LP_Prolog_Observer_Plan` and its XML parser consume the complete native row plan
+and frontier. The checker rejects stale versions, omitted or duplicate rows,
+incorrect frontiers and missing local witnesses. Every local row must pass both
+the existing source-action check and the frontier observer check. The kernel
+checked `lpp_observer_local_assembly_node_contract` connects these executable
+checks to the existing conditional node-contract theorem. A separate theorem
+ensures every nonlocal role remains in the pending list; trace references cannot
+discharge acquired blocks.
+
+Untouched generated SML accepts the fresh original and renamed inputs: all 28
+local receipts pass in each input, with all 40 nonlocal rows still pending.
+The controls reject malformed plans. The exact evidence and source hashes are in
+`target/observer-family-assembly/checked-local-manifest.json`; the oracle-free
+kernel receipt is `target/observer-family-assembly/kernel-receipt.txt`.
+This is development verification, not a unified source certificate. Global
+initialization and attached invariants, both successful returns, acquired blocks,
+module/Split contracts and residual termination remain separate obligations.
+
+## Internal observer coverage diagnostics — 2026-11-18
+
+The resident kernel checked the internal equality/univ coverage and acquired
+entry composition theories. The new `LP_Prolog_Observer_Coverage_Obligations`
+reports dimension failures and individual equality/univ obligations. Its
+oracle-free completeness theorem proves that the report is empty exactly when
+the full internal-coverage checker succeeds; a pending item prevents acceptance.
+
+Untouched generated SML checked both original and renamed retained families.
+Both acquired entry receipts pass, all 28 local checks remain successful, and
+removing each of the six internal witnesses adds its specific missing obligation.
+Malformed table dimensions are also reported. Complete internal coverage fails
+at equality row 19 in modules 0 and 47. Both are retained boundaries targeting
+module 19, with absent local actions. No row was omitted to obtain acceptance.
+The acquired blocks remain unproved pending checked module transport and target
+simulation. Evidence, hashes and kernel receipts are recorded in
+`target/observer-family-assembly/checked-coverage-manifest.json`.
+
+This diagnostic export is not integrated into the unified source checker or the
+common scheduler. No source contract or source termination result is discharged
+by these tests. The production checkpoint rebuild continues separately.
+
+## Conditional acquired-block assembly — 2026-11-18
+
+The coverage diagnosis exposed an overly broad premise for univ normalization:
+its two equality steps retain a nonempty continuation, whereas the two reported
+boundary equalities have no remaining goals. The `LP_Prolog_Observer_Continuing_*`
+theories prove the continuation shape is preserved under evaluation and scope
+transport, and compose the checked normalization steps into acquired-node
+contracts. The executable checker requires the nonempty continuation explicitly.
+It retains all source rows, saved alternatives, frontier checks and boundary
+obligations. Final equalities are not discharged by this block theorem.
+
+The generated checker accepts all five module plans for both original and
+renamed inputs, checking 28 local rows and two conditional acquired-node
+contracts each. Each input rejects eight omitted block witnesses, two removed
+continuations and all seven omitted boundary rows. The oracle-free kernel
+receipt and untouched generated export are pinned in
+`target/observer-family-assembly/checked-continuing-manifest.json`.
+The prior full-coverage rejection remains preserved as diagnostic evidence.
+
+Global source and attached-invariant premises remain open, as do successful
+returns, module contracts, Splits, common scheduling and unified source checking.
+This milestone does not certify `numbervars.pl` or establish campaign results.
+
+The kernel also checked complete plan-to-family composition in
+`LP_Prolog_Observer_Plan_Nodes` and `LP_Prolog_Observer_Planned_Family`.
+Local and acquired rows use their checked contracts, internal rows are handled
+within blocks, and empty rows use the existing empty-state theorem. Successful
+returns and nonempty boundaries remain explicit referenced-node premises.
+The family theorem no longer needs a redundant administrative control-table
+premise when all node contracts are supplied; its previous interface is retained
+as a corollary. The existing family regression theory passes. The evidence in
+`target/observer-family-assembly/planned-family-manifest.json` enumerates the
+nine remaining external node contracts on each actual input: two returns and
+seven boundaries. Global invariants, initial representation and residual
+termination are additional premises, not discharged by this composition.
+
+The residual-subject audit in
+`target/observer-family-assembly/residual-subject-audit.json` makes another open
+dependency explicit. The five local checker subjects contain 65 clauses in
+total. They are separate from the saved 117-clause structural residual whose
+DP child is the checkpoint target. The latter was constructed with conditional
+successful-return information. Its termination certificate cannot instantiate
+the planned-family theorem's residual premise directly. Checked structural
+simulation, initialization and actual-return contracts must connect those
+subjects while retaining the original graph and all continuations.
+
+A subsequent [runtime projection audit](data/observer-structural-projection-20261118.json)
+checks every one of the 65 local clauses against the saved structural residual.
+The runtime half of each head and final continuation is exactly the original
+local clause. Two clauses also contain an argument-conversion prefix. This
+establishes syntactic correspondence only: the added structural coordinates,
+ordered successful prefixes and 52 boundary/helper clauses still require their
+semantic bridge. No source contract is discharged by this audit.
+
+## Exact checkpoint component certified — 2026-11-18
+
+The normal production export and unified `make ceta` build passed. Unified
+executable `fa22399156bb47fcfa286db09c7fe95bfe677af7cace480035864c3d487ab7bf`
+certifies the exact saved 17-pair, 221-rule component twice with `minimal=false`.
+The retained input is unchanged. Four positive fixtures, reordered input and
+nine retained siblings account for 28 positive checks; all 13 negative controls
+are rejected. A fresh native strict replay produces a certificate that passes
+twice with that same immutable executable. Missing guidance is inapplicable
+without fallback; conflicting guidance is rejected.
+
+CeTA changed in the current worktree on `codex/prolog-production-integration`,
+based on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. The integration is the shared
+checkpoint processor, CPF parser and unified CPF export. The new export archive
+has SHA-256 `a152cc4d32c9bcdec87a48dc2de7607811f45a45b5d999a29802fc8a7f23607b`.
+[Component evidence](data/checkpoint-component-20261118.json) pins the artifacts,
+checker, source manifest and strict replay. Prior rejection evidence is retained.
+
+This completes the exact residual-component milestone only. The source verdict
+for `numbervars.pl` remains UNKNOWN. Source-to-structural simulation, successful
+returns, module/Split assembly, global invariants, common scheduling and the
+protected baseline campaigns have not been completed.
+
+
+The source bridge now has a checked ordered-prefix composition theorem in
+`LP_Prolog_Parameter_Leaf_Prefix`. It embeds the parameterized leaf relation into
+a larger residual program and composes ground recognition, a leaf effect and a
+proper-list effect while preserving the caller environment and remaining goals.
+Clause inclusion, parameter groundness, actual runtime effects and output
+observations remain explicit premises. The oracle-free kernel check is recorded
+in [prefix evidence](data/parameter-forest-prefix-20261118.json). The theorem is
+not yet instantiated on the original Split obligations or exported as a source
+checker; it adds no source verdict.
+
+`LP_Answer_Symbol_Map` supplies the corresponding shared LP transport theorem:
+explicit predicate/data maps transport each successful step and complete path,
+including the caller environment, into a program containing the mapped clauses.
+The proof permits infinite runtime terms and requires clause inclusion. Its
+[kernel receipt](data/answer-symbol-map-20261118.json) has no oracle or skipped
+proof dependencies. Instantiating and checking the actual emitted symbol map
+and clause inclusions remains open; this theorem alone discharges no source
+obligation.
+
+
+The generated `LP_Answer_Clause_Rename` checker now accepts all 41 emitted
+helper clauses against the formal argument, leaf, list and ground templates,
+for both the original residual and its systematically renamed/reversed variant.
+It checks explicit clause indices, fresh-variable maps and exact clause bodies.
+Both audits reject missing receipts/clauses, aliased or wrong variable maps,
+truncated maps and forged successful outputs. [Helper-clause evidence](data/helper-prefix-clauses-20261118.json)
+pins the untouched generated matcher and inputs. This is fixture correspondence
+checking, not production discovery or authentication of source return effects.
+
+The first refreshed LP unified build failed because its generated module kept
+`explode` private although the existing adapter calls it. The failed logs remain
+in `target/checkpoint-lp-export/integration.log`. A child export explicitly adds
+that public helper; its Isabelle export build passed in `target/checkpoint-lp-export-v2`,
+and the normal unified compilation is running.
+No generated checking logic was edited, and no full-residual acceptance has
+been claimed from the failed executable build.
+
+
+`LP_Prolog_Parameter_Forest_Check` composes those checks into one executable
+premise for the ordered ground/leaf/list prefix theorem. The generated checker
+accepts both actual prefix clause families (21 receipts each) in the original
+and renamed/reversed residuals, and rejects all 42 individual receipt omissions
+per fixture. [Combined prefix evidence](data/helper-prefix-composed-20261118.json)
+records the kernel theorem and untouched generated checker. Runtime groundness,
+actual leaf/list effects and output observations remain theorem premises; they
+have not been authenticated for the original Split helpers.
+
+
+The [parameter-sharing negative control](data/parameter-sharing-control-20261118.json)
+checks that `numvars(a,f(g(a)),f(X))` succeeds with `X=g(a)` in the source.
+`LP_Prolog_Parameter_Sharing_Control` proves in Isabelle that this compound
+proper subterm is outside the narrow parameter replacement family. Thus that
+family cannot be asserted for every caller variable solely from groundness
+of the parameter. This does not refute the selected Split input/tail contracts:
+source assembly must establish the freshness and sharing conditions for their
+actual observed coordinates. The source remains uncertified.
+
+
+`LP_Prolog_Repeated_Parameter_Head` now proves that actual most-general
+resolution of a repeated-parameter head with a free output reduces to the
+existing ground-binding rule. Its second theorem transports the bounded leaf
+effect on covered active continuation variables. [Kernel evidence](data/repeated-parameter-head-20261118.json)
+retains the explicit groundness, free-output and support premises. Both saved
+Split prefixes record a free output, but Split 44 still needs its parameter
+groundness invariant. This local theorem does not yet discharge either full
+successful-return contract or the original source.
+
+
+`LP_Prolog_Parameter_Return_Composition` supplies the remaining local algebra
+for a copied-or-scalar parameter contract: transitivity, groundness preservation,
+replacement-set inclusion, and composition of leaf effects under the initial
+parameter. Stable successful scalar evaluation establishes this relation using
+the existing arithmetic semantics. [Kernel evidence](data/parameter-return-composition-20261118.json)
+also includes a negative control showing that output groundness alone is
+insufficient. All source return paths still need authentication; these lemmas
+do not turn recursive contract references into discharged evidence.
+
+
+`LP_Prolog_Parameter_Return_Prefix` connects that composition to the checked
+actual residual helper-family theorem. The ordered ground/leaf/list prefix
+retains its original parameter coordinate even when source effects were proved
+under a returned parameter. [Kernel evidence](data/parameter-return-prefix-20261118.json)
+records the composed theorem. The planned observer family still uses the
+all-ground replacement set; it cannot discharge this narrower relation without
+additional source return evidence. Neither full Split contract is discharged.
+
+
+`LP_Prolog_Relational_Allowed_Equality` extends the transport layer to a
+restricted replacement set using the existing relational leaf coverage check.
+It keeps free selection, allowed-template membership, groundness and active
+continuation finiteness explicit. The repeated-parameter resolution lemma now
+uses the same runtime support interface. [Kernel evidence](data/relational-allowed-equality-20261118.json)
+does not yet establish local dispatch or complete observer-family invariants.
+
+
+The restricted equality transport now reaches the observer answer-contract
+theorem through `LP_Prolog_Attached_Allowed_Equality`,
+`LP_Prolog_Observer_Allowed_Equality`, and
+`LP_Prolog_Observer_Allowed_Equality_Contract`. [Kernel evidence](data/observer-allowed-equality-20261118.json)
+covers the existing checked source equality row, strict residual simulation,
+caller attachment and saved alternatives. Free selection and allowed-template
+membership remain explicit additional source conditions. Native local dispatch
+and complete Split authentication remain open.
+
+
+The refreshed normal unified build has now certified the complete retained
+104-triple, 117-clause residual twice, and its renamed/reordered variant twice.
+The final full-residual gate has six positive checks (including two removals of
+unused registries) and 53 rejected controls. It rejects every individual
+checkpoint transition omission, missing component/child, and required registry
+omission. The original harness failure is retained and explained in
+[full-residual milestone evidence](data/checkpoint-full-residual-20261118.json).
+The same immutable checker also passes the exact component/sibling gate
+(28 positives, 13 negatives) and strict state-local replay. Its SHA-256 is
+`732c063e90b47f66088d950962a2da9b9ca3305c5b06cf4667c93621c16581be`.
+CeTA changed in `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`, with integration in
+`target/unified-checkpoint-triples-v2`. The original source remains UNKNOWN;
+no baseline campaigns have been rerun.
+
+The [parameter-binding check](data/parameter-binding-check-20261118.json) now
+supplies the free-selection and allowed-replacement premises of the observer
+equality contract from checked syntax and explicit source parameter facts.
+It does not authenticate those parameter facts across the complete family.
+
+At the user's requested break, the next source-assembly obligations are:
+authenticate the copied-or-scalar parameter relation across all helper returns;
+lift the restricted replacement invariant through the remaining local actions,
+acquired blocks, boundaries and returned continuations; discharge both Splits;
+and prove the original query's initialization and simulation into the exact
+retained residual. Complete scheduler integration, source replay and baseline
+campaigns follow. The certified residual is a milestone, not a source YES.
+
+## Source-contract feasibility review — 2026-11-18
+
+Implementation resumed with the bounded first gate. The gate remains open.
+`tools/audit_source_contract_gate.py` inventories the retained original and renamed
+families and checks their recorded artifact hashes. Fresh runs of the unchanged
+Isabelle-generated continuing checker pass on both: 28 local rows each, with
+its acquired-block, missing-witness, continuation and boundary controls. The
+audit additionally rejects a changed boundary table and a missing plan. This is
+retained-extraction replay, not fresh native discovery or new kernel proof.
+[Review evidence](data/source-contract-feasibility-20261118.json) lists every row.
+
+The exact open return obligations are the attached leaf effects on caller V3:
+Split 30 maps V3 to `return_2` through prefix module 0; Split 44 maps V3 to
+`return_1` through prefix module 47. Both resume module 35. Each still requires
+finite head, finite elements, proper spine, ground replacements and the actual
+attached leaf effect. Free output V2 does not by itself prove preservation of
+the caller tail or saved alternatives. Returned rows are 19:1 and 28:1;
+boundary rows are 0:19, 0:25, 0:27, 35:5, 35:7, 47:17 and 47:19. Acquired
+entries 0:3 and 47:3 retain internal rows 6, 10 and 13 in their respective modules.
+
+The first unresolved assembly premise is
+`lpp_parameter_return initial_parameter current_parameter`, together with
+`vars_term initial_parameter = {}`, at the actual parameter-binding rows and
+recursive returns. The planned family theorem currently carries
+`lpp_observer_invariant {v. vars_term v = {}}`; that invariant does not imply
+the restricted parameter relation. The existing checked negative control in
+`LP_Prolog_Parameter_Return_Composition` gives a ground compound return
+`Fun 2 [Fun 3 []]` outside the copied-or-scalar relation for `Fun 4 []`.
+Split 44's raw prefix ground set is empty: its context ground fact must be
+transported and preserved by the family proof, not inserted as a raw assumption.
+This is an obstruction to using the current theorem, not a counterexample to
+the proposed stronger source invariant.
+
+The revised proof route must carry the initial parameter, its runtime coordinate,
+the copied-or-scalar relation and the restricted attached invariant together;
+authenticate their initialization and every transition, including recursive
+returns, using the existing answer-contract induction. No recursive reference
+has been counted as discharged. Major production integration remains gated on
+that proof. The prior effort envelope remains unvalidated; this audit supplies
+no basis to narrow it or claim milestone 1 complete.
+
+The old binding manifest also records a different `source_triples.rs` hash from
+the current checkout. Both hashes are retained in the review evidence. Artifact
+hashes pass, but fresh source discovery must be rerun before treating this as
+current native-generation evidence. CeTA checking logic and executable did not
+change in this review; no source YES or baseline campaign result is added.
+
+
+## Source parameter and branch gate — 2026-11-18
+
+The [development evidence](data/source-contract-development-20261118.json)
+records new kernel-checked local rules, with no skipped proofs or oracles.
+`LP_Prolog_Runtime_Parameter` derives a finite initial parameter from raw or
+contextual groundness, preserves its identity under substitution and coordinate
+transport, and composes copied-or-scalar returns. The initial ground value is
+arbitrary; it is not assumed to be an integer or scalar. Actual entry checks pass
+at 0:0, 35:7 and 47:0, including Split 44's context-only ground fact. Composition
+still requires a proved child return relation.
+
+There is a second concrete assembly obstruction at 0:12 and 47:12: both retained
+free tables are empty, and the preceding positive `var/1` guard is `LPPSOpaque`.
+The checked counterexample in `LP_Prolog_Parameter_Var_Branch` satisfies that
+context with a compound selected value containing a shared variable. Thus the
+context does not establish the free selected value required by restricted
+equality. The same theory proves the actual successful test establishes freeness
+and cut preserves it in the active environment; failure resumes the original
+saved stack. No successful-branch fact is assigned to a saved alternative.
+
+`LP_Prolog_Parameter_Coordinate_Link` preserves additional facts in the same
+valuation as the checked context and functor observations.
+`LP_Prolog_Observer_Runtime_Parameter_Equality` uses an explicit selected-free
+fact and runtime parameter relation in the restricted equality answer contract.
+All prior separation, finiteness, attached-coverage and lower-contract premises
+remain. In particular, this wrapper's lower premise still uses separation-only
+module representation: it does not yet accept the stronger family induction
+hypothesis. This is a conditional local contract, not either complete helper
+return contract.
+
+The Isabelle-generated fixture checker passes 33 assertions per original and
+renamed family: 19 positive checks and 14 rejection controls. These cover actual
+entries, replacement syntax and coordinate maps on 5 -> 8 -> 12 in modules 0 and
+47. Missing ground context, missing free premises, wrong parameter coordinates
+and wrong replacement parameters are rejected. A positive binding check with
+an explicitly supplied free premise is not evidence authenticating that premise.
+The harness and reproduction instructions are in `tests/source-contract-parameters`.
+
+Fresh native extraction with Rust 1.95.0 and explicit historical graph construction
+now reproduces all 30 retained XML tables for each variant byte for byte. This
+supersedes the prior stale-generation concern for these tables; the evidence binds
+the current `source_triples.rs` hash and preserves earlier failed extraction logs.
+Default ordered construction produced a different graph and failed reconstruction;
+it was not substituted for the intended original graph. The unchanged generated
+continuing checker passes both fresh extractions and its existing omission controls.
+
+Milestone 1 remains OPEN. The next obligation is to instantiate
+`lpp_observer_family_contract_from_nodes` with the parameter relation,
+branch-specific free facts and restricted attached invariant, proving every
+referenced-node contract and its stronger successor conditions. This includes
+acquired blocks, module boundaries, actual recursive returns, caller V3 and saved
+alternatives. Strict residual descent must justify recursive calls. Both Splits
+and both successful-return continuations remain unauthenticated. The proof route
+must strengthen those node conditions before further assembly; the earlier
+3–7 working-week envelope remains unvalidated and cannot be narrowed from these
+local results. Major production integration remains behind this review gate.
+
+CeTA local proof sources changed in `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`; the development export is under
+`target/source-contract-development`. Neither the production checker executable
+nor native Ferrum production code changed in this step. No generated checking
+logic was edited, no source YES was added, and no baseline campaign was run.
+
+
+## Conditioned equality node — 2026-11-18
+
+The [conditioned equality gate](data/source-conditioned-equality-20261118.json)
+discharges the separation-only lower-contract mismatch recorded in the previous
+review. `LP_Prolog_Conditioned_Equality` establishes arbitrary successor node
+conditions in the exact valuation used by the checked graph link. Success uses
+the refreshed MGU valuation; failure uses the incoming saved valuation.
+`LP_Prolog_Observer_Conditioned_Equality` combines those conditions with restricted
+leaf effects and finite execution. `LP_Prolog_Parameter_Equality_Node` supplies
+the parameter-aware node contract, including scope restoration and the strict
+residual-descent lower contract required by the existing family framework.
+All these proofs pass the kernel with no skipped proofs or oracles.
+
+`LP_Prolog_Parameter_Refresh` proves the parameter component of successor
+conditions under the actual refresh map. The original and renamed 0:12 rows
+retain V1 because it is raw ground; the 47:12 rows map it through `$$$V1` because
+the raw ground table is empty. Contextual groundness proves preservation of the
+value but does not authorize changing that map. Both rows' original source-action
+checks and successful-coordinate checks pass. The fixture suite has 11 positive
+checks and 13 rejection controls per variant, including missing successor states
+and contexts, wrong coordinates, changed raw ground tables and overlapping
+refresh bounds. Removing the redundant identity binding at 0:12 is a positive
+control; removing the nonidentity binding at 47:12 is rejected.
+
+Reproduce the development export by loading
+`tests/source-contract-parameters/Conditioned_Export.thy` in the resident Isabelle
+session. Run `tests/source-contract-parameters/Check_Conditioned.ML` with Poly/ML
+from the CeTA repository, setting `OBSERVER_XML_DIRECTORY` to each fresh family
+under `../ferrum-prolog-release/target/source-contract-development`. Generated
+code, the kernel receipt and both execution logs are retained under
+`target/source-conditioned-equality`. No generated checking logic was edited.
+
+Milestone 1 remains OPEN. This node contract still requires authenticated incoming
+freeness and parameter facts, and proofs of all supplied successor conditions.
+The refresh theorem discharges the parameter component, not arbitrary additional
+facts. The next assembly work is to carry free-output and parameter facts through
+matching and repeated-parameter heads (including the copy boundary at 19:0), then
+through acquired blocks, actual return rows 19:1 and 28:1, and resumed
+continuations. Both Split return contracts remain open. No recursive reference
+is treated as a proof, and no complete strengthened family invariant is claimed.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. This gate reuses the freshly
+extracted tables pinned by the previous gate; it is not a new production source
+run. No source YES or baseline result is added. The effort envelope remains
+low confidence until both actual-return contracts are authenticated.
+
+
+## Parameter head preservation — 2026-11-18
+
+The [head preservation gate](data/source-parameter-heads-20261118.json) checks the
+next local operational obligations. `LP_Prolog_Parameter_Head_Return` proves that
+matching resolution preserves covered free outputs and their distinctness up
+to renaming, together with the copied-or-scalar parameter relation. Coverage
+includes variables observed only in the active continuation. It is not inferred
+for arbitrary caller coordinates.
+
+For the repeated-parameter empty-list head, a successful resolution of a proper
+spine forces that incoming spine to be empty. A free output is then bound to the
+actual current ground parameter, in both the caller substitution and the clause
+environment used by successor links. The parameter remains arbitrary finite
+ground data. Under explicit finite-continuation and runtime-support coverage
+premises, the head preserves restricted caller leaf effects; the result is lifted
+over the base answer transition, including failure and saved alternatives.
+These proofs pass the kernel without skipped proofs or oracles.
+
+The generated fixture checker passes 16 positive checks and 22 rejection controls
+per original and renamed family. It checks matching rows 0:2, 0:3, 47:2 and 47:3,
+and repeated-parameter rows 0:22 and 35:2 against their source actions. Missing
+successor states, wrong or missing matching bindings, uncovered outputs,
+nonrepeated parameters and nonempty first head arguments are rejected.
+Continuation-only coverage has explicit synthetic positive controls, not
+production witnesses. Runtime free-output and proper-spine premises remain
+separate from these syntactic checks.
+
+Reproduce by loading `tests/source-contract-parameters/Head_Export.thy` in the
+resident Isabelle session, then running `tests/source-contract-parameters/Check_Heads.ML`
+with Poly/ML and `OBSERVER_XML_DIRECTORY` set to each retained fresh extraction.
+The export, kernel receipt and both logs are in `target/source-parameter-heads`.
+The initial harness failure is retained. The coverage check uses a verified list
+traversal because its first set-based formulation was not code-generatable.
+
+Milestone 1 remains OPEN. These local rules have not yet been assembled into the
+complete observer family. Next, transport their output/parameter facts through
+actual refreshed successor valuations, establish fresh body-only outputs at
+recursive cons heads, and cover acquired blocks and return boundaries. Successful
+return continuations and both Split contracts still require the strict-descent
+family induction. No recursive reference or missing runtime premise is discharged
+by these fixture checks.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, no source YES was added, and no baseline campaign was run.
+
+## Head successor facts — 2026-11-18
+
+The [successor gate](data/source-head-successors-20261118.json) transports the
+parameter and free-output facts into the actual resolution-link valuation.
+`LP_Prolog_Head_Successor_Facts` distinguishes clause coordinates from refreshed
+active coordinates. Its matching-head rule carries the copied-or-scalar parameter
+and preserved free output together. For recursive heads, body-only membership
+establishes a free helper output, disjoint from the finite instantiated selected
+atom. Separation from another caller value retains explicit finiteness and
+active-continuation coverage premises. All rules passed the Isabelle kernel,
+with dependency checks excluding skipped proofs and oracles.
+
+Eight actual head rows in modules 0, 35 and 47 pass 24 positive checks and 44
+rejection controls per original and renamed variant. Controls reject stale or
+wrong prefixes, missing bindings, a head parameter claimed as fresh, missing
+body occurrences and an output mapped to the parameter. These executable checks
+validate source actions and structural premises; runtime freeness, finiteness
+and caller coverage still require the source invariant.
+
+Reproduce by loading `tests/source-contract-parameters/Successor_Export.thy` in
+the resident Isabelle session, then running `Check_Successors.ML` in the same
+directory with Poly/ML and `OBSERVER_XML_DIRECTORY` set to each retained fresh
+extraction. Export, kernel receipt and logs reside in
+`target/source-head-successors`. No generated checking logic was edited.
+
+M1 remains OPEN. The next obligation is to integrate these facts into strengthened
+resolution-node contracts with restricted leaf effects, finiteness and branch
+conditions. Acquired blocks, module links, actual return rows 19:1 and 28:1,
+resumed continuations and both Split contracts still need the complete family
+argument. Recursive references are not discharged premises.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. This reuses pinned extraction
+tables; no production source YES or baseline campaign is added.
+
+## Conditioned matching node — 2026-11-18
+
+The [matching node gate](data/source-conditioned-matching-20261118.json) resolves
+the matching-head assembly mismatch. The new conditioned resolution action carries
+supplied successor conditions in the same valuation as context, free knowledge
+and functor observations. Success uses the actual clause environment; failure
+uses the original saved valuation. The matching observer contract preserves an
+explicit restricted set of ground replacement templates, caller leaf effects and
+finite attached execution. Its full node contract retains scope restoration and
+strict residual descent before any lower answer contract is used.
+
+These rules passed the Isabelle kernel with no skipped proofs or oracles.
+Successor initialization remains an explicit premise: the previous checked
+parameter/free-output transport rules can supply those components, but all other
+family conditions must also be proved. This step does not instantiate the full
+source invariant. In particular, the free output need not occur in the existing
+`Fs` table; its authenticated incoming fact may be part of `node_conditions`.
+
+Reproduce by loading `tests/source-contract-parameters/Matching_Export.thy`, then
+running `tests/source-contract-parameters/Check_Matching.ML` with Poly/ML and each
+retained `OBSERVER_XML_DIRECTORY`. Generated code, kernel receipt and fixture logs
+are in `target/source-conditioned-matching`. Fixtures exercise the four matching
+rows 0:2, 0:3, 47:2 and 47:3, their parameter/output coordinates, missing match
+bindings and caller-slot coverage: 17 positive checks and 25 rejection controls
+per variant. These validate structural premises rather than
+claiming complete runtime or node acceptance for those rows.
+
+M1 remains OPEN. Next, assemble the repeated-parameter copy-head contract with
+its proper-spine and free-output premises, then the recursive cons-head contract
+with finite instantiated-input and caller-coverage premises. Complete success and
+failure conditions, acquired blocks, boundaries 19:1 and 28:1, and resumed
+continuations still require the source-family argument. Neither Split is discharged.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. Existing pinned extraction tables
+were reused. No generated checking logic was edited and no baseline campaign or
+production source certification is claimed.
+
+## Parameter copy node — 2026-11-19
+
+The [copy-node gate](data/source-copy-node-20261119.json) assembles the
+repeated-parameter empty-list head into a full conditional observer node contract.
+`LP_Prolog_Attached_Parameter_Copy` derives caller support from explicit attached
+slot coverage and lifts the parameter-specific restricted leaf rule over the
+actual base transition. The copied ground parameter makes the instantiated head
+finite, allowing preservation of finite attached execution, including saved
+alternatives. A checked clause-coordinate map gives the exact current parameter
+at the successor output, together with its relation to the initial parameter.
+
+`LP_Prolog_Observer_Parameter_Copy` and its node theorem compose these facts with
+conditioned resolution, scope restoration and strict residual descent. They pass
+the Isabelle kernel with dependency checks excluding skipped proofs and oracles.
+The initial parameter remains arbitrary finite ground data. Entry still requires
+a proper spine, a free output and the copied-or-scalar parameter relation;
+success and failure initialization remain explicit obligations. This is a checked
+conditional assembly rule, not unconditional acceptance of a source node or Split.
+
+Reproduce by loading `tests/source-contract-parameters/Copy_Node_Export.thy`, then
+running `tests/source-contract-parameters/Check_Copy_Node.ML` with Poly/ML and
+each retained `OBSERVER_XML_DIRECTORY`. Artifacts reside in
+`target/source-copy-node`. The fixtures cover actual rows 0:22 and 35:2, copied
+output coordinates, stale prefixes, missing bindings, nonrepeated parameters and
+nonempty first head arguments. Caller-slot controls are synthetic positive and
+negative examples. Both variants pass 9 positive checks and 15 rejection controls.
+Runtime entry conditions require proofs beyond these checks.
+
+M1 remains OPEN. Next is the recursive cons-head contract, preserving restricted
+caller effects, finite inputs, sharing and coverage. Source-family initialization,
+acquired blocks, module links, return boundaries 19:1 and 28:1 and resumed
+continuations still need authentication before either Split can be discharged.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, no source YES was added and no baseline campaign was run. The resident
+session was restored and dependencies rechecked after an interrupted proof search;
+the final kernel receipt records the accepted rules.
+
+A development snapshot is saved at `target/source-copy-node/verified.heap`.
+It includes the checked dependencies and export; fresh-process restoration of this
+snapshot was not part of the acceptance gate. The live resident session remains
+available for incremental development.
+
+## Recursive cons node — 2026-11-19
+
+The [cons-node gate](data/source-cons-node-20261119.json) assembles a full
+conditional observer contract for a linear cons head. Successful resolution on a
+proper spine supplies an actual matching witness even if the symbolic selected
+argument is a variable. The attached transition preserves the restricted ground
+replacement set, caller leaf effects and finite execution, including failure and
+saved alternatives. Scope restoration and strict residual descent remain required
+by the full node contract.
+
+The successor rule discharges the previous post-unification finiteness premise
+from an incoming finite call, a proper spine and a linear head of the correct
+arity. It then carries the parameter relation and establishes that the fresh
+body-only helper output is free and disjoint from the instantiated selected call.
+A separate actual-coordinate theorem carries the tail's spine length, exactly one
+less than the incoming spine length. This tail fact does not replace the strict
+residual-descent premise of the family induction. Proper spine length alone does
+not establish finite elements or arbitrary caller coverage.
+
+All new rules pass the Isabelle kernel with checks excluding skipped proofs and
+oracles. The fixture checker exercises actual recursive rows 0:23 and 35:3 in
+both retained source variants. It checks linear head shape/arity, parameter and
+tail coordinates and fresh body-output maps, with negative controls for repeated
+head variables, wrong arity, a tail mapped to the element, stale/missing bindings
+and false freshness. Caller-slot controls are synthetic examples. These checks
+validate structural premises, not the complete source invariant. Each variant passes
+11 positive checks and 21 rejection controls.
+
+Reproduce by loading `tests/source-contract-parameters/Cons_Node_Export.thy` and
+running `tests/source-contract-parameters/Check_Cons_Node.ML` with Poly/ML and
+each retained `OBSERVER_XML_DIRECTORY`. Export, kernel receipt and logs reside in
+`target/source-cons-node`.
+
+M1 remains OPEN. Matching, copy and cons heads now have conditional observer-node
+interfaces. The next step is to instantiate entry and complete successor conditions
+for the concrete source family, starting with recursive helper entry and saved
+caller output facts. Acquired-block rows, module boundaries, actual returns 19:1
+and 28:1 and resumed continuations still need authentication. Neither Split has
+been discharged, and no recursive reference counts as a proof.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, no source YES was added and no baseline campaign was run. Existing
+pinned extraction tables were reused.
+
+## Recursive helper entry — 2026-11-19
+
+The [recursive-entry gate](data/source-recursive-entry-20261119.json) combines
+actual successor facts for edges 0:23 → 0:27 and 35:3 → 35:7. Under successful
+resolution, checked coordinates, an incoming proper spine, finite selected call,
+tracked parameter and free caller output, the kernel-checked rule establishes
+finite input and tail, a proper tail spine, the parameter relation, distinct free
+helper/caller outputs and helper-output separation from input and tail. The
+caller output may share with input and tail. The initial ground parameter need
+not be numeric.
+
+These incoming facts remain premises to authenticate in the source family.
+In particular, this rule does not assume that the original query's unconstrained
+output is free. It proves an entry fragment, not complete successor conditions.
+A kernel-checked positive example permits caller sharing; two negative examples
+reject aliased outputs and a helper output occurring in the input. The generated
+fixture checker passes 28 assertions per retained variant (10 positive, 18
+rejection controls), checking actual five-coordinate maps and caller return
+roles. These structural assertions do not prove the runtime premises.
+
+Both target rows have boundary observer roles and absent local actions in the
+original and renamed tables. The next obligation is to transfer the entry facts
+through these module boundaries with their caller contexts. Actual returns,
+resumed continuations and both Split contracts remain open. M1 remains OPEN.
+
+Reproduce by loading `tests/source-contract-parameters/Recursive_Entry_Export.thy`
+and running `tests/source-contract-parameters/Check_Recursive_Entry.ML` against
+each retained `OBSERVER_XML_DIRECTORY`. The kernel receipt, generated export and
+logs are in `target/source-recursive-entry`. No skipped proofs or oracles occur
+in the checked theorem dependencies.
+
+CeTA local proof sources changed on `codex/prolog-production-integration`, based
+on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, source YES added or baseline campaign run.
+
+## Recursive entry link transport — 2026-11-19
+
+The [entry-link gate](data/source-recursive-entry-link-20261119.json) supplies a
+kernel-checked transport rule for all five recursive-entry coordinates. Its
+integration with the existing stable functor-link theorem carries the entry
+fragment in the same target valuation as the return-state representation,
+ground/free knowledge, context, functor facts and residual transition. Checked
+link, source facts and transfer-program premises remain explicit. Neither a
+coordinate map nor a cyclic module reference proves an answer contract.
+
+The retained boundaries are 0:27 → Split 30 and 35:7 → Split 44. Both preserve
+the five coordinates. The audit checks their source roles against the pinned
+XML and extracts maps from hash-validated retained native logs. Each variant
+passes 34 executable assertions (6 positive, 28 rejection controls), including
+changed coordinates, aliased outputs, growing tails, parameter wrappers and
+missing renamed bindings. Removing identity bindings remains a positive control:
+the instance substitution defaults to identity. Synthetic renamed maps exercise
+nonidentity transport in addition to the two actual retained maps.
+
+This is a conditional link rule and a concrete coordinate gate, not authentication
+of those two boundaries. The retained diagnostic records do not supply a checked
+Split-boundary interface. The next assembly must connect the prefix module and
+saved caller continuation to the strict-descent family/answer-contract framework,
+carrying restricted entry and replacement facts. Caller-frame representation,
+saved alternatives, actual returns 19:1 and 28:1, and resumed continuations remain
+obligations. No new caller rebasing theorem is claimed. M1 and both Splits remain
+OPEN; the original query is not certified.
+
+Reproduce by loading `tests/source-contract-parameters/Recursive_Entry_Link_Export.thy`,
+running `tests/source-contract-parameters/audit_recursive_boundaries.py`, then
+running `Check_Recursive_Entry_Link.ML` with `BOUNDARY_FIXTURES` set to each
+`target/source-recursive-entry-link/{original,renamed}.fixtures` file. Receipts,
+generated export and logs reside in that target directory. No skipped proofs
+or oracles occur in the checked theorem dependencies.
+
+CeTA local proofs changed on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, source YES added or baseline campaign run.
+
+## Shared caller continuation obstruction — 2026-11-19
+
+The [M1 obstruction review](data/source-shared-caller-obstruction-20261119.json)
+identifies a concrete missing continuation case. The permitted original query
+`numvars(f(X),0,X)` reaches `numberargs([X],0,X)`. Its actual recursive prefix
+`numvars(X,0,N1)` succeeds with `X=var/0` and `N1=1`. The saved continuation is
+then `numberargs([],1,var/0)`, which fails. Caller-output freeness held at entry
+but does not hold at this resumed call. Failure is still a source path that the
+answer-contract assembly must cover.
+
+Four kernel-checked facts isolate the structural issue: the shared valuation
+satisfies the existing recursive-entry condition; the binding is an allowed
+parameter replacement; caller-output freeness is lost; and parameter tracking,
+finite caller value and the proper empty tail survive. The kernel example uses
+abstract scalar labels and is not a formal source execution. Independently,
+11 SWI-Prolog assertions execute the original clauses, reproduce the failure,
+and check an unshared output that remains free and successfully returns 1.
+No skipped proofs or oracles occur in the kernel theorem dependencies.
+
+This does not invalidate the earlier conditional entry/link lemmas or refute
+the copied-or-scalar return hypothesis. It blocks closing resumed continuations
+by reusing only the free-caller-output case. The next feasibility gate is a
+continuation contract admitting caller outputs made ground by sharing, covering
+both successful and failing heads. Its preservation through helper execution
+and saved alternatives must be proved. Original query outputs remain arbitrary
+permitted finite terms, including nonground compounds; a free-or-ground mode
+must not silently replace that initialization obligation.
+
+This is the concrete-obstruction review point requested for M1. Revise the
+continuation argument before further Split assembly or major integration.
+Confidence in the previous M1 schedule remains low; a new completion estimate
+awaits the repaired continuation gate. Both Splits and M1 remain OPEN.
+
+Reproduce by loading `tests/source-contract-parameters/Shared_Caller_Obstruction.thy`
+and running `swipl -q -s tests/source-contract-parameters/Check_Shared_Caller.pl`
+from the CeTA checkout. Receipts, source/executable hashes, interpreter version
+and logs are recorded by the manifest. CeTA proof-test sources changed on
+`codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No source YES or baseline campaign
+is added, and no generated checking logic was edited.
+
+## Ground caller continuation repair — 2026-11-19
+
+The [ground-caller gate](data/source-ground-caller-20261119.json) repairs the local
+rule gap exposed by shared caller outputs. A caller value may be free or ground;
+this mode is preserved by bounded substitution images from a ground replacement
+set. It does not assert distinctness or separation between multiple outputs.
+The earlier shared-return counterexample satisfies this wider mode. A negative
+kernel control shows why bounded images cannot be omitted.
+
+For the repeated-parameter empty-list head, successful resolution with ground
+parameter and output forces their equality and copies the parameter into the
+clause environment. Unequal ground values exclude resolution. With an incoming
+proper spine, a successful ground-output resolution supplies an actual matching
+witness and preserves restricted caller leaf effects. Finite call, finite active
+continuation, caller support coverage and ground replacement templates remain
+explicit premises. This is not yet a full observer-node or failure-path contract.
+
+Five rules and four fixture facts pass kernel checking without skipped proofs
+or oracles. Ten SWI-Prolog assertions execute the original source, checking
+scalar and compound ground parameters, equal and unequal outputs, recursive
+bound-output success/failure and the prior shared-root failure. A nonground
+compound-output success is retained as a control: the new local mode must not
+replace the original query's arbitrary finite output semantics.
+
+Next is integration of both free and ground output cases into observer-node
+interfaces, followed by actual preservation through recursion and saved
+alternatives. The remaining M1 work has four broad obligation groups: invariant
+integration/preservation; remaining paths and boundaries; both actual helper
+returns; and justified family assembly. These are not a reliable count of small
+steps. M1 and both Splits remain OPEN, and the original source is not certified.
+
+Reproduce by loading `tests/source-contract-parameters/Ground_Caller_Test.thy`
+and running `swipl -q -s tests/source-contract-parameters/Check_Ground_Caller.pl`
+from this checkout. Evidence resides in `target/source-ground-caller` and the
+manifest. CeTA local proofs changed on `codex/prolog-production-integration`,
+based on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code
+and the production checker executable are unchanged. No generated checking
+logic was edited, source YES added or baseline campaign run.
+
+## Free-or-ground copy-node integration — 2026-11-19
+
+The [caller-copy node gate](data/source-caller-copy-node-20261119.json) integrates
+the ground-output repair with the existing free-output case in a complete
+conditional observer-node contract for the repeated-parameter empty-list head.
+The attached-step proof preserves the restricted parameter replacement set and
+finite execution on successful or failed resolution. Saved alternatives retain
+their own environments. An explicit backtrack theorem derives the unchanged
+saved stack from ground parameter/output mismatch, ruling out all unifiers rather
+than merely assuming the absence of a most-general resolution.
+
+The node contract retains proper-spine, tracked-parameter and caller-output-mode
+entry facts, attached caller coverage, complete success/failure initialization,
+scope restoration and strict residual descent. These are still source-family
+obligations. The widened mode is not a new assumption on arbitrary original-query
+outputs, and no recursive reference is treated as discharged evidence.
+
+Executable fixtures reuse retained rows 0:22 and 35:2 in original and renamed
+sources to check their head, coordinate and coverage syntax. Separate original
+Prolog controls exercise free/ground success, ground mismatch, saved-environment
+restoration after failure, a shared-helper failure followed by saved success,
+and the successful empty-list cut. A nonground compound-output success remains
+a control outside the local mode. Structural fixture acceptance does not prove
+the runtime entry premises.
+
+Progress against the four M1 obligations:
+
+- Invariant integration/preservation: the empty-list copy node now supports both
+  output modes and preserves its attached invariant. Recursive cons successors,
+  acquired blocks and whole-family mode/separation preservation remain open.
+- Remaining paths/boundaries: ground-mismatch backtracking and this node's saved
+  alternatives are covered conditionally. Actual module and Split boundaries,
+  source-family successor facts and resumed continuations remain open.
+- Both actual helper returns: neither return contract nor either Split is
+  authenticated by this change.
+- Justified recursive assembly: strict-descent premises remain intact, but the
+  complete family has not been assembled.
+
+Next is carrying the widened caller-output mode through recursive cons successor
+conditions, keeping fresh-helper-output separation distinct from caller-output
+freeness. M1 remains OPEN and the original source is not certified.
+
+Reproduce by loading `tests/source-contract-parameters/Caller_Copy_Node_Export.thy`,
+running `Check_Caller_Copy_Node.ML` with each retained `OBSERVER_XML_DIRECTORY`,
+and running `swipl -q -s tests/source-contract-parameters/Check_Caller_Copy_Node.pl`.
+Receipts, export and logs are retained in `target/source-caller-copy-node`.
+CeTA local proofs changed on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, source YES added or baseline campaign run.
+
+## Recursive caller-mode successor integration — 2026-11-19
+
+The [recursive-caller gate](data/source-recursive-caller-20261119.json) extends
+the recursive cons successor from free caller outputs to free-or-ground caller
+outputs. In the actual mapped successor valuation it preserves parameter tracking,
+finite input and tail, a proper tail spine and the caller-output mode. The fresh
+body-only helper output is free and separate from the input, tail and caller
+output. Caller sharing with input and tail remains permitted when the caller
+output is free; ground callers need not be scalar.
+
+The new cons-node contract discharges this entry fragment inside its successful
+successor initialization. It reuses the existing conditional cons-node contract
+for attached effects, finite execution and failure/saved-frame handling. It still
+requires authenticated incoming facts, remaining success conditions, failure
+initialization, caller coverage, scope restoration and strict descent. It is not
+an authenticated module boundary or an actual helper-return contract.
+
+Kernel fixtures accept a free shared caller and a compound ground caller, and
+reject aliased helper/caller outputs, a helper occurring in the input and a
+nonground compound caller outside this local mode. Executable tests check the
+actual five-coordinate maps on edges 0:23 → 0:27 and 35:3 → 35:7 for original
+and renamed inputs. Separate original-source Prolog controls exercise the
+recursive clause and helper/continuation routing, shared-output failure,
+ground-output success and nonnumeric ground parameters. A successful nonground
+output remains a positive source control outside the local mode: root query
+semantics have not been narrowed.
+
+Progress against the four M1 obligations:
+
+- Invariant integration/preservation: the widened entry fragment is now proved
+  at the recursive cons successor and integrated into its conditional node
+  contract. Preservation through complete helper executions and acquired blocks,
+  actual incoming facts and the whole-family invariant remain open.
+- Remaining paths/boundaries: the two retained recursive edges pass structural
+  checks. Their Split/module boundaries and complete resumed-continuation
+  contracts remain unauthenticated.
+- Both actual helper returns: neither return contract nor either Split is
+  discharged by this gate.
+- Justified recursive assembly: strict-descent requirements are retained, but
+  full family assembly and initialization remain open.
+
+Next is carrying the widened entry into the actual Split-prefix interfaces and
+authenticating preservation through helper execution, including acquired blocks
+and successful returns. M1 remains OPEN. Reproduce by loading
+`tests/source-contract-parameters/Recursive_Caller_Export.thy`, running
+`Check_Recursive_Caller.ML` against each retained `OBSERVER_XML_DIRECTORY`, and
+running `swipl -q -s tests/source-contract-parameters/Check_Recursive_Caller.pl`.
+Artifacts reside in `target/source-recursive-caller`.
+
+CeTA local proofs changed on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, source YES added or baseline campaign run.
+
+## Split-prefix caller initialization — 2026-11-19
+
+The [prefix-entry gate](data/source-split-prefix-entry-20261119.json) connects the
+widened recursive entry to the suspended caller's actual return coordinates.
+Split 30 has payload `[V1,V2,V3,V4]`, with helper output/tail/caller output at
+indices 1/2/3. Split 44 has `[V2,V3,V4]`, with those roles at 0/1/2. Split 44
+omits the incoming parameter; parameter tracking remains in the helper-entry
+valuation and is not reconstructed from the shorter caller payload.
+
+The kernel-checked initialization theorem obtains a structural list observation
+of the finite caller tail and a structural observation of the finite caller
+output. These initialize the joint observer invariant for the singleton helper
+prefix with the routed three-argument continuation attached: finite execution
+and restricted leaf effects on the tail and caller output. It also carries tail
+spine, caller-output mode, fresh helper output and separation from tail/caller.
+Initial effects are reflexive for any replacement set; later preservation still
+requires the appropriate restricted ground replacement conditions.
+
+The caller-side theorem leaves the helper observation environment arbitrary;
+its module representation is a separate obligation. It does not initialize
+pre-existing saved frames, prove whole-helper preservation, check a return
+projection or supply an actual-answer bridge. The actual incoming entry facts,
+full boundary reconstruction and both return contracts remain unauthenticated.
+No fact is obtained merely by referencing a recursive module.
+
+The fixture audit validates retained native-log hashes and pinned source XML,
+then extracts both caller payloads and checks continuation routing. Each variant
+passes 30 assertions (6 positive, 24 rejection controls), including wrong/missing
+roles, out-of-range indices, aliased outputs and forged ground caller values.
+Removing unused payload coordinates with correct routing remains a positive
+control. These are development interface tests, not native proof search or a
+source certificate. The initial Poly/ML harness compatibility failure is retained
+in the evidence; corrected reruns pass. Kernel dependencies contain no skipped
+proofs or oracles.
+
+Progress against the four M1 obligations:
+
+- Invariant integration/preservation: prefix caller initialization is now checked;
+  preservation through actual helper execution and acquired blocks remains open.
+- Remaining paths/boundaries: both caller-coordinate layouts and routes are
+  checked; complete boundary reconstruction, saved-frame representation and
+  resumed-continuation contracts remain open.
+- Both actual helper returns: neither contract nor either Split is authenticated.
+- Justified recursive assembly: no recursive premise is discharged here; complete
+  family assembly and original-query initialization remain open.
+
+Next is preserving this initialized caller-tail/output invariant through actual
+helper rows, especially acquired argument-extraction blocks and return exits.
+M1 remains OPEN. Reproduce by loading
+`tests/source-contract-parameters/Split_Prefix_Entry_Export.thy`, running
+`python3 tests/source-contract-parameters/audit_split_prefix_entry.py`, then
+running `Check_Split_Prefix_Entry.ML` with `PREFIX_FIXTURES` set to each
+`target/source-split-prefix-entry/{original,renamed}.fixtures` file.
+
+CeTA local proofs changed on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, source YES added or baseline campaign run.
+
+## Acquired extraction caller protection — 2026-11-19
+
+The [acquired-univ caller gate](data/source-acquired-univ-caller-20261119.json)
+discharges a missing preservation premise: fresh extraction outputs must avoid
+all observed suspended-caller values, not merely the selected helper input.
+Matching resolution preserves the restricted leaf effect and establishes finite
+post-resolution caller values. Body-only freshness then gives separation of both
+extraction outputs from those values using the same actual resolution MGU and
+its full live continuation.
+
+The operational rule derives caller support from checked attached-slot coverage
+and applies the acquired protection to an actual constructor-input `=..` step.
+It preserves the restricted caller leaf-stack invariant, including saved frames.
+This closes the protection premise for that local rule. It does not by itself
+prove the full joint finite-execution/mode invariant, the internal normalized
+block's source-coordinate simulation, or its exit conditions. The input must
+be a constructor in this rule; variable-input handling is not newly assembled.
+Actual matching, finite selected call and full pending continuation, ground
+replacement templates and the incoming caller invariant remain premises.
+
+Fixtures inspect the retained acquired rows 0:3 and 47:3 in original and renamed
+sources. They check actual source actions, matching, parameter/output maps,
+fresh decomposition shape, and rejection of aliased outputs, head-variable
+freshness, missing extraction and intervening unification. Attached-slot
+coverage controls are synthetic. Original-source Prolog controls verify caller
+and argument sharing for fresh extraction, zero/three-argument constructors and
+nested inputs, plus saved-state restoration after a failing extraction. A
+negative semantic control demonstrates that forging freshness by aliasing the
+argument-list output with a caller variable binds that caller to a list.
+
+Progress against the four M1 obligations:
+
+- Invariant integration/preservation: restricted caller leaf preservation now
+  has a checked acquisition-to-extraction rule with caller protection derived.
+  Full joint-invariant preservation and source-family applicability remain open.
+- Remaining paths/boundaries: the constructor-input extraction step is covered
+  conditionally and both acquired-row layouts are regression checked. Internal
+  normalized block rows/exits and full module/Split boundaries remain open.
+- Both actual helper returns: neither return contract nor either Split is
+  authenticated.
+- Justified recursive assembly: no recursive premise is discharged; complete
+  family assembly and original-query initialization remain open.
+
+Next is integrating the acquired protection with the continuing block's
+normalized equality path, finite execution and exit conditions. M1 remains OPEN.
+Reproduce by loading `tests/source-contract-parameters/Acquired_Univ_Caller_Export.thy`,
+running `Check_Acquired_Univ_Caller.ML` with each retained `OBSERVER_XML_DIRECTORY`,
+and running `swipl -q -s tests/source-contract-parameters/Check_Acquired_Univ_Caller.pl`.
+Artifacts reside in `target/source-acquired-univ-caller`.
+
+CeTA local proofs changed on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Native production code and the
+production checker executable are unchanged. No generated checking logic was
+edited, source YES added or baseline campaign run.
+
+### Acquired normalized equality preservation — 2026-11-19
+
+The kernel-checked `lpp_acquired_univ_caller_normalized_steps` connects actual
+matching acquisition to both normalized equality steps. Fresh extraction outputs
+and caller separation are derived from the acquired clause and full live
+continuation. The result preserves finite execution and restricted caller leaves,
+including saved alternatives, with both events silent. Entry finite execution,
+constructor input, matching, ground replacement templates, incoming leaf effects
+and attached-slot coverage remain explicit premises. This is conditional
+preservation, not a proof that the source reaches or exits this normalized block.
+
+Evidence: `source-acquired-univ-normalized-20261119.json` in CeTA `docs/data`.
+The resident Isabelle session checked the theorem and its dependency closure with
+no skipped proofs or oracles. Eight executable Prolog controls passed, including
+sharing, zero/nested arity, forged freshness, omitted pair equality and saved
+alternatives. These controls are an executable analogue, not a formal source
+simulation or newly replayed original/renamed row audit.
+
+Against the four M1 obligations: (1) finite/leaf preservation is connected locally;
+parameter and caller-mode integration remain open; (2) normalized equality
+preservation is connected, but entry finiteness, block exits and module boundaries
+remain open; (3) neither actual helper return is authenticated; (4) no recursive
+family premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: discharge normalized entry finiteness and connect the two-step result to
+the continuing block exit using actual source coordinates. No production checker
+or Ferrum native code changed, no source YES was added, and no baseline campaign
+was run. CeTA local theory work remains on `codex/prolog-production-integration`,
+based on `a5106736e8a1cf783b323d938c0aa91e52a1e2bc`.
+
+### Acquired normalized entry finiteness — 2026-11-19
+
+`lpp_acquired_univ_normalized_from_resolution` discharges the previous normalized
+entry-finiteness premise from matching resolution of the actual body, finite
+incoming call/continuation, exact pending continuation, and finite attached saved
+alternatives. It then proves silent two-step finite/leaf preservation. The saved
+invariant is retained explicitly; unrelated pending goals cannot be substituted
+for the resolved body tail. Constructor input, matching, ground replacement
+sets, caller coverage and incoming leaf effects remain premises.
+
+Evidence is in CeTA `docs/data/source-acquired-univ-entry-20261119.json`.
+Isabelle checked the dependency closure without skipped proofs or oracles.
+Eight executable Prolog controls passed, covering actual constructor-clause
+selection, finite shared terms and exact tail, and negative cyclic saved,
+unrelated cyclic pending and wrong-tail controls. They are semantic controls,
+not a formal simulation or a new original/renamed row replay.
+
+Four M1 obligations: (1) normalized entry finiteness is now derived locally;
+parameter/caller-mode integration remains open; (2) exact body/pending identities
+are exposed, but actual coordinate assembly and block exits remain open;
+(3) neither actual helper-return contract is authenticated; (4) no recursive
+family premise has been discharged. M1 and Splits 30/44 remain OPEN.
+
+The precise next exit obligation is the `equalities` premise of
+`lpp_checked_continuing_univ_source_block`: each continuing equality must give a
+strict residual path and a target module representation, including the retained
+context and separation facts. The new rule supplies finite/leaf preservation,
+not that representation or path. Assemble it on the retained acquired block
+coordinates and carry the restricted caller conditions into the module relation.
+
+Reproduce with `Acquired_Univ_Entry_Check.thy` and
+`swipl -q -s tests/source-contract-parameters/Check_Acquired_Univ_Entry.pl` from
+CeTA. Artifacts: `target/source-acquired-univ-entry`. CeTA local proof changes
+are on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no source YES or baseline campaign is claimed.
+
+### Acquired block simulation-row gate — 2026-11-19
+
+The retained blocks in modules 0 and 47 use normalization 6 -> 10, reflexive
+row 10 -> 13 (failure 14), and pair row 13 -> 17 (failure 18). A fresh Isabelle
+export now checks the full `lpp_check_observer_equality_row` on rows 10/13 and
+`lpp_check_observer_univ_row` on row 6 for original and renamed inputs. All pass.
+This discharges the executable local row receipts needed by the continuing
+simulation, including contexts and separation transport, rather than just the
+source-action subcheck. The associated equality-row soundness theorem supplies
+conditional node simulation under stable operations and a checked transfer
+program. Runtime context initialization and composition are still required.
+
+Evidence: CeTA `docs/data/source-acquired-block-rows-20261119.json`. The resident
+Isabelle session checked soundness dependencies without skipped proofs or
+oracles and generated the executable checker. Each input variant passes 32
+assertions (6 positive, 26 negative). Negatives remove actions, witnesses,
+reflexive context, residual clauses, pair separation and the target exit state,
+or substitute an empty row state or ordinary witness. This is a local fixture
+replay, not production source certification. No generated checker was edited.
+
+Four M1 obligations:
+
+- Invariant integration: prior finite/leaf preservation is retained; integration
+  with the runtime module relation, parameter and caller mode remains open.
+- Paths/boundaries: actual internal equality simulation receipts and univ/exit
+  checks now pass in both helper modules and both naming variants. Initializing
+  their contexts from acquisition and composing the restricted caller invariant
+  through the block remain open; module/Split boundaries are not discharged.
+- Actual helper returns: neither return contract is authenticated.
+- Recursive assembly: no recursive premise is discharged. M1 and Splits 30/44
+  remain OPEN.
+
+Next: instantiate the normalization witness on acquired row 6, establishing the
+row-10 equation, functor/list observation, free outputs and pair separation from
+actual acquisition. Compose these checked row simulations with the restricted
+caller invariant; do not substitute the existing all-ground caller invariant.
+The generic `lpp_checked_continuing_univ_source_block` remains conditional on
+this runtime representation/initialization and coverage assembly.
+
+Reproduce by loading `tests/source-contract-parameters/Acquired_Block_Rows_Export.thy`
+and running `Check_Acquired_Block_Rows.ML` with `OBSERVER_XML_DIRECTORY` set to
+each retained source directory. Artifacts: `target/source-acquired-block-rows`.
+Only local verification fixtures and documentation changed this step. Production
+CeTA and native Ferrum are unchanged; no new source YES or baseline campaign is
+claimed. CeTA work remains on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`.
+
+### Acquisition-to-normalization witness — 2026-11-19
+
+`lpp_acquired_univ_normalization_witness` now derives free, distinct extraction
+outputs and input/output separation from the actual matching resolution and its
+finite selected call. The checked normalization link then supplies one common
+target valuation: exact normalized runtime state, residual edge, ground/guard
+knowledge, free context, stable context, functor observation and separation.
+The former source-freeness and initialized-pair-separation assumptions are
+therefore discharged by acquisition. This does not require ground constructor
+arguments or integer-valued parameters.
+
+The rule retains source knowledge/context/functor premises, checked transfer and
+normalization links, constructor input, and three acquisition-coordinate
+identities. It restricts the source free context to the two acquired outputs.
+It does not yet compose the restricted caller invariant with the target module
+representation or authenticate a helper return.
+
+Evidence: CeTA `docs/data/source-acquired-univ-witness-20261119.json`. Isabelle
+checked the theorem and its dependency closure without skipped proofs or
+oracles. Original and renamed fixtures each pass 16 coordinate assertions:
+10 positive and 6 negative. Both modules' acquired rows 3 -> 6 are checked for
+input/name/argument coordinate maps, free-context coverage and distinct output
+coordinates; removing each coordinate binding is rejected. The harness reuses
+the earlier Isabelle-generated coordinate checker, whose hash is pinned. These
+checks do not claim full runtime initialization or production source replay.
+
+Progress against the four obligations: (1) source free-output and separation
+initialization are connected, but parameter/caller-mode and joint caller
+composition remain open; (2) the conditional normalization witness now derives
+its acquisition facts and the concrete maps are checked; block composition and
+module boundaries remain open; (3) neither actual helper-return contract is
+authenticated; (4) no recursive premise is discharged. M1 and Splits 30/44 remain
+OPEN.
+
+Next: compose this common target valuation and the checked equality-row
+simulations with the restricted caller finite/leaf invariant through the block.
+Keep source knowledge and module-interface conditions explicit, and discharge
+coordinate identities through the checked resolution link rather than treating
+fixture acceptance as a runtime proof.
+
+Reproduce with `Acquired_Univ_Witness_Check.thy` and
+`Check_Acquired_Univ_Witness.ML` under each `OBSERVER_XML_DIRECTORY`. Artifacts:
+`target/source-acquired-univ-witness`. CeTA local proof changes are on
+`codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Synchronized normalized block product — 2026-11-19
+
+`lpp_normalized_univ_observer_product` composes the two normalized equality
+simulations and restricted caller preservation on one joint execution. The
+actual attached execution is lifted twice through the existing observer product
+rule. Its helper projection obtains two strict residual paths and a target
+module representation; its caller projection preserves finite execution and
+leaf effects. The conclusion exposes one joint result carrying both properties,
+including the saved alternatives. The replacement set remains `A`, rather than
+being widened to all ground terms. No runtime nonsharing is assumed between the
+helper input and caller; protection concerns the fresh extraction outputs.
+
+The rule still assumes the normalized entry shape and joint invariant, distinct
+fresh extraction outputs and caller protection, nonempty helper continuation,
+checked attached-slot coverage, source-program validity, equality simulation
+coverage and initial helper representation. These are not silently discharged
+by the earlier fixture checks. In particular, the acquired normalization witness
+must still be instantiated into this same joint runtime and its coordinate
+identities proved through the checked link. This is conditional normalized-block
+composition, not a complete acquired source-node or return contract.
+
+Evidence: CeTA `docs/data/source-normalized-univ-product-20261119.json`.
+Isabelle checked the product and three controls with no skipped proofs or
+oracles. Controls cover a continuing equality, rejection of a missing tail and
+aliased free outputs. Six executable Prolog sharing controls passed, including
+synchronized helper/caller updates, the independent-copy contrast, forged caller
+protection and saved-state rollback. These executable controls are analogues,
+not a residual simulation certificate.
+
+Four M1 obligations: (1) restricted finite/leaf preservation is now synchronized
+with helper simulation; acquired-entry and parameter/caller-mode assembly remain
+open; (2) the two equality paths compose to one target representation, but actual
+entry instantiation and module boundaries remain open; (3) neither actual helper
+return is authenticated; (4) no recursive premise is discharged. M1 and Splits
+30/44 remain OPEN.
+
+Next: instantiate the acquired normalization witness as the product's initial
+helper representation, deriving the joint entry invariant and caller protection
+from the actual acquisition and coordinate transport. Keep global equality
+coverage and scope/interface requirements explicit before claiming a complete
+source-node contract.
+
+Reproduce by loading `Normalized_Univ_Product_Check.thy` and running
+`swipl -q -s tests/source-contract-parameters/Check_Normalized_Univ_Product.pl`
+from CeTA. Artifacts are under `target/source-normalized-univ-product`. Local
+proof work remains on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Acquired joint caller entry — 2026-11-19
+
+`lpp_acquired_normalized_univ_product` now feeds the synchronized product from
+actual matching acquisition. The incoming joint invariant supplies finite call,
+continuation and saved alternatives. Matching resolution and the exact body
+continuation derive normalized entry finiteness. Checked attached-slot coverage
+and restricted ground replacement templates derive caller leaf preservation and
+fresh-output protection. Distinct free extraction outputs and input separation
+come from the fresh-clause theorem, not from new assumptions.
+
+The resulting common joint execution preserves `lpp_observer_invariant A` and
+provides a strict residual path and final helper module representation. The
+active caller environment is the actual resolution-substituted environment;
+saved frames retain their own environments. Sharing between caller and helper
+input is permitted. The initial helper representation, helper environment,
+normalization shape, exact pending continuation and global equality coverage
+remain explicit. This step discharges the caller-side entry premises of the
+previous product; it does not yet instantiate the acquired normalization witness
+as that product's initial helper representation or prove a complete source node.
+
+Evidence: CeTA `docs/data/source-acquired-univ-product-20261119.json`. Isabelle
+checked the product and projection controls without skipped proofs or oracles;
+the receipt also checks the existing negative saved-finiteness theorem. Eight
+executable original-source controls passed, including shared caller/input,
+arbitrary noninteger ground parameter, exact continuation, synchronized updates,
+cyclic saved rejection and backtracking restoration. These controls do not assert
+termination for the noninteger parameter or authenticate a module representation.
+
+Four M1 obligations: (1) the joint caller entry invariant, freshness and protection
+are now derived from acquisition; parameter/caller-mode assembly remains open;
+(2) the derived entry feeds normalized block simulation conditionally, while
+initial helper representation, coverage assembly and module boundaries remain
+open; (3) neither actual helper-return contract is authenticated; (4) no recursive
+premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: instantiate `lpp_acquired_univ_normalization_witness` into the initial
+helper projection of this product, proving exact state/payload and saved-frame
+correspondence through the resolution/normalization links. Then compose the
+normalization edge with the product path. Do not treat the remaining initial
+representation premise as already discharged by coordinate fixture acceptance.
+
+Reproduce with `Acquired_Univ_Product_Check.thy` and
+`swipl -q -s tests/source-contract-parameters/Check_Acquired_Univ_Product.pl`
+from CeTA. Artifacts: `target/source-acquired-univ-product`. Local proof work is
+on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Normalization witness/product composition — 2026-11-19
+
+`lpp_acquired_univ_witness_product` derives the product's initial helper module
+representation from the acquired normalization witness. It proves exact helper
+projection correspondence from the active payload, pending-goal and saved-frame
+identities, obtains the common target valuation and its contexts, and introduces
+the module representation. The normalization residual edge is then composed
+with the synchronized two-equality path. The conclusion preserves the restricted
+caller invariant and gives a strict path from the pre-normalization subject to
+the common final helper representation. Initial module representation is no
+longer an assumed premise.
+
+The coordinate identities, payload/pending/saved correspondence, source knowledge
+and contexts, checked transfer/normalization, constructor branch, incoming joint
+invariant and global equality coverage remain explicit. The actual acquisition
+resolution still has to be assembled from the source-node transition; the theorem
+starts with its MGU facts and the normalized two-step execution. Thus this is not
+a full source-node contract or an actual helper-return theorem.
+
+Evidence: CeTA `docs/data/source-acquired-witness-product-20261119.json`.
+Isabelle checked the theorem and three interface controls without skipped proofs
+or oracles: correct helper payload, omitted saved frame rejection and stale
+payload rejection. The existing generated full observer-row checker was replayed
+on original and renamed inputs; each passed 32 assertions (6 positive, 26
+negative). Replaying those rows does not discharge runtime correspondence or
+global coverage. No generated checking logic was changed.
+
+Four M1 obligations: (1) caller invariant preservation is now composed with a
+derived initial helper representation; parameter/caller-mode integration remains
+open; (2) normalization plus two equality steps gives the strict path under the
+explicit correspondence conditions; source-node instantiation and module
+boundaries remain open; (3) neither actual helper-return contract is authenticated;
+(4) no recursive premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: derive coordinate/payload/pending/saved correspondence from the actual
+checked acquisition resolution link, then wrap the composed result in the
+source-node/answer-contract framework with finite and restricted caller entry
+conditions. Keep constructor and failure paths and global coverage distinguished.
+
+Reproduce by loading `Acquired_Witness_Product_Check.thy`, then running the
+existing `Check_Acquired_Block_Rows.ML` under original and renamed
+`OBSERVER_XML_DIRECTORY`. Artifacts: `target/source-acquired-witness-product`.
+Local proof work remains on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Checked acquisition-link correspondence — 2026-11-19
+
+`lpp_acquired_univ_link_correspondence` obtains one target valuation from the
+checked functor/evaluation link and derives all normalization-entry identities
+from equality of the complete evaluated return states: input/name/argument
+coordinates, pending goals, active helper payload and saved helper stack. The
+same valuation carries target knowledge, free/context/functor facts and the
+residual edge. It requires an empty link scope-swap word explicitly; it does not
+silently drop scopes or saved alternatives.
+
+This replaces independent target-coordinate/payload assumptions with checked
+whole-state correspondence. The source evaluation identity, source knowledge,
+free/context/functor facts, equations and old-variable agreement remain explicit
+premises. Deriving that source identity from the actual acquisition resolution,
+and passing this witness into the composed block theorem, are still assembly
+work. This is not a complete source-node or helper-return contract.
+
+Evidence: CeTA `docs/data/source-acquired-univ-link-20261119.json`. Isabelle
+checked the theorem and dependency closure without skipped proofs or oracles.
+The existing generated source-action checker validates acquired links 0:3 -> 6
+and 47:3 -> 6 in original and renamed inputs. Each variant passes 10 assertions
+(2 positive, 8 negative): removing pending goals or payloads, reversing payloads,
+and forging a saved frame are rejected. These fixture checks are distinct from
+runtime instantiation of the link theorem. No generated checking logic changed.
+
+Four M1 obligations: (1) the correspondence needed to initialize the joint
+invariant is derived conditionally; parameter/caller-mode integration remains
+open; (2) checked acquisition links now supply all target entry identities in one
+valuation, but actual resolution instantiation, block assembly and module
+boundaries remain open; (3) neither actual helper-return contract is authenticated;
+(4) no recursive premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: derive the source evaluated-state identity from the resolution's actual
+substitution, body binding, active payload and saved frames. Then instantiate the
+link correspondence in `lpp_acquired_univ_witness_product`, retaining all source
+context and global equality-coverage conditions.
+
+Reproduce with `Acquired_Univ_Link_Check.thy` and `Check_Acquired_Univ_Link.ML`
+under each retained `OBSERVER_XML_DIRECTORY`. Artifacts:
+`target/source-acquired-univ-link`. Local proof work is on
+`codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Actual acquired-resolution identity — 2026-11-19
+
+`lpp_actual_acquired_univ_resolution` now extracts the actual MGU and acquired
+state from an observed domain resolution step. Checked matching excludes the
+resolution-failure branch. The checked resolution and return-value transport
+prove that the result equals evaluation of the successor template under the
+resolution environment, including the active substituted payload and saved
+alternatives evaluated in their original namespace. Fresh-clause shape exposes
+the extraction atom and the exact substituted body/continuation. Thus the source
+evaluation identity needed by the acquisition-link theorem has a checked
+actual-step derivation, rather than being accepted as an unexplained equality.
+
+The theorem retains checked resolution/payload, incoming knowledge, saved-name
+bounds, matching and fresh-clause conditions. It does not claim extraction
+success: the constructor/variable distinction belongs to the next source step.
+It also does not yet instantiate the link and product in one source-node rule.
+That assembly must preserve the same resolution substitution and relate the
+helper projection to the attached caller execution; independently chosen
+existential unifiers must not be conflated.
+
+Evidence: CeTA `docs/data/source-acquired-univ-resolution-20261119.json`.
+Isabelle checked the theorem and dependencies without skipped proofs or oracles.
+The existing acquisition-link fixture harness passed 10 assertions per original
+and renamed input (2 positive, 8 negative), including missing/reversed payload,
+missing pending goals and forged saved frames. Eight existing original-source
+sharing/noninteger-parameter/backtracking controls also passed. These are fresh
+runs of retained controls, not newly added tests or full source certification.
+
+Four M1 obligations: (1) actual substituted active payload and saved-state
+identity are established locally; joint node assembly and parameter/caller-mode
+integration remain open; (2) the acquisition-link source identity is derived
+from an actual step, but link/product instantiation, failure paths and module
+boundaries remain open; (3) neither actual helper-return contract is authenticated;
+(4) no recursive premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: instantiate the checked link with this actual resolution witness and use
+the resulting common target valuation in the normalization/product theorem.
+Preserve the actual MGU across helper/caller projections and discharge the
+link's fork-context/knowledge premises before claiming the assembled node.
+
+Reproduce by loading `Acquired_Univ_Resolution_Check.thy`, running
+`Check_Acquired_Univ_Link.ML` with each retained `OBSERVER_XML_DIRECTORY`, and
+running `swipl -q -s tests/source-contract-parameters/Check_Acquired_Univ_Product.pl`
+from CeTA. Artifacts: `target/source-acquired-univ-resolution`. Local proof work
+is on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Resolution witness through checked acquisition link — 2026-11-19
+
+`lpp_acquired_univ_resolution_link` derives the link's resolution equations,
+old-parent agreement, success/negative-guard knowledge, body and saved free
+alternatives, and forked stable/functor contexts for the supplied MGU. It derives
+the complete evaluated successor state using checked resolution/payload
+transport, chooses a validated free-context branch, and invokes the acquired
+link correspondence theorem. Every target coordinate, pending goal and payload
+therefore refers to the same supplied `sigma`/`rho`, rather than a newly chosen
+resolution witness. The actual-step theorem can supply this MGU.
+
+The checked resolution/link components, incoming knowledge/free/context/functor
+facts, namespace bounds/shortness, target state shape and empty swaps remain
+premises. These static components must still be extracted from the complete
+source-row check. The result is not yet instantiated into the joint helper/caller
+block and does not establish helper/caller MGU agreement on its own.
+
+Evidence: CeTA `docs/data/source-acquired-resolution-link-20261119.json`.
+Isabelle checked the theorem and four namespace controls without skipped proofs
+or oracles: old, active and clause coordinates are distinguished, and a stale
+namespace is rejected when its values differ. Fresh runs of retained acquisition
+fixture controls passed for original and renamed inputs, 10 assertions each
+(2 positive, 8 negative). No generated checking logic changed.
+
+Four M1 obligations: (1) link knowledge/free/fork-context preservation is now
+derived for the supplied unifier; joint block and parameter/caller-mode assembly
+remain open; (2) actual-resolution and target-link facts now share one witness,
+but full source-row instantiation, failure paths and boundaries remain open;
+(3) neither actual helper-return contract is authenticated; (4) no recursive
+premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: extract these static checked components from the acquired source row and
+instantiate the actual-step witness in this link theorem. Then feed its common
+target valuation into the joint normalization/product, preserving the unifier
+across helper/caller projections. Do not infer global coverage or return contracts
+from the local link result.
+
+Reproduce with `Acquired_Resolution_Link_Check.thy` and retained
+`Check_Acquired_Univ_Link.ML` under each `OBSERVER_XML_DIRECTORY`. Artifacts:
+`target/source-acquired-resolution-link`. Local proof work is on
+`codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Full checked acquired-row witness — 2026-11-19
+
+`lpp_checked_actual_acquired_row` extracts resolution, payload, shortness,
+parent-coordinate and success-link checks from the full functor resolution-row
+check. Checked matching excludes an always-failure mode. The actual domain step
+then supplies its MGU and evaluated successor; that same MGU passes through the
+resolution/link theorem. One target valuation carries the residual edge,
+knowledge/free/context/functor facts and all input/output, pending, payload and
+saved-frame identities. Separate static-component and independent MGU premises
+are eliminated at this layer.
+
+Incoming runtime knowledge/free/context/functor facts, matching and fresh-clause
+checks, target shape, empty swaps, stable operations and checked transfer remain
+explicit. This is a checked acquisition-row witness, not a full extraction-node
+answer contract: projection to the caller-attached execution and normalization/
+product assembly remain open. Extraction failure and global coverage are not
+silently discharged.
+
+Evidence: CeTA `docs/data/source-actual-acquired-row-20261119.json`. Isabelle
+checked the theorem and dependency closure without skipped proofs or oracles.
+Fresh runs of retained acquired-caller fixtures passed 34 assertions per original
+and renamed input (11 positive, 23 negative). They cover actual source actions,
+matching, parameter/output coordinates, fresh extraction and caller-slot checks.
+These are retained regression controls, not 34 newly discharged proof premises.
+
+Four M1 obligations: (1) actual-row witness and target invariant facts now share
+one derived MGU; joint caller/block and parameter/caller-mode integration remain
+open; (2) full acquired-row checks now supply the static components and runtime
+link witness, but normalization/product instantiation, failure paths and module
+boundaries remain open; (3) neither actual helper-return contract is authenticated;
+(4) no recursive premise is discharged. M1 and Splits 30/44 remain OPEN.
+
+Next: lift the caller-attached acquisition step to the joint/helper execution,
+apply this full-row theorem to that helper step, and preserve its MGU when
+initializing the joint normalized product. This is the remaining interface
+between the checked actual row and conditional block theorem.
+
+Reproduce with `Actual_Acquired_Row_Check.thy` and retained
+`Check_Acquired_Univ_Caller.ML` under each `OBSERVER_XML_DIRECTORY`. Artifacts:
+`target/source-actual-acquired-row`. Local proof work is on
+`codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+### Actual attached/helper common MGU — 2026-11-19
+
+`lpp_attached_resolution_common_mgu` selects the MGU from the actual caller-
+attached resolution, projects that same MGU to the helper prefix and constructs
+an explicit joint result. Reattaching its caller projection equals the actual
+result, while its helper projection makes the corresponding domain step. Active
+helper and caller coordinates use the same substitution; saved environments
+remain unchanged. No runtime nonsharing or reverse MGU projection is assumed.
+The possible-unifier premise is supplied by matching in the acquired-row case.
+
+Evidence: CeTA `docs/data/source-acquired-joint-mgu-20261119.json`. Isabelle
+checked the theorem, a positive helper-prefix MGU and a negative reverse-
+projection example without skipped proofs or oracles. In the counterexample,
+a substitution grounding a caller-only variable is an MGU for an empty helper
+prefix but not for the attached caller goal. Six retained executable sharing
+controls also passed. They are analogues, not source certification.
+
+Four M1 obligations: (1) local helper/caller MGU agreement and joint-result
+correspondence are now derived from the attached execution; parameter/caller-mode
+and block assembly remain open; (2) the actual attached step now supplies a
+same-unifier helper step, but checked-row/normalization composition, failure
+paths and boundaries remain open; (3) neither actual helper-return contract is
+authenticated; (4) no recursive premise is discharged. M1 and Splits 30/44 remain
+OPEN.
+
+Next: instantiate the checked resolution/link theorem with this projected MGU
+and the actual helper interface, preserving the full attached MGU for caller
+protection. Do not re-extract an unrelated existential MGU from the helper step.
+Then feed the common target valuation and joint result into normalization/product
+assembly, with incoming contexts and coverage explicit.
+
+Reproduce with `Acquired_Joint_MGU_Check.thy` and retained
+`swipl -q -s tests/source-contract-parameters/Check_Normalized_Univ_Product.pl`
+from CeTA. Artifacts: `target/source-acquired-joint-mgu`. Local proof work remains
+on `codex/prolog-production-integration`, based on
+`a5106736e8a1cf783b323d938c0aa91e52a1e2bc`. Production checker and native Ferrum
+code are unchanged; no new source YES or baseline campaign is claimed.
+
+
+### M1: attached acquisition supplies the checked row valuation (2026-11-19)
+
+`lpp_checked_attached_acquired_row` now instantiates the full checked resolution
+row and its evaluation link with the actual caller-attached step's MGU. The same
+witness yields the helper projection, target valuation, residual edge, extraction
+coordinates, pending goals, payload and saved alternatives. Incoming helper
+interface identities and knowledge/context facts remain explicit premises.
+
+This discharges the same-MGU checked-row composition obligation. It does not
+establish normalization/product assembly or whole-source coverage. Relative to
+the four M1 obligations: invariant integration remains partial; remaining paths
+and boundaries remain open; neither actual helper-return contract is proved;
+recursive family discharge remains open. M1 and Splits 30/44 remain OPEN.
+
+Isabelle checked the theorem and a positive/negative MGU control without skipped
+proofs or oracles. Six retained executable sharing controls passed; these are
+analogues, not original-source certification. No production checker/native code
+changed and no production replay or baseline campaign was run.
+
+Next: feed this common target valuation and actual joint result into the
+normalization/product proof, retaining incoming conditions and coverage.
+Evidence: `source-attached-acquired-row-20261119.json` in CeTA `docs/data`;
+receipt and logs in `target/source-attached-acquired-row`.
+
+
+### M1 invariant entry independent of equality coverage (2026-11-19)
+
+Extracted `lpp_acquired_normalized_entry_invariant` and integrated it into
+`lpp_acquired_normalized_univ_product`. Normalized entry preserves finite
+attached execution and restricted caller leaf effects without assuming global
+equality coverage or helper representation. Its matching acquisition, incoming
+invariant, coordinate coverage, ground replacement set, constructor and runtime
+shape premises remain explicit. This factors an existing proof; it does not
+establish actual normalization correspondence or whole-family preservation.
+Isabelle checked both the entry theorem and refactored product without skipped
+proofs or oracles. Six retained executable sharing controls passed.
+
+Broad obligation 1 remains active: actual block composition, tracked-parameter
+and caller-mode integration, and source-family initialization/preservation are
+still required. Obligations 2–4 and M1 remain open. Evidence:
+CeTA `docs/data/source-entry-invariant-20261119.json`. No production changes.
+
+
+### M1: actual attached univ product (2026-11-19)
+
+`lpp_attached_univ_actual_path` derives normalized equality transitions from
+an actual caller-attached constructor `=..` step, retaining its caller tail and
+saved alternatives. `lpp_acquired_actual_univ_product` uses that path with the
+acquired product proof: a nonempty actual result has a joint witness preserving
+the restricted observer invariant and a strict residual path. The empty-result
+case remains explicit. Equality coverage and normalized helper representation
+remain premises; the theorem does not authenticate incoming source conditions.
+
+Kernel checks passed without skipped proofs or oracles. Eight original-source
+sharing/acquisition controls and six normalized sharing controls passed. They
+are executable controls, not a source certificate. Broad obligation 1 remains
+active: connect the checked-row valuation to this representation, discharge
+coverage, and integrate tracked parameter/caller mode and family initialization.
+Obligations 2–4 remain open. No production checker or native code changed.
+Evidence: CeTA `docs/data/source-actual-univ-product-20261119.json`.
+
+
+### M1: checked normalization witness in actual univ product (2026-11-19)
+
+`lpp_acquired_actual_witness_product` derives the normalized helper representation
+from the checked normalization witness, including separation, then composes its
+residual edge with the actual attached univ product. Abstract equality simulation
+is derived from explicit checked equality-row obligations. Coordinates, incoming
+knowledge/context, interface identities, matching acquisition and replacement
+conditions remain premises. The attached acquisition row theorem now also exposes
+the exact joint result shape using the same actual MGU, for subsequent assembly.
+
+Isabelle checked the composition and strengthened row without skipped proofs or
+oracles. Fresh original and renamed block-row controls each passed 32 assertions
+(6 positive, 26 negative). These verify retained row fixtures, not completeness
+of whole-source coverage. Broad obligation 1 remains active: compose the actual
+acquisition row and this witness, supply the required row coverage, and integrate
+parameter/caller-mode facts and source-family initialization/preservation.
+Obligations 2–4 remain open; no actual helper return or recursive discharge is
+claimed. Production checker/native code unchanged. Evidence: CeTA
+`docs/data/source-actual-witness-product-20261119.json`.
+
+
+### M1: exact acquired joint state to witness product (2026-11-19)
+
+`lpp_acquired_joint_witness_product` consumes the exact post-resolution joint
+shape and actual attached builtin step. It derives the selected builtin state
+and normalized runtime internally. Constructor inputs use the checked witness
+product; variable inputs stop, using fresh-name evidence derived from matching
+acquisition and the finite incoming call. No constructor-only restriction is
+imposed by the combined theorem. Incoming invariant, actual MGU, checked rows,
+coordinates, contexts and interface identities remain explicit premises.
+
+Isabelle checked both branches without skipped proofs or oracles. Five new
+executable controls cover constructor sharing, variable/fresh-name stopping,
+known-name construction as a counterexample to dropping freshness, failed
+functor matching and restored alternatives. Broad obligation 1 remains active:
+instantiate this theorem from the acquisition row's existential witnesses, then
+integrate parameter/caller-mode and family initialization/preservation. Required
+source row coverage still needs complete assembly. Obligations 2–4 remain open.
+Evidence: CeTA `docs/data/source-joint-witness-product-20261119.json`.
+Production checker and native code unchanged.
+
+
+### M1: composed checked acquisition block (2026-11-19)
+
+`lpp_checked_acquired_block` composes the actual caller-attached resolution and
+following actual builtin step. It extracts the resolution's MGU and target
+valuation once, derives the matching instance from the checked match, supplies
+payload/pending/saved correspondence to the joint witness product, and composes
+the resolution edge with the strict residual path. Neither a separately chosen
+helper MGU nor a separately assumed target valuation is required. The result
+is empty or has a joint witness preserving the incoming restricted observer
+invariant and representing the residual target.
+
+The theorem retains incoming invariant/knowledge/context/interface conditions,
+checked normalization/separation/equality rows and nonempty helper continuation.
+It is a conditional acquired-block contract, not whole-source initialization or
+helper certification. The existing free-or-ground caller mode still excludes
+permitted nonground compound original-query outputs; parameter/caller-mode and
+whole-family preservation remain required. Broad obligation 1 stays active;
+obligations 2–4 remain open.
+
+Isabelle checked the composed theorem without skipped proofs or oracles. Fresh
+original and renamed block-row fixtures each passed 32 assertions; five retained
+builtin/sharing controls passed. Production checker and native code unchanged.
+Evidence: CeTA `docs/data/source-checked-acquired-block-20261119.json`.
+
+
+### M1 review: nonground compound caller obstruction (2026-11-19)
+
+A concrete obstruction prevents integrating the existing invariant unchanged.
+The permitted finite query `numvars(a, outer(inner(z)), outer(X))` succeeds with
+`X=inner(z)`. The helper output copies the incoming ground parameter, so the
+copy-or-scalar return property holds. However, the binding of the caller variable
+is a strict compound subterm of that parameter. It is outside the existing
+whole-parameter/marked-parameter/scalar replacement set, and the incoming output
+is outside the free-or-ground caller mode.
+
+`Partial_Caller_Obstruction.thy` checks that any MGU of the corresponding repeated
+parameter head forces this image and violates the existing bounded-image premise.
+It also checks mode rejection and a local positive control admitting that subterm.
+The original-source SWI execution and seven further assertions pass. The kernel
+proof is a generic copy-head instance with distinct test symbols; the executable
+fixture connects it to the original source. Neither claims a full return proof.
+
+Revision required before whole-family integration: authenticate replacement
+images drawn from a suitable ground subterm closure, prove its budget and recursive
+parameter compatibility, and extend copy-head/caller transport to permitted
+nonground compounds. Adding subterms is a proposed repair, not yet a proved
+whole-source invariant. Spine preservation and sharing obligations remain explicit.
+Do not assume arbitrary query outputs free-or-ground or silently restrict ground
+parameters to scalars. Prior local block proofs remain valid under their premises.
+
+Broad obligation 1 and M1 remain OPEN. This is a proof-development obstruction
+with a concrete next action, not an external blocker. No revised calendar estimate
+is justified until the general subterm-image argument passes. No production or
+baseline changes. Evidence: CeTA
+`docs/data/source-partial-caller-obstruction-20261119.json`.
+
+
+### M1 repair: bounded parameter subterm closure (2026-11-19)
+
+`LP_Prolog_Parameter_Subterms` introduces a finite-template subterm relation and
+closes the existing parameter replacement set under that relation. Kernel-checked
+facts establish transitive closure, inclusion of the old set, groundness, the
+unchanged parameter leaf budget, monotonicity under copy-or-scalar parameter
+returns, and leaf-effect composition using the enlarged set. These discharge
+the bound/groundness/composition requirements identified by the partial-caller
+obstruction; they do not prove coverage of actual copy-head unifier images.
+
+Kernel controls admit the former strict-subterm counterexample and reject a
+variable replacement and an oversized ground replacement. Eight retained
+original-source obstruction controls still pass. Actual unifier-image coverage,
+nonground caller transport, source-family integration and spine preservation
+remain open. The old replacement definition and its existing proofs are retained;
+no source checker or generated production code uses the new definition yet.
+Broad obligation 1 stays active; obligations 2–4 and M1 remain open.
+Evidence: CeTA `docs/data/source-parameter-subterms-20261119.json`.
+
+
+### M1 repair: actual nonground output images (2026-11-19)
+
+`LP_Prolog_Ground_Output_Images` proves that a finite output instantiated to a
+ground parameter maps each variable occurring in that output to a finite subterm
+of the parameter. The proof retains repeated-variable constraints. Applied to
+an actual repeated-parameter copy-head MGU, it discharges bounded-image coverage
+on the output support without a free-or-ground output premise. The shared-caller
+corollary transports the enlarged leaf invariant when all variables of the
+observed caller value occur in that output.
+
+This does not cover caller variables outside the output support. Their images
+need an MGU-minimality argument over the full caller continuation before the
+support restriction can be removed. Saved alternatives, full node integration,
+spine preservation and whole-family initialization/preservation remain open.
+Broad obligation 1 stays active; neither helper return nor recursion is discharged.
+
+Kernel checks passed without skipped proofs or oracles, including compatible
+repeated-output and incompatible repeated-output controls. Eight retained
+original-source obstruction assertions passed. Production code unchanged.
+Evidence: CeTA `docs/data/source-ground-output-images-20261119.json`.
+
+
+### M1 repair: full continuation and attached partial copy (2026-11-19)
+
+`lpp_partial_copy_continuation_images` uses actual MGU factorization against a
+comparison substitution that fixes variables outside the output. Such variables
+remain variables; output variables have the previously proved ground subterm
+images. The runtime version covers the full finite continuation, with proper
+input spine and arbitrary finite output. `lpp_attached_partial_caller_copy_leaf_step`
+integrates this into actual attached resolution, including the shared base-rule
+handling of failure and saved alternatives. It has no free-or-ground output
+premise. Coverage of observed caller slots in the attached tail remains explicit.
+
+Kernel verification passed without skipped proofs or oracles. Seven executable
+source controls cover partial outputs, shared subterms, unrelated variables,
+compatible/incompatible repeated outputs, rollback and noninteger parameters.
+This repairs the local leaf-transport obstruction, not complete node or family
+assembly. Finiteness and parameter-context successor facts, spine preservation,
+query initialization and whole-family coverage still need integration. Broad
+obligation 1 remains active; obligations 2–4 and M1 remain open. No production
+checker/native changes. Evidence: CeTA
+`docs/data/source-attached-partial-copy-20261119.json`.
+
+
+### M1: arbitrary-output copy observer/node integration (2026-11-19)
+
+The tracked partial-copy rule now keeps its replacement set relative to the
+original parameter through copy-or-scalar updates. `LP_Prolog_Observer_Partial_Copy`
+combines actual attached leaf transport, existing copy-head finiteness, conditioned
+resolution and strict residual descent. `lpp_observer_partial_copy_node_contract`
+packages that proof as an observer node contract with no free-or-ground output
+premise. It uses the enlarged ground subterm replacement set and permits arbitrary
+finite output shapes, including sharing.
+
+Proper input spine, tracked parameter entry, source facts, slot coverage and
+success/failure successor initialization remain explicit. The lower answer
+contract is used only under strict residual descent; no recursive reference is
+claimed discharged. This is node-level invariant integration, not a checked
+whole-family source theorem or actual helper return.
+
+Isabelle checks passed without skipped proofs or oracles. Original and renamed
+copy-coordinate fixtures each passed 24 assertions; 17 retained source controls
+passed, including compound outputs, unrelated caller variables, rollback and
+mismatch. The old fixture label `nonground_output_outside_local_mode` refers to
+the earlier mode, not a restriction of the new theorem. Production code unchanged.
+Broad obligation 1 stays active: successor-context instantiation, remaining node
+invariants, spine preservation and whole-family initialization/coverage remain.
+Obligations 2–4 and M1 remain open. Evidence: CeTA
+`docs/data/source-partial-copy-node-20261119.json`.
+
+
+### M1: partial-copy successor coordinates (2026-11-19)
+
+`lpp_partial_copy_successor_values` derives both checked successor coordinates
+from the actual repeated-parameter-head MGU: the parameter and output equal the
+incoming tracked parameter, and both retain its relation to the original ground
+parameter. The result has no free/ground output-mode assumption.
+`lpp_partial_copy_coordinates_node_contract` feeds these derived facts into the
+successor-initialization obligation of the arbitrary-output copy node. Other
+successor conditions and failure initialization remain explicit premises.
+
+Isabelle checked the facts and node integration without skipped proofs or oracles.
+Original and renamed coordinate fixtures each passed 24 checks, including missing
+and incorrect bindings; seven retained source controls passed. This discharges
+the copy-success parameter/output transport portion, not all successor conditions
+or whole-family preservation. Broad obligation 1 remains active; remaining nodes,
+spines, initialization and family coverage are open. Obligations 2–4 remain open.
+Production code unchanged. Evidence: CeTA
+`docs/data/source-partial-copy-coordinates-20261119.json`.
+
+
+### M1: recursive entry with arbitrary finite caller output (2026-11-19)
+
+`lpp_checked_recursive_partial_entry` derives the tracked parameter, proper
+finite tail, finite caller output and fresh separated helper output from the
+actual cons-head MGU and checked coordinates. It removes the old free-or-ground
+caller-output restriction. `lpp_observer_recursive_partial_node_contract`
+integrates these facts with the subterm replacement invariant; successor and
+failure initialization remain explicit. `lpp_split_prefix_partial_initial`
+constructs the caller/tail observer invariant at the checked prefix payload.
+This establishes prefix entry, not preservation through a successful helper.
+
+Isabelle checked all three results without skipped proofs or oracles. Original
+and renamed structural fixtures passed 28 checks each; nine source controls
+passed, covering partial compound outputs, freshness, tail routing, parameter
+copying, repeated-output mismatch and rollback. The structural fixtures reuse
+the existing coordinate checker; they do not certify the new whole family.
+
+Broad obligation 1 remains incomplete: whole-family initialization, remaining
+node preservation and return-time spine preservation are open. Obligation 2
+still needs complete source-path and boundary coverage. Neither actual helper
+return (obligation 3) nor recursive family discharge (obligation 4) is proved.
+The next assembly task is to connect the actual cons successor and checked
+prefix payload without an externally supplied entry invariant. Production code
+and generated checking logic are unchanged; no production replay is claimed.
+Evidence: CeTA `docs/data/source-recursive-partial-entry-20261119.json`.
+
+
+### M1: cons-to-prefix invariant composition (2026-11-19)
+
+`lpp_recursive_partial_prefix_initial` composes the actual cons-head MGU entry
+proof with the checked prefix payload initializer. A recursive-entry invariant
+is no longer a premise: incoming finite call, proper spine, tracked parameter,
+and both coordinate checks establish it. Isabelle checked the composition and
+its dependency closure without skipped proofs or oracles. Existing positive and
+negative coordinate/source controls are retained in the predecessor manifest;
+no new production or source execution is claimed for this composition.
+
+This proves initialization of the displayed prefix runtime, not correspondence
+of every source boundary with that runtime or preservation through a helper
+return. Full source-state shape/transport integration, remaining node invariants,
+whole-family initialization and return-time spine preservation remain open.
+All four broad obligations remain incomplete. Evidence: CeTA
+`docs/data/source-recursive-partial-prefix-20261119.json`.
+
+
+### M1: widened recursive entry through observer links (2026-11-19)
+
+`lpp_checked_recursive_partial_entry_transport` preserves the arbitrary-finite-
+output entry fragment under the existing five-coordinate check.
+`lpp_stable_functor_link_with_recursive_partial_entry` carries it in the same
+valuation as the checked target representation, context and residual edge.
+`lpp_stable_functor_link_with_partial_prefix` initializes the prefix invariant in
+that valuation. Isabelle checked all three without skipped proofs or oracles.
+The existing coordinate harness passed 34 checks per original/renamed variant,
+including wrong coordinates, helper aliasing, growing tails and missing bindings.
+These are coordinate controls, not acceptance of an actual Split boundary.
+
+The checked-link, incoming entry and source-context premises remain explicit;
+full boundary reconstruction and correspondence with the displayed prefix
+runtime are not discharged. Whole-family initialization, remaining invariant
+preservation and both actual helper returns remain open. All four broad
+obligations remain incomplete. Production code is unchanged. Evidence: CeTA
+`docs/data/source-recursive-partial-link-20261119.json`.
+
+
+### M1: finite (o,i,o) observational initialization (2026-11-19)
+
+`lpp_partial_query_initial` derives an initial finite ground parameter template,
+its tracked-parameter relation, structural observations for both arbitrary finite
+arguments, and the subterm observer invariant for the displayed initial call.
+It assumes neither integer-valued parameters nor free/ground output mode nor
+variable separation between input and output. The caller-coordinate equalities
+remain explicit. Isabelle checked the theorem without skipped proofs or oracles.
+
+This is the observational initialization fragment only. Membership in the actual
+source observer family, original query admission, node conditions, and complete
+preservation are not proved. It does not discharge either helper return or any
+recursive family premise. All four broad obligations remain incomplete. No
+production changes or new execution campaign are included. Evidence: CeTA
+`docs/data/source-partial-query-initial-20261119.json`.
+
+
+### M1: parameter equality under the subterm invariant (2026-11-19)
+
+The runtime parameter equality contract and its conditioned node contract now
+have subterm-invariant counterparts. Checked marker/copy/scalar replacements
+remain in the original replacement set; inclusion into the widened set and its
+groundness establish preservation of the enlarged caller invariant. This removes
+the mismatch between equality nodes and the arbitrary-output copy/cons nodes.
+The source selected-free fact, tracked parameter, coordinate coverage,
+success/failure initialization and strict-descent lower contracts remain explicit.
+
+Isabelle checked all three new contracts and the existing four accepted binding
+forms/five rejection controls without skipped proofs or oracles. These controls
+exercise the existing binding checker; no new executable checker is introduced.
+Actual source-row assembly, arithmetic integration, original query-to-family
+representation and full preservation are still open. Neither helper return nor
+recursive family assembly is discharged. All four broad obligations remain
+incomplete; production code is unchanged. Evidence: CeTA
+`docs/data/source-subterm-equality-20261119.json`.
+
+
+### M1: attached arithmetic with subterm replacements (2026-11-19)
+
+`LP_Prolog_Attached_Subterm_Arithmetic` proves that actual arithmetic steps
+preserve the widened leaf-stack invariant, including attached continuations and
+saved alternatives. A successful source builtin also establishes the tracked
+scalar parameter relation. Groundness of the original parameter is explicit;
+integer-valued inputs are not assumed. Failure/error behavior is retained.
+Isabelle checked the four results without skipped proofs or oracles. Five SWI
+source controls passed: scalar success, caller sharing, compound-output rejection,
+rollback and noninteger-parameter error. These executable checks are source
+examples, not proofs of equivalence with the formal arithmetic profile.
+
+The result covers leaf preservation, not the complete observer invariant:
+finiteness, checked node integration, source-row coverage and full query/family
+initialization remain open. Both actual helper returns and recursive assembly
+remain unproved. All four broad obligations remain incomplete; production code
+is unchanged. Evidence: CeTA `docs/data/source-subterm-arithmetic-20261119.json`.
+
+
+### M1: arithmetic finite execution and leaf preservation (2026-11-19)
+
+`lpp_actual_is_finite_step` and `lpp_attached_is_finite_step` preserve finite
+execution for the actual arithmetic domain transition and attached continuation.
+`lpp_attached_is_subterm_invariants` combines this with widened leaf-stack
+preservation on the same result state. Failure and error outcomes remain covered;
+no successful evaluation or integer input is assumed for the step theorem.
+Isabelle checked all three without skipped proofs or oracles. The five retained
+arithmetic source controls passed again. Documentation validation passed.
+
+Checked observer-successor representation and node conditions remain to be
+integrated. This result does not establish whole-family preservation, query
+admission, actual helper returns or recursive assembly. All four broad
+obligations remain incomplete. Production code is unchanged. Evidence: CeTA
+`docs/data/source-arithmetic-finite-20261119.json`.
+
+
+### M1: full invariant in checked arithmetic normalization (2026-11-19)
+
+`lpp_checked_attached_is_invariant_contract` carries both finite execution and
+caller leaf observations to the checked intermediate equality state, in the
+valuation supplying target representation, source facts and strict residual
+descent. The arithmetic-domain premise is derived from the incoming invariant.
+The replacement set is generic, so the widened subterm invariant is admitted.
+No substitution is applied to caller observations until the equality executes.
+
+Isabelle checked the contract without skipped proofs or oracles; five retained
+arithmetic source controls passed. Actual row instantiation, target node-condition
+initialization and canonical node packaging remain open. The lower answer
+contract is still an explicit strict-descent obligation. Whole-family preservation,
+query-to-family initialization, both helper returns and recursive discharge are
+not established. All four broad obligations remain incomplete. Production code
+is unchanged. Evidence: CeTA `docs/data/source-arithmetic-observer-20261119.json`.
+
+
+### M1: conditioned arithmetic module child (2026-11-19)
+
+`lpp_checked_conditioned_is_invariant_contract` derives target table bounds from
+the checked arithmetic link and packages the intermediate equality state as a
+premised module child with the full observer invariant. The lower answer contract
+receives this representation and strict residual descent. Target node-condition
+initialization remains an explicit premise; it is not inferred from representation.
+Isabelle checked the result without skipped proofs or oracles. Five retained
+arithmetic source controls passed again; they do not establish module assembly.
+
+Canonical node packaging, actual row instantiation, query/family initialization
+and whole-family preservation remain open. Neither helper-return contract nor
+recursive family discharge is established. All four broad obligations remain
+incomplete. Production code is unchanged. Evidence: CeTA
+`docs/data/source-conditioned-arithmetic-20261119.json`.
+
+
+### M1: canonical arithmetic observer node (2026-11-19)
+
+`lpp_observer_arithmetic_node_contract` packages checked arithmetic normalization
+as a canonical observer node with the full leaf/finite-execution invariant.
+It restores scope handling and lifts a represented child's answer contract along
+the strict residual path using `lp_answer_contract_start`. The actual source
+shape and target node-condition initializer remain explicit; recursive lower
+contracts are used only under strict descent.
+
+Isabelle checked the node theorem and dependencies without skipped proofs or
+oracles. Five retained arithmetic source controls passed. This closes arithmetic
+node packaging, not source-row instantiation or target-condition discharge.
+Whole-family initialization/preservation, actual helper returns and recursive
+assembly remain open. All four broad obligations remain incomplete. Production
+code is unchanged. Evidence: CeTA `docs/data/source-arithmetic-node-20261119.json`.
+
+
+### M1: arithmetic target scalar coordinate (2026-11-19)
+
+Inspection of retained original/renamed tables identifies arithmetic rows 0:15
+and 47:15, both targeting row 19. Their equality target has output V0 and scalar
+V1; the checked-link binding maps V1 to the fresh result variable.
+`lpp_arithmetic_target_parameter` derives the output value, scalar value and
+tracked-parameter fact from the represented equality shape and the original
+parameter's groundness. Isabelle checked it without skipped proofs or oracles.
+The structural audit records four target mappings and hashes its input XML.
+It does not validate a complete checked link or authenticate a boundary.
+
+This identifies and proves the scalar-coordinate fragment of target initialization.
+It has not yet been wired into the canonical node initializer; remaining target
+conditions, original parameter transport through V2, actual source-row assembly,
+whole-family preservation and query admission remain open. Neither helper return
+nor recursive assembly is discharged. All four broad obligations remain incomplete.
+Evidence: CeTA `docs/data/source-arithmetic-target-20261119.json`.
+
+
+### M1: scalar facts integrated into arithmetic node (2026-11-19)
+
+`lpp_observer_arithmetic_parameter_node_contract` derives the output/scalar
+coordinate values and tracked scalar fact from the represented target equality,
+then supplies them to target initialization. The target shape and original
+parameter groundness remain explicit. `lpp_arithmetic_target_payload_parameter`
+separately derives preservation of the incoming tracked parameter through a
+checked payload coordinate. The retained targets use payload index 1 / V2;
+this payload lemma is not yet integrated into the node initializer.
+
+Isabelle checked both results without skipped proofs or oracles. A structural
+audit confirms the three separate coordinates in four original/renamed target
+mappings; it does not authenticate actual boundaries. Remaining target conditions,
+source-row instantiation, query/family initialization and whole-family preservation
+remain open. Both helper returns and recursive assembly remain unproved. All four
+broad obligations remain incomplete. Evidence: CeTA
+`docs/data/source-arithmetic-parameter-node-20261119.json`.
+
+
+### M1: incoming payload parameter integrated into arithmetic node (2026-11-19)
+
+`lpp_observer_arithmetic_payload_node_contract` derives the incoming parameter's
+tracked relation through the represented source payload and explicit source/target
+payload coordinates. It supplies that fact together with the derived scalar fact
+to the target initializer. Original incoming tracking and both payload coordinates
+remain premises; arbitrary target conditions are not silently discharged.
+
+Isabelle checked the node and dependency closure without skipped proofs or
+oracles. Five source controls and the four retained structural target mappings
+passed again. Actual checked-row instantiation, other target conditions,
+query/family initialization and whole-family preservation remain open. Neither
+helper return nor recursive assembly is proved. All four broad obligations remain
+incomplete. Production code is unchanged. Evidence: CeTA
+`docs/data/source-arithmetic-payload-node-20261119.json`.
+
+
+### M1: actual arithmetic static row premises checked (2026-11-19)
+
+The existing Isabelle-generated source-action checker accepts arithmetic rows
+0:15 and 47:15 against the retained original and renamed tables. The fixture
+checks source output, scalar-result and parameter-payload coordinates and rejects
+wrong scalar values, missing scalar bindings, parameter aliasing and nonfresh
+result variables. Each variant passed 16 checks. The generated checker was reused
+unchanged; this is a development fixture, not native source discovery or replay.
+
+This validates static premises for arithmetic-node instantiation. Incoming runtime
+parameter facts, remaining target node conditions, boundary assembly and complete
+family coverage are still unproved. No actual helper return or recursive family
+premise is discharged. All four broad obligations remain incomplete. Evidence:
+CeTA `docs/data/source-arithmetic-rows-20261119.json`.
+
+
+### M1: ground equality for partial output patterns (2026-11-19)
+
+The arithmetic return boundary selects an arbitrary finite output, so a
+free-selected-variable equality rule is insufficient. The new
+`lpp_subterm_ground_equality_images` derives restricted images from the actual
+MGU when the replacement set covers subterms of the selected ground value.
+`lpp_parameter_subterm_equality_leaf` instantiates this for the widened parameter
+set. Finite selected output, finite continuation and caller-variable coverage
+remain explicit. No free/ground output-mode assumption is introduced.
+
+Isabelle checked both results without skipped proofs or oracles. Five direct
+equality controls and seven retained partial-output source controls passed,
+covering sharing, repeated-pattern mismatch, compound/scalar mismatch and rollback.
+These are executable examples, not source-boundary certification. Integration into
+the actual equality node and whole-family preservation remain open. Both helper
+returns and recursive assembly remain unproved; all four broad obligations are
+incomplete. Evidence: CeTA `docs/data/source-subterm-ground-equality-20261119.json`.
+
+
+### M1: arbitrary finite output equality integrated through node (2026-11-19)
+
+Restricted subterm images now lift through actual attached equality and saved
+alternatives (`LP_Prolog_Attached_Subterm_Equality`), the conditioned observer
+answer contract (`LP_Prolog_Observer_Conditioned_Subterm_Equality`), and the
+canonical parameter-equality node (`LP_Prolog_Partial_Parameter_Equality_Node`).
+The node no longer assumes the selected runtime output is free. Its full incoming
+invariant supplies finiteness; allowed ground replacements, tracked parameter,
+caller coverage and success/failure successor conditions remain explicit. Lower
+answer contracts require strict residual descent.
+
+Isabelle checked the complete dependency chain without skipped proofs or oracles.
+Five direct equality controls and seven retained partial-output source controls
+passed. Actual source-boundary instantiation, remaining node conditions,
+query/family initialization and whole-family preservation remain open. Neither
+helper return nor recursive assembly is authenticated. All four broad obligations
+remain incomplete. Production code unchanged. Evidence: CeTA
+`docs/data/source-partial-equality-node-20261119.json`.
+
+
+### M1: actual partial-output equality row checked (2026-11-19)
+
+The retained equality row 19:0 passes the unchanged Isabelle-generated source
+checker in both original and renamed tables. Seven checks per variant cover the
+actual source action, both returned coordinates, the empty free-variable table,
+and rejection of wrong/missing return bindings and swapped success/failure links.
+This confirms that the partial-output node rule addresses an actual row whose
+selected output has no static freeness evidence. Both success payload coordinates
+select the tracked right-hand value.
+
+The executable checks validate static premises only. Dynamic incoming tracking,
+successor initialization, return-contract coverage and family invariant assembly
+remain open. No actual helper return or recursive premise is discharged. All four
+broad obligations remain incomplete. Production code and generated checking logic
+are unchanged. Evidence: CeTA `docs/data/source-partial-equality-row-20261119.json`.
+
+
+### M1: equality successor tracked-value integration (2026-11-19)
+
+`lpp_partial_equality_successor_values` derives the refreshed successor value
+from the actual successful equality MGU: it equals the ground right-hand value,
+equals the substituted selected output, and preserves parameter tracking.
+`lpp_observer_partial_equality_successor_node_contract` feeds the derived equality
+and tracking facts into successor initialization, with no free-output premise.
+The arithmetic boundary's variable right-hand side and checked refresh coordinate
+are explicit; other successor conditions and failure initialization remain open.
+
+Isabelle checked both theorems and a positive/negative fixture for the retained
+3/6-prefix V1-to-V0 return coordinate without skipped proofs or oracles. This
+advances local preservation, not complete return-contract authentication.
+Whole-family initialization/coverage, helper returns and recursive assembly remain
+open; all four broad obligations remain incomplete. Production code unchanged.
+Evidence: CeTA `docs/data/source-partial-equality-successor-20261119.json`.
+
+
+### M1: actual-answer spine from partial recursive entry (2026-11-19)
+
+`lpp_partial_prefix_actual_return_spine` derives initialization of the existing
+actual-answer spine theorem from the widened recursive entry and checked prefix
+coordinates. Every actual answer of the displayed single-frame prefix retains
+the exact initial tail length. It requires an actual answer and does not prove
+helper termination, returned-element finiteness or leaf effects. Saved alternatives
+created by execution are handled by the existing semantic theorem; externally
+supplied initial alternatives are outside this single-frame statement.
+
+Isabelle checked the result without skipped proofs or oracles. Five source
+controls passed: shared-element binding, exact tail length, open/cyclic spine
+exclusion and rollback. Full source-boundary correspondence, return leaf effects,
+query/family initialization and complete preservation remain open. Neither helper
+return contract nor recursive assembly is authenticated. All four broad
+obligations remain incomplete. Evidence: CeTA
+`docs/data/source-partial-prefix-spine-20261119.json`.
+
+
+### M1 review: subterm invariant does not supply residual coverage (2026-11-19)
+
+`Subterm_Residual_Obstruction` kernel-checks that the exposed image `inner(z)`
+is allowed by the widened invariant but has no instance among the four existing
+parameter-leaf replacement patterns with parameter `outer(inner(z))` fixed.
+Whole-parameter replacement remains a checked positive control. Eight executable
+source controls reproduce the permitted partial-output copy and its strict
+subterm image. All three theorems have no skipped proofs or oracles.
+
+This is an exact failure of the proposed replacement-coverage bridge, not a proof
+that the full retained residual cannot simulate the source. The existing prefix
+bridge still requires the old replacement set; equal budgets do not discharge
+its coverage premise. Before further family integration, establish a relation
+retaining partial-output context and sharing, or find a checked path in the
+unchanged retained residual that covers these images. Do not simply widen the
+bridge premise. Further completion estimates are unreliable until this revised
+argument passes this gate.
+
+All four broad obligations remain incomplete: full invariant initialization and
+preservation, source paths/boundaries, both actual helper-return contracts, and
+justified recursive family assembly. No production code, generated checker or
+retained residual changed. Evidence:
+[data/source-subterm-residual-obstruction-20261119.json](data/source-subterm-residual-obstruction-20261119.json).
+
+
+### M1: restricted helper output observation (2026-11-19)
+
+`LP_Prolog_Restricted_Prefix_Output` initializes the original restricted
+replacement invariant with an additional leaf observation for the fresh helper
+result. The suspended caller output remains an arbitrary finite term, with its
+own structural observation. The helper's free-or-ground mode follows from its
+leaf observation in any retained frame; it is not assumed of the caller output.
+The actual attached copy step now derives this mode from the invariant and
+preserves both restricted leaf effects and finite execution, including saved
+frames, provided its output equals the observed helper-result coordinate.
+
+This repairs a local entry/copy obligation without widening the residual leaf
+patterns. It does not establish whole-family preservation or resolve the earlier
+subterm-coverage obstruction for arbitrary partial outputs. Assembly must keep
+the restricted helper-prefix invariant separate from general-query/resumed
+continuation invariants, and authenticate output-coordinate correspondence
+across every relevant row and boundary. Neither actual helper return nor
+recursive family assembly is discharged; all four broad obligations remain open.
+
+Isabelle checked the theory and positive/negative helper-leaf controls without
+skipped proofs or oracles. Nine source controls passed, including fresh helper
+output, unchanged partial caller during the prefix, subterm exposure only on
+resumption, repeated-output mismatch and rollback. Production code and the
+retained residual are unchanged. Evidence: CeTA
+`docs/data/source-restricted-prefix-output-20261119.json`.
+
+
+### M1: helper-output interface equality preservation (2026-11-19)
+
+`LP_Prolog_Observer_Output_Alias` records equality between the helper output
+coordinate and its caller observation in every frame. This equality initializes
+from matching bounded payload coordinates and is preserved by every domain
+source transition, including saved alternatives and returned events. Scope
+renaming preserves it; interface projection preserves it when the selected
+coordinate maps to the old coordinate. Combined with represented payloads and
+the restricted leaf invariant, it derives the active output's free-or-ground
+mode and exact equality to the caller observation.
+
+Isabelle checked the theory and three controls (matching output, wrong slot,
+stale saved-frame output) without skipped proofs or oracles. Structural audits
+cover seven copy/arithmetic/equality rows in each original/renamed table, plus
+seven wrong-coordinate rejections per variant. These audits are not checked
+boundary simulation. Slot 2 is retained in the three-argument modules; the
+separate equality module uses slot 0. The empty cut module requires its shared
+caller interface to remain available rather than inventing an output slot.
+
+The alias conjunction still needs integration into canonical node/family
+invariants, actual boundary projections and nested Split interface changes.
+Full leaf preservation and tracked parameters remain open. All four broad
+obligations remain incomplete; no helper-return or recursive premise is newly
+discharged. Production code and the retained residual are unchanged. Evidence:
+CeTA `docs/data/source-observer-output-alias-20261119.json`.
+
+
+### M1: combined invariant integrated into copy node (2026-11-19)
+
+`LP_Prolog_Observer_Output_Copy_Node` defines the conjunction of the restricted
+leaf/finite observer invariant and helper/caller output equality. Checked partial
+Split entry and matching helper payload initialize this conjunction without
+restricting the arbitrary finite caller output. The conditioned copy contract
+retains the actual joint source transition and uses it to preserve output
+equality in the same child that carries the checked representation and strict
+residual descent. The canonical copy node now derives output mode from its
+combined invariant and payload coordinate; it has no separate output-mode entry
+premise. Both success/failure node-condition initialization premises remain.
+
+Isabelle checked the initialization, conditioned contract and canonical node
+without skipped proofs or oracles. Controls establish that matching coordinates
+satisfy the combined invariant and that the leaf invariant alone does not imply
+output equality. Nine retained source controls passed. Other local nodes,
+actual boundary transports, tracked-parameter conditions and complete family
+assembly still require integration. All four broad obligations remain incomplete;
+neither helper return nor a recursive premise is discharged. Production code and
+the retained residual are unchanged. Evidence: CeTA
+`docs/data/source-observer-output-copy-node-20261119.json`.
+
+
+### M1: combined invariant through arithmetic and scalar equality (2026-11-19)
+
+`LP_Prolog_Observer_Output_Arithmetic_Node` carries the combined finite/leaf and
+output-equality invariant through conditioned normalization and its canonical
+node contract. `LP_Prolog_Observer_Output_Scalar_Equality_Node` retains the joint
+actual equality transition, preserving output equality in the same represented
+child as the finite/leaf facts. Its canonical scalar-equality contract uses the
+original parameter replacement set: the only subterm of a scalar is itself.
+No freeness assumption is made on the equality's selected output. The scalar
+right-hand value and success/failure successor conditions remain explicit.
+
+Isabelle checked both theories and the scalar-positive/compound-closure-negative
+controls without skipped proofs or oracles. Five source controls passed: scalar
+success, shared caller, compound-output rejection, rollback and noninteger
+parameter evaluation error. Normalization target conditions, the actual equality
+module boundary, other source nodes/acquired blocks and complete family
+preservation remain open. All four broad obligations remain incomplete; neither
+helper-return contract nor recursive assembly is authenticated. Production code
+and retained residual are unchanged. Evidence: CeTA
+`docs/data/source-observer-output-arithmetic-20261119.json`.
+
+
+### M1: combined invariant through helper-interface rebasing (2026-11-19)
+
+The arithmetic equality boundary is not a pure projection: its new scalar
+operand is absent from the old return tuple. `LP_Prolog_Observer_Output_Rebase`
+preserves the combined invariant when the new output coordinate equals the old
+helper output in every frame. For singleton boundaries, checked payload equality
+and the old runtime representation derive the new helper representation, the
+combined invariant and exact equality of attached caller execution. The checked
+module-link contract now accepts this invariant with a changed output index.
+
+Isabelle checked these results and the retained payload-shaped positive and
+wrong-scalar-coordinate negative controls without skipped proofs or oracles.
+Structural audits confirm both 0:19 and 47:19 to module 19:0 in original/renamed
+tables: output index 2 becomes 0, while scalar index 1 cannot be projected from
+the old tuple. Four wrong-coordinate controls pass. These are structural audits;
+actual runtime representation, checked link and target scalar/parameter conditions
+still need source-family instantiation. The existing module-link theorem's
+frontier/separation conditions do not themselves establish those extra facts.
+
+Other nodes/acquired blocks, nested Splits and complete family preservation remain
+open. All four broad obligations are incomplete; no actual helper-return or
+recursive premise is discharged. Production code and retained residual unchanged.
+Evidence: CeTA `docs/data/source-observer-output-rebase-20261119.json`.
+
+
+### M1: full boundary conditions and retained equality successor initialization (2026-11-19)
+
+`LP_Prolog_Observer_Conditioned_Output_Link` carries arbitrary full target node
+conditions in the same checked binding valuation as representation, contexts,
+functor facts and strict residual descent. Its module contract preserves the
+combined output invariant across rebasing. Checked scalar coordinates also
+supply scalar value and tracked-parameter facts without treating groundness as
+scalar evidence.
+
+The `Conditioned_Output_Link_Check` fixture instantiates the retained equality
+row 19:0 with concrete scalar conditions: V1 at entry, V0 on success, no scalar
+requirement on empty failure rows. Actual-MGU and checked refresh facts discharge
+both successor-condition callbacks in this row's canonical contract. The fixture
+retains static checker, source shape, initial-parameter groundness and caller
+coverage premises; it is not a complete module or source theorem. Kernel controls
+reject a ground compound as scalar evidence and a wrong scalar coordinate.
+
+Isabelle checked all results without skipped proofs or oracles. The unchanged
+generated source checker passes twelve checks per original/renamed variant,
+including the precise 3/6 refresh, V0/V1 source and success binding, row 1/2 targets,
+and V1 ground table used by the fixture. Actual incoming-link instantiation,
+successful-return boundary, remaining nodes/acquired blocks and full family
+preservation remain open. All four broad obligations remain incomplete; no helper
+return or recursive premise is authenticated. Production code unchanged.
+Evidence: CeTA `docs/data/source-conditioned-output-link-20261119.json`.
+
+
+### M1: conditional assembly of the retained equality module (2026-11-19)
+
+`LP_Prolog_Observer_Output_Return` transports the actual scalar helper output
+through the combined output alias/invariant to the caller, retaining parameter,
+restricted leaf-effect and finite-execution facts. `Equality_Output_Module_Check`
+assembles all four retained module-19 rows: equality, successful return and both
+empty rows. Isabelle checked the assembly without skipped proofs or oracles.
+The caller continuation contract remains explicit, as do full-table checking,
+representation, residual termination and the other stated source premises.
+This is a conditional module contract, not an authenticated Split return.
+
+The unchanged generated source checker and structural fixture passed seventeen
+checks per original/renamed variant, including the return row, exact four-state
+shape, missing-row rejection and wrong-return-payload rejection. The fixture does
+not freshly evaluate the full-table control checker. Evidence and hashes:
+CeTA `docs/data/source-equality-output-module-20261119.json`.
+
+Invariant integration/preservation advances locally but remains incomplete.
+Incoming arithmetic-to-equality links, caller continuations, other paths and
+boundaries remain open; neither Split 30 nor Split 44 has an authenticated actual
+helper-return contract, and justified recursive family assembly remains open.
+Next assembly work must instantiate the incoming links and discharge the caller
+continuation under the family framework. Production code, generated checking
+logic and the retained residual are unchanged; no production replay was run.
+
+
+### M1: conditioned arithmetic-to-equality boundary assembly (2026-11-19)
+
+`arithmetic_equality_conditioned_boundary` in `Observer_Output_Rebase_Check`
+combines the retained arithmetic boundary payload rebase with the conditioned
+module link. Its conclusion supplies strict residual descent, the full equality
+module representation, the combined invariant at output slot 0, and exact
+preservation of the attached caller execution. The source output is slot 2;
+the scalar operand is V1 in the source valuation and is transported by a checked
+binding coordinate. No unrelated target valuation is introduced.
+
+Isabelle checked the assembly and identity-coordinate/wrong-binding controls
+without skipped proofs or oracles. The structural audit covers both incoming
+boundaries in original and renamed tables. Actual static link checking, the
+source scalar fact, source representation and context premises remain explicit;
+this audit is not dynamic boundary certification. Incoming preservation is now
+assembled conditionally, but those premises must still be discharged by the
+arithmetic path and family assembly. Evidence:
+CeTA `docs/data/source-equality-incoming-boundary-20261119.json`.
+
+All four broad obligations remain incomplete: whole-family invariant preservation,
+remaining paths/boundaries, both actual Split return contracts and justified
+recursive assembly. No production or generated checker change or replay occurred.
+
+
+### M1: actual arithmetic successor establishes the scalar boundary condition (2026-11-19)
+
+`Arithmetic_Boundary_Condition_Check` instantiates the combined-invariant
+arithmetic node at retained row 15 with a scalar condition at row 19. The actual
+normalized runtime representation forces target V1 to equal the scalar evaluation
+result. This discharges the target-initialization callback in that node contract;
+source scalar-ness is not inferred from groundness. The boundary condition also
+implies the equality-module entry condition in the same valuation.
+
+Isabelle checked the contract and compound-as-scalar rejection without skipped
+proofs or oracles. The unchanged generated checker passes eighteen static/shape
+checks per original/renamed variant across modules 0 and 47, including the exact
+15-to-19 payload shapes and rejection of wrong/missing scalar bindings, parameter
+aliasing and a nonfresh result. The harness retains its historical dynamic-open
+marker: it is static evidence, while the new theorem supplies this particular
+dynamic scalar initialization. Evidence:
+CeTA `docs/data/source-arithmetic-boundary-condition-20261119.json`.
+
+Actual incoming module-link checking and canonical boundary assembly remain open,
+as do other rows/acquired blocks, nested Splits, initialization and full-family
+preservation. Neither actual helper-return contract nor recursive assembly is
+complete. All four broad obligations remain incomplete. Production/generated
+checking logic and the retained residual are unchanged; no production replay ran.
+
+
+### M1 review: local-residual boundary obstruction (2026-11-19)
+
+The planned next step of discharging the strict arithmetic-to-equality module
+link cannot use the retained local residual tables as Q. The source predicates
+at module 0:19 and 47:19 have no clause heads in any of the five local residuals,
+or their union. Their incoming arithmetic clauses exist. This holds for original
+and renamed inputs. Consequently a boundary runtime may be represented, but its
+local residual subject cannot take a step into the separate equality module.
+
+`Boundary_Residual_Obstruction_Check` kernel-checks that an absent head rejects
+`lpc_check_link` and permits neither a residual step nor strict residual descent.
+`audit_boundary_residual.py` establishes the absent-head condition on all retained
+local tables, with actual arithmetic predecessors as positive controls. Evidence:
+CeTA `docs/data/source-boundary-residual-obstruction-20261119.json`.
+
+This corrects the previous next-step assumption: the conditional incoming-boundary
+lemma remains valid, but its strict-link premise is not dischargeable with those
+local residuals. Do not insert synthetic clauses into the retained certified
+residual to make that premise pass. The audit does not establish an obstruction
+for the certified global residual, which uses a different representation.
+
+Revised assembly work must first connect module subjects to the retained global
+residual, or justify administrative module changes separately from strict
+residual descent using a well-founded family argument. Only then can boundary
+contracts be composed without an impossible local-link premise. The scalar,
+parameter, alias and leaf-preservation results remain valid local facts; this
+finding does not show the invariant false. It shows that the selected assembly
+relation is insufficient. Full-family invariant preservation and initialization,
+remaining paths, both Split return contracts and justified recursion remain open.
+The M1 feasibility gate remains open with this concrete unresolved obligation;
+no estimate of remaining step count is supported. Production and generated
+checking logic remain unchanged, and no production replay was run.
+
+
+### M1: global residual supplies the equality boundary projection (2026-11-19)
+
+The retained global residual contains the edges absent from the local residuals.
+Its two arithmetic/equality boundary clauses project six coordinates to four:
+indices [0,1,3,4], retaining the first two values and their structural counterparts.
+`audit_global_boundary_projection.py` verifies the exact clauses and matching
+empty-prefix triples in the hash-pinned original and renamed certificates, and
+rejects wrong structural coordinates and missing calls. No residual was changed
+or freshly recertified.
+
+`Global_Boundary_Projection_Check` kernel-checks the residual step for arbitrary
+valuations and combines it with the retained payload rebase: the helper runtime
+representation, combined output invariant and exact attached caller execution
+are preserved alongside this strict global edge. No skipped proofs or oracles
+are used. Evidence:
+CeTA `docs/data/source-global-boundary-projection-20261119.json`.
+
+This resolves the absence of an appropriate edge at these two global boundaries,
+not the source-to-global-residual simulation. The structural valuation remains
+arbitrary in the lemma; a family representation must relate it to the restricted
+leaf observations, preserve that interpretation along all rows, and reconcile
+the global doubled arities with the existing local node interfaces. Successful
+prefixes and extra global helper clauses must also be covered. Those are the
+next assembly obligations. Full-family preservation/initialization, remaining
+paths, both Split return contracts and justified recursive assembly remain open.
+Production and generated checking logic are unchanged; no source replay ran.
+
+
+### M1: actual output observation at the global boundary (2026-11-19)
+
+`Global_Boundary_Observation_Check` relates a structural coordinate to an actual
+finite runtime observation and its restricted leaf-effect history, with an
+explicit symbol encoding. At the retained arithmetic/equality boundary, the
+combined invariant, output alias, payload representation and covered helper slot
+establish existence of this encoded observation for actual V0. The six-to-four
+projection preserves both retained observed value/structure pairs when supplied.
+
+Isabelle checked these results without skipped proofs or oracles. Controls accept
+a variable's leaf observation and reject a leaf observation for a constructor
+under the abstract identity encoding. Evidence:
+CeTA `docs/data/source-global-boundary-observation-20261119.json`.
+
+The existential observation does not yet initialize the global valuation: native
+symbol encoding, fresh structural-coordinate allocation, the scalar operand's
+observation and a full doubled-arity family representation remain to be assembled.
+Preservation under every source transition is still required. No claim is made
+that arbitrary global structural coordinates denote runtime observations.
+All four broad obligations remain incomplete, including both actual helper
+returns and justified recursion. Production/generated checker and retained
+residual are unchanged; no production replay was run.
+
+
+### M1: fresh boundary structural valuation (2026-11-19)
+
+`Global_Boundary_Valuation_Check` constructs a valuation for the output and scalar
+structural coordinates from the actual helper-output observation and scalar
+value. Under explicit freshness, it preserves every other coordinate and the
+complete displayed source runtime representation, while supplying the global
+boundary residual step. The discarded parameter structural coordinate is retained
+unchanged. The symbol encoder remains an explicit parameter.
+
+Isabelle checked the construction without skipped proofs or oracles, including
+a collision control showing that assigning a structural value to a runtime
+coordinate changes that runtime value. The extended certificate audit checks
+freshness in both immutable variants and rejects collisions, wrong structural
+projections and missing calls: four boundary cases and twelve negative controls.
+Evidence: CeTA `docs/data/source-global-boundary-valuation-20261119.json`.
+
+This initializes a local boundary valuation; it does not authorize resetting
+structural values along an existing residual path. Compatibility with incoming
+structural coordinates, concrete native symbol encoding, and preservation of a
+full global family representation remain open. Source initialization, other
+paths/acquired blocks, both actual Split returns and justified recursive assembly
+remain incomplete. Production/generated checker and retained residual are
+unchanged; no production replay was run.
+
+
+### M1: incoming arithmetic path preserves the output observation (2026-11-19)
+
+`Global_Arithmetic_Path_Check` checks the two-step global residual path from the
+arithmetic node through the equality boundary. The incoming output value and
+its structural observation are unchanged. Only the scalar result and its encoded
+observation use fresh variables. The parameter value/observation also remain
+unchanged on the first edge and are discarded by the boundary projection.
+The proof accepts any scalar, so it can be instantiated with the actual successful
+arithmetic result without expanding arithmetic semantics.
+
+Isabelle checked the path and overwritten-output control without skipped proofs
+or oracles. `audit_global_arithmetic_path.py` identifies both exact arithmetic
+clauses and their matching empty-prefix triples in each pinned certificate,
+paired with their boundary projections. Four path cases and twelve negative
+controls pass (changed output observation, reused result coordinate, reused
+scalar observation coordinate). Evidence:
+CeTA `docs/data/source-global-arithmetic-path-20261119.json`.
+
+This resolves incoming observation compatibility along this residual fragment,
+conditional on an already observed arithmetic input. It does not initialize that
+input from the query or assemble the complete source-to-global simulation.
+Concrete native encoding, integration with actual source normalization and the
+full family representation remain open, along with other paths, both actual
+Split returns and justified recursion. All four broad obligations remain
+incomplete. Production/generated checker and retained residual are unchanged;
+no production replay was run.
+
+
+### M1: actual arithmetic transition connected to the global path (2026-11-19)
+
+`Actual_Global_Arithmetic_Check` decomposes a nonempty actual arithmetic answer
+transition into its evaluated scalar and shared equality transition, then uses
+that same scalar in the retained global arithmetic/boundary path. The normalized
+equality runtime preserves the combined invariant with its saved alternatives.
+The incoming output observation is unchanged and the fresh scalar observation
+is encoded from the actual result. This removes the independent scalar choice
+from the combined source-normalization/global-path statement.
+
+Isabelle checked the result without skipped proofs or oracles. Five executable
+source controls pass: scalar success, shared caller, compound-output rejection,
+rollback and noninteger-parameter evaluation error. Evidence:
+CeTA `docs/data/source-actual-global-arithmetic-20261119.json`.
+
+The theorem preserves the invariant at the normalized equality state, not yet
+at the post-equality successor. It assumes the incoming observed coordinate,
+actual transition, and exact residual clauses/freshness conditions. Empty-result
+branches, concrete native encoding, global family representation, query
+initialization and remaining source paths still require assembly. Both actual
+helper-return contracts and justified recursion remain open; all four broad
+obligations remain incomplete. Production/generated checking logic and retained
+residual are unchanged; no production replay was run.
+
+
+### M1: post-equality combined invariant preservation (2026-11-19)
+
+`LP_Prolog_Observer_Output_Equality_Preservation` establishes the actual attached
+equality successor's combined invariant independently of residual representation.
+It retains caller-slot coverage, finite execution, ground restricted replacements,
+subterm coverage and the actual joint/caller transition correspondence. The
+scalar specialization uses the original parameter replacement set and requires
+initial-parameter groundness; success and failure preserve saved alternatives.
+No output-freeness or successful-return assumption is added.
+
+The existing output equality contract now invokes this shared preservation result.
+Isabelle rechecked that contract and the four-row equality-module assembly,
+without skipped proofs or oracles. The prior module receipts remain byte-identical.
+Positive and missing-slot-negative caller-coverage controls pass, as do five
+executable source controls (success, sharing, compound-output rejection, rollback,
+noninteger evaluation error). Evidence:
+CeTA `docs/data/source-output-equality-preservation-20261119.json`.
+
+This discharges post-equality invariant preservation under the stated actual-step
+and coverage conditions. Global return-coordinate correspondence, concrete native
+encoding, full-family initialization/preservation across remaining rows/acquired
+blocks, both actual Split return contracts and justified recursion remain open.
+All four broad obligations remain incomplete. CeTA proof theories changed;
+production executables, generated checking logic and retained residual did not.
+No production replay was run.
+
+
+### M1: actual equality result and global return coordinates (2026-11-19)
+
+`Global_Equality_Return_Check` connects successful scalar unification to the
+retained global success/return path. The selected output after the actual MGU
+is the scalar. Its restricted leaf history is preserved using the original
+parameter replacement set; uniqueness of runtime structure allows the existing
+scalar observation to serve as the output observation. The combined theorem
+returns the actual substituted value twice and that same structural coordinate
+twice. It requires finite pending goals, initial-parameter groundness, the incoming
+leaf effect and the existing scalar observation; none are inferred from residual
+termination.
+
+Isabelle checked the combined result without skipped proofs or oracles. The
+certificate audit checks both success and return clauses and their empty-prefix
+triples in original/renamed artifacts, rejecting an old-output shadow substituted
+for the scalar shadow, a malformed return duplicate and a missing return call.
+Two path cases and six negative controls pass. Evidence:
+CeTA `docs/data/source-global-equality-return-20261119.json`.
+
+This connects the successful equality fragment to its actual return coordinates.
+It does not authenticate either complete helper-return contract: source return
+emission, caller continuation, failure-path global representation, concrete native
+encoding and the full family invariant/initialization remain to be assembled.
+All four broad obligations remain incomplete. Production/generated checking logic
+and retained residual are unchanged; no production replay was run.
+
+
+### M1: assembled global arithmetic/equality answer contract (2026-11-19)
+
+`Global_Equality_Contract_Check` assembles actual singleton equality against the
+retained global success/return clauses. It handles successful unification and
+failure, preserves the combined invariant, and passes actual scalar, parameter,
+restricted leaf and finite caller facts into an explicit continuation contract.
+It does not require the impossible strict links in the old local residuals.
+
+`Global_Arithmetic_Contract_Check` composes arithmetic normalization, its global
+residual path, helper-interface rebasing and that equality contract. The source
+valuation's output observation stays unchanged; the evaluated scalar supplies
+its fresh observation. Rebased helper slot 0 equals the old helper slot 2, and
+attached caller execution is preserved. Both successful and failed arithmetic/
+equality behavior are covered by the existing answer-contract semantics. The
+original restricted parameter replacement set is retained.
+
+Isabelle checked both contracts without skipped proofs or oracles. Five executable
+source controls pass; renewed original/renamed audits cover four arithmetic path
+cases and two return path cases, with eighteen negative controls. Evidence:
+CeTA `docs/data/source-global-arithmetic-equality-contract-20261119.json`.
+
+The caller continuation is still an actual answer-contract premise, not discharged
+by this assembly. Required incoming observations, covered caller slots, initial
+parameter groundness, exact clauses and coordinate conditions remain explicit.
+The fixture's structural encoder is still abstract. Full source-family integration,
+query initialization, other rows/acquired blocks, both complete helper-return
+contracts and justified recursion remain open. All four broad obligations are
+incomplete. Production/generated checking logic and retained residual are
+unchanged; no production replay was run.
+
+
+## Retained global symbol translation audit (2026-11-19)
+
+The complete JSON subjects match their pinned XML residuals under the native
+role/arity/data naming scheme: all 117 clauses and 104 triples in each of the
+original and renamed variants, including all 15 nonempty ordered prefixes.
+The executable audit rejects nine mutations per variant (role, data symbol,
+sharing, missing clauses/triples, clause order, arity and missing/reordered
+prefixes); whitespace-only serialization remains accepted.
+
+This discharges an artifact-correspondence check, not a semantic source proof.
+The abstract observation encoder still needs a native instantiation for arbitrary
+permitted finite constructors and scalar values, preserving sharing and incoming
+valuations. The existing symbol-map path theorem transports supplied paths; it
+does not establish that instantiation or helper returns. All four broad M1
+obligations remain open; neither Split return contract is authenticated.
+Production code, generated checking logic and certificates are unchanged.
+
+Evidence: [symbol translation audit](data/source-global-symbol-translation-20261119.json).
+
+
+## Concrete structural observation encoding (2026-11-19)
+
+`Native_Structural_Encoding_Check.thy` defines the escaped structural data naming
+scheme on arity-qualified shared-source labels. Kernel-checked substitution and
+structural-equation preservation now feed a runtime-observation bridge and a
+concrete instance of the arithmetic/equality answer contract. Runtime observations
+and restricted leaf effects remain explicit premises. The substitution result
+handles arbitrary finite terms and repeated variables without enumerating labels.
+
+Eight executable name comparisons match the pinned original residual, and an
+arity-collision negative passes. These literal comparisons are executable checks,
+not kernel theorems. Symbolic-variable preservation and rejection of treating a
+symbolic variable as an observed leaf are kernel checked. No skipped proofs or
+oracles occur in the checked results.
+
+Broad obligation 1 remains incomplete: source signature correspondence and
+original-query initialization, all-row integration, and runtime-data coordinate
+transport remain open. In particular, mapping structural symbols alone does not
+map runtime constructors into the retained residual alphabet. The conditional
+contract still requires its incoming observation and caller continuation. The
+other three broad obligations remain open, including both Split returns.
+Production code, generated checking logic and retained certificates are unchanged.
+
+Evidence: [native structural encoding](data/source-native-structural-encoding-20261119.json).
+
+
+## Runtime residual signature transport (2026-11-19)
+
+`Global_Runtime_Signature_Check.thy` reuses the existing signature simulation to
+transport complete residual tuples, strict paths and answer contracts into the
+checker symbol type. The arithmetic/equality boundary retains its source runtime,
+combined observer invariant and exact caller execution. The native arithmetic
+contract is instantiated under this transport; its incoming observation and
+caller continuation remain premises. Lifting a string-symbol program through
+`LPCUser` and transporting it yields exactly its `UnLab` representation.
+This closes the local runtime-alphabet transport issue without requiring source
+runtime constructors to occur as patterns in the residual program.
+
+Justified observations now discharge groundness at residual query coordinates
+3, 4 and 5 after transport. Runtime arguments need not be ground. Kernel controls
+preserve sharing and distinct variables, admit a free runtime value with a ground
+observation, and reject a free structural shadow. All results are checked without
+skipped proofs or oracles.
+
+The executable dependency audit confirms that both retained 117-clause programs
+have exactly the supplied 104 dependency triples as sets, with their complete
+ordered successful prefixes. The renamed artifact reorders the triple list.
+Eight negative mutations are rejected; triple reordering and removal of an unused
+duplicate remain positive controls. This audit is not a kernel instantiation of
+the certificate and is not fresh production replay.
+
+Broad obligation 1 remains open: paired observations and restricted parameter
+facts still need integration across the other retained/acquired rows, recursive
+entries and saved alternatives, together with original-query initialization.
+Both helper-return contracts and justified recursive assembly remain open.
+Production code, generated checking logic and retained certificates are unchanged.
+
+Evidence: [runtime signature transport](data/source-global-runtime-signature-20261119.json).
+
+
+## Actual copy-step observations (2026-11-19)
+
+`Global_Copy_Observation_Check.thy` proves combined observer preservation through
+the actual attached repeated-parameter copy step, including failure rollback,
+finite caller execution and output aliasing. Successful resolution copies the
+tracked parameter and reuses its structural observation with the actual output's
+restricted leaf history. This covers compound ground parameters as well as
+scalar parameters; groundness alone is not used as a substitute for tracking.
+
+The actual copied value is connected to both retained success shapes: six to two
+coordinates (35:2 to 35:5), and ten to six (0:22 to 0:25). The latter keeps the
+saved parameter's groundness explicit. Complete successor representation,
+functor-coordinate observations and full row/continuation assembly remain open.
+The free-or-ground helper-output mode is an explicit local condition; this does
+not restrict the original query's arbitrary finite output terms.
+
+All results pass kernel checking without skipped proofs or oracles. Both shapes
+are audited in original and renamed residuals, including their empty-prefix
+triples; 16 wrong-coordinate, collision and missing-call mutations are rejected.
+Ten caller-copy and seven partial-copy source controls pass, including compound
+parameters, repeated sharing, failure restoration and outputs outside the local
+helper mode. No production code, generated checking logic or certificate changed.
+All four broad obligations remain incomplete, including both helper-return
+contracts and justified recursive assembly.
+
+Evidence: [actual copy observations](data/source-global-copy-observation-20261119.json).
+
+
+### M1 copy-successor payload and observations (2026-11-19)
+
+`Global_Copy_Successor_Check.thy` closes the copy-successor payload and
+functor-observation premises identified in the preceding entry. Successful
+nil-copy resolution and the incoming functor relation force the constructed
+value and constructor name to be nullary. Both are therefore fixed by the
+actual substitution. In region 0, V3 is the constructor name; the preceding
+entry's “saved parameter” wording referred to this coordinate, not a second
+tracked numeric parameter.
+
+The checked coordinate transport preserves the successor functor fact and the
+entire three-slot helper return environment for 0:22→25. The corresponding
+return-environment equality is also checked for 35:2→5. The ten-to-six residual
+step now uses the actual successor valuation and reuses incoming name/functor
+observations; no fresh successor functor observation is assumed. Actual MGU,
+tracked parameter, finite spine, coordinate maps and prefix bounds remain
+explicit premises. Observation transport additionally retains output mode,
+finite pending goals and authenticated incoming leaf effects/observations.
+
+The resident Isabelle kernel checks all four results without skipped proofs or
+oracles. The executable audit covers both source variants and rejects 16
+mutations of bindings, payloads, prefixes and functor facts. Five source controls
+pass, including atomic returns with compound ground parameters and rejection of
+nonempty copy-head inputs and mismatching outputs. These audits do not replace
+kernel checking of complete row contracts.
+
+All four broad obligations remain open: invariant integration has advanced;
+remaining row contexts, paths and boundaries need assembly; neither Split 30 nor
+44 has an authenticated full return contract; recursive family assembly is
+unproved. Next: assemble the copy-row context conditions with these payload and
+observation results. Production code, generated checking logic and certificates
+are unchanged; no production replay or source YES is claimed.
+
+Evidence: [copy successor](data/source-global-copy-successor-20261119.json).
+
+
+### M1 actual copy-success contexts (2026-11-19)
+
+`Global_Copy_Context_Check.thy` derives the retained success-context shapes
+from actual copy resolution and checked coordinate maps. At 35:5 it proves
+the ground-parameter observation and empty-list shape together with the total
+return-environment equality. At 0:25 it proves both ground coordinates, the
+reflexive equation, empty-list shape, retained functor fact and total return
+environment. No target context is assumed. The opaque guards have their existing
+nonrestrictive semantics; they are not interpreted as successful builtin calls.
+
+All five component/assembly results pass resident Isabelle kernel checking
+without skipped proofs or oracles. `audit_copy_contexts.py` checks these exact
+context shapes in both original and renamed fixtures, including empty facts,
+free-variable and separation lists, and rejects 20 mutations. The audit checks
+artifact correspondence, not a full source-row theorem.
+
+This closes the ordinary success-context premises for the two copy shapes.
+Additional recursive node conditions, failure alternatives and complete node
+contracts still need assembly with the joint invariant and residual observations.
+The invariant-integration obligation remains incomplete; remaining paths and
+boundaries, both actual Split contracts (30 and 44), and justified recursive
+assembly remain open. Production code, certificates and generated checker are
+unchanged; no replay or new source YES is claimed.
+
+Evidence: [copy-success contexts](data/source-global-copy-context-20261119.json).
+
+
+### M1 singleton copy-choice answer contract (2026-11-19)
+
+`Global_Copy_Contract_Check.thy` assembles the actual joint copy step,
+leaf/finiteness/alias preservation and six-to-two residual step into an answer
+contract for the retained 35:2 singleton choice. Successful resolution passes
+the actual substituted cut-body state, preserved joint invariant and copied
+output observation to an explicit continuation answer contract. Failure empties
+the local helper, so its answer contract is discharged without a success premise.
+This failure argument requires a singleton stack with no pending goals; it does
+not discard saved alternatives in a general helper state.
+
+The theorem is kernel checked without skips or oracles. The state audit checks
+both original and renamed singleton source states, repeated-parameter nil heads,
+cut bodies, success states and empty failure states. Ten mutations are rejected,
+including an added saved alternative or pending goal, a changed repeated head,
+a missing cut and a nonempty failure target. Fifteen existing source controls
+pass. Earlier residual-coordinate audits supply fixture correspondence for the
+six-to-two clause; the theorem retains exact clause membership as a premise.
+
+The successful cut continuation remains an actual answer-contract obligation,
+not a recursive reference counted as discharged. Full node-contract assembly,
+the ten-to-six copy contract, derived helper mode and all-family invariant
+integration remain open. All four broad obligations remain incomplete; neither
+Split 30 nor 44 is authenticated. Production code, generated checking logic and
+certificates are unchanged; no production replay or source YES is claimed.
+
+Evidence: [copy-choice contract](data/source-global-copy-contract-20261119.json).
+
+
+### M1 tracked copy cut/return continuation (2026-11-19)
+
+`Global_Copy_Return_Check.thy` discharges the administrative singleton cut
+continuation left by the six-to-two copy-choice contract. The cut preserves the
+actual caller environment and activates its pending goals. Output aliasing
+supplies the copied value at the caller coordinate; the joint invariant supplies
+all caller leaf effects and finite execution. The tracked parameter premise is
+retained explicitly, so compound ground incoming parameters are supported
+without inferring tracking from groundness or requiring integer/scalar typing.
+
+`global_simple_copy_caller_contract` composes this result with actual copy
+resolution and its strict residual success step. Its remaining continuation is
+the caller's answer contract, receiving the copied value, parameter tracking,
+authenticated output observation, leaf effects and finiteness. No successful
+cut-state contract is left as a premise. A helper-output coordinate equality is
+explicit. The singleton restriction is essential: this theorem does not model
+arbitrary pruning of saved helper frames.
+
+Both results pass resident kernel checking with no skips or oracles. The
+singleton source-state audit again passes both variants and rejects ten mutated
+states. Seven source controls pass: compound returns, shared caller coordinates,
+list-spine preservation, caller failure, caller-alternative restoration, absence
+of leaked bindings and noninteger compound parameters. These controls do not
+prove an arbitrary caller contract or the complete source-to-residual return
+boundary. That boundary and all-family assembly remain open.
+
+Invariant integration advances but remains incomplete. Other paths/boundaries,
+both actual helper-return contracts and justified recursive assembly remain
+open. Production code, generated checker and certificates are unchanged; no
+production replay or source YES is claimed.
+
+Evidence: [tracked copy return](data/source-global-copy-return-20261119.json).
+
+
+### M1 zero-interface copy boundary (2026-11-19)
+
+The retained copy successes 0:25 and 35:5 enter module 28 through a zero-argument
+residual call. Module 28 has empty helper payloads and a zero-argument return
+symbol. `Copy_Empty_Interface_Check.thy` identifies a concrete assembly hazard:
+rebasing to `lpc_return_env []` makes every helper coordinate `LPCTruth`, so the
+existing helper/caller output alias holds only when the caller output is also
+that value. The kernel rejects this rebasing for a compound copied parameter;
+a truth-valued alias is the positive control. Caller projection itself remains
+unchanged. This is an obstruction to that rebasing route, not to source
+termination or the previously checked direct copy contracts.
+
+`Global_Copy_Boundary_Check.thy` provides an alternative conditional composition:
+retain the original joint runtime interface, use the checked singleton cut/caller
+contract, and compose the residual boundary, cut and return edges. The resulting
+contract transfers the parameter, tracking, caller leaf effects and finiteness
+to a caller contract at the zero-argument module return. The residual path does
+not authenticate a value erased from its coordinates. Caller termination and
+answer coverage remain an explicit premise; no recursive premise is discharged
+by this construction.
+
+Both theories pass kernel checks without skips or oracles. The artifact audit
+matches all three edges and their empty-prefix triples for both copy shapes in
+both original and renamed residuals. It checks module 28's empty payloads and
+rejects 20 mutations (missing boundary/cut/return, invented output and wrong
+return target). The renamed audit uses the recorded symbol transformation.
+
+Invariant integration remains incomplete: full-family assembly must select this
+composition or provide a separately justified interface invariant instead of
+assuming alias-preserving empty-payload rebasing. The ten-to-six entry contract,
+other paths/boundaries, both actual Split return contracts and justified
+recursive assembly remain open. Production code, generated checker and
+certificates are unchanged; no production replay or source YES is claimed.
+
+Evidence: [zero-interface copy boundary](data/source-copy-empty-interface-20261119.json).
+
+
+### M1 ten-to-six copy entry and caller contract (2026-11-19)
+
+`Global_Functor_Copy_Contract_Check.thy` assembles the 0:22 ten-to-six copy
+entry into a conditional answer contract. Success uses the actual MGU and the
+incoming functor relation: nil-copy resolution forces the argument list empty,
+so the constructor name and constructed value are nullary and fixed by the
+substitution. Their existing observations are reused, while the copied output
+receives the authenticated parameter observation with its own leaf history.
+The full joint invariant is preserved. Singleton local failure is discharged.
+
+A second theorem composes this entry with the checked singleton cut/caller rule.
+Its remaining continuation is the caller's answer contract at the six-coordinate
+success subject, carrying the actual copied parameter, tracking, output
+observation, leaf effects and finite execution. The helper-output coordinate
+and free-or-ground mode remain explicit. The separate checked zero-interface
+boundary composition is available but still needs full-family integration;
+these theorems do not assume alias-preserving empty-payload rebasing.
+
+Both theorems pass resident kernel checks without skips or oracles. The original
+and renamed singleton source rows pass an exact shape audit with ten rejected
+mutations. The existing successor payload audit passes four cases and rejects
+16 mutations. Twelve source controls pass, including compound parameters,
+constructor facts, caller sharing and failure restoration. Full row/family
+assembly and both Split contracts remain open. No production code, generated
+checker or certificate changed; no replay or source YES is claimed.
+
+Evidence: [ten-to-six copy contract](data/source-global-functor-copy-contract-20261119.json).
+
+
+### M1 copy mode and output effect from the joint invariant (2026-11-19)
+
+`Global_Copy_Invariant_Check.thy` removes the separate helper-output mode and
+output leaf-effect premises from the composed caller contracts for both copy
+shapes. The joint invariant supplies the caller slot's leaf history; helper/caller
+aliasing and the explicit helper-output coordinate transfer it to the actual call
+output. A leaf-shaped observation at that caller slot supplies free-or-ground
+mode. Groundness of allowed replacements follows from the tracked parameter's
+initial-ground condition, not from a new integer restriction.
+
+The two integrated contracts retain the observed-slot memberships, helper
+coordinate, tracked parameter, finite spine, caller coverage and residual clause
+conditions. Incoming parameter/name/functor observations and the caller answer
+contract remain explicit as applicable. Initializing these observed slots at all
+recursive entries and assembling the full source family are still obligations.
+The local helper mode does not restrict the original query's arbitrary finite
+output terms or the caller's other observed terms.
+
+All six results pass resident kernel checking without skips or oracles. Kernel
+controls accept a free helper output and a compound ground output, and reject a
+partially instantiated compound output from this local mode. Seventeen existing
+caller/partial-copy source controls pass, including output sharing, saved-state
+restoration and partial caller terms outside the helper mode.
+
+Invariant integration advances but remains incomplete. Remaining paths and
+boundaries, both actual Split contracts and justified recursive assembly remain
+open. Production code, generated checker and certificates are unchanged; no
+production replay or source YES is claimed.
+
+Evidence: [copy invariant integration](data/source-global-copy-invariant-20261119.json).
+
+
+### M1 actual recursive Split observer initialization (2026-11-19)
+
+`Recursive_Split_Observer_Check.thy` instantiates the existing prefix observer
+initialization on the retained Split 30 and 44 payloads. Split 30 uses caller
+slots helper/tail/output = 1/2/3 in `[V1,V2,V3,V4]`; Split 44 uses 0/1/2 in
+`[V2,V3,V4]`. Both helper interfaces are `[V0,V1,V2]` with output index 2.
+The resulting observed lists contain the helper leaf, the finite tail spine and
+an arbitrary finite caller-output tree. The theorem establishes the joint
+invariant, exact caller-slot coverage, helper-output mode and output leaf effect.
+
+Two further theorems compose these initializations with the existing checked
+recursive cons-resolution rule. Their premises are the actual MGU, checked
+recursive coordinate map, incoming finite call/list spine and tracked parameter;
+the recursive partial-entry property is derived rather than assumed. Helper and
+tail predicate symbols remain parameters of the instantiated runtime. This
+initializes the entry state, not every subsequent helper path or a full Split
+answer contract.
+
+All four results pass resident kernel checks without skips or oracles. The
+retained prefix/interface audit passes original and renamed fixtures. Exported
+coordinate checks pass 12 positive controls and reject 48 mutations across both
+variants, including missing/wrong roles, out-of-range indices, aliases and forged
+caller values. Nine partial-caller source controls pass, including fresh helper
+output, partial caller terms, sharing and restoration after failure.
+
+Invariant integration remains incomplete: all-path preservation and family
+assembly still need proof. Remaining paths/boundaries, both actual helper-return
+contracts and justified recursive assembly remain open. Production code,
+generated checker and certificates are unchanged; no replay or source YES is
+claimed.
+
+Evidence: [recursive Split observer initialization](data/source-recursive-split-observer-20261119.json).
+
+
+### M1 actual cons-step joint invariant preservation (2026-11-19)
+
+`Global_Cons_Invariant_Check.thy` closes the joint-invariant preservation
+obligation for actual cons-head resolution (retained rows 0:23 and 35:3).
+It combines the checked attached cons leaf/finiteness rules with the actual
+joint transition and alias preservation. Given the incoming joint invariant,
+proper list spine, tracked parameter, distinct head variables and covered
+caller slots, every attached step is silent and yields an actual joint child
+whose caller projection is exactly the result and whose full invariant holds.
+The rule permits pending goals and saved frames and covers backtracking as well
+as successful resolution. Finiteness of the call and pending caller goals is
+derived from the joint invariant; allowed-template groundness comes from the
+tracked initial parameter.
+
+This is the preservation component required for cons node assembly, not a
+complete residual observation or node contract. Recursive-entry initialization
+was connected separately in the preceding entry. Cons successor structural
+observations, full source contexts and family composition remain to be joined.
+
+The result passes resident kernel checking without skips or oracles. Existing
+exported source-row/coordinate checks pass both original and renamed fixtures:
+22 positive controls and 42 rejected mutations, including missing bindings,
+wrong clause prefixes, invalid fresh-output coordinates and uncovered caller
+slots. Nine partial-entry source controls pass. These fixture checks establish
+structural premises, not complete source acceptance.
+
+Invariant integration remains incomplete. Remaining paths/boundaries, both
+actual helper-return contracts and justified recursive assembly remain open.
+Production code, generated checker and certificates are unchanged; no production
+replay or source YES is claimed.
+
+Evidence: [cons joint invariant](data/source-global-cons-invariant-20261119.json).
+
+
+### M1 actual cons child observations (2026-11-19)
+
+`Global_Cons_Observation_Check.thy` authenticates the head/tail structural
+observations required by the retained cons-success clauses. A proper input spine,
+actual successful linear cons MGU and finite selected call supply a matching
+witness. The checked matching-structure theorem then establishes finite template
+renaming; it does not assert unchanged runtime variable identities. The incoming
+input tree decomposes into the exact trees of actual `rho x` and `rho y`.
+
+The second theorem connects this decomposition to the residual encoding:
+the incoming shadow is exactly node(label(cons), cons(head-shadow,
+cons(tail-shadow,nil))). Both child shadows have authenticated observations of
+the actual resolved values, with new child histories initialized at their current
+trees. This does not establish arbitrary earlier child histories or infer output
+groundness. The encoder remains a parameter and can be the checked native one.
+
+Both results pass resident kernel checks without skips or oracles. The exact
+retained shadow decomposition and child-routing audit passes both cons clauses
+in original and renamed residuals (four cases) and rejects 20 mutations: wrong
+label, missing nil, swapped children, wrong child route and missing child.
+Remaining successor coordinates, especially the fresh helper output and the
+extra functor coordinates, still require integration before a complete residual
+step or cons-node contract is established.
+
+Invariant integration remains incomplete. Remaining paths/boundaries, both
+actual helper-return contracts and justified recursive assembly remain open.
+Production code, generated checker and certificates are unchanged; no production
+replay or source YES is claimed.
+
+Evidence: [actual cons observations](data/source-global-cons-observation-20261119.json).
+
+
+### M1 actual fresh helper-output observation (2026-11-19)
+
+`Global_Fresh_Output_Observation_Check.thy` derives the fresh body-only output's
+observation at the actual successor valuation built from the resolution MGU and
+checked coordinate bindings. The output is a runtime variable, its encoded
+observation is the nullary structural leaf, and its support is disjoint from the
+instantiated selected call. Runtime freeness is not confused with the ground
+structural leaf constructor; a kernel control checks their inequality.
+
+The cons-specific theorem derives the required finite instantiated call from
+successful linear cons resolution, a proper input spine and the incoming finite
+call. It does not assume output groundness or a fresh successor observation.
+Separation is from the instantiated selected call only; values outside that call
+need their own caller coverage/separation reasoning. The existing initializer
+already treats partial caller outputs separately.
+
+All three results pass resident kernel checks without skips or oracles. Existing
+exported checks for the two actual cons rows pass in original and renamed
+fixtures: 22 positive controls and 42 rejected mutations, including wrong/missing
+fresh-output bindings, head parameters used as fresh outputs, omitted body
+occurrences and output maps redirected to the parameter. Nine partial-entry
+source controls pass. These are structural-premise controls, not whole-source
+acceptance.
+
+Invariant integration remains incomplete. Other cons successor coordinates,
+the complete residual step and full node/family assembly remain open, as do both
+actual helper-return contracts and justified recursive assembly. Production
+code, generated checker and certificates are unchanged; no production replay or
+source YES is claimed.
+
+Evidence: [fresh helper-output observation](data/source-global-fresh-output-observation-20261119.json).
+
+
+### M1 five actual cons-successor observations (2026-11-19)
+
+`Global_Cons_Output_Check.thy` transports the tracked parameter and caller-output
+observations through actual linear cons resolution. Parameter groundness fixes
+its value, while a finite matching-template renaming preserves the caller-output
+structure. The caller output may be partially instantiated and shared; neither
+runtime identity preservation nor output groundness is assumed. Its prior
+observation and leaf history are retained.
+
+`cons_five_successor_observations` combines this transport with the checked
+head/tail decomposition and fresh body-output observation. Checked clause/body
+coordinate maps place all five results at the actual successor valuation:
+head, tracked parameter, fresh helper output, tail and caller output. The
+incoming list-shadow decomposition is retained in the same conclusion. Head and
+tail histories initialize at their current trees; parameter/output histories
+retain their authenticated predecessors.
+
+All three results pass resident kernel checking without skips or oracles.
+`audit_cons_five_coordinates.py` checks the five mappings for both actual cons
+rows in original and renamed inputs (four cases) and rejects 40 missing/wrong
+mappings. Nine partial-entry source controls pass. The result supplies the five
+observation coordinates of the simple six-to-ten residual successor, but does
+not yet prove that entire residual step. The larger successor's two extra
+functor/name coordinates and full row/family assembly remain open.
+
+Invariant integration remains incomplete. Remaining paths/boundaries, both
+actual helper-return contracts and justified recursive assembly remain open.
+Production code, generated checker and certificates are unchanged; no production
+replay or source YES is claimed.
+
+Evidence: [five cons successor observations](data/source-global-cons-output-20261119.json).
+
+
+### M1 actual six-to-ten cons success simulation (2026-11-19)
+
+`Global_Cons_Residual_Check.thy` connects the five authenticated successor
+observations to the complete retained six-to-ten residual success clause for
+35:3→7. The exact clause uses 13 distinct formal variables and the encoded cons
+shadow pattern. Its target values are instantiated with the actual successor
+valuation from checked source coordinate maps, including the free helper output
+and its structural leaf observation. The assembled theorem retains parameter
+identity/tracking and all five observation facts together with strict residual
+descent. Source runtime and residual observation variable types are explicitly
+aligned for the leaf constant.
+
+Both results pass resident kernel checks without skips or oracles. The exact
+clause and empty-prefix triple audit passes original and renamed residuals,
+rejecting 12 mutations of variable freshness, shadow routes, the call and the
+required triple. The five-coordinate audit also passes four source cases and
+rejects 40 missing/wrong mappings. The former audit is specific to the simple
+six-to-ten shape; the latter additionally checks the shared five-coordinate
+portion of the larger cons successor.
+
+This closes the local successful residual simulation, not a complete source
+node contract. Failure handling, source-context/return-payload assembly and the
+larger ten-to-fourteen successor remain open. Invariant integration is still
+incomplete, as are remaining paths/boundaries, both actual helper-return
+contracts and justified recursive assembly. Production code, generated checker
+and certificates are unchanged; no production replay or source YES is claimed.
+
+Evidence: [six-to-ten cons success simulation](data/source-global-cons-residual-20261119.json).
+
+
+### M1 simple cons successor context and total payload (2026-11-19)
+
+`Global_Cons_Context_Check.thy` proves that the actual 35:3→7 successor
+return environment equals the source return environment after the actual MGU
+substitution, including coordinates outside the three-element interface. Checked
+coordinate maps carry the head, tail, parameter and output. The incoming tracked
+parameter remains unchanged and tracked; the proper list spine survives
+substitution. These facts establish the successor ground/shape context. The
+checked fresh body-output map establishes the successor free coordinate without
+assuming the caller output is ground. This is a conditional local interface
+result, not a successful helper-return contract or a complete source node.
+
+The resident kernel check passes without skips or oracles. Original and renamed
+payload/context audits pass and reject 16 mutations. The five-coordinate audit
+passes four cases and rejects 40 mutations; all nine partial-entry source
+controls pass. Invariant integration remains incomplete. Remaining paths and
+boundaries, both actual Split return contracts (30 and 44), and justified
+recursive assembly remain open. Next is complete simple-cons node assembly,
+including its failure path; the larger cons successor is also outstanding.
+Production code, generated checker and certificates are unchanged; no production
+replay or source YES is claimed.
+
+Evidence: [simple cons context and payload](data/source-global-cons-context-20261119.json).
+
+
+### M1 simple cons choice answer-contract composition (2026-11-19)
+
+`Global_Cons_Contract_Check.thy` assembles the actual simple cons transition into
+an answer contract. The singleton failure case empties the attached local state
+and has a vacuous answer contract. Success preserves the joint observer invariant,
+uses all five actual successor observations and strict six-to-ten residual
+descent, and supplies the total return-payload equality, tracked parameter,
+ground/list-shape context and fresh-output fact to the continuation interface.
+Call finiteness is derived from the incoming invariant. The successful
+continuation contract remains an explicit premise; this theorem does not
+self-discharge recursion or close the observer family.
+
+The resident kernel check passes without skips or oracles. Original/renamed
+singleton-state, linear-head, two-call-body and empty-failure audits reject ten
+mutations. Context/payload audits reject 16, and exact residual clause/triple
+audits reject 12. Six executable source controls cover compound-parameter and
+partial-output success, empty-input cons failure, suppressed caller continuation,
+a failing continuation and incompatible output. The source controls use the
+actual recursive clause and are examples, not kernel proof evidence.
+
+Invariant integration/preservation remains incomplete, though its simple cons
+choice composition is now checked. Remaining paths/boundaries, both actual
+Split return contracts (30 and 44), and justified recursive assembly remain
+open. The larger cons successor and the connection from the explicit successful
+continuation to the observer-family induction remain outstanding. Production
+code, generated checker and certificates are unchanged; no production replay
+or source YES is claimed.
+
+Evidence: [simple cons answer contract](data/source-global-cons-contract-20261119.json).
+
+
+### Development checkpoint and comparison handoff (2026-11-19)
+
+The numbervars source-specific proof campaign is paused. Broad invariant
+integration, both Split return contracts and recursive family assembly remain
+open. No source YES or production promotion is claimed. Further work must
+justify a reusable native mechanism across multiple roots before resuming
+source-specific proof development. Existing proofs and evidence are retained
+as development material.
+
+The final `Global_Cons_Functor_Check.thy` resident check completed successfully
+without skipped proofs or oracles: actual functor-coordinate/payload transport
+and structural observation preservation are checked. This does not close the
+larger cons residual or node contract.
+
+A read-only comparison downloaded the 221 files linked by the official
+TermCOMP 2025 Prolog table from TPDB 11.5. All matched the campaign hashes
+and local bytes. Against AProVE's 158 YES, the cross-table is: 72 Ferrum YES,
+75 Ferrum NO, 11 UNKNOWN; against the 63 competition-unsolved roots: 18 YES,
+22 NO, 23 UNKNOWN. Thus 187 versus 158 is a numerical coverage comparison,
+not established identical-semantics superiority. The 75 opposite verdicts
+require classification. Historical competition policy permits either occurs-check
+convention with consistent proofs; arithmetic and library compatibility remain
+unresolved. Official logs inspected for nonterm.pl, avg-true-c.pl and
+rec-counter1-c.pl confirm that the comparison needs semantic qualification.
+
+Sources: https://termcomp.github.io/Y2025/Prolog.html and
+https://termination-portal.org/wiki/Logic_Programming . The comparison was
+computed in-session; no new campaign or archived per-root comparison manifest
+is claimed. Preserve the existing certified baseline.

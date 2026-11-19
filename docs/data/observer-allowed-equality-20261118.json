@@ -1,0 +1,20 @@
+{
+  "source_certified": false,
+  "files": {
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Attached_Allowed_Equality.thy": "b9e478b3c449dc976a1f3bd1ab6271380047749741d5c69a7139ba17870b7378",
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Allowed_Equality.thy": "3cd171bd984e7e85d8f450fa46ded49d555c87c4f1f5683bb50c6da385abd183",
+    "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Observer_Allowed_Equality_Contract.thy": "a8c76de30305f23857fc82f95f691f9e5baadcf4307f822051e7fd417b752983",
+    "/work/dfm/festschrift/CeTA-prolog-release/target/observer-family-assembly/observer-allowed-equality-kernel-receipt.txt": "67df648ef275194a74b14f9b79dc14b85b0e582127285d3217ca012b28ec8c78"
+  },
+  "kernel_checked": true,
+  "scope": "Restricted replacement transport is composed with the existing checked source equality row, strict residual simulation, attached caller continuation, and recursive answer-contract theorem. Saved alternatives use the shared stack-step semantics.",
+  "explicit_conditions": [
+    "selected runtime value is free",
+    "replacement belongs to the allowed set",
+    "all allowed templates are ground",
+    "existing source context and separation transports",
+    "active continuation coverage and finiteness",
+    "strict residual child contract"
+  ],
+  "remaining": "Authenticate the additional conditions from observer node invariants and integrate restricted dispatch for every required action; both complete Split contracts remain open."
+}

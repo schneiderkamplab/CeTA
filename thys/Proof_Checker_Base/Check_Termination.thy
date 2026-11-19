@@ -4,7 +4,7 @@ Author:  René Thiemann <rene.thiemann@uibk.ac.at> (2013-2015)
 License: LGPL (see file COPYING.LESSER)
 *)
 theory Check_Termination
-  imports Check_Termination_Common RFC_Checker_Ext.RFC_Absolute_Residual_Core
+  imports Check_Termination_Common Checkpoint_DP_Processor RFC_Checker_Ext.RFC_Absolute_Residual_Core
     AAECC_Innermost_Switch QDP_To_SRS_Zantema Rule_Strengthening Sparse_Tiling_Processor
 begin
 
@@ -319,6 +319,7 @@ datatype (dead 'f, dead 'l, dead 'v) dp_termination_proof =
     "(('f, 'l) lab, 'v) cond_red_pair_prf" "('f, 'l, 'v) dp_termination_proof list" 
 | To_Trs_Proc "('f, 'l, 'v) trs_termination_proof"
 | Zantema_To_SRS_Proc "('f, 'l, 'v) trs_termination_proof"
+| Checkpoint_Ranking_Proc "(('f, 'l) lab, 'v) checkpoint_certificate"
 and ('f, 'l, 'v) trs_termination_proof =
   DP_Trans bool bool "(('f, 'l) lab, 'v) rules" "('f, 'l, 'v) dp_termination_proof"
 | Rule_Removal "('f, 'l) lab redtriple_impl" "('f, 'l, 'v) trsLL" "('f, 'l, 'v)trs_termination_proof"
@@ -364,6 +365,7 @@ fun dp_assms :: "bool \<Rightarrow> ('f, 'l, 'v) dp_termination_proof \<Rightarr
   and unknown_assms :: "bool \<Rightarrow> ('f,'l,'v) unknown_proof \<Rightarrow> ('f,'l,'v) assm list" 
   where
   "dp_assms a P_is_Empty = []"
+| "dp_assms a (Checkpoint_Ranking_Proc _) = []"
 | "dp_assms a (Subterm_Criterion_Proc _ _ _ p) = dp_assms a p"
 | "dp_assms a (Gen_Subterm_Criterion_Proc _ _ p) = dp_assms a p"
 | "dp_assms a (Redpair_Proc _ _ p) = dp_assms a p"
@@ -1063,6 +1065,10 @@ where
       tp' \<leftarrow> rfc_matchbox_absolute_bounds_tt J info initial_terms Rr tp;
       check_trs_termination_proof (add_index i 1) tp' prf
     })"
+| "check_dp_termination_proof i dpp (Checkpoint_Ranking_Proc certificate) =
+    debug i (STR ''Checkpoint ranking'')
+    (check (check_checkpoint_dpp I dpp certificate)
+      (i \<circ> showsl_lit (STR '': invalid checkpoint ranking certificate'')))"
   by pat_completeness auto
 
 termination
@@ -2315,6 +2321,10 @@ next
     apply (rule rfc_matchbox_absolute_bounds_tt_sound[OF J tt infinite_lab])
     apply (rule IH(1)[OF _ rec fin])
     using tt by simp
+next
+  case (58 i dpp certificate)
+  have checked: "check_checkpoint_dpp I dpp certificate" using 58 by simp
+  show ?case by (rule check_checkpoint_dpp_sound[OF I checked])
 qed
 
 end

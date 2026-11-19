@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-19",
+  "status": "M1_OPEN",
+  "theorem": "lpp_attached_resolution_common_mgu",
+  "discharged": [
+    "same actual MGU for attached and helper prefix",
+    "explicit joint result and corresponding helper domain step"
+  ],
+  "verification": {
+    "kernel": "Isabelle; no skipped proofs or oracles",
+    "kernel_controls": {
+      "positive": 1,
+      "negative": 1
+    },
+    "retained_sharing_controls": 6,
+    "production_replay": false
+  },
+  "remaining": [
+    "same-MGU checked-row instantiation",
+    "normalization/product assembly",
+    "incoming conditions and global coverage",
+    "parameter/caller-mode integration",
+    "failure paths and boundaries",
+    "both actual helper returns",
+    "justified recursion"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Acquired_Univ_Joint_MGU.thy",
+      "sha256": "d46afa5781673ff453cff236e499965c3a98eb1778a5da570ea9391d58e3c8d6"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Cut_Return_Sequence.thy",
+      "sha256": "51712f50f9f0aebee7a29eb296e5d78111a6f4718b09a352f72b5017509b6302"
+    },
+    {
+      "path": "tests/source-contract-parameters/Acquired_Joint_MGU_Check.thy",
+      "sha256": "76092ec5c8bcca8fbe335e69b49d2c189ff84b6db94319b3782ef18ec880b95a"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Normalized_Univ_Product.pl",
+      "sha256": "63a7a167d9fd4192a54b8196960c0dc7b05215e112f34d378d4bafdb998dc077"
+    },
+    {
+      "path": "target/source-acquired-joint-mgu/kernel-receipt.txt",
+      "sha256": "3e17f274e61835a93fa4ea0774d75526f641e018a77521ef37f3537244feda6c"
+    },
+    {
+      "path": "target/source-acquired-joint-mgu/sharing-controls.log",
+      "sha256": "1ba3e8f6917116e9c07646b7fca1a719dd1ea8a8911ec76db407834a4c9455fa"
+    },
+    {
+      "path": "docs/data/source-actual-acquired-row-20261119.json",
+      "sha256": "11459a56b33e1781e0b1dbac74ef3be385d5b380878749ff10d01b67d5d21d61"
+    }
+  ]
+}

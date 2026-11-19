@@ -1,0 +1,196 @@
+{
+  "schema": "source-recursive-entry-review-v1",
+  "date": "2026-11-19",
+  "source_certified": false,
+  "milestone_1": "OPEN",
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Recursive_Entry.thy",
+      "sha256": "3d4db709528cfc1e567027c723b2fb7d1c806e94a59a6b0625bb47ce6a81294f"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Recursive_Entry_Export.thy",
+      "sha256": "aa695a6536fff631141dcb8d72d12d3a701cf7cb17266b3cb737c8dc8b498838"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Recursive_Entry.ML",
+      "sha256": "510345165e8c200465f69ebfecf9c9d0d19fdb20cc8e1bcb5a39426e68dd252a"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry/kernel-receipt.txt",
+      "sha256": "97d5c0386cce8c0d801d26b67f74ef411131fbfa3efed76b6051c2eb84813bbc"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry/Recursive_Entry_Check.ML",
+      "sha256": "e43ca8b422c1466171646c171cb799883d9e85d529b2a0886168f524abe25185"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-cons-node-20261119.json",
+    "sha256": "f8b24f87916a3dae901417be5b8102c30f05cec1717e594be1fa9dbbc0a51845"
+  },
+  "variants": {
+    "original": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry/original.log",
+        "sha256": "aa73c5f04d362428da617c18fecee3b201f9f57dd080e73f0947a5916539397d"
+      },
+      "positive_checks": 10,
+      "rejection_controls": 18,
+      "boundary_audit": [
+        {
+          "module": 0,
+          "row": 27,
+          "observer_role": "boundary",
+          "local_action": "absent"
+        },
+        {
+          "module": 35,
+          "row": 7,
+          "observer_role": "boundary",
+          "local_action": "absent"
+        }
+      ],
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-0.xml",
+          "sha256": "edc8ded488a1042d65589513d835f8dedba6bf87b5fcfecbf5ea512fc051c535"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-0.xml",
+          "sha256": "cbc9c29a75bdc29de171f391c951981fc3df7ec458addae45606c5b81f534a0c"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-0.xml",
+          "sha256": "12cb749094edd44de2ddee84057414c14133e224498a29f3fda501a57323d967"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/observer-0.xml",
+          "sha256": "64b23c4e3039c7d604518367035af83378e19e6957de8ef85efea92601826e8b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/states-35.xml",
+          "sha256": "dbe84365930caf36dc0b26f2e46cefe2449cff81f50dd95b0c046e9c932b3f31"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/actions-35.xml",
+          "sha256": "04165b6c33f54eef45259bee35eb4ce7518b3f2c65fb215893a4c246aa41db42"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/subject-35.xml",
+          "sha256": "2a946748a054cddde91b23e9556e33fb06889c8959047548ed96ad36ab214d78"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/original/observer-35.xml",
+          "sha256": "2bcc4abbab898c1db333fe210a4a795c702e077f72f529707a6a23807b3dc33d"
+        }
+      ]
+    },
+    "renamed": {
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry/renamed.log",
+        "sha256": "aa73c5f04d362428da617c18fecee3b201f9f57dd080e73f0947a5916539397d"
+      },
+      "positive_checks": 10,
+      "rejection_controls": 18,
+      "boundary_audit": [
+        {
+          "module": 0,
+          "row": 27,
+          "observer_role": "boundary",
+          "local_action": "absent"
+        },
+        {
+          "module": 35,
+          "row": 7,
+          "observer_role": "boundary",
+          "local_action": "absent"
+        }
+      ],
+      "tables": [
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-0.xml",
+          "sha256": "326b9a2319f7405b0c2ec360008ca95f18c2324ef4752347044ef521547d648b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-0.xml",
+          "sha256": "be0944b984b6bd31cdea5e1d74b2d8e24dde3246c437dd01ac5b678cdbd3d6da"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-0.xml",
+          "sha256": "1ac1f42d4c42edec13a2f71eee3d8e640501083bfac71787ae7ea014bcec5abc"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/observer-0.xml",
+          "sha256": "64b23c4e3039c7d604518367035af83378e19e6957de8ef85efea92601826e8b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/states-35.xml",
+          "sha256": "3ebbe4fe237df385c3b9ea00b258739578eb1edb31ea896574f28a9562a897f5"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/actions-35.xml",
+          "sha256": "192d72cb9c5178ec30c64d54d7382280c1a547864c7beb5a667c82e2facb6e6b"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/subject-35.xml",
+          "sha256": "c497e8c577e816c0d8f0b0c2238587200d55405bc18c88841a037dccea0abf00"
+        },
+        {
+          "path": "/work/dfm/festschrift/ferrum-prolog-release/target/source-contract-development/renamed/observer-35.xml",
+          "sha256": "2bcc4abbab898c1db333fe210a4a795c702e077f72f529707a6a23807b3dc33d"
+        }
+      ]
+    }
+  },
+  "kernel_semantic_controls": {
+    "positive": 1,
+    "negative": 2,
+    "description": "Permitted caller sharing with input and tail; rejected aliased outputs and helper occurrence in input. Separate from executable assertion totals."
+  },
+  "actual_edges": [
+    "0:23 -> 0:27",
+    "35:3 -> 35:7"
+  ],
+  "target_roles": {
+    "input": "V0",
+    "parameter": "V1",
+    "helper_output": "V2",
+    "tail": "V3",
+    "caller_output": "V4"
+  },
+  "discharged_interface_obligations": [
+    "Actual recursive successor coordinates jointly carry the tracked parameter, finite input and tail, proper tail spine, distinct free helper/caller outputs and helper separation from input and tail.",
+    "Caller output may share with input and tail; no extra caller separation is assumed."
+  ],
+  "retained_premises": [
+    "Actual successful MGU resolution and checked five-coordinate map.",
+    "Incoming proper spine, finite selected call, tracked parameter and free caller output.",
+    "Incoming facts still require source-family authentication; original query output is not assumed free."
+  ],
+  "scope_limits": [
+    "Conditional entry fragment, not complete successor conditions or module-boundary transfer.",
+    "Structural fixtures do not establish runtime entry premises.",
+    "No return contract, Split discharge, recursive induction closure, source certification or production integration.",
+    "Pinned native extraction tables reused; no fresh extraction."
+  ],
+  "next_obligations": [
+    "Transfer recursive-entry facts through the actual module boundaries with caller contexts.",
+    "Authenticate incoming facts, acquired blocks, actual returns 19:1 and 28:1 and resumed continuations.",
+    "Discharge both Split contracts through justified strict-descent family induction."
+  ]
+}

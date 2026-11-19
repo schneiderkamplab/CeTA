@@ -1,0 +1,39 @@
+{
+  "status": "M1_OPEN",
+  "scope": "Actual fresh helper-output observation and separation, including finite cons instantiation",
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "discharged_local_obligations": [
+    "Checked body-output map and actual MGU yield free successor runtime output",
+    "Actual successor output has encoded leaf observation with initial leaf history",
+    "Output support is disjoint from instantiated selected call",
+    "Cons post-resolution finiteness derived from proper spine, linear head and finite call"
+  ],
+  "required_conditions": [
+    "Actual MGU and checked body-only output coordinate map",
+    "Generic result requires finite instantiated call",
+    "Cons specialization requires proper spine, distinct head variables, matching arity and finite incoming call",
+    "Separation beyond selected call remains separate"
+  ],
+  "coordinate_positive_controls": 22,
+  "coordinate_negative_controls": 42,
+  "source_controls_passed": 9,
+  "production_replay": false,
+  "obligations": {
+    "invariant_integration_preservation": "incomplete; fresh helper-output observation connected to actual successor",
+    "remaining_paths_boundaries": "incomplete; other successor coordinates and full residual/node/family assembly remain",
+    "actual_helper_return_contracts": "both open",
+    "justified_recursive_assembly": "open"
+  },
+  "artifacts": {
+    "tests/source-contract-parameters/Global_Fresh_Output_Observation_Check.thy": "b24e12c2506a4931e70941ff9458f56e22d0904a3d06ac8591439dd9fa7ad862",
+    "tests/source-contract-parameters/Check_Cons_Node.ML": "c72cbe271e5d209614acd3026091eda8c4c800fd6f6a0dfa9dc2d4f3fa699388",
+    "tests/source-contract-parameters/Check_Recursive_Partial_Entry.pl": "f2e565c9258ba2ff5f5f252e7688ad6d3e7ad1c841fa3fe28397b41e4d24e613",
+    "target/source-global-fresh-output-observation/kernel-receipt.txt": "4a94ca05237bea3105308f7aa7cf99605975a0d806290ebf54c0d60f96527832",
+    "target/source-global-fresh-output-observation/original-controls.log": "f94816b51beaf14d721850343ec52633a5811d4c670a305c130bcc336e81ab0b",
+    "target/source-global-fresh-output-observation/renamed-controls.log": "f94816b51beaf14d721850343ec52633a5811d4c670a305c130bcc336e81ab0b",
+    "target/source-global-fresh-output-observation/source-controls.log": "f6d7c6161067d3152e89ef08b35527fe1e7f1d19b2de0be53a11494fa5e7e896",
+    "target/source-cons-node/Cons_Node_Check.ML": "4223c4e49441e23882cdc81af35e04462a53bbdb1ef28d03a0f516fa5bd82d1e"
+  }
+}

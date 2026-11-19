@@ -1,0 +1,36 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "incomplete",
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 5,
+    "production_replay": false
+  },
+  "remaining": [
+    "target node-condition initialization and canonical packaging",
+    "actual source assembly and full preservation",
+    "helper returns and recursive assembly"
+  ],
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Observer_Conditioned_Arithmetic.thy",
+      "sha256": "03602956945639b5ba018ad53bf9bd5636f4e30668e7edbf21ef4b11eb083b6b"
+    },
+    {
+      "path": "tests/source-contract-parameters/Conditioned_Arithmetic_Check.thy",
+      "sha256": "4a3efce84ae648edeed12a82980ec34d4cf9264c5c1a4c862bbdb5701d3fa05b"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Subterm_Arithmetic.pl",
+      "sha256": "61d154c3669622831319eb17b184997d1262e471e9da6c7e8c67c3feb094e4a5"
+    },
+    {
+      "path": "target/source-conditioned-arithmetic/kernel-receipt.txt",
+      "sha256": "5807b476c26b1bd9256fcf13befaa33f8a8b8dac16a5d9a837d6e36736034dcd"
+    },
+    {
+      "path": "target/source-conditioned-arithmetic/source-controls.log",
+      "sha256": "3a5a3eb892f201af85fdafe2a7696dcd3671feb0c84178415ac7cdf64de0e4ac"
+    }
+  ]
+}

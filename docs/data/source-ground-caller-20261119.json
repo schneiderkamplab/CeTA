@@ -1,0 +1,94 @@
+{
+  "schema": "source-ground-caller-review-v1",
+  "date": "2026-11-19",
+  "milestone_1": "OPEN",
+  "source_certified": false,
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Ground_Caller_Continuation.thy",
+      "sha256": "7fc08b270797ea2872085b642e04b8654f26683334e4e28f9f9e7d7bc0c2c8a8"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Ground_Caller_Test.thy",
+      "sha256": "b6fce6944ba333dbf5a576ff027badef82dfc3af6bdbdee113e7e25fd72928fb"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Ground_Caller.pl",
+      "sha256": "4f2f1b28a8f5f9a038a02248a240a23c56e12f3045b1e39869fc532536c6d3ee"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-ground-caller/kernel-receipt.txt",
+      "sha256": "182fef656641dcb05448eb5c4102b5856cbe79d2514214163177cd132f6ffea6"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-ground-caller/prolog.log",
+      "sha256": "e04e56e29fa552500d18917f9aece4b236f0a91314badd801705206c2c06b355"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Shared_Caller_Obstruction.thy",
+      "sha256": "86ea8fc7293f48c378fedb3dcf55f39c4ecb97b042b195e639acbb6113d69ef3"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-shared-caller-obstruction/swipl-version.txt",
+      "sha256": "3ea77e6bd4bc68319e3c43e0dd9895970f2604e191ad7e689d8188b4d8b0997e"
+    },
+    {
+      "path": "/work/dfm/festschrift/TPDB-ARI/Prolog/prolog_mixed/numbervars.pl",
+      "sha256": "4a80e385550b653820f95aa0582c5d45bd37eebd6825f92d4d18b4a42f70d3d7"
+    },
+    {
+      "path": "/usr/lib/swi-prolog/bin/x86_64-linux/swipl",
+      "sha256": "be0c4b8a98f6eed857ddd69543f03c02170b7a63e0cc43cf8cbb5463fcefca61"
+    }
+  ],
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-shared-caller-obstruction-20261119.json",
+    "sha256": "be1b2de9f7385c182e78b477ba02374d01e5ebfb0a27b7477bdd7a5b52c754be"
+  },
+  "verification": {
+    "prolog_assertions": 10,
+    "kernel_fixture_checks": 4,
+    "kernel_rule_checks": 5
+  },
+  "discharged_local_obligations": [
+    "Free-or-ground caller-output mode is preserved under bounded images from a ground replacement set.",
+    "Successful resolution against the repeated-parameter empty-list head with ground parameter and output forces equality and copies that parameter into the clause environment.",
+    "Unequal ground output and parameter exclude resolution against that head.",
+    "On an authenticated proper spine, successful ground-output resolution supplies a matching witness and preserves restricted caller leaf effects under explicit finiteness and support coverage premises."
+  ],
+  "retained_premises": [
+    "Bounded substitution images on actual caller support and groundness of the allowed replacement set.",
+    "Ground parameter/output, proper input spine, finite selected call and active goals, and caller support coverage for the leaf rule.",
+    "No complete saved-stack invariant, failure transition contract, observer-node assembly, Split boundary or actual helper-return contract is discharged."
+  ],
+  "scope_limits": [
+    "The wider caller-output mode is local; arbitrary finite nonground original-query outputs remain outside it.",
+    "The kernel checks the earlier structural counterexample and a concrete ground mismatch; SWI-Prolog separately executes original-source cases.",
+    "Ground mismatch proves absence of successful MGU resolution, not the full source failure-node answer contract.",
+    "The mode does not encode cross-output distinctness or sharing separation; those remain separate obligations."
+  ],
+  "next_obligations": [
+    "Integrate free and ground caller-output cases into the conditional observer-node interfaces.",
+    "Authenticate bounded images and preserve the revised mode plus separation facts through recursive calls and saved alternatives.",
+    "Complete remaining source paths and boundaries, both actual helper-return contracts, and justified family recursion."
+  ],
+  "progress_count": "Four broad remaining M1 obligation groups, not a reliable number of incremental steps: invariant integration/preservation; remaining paths/boundaries; actual returns for both Splits; recursive family assembly.",
+  "development_corrections": [
+    "Replaced a slow unconstrained proof search with explicit use of the successful-resolution theorem; the interrupted search supplied no evidence.",
+    "Corrected Isabelle keyword/notation collisions and fixed the substitution variable type before kernel acceptance."
+  ]
+}

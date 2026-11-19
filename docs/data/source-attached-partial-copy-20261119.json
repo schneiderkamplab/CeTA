@@ -1,0 +1,46 @@
+{
+  "status": "M1_OPEN",
+  "broad_obligation_1": "active",
+  "discharged": [
+    "MGU bounded images over full finite continuation",
+    "outside-output variables remain variables",
+    "actual attached partial-copy leaf transport including failure/saved-frame handling"
+  ],
+  "remaining": [
+    "full node successor finiteness and context integration",
+    "spine preservation and source coverage",
+    "query initialization and whole-family preservation",
+    "helper returns and recursive family discharge"
+  ],
+  "verification": {
+    "kernel": "no skipped proofs or oracles",
+    "source_controls": 7,
+    "production_replay": false
+  },
+  "artifacts": [
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Partial_Copy_Continuation.thy",
+      "sha256": "c2aef83053f828e1e1f40b3c78a74427286212ac7401fe57c8d7d9abeb16dd4a"
+    },
+    {
+      "path": "thys/Logic_Programming/LP_Prolog_Attached_Partial_Copy.thy",
+      "sha256": "a194137ee9760236aacdec616c5aa33f683f61031b38a3f6398459639a2152c2"
+    },
+    {
+      "path": "tests/source-contract-parameters/Attached_Partial_Copy_Check.thy",
+      "sha256": "734095c0400afcc551735ca5f28af93c7d912759187bf957deb47d1626ccc3da"
+    },
+    {
+      "path": "tests/source-contract-parameters/Check_Attached_Partial_Copy.pl",
+      "sha256": "2c750f60288ab75953f9c95e41d3c4dbc5c5ebe21997afc4595202944dd22f6a"
+    },
+    {
+      "path": "target/source-attached-partial-copy/kernel-receipt.txt",
+      "sha256": "b6cc6a2b5297f940ddef29eaf47cd82a1e2bfc775f4aadd18371fa6bcbd0da68"
+    },
+    {
+      "path": "target/source-attached-partial-copy/controls.log",
+      "sha256": "cb1d932d8410891f19ed7758e3b4e834c6505289048c9436eebab71179a6550c"
+    }
+  ]
+}

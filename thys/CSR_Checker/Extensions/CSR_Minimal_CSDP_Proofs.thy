@@ -8759,6 +8759,12 @@ next
     OF "2_26.prems"(1) "2_26.prems"(2) "2_26.prems"(3)
       "2_26.prems"(4) "2_26.prems"(5) "2_26.prems"(6)
       "2_26.prems"(7)]; simp)
+next
+  case "2_27"
+  show ?case by (rule check_csr_dp_tail_core_non_u3_sound[
+    OF "2_27.prems"(1) "2_27.prems"(2) "2_27.prems"(3)
+      "2_27.prems"(4) "2_27.prems"(5) "2_27.prems"(6)
+      "2_27.prems"(7)]; simp)
 qed
 
 lemma csr_instantiation_proc_finite_sound:

@@ -1,0 +1,124 @@
+{
+  "schema": "source-recursive-entry-link-review-v1",
+  "date": "2026-11-19",
+  "milestone_1": "OPEN",
+  "source_certified": false,
+  "split_30_authenticated": false,
+  "split_44_authenticated": false,
+  "kernel_checked": true,
+  "skipped_proofs": false,
+  "oracles": false,
+  "ceta": {
+    "branch": "codex/prolog-production-integration",
+    "base_commit": "a5106736e8a1cf783b323d938c0aa91e52a1e2bc",
+    "dirty_worktree": true,
+    "production_executable_changed": false,
+    "generated_logic_manually_modified": false
+  },
+  "native_code_changed": false,
+  "baseline_campaigns_run": false,
+  "predecessor_evidence": {
+    "path": "/work/dfm/festschrift/CeTA-prolog-release/docs/data/source-recursive-entry-20261119.json",
+    "sha256": "b61181bdb8c6a2f8df67fb357914b6f7d828a14778c3a3b675e609580e7bc16e"
+  },
+  "artifacts": [
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/thys/Logic_Programming/LP_Prolog_Recursive_Entry_Link.thy",
+      "sha256": "1372ab9b7703c3104f8d677af11d8ff6335c9f739a18563cf744b5488266710c"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Recursive_Entry_Link_Export.thy",
+      "sha256": "16513940406fd8a1ccfac455986c0c296ce04cc1619bc7b7299b3ea71539223c"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/Check_Recursive_Entry_Link.ML",
+      "sha256": "4f74d0efa582523aaa9f34acf17f07788fbb08cca10d2113a31dffad4dfcf034"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/tests/source-contract-parameters/audit_recursive_boundaries.py",
+      "sha256": "8095bc28a859e3ba910902185954edfd7160e0b1aa5f09e46f750f07aed446e7"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/kernel-receipt.txt",
+      "sha256": "9ab2fe6f633dbf845647313f2e8e92587b1130a5e8713a3818e360eae19a98f6"
+    },
+    {
+      "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/Recursive_Entry_Link_Check.ML",
+      "sha256": "e37bbacf8aa54abbff1e7828b169b8b88beac135c300eba56ba2a0cf4ca036a6"
+    }
+  ],
+  "retained_boundary_manifest": {
+    "path": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-coverage-20261118/bound-return-contracts-manifest.json",
+    "sha256": "db54d33af90e6c1f70e8654200f632745f62dd827166097d26415c8affa49b22"
+  },
+  "variants": {
+    "original": {
+      "positive_checks": 6,
+      "rejection_controls": 28,
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/original.log",
+        "sha256": "8a5764bd56e7ca9159a1384c9e0c5e3ae8a4aa9d6b04b289fc96e6c047cc5492"
+      },
+      "fixtures": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/original.fixtures",
+        "sha256": "0106425b2f03f9578eaf1cde878dbf485e1981a65944e143d955bffebf4e5042"
+      },
+      "audit": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/original.audit.json",
+        "sha256": "f1aae50465cd68dd90750ee3fcfd7e92492a969618103c14357606283e266120"
+      },
+      "retained_native_log": {
+        "path": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-coverage-20261118/bound-return-contracts-original.log",
+        "sha256": "c3593cc3ed3ae855de336a8f7b779a0b2511a6e3ace7eeadd0bcae7937e2361e"
+      }
+    },
+    "renamed": {
+      "positive_checks": 6,
+      "rejection_controls": 28,
+      "log": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/renamed.log",
+        "sha256": "8a5764bd56e7ca9159a1384c9e0c5e3ae8a4aa9d6b04b289fc96e6c047cc5492"
+      },
+      "fixtures": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/renamed.fixtures",
+        "sha256": "0106425b2f03f9578eaf1cde878dbf485e1981a65944e143d955bffebf4e5042"
+      },
+      "audit": {
+        "path": "/work/dfm/festschrift/CeTA-prolog-release/target/source-recursive-entry-link/renamed.audit.json",
+        "sha256": "f1aae50465cd68dd90750ee3fcfd7e92492a969618103c14357606283e266120"
+      },
+      "retained_native_log": {
+        "path": "/work/dfm/festschrift/ferrum-prolog-release/target/checkpoint-coverage-20261118/bound-return-contracts-renamed.log",
+        "sha256": "fcc9bd9805ddc2ede65fe7d14034ea1cf3a58be46866a21655c5bd9ce9803d2e"
+      }
+    }
+  },
+  "discharged_interface_obligations": [
+    "A checked five-coordinate substitution preserves the entire recursive-entry fragment.",
+    "The entry fragment now accompanies the existing checked-link representation, context, ground/free and functor facts in one common target valuation and residual transition."
+  ],
+  "actual_coordinate_edges": [
+    "0:27 -> Split 30",
+    "35:7 -> Split 44"
+  ],
+  "retained_premises": [
+    "A checked evaluation functor link, transfer program and stable integer operations.",
+    "Equations, old valuation agreement, source ground/free/context/functor facts and incoming recursive-entry fragment.",
+    "Split boundary reconstruction, caller-frame representation and saved alternatives remain separate obligations."
+  ],
+  "scope_limits": [
+    "Tests check maps extracted from hash-validated retained diagnostic logs and source roles from pinned XML. They are not production search or complete source certificates.",
+    "Retained coordinate maps do not instantiate a checked evaluation link into either Split. The new conditional theorem does not authenticate either actual boundary.",
+    "No new caller-frame rebasing or complete answer contract is proved here. Existing caller-preservation lemmas remain available but require assembly.",
+    "Missing identity bindings are genuinely unused because instance substitution defaults to identity. Missing nonidentity bindings are rejected.",
+    "The exact incoming runtime facts and original query initialization remain unproved."
+  ],
+  "next_obligations": [
+    "Assemble the Split boundary interface for 30 and 44, including the prefix module and saved caller continuation; coordinate-only diagnostic records cannot discharge it.",
+    "Connect restricted entry and replacement facts to the existing strict-descent family/answer-contract framework.",
+    "Authenticate actual helper returns 19:1 and 28:1 and resumed continuations."
+  ],
+  "development_corrections": [
+    "Renamed a local initial-parameter variable that collided with an imported constant before successful kernel checking."
+  ]
+}
