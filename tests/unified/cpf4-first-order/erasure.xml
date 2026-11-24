@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<certificationProblem><cpfVersion>4.0</cpfVersion><lookupTables/><input><ctrsInput><ctrs><conditionType><oriented/></conditionType><rules><rule><funapp>
+  <name>f</name>
+  <var>x</var>
+</funapp>
+<var>x</var>
+<conditions></conditions></rule></rules></ctrs></ctrsInput></input><property><termination/></property><answer><yes/></answer><proof><conditionalErasureProof><trsTerminationProof><dpTrans>
+  <dps>
+    <rules>
+    </rules>
+  </dps>
+  <dpProof>
+    <pIsEmpty/>
+  </dpProof>
+</dpTrans>
+</trsTerminationProof></conditionalErasureProof></proof></certificationProblem>

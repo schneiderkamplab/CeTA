@@ -58,7 +58,24 @@ def main():
         for p in source.glob('*.hs'):
             if re.search(r'OPTIONS_GHC[^\n]*(?:-O(?:0|1|3)?\b|-fno-)',p.read_text()):
                 raise ValueError(f'Optimization override in {p}')
-        helpers={str(p.relative_to(ROOT)):sha(p) for p in (ROOT/'src/Haskell/Ceta/Input').glob('*.hs')}
+        # Preserve existing library identities when an unrelated parser is added.
+        # Characters is the historical shared helper; recursively include every
+        # additional Input module imported by this adapter or its dependencies.
+        helper_paths = {ROOT/'src/Haskell/Ceta/Input/Characters.hs'}
+        pending = [adapter, *source.glob('*.hs')]
+        visited = set()
+        while pending:
+            dependency = pending.pop()
+            if dependency in visited:
+                continue
+            visited.add(dependency)
+            for module in re.findall(r'^import\s+(?:qualified\s+)?(Ceta\.Input\.[A-Za-z0-9_.]+)', dependency.read_text(), re.M):
+                helper = ROOT/'src/Haskell'/Path(*module.split('.')).with_suffix('.hs')
+                if not helper.is_file():
+                    raise ValueError(f'Missing parser dependency: {module}')
+                helper_paths.add(helper)
+                pending.append(helper)
+        helpers={str(p.relative_to(ROOT)):sha(p) for p in helper_paths}
         identity=dict(sources=actual,adapter=sha(adapter),helpers=helpers,ghc=version,cpp=spec['cpp'],optimization='-O2')
         digest=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
         unit='ceta-'+key+'-1.0-'+digest[:16];work=out/unit;work.mkdir(exist_ok=True);receipt=work/'build.json'

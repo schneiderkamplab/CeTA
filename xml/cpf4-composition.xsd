@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="4.0">
+  <xs:annotation><xs:documentation>Ferrum/CeTA CPF 4 extensions. Semantic side conditions, including discharge coverage and the exact residual subject, are checked by CeTA.</xs:documentation></xs:annotation>
+  <xs:complexType name="adpIndices"><xs:sequence><xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType>
+  <xs:complexType name="adpReductionPair"><xs:sequence>
+    <xs:group ref="redPair"/>
+    <xs:element name="mainIndices" type="adpIndices"/>
+    <xs:element name="baseIndices" type="adpIndices"/>
+    <xs:element ref="relativeAdpTerminationProof"/>
+  </xs:sequence></xs:complexType>
+  <xs:complexType name="adpGraph"><xs:sequence><xs:element ref="relativeAdpTerminationProof" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType>
+  <xs:element name="relativeAdpTerminationProof"><xs:complexType><xs:choice>
+    <xs:element name="relativeAdpEmpty"><xs:complexType/></xs:element>
+    <xs:element name="relativeAdpErasureReductionPair" type="adpReductionPair"/>
+    <xs:element name="relativeAdpComReductionPair" type="adpReductionPair"/>
+    <xs:element name="relativeAdpDependencyGraph" type="adpGraph"/>
+    <xs:element name="relativeAdpRootDependencyGraph" type="adpGraph"/>
+    <xs:element name="relativeAdpDerelatification"><xs:complexType><xs:sequence><xs:element ref="dpProof"/></xs:sequence></xs:complexType></xs:element>
+    <xs:element name="relativeAdpFilteredDerelatification"><xs:complexType><xs:sequence><xs:element ref="argumentFilter"/><xs:element ref="dpProof"/></xs:sequence></xs:complexType></xs:element>
+  </xs:choice></xs:complexType></xs:element>
+  <xs:element name="relativeDpProof"><xs:complexType><xs:sequence><xs:element ref="dpProof"/></xs:sequence></xs:complexType></xs:element>
+  <xs:element name="relativeAdpComposition"><xs:complexType><xs:sequence>
+    <xs:element name="proof"><xs:complexType><xs:choice>
+      <xs:element ref="trsTerminationProof"/><xs:element ref="dpProof"/><xs:element ref="relativeDpProof"/>
+    </xs:choice></xs:complexType></xs:element>
+    <xs:element name="discharges"><xs:complexType><xs:sequence>
+      <xs:element name="relativeAdpDischarge" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence>
+        <xs:element name="strictRules" type="trs"/><xs:element name="weakRules" type="trs"/>
+        <xs:choice><xs:element ref="relativeAdpTerminationProof"/><xs:element ref="trsTerminationProof"/></xs:choice>
+      </xs:sequence></xs:complexType></xs:element>
+    </xs:sequence></xs:complexType></xs:element>
+  </xs:sequence></xs:complexType></xs:element>
+  <xs:element name="conditionalErasureProof"><xs:complexType><xs:sequence><xs:element ref="trsTerminationProof"/></xs:sequence></xs:complexType></xs:element>
+</xs:schema>

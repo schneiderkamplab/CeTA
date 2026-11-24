@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="CycleEmbedding">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="start" type="nativeWord"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeCycleStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="left" type="nativeWord"/>
+        <xs:element name="right" type="nativeWord"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CycleTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="start" type="nativeWord"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeCycleStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="u" type="nativeWord"/>
+        <xs:element name="v" type="nativeWord"/>
+        <xs:element name="p" type="xs:nonNegativeInteger"/>
+        <xs:element name="s" type="xs:nonNegativeInteger"/>
+        <xs:element name="extension" type="nativeWord"/>
+        <xs:element name="reverse">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="True"/>
+              <xs:enumeration value="False"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CycleMorphism">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="pivot" type="nativeWord"/>
+        <xs:element name="alphabet">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeWord"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="images">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="traces">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeCycleStep"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="marked">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="mirrored">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="True"/>
+              <xs:enumeration value="False"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConditionalCycle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="start" type="nativeTerm"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeConditionalStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConditionalLoop">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="start" type="nativeTerm"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeConditionalStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="substitution" type="nativeSubstitution"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cycleInput">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="rules">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeCycleRule"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="conditionalInput">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="rules">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeConditionalRule"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="nativeConditionalRule">
+    <xs:sequence>
+      <xs:element name="rewrite" type="nativeTermPair"/>
+      <xs:element name="conditions">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeTermPair"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nativeConditionalStep">
+    <xs:choice>
+      <xs:element name="Rewrite">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rewrite" type="nativeConditionalRewrite"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Call">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ruleIndex" type="xs:nonNegativeInteger"/>
+            <xs:element name="substitution" type="nativeSubstitution"/>
+            <xs:element name="conditionIndex" type="xs:nonNegativeInteger"/>
+            <xs:element name="conditions">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeConditionalRewrite"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="source" type="nativeTerm"/>
+            <xs:element name="target" type="nativeTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Argument">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="source" type="nativeTerm"/>
+            <xs:element name="argumentIndex" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="nativeConditionalRewrite">
+    <xs:choice>
+      <xs:element name="RewriteStep">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ruleIndex" type="xs:nonNegativeInteger"/>
+            <xs:element name="position">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="substitution" type="nativeSubstitution"/>
+            <xs:element name="source" type="nativeTerm"/>
+            <xs:element name="target" type="nativeTerm"/>
+            <xs:element name="conditions">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeConditionalRewrite"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="nativeCycleRule">
+    <xs:sequence>
+      <xs:element name="lhs" type="nativeWord"/>
+      <xs:element name="rhs" type="nativeWord"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nativeCycleStep">
+    <xs:sequence>
+      <xs:element name="ruleIndex" type="xs:nonNegativeInteger"/>
+      <xs:element name="rotation" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nativeSubstitution">
+    <xs:sequence>
+      <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="variable" type="xs:string"/>
+            <xs:element name="term" type="nativeTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nativeTerm">
+    <xs:choice>
+      <xs:element name="V">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="F">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="arguments">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="nativeTerm"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="nativeTermPair">
+    <xs:sequence>
+      <xs:element name="lhs" type="nativeTerm"/>
+      <xs:element name="rhs" type="nativeTerm"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nativeWord">
+    <xs:sequence>
+      <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

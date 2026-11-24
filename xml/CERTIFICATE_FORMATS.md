@@ -2,14 +2,15 @@
 
 This is the entry point for the certificate interfaces used by the fourteen
 production categories, through logic programming with cut. It documents the
-existing interfaces; it does not rename all native formats to CPF4 or extend
-the XML schema merely by listing a category here.
+current candidate interfaces. First-order outputs have migrated to CPF 4 XML;
+higher-order and logic-programming migration is deferred. Production deployment
+still depends on the pinned checker binary.
 
 ## Format and semantics map
 
 | Category | Certificate interface and reference | Required source context |
 | --- | --- | --- |
-| TRS Standard | [CPF3](cpf3.xsd), [local CPF4 extensions](CPF4.md) | Original rules, full rewriting |
+| TRS Standard | [CPF4](CPF4.md) (explicit legacy CPF modes retained) | Original rules, full rewriting |
 | TRS Innermost | CPF with innermost strategy and strategy-switch proofs | Original rules and innermost strategy; Q contexts in intermediate DP states |
 | TRS Contextsensitive | [CPF4 CSR extensions](CPF4.md#context-sensitive-rewriting) | Original rules, replacement map and signature |
 | SRS Standard | String systems represented through the first-order CPF interfaces, including bounds/RFC | Original string rules and their first-order representation |
@@ -17,9 +18,9 @@ the XML schema merely by listing a category here.
 | SRS Relative | Relative CPF, including [relative RFC extensions](CPF4.md#right-forward-closures) | Strict and weak string rules and their representation |
 | TRS Outermost | CPF strategy/checked transformation interfaces | Original rules and outermost strategy, not unrestricted termination of an unrelated residual |
 | TRS Equational | CPF interfaces and the supported equational checker path | Rewrite rules and equations, with the intended rewriting-modulo relation |
-| SRS Cycle | [Native cycle certificates](../README), parsed by [Main_Cycle.hs](../src/Haskell/Main_Cycle.hs) | Original string rules; rewriting modulo rotation requires genuine rewrite progress |
-| TRS Conditional (operational) | Supported CPF termination paths; [native conditional descent/loop certificates](../src/Haskell/Main_Conditional.hs) | Original ordered conditions; operational calls and condition evaluation matter |
-| TRS Conditional (ordinary termination) | [Source-bound erasure XML](../src/Haskell/Main_Conditional_Ordinary.hs); native conditional loops in `--ordinary` mode | Original conditional rules; nontermination must establish actual conditional rewriting, not just divergent condition evaluation |
+| SRS Cycle | [Structured CPF4 cycle witnesses](CPF4.md#first-order-envelope-and-structured-witnesses) | Original string rules; rewriting modulo rotation requires genuine rewrite progress |
+| TRS Conditional (operational) | CPF4 termination and structured operational descent/loop certificates | Original ordered conditions; operational calls and condition evaluation matter |
+| TRS Conditional (ordinary termination) | CPF4 source-bound erasure and structured conditional loops in `--ordinary` mode | Original conditional rules; nontermination must establish actual conditional rewriting, not just divergent condition evaluation |
 | Higher-order rewriting | Native typed certificates and [CeTA delegation XML](../thys/Higher_Order_CeTA_Code/Higher_Order_CeTA_Code.thy); [source-bound call expansion](../thys/Higher_Order_Call_Expansion/README.md) | Original typed signature and rules, binding/substitution and the declared higher-order relation |
 | Logic programming | [TOCL09 source-bound XML entry point](../src/Haskell/Main_LP_TOCL09.hs), [Pi-DP XML](../thys/Logic_Programming/LP_PiDP_XML.thy), source nontermination interfaces | Original clauses, query pattern and resolution semantics; a translated TRS certificate alone is insufficient |
 | Logic programming with cut | [Integrated XML dispatcher](../scripts/LP_Cut_Integrated_Main.hs), including [SEG/triples XML](../thys/Logic_Programming/LP_Cut_SEG_Triple_XML.thy) and [NO XML](../thys/Logic_Programming/LP_Cut_NO_XML.thy) | Original ordered clauses, cut control and query pattern; recursive Split and successful-prefix obligations |
@@ -29,20 +30,17 @@ every family is supported by every binary. Production manifests pin the actual
 checker executable and its hash. Follow the executable parser and its generated
 checker for the exact accepted grammar and side conditions.
 
-## CPF and native interfaces are distinct
+## CPF and deferred native interfaces
 
-[cpf4.xsd](cpf4.xsd) is the schema for this repository's CPF4 dialect, not a
-universal schema for every certificate above. [CPF4.md](CPF4.md) describes its
-CSR/RFC additions. A `cpfVersion` value does not turn a native certificate into
-CPF, and XML syntax alone does not imply CPF compatibility. This repository's
-version name is not evidence of adoption by an external standards body.
+[cpf4.xsd](cpf4.xsd) covers the first-order CPF dialect described in
+[CPF4.md](CPF4.md), including the structured cycle and conditional forms.
+These are extensions of CPF, not separate textual or standalone XML formats.
+The cycle/conditional legacy readers remain available for existing artifacts.
 
-Cycle and conditional native front ends declare their constructor grammar in
-the linked Haskell drivers. LP interfaces define XML parsing in Isabelle
-`*_XML.thy` theories and export executable checks. Higher-order interfaces use
-their typed native representations and, where applicable, checked delegation
-to first-order proofs. There is not yet a common XSD covering these native
-interfaces; these source definitions are the exact implementation references.
+Higher-order and LP interfaces still use their existing native or separate
+XML formats. Their migration is deferred; a version label alone would not
+make them CPF. The repository's CPF4 name does not assert adoption by an
+external standards body.
 
 ## LP and cut-aware SEG/triples layers
 

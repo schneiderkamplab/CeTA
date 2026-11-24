@@ -1,0 +1,13 @@
+{
+  "test": "tests/test_cpf4_lts_div_mod.py",
+  "passed": 2,
+  "failed": [
+    "test_no_other_lts_grammar_changes"
+  ],
+  "reason": "Existing lts4.xsd includes integerLassoState and other ITS vocabulary added by d7de204; test assumes div/mod are the only differences. All implicated files unchanged from candidate base.",
+  "unchanged_base_files": {
+    "xml/lts.xsd": "104cc066266dd40564b2a61cb9f0deb81e97588fb91b5ed31177dfb6963d13f1",
+    "xml/lts4.xsd": "e93b86af9b3eb612d161e8ecc4e4be6bde11a4b5caaf92321ffacaefa2f2b12e",
+    "tests/test_cpf4_lts_div_mod.py": "598b78998a1ca492e0637b4d92f37289d3505e2b1fd041dbfe8092a2336af281"
+  }
+}

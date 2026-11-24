@@ -3,6 +3,7 @@
 -- This is a native cycle certificate format, not ordinary SRS CPF.
 module Ceta.Category.Cycle (run) where
 
+import qualified Ceta.Input.Cpf4 as CPF4
 import Prelude hiding (Word)
 import qualified Cycle_Checker as C
 import System.Environment (getArgs, withArgs)
@@ -43,8 +44,8 @@ main = do
   case args of
     [path] -> do
       text <- readFile path
-      case readMaybe text of
-        Just certificate | check certificate -> putStrLn "CERTIFIED"
+      case CPF4.native "cycle" Nothing text >>= maybe (Left "invalid cycle syntax") Right . readMaybe of
+        Right certificate | check certificate -> putStrLn "CERTIFIED"
         _ -> putStrLn "REJECTED" >> exitFailure
     _ -> putStrLn "usage: ceta-cycle CYCLE-CERTIFICATE" >> exitFailure
 

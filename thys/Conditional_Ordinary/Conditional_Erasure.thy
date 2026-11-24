@@ -27,12 +27,32 @@ proof -
   show ?thesis by (rule SN_subset[OF child subset])
 qed
 
-definition conditional_erasure_parser where
-  "conditional_erasure_parser = XMLdo (STR ''conditionalErasureProof'') {
+definition conditional_erasure_legacy_parser where
+  "conditional_erasure_legacy_parser = XMLdo (STR ''conditionalErasureProof'') {
     inp \<leftarrow> input_parser Mapping.empty Mapping.empty;
     prf \<leftarrow> xml2trs_termination_proof symbol_parser Mapping.empty Mapping.empty;
     xml_return (inp, prf)
   }"
+
+definition conditional_erasure_cpf4_parser where
+  "conditional_erasure_cpf4_parser = XMLdo (STR ''certificationProblem'') {
+    cpf_version \<leftarrow> xml_text (STR ''cpfVersion'');
+    tables \<leftarrow> XMLdo (STR ''lookupTables'') {xml_return ()};
+    inp \<leftarrow> input_parser Mapping.empty Mapping.empty;
+    prop \<leftarrow> xml_singleton (STR ''property'')
+      (XMLdo (STR ''termination'') {xml_return ()}) id;
+    ans \<leftarrow> xml_singleton (STR ''answer'')
+      (XMLdo (STR ''yes'') {xml_return ()}) id;
+    prf \<leftarrow> xml_singleton (STR ''proof'')
+      (xml_singleton (STR ''conditionalErasureProof'')
+        (xml2trs_termination_proof symbol_parser Mapping.empty Mapping.empty) id) id;
+    if cpf_version = ''4.0'' then xml_return (inp, prf)
+    else xml_error (STR ''conditional erasure requires CPF 4.0'')
+  }"
+
+definition conditional_erasure_parser where
+  "conditional_erasure_parser =
+    conditional_erasure_cpf4_parser XMLor conditional_erasure_legacy_parser"
 
 definition check_conditional_erasure_xml where
   "check_conditional_erasure_xml xml =

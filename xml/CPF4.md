@@ -2,8 +2,10 @@
 
 For all production categories, including cycle rewriting, higher-order
 rewriting and LP with cut, see [Certificate formats](CERTIFICATE_FORMATS.md).
-This page describes the repository's CPF4 dialect, not the separate native
-certificate interfaces or an externally standardized release.
+This page describes the repository's CPF4 dialect, not an externally
+standardized release. First-order Ferrum outputs now use this XML dialect
+by default, including cycle and conditional certificates. Higher-order and
+logic-programming output migration remains deferred.
 
 CPF 4.0 is a conservative extension of CPF 3.x. A CPF 3.x certification
 problem is also a CPF 4.0 certification problem with the same meaning.
@@ -13,8 +15,9 @@ New producers should write:
 <cpfVersion>4.0</cpfVersion>
 ```
 
-The normative schema is `cpf4.xsd`. Existing CPF 3.x elements and their
-semantics are unchanged.
+The normative schema is `cpf4.xsd`, including `cpf4-composition.xsd`,
+`cpf4-native.xsd` and `cpf4-ferrum.xsd`. Existing CPF 3.x elements retain
+their semantics. Explicit legacy export modes remain available.
 
 ## Context-Sensitive Rewriting
 
@@ -98,8 +101,8 @@ the specified interpretation discipline or reject such applications; a first
 verified implementation may require proof of a nonzero divisor.
 
 `cpf4.xsd` includes `lts4.xsd`; CPF3 continues to include the unchanged `lts.xsd`.
-The only grammar difference between those LTS files is these two expression
-constructors. `tests/test_cpf4_lts_div_mod.py` checks this boundary and the new
+These two expression constructors extend the arithmetic grammar;
+`lts4.xsd` also contains independently added ITS certificate vocabulary. `tests/test_cpf4_lts_div_mod.py` checks this boundary and the new
 constructor arities.
 
 **Implementation status:** this adds CPF4 schema vocabulary and semantics. The
@@ -108,3 +111,76 @@ not yet accept these constructors. Schema validation is not certification. The
 schema-positive fixture `examples/its-div-mod.cpf4.xml` is not claimed as a
 CeTA-certified proof. A verified arithmetic/translation extension, regenerated
 checker and semantic mutation tests are required before promotion.
+
+## First-order envelope and structured witnesses
+
+New first-order documents use `certificationProblem`, with ordered children
+`cpfVersion` (`4.0`), `lookupTables`, `input`, `property`, `answer`, and `proof`.
+The cycle/conditional adapters require empty lookup tables and reject extra,
+duplicate, reordered or mismatched claim fields. They dispatch to the existing
+Isabelle-generated semantic checkers; XML decoding is not proof acceptance.
+
+| Family | Input | Property / answer | Proof constructor |
+| --- | --- | --- | --- |
+| Cycle nontermination | `cycleInput` | `termination` / `no` | `CycleEmbedding`, `CycleTransport`, `CycleMorphism` |
+| Conditional nontermination | `conditionalInput` | `termination` or `operationalTermination` / `no` | `ConditionalCycle`, `ConditionalLoop` |
+| Conditional erasure | Original conditional TRS input | `termination` / `yes` | `conditionalErasureProof` containing `trsTerminationProof` |
+
+Cycle and conditional witnesses contain structured XML fields, lists, tuples
+and constructors; they do not embed opaque Haskell text. The exact typed
+field grammar is `src/Haskell/Ceta/Input/cpf4-native.json`. Regenerate its
+Haskell declarations and first-order XSD with:
+
+```sh
+python3 scripts/generate_cpf4_native_grammar.py
+python3 scripts/generate_cpf4_native_schema.py
+```
+
+The JSON includes preparatory higher-order data declarations; these do not
+activate higher-order output migration. `cpf4-native.xsd` exposes the
+first-order families only. Runnable examples are in
+`tests/unified/cpf4-first-order/`. The erasure proof now lives inside the
+CPF envelope rather than using a standalone `conditionalErasureProof` root.
+
+`--ordinary` conditional checking requires the ordinary termination property.
+An operational call loop is insufficient for ordinary nontermination. Source
+binding still requires the original ordered rules/conditions and witness
+correspondence, independently of schema validity. Legacy textual cycle and
+conditional witnesses and separate erasure XML remain readable for historical
+certificates; fresh Ferrum outputs use CPF 4 XML. Filename extensions alone
+do not identify the format.
+
+## Relative ADP composition
+
+`relativeAdpComposition` wraps an ordinary recursive proof and explicit
+relative-ADP discharges. Each discharge records the exact strict and weak
+rules and a relative-ADP root proof. The wrapper checks every discharge,
+requires coverage of the ordinary proof's termination assumptions, and then
+uses the conditional soundness theorem of the recursive ordinary checker.
+An unchecked assumption is never sufficient for acceptance.
+
+The formal implementation is in `thys/Relative_ADP/Composition`; its code
+session is `Relative_ADP_Composition_Code`. This supports ADP children after
+ordinary transformations such as uncurrying and DP-to-TRS switching. The
+ADP-to-ordinary-to-ADP crossing inside derelatification remains unsupported.
+See `tests/unified/check_adp_composition.py` for positive and negative cases.
+
+## Additional first-order vocabulary and validation
+
+`cpf4-ferrum.xsd` declares existing Ferrum proof forms including sparse
+tiling/removal, GM04 transformations, outermost RZ, innermost Q-DP and
+AAECC proofs, and CSR source/typed/guarded wrappers. These declarations
+describe checker-supported forms; they do not relax their semantic checks.
+
+Build the unified checker with `make ceta`. Run the first-order XML and
+ADP gates with `tests/unified/check_cpf4_first_order.py` and
+`tests/unified/check_adp_composition.py` (see `--help` for checker/output
+arguments). `tests/unified/ValidateCpf4.java` validates deeply nested proofs
+that exceed libxml2's fixed nesting limit. Schema validation is separate
+from semantic certification and original-source binding.
+
+The November 24 candidate replay retains all 4,821 certified results across
+4,991 first-order inputs (3,721 YES, 1,100 NO, 170 unresolved). Build and
+formal-check evidence is recorded in `docs/state-local-integration.md` and
+the sibling Ferrum `docs/state-of-the-art.md`. This is candidate validation;
+production binaries and higher-order/LP interfaces are unchanged.

@@ -1,0 +1,4 @@
+session Conditional_Erasure_CPF4_Code = Conditional_Ordinary +
+  options [document = false, quick_and_dirty = false]
+  sessions Certificate_Performance
+  theories Conditional_Erasure_CPF4_Code

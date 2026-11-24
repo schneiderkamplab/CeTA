@@ -1,0 +1,449 @@
+{
+  "checker_sha256": "e54918634d8740ed9880be222c6dfd35105723dcd975be54b2bcbf69bdf565a6",
+  "passed": true,
+  "cases": [
+    {
+      "category": "cycle",
+      "name": "valid",
+      "expected": true,
+      "passed": true,
+      "exit": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-valid.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "wrong-answer",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-wrong-answer.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "wrong-version",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-wrong-version.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "wrong-property",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-wrong-property.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "trailing",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-trailing.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "extra-field",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-extra-field.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "negative-index",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-negative-index.xml"
+      ]
+    },
+    {
+      "category": "cycle",
+      "name": "invalid-rule",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "cycle",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/cycle-invalid-rule.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "valid",
+      "expected": true,
+      "passed": true,
+      "exit": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-valid.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "wrong-answer",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-wrong-answer.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "wrong-version",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-wrong-version.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "wrong-property",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-wrong-property.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "trailing",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-trailing.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "extra-field",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-extra-field.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "negative-index",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-negative-index.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "invalid-rule",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "--ordinary",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-invalid-rule.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "valid",
+      "expected": true,
+      "passed": true,
+      "exit": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-valid.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "wrong-answer",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-wrong-answer.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "wrong-version",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-wrong-version.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "wrong-property",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-wrong-property.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "trailing",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-trailing.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "extra-field",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-extra-field.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "negative-index",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-negative-index.xml"
+      ]
+    },
+    {
+      "category": "conditional",
+      "name": "invalid-rule",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/conditional-operational-invalid-rule.xml"
+      ]
+    },
+    {
+      "category": "conditional-erasure",
+      "name": "valid",
+      "expected": true,
+      "passed": true,
+      "exit": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional-erasure",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/erasure-valid.xml"
+      ]
+    },
+    {
+      "category": "conditional-erasure",
+      "name": "wrong-answer",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional-erasure",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/erasure-wrong-answer.xml"
+      ]
+    },
+    {
+      "category": "conditional-erasure",
+      "name": "wrong-version",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional-erasure",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/erasure-wrong-version.xml"
+      ]
+    },
+    {
+      "category": "conditional-erasure",
+      "name": "wrong-property",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional-erasure",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/erasure-wrong-property.xml"
+      ]
+    },
+    {
+      "category": "conditional-erasure",
+      "name": "false-empty-proof",
+      "expected": false,
+      "passed": true,
+      "exit": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "",
+      "command": [
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+        "--category",
+        "conditional-erasure",
+        "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/first-order-gate-operational/erasure-false-empty-proof.xml"
+      ]
+    }
+  ]
+}

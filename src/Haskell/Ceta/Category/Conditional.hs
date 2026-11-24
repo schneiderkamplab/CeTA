@@ -1,6 +1,7 @@
 -- Native conditional descent certificates. All original rules and ordered
 -- conditions are retained. The generated checker validates every step.
 module Ceta.Category.Conditional (run) where
+import qualified Ceta.Input.Cpf4 as CPF4
 import qualified Conditional_Checker as C
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
@@ -64,13 +65,13 @@ main = do
   case args of
     ["--ordinary", path] -> do
       text <- readFile path
-      case readMaybe text of
-        Just cert | checkOrdinary cert -> putStrLn "CERTIFIED"
+      case CPF4.native "conditional" (Just True) text >>= maybe (Left "invalid conditional syntax") Right . readMaybe of
+        Right cert | checkOrdinary cert -> putStrLn "CERTIFIED"
         _ -> putStrLn "REJECTED" >> exitFailure
     [path] -> do
       text <- readFile path
-      case readMaybe text of
-        Just cert | check cert -> putStrLn "CERTIFIED"
+      case CPF4.native "conditional" (Just False) text >>= maybe (Left "invalid conditional syntax") Right . readMaybe of
+        Right cert | check cert -> putStrLn "CERTIFIED"
         _ -> putStrLn "REJECTED" >> exitFailure
     _ -> putStrLn "usage: ceta-conditional CERTIFICATE" >> exitFailure
 

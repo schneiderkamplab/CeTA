@@ -10555,3 +10555,41 @@ Sources: https://termcomp.github.io/Y2025/Prolog.html and
 https://termination-portal.org/wiki/Logic_Programming . The comparison was
 computed in-session; no new campaign or archived per-root comparison manifest
 is claimed. Preserve the existing certified baseline.
+
+
+### First-order CPF 4 candidate integration (2026-11-24)
+
+The `codex/adp-composition-20261123` candidate extends CPF 4 XML with
+structured cycle and conditional nontermination certificates, conditional
+erasure inside the `certificationProblem` envelope, and relative-ADP
+discharges for ordinary recursive proofs. The XML adapters decode typed
+data for the existing generated checkers; they do not implement mathematical
+acceptance. Legacy native inputs remain readable. Higher-order rewriting
+and logic-programming output migration is deferred.
+
+The new ADP composition soundness theorem and conditional-erasure parser
+were checked by Isabelle with `quick_and_dirty=false`, and their Haskell
+exports were regenerated. No generated checking logic was hand-edited.
+ADP composition introduces no additional oracle instances beyond the
+inherited sessions. ADP-to-ordinary-to-ADP nesting inside derelatification
+remains conservatively unsupported.
+
+The unified candidate was built with `make ceta` in
+`target/cpf4-extension/{unified,bin}`. Its SHA-256 is
+`e54918634d8740ed9880be222c6dfd35105723dcd975be54b2bcbf69bdf565a6`.
+The checker tree is `/work/dfm/festschrift/CeTA-adp-composition`, based on
+`3b3f7071588559d170a0f7c093bb2fc9b1bc6a2e`, with uncommitted candidate changes.
+The export manifest pins generated archives, sources and verified sessions.
+Formal build evidence is in `target/adp-composition` and
+`target/cpf4-extension/conditional-erasure-build.log`.
+
+The first-order format gate passes 29 positive/negative cases; the ADP gate
+passes nine cases. The concrete schemas are `xml/cpf4.xsd` and its
+`cpf4-{composition,native,ferrum}.xsd` includes. All 111 distinct positive
+Ferrum CPF regression fixtures validate, including deeply nested proofs
+checked with `tests/unified/ValidateCpf4.java`. This is candidate evidence,
+not a production promotion or an all-category release gate.
+
+Compact build logs and gate receipts are tracked in
+`docs/cpf4-first-order-20261124`. The format specification and category map
+are `xml/CPF4.md` and `xml/CERTIFICATE_FORMATS.md`.

@@ -1,0 +1,2155 @@
+{
+  "types": {
+    "Word": {
+      "list": "natural"
+    },
+    "CycleRule": {
+      "tuple": [
+        [
+          "lhs",
+          "Word"
+        ],
+        [
+          "rhs",
+          "Word"
+        ]
+      ]
+    },
+    "CycleStep": {
+      "tuple": [
+        [
+          "ruleIndex",
+          "natural"
+        ],
+        [
+          "rotation",
+          "natural"
+        ]
+      ]
+    },
+    "Term": {
+      "sum": {
+        "V": [
+          [
+            "name",
+            "string"
+          ]
+        ],
+        "F": [
+          [
+            "name",
+            "string"
+          ],
+          [
+            "arguments",
+            {
+              "list": "Term"
+            }
+          ]
+        ]
+      }
+    },
+    "TermPair": {
+      "tuple": [
+        [
+          "lhs",
+          "Term"
+        ],
+        [
+          "rhs",
+          "Term"
+        ]
+      ]
+    },
+    "ConditionalRule": {
+      "tuple": [
+        [
+          "rewrite",
+          "TermPair"
+        ],
+        [
+          "conditions",
+          {
+            "list": "TermPair"
+          }
+        ]
+      ]
+    },
+    "Substitution": {
+      "list": {
+        "tuple": [
+          [
+            "variable",
+            "string"
+          ],
+          [
+            "term",
+            "Term"
+          ]
+        ]
+      }
+    },
+    "ConditionalRewrite": {
+      "sum": {
+        "RewriteStep": [
+          [
+            "ruleIndex",
+            "natural"
+          ],
+          [
+            "position",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "substitution",
+            "Substitution"
+          ],
+          [
+            "source",
+            "Term"
+          ],
+          [
+            "target",
+            "Term"
+          ],
+          [
+            "conditions",
+            {
+              "list": {
+                "list": "ConditionalRewrite"
+              }
+            }
+          ]
+        ]
+      }
+    },
+    "ConditionalStep": {
+      "sum": {
+        "Rewrite": [
+          [
+            "rewrite",
+            "ConditionalRewrite"
+          ]
+        ],
+        "Call": [
+          [
+            "ruleIndex",
+            "natural"
+          ],
+          [
+            "substitution",
+            "Substitution"
+          ],
+          [
+            "conditionIndex",
+            "natural"
+          ],
+          [
+            "conditions",
+            {
+              "list": {
+                "list": "ConditionalRewrite"
+              }
+            }
+          ],
+          [
+            "source",
+            "Term"
+          ],
+          [
+            "target",
+            "Term"
+          ]
+        ],
+        "Argument": [
+          [
+            "source",
+            "Term"
+          ],
+          [
+            "argumentIndex",
+            "natural"
+          ]
+        ]
+      }
+    },
+    "HoType": {
+      "sum": {
+        "base": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "arrow": [
+          [
+            "domain",
+            "HoType"
+          ],
+          [
+            "codomain",
+            "HoType"
+          ]
+        ]
+      }
+    },
+    "HoTerm": {
+      "sum": {
+        "bound": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "free": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "const": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "app": [
+          [
+            "function",
+            "HoTerm"
+          ],
+          [
+            "argument",
+            "HoTerm"
+          ]
+        ],
+        "abs": [
+          [
+            "type",
+            "HoType"
+          ],
+          [
+            "body",
+            "HoTerm"
+          ]
+        ]
+      }
+    },
+    "HoPattern": {
+      "sum": {
+        "pbound": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "pconst": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "papp": [
+          [
+            "function",
+            "HoPattern"
+          ],
+          [
+            "argument",
+            "HoPattern"
+          ]
+        ],
+        "pabs": [
+          [
+            "type",
+            "HoType"
+          ],
+          [
+            "body",
+            "HoPattern"
+          ]
+        ],
+        "meta": [
+          [
+            "index",
+            "natural"
+          ],
+          [
+            "arguments",
+            {
+              "list": "HoPattern"
+            }
+          ]
+        ]
+      }
+    },
+    "HoRule": {
+      "tuple": [
+        [
+          "variables",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "lhs",
+          "HoPattern"
+        ],
+        [
+          "rhs",
+          "HoPattern"
+        ]
+      ]
+    },
+    "HoStep": {
+      "sum": {
+        "rule": [
+          [
+            "ruleIndex",
+            "natural"
+          ],
+          [
+            "substitution",
+            {
+              "list": "HoTerm"
+            }
+          ]
+        ],
+        "beta": [],
+        "left": [
+          [
+            "step",
+            "HoStep"
+          ]
+        ],
+        "right": [
+          [
+            "step",
+            "HoStep"
+          ]
+        ],
+        "under": [
+          [
+            "step",
+            "HoStep"
+          ]
+        ]
+      }
+    },
+    "HoContext": {
+      "sum": {
+        "hole": [],
+        "cleft": [
+          [
+            "context",
+            "HoContext"
+          ],
+          [
+            "term",
+            "HoTerm"
+          ]
+        ],
+        "cright": [
+          [
+            "term",
+            "HoTerm"
+          ],
+          [
+            "context",
+            "HoContext"
+          ]
+        ]
+      }
+    },
+    "HoPolynomial": {
+      "sum": {
+        "pvar": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "pnum": [
+          [
+            "sort",
+            "natural"
+          ],
+          [
+            "value",
+            "natural"
+          ]
+        ],
+        "padd": [
+          [
+            "sort",
+            "natural"
+          ],
+          [
+            "left",
+            "HoPolynomial"
+          ],
+          [
+            "right",
+            "HoPolynomial"
+          ]
+        ],
+        "pmul": [
+          [
+            "sort",
+            "natural"
+          ],
+          [
+            "left",
+            "HoPolynomial"
+          ],
+          [
+            "right",
+            "HoPolynomial"
+          ]
+        ],
+        "papply": [
+          [
+            "domain",
+            "HoType"
+          ],
+          [
+            "codomain",
+            "HoType"
+          ],
+          [
+            "function",
+            "HoPolynomial"
+          ],
+          [
+            "argument",
+            "HoPolynomial"
+          ]
+        ],
+        "plam": [
+          [
+            "domain",
+            "HoType"
+          ],
+          [
+            "codomain",
+            "HoType"
+          ],
+          [
+            "body",
+            "HoPolynomial"
+          ]
+        ]
+      }
+    },
+    "FoTerm": {
+      "sum": {
+        "var": [
+          [
+            "index",
+            "natural"
+          ]
+        ],
+        "fun": [
+          [
+            "index",
+            "natural"
+          ],
+          [
+            "arguments",
+            {
+              "list": "FoTerm"
+            }
+          ]
+        ]
+      }
+    },
+    "HoTermination": {
+      "sum": {
+        "empty": [],
+        "application": [
+          [
+            "symbol",
+            "natural"
+          ]
+        ],
+        "schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ]
+        ],
+        "partial-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ]
+        ],
+        "lambda-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ]
+        ],
+        "priority-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ]
+        ],
+        "accessible-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ]
+        ],
+        "descent-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ],
+          [
+            "descentFuel",
+            "natural"
+          ]
+        ],
+        "polynomial": [
+          [
+            "interpretations",
+            {
+              "list": "HoPolynomial"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ],
+          [
+            "continuation",
+            "HoTermination"
+          ]
+        ]
+      }
+    },
+    "HoModular": {
+      "sum": {
+        "base": [
+          [
+            "certificate",
+            "HoTermination"
+          ]
+        ],
+        "functional-access-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ]
+        ],
+        "lambda-access-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ]
+        ],
+        "semantic-schema": [
+          [
+            "ordinary",
+            {
+              "list": "HoPolynomial"
+            }
+          ],
+          [
+            "marked",
+            {
+              "list": "HoPolynomial"
+            }
+          ],
+          [
+            "orderFuel",
+            "natural"
+          ],
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ]
+        ],
+        "component-schema": [
+          [
+            "ordinary",
+            {
+              "list": {
+                "list": "HoPolynomial"
+              }
+            }
+          ],
+          [
+            "marked",
+            {
+              "list": {
+                "list": "HoPolynomial"
+              }
+            }
+          ],
+          [
+            "orderFuel",
+            "natural"
+          ],
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ]
+        ],
+        "polynomial": [
+          [
+            "interpretations",
+            {
+              "list": "HoPolynomial"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ],
+          [
+            "continuation",
+            "HoModular"
+          ]
+        ]
+      }
+    },
+    "HoGuarded": {
+      "sum": {
+        "base": [
+          [
+            "certificate",
+            "HoModular"
+          ]
+        ],
+        "guarded-schema": [
+          [
+            "ranks",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "arities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "priorities",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "sorts",
+            {
+              "list": "natural"
+            }
+          ],
+          [
+            "closureFuel",
+            "natural"
+          ],
+          [
+            "selections",
+            {
+              "list": "natural"
+            }
+          ]
+        ],
+        "polynomial": [
+          [
+            "interpretations",
+            {
+              "list": "HoPolynomial"
+            }
+          ],
+          [
+            "fuel",
+            "natural"
+          ],
+          [
+            "continuation",
+            "HoGuarded"
+          ]
+        ]
+      }
+    },
+    "HoDefinition": {
+      "sum": {
+        "none": [],
+        "some": [
+          [
+            "term",
+            "HoTerm"
+          ],
+          [
+            "arity",
+            "natural"
+          ]
+        ]
+      }
+    }
+  },
+  "roots": {
+    "CycleEmbedding": {
+      "category": "cycle",
+      "wire": "haskell",
+      "fields": [
+        [
+          "rules",
+          {
+            "list": "CycleRule"
+          }
+        ],
+        [
+          "start",
+          "Word"
+        ],
+        [
+          "steps",
+          {
+            "list": "CycleStep"
+          }
+        ],
+        [
+          "left",
+          "Word"
+        ],
+        [
+          "right",
+          "Word"
+        ]
+      ],
+      "inputs": [
+        "rules"
+      ],
+      "yes": false
+    },
+    "CycleTransport": {
+      "category": "cycle",
+      "wire": "haskell",
+      "fields": [
+        [
+          "rules",
+          {
+            "list": "CycleRule"
+          }
+        ],
+        [
+          "start",
+          "Word"
+        ],
+        [
+          "steps",
+          {
+            "list": "CycleStep"
+          }
+        ],
+        [
+          "u",
+          "Word"
+        ],
+        [
+          "v",
+          "Word"
+        ],
+        [
+          "p",
+          "natural"
+        ],
+        [
+          "s",
+          "natural"
+        ],
+        [
+          "extension",
+          "Word"
+        ],
+        [
+          "reverse",
+          "boolean"
+        ]
+      ],
+      "inputs": [
+        "rules"
+      ],
+      "yes": false
+    },
+    "CycleMorphism": {
+      "category": "cycle",
+      "wire": "haskell",
+      "fields": [
+        [
+          "rules",
+          {
+            "list": "CycleRule"
+          }
+        ],
+        [
+          "pivot",
+          "Word"
+        ],
+        [
+          "alphabet",
+          {
+            "list": "Word"
+          }
+        ],
+        [
+          "images",
+          {
+            "list": {
+              "list": "natural"
+            }
+          }
+        ],
+        [
+          "traces",
+          {
+            "list": {
+              "list": "CycleStep"
+            }
+          }
+        ],
+        [
+          "marked",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "mirrored",
+          "boolean"
+        ]
+      ],
+      "inputs": [
+        "rules"
+      ],
+      "yes": false
+    },
+    "ConditionalCycle": {
+      "category": "conditional",
+      "wire": "haskell",
+      "fields": [
+        [
+          "rules",
+          {
+            "list": "ConditionalRule"
+          }
+        ],
+        [
+          "start",
+          "Term"
+        ],
+        [
+          "steps",
+          {
+            "list": "ConditionalStep"
+          }
+        ]
+      ],
+      "inputs": [
+        "rules"
+      ],
+      "yes": false
+    },
+    "ConditionalLoop": {
+      "category": "conditional",
+      "wire": "haskell",
+      "fields": [
+        [
+          "rules",
+          {
+            "list": "ConditionalRule"
+          }
+        ],
+        [
+          "start",
+          "Term"
+        ],
+        [
+          "steps",
+          {
+            "list": "ConditionalStep"
+          }
+        ],
+        [
+          "substitution",
+          "Substitution"
+        ]
+      ],
+      "inputs": [
+        "rules"
+      ],
+      "yes": false
+    },
+    "ho-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "certificate",
+          "HoTermination"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-application": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "symbol",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-modular-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "certificate",
+          "HoModular"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-meta-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "certificate",
+          "HoModular"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-guarded-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "certificate",
+          "HoGuarded"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-prefix-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-blocked-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-functional-access-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-lambda-access-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-semantic-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ordinary",
+          {
+            "list": "HoPolynomial"
+          }
+        ],
+        [
+          "marked",
+          {
+            "list": "HoPolynomial"
+          }
+        ],
+        [
+          "orderFuel",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-component-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ordinary",
+          {
+            "list": {
+              "list": "HoPolynomial"
+            }
+          }
+        ],
+        [
+          "marked",
+          {
+            "list": {
+              "list": "HoPolynomial"
+            }
+          }
+        ],
+        [
+          "orderFuel",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-lex-semantic-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "orders",
+          {
+            "list": {
+              "tuple": [
+                [
+                  "ordinary",
+                  {
+                    "list": "HoPolynomial"
+                  }
+                ],
+                [
+                  "marked",
+                  {
+                    "list": "HoPolynomial"
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          "orderFuel",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-call-expansion-termination": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "definitions",
+          {
+            "list": "HoDefinition"
+          }
+        ],
+        [
+          "expansionFuel",
+          "natural"
+        ],
+        [
+          "ordinary",
+          {
+            "list": "HoPolynomial"
+          }
+        ],
+        [
+          "marked",
+          {
+            "list": "HoPolynomial"
+          }
+        ],
+        [
+          "orderFuel",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-ceta-delegation": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "symbols",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "pairs",
+          {
+            "list": {
+              "tuple": [
+                [
+                  "lhs",
+                  "FoTerm"
+                ],
+                [
+                  "rhs",
+                  "FoTerm"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          "constant",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-ceta-semantic-delegation": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "symbols",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "pairs",
+          {
+            "list": {
+              "tuple": [
+                [
+                  "lhs",
+                  "FoTerm"
+                ],
+                [
+                  "rhs",
+                  "FoTerm"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          "constant",
+          "natural"
+        ],
+        [
+          "ordinary",
+          {
+            "list": "HoPolynomial"
+          }
+        ],
+        [
+          "marked",
+          {
+            "list": "HoPolynomial"
+          }
+        ],
+        [
+          "orderFuel",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-ceta-filtered-delegation": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "symbols",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "pairs",
+          {
+            "list": {
+              "tuple": [
+                [
+                  "lhs",
+                  "FoTerm"
+                ],
+                [
+                  "rhs",
+                  "FoTerm"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          "constant",
+          "natural"
+        ],
+        [
+          "ranks",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "arities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "priorities",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "selections",
+          {
+            "list": {
+              "list": "natural"
+            }
+          }
+        ],
+        [
+          "phases",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "sorts",
+          {
+            "list": "natural"
+          }
+        ],
+        [
+          "closureFuel",
+          "natural"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": true
+    },
+    "ho-pump": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "ruleIndex",
+          "natural"
+        ],
+        [
+          "substitution",
+          {
+            "list": "HoTerm"
+          }
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": false
+    },
+    "ho-loop": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "variables",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "rootType",
+          "HoType"
+        ],
+        [
+          "start",
+          "HoTerm"
+        ],
+        [
+          "steps",
+          {
+            "list": "HoStep"
+          }
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": false
+    },
+    "ho-embedding": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "variables",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "rootType",
+          "HoType"
+        ],
+        [
+          "start",
+          "HoTerm"
+        ],
+        [
+          "steps",
+          {
+            "list": "HoStep"
+          }
+        ],
+        [
+          "context",
+          "HoContext"
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": false
+    },
+    "ho-plain-pump": {
+      "category": "higherOrder",
+      "wire": "prefix",
+      "fields": [
+        [
+          "signature",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "variables",
+          {
+            "list": "HoType"
+          }
+        ],
+        [
+          "rules",
+          {
+            "list": "HoRule"
+          }
+        ],
+        [
+          "rootType",
+          "HoType"
+        ],
+        [
+          "start",
+          "HoTerm"
+        ],
+        [
+          "steps",
+          {
+            "list": "HoStep"
+          }
+        ],
+        [
+          "context",
+          "HoContext"
+        ],
+        [
+          "substitution",
+          {
+            "list": "HoTerm"
+          }
+        ]
+      ],
+      "inputs": [
+        "signature",
+        "rules"
+      ],
+      "yes": false
+    }
+  }
+}

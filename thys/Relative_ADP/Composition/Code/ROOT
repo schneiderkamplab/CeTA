@@ -1,0 +1,4 @@
+session Relative_ADP_Composition_Code = Relative_ADP_Composition +
+  options [document = false]
+  sessions Certificate_Performance_CPF_Export
+  theories Relative_ADP_Composition_Code

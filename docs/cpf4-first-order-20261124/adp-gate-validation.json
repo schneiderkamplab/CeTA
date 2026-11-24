@@ -1,0 +1,106 @@
+{
+  "checker": "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/bin/ceta",
+  "checker_sha256": "e54918634d8740ed9880be222c6dfd35105723dcd975be54b2bcbf69bdf565a6",
+  "checks": [
+    {
+      "name": "split-two-children",
+      "expected_acceptance": true,
+      "seconds": 0.011103849858045578,
+      "certificate_sha256": "c005bc774d59fdb3491a94fc669cf9567c7bf84ed61a155eb3a38e68d4f85b55",
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "accepted": true,
+      "passed": true
+    },
+    {
+      "name": "dp-to-trs-child",
+      "expected_acceptance": true,
+      "seconds": 0.011481677182018757,
+      "certificate_sha256": "f45fb6bb8b76019228831be1127d27499a4f4a7d0bad3506d6a00e52bf0d8d79",
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "accepted": true,
+      "passed": true
+    },
+    {
+      "name": "uncurry-child",
+      "expected_acceptance": true,
+      "seconds": 0.01133464789018035,
+      "certificate_sha256": "2f06ba52db128f85fcac7c2e7c6f2006867f90014592a9564ebecae5e829f88b",
+      "returncode": 0,
+      "stdout": "CERTIFIED\n",
+      "stderr": "",
+      "accepted": true,
+      "passed": true
+    },
+    {
+      "name": "missing-discharge",
+      "expected_acceptance": false,
+      "seconds": 0.0113974679261446,
+      "certificate_sha256": "98ba6cdb649e69188032fa6e6a1ed1cf9e78fe0c3b71b05aa0a72a1b6ae9f575",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "ordinary proof has an undischarged or incompatible assumption\n",
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "name": "wrong-strict-subject",
+      "expected_acceptance": false,
+      "seconds": 0.011293068993836641,
+      "certificate_sha256": "f0a0837090a9ed58cb4990dd6196c5cfe85ab2cbf3a3568c3091771b723fefe7",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "1: error in termination assumption or unknown proof\ntermination of the problem\nrules:\n\nf(x) -> f(x)\n\nmay not be concluded from assuming termination of the problem\nrules:\n\n\n\nsuperfluous rule f(x) -> f(x)\n\n\n",
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "name": "wrong-weak-subject",
+      "expected_acceptance": false,
+      "seconds": 0.011291079223155975,
+      "certificate_sha256": "67b4cca1f4dc444aecbdc9c3cd844c3d020f16bf6fa79902d1fcba4b9e6a4562",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "ordinary proof has an undischarged or incompatible assumption\n",
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "name": "false-adp-proof",
+      "expected_acceptance": false,
+      "seconds": 0.011180550325661898,
+      "certificate_sha256": "606c37f69df79a4bad28c55aacf25e99a20025f5af0b0e4c17d9b95acad05156",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "relative ADP main component is not empty\n",
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "name": "incompatible-strategy",
+      "expected_acceptance": false,
+      "seconds": 0.011533006094396114,
+      "certificate_sha256": "a86ce325ddac45de4c7096ff24cd83704370978272e267c3819d2ba0af774ca6",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "ordinary proof has an undischarged or incompatible assumption\n",
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "name": "unchecked-extra-discharge",
+      "expected_acceptance": false,
+      "seconds": 0.011496136896312237,
+      "certificate_sha256": "ec398f36a75c512326cfde17267425aeb7f7e81b4e312293bf76221deb726c67",
+      "returncode": 1,
+      "stdout": "REJECTED\n",
+      "stderr": "relative ADP main component is not empty\n",
+      "accepted": false,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

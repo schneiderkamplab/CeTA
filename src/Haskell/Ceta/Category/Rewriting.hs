@@ -1,7 +1,7 @@
 module Ceta.Category.Rewriting (run) where
 
 import Ceta.Input.Characters (cachedCharacters)
-import Ceta_Relative (Cert_result(..), certify_proof_integrated, explode)
+import Ceta_Relative (Cert_result(..), certify_proof_composed, explode)
 import System.Environment (getArgs, withArgs)
 import System.Exit (ExitCode(..), exitWith)
 import System.IO (hPutStrLn, stderr)
@@ -85,7 +85,7 @@ parse _ _ _ _ _ = do
   exitWith (ExitFailure 4)
 
 start assumptions input property answer proof =
-  case certify_proof_integrated assumptions input property answer proof of
+  case certify_proof_composed assumptions input property answer proof of
     Certified -> do
       putStrLn "CERTIFIED"
       exitWith ExitSuccess

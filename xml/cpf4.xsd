@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="4.0">
   <xs:annotation>
     <xs:documentation>
@@ -8,6 +8,9 @@ CPF 4.0 document; the existing CPF 3.x vocabulary is unchanged.
     </xs:documentation>
   </xs:annotation>
   <xs:include schemaLocation="lts4.xsd"/>
+  <xs:include schemaLocation="cpf4-composition.xsd"/>
+  <xs:include schemaLocation="cpf4-native.xsd"/>
+  <xs:include schemaLocation="cpf4-ferrum.xsd"/>
   <xs:element name="name" type="xs:string"/>
   <xs:group name="label">
     <xs:annotation>
@@ -17,8 +20,7 @@ CPF 4.0 document; the existing CPF 3.x vocabulary is unchanged.
       <xs:element name="numberLabel">
         <xs:complexType>
           <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="number"
-              type="xs:nonNegativeInteger"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="number" type="xs:nonNegativeInteger"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -36,6 +38,8 @@ CPF 4.0 document; the existing CPF 3.x vocabulary is unchanged.
       <xs:documentation>is used as a function symbol in terms, orderings, ....</xs:documentation>
     </xs:annotation>
     <xs:choice>
+      <xs:element name="adpCom0"><xs:complexType/></xs:element>
+      <xs:element name="adpCom2"><xs:complexType/></xs:element>
       <xs:element ref="name"/>
       <xs:element name="sharp">
         <xs:complexType>
@@ -256,8 +260,8 @@ a + b * sqrt(c)</xs:documentation>
       <xs:documentation>an argument filter consist of a mapping from symbols to collapsing or non-collapsing filters.
 
 Example:
-an entry f/3 -> collapsing/1 filters the ternary symbol f to its third argument.
-an entry f/3 -> nonCollapsing/3 1 filters the term f(x,y,z) to f(z,x)
+an entry f/3 -&gt; collapsing/1 filters the ternary symbol f to its third argument.
+an entry f/3 -&gt; nonCollapsing/3 1 filters the term f(x,y,z) to f(z,x)
 
 often for nonCollapsing filters the positions are given in increasing order. However, argument filters can also be used to simulate permutations e.g. to express some LPOS by an LPO an argument filter.</xs:documentation>
     </xs:annotation>
@@ -564,7 +568,7 @@ Note that interpretations are still full linear expressions and not just singlet
                         <xs:choice>
                           <xs:element name="lex">
                             <xs:annotation>
-                              <xs:documentation>to realize permutations for lex. comparisons, use an argument filter, which just permutes. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                              <xs:documentation>to realize permutations for lex. comparisons, use an argument filter, which just permutes. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
                             </xs:annotation>
                             <xs:complexType> </xs:complexType>
                           </xs:element>
@@ -578,7 +582,7 @@ Note that interpretations are still full linear expressions and not just singlet
             </xs:element>
             <xs:element minOccurs="0" ref="argumentFilter">
               <xs:annotation>
-                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -616,8 +620,7 @@ Note that interpretations are still full linear expressions and not just singlet
                         <xs:element minOccurs="0" name="subtermCoefficientEntries">
                           <xs:complexType>
                             <xs:sequence>
-                              <xs:element maxOccurs="unbounded" minOccurs="0" name="entry"
-                                type="xs:positiveInteger"/>
+                              <xs:element maxOccurs="unbounded" minOccurs="0" name="entry" type="xs:positiveInteger"/>
                             </xs:sequence>
                           </xs:complexType>
                         </xs:element>
@@ -629,7 +632,7 @@ Note that interpretations are still full linear expressions and not just singlet
             </xs:element>
             <xs:element minOccurs="0" ref="argumentFilter">
               <xs:annotation>
-                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -672,7 +675,7 @@ Note that interpretations are still full linear expressions and not just singlet
             </xs:element>
             <xs:element minOccurs="0" ref="argumentFilter">
               <xs:annotation>
-                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -746,7 +749,7 @@ If no lex/mul argument is given, then the default is used: lex.</xs:documentatio
                         <xs:choice minOccurs="0">
                           <xs:element name="lex">
                             <xs:annotation>
-                              <xs:documentation>to realize permutations for lex. comparisons, use an argument filter, which just permutes. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                              <xs:documentation>to realize permutations for lex. comparisons, use an argument filter, which just permutes. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
                             </xs:annotation>
                             <xs:complexType> </xs:complexType>
                           </xs:element>
@@ -878,7 +881,7 @@ Note that the arities change, e.g., when the argument filter assigns a ternary f
           <xs:sequence>
             <xs:element ref="argumentFilter">
               <xs:annotation>
-                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
               </xs:annotation>
             </xs:element>
             <xs:group ref="redPair"/>
@@ -895,7 +898,7 @@ Note that the arities change, e.g., when the argument filter assigns a ternary f
       <xs:choice>
         <xs:element name="knuthBendixOrder">
           <xs:annotation>
-            <xs:documentation>For Martin and Nipkow's testing, the precedence > must be injective, i.e., f > g or g > f for all different function symbols f, g.</xs:documentation>
+            <xs:documentation>For Martin and Nipkow's testing, the precedence &gt; must be injective, i.e., f &gt; g or g &gt; f for all different function symbols f, g.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -928,8 +931,7 @@ Note that the arities change, e.g., when the argument filter assigns a ternary f
                           <xs:element minOccurs="0" name="subtermCoefficientEntries">
                             <xs:complexType>
                               <xs:sequence>
-                                <xs:element maxOccurs="unbounded" minOccurs="0" name="entry"
-                                  type="xs:positiveInteger"/>
+                                <xs:element maxOccurs="unbounded" minOccurs="0" name="entry" type="xs:positiveInteger"/>
                               </xs:sequence>
                             </xs:complexType>
                           </xs:element>
@@ -1009,13 +1011,13 @@ Note that the arities change, e.g., when the argument filter assigns a ternary f
                 <xs:annotation>
                   <xs:documentation>If this element is missing, then one uses semantic labeling in the model version.
 
-Otherwise, semantic labeling is applied with a quasi-model where one uses a tuple extension of the standard order > on the naturals. However, there can be several such extensions, e.g., point-wise, lexicographic (w.r.t. permutation), ...</xs:documentation>
+Otherwise, semantic labeling is applied with a quasi-model where one uses a tuple extension of the standard order &gt; on the naturals. However, there can be several such extensions, e.g., point-wise, lexicographic (w.r.t. permutation), ...</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
                   <xs:choice>
                     <xs:element name="pointWise">
                       <xs:annotation>
-                        <xs:documentation>here, (x1,..,xn) > (y1,...,yn) iff all xi >= yi and for some i: xi > yi</xs:documentation>
+                        <xs:documentation>here, (x1,..,xn) &gt; (y1,...,yn) iff all xi &gt;= yi and for some i: xi &gt; yi</xs:documentation>
                       </xs:annotation>
                     </xs:element>
                   </xs:choice>
@@ -1270,7 +1272,7 @@ Otherwise, semantic labeling is applied with a quasi-model where one uses a tupl
   </xs:element>
   <xs:element name="derivationPatternProof">
     <xs:annotation>
-      <xs:documentation>state that u ->+ v.
+      <xs:documentation>state that u -&gt;+ v.
 
 The strings u v must be provided in combination with a proof.</xs:documentation>
     </xs:annotation>
@@ -1286,9 +1288,9 @@ The strings u v must be provided in combination with a proof.</xs:documentation>
         </xs:element>
         <xs:element name="OC2">
           <xs:annotation>
-            <xs:documentation>derive w l -> t r
-from w -> t x
-and  x l -> r
+            <xs:documentation>derive w l -&gt; t r
+from w -&gt; t x
+and  x l -&gt; r
 
 The strings t, x, and l have to be provided (in this order) to ease proof reconstruction. </xs:documentation>
           </xs:annotation>
@@ -1305,9 +1307,9 @@ The strings t, x, and l have to be provided (in this order) to ease proof recons
         </xs:element>
         <xs:element name="OC2prime">
           <xs:annotation>
-            <xs:documentation>derive l w -> r t
-from w -> x t
-and  l x -> r
+            <xs:documentation>derive l w -&gt; r t
+from w -&gt; x t
+and  l x -&gt; r
 
 The strings x, t, and l have to be provided (in this order) to ease proof reconstruction. </xs:documentation>
           </xs:annotation>
@@ -1324,9 +1326,9 @@ The strings x, t, and l have to be provided (in this order) to ease proof recons
         </xs:element>
         <xs:element name="OC3">
           <xs:annotation>
-            <xs:documentation>derive w -> t1 r t2
-from w -> t1 x t2
-and  x -> r
+            <xs:documentation>derive w -&gt; t1 r t2
+from w -&gt; t1 x t2
+and  x -&gt; r
 
 The strings t1 and t2 have to be provided (in this order) to ease proof reconstruction. </xs:documentation>
           </xs:annotation>
@@ -1342,9 +1344,9 @@ The strings t1 and t2 have to be provided (in this order) to ease proof reconstr
         </xs:element>
         <xs:element name="OC3prime">
           <xs:annotation>
-            <xs:documentation>derive t1 w t2 -> r
-from t1 x t2 -> r
-and  w -> x
+            <xs:documentation>derive t1 w t2 -&gt; r
+from t1 x t2 -&gt; r
+and  w -&gt; x
 
 The strings t1 and t2 have to be provided (in this order) to ease proof reconstruction. </xs:documentation>
           </xs:annotation>
@@ -1360,8 +1362,8 @@ The strings t1 and t2 have to be provided (in this order) to ease proof reconstr
         </xs:element>
         <xs:element name="OCintoDP1">
           <xs:annotation>
-            <xs:documentation>derive l^n c ->+ c r^n from
-overlap-closure l c ->+ c r</xs:documentation>
+            <xs:documentation>derive l^n c -&gt;+ c r^n from
+overlap-closure l c -&gt;+ c r</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -1372,8 +1374,8 @@ overlap-closure l c ->+ c r</xs:documentation>
         </xs:element>
         <xs:element name="OCintoDP2">
           <xs:annotation>
-            <xs:documentation>derive c l^n ->+ r^n c from
-overlap-closure c l ->+ r c</xs:documentation>
+            <xs:documentation>derive c l^n -&gt;+ r^n c from
+overlap-closure c l -&gt;+ r c</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -1384,8 +1386,8 @@ overlap-closure c l ->+ r c</xs:documentation>
         </xs:element>
         <xs:element name="lift">
           <xs:annotation>
-            <xs:documentation>derive l1 m1^(f1*n+(c1+f1)) r1 ->+ l2 m2^(f2*n+(c2+f2)) r2
-from l1 m1^(f1*n+c1) r1 ->+ l2 m2^(f2*n+c2) r2</xs:documentation>
+            <xs:documentation>derive l1 m1^(f1*n+(c1+f1)) r1 -&gt;+ l2 m2^(f2*n+(c2+f2)) r2
+from l1 m1^(f1*n+c1) r1 -&gt;+ l2 m2^(f2*n+c2) r2</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -1396,9 +1398,9 @@ from l1 m1^(f1*n+c1) r1 ->+ l2 m2^(f2*n+c2) r2</xs:documentation>
         </xs:element>
         <xs:element name="DP_OC_1_1">
           <xs:annotation>
-            <xs:documentation>derive pat ->+ l v r m^n r'
-from   pat ->+ l x r m^n r'
-and      x ->+ v
+            <xs:documentation>derive pat -&gt;+ l v r m^n r'
+from   pat -&gt;+ l x r m^n r'
+and      x -&gt;+ v
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1414,9 +1416,9 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_OC_1_2">
           <xs:annotation>
-            <xs:documentation>derive l l1 m1^n r1 ->+ v r m2^n r2
-from     l1 m1^n r1 ->+ x r m2^n r2
-and             l x ->+ v
+            <xs:documentation>derive l l1 m1^n r1 -&gt;+ v r m2^n r2
+from     l1 m1^n r1 -&gt;+ x r m2^n r2
+and             l x -&gt;+ v
 
 The strings l, r, and x have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1433,9 +1435,9 @@ The strings l, r, and x have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_OC_2">
           <xs:annotation>
-            <xs:documentation>derive pat ->+ l' (l v r)^n r'
-from   pat ->+ l' (l x r)^n r'
-and      x ->+ v
+            <xs:documentation>derive pat -&gt;+ l' (l v r)^n r'
+from   pat -&gt;+ l' (l x r)^n r'
+and      x -&gt;+ v
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1451,9 +1453,9 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_OC_3_1">
           <xs:annotation>
-            <xs:documentation>derive pat ->+ l' m^n l v r
-from   pat ->+ l' m^n l x r
-and      x ->+ v
+            <xs:documentation>derive pat -&gt;+ l' m^n l v r
+from   pat -&gt;+ l' m^n l x r
+and      x -&gt;+ v
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1469,9 +1471,9 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_OC_3_2">
           <xs:annotation>
-            <xs:documentation>derive l1 m1^n r1 r ->+ l2 m2 l v
-from     l1 m1^n r1 ->+ l2 m2^n l x
-and             x r ->+ v
+            <xs:documentation>derive l1 m1^n r1 r -&gt;+ l2 m2 l v
+from     l1 m1^n r1 -&gt;+ l2 m2^n l x
+and             x r -&gt;+ v
 
 The strings l, r, and x have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1488,9 +1490,9 @@ The strings l, r, and x have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_DP_1_1">
           <xs:annotation>
-            <xs:documentation>derive pat ->+ l l2 m2^n r2 r
-from   pat ->+ l l1 m1^n r1 r
-and      l1 m1^n r1 ->+ l2 m2^n r2
+            <xs:documentation>derive pat -&gt;+ l l2 m2^n r2 r
+from   pat -&gt;+ l l1 m1^n r1 r
+and      l1 m1^n r1 -&gt;+ l2 m2^n r2
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1506,9 +1508,9 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_DP_1_2">
           <xs:annotation>
-            <xs:documentation>derive l1 m1^n r1' r ->+ l l2' m2^n r2
-from   l1 m1^n r1' ->+ l l2 m^n r1
-and    l2 m^n r1 r ->+ l2' m2^n r2
+            <xs:documentation>derive l1 m1^n r1' r -&gt;+ l l2' m2^n r2
+from   l1 m1^n r1' -&gt;+ l l2 m^n r1
+and    l2 m^n r1 r -&gt;+ l2' m2^n r2
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1524,9 +1526,9 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_DP_2_1">
           <xs:annotation>
-            <xs:documentation>derive l l1' m1^n r1 ->+ l2' m2^n r2' r
-from   l1' m1^n r1 ->+ l1 m^n r2 r
-and    l l1 m^n r2 -> l2' m2^n r2'
+            <xs:documentation>derive l l1' m1^n r1 -&gt;+ l2' m2^n r2' r
+from   l1' m1^n r1 -&gt;+ l1 m^n r2 r
+and    l l1 m^n r2 -&gt; l2' m2^n r2'
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1542,9 +1544,9 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="DP_DP_2_2">
           <xs:annotation>
-            <xs:documentation>derive l l1' m'^n r1' r ->+ pat
-from   l1' m'^n r1' ->+ l1 m1^n r1
-and    l l1 m1^n r1 r ->+ pat
+            <xs:documentation>derive l l1' m'^n r1' r -&gt;+ pat
+from   l1' m'^n r1' -&gt;+ l1 m1^n r1
+and    l l1 m1^n r1 r -&gt;+ pat
 
 The strings l and r have to be provided.</xs:documentation>
           </xs:annotation>
@@ -1560,8 +1562,8 @@ The strings l and r have to be provided.</xs:documentation>
         </xs:element>
         <xs:element name="equivalent">
           <xs:annotation>
-            <xs:documentation>derive patl  ->+ patr
-from   patl' ->+ patr'
+            <xs:documentation>derive patl  -&gt;+ patr
+from   patl' -&gt;+ patr'
 since patl and patl' are equivalent word patterns and patr and patr' are equivalent word patterns.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
@@ -1591,7 +1593,7 @@ i.e., the i-th proof step may be based on all derivation patterns that have been
         <xs:choice>
           <xs:element name="selfEmbeddingOC">
             <xs:annotation>
-              <xs:documentation>there is a loop, as we have generated an overlap closure m ->+ l m r.
+              <xs:documentation>there is a loop, as we have generated an overlap closure m -&gt;+ l m r.
 
 The strings l, m, and r must be given in this order.</xs:documentation>
             </xs:annotation>
@@ -1607,7 +1609,7 @@ The strings l, m, and r must be given in this order.</xs:documentation>
             <xs:annotation>
               <xs:documentation>There is a self-embedding derivation pattern
 
-l m^f1 r ->+ l' l m^f2 r r'
+l m^f1 r -&gt;+ l' l m^f2 r r'
 
 such that f1 and f2 are fitting.
 
@@ -1665,7 +1667,7 @@ l' and r' have to be provided.</xs:documentation>
   <xs:element name="rewriteSequence">
     <xs:annotation>
       <xs:documentation>if t_0 is startterm, and there are rewrite-steps p_i, rule_i, t_i (for i = 1..n)
-then t_{i-1} ->_{p_i,rule_i} t_i for all i=1..n
+then t_{i-1} -&gt;_{p_i,rule_i} t_i for all i=1..n
 
 If the rewrite sequence is built via two TRSs, where one corresponds to a major step, and the other corresponds to a relative step, then all relative steps have to be marked with the relative-elemnt. (e.g., for loops in relative termination analysis R/S, the S-steps are relative, or for loops in the DP-framework with (P,R), the R-steps are relative).</xs:documentation>
     </xs:annotation>
@@ -1756,7 +1758,7 @@ If the rewrite sequence is built via two TRSs, where one corresponds to a major 
         <xs:element name="uncurriedSymbols">
           <xs:complexType>
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" name="uncurriedSymbolEntry">
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="uncurriedSymbolEntry">
                 <xs:annotation>
                   <xs:documentation>mark for each original symbols the new uncurried symbols:
 if the constant map should now be uncurried up to two levels then
@@ -1799,7 +1801,7 @@ there should be a symbol map entry
   </xs:element>
   <xs:element name="loop">
     <xs:annotation>
-      <xs:documentation>a loop is given by a (non-empty) rewrite-sequence t0 ->+ tn where additionally tn = C[t0 sigma]</xs:documentation>
+      <xs:documentation>a loop is given by a (non-empty) rewrite-sequence t0 -&gt;+ tn where additionally tn = C[t0 sigma]</xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
@@ -1886,7 +1888,7 @@ Note that CeTA only supports relative systems for no strategy or for innermost s
         <xs:element name="innermostLhss">
           <xs:complexType>
             <xs:sequence>
-              <xs:group ref="term" maxOccurs="unbounded" minOccurs="0"/>
+              <xs:element ref="nfs" minOccurs="0"/><xs:group ref="term" maxOccurs="unbounded" minOccurs="0"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -2066,9 +2068,9 @@ Note that CeTA only supports relative systems for no strategy or for innermost s
       <xs:choice>
         <xs:element name="implication">
           <xs:annotation>
-            <xs:documentation>a1 -> a2 -> ... -> an
+            <xs:documentation>a1 -&gt; a2 -&gt; ... -&gt; an
 or
-(a1 /\ a2 /\ ... ) -> an</xs:documentation>
+(a1 /\ a2 /\ ... ) -&gt; an</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -2215,8 +2217,7 @@ The quantified formula, the instantiation substitution, and the new total constr
                           <xs:element name="subtermVarEntries">
                             <xs:complexType>
                               <xs:sequence>
-                                <xs:element maxOccurs="unbounded" minOccurs="0"
-                                  name="subtermVarEntry">
+                                <xs:element maxOccurs="unbounded" minOccurs="0" name="subtermVarEntry">
                                   <xs:complexType>
                                     <xs:sequence>
                                       <xs:group ref="term"/>
@@ -2246,9 +2247,9 @@ The quantified formula, the instantiation substitution, and the new total constr
       <xs:element name="polynomial" type="xs:nonNegativeInteger">
         <xs:annotation>
           <xs:documentation>the number is the degree:
-0 -> O(1)
-1 -> O(n)
-2 -> O(n^2) ...</xs:documentation>
+0 -&gt; O(1)
+1 -&gt; O(n)
+2 -&gt; O(n^2) ...</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:choice>
@@ -2637,7 +2638,7 @@ Peaks have to be specified in the critical pairs and it is recommended to also p
   </xs:element>
   <xs:element name="critPairInfo">
     <xs:annotation>
-      <xs:documentation>We nearly always consider peaks of the form left &lt;- peak -root-> Only exception: for simultaneous critical pairs we consider peaks of the form left &lt;-o- peak -> right, i.e., where the multistep leads to the left and the single step to the right.) The intermediate terms t1, .., tn are those that occur in the joining conversion of form left &lt;-> t1 &lt;-> ... &lt;-> tn &lt;-> right.
+      <xs:documentation>We nearly always consider peaks of the form left &lt;- peak -root-&gt; Only exception: for simultaneous critical pairs we consider peaks of the form left &lt;-o- peak -&gt; right, i.e., where the multistep leads to the left and the single step to the right.) The intermediate terms t1, .., tn are those that occur in the joining conversion of form left &lt;-&gt; t1 &lt;-&gt; ... &lt;-&gt; tn &lt;-&gt; right.
 
 All non-trivial peaks must be listed, i.e., where left and right differ.
 
@@ -2989,7 +2990,7 @@ It is preferred to not use the auto-mode, but instead explicitly list the critic
         <xs:element name="simultaneousCriticalPairsClosed">
           <xs:annotation>
             <xs:documentation>The TRSs R and S are commuting as they all simultaneous critical
-  pairs of R and S are closed, i.e., whenever u &lt;-o,R- . -S-> v is a simultaneous critical pair, then u -S->* . &lt;-o,R- v.
+  pairs of R and S are closed, i.e., whenever u &lt;-o,R- . -S-&gt; v is a simultaneous critical pair, then u -S-&gt;* . &lt;-o,R- v.
 
 Note that the criterion is not symmetric, therefore,
 you might need to swap the role of the two TRSs.
@@ -3197,7 +3198,7 @@ The TRS R has to be given.</xs:documentation>
         </xs:element>
         <xs:element name="ruleRemoval">
           <xs:annotation>
-            <xs:documentation>the TRS R is not confluent as one can remove some rules and show that the sub-system is not confluent. If S is the subsystem, then for each rule (l,r) in R-S where l only has symbols from S, one has to provide a l ->*S r rewrite sequence. Note that S is obtained from R by providing the list of deleted rules, i.e., R \ S must be part of the certificate.</xs:documentation>
+            <xs:documentation>the TRS R is not confluent as one can remove some rules and show that the sub-system is not confluent. If S is the subsystem, then for each rule (l,r) in R-S where l only has symbols from S, one has to provide a l -&gt;*S r rewrite sequence. Note that S is obtained from R by providing the list of deleted rules, i.e., R \ S must be part of the certificate.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -3261,11 +3262,11 @@ The TRS R has to be given.</xs:documentation>
           <xs:documentation>Let s and t be two ground terms that should not be non-joinable
 w.r.t. TRSs Rs and Rt
 This is proved by giving some weakly monotone interpretation
-[.] and >=, such that
+[.] and &gt;=, such that
 - Rs^-1 and Rt are a quasi-model of the interpretation.
-- not [t] >= [s]
+- not [t] &gt;= [s]
 
-This corresponds to Aoto/FroCoS 13/Thm 10, and it can simulate Thm 6 by choosing equality for >=.
+This corresponds to Aoto/FroCoS 13/Thm 10, and it can simulate Thm 6 by choosing equality for &gt;=.
 Note that the usable restriction to usable rules must be made explicitly before by applying the non-joinability technique usable-rules!
 
 This technique is tried symmetrically, i.e., (Rs,s) and (Rt,t) might be swapped.</xs:documentation>
@@ -3280,10 +3281,10 @@ This technique is tried symmetrically, i.e., (Rs,s) and (Rt,t) might be swapped.
         <xs:annotation>
           <xs:documentation>Let s and t be two ground terms that should not be non-joinable
 wrt. to TRSs Rs and Rt.
-This is proved by giving some discrimination pair >= and >
+This is proved by giving some discrimination pair &gt;= and &gt;
 (and an optional argument filter pi) such that
 - Rs^-1 and Rt are weakly decreasing
-- s > t
+- s &gt; t
 
 This corresponds to Aoto/FroCoS 13/Thm 12 without usable rules.
 Note that the restriction to usable rules must be made explicitly before by applying the non-joinability technique usable-rules!
@@ -3306,7 +3307,7 @@ This technique is tried symmetrically, i.e., (Rs,s) and (Rt,t) might be swapped.
           <xs:sequence>
             <xs:element ref="argumentFilter">
               <xs:annotation>
-                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
               </xs:annotation>
             </xs:element>
             <xs:group ref="nonJoinProof"/>
@@ -3421,10 +3422,10 @@ The remaining set of lhss has to be given in the proof.</xs:documentation>
         <xs:element name="rewritingProc">
           <xs:annotation>
             <xs:documentation>Rewrite the rhs of some DP, if the usable rules of the redex are confluent.
-First rule: the original DP s -> t
+First rule: the original DP s -&gt; t
 Rewrite step: the reduction from t to t' at position p
 Usable rules of t |_ p (optional)
-The second rule is also optional: it can be any variable renamed rule of s -> t' (which may be used in the new DP-problem instead)</xs:documentation>
+The second rule is also optional: it can be any variable renamed rule of s -&gt; t' (which may be used in the new DP-problem instead)</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -3458,8 +3459,9 @@ The second rule is also optional: it can be any variable renamed rule of s -> t'
       </xs:choice>
     </xs:complexType>
   </xs:element>
-  <xs:element name="dpProof">
-    <xs:complexType>
+  <xs:element name="dpProof" type="ferrumDpProofBody">
+    </xs:element>
+  <xs:complexType name="ferrumDpProofBody">
       <xs:choice>
         <xs:element name="pIsEmpty">
           <xs:annotation>
@@ -3580,7 +3582,7 @@ The removed DPs need to be listed.</xs:documentation>
                     <xs:annotation>
                       <xs:documentation>The rule specifies the DP for which the rewrite sequence is applied. Here, the rewrite sequence for the projected terms has to be given.
 
-Example: if s -> t is the DP and a rewrite sequence t_1 ->+ t_n is given then it must hold that pi(s) = t_1, and t_n contains pi(t) as a subterm.</xs:documentation>
+Example: if s -&gt; t is the DP and a rewrite sequence t_1 -&gt;+ t_n is given then it must hold that pi(s) = t_1, and t_n contains pi(t) as a subterm.</xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                       <xs:sequence>
@@ -3601,7 +3603,7 @@ Example: if s -> t is the DP and a rewrite sequence t_1 ->+ t_n is given then it
           <xs:annotation>
             <xs:documentation>Use the semantic labeling processor to apply semantic labeling on both the DPs and the TRS. The model element determines the kind (model or quasi-model version, label, root-labeling, etc.).
 
-The decreasing rules should be of the form f_..(x1,..,xn) -> f_..(x1,..,xn), i.e., the variables should be enumerated from x1 onwards.
+The decreasing rules should be of the form f_..(x1,..,xn) -&gt; f_..(x1,..,xn), i.e., the variables should be enumerated from x1 onwards.
 
 The labeled system has to be provided where the new innermost strategy in the form of innermost left-hand-sides is only required if one had an innermost problem before. </xs:documentation>
           </xs:annotation>
@@ -3625,9 +3627,9 @@ otherwise, for every existing edge in a size-change graph, the corresponding sub
 if not all rules are usable, then one has to use a Ce-compatible order.
 
 Example:
-DP: F(s(x),g(x)) -> F(id(x),g(x))
-TRS: g(..) -> ..
-     id(x) -> x
+DP: F(s(x),g(x)) -&gt; F(id(x),g(x))
+TRS: g(..) -&gt; ..
+     id(x) -&gt; x
 
 if one builds a size-change graph where only the first arguments are connected, then one only has to add the id-rule to the set of usable rules, but not the g-rule.</xs:documentation>
           </xs:annotation>
@@ -3655,7 +3657,7 @@ if one builds a size-change graph where only the first arguments are connected, 
                       <xs:annotation>
                         <xs:documentation>an edge in a size change graph is always of the form
 
-left-argument > / >= right-argument
+left-argument &gt; / &gt;= right-argument
 
 position 0 corresponds to the whole term.</xs:documentation>
                       </xs:annotation>
@@ -3710,7 +3712,7 @@ see the flat context closure technique for TRS for more explanations including a
             <xs:sequence>
               <xs:element ref="argumentFilter">
                 <xs:annotation>
-                  <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -> [3,1]</xs:documentation>
+                  <xs:documentation>To realize permutations for lex. comparisons, one has to use an argument filter, which can just permute. Eg., right-to-left precedence of f(x,y,z) where the second argument is dropped, is done by argument filter f -&gt; [3,1]</xs:documentation>
                 </xs:annotation>
               </xs:element>
               <xs:element name="dps" type="trs"/>
@@ -3781,7 +3783,7 @@ but then minimality is not preserved)</xs:documentation>
         <xs:element name="rewritingProc">
           <xs:annotation>
             <xs:documentation>Rewrite the rhs of some DP, if the usable rules of the redex are confluent.
-First rule: the original DP s -> t
+First rule: the original DP s -&gt; t
 Rewrite step: the reduction from t to t' at position p
 Second rule: the new DP (can be variable renamed)
 Usable rules of t |_ p</xs:documentation>
@@ -3937,11 +3939,11 @@ It returns two DP problems where once all strict and once all bound DPs are dele
           <xs:annotation>
             <xs:documentation>replace some ground term in rhs of pairs by a fresh variable, which is then added as additional argument to all pairs. Example, replacing 1000 by x may transform
 
-F(a,b,c) -> G(1000,f(1000),1000)
+F(a,b,c) -&gt; G(1000,f(1000),1000)
 
 may yield
 
-F'(a,b,c,x) -> G'(1000,f(x),x,x).
+F'(a,b,c,x) -&gt; G'(1000,f(x),x,x).
 
 In the proof, one has to provide the ground term and a list showing how each old pair is transformed into a new pair.
 
@@ -3980,9 +3982,8 @@ the fresh variable is always added as last argument.</xs:documentation>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-      </xs:choice>
+      <xs:element ref="qdpToSrs"/><xs:element ref="finitenessAssumption"/></xs:choice>
     </xs:complexType>
-  </xs:element>
   <xs:element name="subProof">
     <xs:complexType>
       <xs:sequence>
@@ -4047,7 +4048,7 @@ the fresh variable is always added as last argument.</xs:documentation>
         </xs:element>
         <xs:element name="stringReversal">
           <xs:annotation>
-            <xs:documentation>reverse the strings in a TRS, i.e., replace f(g(h(x))) -> f(x) by h(g(f(x))) -> f(x).
+            <xs:documentation>reverse the strings in a TRS, i.e., replace f(g(h(x))) -&gt; f(x) by h(g(f(x))) -&gt; f(x).
 Note that the variable in a reversed rule should be same as the variable in the original rule.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
@@ -4061,8 +4062,9 @@ Note that the variable in a reversed rule should be same as the variable in the 
       </xs:choice>
     </xs:complexType>
   </xs:element>
-  <xs:element name="trsNonterminationProof">
-    <xs:complexType>
+  <xs:element name="trsNonterminationProof" type="ferrumNonterminationProofBody">
+    </xs:element>
+  <xs:complexType name="ferrumNonterminationProofBody">
       <xs:choice>
         <xs:element name="rightGroundNontermination">
           <xs:annotation>
@@ -4088,7 +4090,7 @@ The removed rules need to be specified.</xs:documentation>
         </xs:element>
         <xs:element name="stringReversal">
           <xs:annotation>
-            <xs:documentation>reverse the strings in a TRS, i.e., replace f(g(h(x))) -> f(x) by h(g(f(x))) -> f(x).
+            <xs:documentation>reverse the strings in a TRS, i.e., replace f(g(h(x))) -&gt; f(x) by h(g(f(x))) -&gt; f(x).
 Note that the variable in a reversed rule should be same as the variable in the original rule.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
@@ -4126,7 +4128,7 @@ Note that the variable in a reversed rule should be same as the variable in the 
         <xs:element name="constantToUnary">
           <xs:annotation>
             <xs:documentation>Transform all constants into unary symbols. A renaming from the constants to the unary symbols has to be provided, in combination with the new TRS. Moreover, one has to provide a unique variable which is used for transforming ground rules.
-E.g., for a rule f(a) -> g(b), one needs to know the x in the resulting rule f(a(x)) -> g(b(x)).</xs:documentation>
+E.g., for a rule f(a) -&gt; g(b), one needs to know the x in the resulting rule f(a(x)) -&gt; g(b(x)).</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -4171,10 +4173,9 @@ E.g., for a rule f(a) -> g(b), one needs to know the x in the resulting rule f(a
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-      </xs:choice>
+      <xs:element ref="gm04CompleteNonterminationTransformation"/></xs:choice>
     </xs:complexType>
-  </xs:element>
-  <xs:element name="trsTerminationProof">
+  <xs:element name="trsTerminationProof" type="ferrumTrsProofBody">
     <xs:annotation>
       <xs:documentation>An (innermost) (relative) termination proof of R/S.
 
@@ -4183,8 +4184,11 @@ Some proofs may implicitly turn R/S into R u S, e.g., dependency pairs.
 For all elements that require a new TRS, e.g., via transformation T where the natural new problem would be T(R) / T(S), the certificate just lists the new TRS T(R) union T(S), and the certifier will convert this to T(R) / T(S) internally.
 </xs:documentation>
     </xs:annotation>
-    <xs:complexType>
+    </xs:element>
+  <xs:complexType name="ferrumTrsProofBody">
       <xs:choice>
+        <xs:element name="terminationAssumption"><xs:complexType><xs:sequence><xs:element ref="trsInput"/></xs:sequence></xs:complexType></xs:element>
+        <xs:element ref="relativeAdpTerminationProof"/>
         <xs:element name="rIsEmpty">
           <xs:annotation>
             <xs:documentation>state that the R/S is relative terminating since R has no rules</xs:documentation>
@@ -4206,6 +4210,21 @@ The deleted rules have to be given.
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="relativeBounds">
+          <xs:annotation>
+            <xs:documentation>apply relative match-bounds to move some rules from the strict in the weak component. The moved rules have to be provided.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="bounds"/>
+              <xs:element name="trs" type="trs"/>
+              <xs:element ref="trsTerminationProof"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="sparseTiling"/>
+        <xs:element ref="sparseRuleRemoval"/>
+        <xs:element ref="ruleStrengthening"/>
         <xs:element name="rfcBounds">
           <xs:annotation>
             <xs:documentation>Prove termination by a right-forward-closure bounds certificate.</xs:documentation>
@@ -4258,6 +4277,16 @@ The deleted rules have to be given.
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="rfcMatchboxAbsoluteBounds">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="initialTerms"/>
+              <xs:element ref="bounds"/>
+              <xs:element name="trs" type="trs"/>
+              <xs:element ref="trsTerminationProof"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="rfcNativeMatchboxRelativeBounds">
           <xs:annotation>
             <xs:documentation>RFC relative bounds checked by the native verified Matchbox checker.</xs:documentation>
@@ -4294,7 +4323,7 @@ In the relative setting, an implicit step from R/S to R u S is done!</xs:documen
           <xs:annotation>
             <xs:documentation>Use semantic labeling. The model element determines the kind (model or quasi-model version, label, root-labeling, etc.).
 
-The decreasing rules should be of the form f_..(x1,..,xn) -> f_..(x1,..,xn), i.e., the variables should be enumerated from x1 onwards.
+The decreasing rules should be of the form f_..(x1,..,xn) -&gt; f_..(x1,..,xn), i.e., the variables should be enumerated from x1 onwards.
 
 The new TRS and if applicable the new innermost strategy in the form of left-hand-sides must be provided.</xs:documentation>
           </xs:annotation>
@@ -4309,7 +4338,7 @@ The new TRS and if applicable the new innermost strategy in the form of left-han
         </xs:element>
         <xs:element name="stringReversal">
           <xs:annotation>
-            <xs:documentation>reverse the strings in a TRS, i.e., replace f(g(h(x))) -> f(x) by h(g(f(x))) -> f(x).
+            <xs:documentation>reverse the strings in a TRS, i.e., replace f(g(h(x))) -&gt; f(x) by h(g(f(x))) -&gt; f(x).
 Note that the variable in a reversed rule should be same as the variable in the original rule.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
@@ -4372,7 +4401,7 @@ The transformed rules of R have to be provided as TRS, the uncurrying rules are 
         </xs:element>
         <xs:element name="equalityRemoval">
           <xs:annotation>
-            <xs:documentation>removes all rules t -> t from S</xs:documentation>
+            <xs:documentation>removes all rules t -&gt; t from S</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -4393,15 +4422,15 @@ f(x_1,Box)
 g(Box,u)
 g(z,Box)
 
-and the TRS f(x,y) -> g(x,y)
+and the TRS f(x,y) -&gt; g(x,y)
 
 then the resulting TRS is obtained by replacing all boxes
 by corresponding left- and right-hand sides of rules:
 
-f(f(x,y),x_1) -> f(g(x,y),x_1)
-f(x_1,f(x,y)) -> f(x_1,g(x,y))
-g(f(x,y),u) -> g(g(x,y),u)
-g(z,f(x,y)) -> g(z,g(x,y))
+f(f(x,y),x_1) -&gt; f(g(x,y),x_1)
+f(x_1,f(x,y)) -&gt; f(x_1,g(x,y))
+g(f(x,y),u) -&gt; g(g(x,y),u)
+g(z,f(x,y)) -&gt; g(z,g(x,y))
 
 The reason for this requirement is that
 1) it eases the check whether the given system really consists
@@ -4427,7 +4456,7 @@ The reason for this requirement is that
         <xs:element name="constantToUnary">
           <xs:annotation>
             <xs:documentation>Transform all constants into unary symbols. A renaming from the constants to the unary symbols has to be provided, in combination with the new TRS. Moreover, one has to provide a unique variable which is used for transforming ground rules.
-E.g., for a rule f(a) -> g(b), one needs to know the x in the resulting rule f(a(x)) -> g(b(x)).</xs:documentation>
+E.g., for a rule f(a) -&gt; g(b), one needs to know the x in the resulting rule f(a(x)) -&gt; g(b(x)).</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -4438,9 +4467,8 @@ E.g., for a rule f(a) -> g(b), one needs to know the x in the resulting rule f(a
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-      </xs:choice>
+      <xs:element ref="outermostRaffelsieperZantemaTransformation"/><xs:element ref="aaeccInnermost"/><xs:element ref="gm04CompleteFullTransformation"/><xs:element ref="gm04CompleteTransformation"/></xs:choice>
     </xs:complexType>
-  </xs:element>
   <xs:element name="wcrProof">
     <xs:complexType>
       <xs:choice>
@@ -4613,7 +4641,7 @@ can be checked by computing normal forms</xs:documentation>
         <xs:element name="nonreachableSubstApprox">
           <xs:annotation>
             <xs:documentation>
-              Has to provide a TRS 'R'' s.t. for each 'l -> r in R' there is 'l' -> r' in R'' and
+              Has to provide a TRS 'R'' s.t. for each 'l -&gt; r in R' there is 'l' -&gt; r' in R'' and
               a substituion 'sigma' with 'l = l'sigma' and 'r = r'sigma', and a 'nonreachabilityProof' for '(R', s, t)'.
             </xs:documentation>
           </xs:annotation>
@@ -4639,7 +4667,7 @@ can be checked by computing normal forms</xs:documentation>
         <xs:element name="nonreachableCorewritePair">
           <xs:annotation>
             <xs:documentation>Such that s sigma does not rewrite to t sigma by providng a cowrite pair such that:
-A) R is contained in >= and
+A) R is contained in &gt;= and
 B) s &lt; t
 
 Note that the redPair element actually refers to corewrite pairs.</xs:documentation>
@@ -4840,7 +4868,7 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
               This transformation lifts infeasibility condtions into a rule. To be precise,
               given two constants T, F
               transforms the infeasibility problem of conditions cs over R
-              into the infeasibility problem of the single condition T -> F over R plus the rule T -> F | cs.
+              into the infeasibility problem of the single condition T -&gt; F over R plus the rule T -&gt; F | cs.
             </xs:documentation>
           </xs:annotation>
           <xs:complexType>
@@ -5085,7 +5113,7 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
           <xs:annotation>
             <xs:documentation>
               Indicates that the CTRS 'R' is almost orthogonal modulo infeasibility.
-              So for each CCP coming from an overlap of rules 'l_1 -> r_1 | d_1' and 'l_2 -> r_2 | d_2' with mgu 'sigma'
+              So for each CCP coming from an overlap of rules 'l_1 -&gt; r_1 | d_1' and 'l_2 -&gt; r_2 | d_2' with mgu 'sigma'
               we have to certify that its conditions 'c_1, c_2' (where 'c_1 = d_1sigma' and 'c_2 = d_2sigma') are infeasible
               by 'aoInfeasibleConditions'.
             </xs:documentation>
@@ -5205,8 +5233,7 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
               <xs:element name="conditions">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0"
-                      ref="conditionalRewritingSequence"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" ref="conditionalRewritingSequence"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -5296,6 +5323,8 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
   </xs:element>
   <xs:group name="input">
     <xs:choice>
+      <xs:element ref="cycleInput"/>
+      <xs:element ref="conditionalInput"/>
       <xs:element ref="trsInput"/>
       <xs:element name="acRewriteSystem">
         <xs:complexType>
@@ -5388,8 +5417,7 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
                     <xs:element name="precedenceWeight">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="precedenceWeightEntry" maxOccurs="unbounded"
-                            minOccurs="0">
+                          <xs:element name="precedenceWeightEntry" maxOccurs="unbounded" minOccurs="0">
                             <xs:annotation>
                               <xs:documentation>Note that the arities within the precedence weight entries in combination with argument filters correspond to the unfiltered arities. E.g., if the second argument of f/3 is dropped then the weight precedence entry still has to give arity 3 to f.</xs:documentation>
                             </xs:annotation>
@@ -5410,8 +5438,7 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
                                 <xs:element minOccurs="0" name="subtermCoefficientEntries">
                                   <xs:complexType>
                                     <xs:sequence>
-                                      <xs:element maxOccurs="unbounded" minOccurs="0" name="entry"
-                                        type="xs:positiveInteger"/>
+                                      <xs:element maxOccurs="unbounded" minOccurs="0" name="entry" type="xs:positiveInteger"/>
                                     </xs:sequence>
                                   </xs:complexType>
                                 </xs:element>
@@ -5448,7 +5475,7 @@ Note that the redPair element actually refers to corewrite pairs.</xs:documentat
       </xs:element>
       <xs:element name="lts" type="lts"/>
       <xs:element ref="ltsSafetyInput"/>
-    </xs:choice>
+    <xs:element ref="relativeDpInput"/><xs:element ref="csrImprovedDpInput"/><xs:element ref="csrMutermTypedDpInput"/></xs:choice>
   </xs:group>
   <xs:element name="acDPTerminationProof">
     <xs:complexType>
@@ -5528,7 +5555,7 @@ The removed DPs have to be given.</xs:documentation>
             <xs:documentation>First the equations have to be given,
 then the dps for the equations,
 then the dps for the TRS,
-finally, the extended rules like f(l,x) -> f(r,x)
+finally, the extended rules like f(l,x) -&gt; f(r,x)
 The two subproofs are first for the DPs of the TRS, and second for the sharped version of the extended rules.
 If only one subproof is provided, then the DPs of the TRS and the sharped version of the extended rules are merged.</xs:documentation>
           </xs:annotation>
@@ -5658,11 +5685,12 @@ important in presence of extra variables in rhss. Default is false.</xs:document
       </xs:choice>
     </xs:complexType>
   </xs:element>
-  <xs:element name="csrDpProof">
+  <xs:element name="csrDpProof" type="ferrumCsrDpProofBody">
     <xs:annotation>
       <xs:documentation>A replacement-map-aware dependency-pair proof.</xs:documentation>
     </xs:annotation>
-    <xs:complexType>
+    </xs:element>
+  <xs:complexType name="ferrumCsrDpProofBody">
       <xs:choice>
         <xs:element name="pIsEmpty"/>
         <xs:element name="ordinaryDpProof">
@@ -5712,8 +5740,7 @@ important in presence of extra variables in rhss. Default is false.</xs:document
               <xs:choice>
                 <xs:sequence>
                   <xs:element ref="argumentFilter"/>
-                  <xs:element name="projectedRewriteSequence"
-                    minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="projectedRewriteSequence" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                       <xs:sequence>
                         <xs:group ref="rule"/>
@@ -5733,20 +5760,16 @@ important in presence of extra variables in rhss. Default is false.</xs:document
           <xs:complexType>
             <xs:sequence>
               <xs:element name="subtermCriterion"/>
-              <xs:element name="sizeChangeGraph" minOccurs="0"
-                maxOccurs="unbounded">
+              <xs:element name="sizeChangeGraph" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:group ref="rule"/>
-                    <xs:element name="edge" minOccurs="0"
-                      maxOccurs="unbounded">
+                    <xs:element name="edge" minOccurs="0" maxOccurs="unbounded">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="position"
-                            type="xs:nonNegativeInteger"/>
+                          <xs:element name="position" type="xs:nonNegativeInteger"/>
                           <xs:element name="strict" type="xs:boolean"/>
-                          <xs:element name="position"
-                            type="xs:nonNegativeInteger"/>
+                          <xs:element name="position" type="xs:nonNegativeInteger"/>
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
@@ -5756,9 +5779,20 @@ important in presence of extra variables in rhss. Default is false.</xs:document
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-      </xs:choice>
+      <xs:element ref="csrRedPairUrProc"/><xs:element name="csrForwardInstantiationProc">
+          <xs:annotation>
+            <xs:documentation>Replacement-map-aware CS-instantiation (LPAR 2008).</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="rule"/>
+              <xs:element name="instantiations" type="trs"/>
+              <xs:element ref="csrDpProof"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        </xs:choice>
     </xs:complexType>
-  </xs:element>
   <xs:complexType name="csrTerminationProofType">
     <xs:choice>
       <xs:element name="rIsEmpty"/>
@@ -5825,8 +5859,7 @@ Deprecated compatibility alias for csrTerminationProof.
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="conservativeCsrTerminationProof"
-    type="conservativeCsrTerminationProofType">
+  <xs:element name="conservativeCsrTerminationProof" type="conservativeCsrTerminationProofType">
     <xs:annotation>
       <xs:documentation>
 Conservative improved context-sensitive dependency pairs with an explicit
@@ -5834,8 +5867,7 @@ fresh unhiding symbol, dependency-pair superset, and auxiliary rules.
       </xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:element name="nativeConservativeCsrTerminationProof"
-    type="conservativeCsrTerminationProofType">
+  <xs:element name="nativeConservativeCsrTerminationProof" type="conservativeCsrTerminationProofType">
     <xs:annotation>
       <xs:documentation>
 Deprecated compatibility alias for conservativeCsrTerminationProof.
@@ -5853,8 +5885,7 @@ Deprecated compatibility alias for conservativeCsrTerminationProof.
       <xs:element ref="csrDpProof"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="csrImprovedDependencyPairs"
-    type="csrImprovedDependencyPairsType">
+  <xs:element name="csrImprovedDependencyPairs" type="csrImprovedDependencyPairsType">
     <xs:annotation>
       <xs:documentation>
 Exact LPAR 2008 improved Q-CSDP construction. The checker recomputes ordinary,
@@ -5865,6 +5896,16 @@ is untrusted.
   </xs:element>
   <xs:group name="proof">
     <xs:choice>
+      <xs:element ref="CycleEmbedding"/>
+      <xs:element ref="CycleTransport"/>
+      <xs:element ref="CycleMorphism"/>
+      <xs:element ref="ConditionalCycle"/>
+      <xs:element ref="ConditionalLoop"/>
+
+      <xs:element ref="relativeAdpTerminationProof"/>
+      <xs:element ref="relativeAdpComposition"/>
+      <xs:element ref="relativeDpProof"/>
+      <xs:element ref="conditionalErasureProof"/>
       <xs:element ref="acTerminationProof"/>
       <xs:element ref="trsTerminationProof"/>
       <xs:element ref="csrTerminationProof"/>
@@ -5914,15 +5955,14 @@ is untrusted.
               <xs:complexType>
                 <xs:sequence>
                   <xs:element ref="substitution"/>
-                  <xs:element ref="conditionalRewritingSequence" maxOccurs="unbounded" minOccurs="0"
-                  />
+                  <xs:element ref="conditionalRewritingSequence" maxOccurs="unbounded" minOccurs="0"/>
                 </xs:sequence>
               </xs:complexType>
             </xs:element>
           </xs:choice>
         </xs:complexType>
       </xs:element>
-    </xs:choice>
+    <xs:element ref="csrMutermTypedDependencyPairs"/><xs:element ref="csrRuleRemovalsThenImproved"/><xs:element ref="csrGmTransformation"/><xs:element ref="csrGuardedTerminationProof"/><xs:element ref="gm04StandaloneTrsProof"/><xs:element ref="gm04StandaloneDpProof"/><xs:element ref="csrImprovedDpProof"/><xs:element ref="csrMutermTypedDpProof"/><xs:element ref="csrOrthogonalityCheck"/><xs:element ref="csrRta08DependencyPairs"/><xs:element ref="csrInnermostDependencyPairs"/></xs:choice>
   </xs:group>
   <xs:element name="input">
     <xs:complexType>
@@ -5963,6 +6003,7 @@ is untrusted.
     <xs:complexType>
       <xs:choice>
         <xs:element name="termination"/>
+        <xs:element name="operationalTermination"/>
         <xs:element name="confluence"/>
         <xs:element name="commutation"/>
         <xs:element name="completion"/>

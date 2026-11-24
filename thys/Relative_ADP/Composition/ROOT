@@ -1,0 +1,5 @@
+session Relative_ADP_Composition = Relative_ADP_Ceta_Dev +
+  options [document = false]
+  theories
+    Relative_ADP_Composition
+    Relative_ADP_Composition_Parser

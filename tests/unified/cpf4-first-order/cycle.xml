@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<certificationProblem><cpfVersion>4.0</cpfVersion><lookupTables/><input><cycleInput><rules><item><lhs><item>0</item></lhs><rhs><item>0</item></rhs></item></rules></cycleInput></input><property><termination/></property><answer><no/></answer><proof><CycleEmbedding><start><item>0</item></start><steps><item><ruleIndex>0</ruleIndex><rotation>0</rotation></item></steps><left></left><right></right></CycleEmbedding></proof></certificationProblem>
