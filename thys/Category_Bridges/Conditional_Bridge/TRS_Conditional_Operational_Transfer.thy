@@ -2,10 +2,10 @@ theory TRS_Conditional_Operational_Transfer
   imports TRS_Conditional_Embedding
 begin
 fun conditional_source where
-  "conditional_source (CRewrite s t) = to_term s"
+  "conditional_source (CStep s t) = to_term s"
 | "conditional_source (CReach s t) = to_term s"
 fun conditional_phase :: "('f,'v) conditional_goal \<Rightarrow> nat" where
-  "conditional_phase (CRewrite s t) = 0"
+  "conditional_phase (CStep s t) = 0"
 | "conditional_phase (CReach s t) = 1"
 
 lemma evaluation_order:
@@ -24,7 +24,7 @@ next
   case (transitive s u t)
   have cases: "i=0 \<or> i=1" using index transitive by auto
   have first: "i=1 \<Longrightarrow> (to_term s,to_term u) \<in> cstep (to_conditional_rules R)"
-    using prefix[of 0] conditional_success_embedding[of A R "CRewrite s u"] transitive by simp
+    using prefix[of 0] conditional_success_embedding[of A R "CStep s u"] transitive by simp
   have subset: "cstep (to_conditional_rules R) \<subseteq> S"
     using order unfolding quasi_decreasing_order_def by blast
   have smaller: "i=1 \<Longrightarrow> (to_term s,to_term u) \<in> S"

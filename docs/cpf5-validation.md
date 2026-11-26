@@ -62,3 +62,13 @@ attempts remain diagnostic evidence and are excluded from final totals.
 
 Use the [CPF 5 user guide](../xml/CPF5.md) for end-user build and checking
 commands. Work pauses here as requested; no CPF 6 or LeTA continuation is implied.
+
+## Main synchronization before publication
+
+Remote commit `9f0297d4b7794832b9f5259de46914478854397a` arrived after validation.
+It renames the conditional specification goal `CRewrite` to `CStep` and updates
+documentation. The merge preserves its new README layout and adds CPF 5 links.
+No unified build scripts, Haskell inputs, export archives or export manifest
+changed relative to the validated milestone commit `f93f84f`; the executable
+validation remains applicable. This does not claim a new Isabelle verification
+of the incoming category-specification rename.

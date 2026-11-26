@@ -6,11 +6,11 @@ is False for a single rewrite and True for reachability. Signature restrictions
 apply to every premise and substitution, not just to the outer endpoints.\<close>
 type_synonym ('f,'v) native_conditional_goal = "bool \<times> ('f,'v) term \<times> ('f,'v) term"
 fun to_conditional_goal where
-  "to_conditional_goal (CRewrite s t) = (False,to_term s,to_term t)"
+  "to_conditional_goal (CStep s t) = (False,to_term s,to_term t)"
 | "to_conditional_goal (CReach s t) = (True,to_term s,to_term t)"
 definition from_conditional_goal where
   "from_conditional_goal g = (case g of (b,s,t) \<Rightarrow>
-    if b then CReach (from_term s) (from_term t) else CRewrite (from_term s) (from_term t))"
+    if b then CReach (from_term s) (from_term t) else CStep (from_term s) (from_term t))"
 lemma conditional_goal_roundtrip [simp]:
   "from_conditional_goal (to_conditional_goal g) = g"
   "to_conditional_goal (from_conditional_goal h) = h"

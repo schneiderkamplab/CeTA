@@ -3,11 +3,11 @@ theory TRS_Conditional_Examples
 begin
 lemma empty_conditional_success:
   assumes "conditional_success A {} g"
-  shows "case g of CRewrite s t \<Rightarrow> False | CReach s t \<Rightarrow> s=t"
+  shows "case g of CStep s t \<Rightarrow> False | CReach s t \<Rightarrow> s=t"
   using assms by (induct rule: conditional_success.induct)
     (erule conditional_inference.cases; auto)
 lemma empty_ordinary_terminates: "trs_conditional_terminates A {}"
-  using empty_conditional_success[of A "CRewrite _ _"]
+  using empty_conditional_success[of A "CStep _ _"]
   by (auto simp: trs_conditional_terminates_def no_infinite_steps_def conditional_step_def)
 
 text \<open>The circular condition a reaches b never succeeds. Thus there are
@@ -18,31 +18,31 @@ definition circular_rules where "circular_rules = {((ca,cb),[(ca,cb)])}"
 definition constants :: "bool arity" where "constants f = 0"
 lemma circular_success:
   assumes "conditional_success constants circular_rules g"
-  shows "case g of CRewrite s t \<Rightarrow> False | CReach s t \<Rightarrow> s=t"
+  shows "case g of CStep s t \<Rightarrow> False | CReach s t \<Rightarrow> s=t"
   using assms by (induct rule: conditional_success.induct)
     (erule conditional_inference.cases; auto simp: circular_rules_def)
 lemma circular_ordinary_terminates:
   "trs_conditional_terminates constants circular_rules"
-  using circular_success[of "CRewrite _ _"]
+  using circular_success[of "CStep _ _"]
   by (auto simp: trs_conditional_terminates_def no_infinite_steps_def conditional_step_def)
 lemma circular_call:
-  "conditional_evaluation_step constants circular_rules (CRewrite ca cb) (CReach ca cb)"
+  "conditional_evaluation_step constants circular_rules (CStep ca cb) (CReach ca cb)"
 proof -
-  have inf: "conditional_inference constants circular_rules (CRewrite ca cb) [CReach ca cb]"
+  have inf: "conditional_inference constants circular_rules (CStep ca cb) [CReach ca cb]"
     using conditional_inference.rule[of ca cb "[(ca,cb)]" circular_rules constants SHole SVar]
     by (simp add: circular_rules_def constants_def correct_substitution_def)
   show ?thesis unfolding conditional_evaluation_step_def
     by (intro exI[of _ "[CReach ca cb]"] exI[of _ 0]) (simp add: inf)
 qed
 lemma circular_reach:
-  "conditional_evaluation_step constants circular_rules (CReach ca cb) (CRewrite ca cb)"
+  "conditional_evaluation_step constants circular_rules (CReach ca cb) (CStep ca cb)"
   unfolding conditional_evaluation_step_def
-  by (intro exI[of _ "[CRewrite ca cb, CReach cb cb]"] exI[of _ 0] conjI;
+  by (intro exI[of _ "[CStep ca cb, CReach cb cb]"] exI[of _ 0] conjI;
     (rule conditional_inference.transitive; simp add: constants_def | simp add: constants_def))
 lemma circular_operational_nontermination:
   "\<not> trs_conditional_operationally_terminates constants circular_rules"
   unfolding trs_conditional_operational_nontermination_iff
-  by (intro exI[of _ "\<lambda>i. if even i then CReach ca cb else CRewrite ca cb"] allI)
+  by (intro exI[of _ "\<lambda>i. if even i then CReach ca cb else CStep ca cb"] allI)
     (simp add: circular_call circular_reach)
 lemma circular_valid: "conditional_problem constants circular_rules"
   by (simp add: conditional_problem_def circular_rules_def constants_def)
@@ -51,7 +51,7 @@ lemma unconditional_step_iff:
   "conditional_step A ((\<lambda>(l,r). ((l,r),[])) ` R) s t \<longleftrightarrow> fo_step A R s t"
 proof
   assume "conditional_step A ((\<lambda>(l,r). ((l,r),[])) ` R) s t"
-  then obtain gs where "conditional_inference A ((\<lambda>(l,r). ((l,r),[])) ` R) (CRewrite s t) gs"
+  then obtain gs where "conditional_inference A ((\<lambda>(l,r). ((l,r),[])) ` R) (CStep s t) gs"
     unfolding conditional_step_def by (cases rule: conditional_success.cases) auto
   then show "fo_step A R s t"
     by (cases rule: conditional_inference.cases) (auto simp: fo_step_def)
@@ -63,7 +63,7 @@ next
     and eq: "s = fo_plug C (fo_subst sigma l)"
       "t = fo_plug C (fo_subst sigma r)"
     by (auto simp: fo_step_def)
-  have inf: "conditional_inference A ((\<lambda>(l,r). ((l,r),[])) ` R) (CRewrite s t) []"
+  have inf: "conditional_inference A ((\<lambda>(l,r). ((l,r),[])) ` R) (CStep s t) []"
     using conditional_inference.rule[of l r "[]" "(\<lambda>(l,r). ((l,r),[])) ` R" A C sigma] wf lr
     by (auto simp: eq)
   show "conditional_step A ((\<lambda>(l,r). ((l,r),[])) ` R) s t"
@@ -95,7 +95,7 @@ proof -
     by (rule conditional_success.derive[where gs="[]"];
       (rule conditional_inference.reflexive; simp | simp))
   have inf: "conditional_inference unary guarded_reduction
-    (CRewrite (SFun () [SFun () [SVar 7]]) (SFun () [SVar 7])) [CReach (SVar 7) (SVar 7)]"
+    (CStep (SFun () [SFun () [SVar 7]]) (SFun () [SVar 7])) [CReach (SVar 7) (SVar 7)]"
     using conditional_inference.rule[of "SFun () [SVar 0]" "SVar 0"
       "[(SVar 0,SVar 0)]" guarded_reduction unary "SMore () [] SHole []" "\<lambda>_. SVar 7"]
     by (simp add: unary_def correct_substitution_def)
@@ -106,7 +106,7 @@ lemma conditional_step_implies_erased_step:
   assumes "conditional_step A R s t"
   shows "fo_step A (fst ` R) s t"
 proof -
-  obtain gs where "conditional_inference A R (CRewrite s t) gs"
+  obtain gs where "conditional_inference A R (CStep s t) gs"
     using assms unfolding conditional_step_def by (cases rule: conditional_success.cases) auto
   then obtain l r cs C sigma where lr: "((l,r),cs) \<in> R"
     and ctxt: "correct_context A C" and sub: "correct_substitution A sigma"
@@ -129,7 +129,7 @@ qed
 
 lemma empty_evaluation_shape:
   assumes "conditional_evaluation_step A {} g h"
-  shows "\<exists>s t u. g=CReach s t \<and> h=CRewrite s u"
+  shows "\<exists>s t u. g=CReach s t \<and> h=CStep s u"
 proof -
   obtain gs i where inf: "conditional_inference A {} g gs" and idx: "i < length gs"
     and pre: "\<And>j. j<i \<Longrightarrow> conditional_success A {} (gs!j)" and h: "h=gs!i"
@@ -144,7 +144,7 @@ proof -
     have "i \<noteq> 1"
     proof
       assume "i=1"
-      then have "conditional_success A {} (CRewrite s u)" using pre[of 0] transitive by simp
+      then have "conditional_success A {} (CStep s u)" using pre[of 0] transitive by simp
       from empty_conditional_success[OF this] show False by simp
     qed
     with cases transitive h show ?thesis by auto

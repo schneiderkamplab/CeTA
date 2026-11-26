@@ -20,7 +20,7 @@ text \<open>A goal asks for one rewrite or for a finite, possibly empty sequence
 The inference rules below describe proof attempts, including unsuccessful ones.
 Premises are evaluated in their displayed order.\<close>
 datatype ('f,'v) conditional_goal =
-    CRewrite "('f,'v) fo_term" "('f,'v) fo_term"
+    CStep "('f,'v) fo_term" "('f,'v) fo_term"
   | CReach "('f,'v) fo_term" "('f,'v) fo_term"
 
 inductive conditional_inference ::
@@ -28,7 +28,7 @@ inductive conditional_inference ::
     \<Rightarrow> ('f, 'v) conditional_goal list \<Rightarrow> bool" for A R where
   reflexive: "arity_correct A s \<Longrightarrow> conditional_inference A R (CReach s s) []"
 | transitive: "arity_correct A s \<Longrightarrow> arity_correct A u \<Longrightarrow> arity_correct A t \<Longrightarrow>
-    conditional_inference A R (CReach s t) [CRewrite s u, CReach u t]"
+    conditional_inference A R (CReach s t) [CStep s u, CReach u t]"
 | rule: "((l,r),cs) \<in> R \<Longrightarrow> correct_context A C \<Longrightarrow>
     correct_substitution A sigma \<Longrightarrow>
     arity_correct A (fo_plug C (fo_subst sigma l)) \<Longrightarrow>
@@ -36,7 +36,7 @@ inductive conditional_inference ::
     (\<forall>(s,t)\<in>set cs. arity_correct A (fo_subst sigma s) \<and>
       arity_correct A (fo_subst sigma t)) \<Longrightarrow>
     conditional_inference A R
-      (CRewrite (fo_plug C (fo_subst sigma l))
+      (CStep (fo_plug C (fo_subst sigma l))
                 (fo_plug C (fo_subst sigma r)))
       (map (\<lambda>(s,t). CReach (fo_subst sigma s) (fo_subst sigma t)) cs)"
 
@@ -51,7 +51,7 @@ inductive conditional_success ::
 definition conditional_step ::
   "'f arity \<Rightarrow> ('f,'v) conditional_rule set \<Rightarrow> ('f, 'v) fo_term \<Rightarrow> ('f,
     'v) fo_term \<Rightarrow> bool" where
-  "conditional_step A R s t \<longleftrightarrow> conditional_success A R (CRewrite s t)"
+  "conditional_step A R s t \<longleftrightarrow> conditional_success A R (CStep s t)"
 
 text \<open>An evaluation descends to a premise only after all its earlier
 siblings have succeeded. The selected premise need not succeed. This records

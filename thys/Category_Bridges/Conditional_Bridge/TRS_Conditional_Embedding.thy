@@ -9,7 +9,7 @@ definition to_conditional_rules :: "('f,'v) conditional_rule set \<Rightarrow> (
     ((to_term l,to_term r),map (\<lambda>(s,t). (to_term s,to_term t)) cs)) ` R"
 
 fun conditional_goal_holds where
-  "conditional_goal_holds R (CRewrite s t) = ((to_term s,to_term t) \<in> cstep R)"
+  "conditional_goal_holds R (CStep s t) = ((to_term s,to_term t) \<in> cstep R)"
 | "conditional_goal_holds R (CReach s t) = ((to_term s,to_term t) \<in> (cstep R)^*)"
 
 lemma conditional_success_embedding:
@@ -49,7 +49,7 @@ qed
 lemma conditional_step_embedding:
   "conditional_step A R s t \<Longrightarrow>
     (to_term s,to_term t) \<in> cstep (to_conditional_rules R)"
-  using conditional_success_embedding[of A R "CRewrite s t"]
+  using conditional_success_embedding[of A R "CStep s t"]
   by (simp add: conditional_step_def)
 
 theorem conditional_ordinary_termination_transfer:

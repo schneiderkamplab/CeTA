@@ -33,7 +33,7 @@ not treated as an Isabelle theorem or an extra axiom in this package.
 
 There is no duplicated first-order term or context datatype. The new
 `conditional_goal` datatype describes questions about the existing terms:
-`CRewrite s t` asks for one step; `CReach s t` asks for a finite sequence.
+`CStep s t` asks for one step; `CReach s t` asks for a finite sequence.
 The earlier Standard, Innermost, Relative, Context-sensitive and Outermost
 specifications likewise use `TRS_Spec_Base`. SRS uses its shared word definitions;
 higher-order rewriting uses its shared typed, binding-aware term definitions.
@@ -60,7 +60,7 @@ premise need not succeed. An infinite sequence of these descents represents
 an infinite branch of a left-to-right proof attempt. This definition does not
 mention quasi-decreasingness or any checker implementation.
 
-The ordinary property excludes infinite sequences of successful `CRewrite`
+The ordinary property excludes infinite sequences of successful `CStep`
 goals. The operational property excludes infinite evaluation branches. Both
 specifications expose nontermination as an existential infinite sequence.
 `operational_implies_ordinary` proves the implication between the two properties.
