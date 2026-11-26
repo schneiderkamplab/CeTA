@@ -2,6 +2,7 @@
 -- first-order CPF are checked by the Isabelle-generated combined checker.
 module Ceta.Category.HigherOrderDelegation (run) where
 
+import qualified Ceta.Input.Cpf4 as CPF
 import Ceta.Input.Characters (cachedCharacters)
 import qualified Higher_Order_Core as C
 import qualified Higher_Order_Algebraic_Embedding as F
@@ -96,16 +97,26 @@ filteredDelegation = do
 main = do
   args <- getArgs
   case args of
+    [sourceFile] -> do
+      source <- readFile sourceFile
+      case CPF.higherOrderDelegation source of
+        Left message -> putStrLn message >> exitFailure
+        Right (wire, cpf) -> certify wire cpf
     [sourceFile, cpfFile] -> do
       source <- readFile sourceFile
       cpf <- readFile cpfFile
-      case readP_to_S (skipSpaces >> (delegation <++ semanticDelegation <++ filteredDelegation)) source of
-        [(check, "")] | check (decodeA cpf) -> putStrLn "CERTIFIED YES"
-        _ -> putStrLn "REJECTED" >> exitFailure
+      certify source cpf
     _ -> putStrLn "usage: ceta-ho-delegation SOURCE-CERTIFICATE FIRST-ORDER-PROOF.xml" >> exitFailure
 
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
-run args = withArgs args main
+run [sourceFile] = withArgs [sourceFile] main
+run ["--legacy", sourceFile, cpfFile] = withArgs [sourceFile, cpfFile] main
+run _ = putStrLn "usage: ceta --category higher-order-delegation CPF5.xml | --legacy NATIVE CHILD.xml" >> exitFailure
 
 decodeA = cachedCharacters A.explode
+
+certify source cpf =
+  case readP_to_S (skipSpaces >> (delegation <++ semanticDelegation <++ filteredDelegation)) source of
+    [(check, "")] | check (decodeA cpf) -> putStrLn "CERTIFIED YES"
+    _ -> putStrLn "REJECTED" >> exitFailure

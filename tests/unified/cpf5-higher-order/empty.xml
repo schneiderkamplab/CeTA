@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<certificationProblem><cpfVersion>5.0</cpfVersion><lookupTables/><input><higherOrderInput><signature></signature><rules></rules></higherOrderInput></input><property><termination/></property><answer><yes/></answer><proof><ho-termination><certificate><empty></empty></certificate></ho-termination></proof></certificationProblem>

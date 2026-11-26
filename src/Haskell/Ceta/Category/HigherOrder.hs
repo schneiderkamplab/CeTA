@@ -5,7 +5,9 @@
 module Ceta.Category.HigherOrder (run) where
 
 import qualified Higher_Order_Checker as C
+import qualified Ceta.Input.Cpf4 as CPF
 import Control.Monad (replicateM)
+import Data.Char (isSpace)
 import System.Environment (getArgs, withArgs)
 import System.Exit (exitFailure)
 import Text.ParserCombinators.ReadP
@@ -340,12 +342,14 @@ main = do
   args <- getArgs
   case args of
     ["--explain", path] -> do
-      source <- readFile path
+      raw <- readFile path
+      source <- either (\message -> putStrLn message >> exitFailure) return (CPF.native "higherOrder" Nothing raw)
       case readP_to_S (skipSpaces >> terminationDiagnostics) source of
         [(lines, "")] -> mapM_ putStrLn lines
         _ -> putStrLn "INVALID DIAGNOSTIC INPUT" >> exitFailure
     [path] -> do
-      source <- readFile path
+      raw <- readFile path
+      source <- either (\message -> putStrLn message >> exitFailure) return (CPF.native "higherOrder" Nothing raw)
       case readP_to_S (skipSpaces >> check) source of
         [((False, True), "")] -> putStrLn "CERTIFIED HO LOOP"
         [((True, True), "")] -> putStrLn "CERTIFIED HO TERMINATION"
@@ -354,4 +358,14 @@ main = do
 
 -- Keep the existing category CLI and verdicts behind the shared dispatcher.
 run :: [String] -> IO ()
-run args = withArgs args main
+run ("--legacy" : args) = withArgs args main
+run args = case args of
+  [path] -> requireXML path
+  ["--explain", path] -> requireXML path
+  _ -> withArgs args main
+  where
+    requireXML path = do
+      source <- readFile path
+      case dropWhile isSpace source of
+        '<':_ -> withArgs args main
+        _ -> putStrLn "CPF 5 XML required; use --legacy for native witnesses" >> exitFailure

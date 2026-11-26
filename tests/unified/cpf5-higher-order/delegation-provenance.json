@@ -1,0 +1,9 @@
+{
+  "source": "CeTA-Lean/tests/fixtures/ho-children",
+  "source_commit": "799abb5",
+  "fixtures": {
+    "ho-ceta-semantic-delegation": "223b8de01277bc73f97bb982e9f97d92d4fcbfca26ba9cc3e4f70dbde3aa628d",
+    "ho-ceta-filtered-delegation": "c31a2c24d0afb4ace4c9e16aa2ce9b05a9b59aba812a87401549c8f836868a95",
+    "ho-ceta-delegation": "6c6a7ea65d5bc9c0b52be8e16fddb2a1762a3fe82d9128f7a9caf54d52a60f04"
+  }
+}

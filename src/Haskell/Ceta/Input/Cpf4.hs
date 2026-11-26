@@ -1,5 +1,5 @@
 -- Strict CPF 4 data parsing. No mathematical acceptance lives in this module.
-module Ceta.Input.Cpf4 (native, parseXML, renderXML, XML(..), elems, scalar, field, envelope) where
+module Ceta.Input.Cpf4 (native, higherOrderDelegation, parseXML, renderXML, XML(..), elems, scalar, field, envelope) where
 import Ceta.Input.Cpf4Grammar
 import Control.Monad (guard, unless)
 import Data.Char (isSpace, isAlphaNum, chr)
@@ -49,16 +49,17 @@ envelope source = do
  root<-parseXML source;assert (label root=="certificationProblem") "expected CPF document"
  cs<-elems root;assert (map label cs==["cpfVersion","lookupTables","input","property","answer","proof"]) "CPF envelope fields"
  let [version,tables,inp,prop,ans,prf]=cs
- v<-scalar version;assert (v=="4.0") "expected CPF 4.0";empty tables
+ v<-scalar version;assert (v `elem` ["4.0","5.0","6.0"]) "unsupported CPF version";empty tables
  ps<-elems prop;as<-elems ans;qs<-elems prf;is<-elems inp
  case (is,ps,as,qs) of
-  ([i],[p],[a],[q])->do empty p;empty a;return (i,label p,label a,q)
+  ([i],[p],[a],[q])->do empty p;empty a;return (v,i,label p,label a,q)
   _->Left "ambiguous input, property, answer or proof"
 
 native expected ordinary source
  | not ("<" `isPrefixOf` dropWhile isSpace source) = Right source
  | otherwise = do
-  (inp,prop,ans,proof)<-envelope source
+  (version,inp,prop,ans,proof)<-envelope source
+  assert (expected/="higherOrder" || version/="4.0") "higher-order certificates require CPF 5 or later"
   let kind=label proof
   spec<-maybe (Left "unknown certificate constructor") Right (lookup kind roots)
   assert (category spec==expected && label inp==expected++"Input") "wrong category"
@@ -71,7 +72,7 @@ native expected ordinary source
       proofFields=filter (not . (`elem` inputs spec).fst) fs
   assert (map label ins==map fst inputFields && map label ps==map fst proofFields) "missing, duplicate or reordered fields"
   vs<-mapM (\(n,t)->do x<-maybe (Left "missing field") Right (lookup n [(label x,x)|x<-ins++ps]);decode 0 (wire spec) t x) fs
-  return (unwords (kind:vs)++"\n")
+  return (unwords (kind:vs)++" \n")
 
 decode d w _ _ | d>1024 = Left "certificate nesting limit"
 decode d w (Ref n) x = maybe (Left "unknown schema") (\s->decode (d+1) w s x) (lookup n types)
@@ -96,3 +97,18 @@ decode d w (Choice cases) x = do
 decodeFields d w fs x = do
  cs<-elems x;assert (map label cs==map fst fs) "constructor fields"
  sequence [decode (d+1) w t c | ((_,t),c)<-zip fs cs]
+
+-- Decode a self-contained HO delegation without trusting its first-order child.
+-- The combined generated checker verifies the child against the extracted TRS.
+higherOrderDelegation source = do
+ root <- parseXML source
+ (_,_,_,_,proof) <- envelope source
+ assert (label proof `elem` ["ho-ceta-delegation","ho-ceta-semantic-delegation","ho-ceta-filtered-delegation"]) "delegation required"
+ fs <- elems proof
+ let children = filter ((=="firstOrderProof").label) fs
+ child <- case children of [c] -> field "trsTerminationProof" c; _ -> Left "one embedded child required"
+ let cleanProof = Element (label proof) [] (filter ((/="firstOrderProof").label) fs)
+ cs <- elems root
+ let cleanRoot = Element "certificationProblem" [] [if label c=="proof" then Element "proof" [] [cleanProof] else c | c<-cs]
+ wire <- native "higherOrder" Nothing (renderXML cleanRoot)
+ return (wire,renderXML child)

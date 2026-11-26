@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "name": "switchToCooperationTermination",
+      "file": "switchToCooperationTermination.xml.gz",
+      "sha256": "30dc4d48407bda2c6d0e329a2596325b7c8a01f45a9d354e05c2631ad3000d57",
+      "converted_from": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/converted-v2/0649.xml"
+    },
+    {
+      "name": "newInvariants",
+      "file": "newInvariants.xml.gz",
+      "sha256": "beff1e1ff16935e79e94e2b6c48f193a50914282c1212fe3b366fad1129b9636",
+      "converted_from": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/converted-v2/0428.xml"
+    },
+    {
+      "name": "equivalentState",
+      "file": "equivalentState.xml.gz",
+      "sha256": "aea05995aba8a2e7a5f4f76d2ac6ad3c04d5fb8052784bec300933d50b5d0811",
+      "converted_from": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/converted-v2/0261.xml"
+    },
+    {
+      "name": "recurrentSet",
+      "file": "recurrentSet.xml.gz",
+      "sha256": "8af76bf39df27dabbc927d9d141e1bb65d02df85a2b5264a9cacc1bf472dcab4",
+      "converted_from": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/converted-v2/1882.xml"
+    },
+    {
+      "name": "recurrentCycle",
+      "file": "recurrentCycle.xml.gz",
+      "sha256": "6b20b208ffc185c21af0bc4ff799c3da7754b6062f62778ae8d1150ae2e613d0",
+      "converted_from": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/converted-v2/0741.xml"
+    }
+  ],
+  "provenance": "Retained November 20 oracle/learned corpus, CPF5 conversion; complete source pins in milestone inventory"
+}

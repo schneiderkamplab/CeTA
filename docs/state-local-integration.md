@@ -11003,3 +11003,102 @@ CPF3 certificates. [Staged-source evidence](data/cpf4-user-guide/staged-summary.
 records the source index tree and archive hashes. The prior full 4,821-corpus
 recheck remains evidence for its original pinned executable; it was not rerun
 or relabelled as a result of this documentation checkpoint.
+
+## CPF5 CeTA milestone started
+
+The user authorized CPF5 support/validation as the next milestone and requested
+a break after it passes. CPF3/4 compatibility remains required; LeTA and CPF6
+implementation remain deferred. The CPF4 main checkpoint is `fd6a686`.
+
+The exact November 20 ITS/HO frontier is pinned in
+`target/cpf5-milestone/baseline.json` and `retained/manifest.json`: both modes
+cover 1,114 ITS and 257 higher-order roots. Strict replay requires 1,114 ITS
+and 228 HO certificates; learned replay requires 1,105 ITS and 227 HO.
+The remaining 68 mode/root entries are explicit unknowns. These totals are
+separate mode-specific requirements, not a deduplicated problem count.
+
+Current source work adds a version-gated ITS parser/export entry point and
+an explicit legacy interface, exposes structured higher-order defaults with
+explicit native compatibility, and permits inherited conditional erasure under
+CPF5/6 as well as CPF4. Acceptance still uses Isabelle-generated mathematical
+checkers. The extended ITS semantics and soundness theorems already exist;
+no generated code is edited. The first ITS export failed because the current
+container setup requires datatype comparison instances; standard derived
+instances and a skipped-proof audit are now in the code theory.
+
+Two formal builds collided in a shared Isabelle export database. Only our
+process trees were stopped; failure logs and process identities are retained.
+The combined retry uses a private `USER_HOME` / `ISABELLE_IDENTIFIER` under
+`target/cpf5-milestone/isabelle-user`. This is not yet a successful formal gate.
+
+An isolated Ferrum source tree at `../ferrum-cpf5-milestone` contains only
+ITS/HO producer and audit changes plus a stale CPF4 ADP test expectation fix.
+Its initial O2 build passed. The retained-corpus preparation exposed a scalar
+version-field bug in the deferred ITS source audit; the corrected field check
+and regression tests are being verified. The original failed conversion remains
+under `target/cpf5-milestone/converted` and is not certification evidence.
+The 207 higher-order XML regression cases cover all 20 positive root forms;
+they reuse frozen fixture data only and do not resume LeTA work.
+
+CPF5 preparation now passes schema/source audits for all 2,674 retained
+certificates. The higher-order pilot passes 287 cases twice across all 20 root
+forms. The earlier unified binary also accepts all 2,674 converted certificates
+twice: original pilot summary output parsing was too narrow for higher-order
+`CERTIFIED YES/NO` and `CERTIFIED HO TERMINATION/LOOP` messages; preserved raw
+transcripts and `retained-pilot/transcript-audit-v2.json` record the corrected
+interpretation. This is pilot evidence, not acceptance of the rebuilt checker.
+
+The ITS integration pilot passes 41 ordinary tests and three recurrent tests.
+The checkpoint-specific test initially lacked its environment setting; a
+separate run with the retained source-bound directory passes all 1,114
+checkpoints. The ITS export also required a `mapping_impl` instance under the
+current container setup. Its retry uses a second private cache and is separate
+from the ongoing conditional-erasure dependency build. Both failed export
+attempts remain recorded. No final CPF5 milestone is claimed yet.
+
+## CPF5 formal exports and final checker
+
+The ITS export passes in `target/cpf5-milestone/its-formal-retry-v2.log`.
+The current container setup needs standard mapping/comparison instances and
+proved code equations for groundness and infinite transition-variable carriers;
+these are in `ITS4_Code.thy`, with a skipped-proof audit. The conditional-erasure
+export passes in the combined log and the separate zero-exit
+`erasure-final-build.log`. Its only parser change admits inherited versions
+5.0/6.0 alongside 4.0. Neither generated Haskell module was edited.
+
+The final unified executable is
+`target/cpf5-milestone/final-unified/ceta`, SHA-256
+`c66580c2e168158a01c3803a5ee01ddd7635c871573fe84b25920dd9c42adbf4`.
+It was built with `make ceta` at O2 from the isolated
+`../CeTA-cpf5-milestone` tree. The LP adapter is the committed CPF4 checkpoint
+version; deferred CPF6 implementation remains outside this build.
+
+This executable passes all 596 CPF3 compatibility cases, the focused CPF4
+gates, 95 ITS version/claim cases, 287 higher-order cases twice, 24 inherited
+first-order version/claim cases, four explicit legacy cases, and all 45 ITS
+integration tests. All 2,674 converted retained CPF5 certificates pass twice,
+and all 455 higher-order certificates additionally pass Ferrum's bound-input
+interface. The 4,821-certificate CPF4 corpus check is still running.
+
+Fresh strict replay has started on all 1,371 ITS/HO roots, using the recorded
+oracle and release ceilings. Learned replay follows on the same population.
+The supervisor limits replay to 128 CPU slots and 800 GB aggregate sampled RSS,
+leaving capacity for the concurrent CPF4 check within the overall allowance.
+Acceptance still requires the complete CPF4 check and both replay retention
+gates; the milestone is not yet complete.
+
+Both main branches were refreshed from `origin/main` at the user's request.
+CeTA was already current at `fd6a686`; Ferrum's first authentication attempt
+failed, then its retry succeeded and confirmed `5a2a9234` current. No merge or
+validation restart was needed. `target/cpf5-milestone/pull-status.json` records
+both attempts.
+
+## CPF5 milestone complete
+
+All 22 final gates now pass, including both checks of all 4,821 retained CPF4
+certificates. Fresh strict replay certifies 1,342 of 1,371 roots; learned replay
+certifies 1,335, retaining all 1,332 baseline successes and adding three YES
+results. Both final source/schema audits pass. Strict has 29 unknowns; learned
+has 30 unknowns and six search timeouts. See the [final validation report](cpf5-validation.md)
+for immutable identities, formal exports and archived evidence. The milestone
+is complete; LeTA and CPF6 remain deferred, and work pauses here.

@@ -135,29 +135,30 @@
     "adapter": "src/Haskell/Ceta/Category/ConditionalErasure.hs",
     "cpp": [],
     "sources": {
-      "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
-      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
-      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
-      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
-      "Conditional_Erasure_Generated.hs": "7bf2138c754d9fda3a78eb7a5a0039a6e78f3411dce339af16f239d95bc1e170",
-      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+      "Conditional_Erasure_Generated.hs": "e2e0b87bab30b0daa6a575a169ffb6af55e951bce5fe84d0905ea4c50621577f",
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
-      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38"
+      "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "origin": "/work/dfm/festschrift/CeTA-adp-composition/target/cpf4-extension/generated-erasure/Conditional_Erasure_CPF4_Code.Conditional_Erasure_CPF4_Code/code/export1",
-    "archive": "tests/unified/exports/conditional-erasure-cpf4.tar.gz",
-    "archive_sha256": "1258b90ce6ac13f4f77ee13627f52e883e1411bfcfb00147c8cfa429c9dea77e",
+    "origin": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/generated-erasure/Conditional_Erasure_CPF4_Code.Conditional_Erasure_CPF4_Code/code/export1",
+    "archive": "tests/unified/exports/conditional-erasure-cpf5.tar.gz",
+    "archive_sha256": "5e6f7e898218f46cf9d98ebec784852ae16c757289f4a1cc59ecb77164089499",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "verified_session": "Conditional_Erasure_CPF4_Code",
-    "verification_log": "target/cpf4-extension/conditional-erasure-build.log",
-    "source_commit": "3b3f7071588559d170a0f7c093bb2fc9b1bc6a2e",
+    "verification_log": "target/cpf5-milestone/erasure-final-build.log",
+    "source_commit": "fd6a6868ccd7632bb6e8400144be6f6583360330",
     "source_worktree_modified": true,
-    "cpf4_source_hashes": {
-      "thys/Conditional_Ordinary/Conditional_Erasure.thy": "f120f0212571ccd22c96bdfd436b0f2d429364d9bd95222ff5c59d0e5826fae9",
-      "thys/Conditional_Ordinary/Code/ROOT": "51e6567bcc0908e7d66d5ebb812a0ec7b812afbbcff387abc863f9fed97a6aca",
-      "thys/Conditional_Ordinary/Code/Conditional_Erasure_CPF4_Code.thy": "83e77bcb943b1862f2968a2daf33cc5857f6c0aded9daa3d3f50c68592644d13"
+    "verification_log_sha256": "2581d10bd75fe0fc7b2fa325138c496fbd91972c440e285dab17f6af31b7250c",
+    "cpf5_source_hashes": {
+      "thys/Conditional_Ordinary/Conditional_Erasure.thy": "16cfa5a02e87f158a515747a1b3dac2796da8312c28924f6cd7aeae5e0846ae7",
+      "thys/Conditional_Ordinary/Code/Conditional_Erasure_CPF4_Code.thy": "83e77bcb943b1862f2968a2daf33cc5857f6c0aded9daa3d3f50c68592644d13",
+      "thys/Conditional_Ordinary/Code/ROOT": "51e6567bcc0908e7d66d5ebb812a0ec7b812afbbcff387abc863f9fed97a6aca"
     }
   },
   "lp": {
@@ -19261,20 +19262,38 @@
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
       "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
-      "ITS_Checker.hs": "bb07a42d42cb863a691a1968361d11fa59d5bd8d1364f8f681842c4b899dd618",
+      "ITS_Checker.hs": "c780c81974566015fffaccb2af792d6d0118496a4243a1d854a2ab8332fcf59c",
       "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
       "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
       "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
       "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "archive": "tests/unified/exports/its.tar.gz",
+    "archive": "tests/unified/exports/its-cpf5.tar.gz",
     "verified_session": "ITS_Ext",
-    "source_commit": "d7de2046dab2f7c93365ff2d1e8702dac4bbee99",
+    "source_commit": "fd6a6868ccd7632bb6e8400144be6f6583360330",
     "integration_base_commit": "ef8d86480ee4b33c91dd8357947d8624fe727853",
-    "verification_log": "target/unified-its-20261027/isabelle-build.log",
-    "archive_sha256": "06bffc68f971549df86bc49d2ab349e4bc865d412b88c6c7c449da6d90546344",
-    "origin": "/work/dfm/festschrift/CeTA/target/unified-its-20261027/export/ITS_Ext.ITS4_Parser/code/export1",
-    "optimization_theory": "thys/ITS_Ext/Integration/ITS4_Parser.thy",
-    "optimization_theory_sha256": "4790d35ad0c04c9529027a42a7d789ba68d67b0a2e0bb682e5a45faa121916f6"
+    "verification_log": "target/cpf5-milestone/its-formal-retry-v2.log",
+    "archive_sha256": "55a6dff29d64f60f4c30388227adaf65ccccfb4e612e9502bd89584381a2e44a",
+    "origin": "/work/dfm/festschrift/CeTA/target/cpf5-milestone/generated-its/ITS_Ext.ITS4_Code/code/export1",
+    "optimization_theory": "thys/ITS_Ext/Integration/ITS4_Code.thy",
+    "optimization_theory_sha256": "04d76317d5c0bf1a2994bfadca9fb9dbabc7f073d86e5871f2a01b4f236744ef",
+    "source_worktree_modified": true,
+    "verification_log_sha256": "4b0fa9257ee29a4a65e37963ae786f35f7ac1bd7cd63d0e2e0b03230877412ea",
+    "cpf5_source_hashes": {
+      "thys/ITS_Ext/Arithmetic/IA_Div_Mod.thy": "a477f5a11c048de85cf9b09fdf0148bd6bd0fa01a588c9468f9928a66ba0a6ae",
+      "thys/ITS_Ext/Arithmetic/IA4_Normalization.thy": "8adcdf82aba52fcbcf5a6ea73f86375c6f2d46a28f5896f53830393433fb230e",
+      "thys/ITS_Ext/Arithmetic/IA4_Definability.thy": "f9233849074b08d9e2fe1243fbe9bfda6569c007a58d6254462e8e5f155b9c76",
+      "thys/ITS_Ext/Arithmetic/IA4_Checker.thy": "8ccdf86ef50583de946d9bb9208f0d180319a490fc31f12004a0105eb1ee0ec3",
+      "thys/ITS_Ext/Ground/IA_Nontermination.thy": "a85f9aa86f095127dd767be2a193f35017e14252e76aa7c6fc16cac101b26337",
+      "thys/ITS_Ext/Ground/ITS_Parser.thy": "27f2fcea9d54178e4f4aba0b9ae9b337d33fa5b40733718508cd2a737e821b11",
+      "thys/ITS_Ext/Integration/IA4_Nontermination.thy": "812f3cfb4cbdc82f0fc461cc00942623b83dcd4328fc0c31e3c850cea1ea48c5",
+      "thys/ITS_Ext/Integration/IA4_Recurrent.thy": "4bf10a042a88c89fccc4895d01f031921f59828f4b12a953d665501bd5af8953",
+      "thys/ITS_Ext/Integration/IA4_Instance.thy": "b9ac74e10cd9efab16a8b432fda75dfa0aa9348c61ff4a403cf6d159dd16b157",
+      "thys/ITS_Ext/Integration/ITS4_Code.thy": "04d76317d5c0bf1a2994bfadca9fb9dbabc7f073d86e5871f2a01b4f236744ef",
+      "thys/ITS_Ext/Integration/IA4_Recurrent_Cycle.thy": "58b2640ebce953e78b4553482d45f8c4a4b3332fcd1815d357103e628dabee5d",
+      "thys/ITS_Ext/Integration/ITS4_Parser.thy": "558dbe4e19cb1e1ca2b8ae2e1aaae399c3e11a515d5177278a8411d4c22ac820",
+      "thys/ITS_Ext/Integration/IA4_Parser.thy": "1581d0ce5a98c1509fc81376a2b0ee4c32ccbe7d465de3b86eef8c009b66b5bb",
+      "thys/ITS_Ext/ROOT": "32f0812e101a7e67acd45ea4a3256ee6fd7b71d069ab0a068e942f1b331352b4"
+    }
   }
 }

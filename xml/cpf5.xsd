@@ -6026,7 +6026,7 @@ is untrusted.
       <xs:sequence>
         <xs:element name="cpfVersion" type="xs:string">
           <xs:annotation>
-            <xs:documentation>current version number: 4.0</xs:documentation>
+            <xs:documentation>current version number: 5.0</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="lookupTables">

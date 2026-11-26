@@ -46,8 +46,8 @@ definition conditional_erasure_cpf4_parser where
     prf \<leftarrow> xml_singleton (STR ''proof'')
       (xml_singleton (STR ''conditionalErasureProof'')
         (xml2trs_termination_proof symbol_parser Mapping.empty Mapping.empty) id) id;
-    if cpf_version = ''4.0'' then xml_return (inp, prf)
-    else xml_error (STR ''conditional erasure requires CPF 4.0'')
+    if cpf_version \<in> {''4.0'', ''5.0'', ''6.0''} then xml_return (inp, prf)
+    else xml_error (STR ''conditional erasure requires CPF 4.0, 5.0 or 6.0'')
   }"
 
 definition conditional_erasure_parser where

@@ -31,12 +31,13 @@ acceptance requirements; the full migration has not yet passed all three.
 | SRS Cycle | [Structured CPF4 cycle witnesses](CPF4.md#first-order-envelope-and-structured-witnesses) | Original string rules; rewriting modulo rotation requires genuine rewrite progress |
 | TRS Conditional (operational) | CPF4 termination and structured operational descent/loop certificates | Original ordered conditions; operational calls and condition evaluation matter |
 | TRS Conditional (ordinary termination) | CPF4 source-bound erasure and structured conditional loops in `--ordinary` mode | Original conditional rules; nontermination must establish actual conditional rewriting, not just divergent condition evaluation |
-| Higher-order rewriting | [CPF5 structured proofs and embedded delegation](CPF5.md); legacy native readers during migration | Original typed signature and rules, binding/substitution and the declared higher-order relation |
+| Higher-order rewriting | [CPF5 structured proofs and embedded delegation](CPF5.md); explicit `--legacy` native compatibility | Original typed signature and rules, binding/substitution and the declared higher-order relation |
 | Logic programming | [CPF6 translation, Pi-DP composition and source nontermination forms](CPF6.md); remaining constructors still use separate XML during migration | Original clauses, query pattern and resolution semantics; a translated TRS certificate alone is insufficient |
 | Logic programming with cut | [CPF6 graph, source-NO, SEG, SEG-triple and nested/composed-return forms](CPF6.md); remaining return forms still use separate XML during migration | Original ordered clauses, cut control and query pattern; recursive Split and successful-prefix obligations |
 
-ITS additions use the CPF5 schema (`lts5.xsd`); complete version-gate and
-independent LeTA integration remain pending. LP with cut and Prolog additions
+ITS additions use the CPF5 schema (`lts5.xsd`) and the version-gated `its`
+interface. Historical CPF3/4 ITS extensions require `--legacy`; original CPF3
+LTS proofs remain supported by `cpf`. Independent LeTA integration is deferred. LP with cut and Prolog additions
 are assigned to CPF6. Ten cut forms have focused integration gates; the remaining standalone
 XML producers/checker paths still require migration. Prolog additionally retains its ordered operational
 semantics, builtin behavior and source query context; an LP proof is not a

@@ -3,6 +3,8 @@ okf_version: "0.2"
 ---
 # docs
 
+- [CPF 5 user guide](../xml/CPF5.md) — ITS and higher-order XML, examples and checking commands.
+
 - [CPF 4 user guide](../xml/CPF4.md) — Format, examples and checker commands.
 
 - [certificate-performance-20261027](certificate-performance-20261027/index.md) — Directory index.
@@ -67,3 +69,5 @@ okf_version: "0.2"
 - [ITS and logic-programming category specifications](its-lp-specifications.md) — Definitions and explicit bridge obligations.
 - [ITS and LP semantic correspondence completion](its-lp-completion.md) — Full remaining proof and runtime-boundary ledger.
 - [LP refactor historical checkpoints](lp-refactor-history-20261117.md) — Intermediate states superseded by the ranked LP verification.
+
+- [CPF 5 validation](cpf5-validation.md) — Completed compatibility, certification and fresh replay gates.

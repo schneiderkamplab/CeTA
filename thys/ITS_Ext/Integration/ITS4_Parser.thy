@@ -85,8 +85,8 @@ definition its4_proof_parser :: "its4_proof xmlt" where
     xml_return prf
   }"
 
-definition its4_cpf_parser where
-  "its4_cpf_parser = XMLdo (STR ''certificationProblem'') {
+definition its_cpf_parser where
+  "its_cpf_parser legacy = XMLdo (STR ''certificationProblem'') {
     version \<leftarrow> xml_text (STR ''cpfVersion'');
     tables \<leftarrow> XMLdo (STR ''lookupTables'') {
       t \<leftarrow> XMLdo (STR ''ruleTable'') {xml_return ()};
@@ -101,8 +101,17 @@ definition its4_cpf_parser where
       xml_return a
     };
     proof \<leftarrow> its4_proof_parser;
-    xml_return (input,answer,proof)
+    if version = ''5.0'' \<or> version = ''6.0'' \<or>
+       (legacy \<and> version \<in> {''3'', ''3.0'', ''4'', ''4.0''})
+    then xml_return (input,answer,proof)
+    else xml_error (STR ''ITS extensions require CPF 5.0 or 6.0; use the legacy interface for CPF 3/4'')
   }"
+
+definition its4_cpf_parser where
+  "its4_cpf_parser = its_cpf_parser True"
+
+definition its5_cpf_parser where
+  "its5_cpf_parser = its_cpf_parser False"
 
 fun check_its4 where
   "check_its4 P True (ITS4_Termination proof) = ia4_check_termination P proof"
@@ -117,6 +126,14 @@ lemma check_its4_sound:
 
 definition check_its4_string :: "string \<Rightarrow> string + unit" where
   "check_its4_string s = (case parse_xml_string its4_cpf_parser s of
+      Bottom \<Rightarrow> Inl ''ITS parser did not terminate''
+    | Left message \<Rightarrow> Inl message
+    | Right (p,a,proof) \<Rightarrow> (case check_its4 p a proof of
+        Inl message \<Rightarrow> Inl (String.explode (message (STR '''')))
+      | Inr () \<Rightarrow> Inr ()))"
+
+definition check_its5_string :: "string \<Rightarrow> string + unit" where
+  "check_its5_string s = (case parse_xml_string its5_cpf_parser s of
       Bottom \<Rightarrow> Inl ''ITS parser did not terminate''
     | Left message \<Rightarrow> Inl message
     | Right (p,a,proof) \<Rightarrow> (case check_its4 p a proof of
