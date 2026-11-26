@@ -4,19 +4,19 @@
     "adapter": "src/Haskell/Ceta/Category/Rewriting.hs",
     "cpp": [],
     "sources": {
-      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
-      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
       "Array.hs": "3c0ef77aa496fda0f499a1d85506047f391f53aee9b13d9e95d8c59f95d2f419",
-      "Ceta_Relative.hs": "81b9ea9a17065f2c259066ba9deb7fec2c496403a53631d5756da0dc4a049ad1",
-      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
-      "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+      "Bit_Shifts.hs": "ca69420848234eb355e3a72b862066375eee733cdb485c98c276e0fa5f7cfc38",
+      "Ceta_Relative.hs": "ee95b7fb34cc20dc07fe5eaa26016190df09780dd1655064912f48f5c974e8e0",
       "Data_Bits.hs": "d19e7b37fecdc1449656bf972f29d93fdca9adb6a44d2e3a6c3447aed7a3aba9",
-      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a",
-      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618"
+      "IArray.hs": "1d24012b0cfc725b6a87b2c9cba97bf409ebc3c1aab8b650489ce4a015b25c49",
+      "Str_Literal.hs": "3b30aa1a184020ce9aca5b7aec7b96b29ef973ca2cbea56782fc799c9722fa1b",
+      "Uint.hs": "48196f83892367e42db209a1050c496ef0eea2a4ec0534f18a32bc60b34fb618",
+      "Uint32.hs": "416b7b842e2853c188128a8c540c196341c028e48e624a80ac3235a216cc2406",
+      "Uint64.hs": "05d36f18409fd57cafe923a940e8953c1eac44eedeb197faa099dafdfa66bf4a"
     },
-    "origin": "/work/dfm/festschrift/CeTA-adp-composition/target/adp-composition/generated/Relative_ADP_Composition_Code.Relative_ADP_Composition_Code/code/export1",
-    "archive": "tests/unified/exports/cpf-adp-composition.tar.gz",
-    "archive_sha256": "ff90de5c09c83723005f0e896b5d7ea6825b7f44c82e198e5804e606e0072c76",
+    "origin": "/work/dfm/festschrift/CeTA/target/cpf4-milestone-generated/Relative_ADP_Composition_Code.Relative_ADP_Composition_Code/code/export1",
+    "archive": "tests/unified/exports/cpf4-typed-extensions.tar.gz",
+    "archive_sha256": "6d8adb9ec1df8ee2d609e9c51aefc9edafc84798b2c66c15ae224e6ea3e56afe",
     "optimization_theory": "thys/Certificate_Performance/Certificate_Performance.thy",
     "optimization_theory_sha256": "07408ab63fc1a420b8cc19d8e2d5f2adec3538b98524c2309822c2e4ac207115",
     "public_api": {
@@ -39,9 +39,9 @@
         "certify_proof_composed"
       ]
     },
-    "source_commit": "3b3f7071588559d170a0f7c093bb2fc9b1bc6a2e",
+    "source_commit": "e669464184ef8dca12df42315190ba9c23305796",
     "verified_session": "Relative_ADP_Composition_Code",
-    "verification_log": "target/adp-composition/export-build.log",
+    "verification_log": "target/cpf4-milestone-export-build.log",
     "source_worktree_modified": true,
     "checkpoint_source_hashes": {
       "thys/Rewriting/Checkpoint_Ranking/DP_Checkpoint_Acquisition.thy": "c68f4b885c532641fc8282b757768df1dd8c80a4ce6e47f654fce3c347ee651c",
@@ -102,7 +102,10 @@
       "thys/Relative_ADP/Composition/Relative_ADP_Composition_Parser.thy": "d72d4702887534ed8bf93af96d5616b60f43babb8f501e7cbae05ff3c32f4fd6",
       "thys/Relative_ADP/Composition/Code/ROOT": "7d404a052248ae6e25626253b04a8f5754901e61da9d48b503e54be705842c1f",
       "thys/Relative_ADP/Composition/Code/Relative_ADP_Composition_Code.thy": "24efb8623857ea5c31ce9f0c97ffa5fa3095700a7090d2e8dc046ae0090d70c5"
-    }
+    },
+    "verification_log_sha256": "bc8e9f56e0f082b6fe64688147aeba5f0d62ebb6845b9e1ffb1a9536d61362fb",
+    "typed_extension_source_sha256": "b3fd1fd198ecea28acf0c54c191a6f4609d83f08466b0b055f6502c3f019a259",
+    "typed_extension_patch_sha256": "485e9dd038750a1dd19a00e8e3963eb457ba6a2483e38660be4e9dc7d5d0af4e"
   },
   "cycle": {
     "module": "Ceta.Category.Cycle",

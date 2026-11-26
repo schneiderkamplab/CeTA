@@ -1,10 +1,20 @@
 # Certificate formats across the production categories
 
-This is the entry point for the certificate interfaces used by the fourteen
-production categories, through logic programming with cut. It documents the
-current candidate interfaces. First-order outputs have migrated to CPF 4 XML;
-higher-order and logic-programming migration is deferred. Production deployment
-still depends on the pinned checker binary.
+For first-order certificate users, start with the [CPF 4 user guide](CPF4.md):
+it includes runnable examples, validation and checking commands, and source
+binding instructions.
+
+This is the entry point for the certificate interfaces across rewriting, ITS,
+and logic programming, including cut and Prolog. It documents candidate
+interfaces and their remaining migration gaps. Production deployment still
+depends on the pinned checker binary.
+
+The versions are additive: [CPF 4](CPF4.md) preserves all of CPF 3 and adds
+first-order term and string rewriting; [CPF 5](CPF5.md) adds ITS and
+higher-order rewriting extensions; [CPF 6](CPF6.md) adds LP, LP with cut,
+and Prolog extensions. Existing CPF 3 LTS constructs remain inherited.
+Schema support, independent checker coverage, and fresh replay are separate
+acceptance requirements; the full migration has not yet passed all three.
 
 ## Format and semantics map
 
@@ -21,26 +31,35 @@ still depends on the pinned checker binary.
 | SRS Cycle | [Structured CPF4 cycle witnesses](CPF4.md#first-order-envelope-and-structured-witnesses) | Original string rules; rewriting modulo rotation requires genuine rewrite progress |
 | TRS Conditional (operational) | CPF4 termination and structured operational descent/loop certificates | Original ordered conditions; operational calls and condition evaluation matter |
 | TRS Conditional (ordinary termination) | CPF4 source-bound erasure and structured conditional loops in `--ordinary` mode | Original conditional rules; nontermination must establish actual conditional rewriting, not just divergent condition evaluation |
-| Higher-order rewriting | Native typed certificates and [CeTA delegation XML](../thys/Higher_Order_CeTA_Code/Higher_Order_CeTA_Code.thy); [source-bound call expansion](../thys/Higher_Order_Call_Expansion/README.md) | Original typed signature and rules, binding/substitution and the declared higher-order relation |
-| Logic programming | [TOCL09 source-bound XML entry point](../src/Haskell/Main_LP_TOCL09.hs), [Pi-DP XML](../thys/Logic_Programming/LP_PiDP_XML.thy), source nontermination interfaces | Original clauses, query pattern and resolution semantics; a translated TRS certificate alone is insufficient |
-| Logic programming with cut | [Integrated XML dispatcher](../scripts/LP_Cut_Integrated_Main.hs), including [SEG/triples XML](../thys/Logic_Programming/LP_Cut_SEG_Triple_XML.thy) and [NO XML](../thys/Logic_Programming/LP_Cut_NO_XML.thy) | Original ordered clauses, cut control and query pattern; recursive Split and successful-prefix obligations |
+| Higher-order rewriting | [CPF5 structured proofs and embedded delegation](CPF5.md); legacy native readers during migration | Original typed signature and rules, binding/substitution and the declared higher-order relation |
+| Logic programming | [CPF6 translation, Pi-DP composition and source nontermination forms](CPF6.md); remaining constructors still use separate XML during migration | Original clauses, query pattern and resolution semantics; a translated TRS certificate alone is insufficient |
+| Logic programming with cut | [CPF6 graph, source-NO, SEG, SEG-triple and nested/composed-return forms](CPF6.md); remaining return forms still use separate XML during migration | Original ordered clauses, cut control and query pattern; recursive Split and successful-prefix obligations |
+
+ITS additions use the CPF5 schema (`lts5.xsd`); complete version-gate and
+independent LeTA integration remain pending. LP with cut and Prolog additions
+are assigned to CPF6. Ten cut forms have focused integration gates; the remaining standalone
+XML producers/checker paths still require migration. Prolog additionally retains its ordered operational
+semantics, builtin behavior and source query context; an LP proof is not a
+substitute for those obligations.
 
 This map identifies interface families, not a claim that every processor in
 every family is supported by every binary. Production manifests pin the actual
 checker executable and its hash. Follow the executable parser and its generated
 checker for the exact accepted grammar and side conditions.
 
-## CPF and deferred native interfaces
+## CPF and remaining native interfaces
 
 [cpf4.xsd](cpf4.xsd) covers the first-order CPF dialect described in
 [CPF4.md](CPF4.md), including the structured cycle and conditional forms.
 These are extensions of CPF, not separate textual or standalone XML formats.
 The cycle/conditional legacy readers remain available for existing artifacts.
 
-Higher-order and LP interfaces still use their existing native or separate
-XML formats. Their migration is deferred; a version label alone would not
-make them CPF. The repository's CPF4 name does not assert adoption by an
-external standards body.
+Higher-order CPF5 proofs embed structured source/witness data and any
+first-order child. The eighteen integrated pure-LP CPF6 forms and ten cut forms separate
+source program/query from proof evidence. Other LP/cut/Prolog forms still use
+separate XML. Automatic legacy readers remain a staging measure pending explicit legacy
+interfaces. A version label alone does not migrate a certificate. These version
+names do not assert adoption by an external standards body.
 
 ## LP and cut-aware SEG/triples layers
 
@@ -72,6 +91,6 @@ narrower semantic claim and must not silently replace the TOCL09 interface.
    certification in the production acceptance record. Oracle guidance is search
    advice and is not a certificate or an additional trusted premise.
 
-The fourteen-category production catalog and replay ledger live in the sibling
+The historical fourteen-category production catalog and current replay ledger live in the sibling
 Ferrum repository: `oracles/production/20261025-v145/catalog.json` and
 `docs/state-of-the-art.md`. They record tested root sets, not format standards.

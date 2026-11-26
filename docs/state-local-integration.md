@@ -10593,3 +10593,413 @@ not a production promotion or an all-category release gate.
 Compact build logs and gate receipts are tracked in
 `docs/cpf4-first-order-20261124`. The format specification and category map
 are `xml/CPF4.md` and `xml/CERTIFICATE_FORMATS.md`.
+
+
+The established-triples CPF6 adapter now routes
+`prologEstablishedSEGDependencyTriplesProof` to the existing generated
+checker representation, requiring a YES envelope and exactly one
+dependency-triples child. `runghc -isrc/Haskell
+tests/unified/Cpf6Established.hs` passes six transport checks. This is
+not a mathematical acceptance gate or a rebuilt unified executable.
+No generated checking logic changed. Schema integration, executable
+rebuild, dual-checker certification and full replay remain outstanding.
+
+
+## Established Prolog triple CPF6 schema
+
+The [structured schema checkpoint](data/cpf6-established-schema-summary.json)
+adds the established triple root constructor and its complete nested evidence:
+success-transfer contracts, source contexts, contextual actions, ranked control
+regions and static/integer/ground splits. The generator follows
+`LP_Prolog_Success_Types_XML`, `LP_Prolog_Success_Transfer_XML`,
+`LP_Prolog_Numeric_Row_XML`, `LP_Prolog_Context_XML`,
+`LP_Prolog_Context_Module_XML` and `LP_Prolog_Triple_XML`.
+All 65 structural checks pass, including the complete document, all 12 action
+forms and four component forms, nonempty transfer/context evidence and malformed
+variants. The 19 existing arithmetic checks and three schema inheritance tests
+pass. Regeneration is byte-identical. Schema validity does not establish the
+source claim: unchanged mathematical checkers must still validate it.
+No generated checker logic or installed binary changed. Automatic export,
+native dual-checker certification and full fresh replay remain pending.
+
+
+Composed contextual CPF6 integration now transports the exact input source
+program into `prologContextComposed`, and the schema describes both ordinary
+rows and full prefix/continuation split modules. Forty schema checks and the
+Haskell transport mutation checks pass. The native unified build is running
+under `target/cpf6-prolog-context-composed`; no completed native gate is claimed
+at this checkpoint. The generated mathematical checker is unchanged.
+Cross-repository evidence is retained in
+`CeTA-Lean/docs/cpf456-integration/cpf-prolog-context-composed-integration-evidence.zip`.
+
+
+The composed contextual native gate is now complete. Unified checker
+`target/cpf6-prolog-context-composed/ceta` (SHA-256
+`9c0bf65eb32852b145d6597a6648ee276e978ae0c631880abe5d079dfea1f45b`)
+and LeTA pass 212 repeated fixture, fresh-split and regression checks in total.
+The actual conjunction split is accepted twice by each checker. Generated
+checking logic remains unchanged. Exact rows and hashes are preserved in
+`CeTA-Lean/docs/cpf456-integration/cpf-prolog-context-composed-dual-evidence.zip`.
+This closes the preceding pending build; all-category replay remains pending.
+
+
+Constructor dependency-triple CPF6 transport now preserves separate triple
+and support-program inputs, optional normal-substitution flags, seed and DP
+proof. The ordinary established Prolog constructor parent checks the exact
+child constructor. Source transport tests and 13 schema checks pass; generated
+mathematical checking logic is unchanged. Unified build
+`target/cpf6-prolog-constructor-triples` is live; its native gate is pending.
+Cross-repository evidence is retained in
+`CeTA-Lean/docs/cpf456-integration/constructor-triple-integration-evidence.zip`.
+The fresh finite constructor variant remains outside this migration.
+
+
+The ordinary constructor-triple native gate has completed using unified CeTA
+`target/cpf6-prolog-constructor-triples/ceta`: 56 constructor fixture checks,
+52 composed regressions and 56 established regressions pass across both
+checkers. Exact hashes and result rows are retained in
+`CeTA-Lean/docs/cpf456-integration/constructor-triple-dual-evidence.zip`.
+Generated mathematical checking logic is unchanged. The fresh finite variant
+remains unmigrated; this fixture gate does not claim fresh finite certification
+or all-category replay.
+
+
+## CPF6 finite Prolog dual-checker integration
+
+Both finite established PiDP and constructor-triple roots now pass CPF6 export,
+source binding, schema validation and native checking. Ferrum passes 25 codec
+tests; the finite schema passes 52 structural checks. Both rebuilt checkers pass
+112 finite fixture checks and 164 ordinary/composed regression checks. A fresh
+recursive-list search certificate is accepted twice by each checker, and its
+source audit rejects a changed source. These are focused gates, not an oracle
+replay or a claim of full category coverage.
+
+CeTA main at base `e669464184ef8dca12df42315190ba9c23305796` changed its
+handwritten CPF6 adapter and schema; generated mathematical checking logic is
+unchanged. The candidate unified binary is
+`CeTA/target/cpf6-prolog-finite-triples/ceta`. Exact binary hashes, commands,
+results and source snapshots are retained in
+`CeTA-Lean/docs/cpf456-integration/cpf6-prolog-finite-dual-evidence.zip`
+and its adjacent summary JSON. This closes the preceding finite-root native
+build/export gap. Remaining proof families and full strict/learned all-category
+replay remain open.
+
+
+## CPF6 finite direct Prolog dual-checker integration
+
+`prologEstablishedFiniteDirectProof` now uses the CPF6 envelope. The
+handwritten adapter reconstructs the source-bound mathematical input and the
+explicit schema includes signatures, evaluation control and free-variable
+knowledge. Generated mathematical checking logic is unchanged.
+The unified binary in `target/cpf6-finite-direct-unified/ceta` and the rebuilt
+LeTA pass 60 direct-root checks, 16 checks of four fresh Ferrum exports and
+56 finite-triples regression checks, twice per checker. All 26 Ferrum codec
+tests, eight original-source audits and 52 schema regression checks pass.
+The [pinned evidence](../../CeTA-Lean/docs/cpf456-integration/prolog-finite-direct-dual-summary.json)
+records hashes and commands. Mixed/guarded families and full strict/learned
+replay remain open; this is a focused integration gate.
+
+
+## Stable guarded CPF6 integration in progress
+
+Ferrum now encodes and decodes `prologEstablishedStableSEGGuardedProof` in a
+CPF6 `certificationProblem`, moving the execution profile, source program and
+query into the input. The numeric component remains structured XML. The CeTA
+adapter reconstructs that exact source-bound form, and the explicit CPF6 schema
+includes all numeric endpoint/condition/row forms and guarded descents.
+
+The Ferrum codec suite passes 27 tests. LeTA's rebuilt native binary passes 26
+focused stable-guarded checks, with every case run twice, recorded in
+`../target/cpf6-stable-guarded-leta-3/results.json` (resolve from this
+document's repository as appropriate). The new schema suite passes 53 checks;
+existing schema regressions pass. Two malformed mutation strings in the new
+native harness were corrected; partial results remain in the preceding `leta`
+and `leta-2` directories. These are focused fixture results, not fresh replay.
+
+The unified CeTA candidate is still building in
+`../target/cpf6-stable-guarded-unified`; dual-checker certification is
+pending and must not be inferred from LeTA or schema results. CeTA changed in
+`src/Haskell/Ceta/Input/Cpf6.hs` on `main`, based on
+`e669464184ef8dca12df42315190ba9c23305796`; generated checking logic was not
+edited. Remaining families and complete strict/learned replay remain open.
+
+## Stable guarded CPF6 dual-checker gate
+
+The unified CeTA build completed. The stable-guarded CPF6 fixture and its
+mutations pass 52 native checks; finite direct, constructor and PiDP regressions
+pass 172 checks with the same immutable checker pair. Ferrum's encoded
+roundtrip passes four additional checks, twice by each checker. The earlier
+27 codec tests and 53 schema cases are retained.
+
+CeTA changed in the handwritten `src/Haskell/Ceta/Input/Cpf6.hs` adapter and
+schema on main, based on `e669464184ef8dca12df42315190ba9c23305796`; generated
+checking logic is unchanged. The candidate executable SHA-256 is
+`51d7df3f08c361acfb19f62ee934c09d175c6f2b3b4de652999fef349b87e73f`; LeTA is
+`ef90389e0ba688ae8092afcbe31a6797c101a2e3180b7644d4ae5ac2dd9d9379`.
+
+[Source hashes, commands and retained results](../../CeTA-Lean/docs/cpf456-integration/prolog-stable-guarded-dual-summary.json) freeze this focused
+gate, including the two earlier malformed test-harness attempts. Mixed/stopped
+backend families and the full strict/learned oracle replay remain open. This
+is not a full migration or release-completion claim.
+
+## CeTA CPF 3/4 milestone in progress
+
+The user deferred LeTA, made full CPF 4 support and CPF 3 backward
+compatibility the first CeTA-only milestone, and requested a break after both
+are validated. CPF 5/6 implementation is deferred until that milestone.
+
+The current unified candidate is `target/cpf6-stable-guarded-unified/ceta`,
+SHA-256 `51d7df3f08c361acfb19f62ee934c09d175c6f2b3b4de652999fef349b87e73f`.
+Schema inheritance, the historical ITS-vocabulary boundary, 29 first-order
+format cases, nine ADP composition cases and all 408 retained semantic negatives
+pass on current sources/binary. Logs are under `target/cpf4-milestone-*`.
+
+`scripts/recheck_cpf4_milestone.py` is rechecking the complete retained
+4,821-certificate first-order corpus twice, with hashes and a resumable journal
+in `target/cpf4-milestone-recheck`; the 170 unresolved inputs are accounted for
+separately. This is certification replay, not a fresh search campaign.
+`scripts/check_cpf3_compatibility.py` checks all schema-valid CPF3 examples and
+compact certificates against the old production checker and current checker,
+plus the CPF4 version of each document, twice each. Its first run omitted the
+external input of `examples/div.cpf.xml`; both checkers correctly returned
+UNSUPPORTED. The corrected v2 run uses the existing input/property/answer
+companions and records their hashes. Both attempts are retained.
+
+Neither in-progress replay nor these focused gates establishes milestone
+completion. Extension inventory, schema fidelity across the full corpus and
+remaining compatibility dispositions must be audited before the requested break.
+
+## CPF3/4 milestone: compatibility passed; full corpus validation running
+
+The user requested a break only after CPF3 backward compatibility and full
+CPF4 validation. LeTA remains deferred, and CPF5/6 implementation is outside
+this milestone. This checkpoint does not claim that the milestone is complete.
+
+On the same candidate `51d7df3f08c361acfb19f62ee934c09d175c6f2b3b4de652999fef349b87e73f`,
+`target/cpf3-milestone-compatibility-v2/summary.json` records 596/596 compatible
+CPF3 fixtures. Each fixture was checked twice with the frozen baseline,
+twice with the candidate, and twice with the candidate after changing only
+the version marker to CPF4. Schema inheritance and the original LTS boundary
+also pass. The 221 exclusions are explicit: 186 non-CPF3 documents, 33
+CPF3-schema-invalid documents and two malformed XML files. Exclusion from
+this comparison is not a claim that an extension is unsupported.
+The first attempt is retained separately: `div.cpf.xml` needs its sibling
+input/property/answer files. The corrected harness supplies and hashes those
+files. The 96-case parser differential gate passes without differences.
+
+Further passed gates on this candidate are 208/208 compact positives (twice
+each), 408/408 compact semantic negatives, the 29-case first-order envelope
+gate, nine ADP composition cases, six recursive RFC cases, 28 CSR/GM cases
+and seven GM04 source-map cases. Logs and JSON are under
+`target/cpf4-milestone-*`. The source hash audit matches all 4,821 retained
+certificates to the original benchmark files. The build identity audit matches
+37 first-order generated source, adapter, helper and library archive hashes
+to the candidate build manifest. No generated checking logic was modified.
+
+The full 4,821-certificate two-pass recheck remains running via
+`scripts/recheck_cpf4_milestone.py`, with its immutable manifest and resumable
+journal in `target/cpf4-milestone-recheck`. The preparation failure from the
+first attempt is retained: internally checked conditional certificates have
+no separate checker-command file. The corrected preparation derives the
+category from the structured certificate and preserves the original proof
+hash. Schema validation runs separately with `tests/unified/ValidateCpf4.java`;
+its input list and log are `target/cpf4-milestone-schema-inputs.txt` and
+`target/cpf4-milestone-schema.log`. The added-element occurrence inventory
+is `scripts/inventory_cpf4_milestone.py`; occurrence counts alone do not
+establish semantic test coverage. Do not mark full CPF4 validation complete
+until these runs and the remaining coverage audit have been reviewed.
+
+## CPF4 coverage audit: expanded typed-CSR routing gap
+
+The full retained corpus passes the current CPF4 schema: 4,821/4,821, with
+an exact path-set audit and schema/include hashes recorded in
+`target/cpf4-milestone-schema-summary.json`. All 111 retained Ferrum
+certificate-regression fixtures also pass twice with the frozen candidate and
+pass the current schema. The full semantic recheck remains running and is
+not a fresh oracle search replay.
+
+The added-element inventory identified proof forms absent from the retained
+positive corpus. New tests cover the canonical/conservative CSR aliases and
+guarded DP boundary (24 checks, all passed), plus five RFC variants on a
+nonempty string TRS (40 checks, all passed):
+`tests/unified/check_cpf4_csr_aliases.py` and
+`tests/unified/check_cpf4_rfc_variants.py`.
+The streaming schema checker accepts the deep proofs that exceed libxml2's
+2,048-level inventory-parser limit; those inventory errors are not semantic
+or schema failures. The malformed `._ordered_completion_proof.xml` is an
+excluded metadata file, not an accepted certificate.
+
+`tests/unified/check_cpf4_typed_extensions.py` deliberately remains a failing
+acceptance gate on the old candidate. Its 24 cases accept general usable-rule
+reduction and typed instantiation, and reject semantic mutations. Four
+positive runs (two each) fail for `expandedExtendedBasicCsrProof` and
+`expandedStrongUsableRulesProc`: the current recursive i4 route rejects these
+constructors even though the format and Ferrum writer expose them. Retained
+failure evidence is `target/cpf4-milestone-typed-before/validation.json`.
+Do not claim full CPF4 support while this gate fails.
+
+The handwritten Isabelle source now routes those two forms through the
+existing production typed-CSR checker. Its soundness proof uses
+`check_muterm_typed_production_imp_i4_good`; the recursive linear soundness
+lemma was moved after that theorem to preserve dependency order. This is an
+unverified source change until the focused session passes. The isolated
+`CPF4_Typed_Extension_Check` build uses `quick_and_dirty=false`, four jobs and
+eight threads; command/source pins and logs are under
+`target/cpf4-typed-check`. It is building against the current main theory
+sources. No generated code or installed checker was patched. After formal
+validation, regenerate the CPF export, rebuild one unified candidate, and
+rerun the CPF3/4 acceptance gates on that exact binary before the requested
+break. CPF5/6 and LeTA remain deferred.
+
+## Retained CPF4 corpus recheck completed before the typed-CSR fix
+
+The frozen candidate `51d7df3f08c361acfb19f62ee934c09d175c6f2b3b4de652999fef349b87e73f`
+passes all 4,821 retained certificates twice (9,642 successful checks), with
+no failures or missing roots. All 4,821 pass the current CPF4 schema and all
+source hashes match. The original 170 unknown inputs remain explicit; no
+certificate or new proof is claimed for them. CPF3 compatibility passes
+596 fixtures, each checked twice on the baseline, twice on the candidate,
+and twice after changing the version marker to CPF4.
+
+[Before-fix summary](data/cpf4-milestone-20261126/before-typed-fix-summary.json)
+and the adjacent compressed evidence archive preserve manifests, results,
+source/binary bindings and the two outstanding typed-CSR acceptance failures.
+This is complete validation of the retained corpus on the original candidate,
+not completion of the full CPF4 milestone: the two new positive fixtures
+must pass after formal verification, export regeneration and unified rebuild.
+The final acceptance evidence must identify that new executable explicitly.
+
+## Prepared affected CSR replay for the final CPF4 checker
+
+`target/cpf4-affected-csr/prepared.json` records a prepared, unlaunched strict
+replay of all 110 retained CSR roots. It freezes the original Ferrum binary
+`6e0669559020492e2ee957cd874b4b0e6cf1c1b5ca7b6004143778b16aaabbc5`
+in a private snapshot and preserves oracle
+`49c7bfddf5daea0d0b4f07b2d0453e68a17727d2fd3d221255d30a0edeeaf81e`,
+the complete root manifest, category environment and original release limits.
+The original runner is pinned by hash and receives an explicit 110-root sample
+with 32 workers. Its source-correspondence audit and two final checks per
+root are retained. The snapshot's checker slot is deliberately unpopulated
+until the new unified candidate has passed the focused gates. No replay has
+started at this checkpoint; this preparation does not count as validation.
+
+## Expanded typed-CSR routes: focused formal verification passed
+
+`CPF4_Typed_Extension_Check` passed with `quick_and_dirty=false`, including
+all current prerequisite sessions. The modified source and the isolated
+checked copy match the command's recorded SHA-256. The new branches use
+`check_muterm_typed_production_imp_i4_good` to preserve the existing i4
+obligation; no checker theorem was weakened and no generated logic was edited.
+[Formal summary](data/cpf4-milestone-20261126/typed-formal-summary.json) and the
+adjacent evidence archive retain the source, patch, command and build log.
+
+The production `Relative_ADP_Composition_Code` build/export is now running
+against the current main theory tree, with the command prepared in
+`target/cpf4-milestone-export-command.json` and live output in
+`target/cpf4-milestone-export-build.log`. A focused proof build is not yet
+validation of a new executable. The archive, unified binary, typed-CSR XML
+gate, full corpus recheck, CPF3 compatibility and affected CSR replay remain
+required before the user's requested break.
+
+## CPF4 final unified candidate and acceptance gates
+
+The production `Relative_ADP_Composition_Code` session passed with
+`quick_and_dirty=false`; the exported nine Haskell modules were extracted
+without edits. Only `Ceta_Relative.hs` changed. The deterministic archive
+`tests/unified/exports/cpf4-typed-extensions.tar.gz` and
+`scripts/unified-exports.json` bind the export to the source and formal log.
+`make ceta` rebuilt the CPF library and reused the seven unchanged category
+libraries by hash. The private unified executable is
+`target/cpf4-final-unified/ceta`, SHA-256
+`18a5be12a468d2ad895f6b58561703f7b873b4e75c048da8dc545f8c0e320260`.
+The installed executable remains unchanged.
+
+All 14 focused acceptance gates now pass on this binary, including the
+596-case CPF3 compatibility comparison, 319 retained positive fixtures,
+408 semantic negatives and the expanded typed-CSR routes. See
+`target/cpf4-final-validation/acceptance-summary.json`. The initial typed
+fixtures incorrectly named original variables in their expanded pair
+references; expansion uses `string_renameN`, so these must reference `x0_x`.
+The corrected 28-check gate includes explicit rejection tests for unexpanded
+references. The old checker still rejects the two corrected positive forms;
+the new checker accepts them. Both failed runs are preserved and distinguished
+from the final passing gate; neither checker logic nor expectations were
+weakened to resolve the fixture error.
+
+The complete 4,821-certificate recheck and the focused 110-root CSR strict
+replay are running against that exact executable. Their outputs are
+`target/cpf4-final-recheck` and `target/cpf4-affected-csr/replay`.
+This checkpoint does not yet establish completion of those gates.
+
+## CPF3 compatibility and CPF4 CeTA milestone validated — paused
+
+The final private unified checker
+`18a5be12a468d2ad895f6b58561703f7b873b4e75c048da8dc545f8c0e320260`
+passes the CPF3/CPF4 milestone. The user requested a break at this point;
+CPF5/6 work and LeTA remain deferred. CeTA changed on `main` in
+`/work/dfm/festschrift/CeTA`, based on
+`e669464184ef8dca12df42315190ba9c23305796`, through the verified typed-CSR
+source, regenerated CPF export and unified build described above. Ferrum
+was unchanged for the focused replay; its frozen binary/oracle/source set
+matches the retained first-order baseline. No production binary was promoted.
+
+[Final summary](data/cpf4-milestone-20261126/final-summary.json) and its
+adjacent `final-evidence.zip` retain the commands, identities and results:
+
+- 596 CPF3 compatibility cases pass on the baseline and new checker, including
+  checks after changing their version marker to CPF4; each variant runs twice.
+  The 221 excluded files and reasons remain explicit in the manifest.
+- All 14 focused acceptance gates pass, including 319 retained positives,
+  408 semantic negatives and 28 typed-extension checks. Five additional
+  examples pass schema validation and ten semantic checks. Four older CSR
+  examples now use the schema's `csrDpProof/ordinaryDpProof` wrapper; their
+  two positive and two negative outcomes are preserved in a dedicated gate.
+- All 4,821 retained first-order certificates pass twice on the final checker
+  (9,642 checks). Their source/certificate identities match the previously
+  schema-validated corpus. All 4,821 remain CPF4-schema-valid. The original
+  170 unresolved inputs remain unresolved; no certificate is claimed for them.
+- Fresh strict oracle replay retains all 110 CSR roots, with 220 successful
+  checker calls, matching source rules/replacement maps and 110 schema-valid
+  CPF4 documents. The replay uses the frozen release environment and limits.
+- All 169 added named XML elements have retained or focused fixture coverage.
+  The two previously missing expanded typed-CSR branches now pass their
+  positive and negative gates. The Isabelle production export session passed
+  with `quick_and_dirty=false`; 376 final build identities match the inputs.
+
+These are finite compatibility, constructor and regression gates, not an
+exhaustive enumeration of possible XML documents or a claim that all unknown
+rewriting problems can be solved. Existing proof-rule side conditions and
+the documented derelatification composition boundary still apply.
+The validated binary is `target/cpf4-final-unified/ceta`; rebuild with
+`make ceta` using the updated `scripts/unified-exports.json`. Full local replay
+artifacts remain under `target/cpf4-final-recheck` and
+`target/cpf4-affected-csr`. Do not resume broader migration until requested.
+
+## CPF4 end-user guide and commit preparation
+
+`xml/CPF4.md` now provides a user guide comparable in scope to the official
+CPF3 page: format files, a complete example, schema and semantic checking,
+category dispatch, external source binding, properties/answers, extension
+reference, migration, rendering limits and troubleshooting. Historical prose
+is preserved in `docs/cpf4-history/guide-before-user-rewrite.txt`. The README
+and documentation index link the guide. Seven documented checker invocations
+pass on the validated milestone binary; the inline example matches the saved
+XML exactly and passes xmllint, Java and lxml validation. Local guide links,
+schema inheritance, the ITS boundary and documentation checks pass.
+[Guide evidence](data/cpf4-user-guide/summary.json) records the checks.
+
+The CPF4 checkpoint includes the additive version schemas needed by the
+inheritance/boundary tests, but does not claim CPF5/6 checker implementation
+completion. Deferred Ferrum, LeTA and CeTA CPF5/6 implementation changes remain
+separate working-tree changes. No production executable or oracle is promoted.
+
+The isolated staged-source build also passes. It produces checker
+`b19ec1630060583019b5d84916fd811f8ba94a5604b0a1d36745a3dc730cc0e2`
+without the deferred CPF5/6 adapter edits present in the working tree.
+All 596 CPF3 cases, 12 focused runtime gates, both schema gates, seven guide
+commands and eight unhiding-example checks pass. The compatibility inventory
+now excludes 223 files, including the two new guide XML files that are not
+CPF3 certificates. [Staged-source evidence](data/cpf4-user-guide/staged-summary.json)
+records the source index tree and archive hashes. The prior full 4,821-corpus
+recheck remains evidence for its original pinned executable; it was not rerun
+or relabelled as a result of this documentation checkpoint.

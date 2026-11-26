@@ -1,0 +1,1496 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="ho-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="certificate" type="hoNativeHoTermination"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-application">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="symbol" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-modular-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="certificate" type="hoNativeHoModular"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-meta-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="certificate" type="hoNativeHoModular"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-guarded-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="certificate" type="hoNativeHoGuarded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-prefix-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-blocked-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-functional-access-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-lambda-access-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-semantic-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ordinary">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="marked">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-component-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ordinary">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="marked">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-lex-semantic-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="orders">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="ordinary">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="marked">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-call-expansion-termination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="definitions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoDefinition"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="expansionFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="ordinary">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="marked">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-ceta-delegation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="symbols">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="pairs">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="lhs" type="hoNativeFoTerm"/>
+                    <xs:element name="rhs" type="hoNativeFoTerm"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="constant" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="firstOrderProof">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="trsTerminationProof" type="ferrumTrsProofBody"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-ceta-semantic-delegation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="symbols">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="pairs">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="lhs" type="hoNativeFoTerm"/>
+                    <xs:element name="rhs" type="hoNativeFoTerm"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="constant" type="xs:nonNegativeInteger"/>
+        <xs:element name="ordinary">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="marked">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="firstOrderProof">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="trsTerminationProof" type="ferrumTrsProofBody"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-ceta-filtered-delegation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="symbols">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="pairs">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="lhs" type="hoNativeFoTerm"/>
+                    <xs:element name="rhs" type="hoNativeFoTerm"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="constant" type="xs:nonNegativeInteger"/>
+        <xs:element name="ranks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="arities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="priorities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="selections">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="phases">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="sorts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="firstOrderProof">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="trsTerminationProof" type="ferrumTrsProofBody"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-pump">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ruleIndex" type="xs:nonNegativeInteger"/>
+        <xs:element name="substitution">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-loop">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="variables">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rootType" type="hoNativeHoType"/>
+        <xs:element name="start" type="hoNativeHoTerm"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-embedding">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="variables">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rootType" type="hoNativeHoType"/>
+        <xs:element name="start" type="hoNativeHoTerm"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="context" type="hoNativeHoContext"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ho-plain-pump">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="variables">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rootType" type="hoNativeHoType"/>
+        <xs:element name="start" type="hoNativeHoTerm"/>
+        <xs:element name="steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoStep"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="context" type="hoNativeHoContext"/>
+        <xs:element name="substitution">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="higherOrderInput">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="signature">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rules">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoRule"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="hoNativeFoTerm">
+    <xs:choice>
+      <xs:element name="var">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fun">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+            <xs:element name="arguments">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeFoTerm"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoContext">
+    <xs:choice>
+      <xs:element name="hole">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="cleft">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="context" type="hoNativeHoContext"/>
+            <xs:element name="term" type="hoNativeHoTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="cright">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="term" type="hoNativeHoTerm"/>
+            <xs:element name="context" type="hoNativeHoContext"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoDefinition">
+    <xs:choice>
+      <xs:element name="none">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="some">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="term" type="hoNativeHoTerm"/>
+            <xs:element name="arity" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoGuarded">
+    <xs:choice>
+      <xs:element name="base">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="certificate" type="hoNativeHoModular"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="guarded-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="selections">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="polynomial">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="interpretations">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="continuation" type="hoNativeHoGuarded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoModular">
+    <xs:choice>
+      <xs:element name="base">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="certificate" type="hoNativeHoTermination"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="functional-access-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="lambda-access-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="semantic-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ordinary">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="marked">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="component-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ordinary">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="marked">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="orderFuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="polynomial">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="interpretations">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="continuation" type="hoNativeHoModular"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoPolynomial">
+    <xs:choice>
+      <xs:element name="pvar">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="pnum">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sort" type="xs:nonNegativeInteger"/>
+            <xs:element name="value" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="padd">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sort" type="xs:nonNegativeInteger"/>
+            <xs:element name="left" type="hoNativeHoPolynomial"/>
+            <xs:element name="right" type="hoNativeHoPolynomial"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="pmul">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sort" type="xs:nonNegativeInteger"/>
+            <xs:element name="left" type="hoNativeHoPolynomial"/>
+            <xs:element name="right" type="hoNativeHoPolynomial"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="papply">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="domain" type="hoNativeHoType"/>
+            <xs:element name="codomain" type="hoNativeHoType"/>
+            <xs:element name="function" type="hoNativeHoPolynomial"/>
+            <xs:element name="argument" type="hoNativeHoPolynomial"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="plam">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="domain" type="hoNativeHoType"/>
+            <xs:element name="codomain" type="hoNativeHoType"/>
+            <xs:element name="body" type="hoNativeHoPolynomial"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoRule">
+    <xs:sequence>
+      <xs:element name="variables">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="lhs" type="hoNativeHoPattern"/>
+      <xs:element name="rhs" type="hoNativeHoPattern"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoPattern">
+    <xs:choice>
+      <xs:element name="pbound">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="pconst">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="papp">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="function" type="hoNativeHoPattern"/>
+            <xs:element name="argument" type="hoNativeHoPattern"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="pabs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="type" type="hoNativeHoType"/>
+            <xs:element name="body" type="hoNativeHoPattern"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="meta">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+            <xs:element name="arguments">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPattern"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoStep">
+    <xs:choice>
+      <xs:element name="rule">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ruleIndex" type="xs:nonNegativeInteger"/>
+            <xs:element name="substitution">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoTerm"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="beta">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="left">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="step" type="hoNativeHoStep"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="right">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="step" type="hoNativeHoStep"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="under">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="step" type="hoNativeHoStep"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoTerm">
+    <xs:choice>
+      <xs:element name="bound">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="free">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="const">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="app">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="function" type="hoNativeHoTerm"/>
+            <xs:element name="argument" type="hoNativeHoTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="abs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="type" type="hoNativeHoType"/>
+            <xs:element name="body" type="hoNativeHoTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoTermination">
+    <xs:choice>
+      <xs:element name="empty">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="application">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="symbol" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="partial-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="lambda-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="priority-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="accessible-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="descent-schema">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ranks">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="arities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="priorities">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sorts">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="closureFuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="descentFuel" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="polynomial">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="interpretations">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="item" minOccurs="0" maxOccurs="unbounded" type="hoNativeHoPolynomial"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+            <xs:element name="continuation" type="hoNativeHoTermination"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="hoNativeHoType">
+    <xs:choice>
+      <xs:element name="base">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="arrow">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="domain" type="hoNativeHoType"/>
+            <xs:element name="codomain" type="hoNativeHoType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+</xs:schema>

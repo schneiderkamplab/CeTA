@@ -1,0 +1,233 @@
+# Certification Problem Format 4.0
+
+For all production categories, including cycle rewriting, higher-order
+rewriting and LP with cut, see [Certificate formats](CERTIFICATE_FORMATS.md).
+This page describes the repository's CPF4 dialect, not an externally
+standardized release. First-order Ferrum outputs now use this XML dialect
+by default, including cycle and conditional certificates. Higher-order and
+logic-programming additions are being migrated under [CPF 5](CPF5.md) and
+[CPF 6](CPF6.md), respectively. Those migrations are not yet complete.
+
+CPF 4.0 is a conservative extension of CPF 3.x. A CPF 3.x certification
+problem is also a CPF 4.0 certification problem with the same meaning.
+New producers should write:
+
+```xml
+<cpfVersion>4.0</cpfVersion>
+```
+
+The normative schema is `cpf4.xsd`, including `cpf4-composition.xsd`,
+`cpf4-native.xsd` and `cpf4-ferrum.xsd`. Existing CPF 3.x elements retain
+their semantics. Explicit legacy export modes remain available.
+
+## Schema inheritance regression
+
+`python3 tests/test_cpf_schema_inheritance.py` compiles CPF 3/4/5/6 and checks
+each predecessor's global declarations against its successor, following schema
+includes and named complex types. It permits added choice alternatives,
+optional sequence fields and widened occurrence bounds; other structural
+changes require review. Negative controls reject removed fields, narrowed
+bounds and new required fields. `tests/test_cpf4_lts_div_mod.py` separately
+checks the original LTS inheritance and the CPF5 boundary for ITS arithmetic
+additions. These are schema gates, not executable checker coverage claims.
+Evidence is in `docs/cpf456-integration/schema-inheritance-summary.json`.
+
+## Context-Sensitive Rewriting
+
+The replacement map remains part of the existing
+`input/trsInput/strategy/contextSensitive` element. CSR termination is
+termination over terms whose function symbols belong to the finite input
+TRS signature.
+
+CPF 4.0 adds these top-level proof elements:
+
+- `csrTerminationProof`
+- `csrImprovedDependencyPairs`
+- `conservativeCsrTerminationProof`
+
+The first supports CSR rule removal and replacement-map-aware dependency
+pairs. Its `csrDpProof` supports empty problems, ordinary DP suffixes,
+CSR dependency-graph decomposition, CSR usable rules, CSR subterm
+criteria, direct replacement-map-aware LPAR'08 CS instantiation, and CSR
+size-change proofs.
+
+The canonical `csrImprovedDependencyPairs` proof implements the exact LPAR'08
+construction. It contains an explicit fresh unhiding symbol, the dependency
+pairs, and a `csrDpProof`. A checker recomputes ordinary, collapsing,
+hidden-term, and exact hiding-projection pairs; the supplied list is not
+trusted.
+
+The separate conservative proof contains auxiliary weak rules and retains the
+older conservative coverage semantics.
+
+For compatibility with development certificates produced before CPF 4.0
+was finalized, parsers also accept the deprecated aliases
+`conservativeCsrTerminationProof`,
+`nativeCsrTerminationProof` and
+`nativeConservativeCsrTerminationProof`. They have exactly the same
+semantics as their canonical counterparts.
+
+CPF 4.0 does not currently add a context-sensitive nontermination proof.
+
+## Right-Forward Closures
+
+CPF 4.0 adds the following processors below `trsTerminationProof`:
+
+- `rfcBounds`
+- `rfcAutomatonClosedBounds`
+- `rfcRelativeBounds`
+- `rfcAutomatonClosedRelativeBounds`
+- `rfcMatchboxRelativeBounds`
+- `rfcNativeMatchboxRelativeBounds`
+
+Each RFC processor records `initialTerms` followed by the ordinary
+CPF bounds certificate. Relative variants additionally record the
+remaining TRS and recursive termination proof.
+
+## Compatibility
+
+CPF 4.0 processors are optional extensions. A certifier may reject an
+unsupported CPF 4.0 processor, but it must not interpret an unknown
+processor as an assumption or an ordinary CPF 3.x proof step.
+
+## Historical ITS extension (moved to CPF 5)
+
+The historical CPF4 ITS dialect's LTS arithmetic expression grammar includes binary `<div>` and `<mod>`.
+Each contains exactly two expressions: dividend, then divisor. Expressions may
+be nested in guards, updates, and ranking expressions. For example:
+
+```xml
+<div><variableId>x</variableId><constant>2</constant></div>
+<mod><constant>-5</constant><constant>-2</constant></mod>
+```
+
+For nonzero divisor `d`, the quotient `q` and remainder `r` are the unique
+integers satisfying `n = d*q + r` and `0 <= r < abs(d)`. This is the
+[SMT-LIB Ints Euclidean convention](https://smt-lib.org/theories-Ints.shtml),
+not truncation toward zero or floor division for negative divisors. Examples:
+`div(-5,2)=-3`, `div(-5,-2)=3`, and both remainders equal 1.
+
+At divisor zero these operators are underspecified, as in SMT-LIB Ints.
+No producer/checker may silently replace them by zero or select convenient
+values to establish termination/nontermination. A checker must either preserve
+the specified interpretation discipline or reject such applications; a first
+verified implementation may require proof of a nonzero divisor.
+
+`cpf4.xsd` now includes the unchanged CPF3 `lts.xsd`. The later ITS
+vocabulary is in `cpf5.xsd` / `lts5.xsd`; `cpf4-legacy-its.xsd` preserves
+the historical dialect for explicit compatibility.
+These two expression constructors extend the arithmetic grammar;
+`lts4.xsd` also contains independently added ITS certificate vocabulary. `tests/test_cpf4_lts_div_mod.py` checks this boundary and the new
+constructor arities.
+
+**Implementation status:** these are CPF 5 additions, preserved separately in
+the historical CPF4 ITS dialect. They are not part of the CPF 4 first-order
+milestone. The
+existing Isabelle IA signature, LTS XML parser, and frozen production checker do
+not yet accept these constructors. Schema validation is not certification. The
+schema-positive fixture `examples/its-div-mod.cpf4.xml` is not claimed as a
+CeTA-certified proof. A verified arithmetic/translation extension, regenerated
+checker and semantic mutation tests are required before promotion.
+
+## First-order envelope and structured witnesses
+
+New first-order documents use `certificationProblem`, with ordered children
+`cpfVersion` (`4.0`), `lookupTables`, `input`, `property`, `answer`, and `proof`.
+The cycle/conditional adapters require empty lookup tables and reject extra,
+duplicate, reordered or mismatched claim fields. They dispatch to the existing
+Isabelle-generated semantic checkers; XML decoding is not proof acceptance.
+
+| Family | Input | Property / answer | Proof constructor |
+| --- | --- | --- | --- |
+| Cycle nontermination | `cycleInput` | `termination` / `no` | `CycleEmbedding`, `CycleTransport`, `CycleMorphism` |
+| Conditional nontermination | `conditionalInput` | `termination` or `operationalTermination` / `no` | `ConditionalCycle`, `ConditionalLoop` |
+| Conditional erasure | Original conditional TRS input | `termination` / `yes` | `conditionalErasureProof` containing `trsTerminationProof` |
+
+Cycle and conditional witnesses contain structured XML fields, lists, tuples
+and constructors; they do not embed opaque Haskell text. The exact typed
+field grammar is `src/Haskell/Ceta/Input/cpf4-native.json`. Regenerate its
+Haskell declarations and first-order XSD with:
+
+```sh
+python3 scripts/generate_cpf4_native_grammar.py
+python3 scripts/generate_cpf4_native_schema.py
+```
+
+The JSON includes preparatory higher-order data declarations; these do not
+activate higher-order output migration. `cpf4-native.xsd` exposes the
+first-order families only. Runnable examples are in
+`tests/unified/cpf4-first-order/`. The erasure proof now lives inside the
+CPF envelope rather than using a standalone `conditionalErasureProof` root.
+
+`--ordinary` conditional checking requires the ordinary termination property.
+An operational call loop is insufficient for ordinary nontermination. Source
+binding still requires the original ordered rules/conditions and witness
+correspondence, independently of schema validity. Legacy textual cycle and
+conditional witnesses and separate erasure XML remain readable for historical
+certificates; fresh Ferrum outputs use CPF 4 XML. Filename extensions alone
+do not identify the format.
+
+## Relative ADP composition
+
+`relativeAdpComposition` wraps an ordinary recursive proof and explicit
+relative-ADP discharges. Each discharge records the exact strict and weak
+rules and a relative-ADP root proof. The wrapper checks every discharge,
+requires coverage of the ordinary proof's termination assumptions, and then
+uses the conditional soundness theorem of the recursive ordinary checker.
+An unchecked assumption is never sufficient for acceptance.
+
+The formal implementation is in `thys/Relative_ADP/Composition`; its code
+session is `Relative_ADP_Composition_Code`. This supports ADP children after
+ordinary transformations such as uncurrying and DP-to-TRS switching. The
+ADP-to-ordinary-to-ADP crossing inside derelatification remains unsupported.
+See `tests/unified/check_adp_composition.py` for positive and negative cases.
+
+## Additional first-order vocabulary and validation
+
+`cpf4-ferrum.xsd` declares existing Ferrum proof forms including sparse
+tiling/removal, GM04 transformations, outermost RZ, innermost Q-DP and
+AAECC proofs, and CSR source/typed/guarded wrappers. Each form requires its corresponding semantic checks. Schema validity
+alone does not establish executable support.
+
+The typed CSR continuations `expandedExtendedBasicCsrProof` and
+`expandedStrongUsableRulesProc` operate on the expanded dependency pairs.
+Pair references in their reduction steps must use the expanded variable
+names produced by `string_renameN` (for example, `x0_x`), rather than the
+original typed input names. The checker recomputes the expansion; an
+unmatched pair reference does not remove a pair.
+
+Build the unified checker with `make ceta`. Run the first-order XML and
+ADP gates with `tests/unified/check_cpf4_first_order.py` and
+`tests/unified/check_adp_composition.py` (see `--help` for checker/output
+arguments). `tests/unified/ValidateCpf4.java` validates deeply nested proofs
+that exceed libxml2's fixed nesting limit. Schema validation is separate
+from semantic certification and original-source binding.
+
+The November 24 candidate replay retains all 4,821 certified results across
+4,991 first-order inputs (3,721 YES, 1,100 NO, 170 unresolved). Build and
+formal-check evidence is recorded in `docs/state-local-integration.md` and
+the sibling Ferrum `docs/state-of-the-art.md`. This is candidate validation;
+production binaries and higher-order/LP interfaces are unchanged.
+
+## Validated CeTA milestone
+
+The CPF3 backward-compatibility and CPF4 CeTA milestone is validated on
+unified checker SHA-256
+`18a5be12a468d2ad895f6b58561703f7b873b4e75c048da8dc545f8c0e320260`.
+The finite regression suite passes 596 CPF3 compatibility cases, all focused
+CPF4 gates, all 4,821 retained certificates twice, and fresh strict replay of
+110 CSR roots. The original 170 unknown inputs remain explicit. All retained
+and fresh certificates pass the CPF4 schema. See the
+[final evidence summary](../docs/data/cpf4-milestone-20261126/final-summary.json)
+and [integration record](../docs/state-local-integration.md).
+The installed production checker was not replaced. Work pauses at this
+milestone; CPF5/6 and LeTA remain deferred.
+
+## Version migration in progress
+
+CPF 4 preserves all CPF 3 vocabulary and adds first-order term/string
+rewriting forms. [CPF 5](CPF5.md) adds ITS and higher-order extensions;
+[CPF 6](CPF6.md) adds LP, LP with cut and Prolog extensions. Structured
+higher-order and two LP translation forms now have focused certification
+gates. Their documentation identifies implemented forms and remaining gaps;
+the full producer/checker migration and current-frontier replay are unfinished.

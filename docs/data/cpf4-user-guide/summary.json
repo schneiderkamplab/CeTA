@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "guide_sha256": "db9ea57d37127d7b46ed5fe2ab08499108734db1e292664efbf2a6aeba8531e6",
+  "local_links_checked": true,
+  "inline_example_matches_file": true,
+  "checker_commands": "target/cpf4-user-guide-validation/commands.json",
+  "schema_validation": [
+    "xmllint",
+    "Java ValidateCpf4",
+    "lxml"
+  ],
+  "docs_check": "target/cpf4-user-guide-validation/docs.log"
+}

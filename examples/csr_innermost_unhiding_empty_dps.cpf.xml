@@ -33,7 +33,7 @@
           </rule>
         </rules>
       </auxiliaryRules>
-      <dpProof><depGraphProc/></dpProof>
+      <csrDpProof><ordinaryDpProof><dpProof><depGraphProc/></dpProof></ordinaryDpProof></csrDpProof>
     </csrInnermostDependencyPairs>
   </proof>
   <metaInformation>

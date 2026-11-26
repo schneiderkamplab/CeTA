@@ -1,0 +1,3877 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:documentation>Prolog source certificates. Schema validity is not certification.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="prologInput">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="executionProfile" type="xs:string"/>
+        <xs:element name="program" type="lp6CutProgram"/>
+        <xs:element name="query" type="lp6CutQuery"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="lp6PrologSignature">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="arity" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="prologStaticSEGProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="predicates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologStaticNonterminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="predicates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologStaticUniformRecursionProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="predicates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologUndefinedQueryProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="definitions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6PrologReturnAction">
+    <xs:choice>
+      <xs:element name="cut">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutReturnAction"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="variableTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="identityTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologVarReturnDependencyTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="root" type="xs:nonNegativeInteger"/>
+        <xs:element name="nodes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnStates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnSymbol">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+        <xs:element name="actions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologReturnAction" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="residual">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6PrologReturnModuleAction">
+    <xs:choice>
+      <xs:group ref="lp6PrologReturnAction"/>
+      <xs:element name="trimBarriers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="parallelAlternatives">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="links">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="link" type="lp6CutLink" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="refutedGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+            <xs:element name="prefix" type="xs:nonNegativeInteger"/>
+            <xs:element name="bindings">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="binding" type="lp6CutBinding" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologModularReturnDependencyTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="root" type="xs:nonNegativeInteger"/>
+        <xs:element name="nodes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnStates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnSymbol">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+        <xs:element name="actions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologReturnModuleAction" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="residual">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6PrologNoAction">
+    <xs:choice>
+      <xs:element name="ordinary">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutNoAction"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="test" type="lp6CutEmpty"/>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6PrologNoTrace">
+    <xs:sequence>
+      <xs:element name="step" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologNoAction"/>
+            <xs:element name="state">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="prologTestSourceNonterminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="predicates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="arguments">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="core">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="before">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="after">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prefix" type="lp6PrologNoTrace"/>
+        <xs:element name="loop" type="lp6CutNoTrace"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6RationalGoal">
+    <xs:choice>
+      <xs:element name="atom">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ref" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="meta">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ref" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="unify">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ref" type="xs:nonNegativeInteger" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="cut" type="xs:nonNegativeInteger"/>
+      <xs:element name="true" type="lp6CutEmpty"/>
+      <xs:element name="fail" type="lp6CutEmpty"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6RationalEntry">
+    <xs:choice>
+      <xs:element name="goals">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6RationalGoal" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="clauseChoice">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6RationalGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+            <xs:element name="scope" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="barrier" type="xs:nonNegativeInteger"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6RationalClash">
+    <xs:choice>
+      <xs:element name="constructorClash">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="repeatedVariableClash">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="left">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="right">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6RationalAction">
+    <xs:choice>
+      <xs:element name="admin" type="lp6CutEmpty"/>
+      <xs:element name="case">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="scope" type="xs:nonNegativeInteger"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="resolve">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="environment">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="binding" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="var" type="xs:string"/>
+                        <xs:element name="ref" type="xs:nonNegativeInteger"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="body">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6RationalGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="backtrack">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6RationalClash"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologRationalSourceNonterminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="predicates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="arguments">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="graph">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="node" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:group ref="lp6CutSymbol"/>
+                    <xs:element name="children">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ref" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="anchors">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="variable" type="xs:string"/>
+        <xs:element name="rhs">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="bindingRoot" type="xs:nonNegativeInteger"/>
+        <xs:element name="call">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="callRoot" type="xs:nonNegativeInteger"/>
+        <xs:element name="before">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="after">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6RationalEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prefix" type="lp6CutNoTrace"/>
+        <xs:element name="loop">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="step" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:group ref="lp6RationalAction"/>
+                    <xs:element name="state">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6RationalEntry" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6IntegerNoAction">
+    <xs:choice>
+      <xs:group ref="lp6PrologNoAction"/>
+      <xs:element name="integerIdentity">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="integer" type="xs:integer"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6IntegerNoTrace">
+    <xs:sequence>
+      <xs:element name="step" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerNoAction"/>
+            <xs:element name="state">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="prologIntegerSourceNonterminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="arguments">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="core">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="before">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="after">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prefix" type="lp6IntegerNoTrace"/>
+        <xs:element name="loop" type="lp6IntegerNoTrace"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6IntegerExpression">
+    <xs:choice>
+      <xs:element name="integer" type="xs:integer"/>
+      <xs:element name="var" type="xs:string"/>
+      <xs:element name="positive">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="negate">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="add">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="subtract">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="multiply">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="divide">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:element name="divisor" type="xs:integer"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="modulo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:element name="divisor" type="xs:integer"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6GroundIntegerNoAction">
+    <xs:choice>
+      <xs:group ref="lp6IntegerNoAction"/>
+      <xs:element name="integerComparison">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="left">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6IntegerExpression"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="right">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6IntegerExpression"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="holds" type="xs:boolean"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6GroundIntegerNoTrace">
+    <xs:sequence>
+      <xs:element name="step" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6GroundIntegerNoAction"/>
+            <xs:element name="state">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="prologGroundIntegerSourceNonterminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="arguments">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="core">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutTerm"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="before">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="after">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutEntry" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prefix" type="lp6GroundIntegerNoTrace"/>
+        <xs:element name="loop" type="lp6GroundIntegerNoTrace"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="lp6PrologSuccessAtom">
+    <xs:sequence>
+      <xs:element name="predicate" type="xs:string"/>
+      <xs:element name="arguments">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologSuccessGuard">
+    <xs:choice>
+      <xs:element name="integerGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="opaqueGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="evaluationGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="numericSuccessGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="comparison" type="xs:nonNegativeInteger"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6PrologIntegerFact">
+    <xs:choice>
+      <xs:element name="guardFact">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="guard" type="xs:nonNegativeInteger"/>
+            <xs:element name="var" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="helperFact">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="call" type="xs:nonNegativeInteger"/>
+            <xs:element name="argument" type="xs:nonNegativeInteger"/>
+            <xs:element name="var" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="evaluationFact">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="guard" type="xs:nonNegativeInteger"/>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:element name="result" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6PrologIntegerOutput">
+    <xs:choice>
+      <xs:element name="var" type="xs:string"/>
+      <xs:element name="integer" type="xs:integer"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6PrologTransferFact">
+    <xs:choice>
+      <xs:element name="inputFact">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="argument" type="xs:nonNegativeInteger"/>
+            <xs:element name="var" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="baseFact">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologIntegerFact"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="helperTransferFact">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="call" type="xs:nonNegativeInteger"/>
+            <xs:element name="rule" type="xs:nonNegativeInteger"/>
+            <xs:element name="argument" type="xs:nonNegativeInteger"/>
+            <xs:element name="var" type="xs:string"/>
+            <xs:element name="inputs">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologIntegerOutput" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6PrologTransferContext">
+    <xs:sequence>
+      <xs:element name="required">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="position" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="outputs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="position" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologTransferSummary">
+    <xs:sequence>
+      <xs:element name="predicate" type="xs:string"/>
+      <xs:element name="arity" type="xs:nonNegativeInteger"/>
+      <xs:element name="contexts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="context" type="lp6PrologTransferContext" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologSuccessClause">
+    <xs:sequence>
+      <xs:element name="head">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="atom" type="lp6PrologSuccessAtom"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="body">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="atom" type="lp6PrologSuccessAtom" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="guards">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologSuccessGuard" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologTransferReceipt">
+    <xs:sequence>
+      <xs:element name="facts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="outputs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologIntegerOutput" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologTransferProof">
+    <xs:sequence>
+      <xs:element name="contexts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="context" type="lp6PrologTransferReceipt" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologTransferContract">
+    <xs:sequence>
+      <xs:element name="summaries">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="summary" type="lp6PrologTransferSummary" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="successProgram">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" type="lp6PrologSuccessClause" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="proofs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" type="lp6PrologTransferProof" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologComparison">
+    <xs:choice>
+      <xs:element name="less" type="lp6CutEmpty"/>
+      <xs:element name="lessEqual" type="lp6CutEmpty"/>
+      <xs:element name="equal" type="lp6CutEmpty"/>
+      <xs:element name="notEqual" type="lp6CutEmpty"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6PrologReturnShape">
+    <xs:choice>
+      <xs:element name="any" type="lp6CutEmpty"/>
+      <xs:element name="ground" type="lp6CutEmpty"/>
+      <xs:element name="node" type="xs:nonNegativeInteger"/>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6PrologShapeProduction">
+    <xs:sequence>
+      <xs:element name="symbol">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutSymbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="arguments">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologReturnShape" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologShapeNode">
+    <xs:sequence>
+      <xs:element name="production" type="lp6PrologShapeProduction" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologObservation">
+    <xs:choice>
+      <xs:element name="integerGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="groundGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="comparisonGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="sourceEquation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="evaluationGuard">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnShape">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="grammar">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="shapeNode" type="lp6PrologShapeNode" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="shape">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologReturnShape"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="term">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6PrologSourceContext">
+    <xs:sequence>
+      <xs:element name="facts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="atom" type="lp6PrologSuccessAtom" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="guards">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologSuccessGuard" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="observations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologObservation" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologContextAction">
+    <xs:choice>
+      <xs:element name="cut">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutReturnAction"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integerTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integerComparison">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="known">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6PrologComparison"/>
+            <xs:element name="reversed" type="xs:boolean"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integerEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="known">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="resultVariable" type="xs:string"/>
+            <xs:element name="activePrefix" type="xs:nonNegativeInteger"/>
+            <xs:element name="clausePrefix" type="xs:nonNegativeInteger"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:group ref="lp6CutCoverage"/>
+            <xs:element name="outputs">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="link" type="lp6CutLink" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="stagedIntegerEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="known">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="resultVariable" type="xs:string"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+            <xs:group ref="lp6CutReturnAction"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="constantIntegerEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+            <xs:group ref="lp6CutReturnAction"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="normalizedIntegerEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="known">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="resultVariable" type="xs:string"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="normalizedConstantIntegerEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="identityTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="2" maxOccurs="2"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="finiteComparison">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6PrologComparison"/>
+            <xs:element name="reversed" type="xs:boolean"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="3" maxOccurs="3"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="trimBarriers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="returnState" type="lp6CutReturnState" minOccurs="2" maxOccurs="2"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="parallelAlternatives">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="links">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="link" type="lp6CutLink" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6PrologTyping">
+    <xs:sequence>
+      <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologRank">
+    <xs:sequence>
+      <xs:element name="symbol">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutSymbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="value" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologEstablishedControl">
+    <xs:sequence>
+      <xs:element name="program" type="lp6CutProgram"/>
+      <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+      <xs:element name="root" type="xs:nonNegativeInteger"/>
+      <xs:element name="nodes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnStates">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="contexts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="typings">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="facts" type="lp6PrologTyping" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+      <xs:element name="returnSymbol">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutSymbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+      <xs:element name="actions">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="boundary" type="lp6CutEmpty"/>
+              <xs:group ref="lp6PrologContextAction"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="residual">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ranks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rank" type="lp6PrologRank" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologTripleRegion">
+    <xs:sequence>
+      <xs:element name="prologContextControl" type="lp6PrologEstablishedControl"/>
+      <xs:element name="freeKnowledge" type="lp6SegFreeSets"/>
+      <xs:element name="connections">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleConnection" type="lp6TripleConnection" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="emits">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clauseReceipt" type="lp6TripleReceipt" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologSourceReturnModel">
+    <xs:sequence>
+      <xs:element name="predicates">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologSourceIntegerReturn">
+    <xs:sequence>
+      <xs:element name="sourceReturnModel" type="lp6PrologSourceReturnModel"/>
+      <xs:element name="facts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologSourceGroundReturn">
+    <xs:sequence>
+      <xs:element name="sourceReturnModel" type="lp6PrologSourceReturnModel"/>
+      <xs:element name="groundModes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="groundMode" type="lp6CutGroundMode" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ground">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologTripleComponent">
+    <xs:choice>
+      <xs:element name="prologTripleRegion" type="lp6PrologTripleRegion"/>
+      <xs:element name="prologTripleSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="staticPredicates">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="signature" type="lp6PrologSignature" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologTripleIntegerSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+            <xs:element name="sourceIntegerReturn" type="lp6PrologSourceIntegerReturn"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologTripleGroundSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+            <xs:element name="sourceGroundReturn" type="lp6PrologSourceGroundReturn"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologEstablishedSEGDependencyTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="chainPredicate">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="triples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" type="lp6CutTriple" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="successProgram">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="roots">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="tripleRoot" type="lp6TripleRoot" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="components">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologTripleComponent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologContextDependencyTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="root" type="xs:nonNegativeInteger"/>
+        <xs:element name="nodes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnStates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="typings">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="facts" type="lp6PrologTyping" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="returnSymbol">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+        <xs:element name="actions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologContextAction" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="residual">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="lp6PrologContextModuleData">
+    <xs:sequence>
+      <xs:element name="nodes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnStates">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="contexts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="typings">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="facts" type="lp6PrologTyping" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnSymbol">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutSymbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+      <xs:element name="actions">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologContextAction" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologContextComposedAction">
+    <xs:choice>
+      <xs:group ref="lp6PrologContextAction"/>
+      <xs:element name="returnSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="routing">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="route" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="var" type="xs:string"/>
+                        <xs:element name="index" type="xs:nonNegativeInteger"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="projection">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="prefix">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="continuation">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="interface">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="contextModule" type="lp6PrologContextModuleData"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="returnVariables">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="contextModule" type="lp6PrologContextModuleData"/>
+            <xs:element name="link" type="lp6CutLink" minOccurs="1" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologContextComposedDependencyTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="root" type="xs:nonNegativeInteger"/>
+        <xs:element name="nodes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnStates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="typings">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="facts" type="lp6PrologTyping" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="returnSymbol">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+        <xs:element name="actions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologContextComposedAction" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="residual">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologEstablishedSEGConstructorTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="chainPredicate">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="triples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" type="lp6CutTriple" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="successProgram">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="roots">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="tripleRoot" type="lp6TripleRoot" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="components">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologTripleComponent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6PrologEvaluationAction">
+    <xs:choice>
+      <xs:element name="cut">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutReturnAction"/>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integerTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="termTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="groundDisequality">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="disjunction">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="leftGoals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="rightGoals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="conditionalBranch">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="conditionGoals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="thenGoals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="elseGoals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="commitScope" type="xs:nonNegativeInteger"/>
+            <xs:element name="localScope" type="xs:nonNegativeInteger"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="opaqueProbe">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:element name="targetPredicate" type="xs:string"/>
+            <xs:element name="arguments">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="commitScope" type="xs:nonNegativeInteger"/>
+            <xs:element name="localScope" type="xs:nonNegativeInteger"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="rationalDisequality">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="identityTest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="equationRewrite">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="clauseEquationRewrite">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+            <xs:element name="scope" type="xs:nonNegativeInteger"/>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="finiteEvaluationError">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="finiteComparisonError">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="predicate" type="xs:string"/>
+            <xs:group ref="lp6PrologComparison"/>
+            <xs:element name="reversed" type="lp6Boolean"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="checkedFiniteComparison">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="finiteComparison">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="predicate" type="xs:string"/>
+                  <xs:group ref="lp6PrologComparison"/>
+                  <xs:element name="reversed" type="xs:boolean"/>
+                  <xs:group ref="lp6CutTerm"/>
+                  <xs:group ref="lp6CutTerm"/>
+                  <xs:element name="goals">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="active">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="returnState" type="lp6CutReturnState"/>
+                  <xs:element name="link" type="lp6CutLink" minOccurs="3" maxOccurs="3"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="yesTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="noTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="errorTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="normalizedFiniteEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="resultVariable" type="xs:string"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="normalizedFiniteLength">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="resultVariable" type="xs:string"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="subtractLibrary">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="normalizedConstantEvaluation">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="goals">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutGoal" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="active">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6CutTerm" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="trimBarriers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="returnState" type="lp6CutReturnState"/>
+            <xs:element name="link" type="lp6CutLink"/>
+            <xs:element name="types">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="parallelAlternatives">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="links">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="link" type="lp6CutLink" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="linkTypes">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="types" type="lp6PrologTyping" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="refutedContext">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger"/>
+            <xs:element name="refresh" type="xs:nonNegativeInteger"/>
+            <xs:element name="bindings">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="binding" type="lp6CutBinding" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:complexType name="lp6PrologFiniteControl">
+    <xs:sequence>
+      <xs:element name="program" type="lp6CutProgram"/>
+      <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+      <xs:element name="root" type="xs:nonNegativeInteger"/>
+      <xs:element name="nodes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="node" type="lp6CutNode" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnStates">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="returnState" type="lp6CutReturnState" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="contexts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="typings">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="facts" type="lp6PrologTyping" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+      <xs:element name="returnSymbol">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutSymbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="returnArity" type="xs:nonNegativeInteger"/>
+      <xs:element name="actions">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="boundary" type="lp6CutEmpty"/>
+              <xs:group ref="lp6PrologEvaluationAction"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="residual">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ranks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rank" type="lp6PrologRank" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologFiniteRegion">
+    <xs:sequence>
+      <xs:element name="prologEvaluationControl" type="lp6PrologFiniteControl"/>
+      <xs:element name="freeKnowledge" type="lp6SegFreeSets"/>
+      <xs:element name="connections">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleConnection" type="lp6TripleConnection" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="emits">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clauseReceipt" type="lp6TripleReceipt" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologFiniteIntegerReturn">
+    <xs:sequence>
+      <xs:element name="sourceFiniteReturnModel" type="lp6PrologSourceReturnModel"/>
+      <xs:element name="facts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologTransferFact" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologFiniteGroundReturn">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="sourceFiniteReturnModel" type="lp6PrologSourceReturnModel"/>
+        <xs:element name="sourceControlReturnModel" type="lp6PrologSourceReturnModel"/>
+      </xs:choice>
+      <xs:element name="groundModes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="groundMode" type="lp6CutGroundMode" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ground">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6PrologFiniteShapeReturn">
+    <xs:sequence>
+      <xs:element name="sourceGroundReturn" type="lp6PrologFiniteGroundReturn"/>
+      <xs:element name="integerFacts" type="lp6PrologTyping"/>
+      <xs:element name="integers">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="shapeFuel" type="xs:nonNegativeInteger"/>
+      <xs:element name="grammar">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="shapeNode" type="lp6PrologShapeNode" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="nonproductivePredicates" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="signature" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="symbol">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6CutSymbol"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="arity" type="xs:nonNegativeInteger"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="shapeContracts">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="shapeContract" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="symbol">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6CutSymbol"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="inputs">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6PrologReturnShape" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="outputs">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6PrologReturnShape" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="seeds">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="shapeFact" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="shape">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6PrologReturnShape"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="var" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="outputs">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="shapeFact" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="shape">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:group ref="lp6PrologReturnShape"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="var" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="lp6PrologFiniteTripleComponent">
+    <xs:choice>
+      <xs:element name="prologTripleRegion" type="lp6PrologFiniteRegion"/>
+      <xs:element name="prologTripleSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+            <xs:element name="firstTypes" type="lp6PrologTyping"/>
+            <xs:element name="secondTypes" type="lp6PrologTyping"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologTripleIntegerSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+            <xs:element name="sourceIntegerReturn" type="lp6PrologFiniteIntegerReturn"/>
+            <xs:element name="firstTypes" type="lp6PrologTyping"/>
+            <xs:element name="secondTypes" type="lp6PrologTyping"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologTripleGroundSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+            <xs:element name="sourceGroundReturn" type="lp6PrologFiniteGroundReturn"/>
+            <xs:element name="firstTypes" type="lp6PrologTyping"/>
+            <xs:element name="secondTypes" type="lp6PrologTyping"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="prologTripleShapeSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tripleSplit" type="lp6TripleSplit"/>
+            <xs:element name="sourceShapeReturn" type="lp6PrologFiniteShapeReturn"/>
+            <xs:element name="firstTypes" type="lp6PrologTyping"/>
+            <xs:element name="secondTypes" type="lp6PrologTyping"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologEstablishedFiniteSEGDependencyTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="chainPredicate">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="triples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" type="lp6CutTriple" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="successProgram">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="roots">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="tripleRoot" type="lp6TripleRoot" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="components">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologFiniteTripleComponent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologEstablishedFiniteSEGConstructorTriplesProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="chainPredicate">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="triples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" type="lp6CutTriple" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="successProgram">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="roots">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="tripleRoot" type="lp6TripleRoot" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="components">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologFiniteTripleComponent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="predicateEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="dataEncoding">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="encoding" type="lp6CutEncoding" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="prologEstablishedFiniteDirectProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="signatures">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="signature" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="predicate" type="xs:string"/>
+                    <xs:element name="arity" type="xs:nonNegativeInteger"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologEvaluationControl" type="lp6PrologFiniteControl"/>
+        <xs:element name="freeKnowledge" type="lp6SegFreeSets"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6StableCoordinate">
+    <xs:choice>
+      <xs:element name="integerCoordinate">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="upperBoundCoordinate">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledBoundCoordinate">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeBoundCoordinate">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6StableEndpointExpression">
+    <xs:choice>
+      <xs:element name="integerEndpoint">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integerBoundEndpoint">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="boundEndpoint">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledEndpoint">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeEndpoint">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6StableKey">
+    <xs:choice>
+      <xs:element name="integerKey" type="xs:string"/>
+      <xs:element name="boundKey">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledKey">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeKey">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="lp6StableCondition">
+    <xs:choice>
+      <xs:element name="ignoredCondition">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="integerCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6PrologComparison"/>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="evaluatedIntegerCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="leaves">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="leaf" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="var" type="xs:string"/>
+                        <xs:group ref="lp6CutTerm"/>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="floorOrderCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeLessCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeLeqCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledEqualityCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeEvaluationCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledEvaluationCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledLessCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledLeqCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeModuloCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledModuloCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="moduloDescentCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="quotientDescentCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeQuotientModuloCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="scaledQuotientModuloCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeLiteralLessCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="integer" type="xs:integer"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="magnitudeLiteralLeqCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="integer" type="xs:integer"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="squareIntegerLessCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="squareIntegerLeqCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6IntegerExpression"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="squareUpperCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="upperCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="quotientMagnitudeUpperCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="quotientUpperCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6IntegerExpression"/>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="divisor" type="xs:integer"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="quotientCondition">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="lp6CutTerm"/>
+            <xs:element name="divisor" type="xs:integer"/>
+            <xs:group ref="lp6CutTerm"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologStableNumericComponent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="coordinates">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="predicate" type="xs:string"/>
+                    <xs:element name="names">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="coordinate" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="coordinateModes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="predicate" type="xs:string"/>
+                    <xs:element name="modes">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6StableCoordinate" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="locations">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="predicate" type="xs:string"/>
+                    <xs:element name="locationId" type="xs:string"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="triples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="head">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="atom" type="lp6PrologSuccessAtom"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="prefix">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="atom" type="lp6PrologSuccessAtom" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="call">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="atom" type="lp6PrologSuccessAtom"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="guards">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6PrologSuccessGuard" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="observations">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6PrologObservation" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rows">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="row" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="facts" type="lp6PrologTyping"/>
+                    <xs:element name="ground">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="inputs">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="endpoint" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="coordinate" type="xs:string"/>
+                                <xs:group ref="lp6CutTerm"/>
+                                <xs:group ref="lp6StableEndpointExpression"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="outputs">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="endpoint" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="coordinate" type="xs:string"/>
+                                <xs:group ref="lp6CutTerm"/>
+                                <xs:group ref="lp6StableEndpointExpression"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="tests">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6StableCondition" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="bindings">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="binding" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:group ref="lp6StableKey"/>
+                                <xs:group ref="variable"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="formula" type="formula"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="lts" type="lts"/>
+        <xs:element name="ltsTerminationProof">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="ltsTerminationProof"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="lp6GuardedDescent">
+    <xs:choice>
+      <xs:element name="guardedRegion">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="connections">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="tripleConnection" type="lp6TripleConnection" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="guardedSplit">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="firstCall">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="clauseReceipt" type="lp6TripleReceipt"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="secondCall">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="clauseReceipt" type="lp6TripleReceipt"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="prologEstablishedStableSEGGuardedProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fuel" type="xs:nonNegativeInteger"/>
+        <xs:element name="chainPredicate">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6CutSymbol"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="triples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" type="lp6CutTriple" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="successProgram">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="clause" type="lp6CutResidualClause" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="prologSuccessTransferContract" type="lp6PrologTransferContract"/>
+        <xs:element name="contexts">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="sourceContext" type="lp6PrologSourceContext" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="roots">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="tripleRoot" type="lp6TripleRoot" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="components">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6PrologFiniteTripleComponent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="observedTriples">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="triple" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="head">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="atom" type="lp6PrologSuccessAtom"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="prefix">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="atom" type="lp6PrologSuccessAtom" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="call">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="atom" type="lp6PrologSuccessAtom"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="guards">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6PrologSuccessGuard" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="observations">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:group ref="lp6PrologObservation" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="guardedDescents">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lp6GuardedDescent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="argumentProjection">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="predicate" type="xs:string"/>
+                    <xs:element name="positions">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="position" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="prologStableNumericComponent"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

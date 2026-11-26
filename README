@@ -1,5 +1,8 @@
 Contents
 ========
+CPF 4 user guide: xml/CPF4.md (examples, schema validation, checking,
+source binding, compatibility and troubleshooting).
+
 Certificate formats for all production categories, through LP with cut:
 xml/CERTIFICATE_FORMATS.md (schemas, native interfaces and semantic scope).
 
@@ -7,7 +10,7 @@ xml/CERTIFICATE_FORMATS.md (schemas, native interfaces and semantic scope).
  2) Compilation
  3) Dependencies
 
-Verified cycle-rewriting extension (2026-10-19)
+Historical cycle-rewriting extension (2026-10-19)
 ==============================================
 The additive Cycle_Checker session in thys/Cycle_Checker proves soundness of
 ordinary self-embedding, cyclic power transport, and finite transport systems
@@ -19,7 +22,8 @@ tools/build_cycle_checker.py builds this session on a private clone of a
 verified consolidated Proof_Checker heap and exports/compiles ceta-cycle.
 It does not change existing production checkers or rebuild HOL/AFP. The source,
 generated code, binary hashes and build logs are retained in the output tree.
-The accepted front end is src/Haskell/Main_Cycle.hs. Its CycleTransport,
+This historical standalone front end is src/Haskell/Main_Cycle.hs.
+For current structured CPF 4 XML, use the unified checker and xml/CPF4.md. Its CycleTransport,
 CycleEmbedding and CycleMorphism constructors are a native cycle-certificate
 format, NOT ordinary SRS CPF or a claim of stock CPF schema support. Natural
 number fields must be nonnegative. The generated executable checks each local

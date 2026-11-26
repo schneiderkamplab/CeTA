@@ -7,7 +7,7 @@ right-forward-closure proof processors. Every CPF 3.x document remains a
 CPF 4.0 document; the existing CPF 3.x vocabulary is unchanged.
     </xs:documentation>
   </xs:annotation>
-  <xs:include schemaLocation="lts4.xsd"/>
+  <xs:include schemaLocation="lts.xsd"/>
   <xs:include schemaLocation="cpf4-composition.xsd"/>
   <xs:include schemaLocation="cpf4-native.xsd"/>
   <xs:include schemaLocation="cpf4-ferrum.xsd"/>
@@ -5935,9 +5935,6 @@ is untrusted.
         <xs:complexType>
           <xs:group ref="ltsTerminationProof"/>
         </xs:complexType>
-      </xs:element>
-      <xs:element name="ltsNonterminationProof">
-        <xs:complexType><xs:group ref="ltsNonterminationProof"/></xs:complexType>
       </xs:element>
       <xs:element name="ltsSafetyProof">
         <xs:complexType>

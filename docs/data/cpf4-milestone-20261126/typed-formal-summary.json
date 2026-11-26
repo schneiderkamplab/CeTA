@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "exit_code": 0,
+  "session": "CPF4_Typed_Extension_Check",
+  "command": {
+    "command": [
+      "/work/dfm/Isabelle2025-2/bin/isabelle",
+      "build",
+      "-j",
+      "4",
+      "-o",
+      "threads=8",
+      "-o",
+      "quick_and_dirty=false",
+      "-d",
+      "thys",
+      "-d",
+      "target/cpf4-typed-check",
+      "CPF4_Typed_Extension_Check"
+    ],
+    "AFP": "/work/dfm/festschrift/CeTA-adp-composition/target/adp-composition/afp",
+    "source": "thys/Proof_Checker/CSR_Muterm_Typed_Checker.thy",
+    "source_sha256": "b3fd1fd198ecea28acf0c54c191a6f4609d83f08466b0b055f6502c3f019a259",
+    "repository_revision": "e669464184ef8dca12df42315190ba9c23305796",
+    "patch_sha256": "485e9dd038750a1dd19a00e8e3963eb457ba6a2483e38660be4e9dc7d5d0af4e",
+    "before_source_sha256": "7ca293685c572f1de0d693349c6b10f853e8ecde6974142e9c9dcc0d001ad417"
+  },
+  "log_sha256": "00b99332b94978c81ba5879a6703f2a9243deb8109d04f6e626bac89cd2bff94",
+  "source_sha256": "b3fd1fd198ecea28acf0c54c191a6f4609d83f08466b0b055f6502c3f019a259",
+  "quick_and_dirty": false,
+  "archive_sha256": "2ef96fbdde4190728ca60932ef4c65fcc8645cafe1c4dadbfcd62031b9693675"
+}

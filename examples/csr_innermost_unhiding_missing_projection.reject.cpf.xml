@@ -41,7 +41,7 @@
           </rule>
         </rules>
       </auxiliaryRules>
-      <dpProof>
+      <csrDpProof><ordinaryDpProof><dpProof>
         <redPairProc>
           <interpretation>
             <type><polynomial><domain><naturals/></domain><degree>1</degree></polynomial></type>
@@ -65,7 +65,7 @@
           </dps>
           <dpProof><depGraphProc/></dpProof>
         </redPairProc>
-      </dpProof>
+      </dpProof></ordinaryDpProof></csrDpProof>
     </csrInnermostDependencyPairs>
   </proof>
   <metaInformation>

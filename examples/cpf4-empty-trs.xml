@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<certificationProblem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:noNamespaceSchemaLocation="../xml/cpf4.xsd">
+  <cpfVersion>4.0</cpfVersion>
+  <lookupTables/>
+  <input><trsInput><trs><rules/></trs></trsInput></input>
+  <property><termination/></property>
+  <answer><yes/></answer>
+  <proof><trsTerminationProof><rIsEmpty/></trsTerminationProof></proof>
+</certificationProblem>

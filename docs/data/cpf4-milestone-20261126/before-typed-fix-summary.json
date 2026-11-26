@@ -1,0 +1,93 @@
+{
+  "status": "CPF3 compatibility and retained CPF4 corpus passed; full CPF4 milestone open",
+  "checker_sha256": "51d7df3f08c361acfb19f62ee934c09d175c6f2b3b4de652999fef349b87e73f",
+  "cpf3_compatibility": 596,
+  "retained_cpf4_certificates": 4821,
+  "passes_per_retained_certificate": 2,
+  "schema_valid": 4821,
+  "unknown_inputs": 170,
+  "remaining": [
+    "Validate Isabelle integration for expandedExtendedBasicCsrProof and expandedStrongUsableRulesProc",
+    "Regenerate CPF export and build unified checker",
+    "Run full CPF3/4 acceptance gates on the final checker"
+  ],
+  "archive_sha256": "3a5a9c78c14ca0eefb1c9398151f147d397abc54bf98a098c4100000360c63ab",
+  "source_records": [
+    {
+      "path": "target/cpf3-milestone-compatibility-v2/summary.json",
+      "sha256": "61e0f3214b441ae3a3b193ad22958939c4ed59f102e129c577a7da9f640cac39"
+    },
+    {
+      "path": "target/cpf3-milestone-compatibility-v2/manifest.json",
+      "sha256": "eced4b8b09263bec53ebe59574ace2f1400b89fdb230cbccc238f2e14c4d235a"
+    },
+    {
+      "path": "target/cpf3-milestone-compatibility-v2/results.jsonl",
+      "sha256": "8e42d84167d814487869391630053b0a1f7fc9430f58c2e7d34b2ede5ee363eb"
+    },
+    {
+      "path": "target/cpf3-milestone-parser.json",
+      "sha256": "4339da6dd7da98e2e33058285acd274b00b2ae527317557fd0028efe7c4ee0fd"
+    },
+    {
+      "path": "target/cpf4-milestone-recheck/summary.json",
+      "sha256": "ca39489efd0a70ed76960470cd906449a3ad11960fe2a89f9fc87e1cf92ae483"
+    },
+    {
+      "path": "target/cpf4-milestone-recheck/manifest.json",
+      "sha256": "f1725681dace8e3fe5239a8fa6579c7f695af324d8a209891c7c6466fdf86c07"
+    },
+    {
+      "path": "target/cpf4-milestone-recheck/results.jsonl",
+      "sha256": "c65d718b4b369fae371a3e11db84f36b4c80a0a3f5518ac9efba27221080410d"
+    },
+    {
+      "path": "target/cpf4-milestone-schema-summary.json",
+      "sha256": "277e6bf140f39cc01516ea3b816e4036a07755bd9d4f8374fa605257a677e549"
+    },
+    {
+      "path": "target/cpf4-milestone-source-audit.json",
+      "sha256": "89d6e618bf7e3f93464dfb56e3b93c98d3d602f9cad49aa8d3e441d38cb24bb8"
+    },
+    {
+      "path": "target/cpf4-milestone-build-identity.json",
+      "sha256": "5b75a59b34fe89106c3b684ad8b91184fa70d5c5fe8cb57121374867f730b12b"
+    },
+    {
+      "path": "target/cpf4-milestone-compact/validation.json",
+      "sha256": "caad24b27875c198a832d29d7a1027a74194bf5c03db60e03fbde18c31f559fc"
+    },
+    {
+      "path": "target/cpf4-milestone-regressions/validation.json",
+      "sha256": "c26fc318d1ac10739948589ec330e2eec7911052ced04150cbb21086a8058128"
+    },
+    {
+      "path": "target/cpf4-milestone-csr-aliases-v2/validation.json",
+      "sha256": "71ab2db8c41348fb35e369cc8137951b74b00df49968fade5ad9a34aa17b91c3"
+    },
+    {
+      "path": "target/cpf4-milestone-rfc-variants/validation.json",
+      "sha256": "c8432d9f5b69bf1f2866f25e282c3c11a0ea550e84806be8df532b2667673d35"
+    },
+    {
+      "path": "target/cpf4-milestone-typed-before/validation.json",
+      "sha256": "12fdea35d561075b5080053b969af892f3cd75e415d0d5586f3ae8ac6b6a2c64"
+    },
+    {
+      "path": "target/cpf4-milestone-coverage-requirements.json",
+      "sha256": "528284a7edd7a45f9d33135e9b55d43c7e2784cf1df92264046cc2e6c7e0e13d"
+    },
+    {
+      "path": "target/cpf4-milestone-inheritance.log",
+      "sha256": "43199d6b39cea40787c8796a832910aa8ab6d07dc9830f8c2bc4dd59d8c36db3"
+    },
+    {
+      "path": "target/cpf4-milestone-lts-boundary.log",
+      "sha256": "946acfd74cc11aff8da84cf35f68137c7af2d277f03e4bec7c5baf2f80df4833"
+    },
+    {
+      "path": "target/cpf4-milestone-typed-before.thy",
+      "sha256": "7ca293685c572f1de0d693349c6b10f853e8ecde6974142e9c9dcc0d001ad417"
+    }
+  ]
+}

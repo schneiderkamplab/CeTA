@@ -1,0 +1,747 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:documentation>CPF 6 LP translation and source nontermination constructors. Other LP, cut and Prolog constructors are pending. Schema validity is not certification.</xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="lp6Program">
+    <xs:sequence>
+      <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="head">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="term"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="body">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="term" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6Query">
+    <xs:sequence>
+      <xs:group ref="symbol"/>
+      <xs:element name="arity" type="xs:nonNegativeInteger"/>
+      <xs:element name="ground">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="logicProgramInput">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="resolutionSemantics">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="finiteTerms"/>
+              <xs:enumeration value="infiniteTrees"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="program" type="lp6Program"/>
+        <xs:element name="query" type="lp6Query"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="lp6TranslationProof">
+    <xs:sequence>
+      <xs:element name="returns">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fallback">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="symbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="continuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="argumentFilter"/>
+      <xs:element name="trsTerminationProof" type="ferrumTrsProofBody"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="lpFiniteTerminationProof" type="lp6TranslationProof"/>
+  <xs:element name="lpTocl09TerminationProof" type="lp6TranslationProof"/>
+  <xs:complexType name="lp6Bindings">
+    <xs:sequence>
+      <xs:element name="binding" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string"/>
+            <xs:group ref="term"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6Atom">
+    <xs:sequence>
+      <xs:group ref="term"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6Seed">
+    <xs:sequence>
+      <xs:group ref="symbol"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6MatchSteps">
+    <xs:sequence>
+      <xs:element name="step" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clauseIndex" type="xs:nonNegativeInteger"/>
+            <xs:element name="substitution" type="lp6Bindings"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6UnifySteps">
+    <xs:sequence>
+      <xs:element name="step" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clauseIndex" type="xs:nonNegativeInteger"/>
+            <xs:element name="substitution" type="lp6Bindings"/>
+            <xs:element name="substitution" type="lp6Bindings"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="lpTocl09SourceLoopProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="clauseIndex" type="xs:nonNegativeInteger"/>
+        <xs:element name="seed" type="lp6Seed"/>
+        <xs:element name="substitution" type="lp6Bindings"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="lpTocl09SourceTraceProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="seed" type="lp6Seed"/>
+        <xs:element name="initial" type="lp6Atom"/>
+        <xs:element name="steps" type="lp6MatchSteps"/>
+        <xs:element name="substitution" type="lp6Bindings"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="lpTocl09SourceUnifyProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="initial" type="lp6Atom"/>
+        <xs:element name="prefix" type="lp6UnifySteps"/>
+        <xs:element name="steps" type="lp6UnifySteps"/>
+        <xs:element name="substitution" type="lp6Bindings"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="lpTocl09SourceNeutralProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="initial" type="lp6Atom"/>
+        <xs:element name="prefix" type="lp6UnifySteps"/>
+        <xs:element name="clauseIndex" type="xs:nonNegativeInteger"/>
+        <xs:element name="neutral">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="substitution" type="lp6Bindings"/>
+        <xs:element name="substitution" type="lp6Bindings"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="lp6Affine">
+    <xs:sequence>
+      <xs:element name="first" type="xs:nonNegativeInteger"/>
+      <xs:element name="second" type="xs:nonNegativeInteger"/>
+      <xs:element name="constant" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6Environment">
+    <xs:sequence>
+      <xs:element name="binding" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="var" type="xs:string"/>
+            <xs:element name="affine" type="lp6Affine"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6Hole">
+    <xs:sequence>
+      <xs:element name="var" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6ResolvePattern">
+    <xs:sequence>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6AffineSuccess">
+    <xs:sequence>
+      <xs:element name="atomContext" type="lp6Atom"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="affine" type="lp6Affine"/>
+      <xs:element name="environment" type="lp6Environment"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6SuccessPattern">
+    <xs:sequence>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6SuccessInstance">
+    <xs:sequence>
+      <xs:element name="atomContext" type="lp6Atom"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6Acceleration">
+    <xs:sequence>
+      <xs:element name="atomContext" type="lp6Atom"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="factor" type="xs:nonNegativeInteger"/>
+      <xs:element name="offset" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lp6AffinePrefixes">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="affineSuccess" type="lp6AffineSuccess"/>
+      <xs:element name="resolvePattern" type="lp6ResolvePattern"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="lp6PatternPrefixes">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="successPattern" type="lp6SuccessPattern"/>
+      <xs:element name="successInstance" type="lp6SuccessInstance"/>
+      <xs:element name="resolvePattern" type="lp6ResolvePattern"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="lpTocl09RecurrentPairProofData">
+    <xs:sequence>
+      <xs:element name="atomContext" type="lp6Atom"/>
+      <xs:element name="termContext" type="lp6Atom"/>
+      <xs:element name="firstHole" type="lp6Hole"/>
+      <xs:element name="secondHole" type="lp6Hole"/>
+      <xs:element name="seed" type="lp6Atom"/>
+      <xs:element name="stride" type="xs:nonNegativeInteger"/>
+      <xs:element name="pumpBase" type="xs:nonNegativeInteger"/>
+      <xs:element name="resetBase" type="xs:nonNegativeInteger"/>
+      <xs:element name="pumpGrowth" type="xs:nonNegativeInteger"/>
+      <xs:element name="resetGrowth" type="xs:nonNegativeInteger"/>
+      <xs:element name="resetOffset" type="xs:nonNegativeInteger"/>
+      <xs:element name="keepFirst" type="lp6Boolean"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="lpTocl09RecurrentPairProof" type="lpTocl09RecurrentPairProofData"/>
+  <xs:complexType name="lpTocl09AffineLoopProofData">
+    <xs:sequence>
+      <xs:element name="constructor" type="lp6Seed"/>
+      <xs:element name="zero" type="lp6Seed"/>
+      <xs:element name="environment" type="lp6Environment"/>
+      <xs:element name="atomContext" type="lp6Atom"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="prefixes" type="lp6AffinePrefixes"/>
+      <xs:element name="affine" type="lp6Affine"/>
+      <xs:element name="affine" type="lp6Affine"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="lpTocl09AffineLoopProof" type="lpTocl09AffineLoopProofData"/>
+  <xs:complexType name="lpTocl09PatternLoopProofData">
+    <xs:sequence>
+      <xs:element name="atomContext" type="lp6Atom"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="substitution" type="lp6Bindings"/>
+      <xs:element name="steps" type="lp6MatchSteps"/>
+      <xs:element name="prefixes" type="lp6PatternPrefixes"/>
+      <xs:element name="acceleration" type="lp6Acceleration" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="lpTocl09PatternLoopProof" type="lpTocl09PatternLoopProofData"/>
+  <xs:simpleType name="lp6Boolean">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="lp6PiDPProof">
+    <xs:sequence>
+      <xs:element name="returns">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fallback">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="symbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="continuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="marks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="mark" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="argumentFilter"/>
+      <xs:element name="ranks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rank" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="components">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="noCycle">
+              <xs:complexType/>
+            </xs:element>
+            <xs:element name="component">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element ref="dpProof"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="lpTocl09PiDpTerminationProof" type="lp6PiDPProof"/>
+  <xs:element name="lpTocl09PiDpModeTerminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="modes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="mode" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:group ref="symbol"/>
+                    <xs:group ref="symbol"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="lpTocl09SimplificationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+<xs:complexType name="lp6SourceGraphProof"><xs:sequence><xs:element name="fuel" type="xs:nonNegativeInteger"/><xs:element name="root" type="xs:nonNegativeInteger"/><xs:element name="nodes"><xs:complexType><xs:sequence><xs:element name="node" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence><xs:element name="goals"><xs:complexType><xs:sequence><xs:group ref="term" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="prefix" type="xs:nonNegativeInteger"/><xs:element name="children"><xs:complexType><xs:sequence><xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType><xs:element name="lpTocl09SourceGraphProof" type="lp6SourceGraphProof"/><xs:complexType name="lp6ConstructorProof"><xs:sequence><xs:element name="returns">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fallback">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="symbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="continuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="marks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="mark" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="argumentFilter"/>
+      <xs:element name="seed"><xs:complexType><xs:sequence><xs:group ref="symbol"/></xs:sequence></xs:complexType></xs:element><xs:element name="normalSubstitutions" type="lp6Boolean" minOccurs="0"/><xs:element ref="dpProof"/></xs:sequence></xs:complexType><xs:element name="lpConstructorQDpTerminationProof" type="lp6ConstructorProof"/><xs:complexType name="lp6AnswerGraphProof"><xs:sequence><xs:element name="fuel" type="xs:nonNegativeInteger"/><xs:element name="root" type="xs:nonNegativeInteger"/><xs:element name="nodes"><xs:complexType><xs:sequence><xs:element name="node" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence><xs:element name="goals"><xs:complexType><xs:sequence><xs:group ref="term" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="variables"><xs:complexType><xs:sequence><xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="symbol"><xs:complexType><xs:sequence><xs:group ref="symbol"/></xs:sequence></xs:complexType></xs:element><xs:choice><xs:element name="success"><xs:complexType/></xs:element><xs:element name="resolve"><xs:complexType><xs:sequence><xs:element name="prefix" type="xs:nonNegativeInteger"/><xs:element name="anchor"><xs:complexType><xs:sequence><xs:group ref="symbol"/></xs:sequence></xs:complexType></xs:element><xs:element name="children"><xs:complexType><xs:sequence><xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element><xs:element name="instance"><xs:complexType><xs:sequence><xs:element name="target" type="xs:nonNegativeInteger"/><xs:element name="substitution" type="lp6Bindings"/></xs:sequence></xs:complexType></xs:element><xs:element name="split"><xs:complexType><xs:sequence><xs:element name="first" type="xs:nonNegativeInteger"/><xs:element name="rest" type="xs:nonNegativeInteger"/></xs:sequence></xs:complexType></xs:element></xs:choice></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element><xs:element ref="certificationProblem"/></xs:sequence></xs:complexType><xs:element name="lpAnswerGraphTerminationProof" type="lp6AnswerGraphProof"/><xs:element name="lpTocl09ModeTerminationProof">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="modes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="mode" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:group ref="symbol"/>
+                    <xs:group ref="symbol"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="certificationProblem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="lp6InitialTriplesProof"><xs:sequence><xs:element name="returns">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fallback">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="symbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="programContinuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="marks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="mark" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="argumentFilter"/>
+      <xs:element name="ranks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rank" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="components">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="noCycle">
+              <xs:complexType/>
+            </xs:element>
+            <xs:element name="component">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element ref="dpProof"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    <xs:element name="triples"><xs:complexType><xs:sequence><xs:element name="triple" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence><xs:element name="head"><xs:complexType><xs:sequence><xs:group ref="term"/></xs:sequence></xs:complexType></xs:element><xs:element name="prefix"><xs:complexType><xs:sequence><xs:group ref="term" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="call"><xs:complexType><xs:sequence><xs:group ref="term"/></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element><xs:element name="tripleContinuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="triple" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      </xs:sequence></xs:complexType><xs:element name="lpInitialDependencyTriplesProof" type="lp6InitialTriplesProof"/><xs:complexType name="lp6SymbolicGraphProof"><xs:sequence><xs:element name="fuel" type="xs:nonNegativeInteger"/><xs:element name="root" type="xs:nonNegativeInteger"/><xs:element name="nodes"><xs:complexType><xs:sequence><xs:element name="node" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence><xs:element name="goals"><xs:complexType><xs:sequence><xs:group ref="term" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="ground"><xs:complexType><xs:sequence><xs:element name="var" type="xs:string" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="symbol"><xs:complexType><xs:sequence><xs:group ref="symbol"/></xs:sequence></xs:complexType></xs:element><xs:choice><xs:element name="success"><xs:complexType/></xs:element><xs:element name="resolve"><xs:complexType><xs:sequence><xs:element name="prefix" type="xs:nonNegativeInteger"/><xs:element name="anchor"><xs:complexType><xs:sequence><xs:group ref="symbol"/></xs:sequence></xs:complexType></xs:element><xs:element name="children"><xs:complexType><xs:sequence><xs:element name="index" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element><xs:element name="instance"><xs:complexType><xs:sequence><xs:element name="target" type="xs:nonNegativeInteger"/><xs:element name="substitution" type="lp6Bindings"/></xs:sequence></xs:complexType></xs:element><xs:element name="split"><xs:complexType><xs:sequence><xs:element name="first" type="xs:nonNegativeInteger"/><xs:element name="rest" type="xs:nonNegativeInteger"/></xs:sequence></xs:complexType></xs:element></xs:choice></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element><xs:element name="rules" type="rules"/><xs:element name="trsTerminationProof" type="ferrumTrsProofBody"/></xs:sequence></xs:complexType><xs:element name="lpSymbolicGraphTerminationProof" type="lp6SymbolicGraphProof"/><xs:element name="logicProgramTriplesInput"><xs:complexType><xs:sequence><xs:element name="resolutionSemantics">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="infiniteTrees"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="triples"><xs:complexType><xs:sequence><xs:element name="triple" minOccurs="0" maxOccurs="unbounded"><xs:complexType><xs:sequence><xs:element name="head"><xs:complexType><xs:sequence><xs:group ref="term"/></xs:sequence></xs:complexType></xs:element><xs:element name="prefix"><xs:complexType><xs:sequence><xs:group ref="term" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element><xs:element name="call"><xs:complexType><xs:sequence><xs:group ref="term"/></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element></xs:sequence></xs:complexType></xs:element><xs:element name="program" type="lp6Program"/><xs:element name="query" type="lp6Query"/></xs:sequence></xs:complexType></xs:element><xs:element name="lpDependencyTriplesPiDpProof"><xs:complexType><xs:sequence><xs:element name="returns">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fallback">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="symbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="tripleContinuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="triple" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="programContinuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="marks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="mark" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="argumentFilter"/>
+      <xs:element name="ranks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rank" type="xs:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="components">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="noCycle">
+              <xs:complexType/>
+            </xs:element>
+            <xs:element name="component">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element ref="dpProof"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence></xs:complexType></xs:element><xs:element xmlns:xs="http://www.w3.org/2001/XMLSchema" name="lpDependencyTriplesConstructorProof"><xs:complexType><xs:sequence><xs:element name="returns">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="fallback">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:group ref="symbol"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="tripleContinuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="triple" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="programContinuations">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="clause" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="marks">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="mark" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:group ref="symbol"/>
+                  <xs:group ref="symbol"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="argumentFilter"/>
+      <xs:element name="seed"><xs:complexType><xs:sequence><xs:group ref="symbol"/></xs:sequence></xs:complexType></xs:element><xs:element name="normalSubstitutions" type="lp6Boolean" minOccurs="0"/><xs:element ref="dpProof"/></xs:sequence></xs:complexType></xs:element>
+</xs:schema>

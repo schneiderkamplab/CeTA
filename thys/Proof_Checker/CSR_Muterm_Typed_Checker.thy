@@ -2240,6 +2240,14 @@ fun check_muterm_i4_linear_proof where
       (Muterm_Typed_CSR_Proof child) =
     check_muterm_typed_dp_proof_production I J m i R B P
       (Muterm_Typed_CSR_Proof child)"
+| "check_muterm_i4_linear_proof I J m i R B P
+      (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child) =
+    check_muterm_typed_dp_proof_production I J m i R B P
+      (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child)"
+| "check_muterm_i4_linear_proof I J m i R B P
+      (Muterm_Typed_Expanded_Strong_Usable U redp Pr child) =
+    check_muterm_typed_dp_proof_production I J m i R B P
+      (Muterm_Typed_Expanded_Strong_Usable U redp Pr child)"
 | "check_muterm_i4_linear_proof I J m i R B P child =
     error (i \<circ> showsl_lit
       (STR '': unsupported processor in recursive i4 MU-TERM continuation''))"
@@ -2264,83 +2272,6 @@ proof -
       fin[unfolded M.finite_muterm_i4_good_typed_dpp_def]])
 qed
 
-theorem check_muterm_i4_linear_proof_sound:
-  fixes I :: "('tp,('f::{showl,compare_order,countable},label_type) lab,string) tp_ops"
-    and J :: "('dpp,('f,label_type) lab,string) dpp_ops"
-  assumes I: "tp_spec I" and J: "dpp_spec J"
-    and wf: "wf_trs (set R)"
-    and overlay: "csr_switch_overlay (set R)"
-    and exact: "set B = set (muterm_exact_unhiding_rules_list Sharp m D R)"
-    and fresh: "\<And>h n. \<not> defined (set R) (Sharp h,n)"
-    and rules_unmarked: "\<And>fn. fn \<in> funas_trs (set R) \<Longrightarrow>
-      \<not> is_sharp_lab (fst fn)"
-    and marked: "\<And>f n. \<not> is_sharp_lab f \<Longrightarrow>
-      mu_of m (Sharp f,n) = mu_of m (f,n)"
-    and ok: "isOK (check_muterm_i4_linear_proof I J m i R B P p)"
-  shows "muterm_i4.finite_muterm_i4_good_typed_dpp
-    R (mu_of m) (set P) (set B)"
-  using ok
-proof (induct p arbitrary: i P)
-  case Muterm_Typed_P_Is_Empty
-  then have P: "P = []" by simp
-  interpret M: muterm_i4 R "mu_of m" "{}" "undefined"
-    by (unfold_locales, rule wf)
-  have empty: "M.muterm_i4_good_pair_step (set P) (set B) = {}"
-    unfolding P M.muterm_i4_good_pair_step_def
-      muterm_innermost_min_typed_pair_step_def
-      muterm_innermost_typed_pair_step_def muterm_typed_pair_step_def
-      muterm_noncollapsing_rrstep_def muterm_collapsing_rrstep_def
-    by auto
-  show ?case
-    unfolding M.finite_muterm_i4_good_typed_dpp_def empty
-    by (rule SN_rel_empty1)
-next
-  case (Muterm_Typed_General_Usable redp Pr U child)
-  let ?d = "dpp_ops.mk J False False P [] [] [] R"
-  from Muterm_Typed_General_Usable.prems obtain d' where proc:
-      "muterm_recursive_rta08_ur_redpair_proc_exec
-        (dpp_ops.rules J ?d) (mu_of m)
-        (csr_u3_delta (set (dpp_ops.rules J ?d)) (set U)) J m
-        (get_rel_impl redp) Pr U B B ?d = return d'"
-    and rec: "isOK (check_muterm_i4_linear_proof I J m
-      (add_index i 1) R B (dpp_ops.pairs J d') child)"
-    by (auto simp: Let_def)
-  have child_fin: "muterm_i4.finite_muterm_i4_good_typed_dpp
-      R (mu_of m) (set (dpp_ops.pairs J d')) (set B)"
-    by (rule Muterm_Typed_General_Usable.hyps[OF rec])
-  show ?case by (rule check_muterm_recursive_redpair_step_sound[
-    OF J wf overlay exact subset_refl fresh rules_unmarked marked
-      proc child_fin])
-next
-  case (Muterm_Typed_Pair_Augmentation st sts child)
-  let ?d = "dpp_ops.mk J False False P [] [] [] R"
-  from Muterm_Typed_Pair_Augmentation.prems obtain d' where proc:
-      "csr_instantiation_proc J m st sts ?d = return d'"
-    and sub: "isOK (check_subseteq P
-      (filter muterm_typed_recursive_pair (dpp_ops.pairs J d')))"
-    and rec: "isOK (check_muterm_i4_linear_proof I J m (add_index i 1)
-      R B (filter muterm_typed_recursive_pair (dpp_ops.pairs J d')) child)"
-    by (auto simp: Let_def)
-  have child_fin: "muterm_i4.finite_muterm_i4_good_typed_dpp
-      R (mu_of m)
-      (set (filter muterm_typed_recursive_pair (dpp_ops.pairs J d')))
-      (set B)"
-    by (rule Muterm_Typed_Pair_Augmentation.hyps[OF rec])
-  from sub have subset: "set P \<subseteq>
-      set (filter muterm_typed_recursive_pair (dpp_ops.pairs J d'))"
-    by (induct P; auto)
-  show ?case by (rule finite_muterm_i4_good_typed_dpp_mono_pairs[
-    OF wf subset child_fin])
-next
-  case (Muterm_Typed_CSR_Proof child)
-  from Muterm_Typed_CSR_Proof.prems have noncoll:
-      "list_all (is_Fun \<circ> snd) P"
-    and child_ok: "isOK (check_csr_dp_termination_proof_min I J m False
-      (add_index i 1) (dpp_ops.mk J False False P [] [] [] R) child)"
-    by (auto simp: Let_def)
-  show ?case by (rule check_muterm_csr_component_imp_i4_good[
-    OF I J wf overlay fresh noncoll child_ok])
-qed simp_all
 
 fun check_muterm_i4_graph_component where
   "check_muterm_i4_graph_component I J m i R B P (None,C) = succeed"
@@ -3363,6 +3294,100 @@ proof -
   show ?thesis
     by (rule M.finite_muterm_innermost_min_typed_dpp_imp_i4_good[OF raw])
 qed
+
+theorem check_muterm_i4_linear_proof_sound:
+  fixes I :: "('tp,('f::{showl,compare_order,countable},label_type) lab,string) tp_ops"
+    and J :: "('dpp,('f,label_type) lab,string) dpp_ops"
+  assumes I: "tp_spec I" and J: "dpp_spec J"
+    and wf: "wf_trs (set R)"
+    and overlay: "csr_switch_overlay (set R)"
+    and exact: "set B = set (muterm_exact_unhiding_rules_list Sharp m D R)"
+    and fresh: "\<And>h n. \<not> defined (set R) (Sharp h,n)"
+    and rules_unmarked: "\<And>fn. fn \<in> funas_trs (set R) \<Longrightarrow>
+      \<not> is_sharp_lab (fst fn)"
+    and marked: "\<And>f n. \<not> is_sharp_lab f \<Longrightarrow>
+      mu_of m (Sharp f,n) = mu_of m (f,n)"
+    and ok: "isOK (check_muterm_i4_linear_proof I J m i R B P p)"
+  shows "muterm_i4.finite_muterm_i4_good_typed_dpp
+    R (mu_of m) (set P) (set B)"
+  using ok
+proof (induct p arbitrary: i P)
+  case Muterm_Typed_P_Is_Empty
+  then have P: "P = []" by simp
+  interpret M: muterm_i4 R "mu_of m" "{}" "undefined"
+    by (unfold_locales, rule wf)
+  have empty: "M.muterm_i4_good_pair_step (set P) (set B) = {}"
+    unfolding P M.muterm_i4_good_pair_step_def
+      muterm_innermost_min_typed_pair_step_def
+      muterm_innermost_typed_pair_step_def muterm_typed_pair_step_def
+      muterm_noncollapsing_rrstep_def muterm_collapsing_rrstep_def
+    by auto
+  show ?case
+    unfolding M.finite_muterm_i4_good_typed_dpp_def empty
+    by (rule SN_rel_empty1)
+next
+  case (Muterm_Typed_General_Usable redp Pr U child)
+  let ?d = "dpp_ops.mk J False False P [] [] [] R"
+  from Muterm_Typed_General_Usable.prems obtain d' where proc:
+      "muterm_recursive_rta08_ur_redpair_proc_exec
+        (dpp_ops.rules J ?d) (mu_of m)
+        (csr_u3_delta (set (dpp_ops.rules J ?d)) (set U)) J m
+        (get_rel_impl redp) Pr U B B ?d = return d'"
+    and rec: "isOK (check_muterm_i4_linear_proof I J m
+      (add_index i 1) R B (dpp_ops.pairs J d') child)"
+    by (auto simp: Let_def)
+  have child_fin: "muterm_i4.finite_muterm_i4_good_typed_dpp
+      R (mu_of m) (set (dpp_ops.pairs J d')) (set B)"
+    by (rule Muterm_Typed_General_Usable.hyps[OF rec])
+  show ?case by (rule check_muterm_recursive_redpair_step_sound[
+    OF J wf overlay exact subset_refl fresh rules_unmarked marked
+      proc child_fin])
+next
+  case (Muterm_Typed_Pair_Augmentation st sts child)
+  let ?d = "dpp_ops.mk J False False P [] [] [] R"
+  from Muterm_Typed_Pair_Augmentation.prems obtain d' where proc:
+      "csr_instantiation_proc J m st sts ?d = return d'"
+    and sub: "isOK (check_subseteq P
+      (filter muterm_typed_recursive_pair (dpp_ops.pairs J d')))"
+    and rec: "isOK (check_muterm_i4_linear_proof I J m (add_index i 1)
+      R B (filter muterm_typed_recursive_pair (dpp_ops.pairs J d')) child)"
+    by (auto simp: Let_def)
+  have child_fin: "muterm_i4.finite_muterm_i4_good_typed_dpp
+      R (mu_of m)
+      (set (filter muterm_typed_recursive_pair (dpp_ops.pairs J d')))
+      (set B)"
+    by (rule Muterm_Typed_Pair_Augmentation.hyps[OF rec])
+  from sub have subset: "set P \<subseteq>
+      set (filter muterm_typed_recursive_pair (dpp_ops.pairs J d'))"
+    by (induct P; auto)
+  show ?case by (rule finite_muterm_i4_good_typed_dpp_mono_pairs[
+    OF wf subset child_fin])
+next
+  case (Muterm_Typed_CSR_Proof child)
+  from Muterm_Typed_CSR_Proof.prems have noncoll:
+      "list_all (is_Fun \<circ> snd) P"
+    and child_ok: "isOK (check_csr_dp_termination_proof_min I J m False
+      (add_index i 1) (dpp_ops.mk J False False P [] [] [] R) child)"
+    by (auto simp: Let_def)
+  show ?case by (rule check_muterm_csr_component_imp_i4_good[
+    OF I J wf overlay fresh noncoll child_ok])
+next
+  case (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child)
+  from Muterm_Typed_Expanded_Extended_Basic_CSR_Proof.prems have checked:
+    "isOK (check_muterm_typed_dp_proof_production I J m i R B P
+      (Muterm_Typed_Expanded_Extended_Basic_CSR_Proof child))"
+    by (simp only: check_muterm_i4_linear_proof.simps)
+  show ?case by (rule check_muterm_typed_production_imp_i4_good[
+    OF I J wf overlay fresh checked])
+next
+  case (Muterm_Typed_Expanded_Strong_Usable U redp Pr child)
+  from Muterm_Typed_Expanded_Strong_Usable.prems have checked:
+    "isOK (check_muterm_typed_dp_proof_production I J m i R B P
+      (Muterm_Typed_Expanded_Strong_Usable U redp Pr child))"
+    by (simp only: check_muterm_i4_linear_proof.simps)
+  show ?case by (rule check_muterm_typed_production_imp_i4_good[
+    OF I J wf overlay fresh checked])
+qed simp_all
 
 lemma check_muterm_i4_graph_local_component_sound:
   fixes J :: "('dpp,('f::{showl,compare_order,countable},label_type) lab,string) dpp_ops"

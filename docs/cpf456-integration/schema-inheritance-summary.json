@@ -1,0 +1,23 @@
+{
+  "scope": "Structural XSD inheritance and compilation; not executable checker coverage or certification.",
+  "inherited_declarations": {
+    "3->4": 155,
+    "4->5": 234,
+    "5->6": 271
+  },
+  "commands": [
+    "python3 tests/test_cpf_schema_inheritance.py",
+    "python3 tests/test_cpf4_lts_div_mod.py"
+  ],
+  "sha256": {
+    "tests/test_cpf_schema_inheritance.py": "1d887b538a16657b1b4ea4a75c2c10464448a6ef8e1d4e9fadf2c3e816073811",
+    "tests/test_cpf4_lts_div_mod.py": "e4aeae75b6959ce76acf86577eb8975887302d33e33b6a9199f8b89cb5ef44e4",
+    "xml/cpf3.xsd": "579396c6a3067de614f2166c7a2a913f0c2631ff629e139bafc2f773d750c8fa",
+    "xml/cpf4.xsd": "38890c43d9cd65e9cc9c37986a54988091da88eac9279f7981fd40a966ef4eb8",
+    "xml/cpf5.xsd": "3c2cf07166fef9e40399aba0ef1bf8765b69f60b027006190c55ef1efb384981",
+    "xml/cpf6.xsd": "a7d2b0b6c4ad823ca48f94c19f69b9c6841fdfa73fad4053665c797660902d50",
+    "xml/lts.xsd": "104cc066266dd40564b2a61cb9f0deb81e97588fb91b5ed31177dfb6963d13f1",
+    "xml/lts5.xsd": "37315831d56283333d4fd175be94d962275a56b5274693482095129ee74f08f9",
+    "xml/cpf6-logic-programming.xsd": "c7ecbc49c917b4e84e65718f1608f9035194a9fa1e14f1bfeb7f41ee72e1dedf"
+  }
+}

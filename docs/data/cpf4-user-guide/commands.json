@@ -1,0 +1,84 @@
+[
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "--category",
+      "cpf",
+      "examples/cpf4-empty-trs.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "examples/cpf4-empty-trs.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "--category",
+      "cpf",
+      "--inputf",
+      "examples/cpf4-empty-trs.input.xml",
+      "--property",
+      "SN",
+      "--answer",
+      "YES",
+      "examples/cpf4-empty-trs.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "--category",
+      "cycle",
+      "tests/unified/cpf4-first-order/cycle.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "--category",
+      "conditional",
+      "--ordinary",
+      "tests/unified/cpf4-first-order/conditional.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "--category",
+      "conditional",
+      "tests/unified/cpf4-first-order/conditional-operational.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/work/dfm/festschrift/CeTA/target/cpf4-final-unified/ceta",
+      "--category",
+      "conditional-erasure",
+      "tests/unified/cpf4-first-order/erasure.xml"
+    ],
+    "exit": 0,
+    "stdout": "CERTIFIED\n",
+    "stderr": ""
+  }
+]

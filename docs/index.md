@@ -3,6 +3,8 @@ okf_version: "0.2"
 ---
 # docs
 
+- [CPF 4 user guide](../xml/CPF4.md) — Format, examples and checker commands.
+
 - [certificate-performance-20261027](certificate-performance-20261027/index.md) — Directory index.
 - [compact-children-20261026](compact-children-20261026/index.md) — Directory index.
 - [consolidation](consolidation/index.md) — Directory index.
