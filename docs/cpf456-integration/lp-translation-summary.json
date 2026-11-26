@@ -1,0 +1,35 @@
+{
+  "checker_executions": 50,
+  "positive_checks": 6,
+  "schema": "xml/cpf6.xsd",
+  "command": "python3 tests/unified/check_cpf6_lp.py --ceta target/cpf6/bin/ceta --codec ../ferrum/target/debug/examples/cpf6_lp_codec --leta ../CeTA-Lean/.lake/build/bin/ceta-lean",
+  "binaries": {
+    "target/cpf6/bin/ceta": "975d4184a406784d1b0694e23298056317767da0e100df7e58ca101ec6d9d0a0",
+    "../CeTA-Lean/.lake/build/bin/ceta-lean": "9a3d3c92964560b7f30854c1a309f99de3eabf067f500975cbf729ec08e212f0",
+    "../ferrum/target/debug/ferrum": "258e4242fff4c41b20ad4a3187a8539e4ca275faa1c2815b2fdfca0f845dce69",
+    "../ferrum/target/debug/examples/cpf6_lp_codec": "f0d606fdc096f0bc05ef13a6e4e2793f1f74cfe26ce1d263ffeada4dcc6df30f"
+  },
+  "source_sha256": {
+    "src/Haskell/Ceta/Input/Cpf6.hs": "486870f20ff0e991863c15ad07935891aa8271b9b78805852a233fa367f03a02",
+    "src/Haskell/Ceta/Category/LogicProgramming.hs": "59da4806d5a04e1205787f668ddabe9694189f4fb75f2fffaa36e7df8f1485ca",
+    "xml/cpf6.xsd": "81d2c9f3892361dd48a19113db111ae38198294866de086b1ed160c03f85b18e",
+    "xml/cpf6-logic-programming.xsd": "9e74ca3d9429ca226232839ff8c64ab77c7e2d59c2bf6b5f4a50d082429012f3",
+    "scripts/generate_cpf6_schema.py": "f98189c6cd75a4b9a833e3cc9d4dc234692af110e1901e786b7023f7265aa3fa",
+    "tests/unified/check_cpf6_lp.py": "1ca6dbf7d1ba555640f2baff571ae4bf64924d9e2d849d3032c55a94fd3a5c65",
+    "../ferrum/src/cert/logic_programming_input.rs": "fdf54e41554ffbf2947952084dad69387699eb8843e57e5397cd6e26dcac12e9",
+    "../ferrum/src/logic_programming/certificate.rs": "d699323c99a87d27fb6b7e7f3f82e3288b6159a3919c18106bdbb1a9d1205563",
+    "../ferrum/src/cli/mod.rs": "8bc7f6d351653b49a06c159a833503f2a850f9d0e800e06e4b39a76736799e2b",
+    "../CeTA-Lean/CetaLean/CPF/LogicProgramming.lean": "641ee364b730afb05e6344047ed2473f2ee48a1aa418a7e40cd0611ae6f57352",
+    "../CeTA-Lean/CetaLean/CPF/Check.lean": "716b480c9607d7a9b8c31a47f4b7b54ad2c6b7cac0d4c58c3946c471f5028ef5"
+  },
+  "ceta_base": "e669464184ef8dca12df42315190ba9c23305796",
+  "ceta_branch": "main",
+  "scope": "Finite-term and TOCL09 LP translation CPF6 envelopes and native checking. Not complete LP/cut/Prolog migration or a current-frontier replay.",
+  "remaining": [
+    "Other LP, LP-cut and Prolog constructors",
+    "Complete first-order child decoder coverage",
+    "All producer/export paths",
+    "Explicit legacy compatibility mode",
+    "Full current strict/learned replay"
+  ]
+}

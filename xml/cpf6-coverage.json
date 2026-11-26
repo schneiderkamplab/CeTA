@@ -1,0 +1,510 @@
+{
+  "scope": "CPF6 source and residual forms exposed by the unified LP/Prolog adapters; inherited CPF3-5 forms are separate. This static inventory is not a mathematical acceptance test.",
+  "roots": [
+    "lpAnswerGraphTerminationProof",
+    "lpConstructorQDpTerminationProof",
+    "lpCutConstructorGraphTerminationProof",
+    "lpCutGraphTerminationProof",
+    "lpCutMguConstructorGraphTerminationProof",
+    "lpCutProjectedGraphTerminationProof",
+    "lpCutReturnComposedConstructorGraphTerminationProof",
+    "lpCutReturnComposedDependencyTriplesProof",
+    "lpCutReturnConstructorGraphTerminationProof",
+    "lpCutReturnDependencyTriplesProof",
+    "lpCutReturnModuleConstructorGraphTerminationProof",
+    "lpCutReturnModuleDependencyTriplesProof",
+    "lpCutReturnNestedConstructorGraphTerminationProof",
+    "lpCutReturnNestedDependencyTriplesProof",
+    "lpCutSEGDependencyTriplesProof",
+    "lpCutSEGFreeTerminationProof",
+    "lpCutSEGProjectedTerminationProof",
+    "lpCutSEGTerminationProof",
+    "lpCutSourceNonterminationProof",
+    "lpCutUniformRecursionProof",
+    "lpDependencyTriplesConstructorProof",
+    "lpDependencyTriplesPiDpProof",
+    "lpFiniteTerminationProof",
+    "lpInitialDependencyTriplesProof",
+    "lpSymbolicGraphTerminationProof",
+    "lpTocl09AffineLoopProof",
+    "lpTocl09ModeTerminationProof",
+    "lpTocl09PatternLoopProof",
+    "lpTocl09PiDpModeTerminationProof",
+    "lpTocl09PiDpTerminationProof",
+    "lpTocl09RecurrentPairProof",
+    "lpTocl09SimplificationProof",
+    "lpTocl09SourceGraphProof",
+    "lpTocl09SourceLoopProof",
+    "lpTocl09SourceNeutralProof",
+    "lpTocl09SourceTraceProof",
+    "lpTocl09SourceUnifyProof",
+    "lpTocl09TerminationProof",
+    "prologBinary64SourceNonterminationProof",
+    "prologCallTraceNonterminationProof",
+    "prologContextComposedDependencyTriplesProof",
+    "prologContextDependencyTriplesProof",
+    "prologContextITSProof",
+    "prologDomainGraphNonterminationProof",
+    "prologEstablishedFiniteDirectProof",
+    "prologEstablishedFiniteLocalSEGMixedProof",
+    "prologEstablishedFiniteSEGConstructorTriplesProof",
+    "prologEstablishedFiniteSEGDependencyTriplesProof",
+    "prologEstablishedFiniteSEGGuardedProof",
+    "prologEstablishedSEGConstructorTriplesProof",
+    "prologEstablishedSEGDependencyTriplesProof",
+    "prologEstablishedStableSEGGuardedProof",
+    "prologEstablishedStableSEGMixedProof",
+    "prologEstablishedStoppedSEGMixedProof",
+    "prologGroundIntegerSourceNonterminationProof",
+    "prologGuardedDomainGraphNonterminationProof",
+    "prologHelperIntegerCallsProof",
+    "prologIntegerCallsProof",
+    "prologIntegerRecurrenceProof",
+    "prologIntegerSourceNonterminationProof",
+    "prologModularReturnDependencyTriplesProof",
+    "prologPartialIntegerCallsProof",
+    "prologRationalSourceNonterminationProof",
+    "prologScalarDomainRecurrenceNonterminationProof",
+    "prologScalarRecurrenceNonterminationProof",
+    "prologStaticNonterminationProof",
+    "prologStaticSEGProof",
+    "prologStaticUniformRecursionProof",
+    "prologTestSourceNonterminationProof",
+    "prologUndefinedQueryProof",
+    "prologVarReturnDependencyTriplesProof"
+  ],
+  "root_count": 71,
+  "source_parsers": {
+    "lpTocl09AffineLoopProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Affine_Loop_XML.thy",
+        "sha256": "c83ba366904ae4d6de1d690ba211f668d2570398af64f0f4f26901146178ffaa"
+      }
+    ],
+    "lpConstructorQDpTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Constructor_XML.thy",
+        "sha256": "918cc1dd43a157a881199464a7c533714974d33dc254d053839485484775cdab"
+      }
+    ],
+    "lpAnswerGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Constructor_XML.thy",
+        "sha256": "918cc1dd43a157a881199464a7c533714974d33dc254d053839485484775cdab"
+      },
+      {
+        "path": "thys/Logic_Programming/LP_SEG_Residual_XML.thy",
+        "sha256": "8f8824fbf1d2b9767c74e74d809b0fdafc7322396492c448e6f3d2aa2109288b"
+      }
+    ],
+    "lpCutConstructorGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Constructor_XML.thy",
+        "sha256": "81cadbd30209bbdff103ca12abad91e7ca3391c18d5c74110606a2b0cb50711d"
+      }
+    ],
+    "lpCutMguConstructorGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_MGU_XML.thy",
+        "sha256": "9a1d3f7a7e3c986bd1051ce8c4e078614fa738cb5feb058b371a20ce487ba7ec"
+      }
+    ],
+    "lpCutSourceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_NO_XML.thy",
+        "sha256": "07736a35a55f884d1aaa3553571ad287814153ef17e9fa42ad7fa3b886da600f"
+      }
+    ],
+    "lpCutProjectedGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Projected_XML.thy",
+        "sha256": "dfdc497375acb6600f74b04463483e7dd4471862a100a94f076f4f82bc8352de"
+      }
+    ],
+    "lpCutReturnComposedDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Composed_Triples_XML.thy",
+        "sha256": "be754833552393343b5820b081a8098c9cb2bda4566f8f4520a357e75879a522"
+      }
+    ],
+    "lpCutReturnComposedConstructorGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Composed_XML.thy",
+        "sha256": "2100477f224c25e45f35d9f263e7e88f5b57a3c503feec9c897c898451a74dd7"
+      }
+    ],
+    "lpCutReturnModuleDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Module_Triples_XML.thy",
+        "sha256": "66d39bda3a4f8b6b683b37aa466cd0f1acce2c8737529f14d2e7d9d881ffae73"
+      }
+    ],
+    "lpCutReturnModuleConstructorGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Module_XML.thy",
+        "sha256": "36b41560cab78750f76325da58006d4064ee2333ef688ca2742a555171f3171b"
+      }
+    ],
+    "lpCutReturnNestedDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Nested_Triples_XML.thy",
+        "sha256": "346cc7f7495e140c680b7763bba3b71d3aeaeefb5087d2e2195f24409d0b231a"
+      }
+    ],
+    "lpCutReturnNestedConstructorGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Nested_XML.thy",
+        "sha256": "8bf02f00bfbcb287aba2fc0fb9e5f3c36232c9421ac9d5efb2bda2b699f6b8de"
+      }
+    ],
+    "lpCutReturnDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_Triples_XML.thy",
+        "sha256": "3dd0c6a183729cd00651ce1c6bbbdae173ad9347f156ebd63aa81f07825ebd3e"
+      }
+    ],
+    "lpCutReturnConstructorGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Return_XML.thy",
+        "sha256": "b91c0f2e0030f6f554db426d887bba82987cd2cfecd6a196b76cf9dc1431f160"
+      }
+    ],
+    "lpCutSEGTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_SEG_Certificate_XML.thy",
+        "sha256": "b0e8fe6d7e065e643caef20ab8757afc1a1ddaea6c6c54385bf6c619997223d8"
+      }
+    ],
+    "lpCutSEGFreeTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_SEG_Free_Certificate_XML.thy",
+        "sha256": "88e37126cec371915df4b0671af9b3a75360cb3c2f4efdf850ef0d9d82d3db53"
+      }
+    ],
+    "lpCutSEGProjectedTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_SEG_Projected_Certificate_XML.thy",
+        "sha256": "9e4f4d8af7318641a07232fa134fb40b6121ab4230f0c49b6de25022333ede9f"
+      }
+    ],
+    "lpCutSEGDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_SEG_Triple_XML.thy",
+        "sha256": "b3ed89e15a28c27b189958566840ae608e8340ba0cc71f15767fb19b03d36d73"
+      }
+    ],
+    "lpCutGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Table_XML.thy",
+        "sha256": "4f083a58de0bd7488a3c8ccda111567c4ca9520fcfb5d134f7f472d6d96ba476"
+      }
+    ],
+    "lpCutUniformRecursionProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Cut_Uniform_Recursion_XML.thy",
+        "sha256": "c51acb9d38d6dff82915642b012e77754f26c9de4cf31b0dc7e3eb0bbf4f9ea3"
+      }
+    ],
+    "lpDependencyTriplesConstructorProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Dependency_Triple_Constructor_XML.thy",
+        "sha256": "bd2b8bb7d8ca2cd80f2cf81abba9bed64260c8e057ec0546b0bf717834f4ea6f"
+      }
+    ],
+    "lpDependencyTriplesPiDpProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Dependency_Triple_XML.thy",
+        "sha256": "2c021cf825cdbb87443756f35f9dc2604a26fef9008678053139e2301e863b50"
+      }
+    ],
+    "lpFiniteTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Finite_Checker.thy",
+        "sha256": "3edd8f5bb0acd6ddee6a6d7a6767a73d11526347109b83a91a0701c4d543cd21"
+      }
+    ],
+    "lpTocl09ModeTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Mode_Checker.thy",
+        "sha256": "2feff4c342840d48190b0826867e4bebd8b96a4f591bbfd364c03ddd4ce62eb1"
+      }
+    ],
+    "lpTocl09PatternLoopProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Pattern_Trace_XML.thy",
+        "sha256": "922e32940b11f8be9722f6e58d5162c5d1d451bd49217c0741f0dda9b64015e3"
+      }
+    ],
+    "lpTocl09PiDpTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_PiDP_XML.thy",
+        "sha256": "4ac1fe5e8453029c0e568f282023def3cdfb95db363419e22997edb76732a24f"
+      }
+    ],
+    "lpTocl09PiDpModeTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_PiDP_XML.thy",
+        "sha256": "4ac1fe5e8453029c0e568f282023def3cdfb95db363419e22997edb76732a24f"
+      }
+    ],
+    "prologBinary64SourceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Binary64_NO_XML.thy",
+        "sha256": "0e8e1dba55ad1edb3252ae23f43b6861792615a489ba321f38a88065777810c8"
+      }
+    ],
+    "prologEstablishedSEGConstructorTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Constructor_Triple_XML.thy",
+        "sha256": "a5cfae85a6762d659eebfc141e69d02adbc73fa7f2393e54fa9655a3f643207a"
+      }
+    ],
+    "prologContextDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Context_Certificate.thy",
+        "sha256": "200d76216521657458f590875984d4f4f55e0946c98725a8145e12ed80a99660"
+      }
+    ],
+    "prologContextComposedDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Context_Composed_Certificate.thy",
+        "sha256": "0cfc83eaf69f3f47069f5ba2e92f45f3c01f528250a797a6b35f5877666a75f7"
+      }
+    ],
+    "prologContextITSProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Context_ITS_XML.thy",
+        "sha256": "a2ecab7dbbcac0e67cccb089d56cbcc1ac651cb48fa85413d2c1b2d52d88ea5f"
+      }
+    ],
+    "prologDomainGraphNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Domain_Graph_XML.thy",
+        "sha256": "3f37a918770093c23add9bd9b568d434e3b573339157ba05f374f197db239123"
+      }
+    ],
+    "prologEstablishedFiniteSEGConstructorTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Finite_Constructor_Triple_XML.thy",
+        "sha256": "df1bd0e1a5c387e2d00db77bb1947bb2c976bd2220b4560d41922e945e942937"
+      }
+    ],
+    "prologEstablishedFiniteDirectProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Finite_Direct_XML.thy",
+        "sha256": "04f5faa8f410a44b0158ae2c8bc855afe4a0771c8c3b6b12a72d4824475bc354"
+      }
+    ],
+    "prologEstablishedFiniteSEGGuardedProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Finite_Guarded_XML.thy",
+        "sha256": "90abcf7d2045831ba4bf8fda6f04d58257404de0ce8c1d31b92d48a625504c4a"
+      }
+    ],
+    "prologEstablishedFiniteLocalSEGMixedProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Finite_Local_Mixed_XML.thy",
+        "sha256": "ff39dd7f9a130459069237a66c40d8df355a2d1b1a534e239fbd0b3e3ed7b79d"
+      }
+    ],
+    "prologEstablishedFiniteSEGDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+        "sha256": "7244495b17116c2ad589a02b9b7a78faea896e88f64dc807e6920644a25c6ee1"
+      }
+    ],
+    "prologGroundIntegerSourceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Ground_Integer_NO_XML.thy",
+        "sha256": "99b8c37207726ca098895d302c3786dc2b79bbc625881cbb848cf8cdec90268b"
+      }
+    ],
+    "prologGuardedDomainGraphNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Guarded_Domain_Graph_XML.thy",
+        "sha256": "54b3b9d50d192c6f40ceebfec929114684530bf3da57a6a2f25717ac581ea381"
+      }
+    ],
+    "prologHelperIntegerCallsProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Helper_Call_XML.thy",
+        "sha256": "e97a6876be47bc6635ff0d3f61685110b11cdfe5bebcad4be8ab1a98d9d05cd5"
+      }
+    ],
+    "prologIntegerCallsProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Integer_Call_XML.thy",
+        "sha256": "cc5f25117b50cea4246227430112d0ec7899fe9d94030ad87f1c8aa70e2d0dad"
+      }
+    ],
+    "prologIntegerSourceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Integer_NO_XML.thy",
+        "sha256": "031e405620fe493133f09fd25bc2d0dcc4f86fc8236e8b5b1eae2b75a72bb195"
+      }
+    ],
+    "prologIntegerRecurrenceProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_XML.thy",
+        "sha256": "c88b2df624fe107afd7dc66bb5bf34b989769fbd7307f3a2e95969c7a0d29c86"
+      }
+    ],
+    "prologCallTraceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_NO_Call_Trace_XML.thy",
+        "sha256": "58af85b0b195f7bde638ec8ea7b2da0cd5bc16c3f1d0c10d6b2ee9221c9d47de"
+      }
+    ],
+    "prologPartialIntegerCallsProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Partial_Integer_XML.thy",
+        "sha256": "f4832e6e67404ee6e8c04c52a59243b34795f00abdf4aed9657df7194259e482"
+      }
+    ],
+    "prologRationalSourceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Rational_NO_XML.thy",
+        "sha256": "0659d4fb8a15c52514893d88f2e3d9ee7aed82abf1f75138df7347e08c240306"
+      }
+    ],
+    "prologModularReturnDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Return_Module_XML.thy",
+        "sha256": "f2415208da82d7d3ef2fb1247d905520b680173dad79b3e5b4f5b8bd73e35f36"
+      }
+    ],
+    "prologVarReturnDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Return_XML.thy",
+        "sha256": "f622e81e9af0504960b47ac6e3941142c18ce923b765303c8b118437a859cfa6"
+      }
+    ],
+    "prologScalarDomainRecurrenceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Scalar_Domain_XML.thy",
+        "sha256": "e06be510c3c2583c9a31f471f75bfaa540af5c7e5bd113b5956a5dabb19a50ac"
+      }
+    ],
+    "prologScalarRecurrenceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Scalar_Recurrence_XML.thy",
+        "sha256": "f5743287dbb35c75f16ecd53cc0ba05456793f103db587cc78126d5bc1c55908"
+      }
+    ],
+    "prologEstablishedStableSEGGuardedProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Stable_Guarded_XML.thy",
+        "sha256": "4018e61bda7a906bbdef83dedd3eee1a7e7ffa71e3e83d369c77a36a4bca4e4e"
+      }
+    ],
+    "prologEstablishedStableSEGMixedProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Stable_Mixed_XML.thy",
+        "sha256": "184e47e12c81a747dfad0e7d8e85301c23be41b7ff09268b7dc1a35652d4b56f"
+      }
+    ],
+    "prologStaticNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Static_NO_XML.thy",
+        "sha256": "1bc7a32371cb70e7649d216b2a3b8e00709d267626e0f094a5da42109315bc97"
+      }
+    ],
+    "prologStaticSEGProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Static_XML.thy",
+        "sha256": "094887c675d2dac18cf269a810477917417e70ff846a06d6fc0ef6749c6d4c30"
+      }
+    ],
+    "prologEstablishedStoppedSEGMixedProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy",
+        "sha256": "e8cee1db35e13ae7c8b1c94a10aa54a7913dab7971ab7f56825c3a978918dc36"
+      }
+    ],
+    "prologTestSourceNonterminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Test_NO_XML.thy",
+        "sha256": "48ee7ff07bc3e77192a20a6353408d709d7a30baf3e57fda81ef69070e7e70e2"
+      }
+    ],
+    "prologEstablishedSEGDependencyTriplesProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+        "sha256": "d63761f8e737a83c064ae7e18510ba0cbbcce2bbac735c71ab1a286bd86fd23b"
+      }
+    ],
+    "prologUndefinedQueryProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Undefined_XML.thy",
+        "sha256": "d32c98ec1f8dd37108d6f499414b59d761fb519e753a29ba65e0f9b47ef9f0d4"
+      }
+    ],
+    "prologStaticUniformRecursionProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Prolog_Uniform_NO_XML.thy",
+        "sha256": "e32bca0bb5a1c094381672828cb1557d1387249d6881ea89cbf68f2ad5f6fbcf"
+      }
+    ],
+    "lpTocl09RecurrentPairProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Recurrent_Pair_XML.thy",
+        "sha256": "4e4bcc657306e33e9d8e8756e3b4ef8a0f4fd75489e601b16553f8a7cae444f4"
+      }
+    ],
+    "lpSymbolicGraphTerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_SEG_XML.thy",
+        "sha256": "f5142fb4a5d07d3b8de57fe9d3637a9653ad83d47831099c42bbce9da7591e5b"
+      }
+    ],
+    "lpTocl09SourceGraphProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Source_Graph_XML.thy",
+        "sha256": "0fda2c0b4855e7f8b7e051822b0a67f2a012d24489ba96dde3c0d47d35737dc4"
+      }
+    ],
+    "lpTocl09SourceLoopProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Source_Loop_XML.thy",
+        "sha256": "3831e984fcd7bdd8d28a762f29c988f90a3576de06184223e03b182ddff5c19e"
+      }
+    ],
+    "lpTocl09SimplificationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Source_Simplify_XML.thy",
+        "sha256": "34ab200992854221d318f01b7085946d5accda15a94517ab43ec41744002a991"
+      }
+    ],
+    "lpTocl09SourceTraceProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Source_Trace_XML.thy",
+        "sha256": "e4fc5e05fe0a38e46fa102cc0f58d62687e3926d36c0eaba99f645fa82fa7b3c"
+      }
+    ],
+    "lpTocl09SourceUnifyProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Source_Unify_XML.thy",
+        "sha256": "31feadeab52b2a0ba63396ba64e6805e4ac8ac19c7e3007e4f660b66076be4b9"
+      }
+    ],
+    "lpTocl09SourceNeutralProof": [
+      {
+        "path": "thys/Logic_Programming/LP_Source_Unify_XML.thy",
+        "sha256": "31feadeab52b2a0ba63396ba64e6805e4ac8ac19c7e3007e4f660b66076be4b9"
+      }
+    ],
+    "lpTocl09TerminationProof": [
+      {
+        "path": "thys/Logic_Programming/LP_TOCL09_Checker.thy",
+        "sha256": "df231bb3fdfa0701623157077f7c447f525dfe77cd80c1d07058747df6a7a3f0"
+      }
+    ]
+  },
+  "excluded": [
+    {
+      "constructor": "prologContextReferencesDependencyTriplesProof",
+      "reason": "Separate experimental formalization; not exported or dispatched by the current unified checker and not emitted by Ferrum."
+    }
+  ],
+  "adapter_sha256": "3f83deb285da410fb4feed46b5699de00f01f6e8e1d06b3117c48322b4364d9f"
+}

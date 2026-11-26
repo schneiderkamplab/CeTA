@@ -5,8 +5,7 @@ it includes runnable examples, validation and checking commands, and source
 binding instructions.
 
 This is the entry point for the certificate interfaces across rewriting, ITS,
-and logic programming, including cut and Prolog. It documents candidate
-interfaces and their remaining migration gaps. Production deployment still
+and logic programming, including cut and Prolog. It documents the supported certificate interfaces. Production deployment still
 depends on the pinned checker binary.
 
 The versions are additive: [CPF 4](CPF4.md) preserves all of CPF 3 and adds
@@ -14,7 +13,8 @@ first-order term and string rewriting; [CPF 5](CPF5.md) adds ITS and
 higher-order rewriting extensions; [CPF 6](CPF6.md) adds LP, LP with cut,
 and Prolog extensions. Existing CPF 3 LTS constructs remain inherited.
 Schema support, independent checker coverage, and fresh replay are separate
-acceptance requirements; the full migration has not yet passed all three.
+acceptance requirements. The [CPF 6 validation report](../docs/cpf6-validation.md)
+records their CeTA scope; LeTA remains deferred.
 
 ## Format and semantics map
 
@@ -32,14 +32,16 @@ acceptance requirements; the full migration has not yet passed all three.
 | TRS Conditional (operational) | CPF4 termination and structured operational descent/loop certificates | Original ordered conditions; operational calls and condition evaluation matter |
 | TRS Conditional (ordinary termination) | CPF4 source-bound erasure and structured conditional loops in `--ordinary` mode | Original conditional rules; nontermination must establish actual conditional rewriting, not just divergent condition evaluation |
 | Higher-order rewriting | [CPF5 structured proofs and embedded delegation](CPF5.md); explicit `--legacy` native compatibility | Original typed signature and rules, binding/substitution and the declared higher-order relation |
-| Logic programming | [CPF6 translation, Pi-DP composition and source nontermination forms](CPF6.md); remaining constructors still use separate XML during migration | Original clauses, query pattern and resolution semantics; a translated TRS certificate alone is insufficient |
-| Logic programming with cut | [CPF6 graph, source-NO, SEG, SEG-triple and nested/composed-return forms](CPF6.md); remaining return forms still use separate XML during migration | Original ordered clauses, cut control and query pattern; recursive Split and successful-prefix obligations |
+| Integer transition systems | [CPF5 ITS additions](CPF5.md), with inherited original CPF3 LTS forms | Complete transitions, entry conditions, invariants and arithmetic semantics |
+| Logic programming | [CPF6 translation, Pi-DP composition and source nontermination forms](CPF6.md) | Original clauses, query pattern and resolution semantics; a translated TRS certificate alone is insufficient |
+| Logic programming with cut | [CPF6 graph, source-NO, SEG, SEG-triple and nested/composed-return forms](CPF6.md) | Original ordered clauses, cut control and query pattern; recursive Split and successful-prefix obligations |
+| Prolog | [CPF6 source proofs](CPF6.md) through the unified `prolog` category | Complete ordered source, execution profile, builtin behavior, query and modes |
 
 ITS additions use the CPF5 schema (`lts5.xsd`) and the version-gated `its`
 interface. Historical CPF3/4 ITS extensions require `--legacy`; original CPF3
 LTS proofs remain supported by `cpf`. Independent LeTA integration is deferred. LP with cut and Prolog additions
-are assigned to CPF6. Ten cut forms have focused integration gates; the remaining standalone
-XML producers/checker paths still require migration. Prolog additionally retains its ordered operational
+are assigned to CPF6. New exports use CPF envelopes; historical standalone XML
+remains readable for compatibility. Prolog additionally retains its ordered operational
 semantics, builtin behavior and source query context; an LP proof is not a
 substitute for those obligations.
 
@@ -48,7 +50,7 @@ every family is supported by every binary. Production manifests pin the actual
 checker executable and its hash. Follow the executable parser and its generated
 checker for the exact accepted grammar and side conditions.
 
-## CPF and remaining native interfaces
+## CPF and legacy interfaces
 
 [cpf4.xsd](cpf4.xsd) covers the first-order CPF dialect described in
 [CPF4.md](CPF4.md), including the structured cycle and conditional forms.
@@ -56,10 +58,10 @@ These are extensions of CPF, not separate textual or standalone XML formats.
 The cycle/conditional legacy readers remain available for existing artifacts.
 
 Higher-order CPF5 proofs embed structured source/witness data and any
-first-order child. The eighteen integrated pure-LP CPF6 forms and ten cut forms separate
-source program/query from proof evidence. Other LP/cut/Prolog forms still use
-separate XML. Automatic legacy readers remain a staging measure pending explicit legacy
-interfaces. A version label alone does not migrate a certificate. These version
+first-order child. The CPF6 LP/cut/Prolog forms separate source program/query
+from proof evidence. Their legacy standalone XML remains an explicit compatibility
+format, not the format of new Ferrum exports. A version label alone does not
+migrate a certificate. These version
 names do not assert adoption by an external standards body.
 
 ## LP and cut-aware SEG/triples layers

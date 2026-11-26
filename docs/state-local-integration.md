@@ -11102,3 +11102,19 @@ results. Both final source/schema audits pass. Strict has 29 unknowns; learned
 has 30 unknowns and six search timeouts. See the [final validation report](cpf5-validation.md)
 for immutable identities, formal exports and archived evidence. The milestone
 is complete; LeTA and CPF6 remain deferred, and work pauses here.
+
+## CPF6 milestone complete
+
+The existing unified LP, cut and Prolog interfaces now have CPF6 source/residual
+transport. Fifteen additional Prolog source forms close the dispatched-format
+inventory (71 forms total). All 1,274 retained certified mode entries and all
+1,274 fresh certified mode entries pass source auditing and two checker passes;
+all 80 unresolved mode entries are recorded. Fresh strict replay retains 456
+LP/cut and 187 Prolog successes; learned replay retains 454 and 177 respectively.
+
+All 22 CPF3–5 compatibility gates pass, including the complete 4,821-certificate
+CPF4 corpus twice. The [validation report](cpf6-validation.md) records immutable
+checker/source identities, regression results, end-user documentation and
+archived evidence. Only handwritten transport and format integration changed;
+Isabelle-generated mathematical checking logic remains unchanged. LeTA remains
+deferred. This milestone is complete and work pauses here as requested.

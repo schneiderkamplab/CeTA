@@ -9,3 +9,5 @@ Certificate interfaces across all categories: xml/CERTIFICATE_FORMATS.md.
 
 CPF 5 user guide: xml/CPF5.md (ITS and higher-order XML, embedded children,
 checking commands and explicit legacy compatibility).
+
+CPF 6 user guide: xml/CPF6.md (LP, cut and Prolog source certificates).

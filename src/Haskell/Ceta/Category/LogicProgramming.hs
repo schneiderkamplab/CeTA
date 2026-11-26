@@ -2,6 +2,7 @@
 -- Every acceptance branch is generated from Isabelle.
 module Ceta.Category.LogicProgramming (run, runProlog) where
 import Ceta.Input.Characters (cachedCharacters)
+import qualified Ceta.Input.Cpf6 as CPF6
 #ifdef LP_SEG_TRIPLES
 import qualified LP_Triples_Generated as T
 #endif
@@ -54,7 +55,8 @@ main = do
   args <- getArgs
   case args of
     [path] -> do
-      input <- readFile path
+      source <- readFile path
+      input <- either (\message -> putStrLn message >> exitFailure) return (CPF6.logicProgramming source)
       let xml = decodeR input
       if
 #ifdef LP_SEG_TRIPLES
@@ -116,7 +118,8 @@ runProlog ["--diagnostics", path] = do
   exitFailure
 #endif
 runProlog [path] = do
-  input <- readFile path
+  source <- readFile path
+  input <- either (\message -> putStrLn message >> exitFailure) return (CPF6.prologCertificate source)
 #ifdef LP_PROLOG_STATIC
   if PS.check_lpp_static_xml (cachedCharacters PS.explode input) ||
     PS.check_lpp_undefined_xml (cachedCharacters PS.explode input)

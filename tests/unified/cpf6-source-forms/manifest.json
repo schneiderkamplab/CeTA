@@ -1,0 +1,375 @@
+{
+  "scope": "Smallest retained certified CPF6 example per observed constructor; all 37 pass final-checker positive and malformed-envelope controls.",
+  "fixtures": [
+    {
+      "file": "000.xml.gz",
+      "constructor": "lpCutConstructorGraphTerminationProof",
+      "category": "Logic_Programming_with_Cut",
+      "answer": "yes",
+      "sha256": "46ba51bd8ccec126edee8a8150930e0e3f966816c767d45ec1a7bff7ba50c30a",
+      "source_root": "Logic_Programming_with_Cut/Schneider_Kamp_09/soundex.pl",
+      "source_sha256": "3ea9a5d9d486df5b6cec7130cbda42d9eb74835adc86569db691b7a21920c5f1",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "001.xml.gz",
+      "constructor": "lpCutSEGDependencyTriplesProof",
+      "category": "Logic_Programming",
+      "answer": "yes",
+      "sha256": "0d4dab1dcf858700c7a53e51f570b66a371e479dc22cff059ca89a0f35a3286c",
+      "source_root": "Logic_Programming/SGST06/incomplete_variant.pl",
+      "source_sha256": "04e7a62a2d800e06086425e81d5c2928b6de32f7728ece1c72b33c9d5457d21a",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "002.xml.gz",
+      "constructor": "lpCutSourceNonterminationProof",
+      "category": "Logic_Programming_with_Cut",
+      "answer": "no",
+      "sha256": "c0c303ef03f3d8add8fd6be213773545bead69ff73e36ea1e73944f5c2f287d2",
+      "source_root": "Logic_Programming_with_Cut/Schneider_Kamp_09/psk03.pl",
+      "source_sha256": "0b5368e9c17d2700545d4197a4f5cc3b7e903166d86f5ad546b3f808de339892",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "003.xml.gz",
+      "constructor": "lpTocl09AffineLoopProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "adcff4329f7a48fdedbad9eddaa106b79de67137ac8e7064a36c171b336c4613",
+      "source_root": "Logic_Programming/Payet_25/AProVE_10/andIsNat.pl",
+      "source_sha256": "a419ff63f4ad3fe3c8c5eb3e4c79f7df266deec2ddba2b01fa8ae347d0345ae4",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "004.xml.gz",
+      "constructor": "lpTocl09PatternLoopProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "3637b81288cb0112c0b67d8b603cd2382ddf8aaeb208884a7e73748dc6743d09",
+      "source_root": "Logic_Programming/Payet_25/AProVE_10/isList.pl",
+      "source_sha256": "70e9464c7cdeb06a6d112150f78e49396751ae793af2829d29d8fb5e630e5e02",
+      "origin_mode": "other-learned-socket"
+    },
+    {
+      "file": "005.xml.gz",
+      "constructor": "lpTocl09RecurrentPairProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "5c2493101b8edb8a05e8ab73e096d0c48bfa966883cf4d0e2180c0bdf70580f1",
+      "source_root": "Logic_Programming/Payet_22/payet-nonloop-1.pl",
+      "source_sha256": "ec5f270ded8e4b6d7f07126e3330763f8711095e104fa9a4a5c52ea7525a6bf8",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "006.xml.gz",
+      "constructor": "lpTocl09SourceLoopProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "4a1315444ad6095dea01b5a35a2cdd5cf3484de9ad3ba2b14ced41a049390189",
+      "source_root": "Logic_Programming/talp_plumer/pl4.5.3b.pl",
+      "source_sha256": "86f0ac6fe97c530a176938a78f6987015f379779b16b4a08d36e2c2ef91402f4",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "007.xml.gz",
+      "constructor": "lpTocl09SourceNeutralProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "eaac29b7a264e4cb69b9182e4f955a24bcc7b360694298a3eaa15fc681056276",
+      "source_root": "Logic_Programming/Payet_22/payet-loop.pl",
+      "source_sha256": "bce375106c689f839c62fbd682163afd3e2266a370ed8c126e3f338046d6a453",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "008.xml.gz",
+      "constructor": "lpTocl09SourceTraceProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "949fcca988e6c73405a86ef43bc28922957f21f3725e2745f8b859a552523d07",
+      "source_root": "Logic_Programming/Payet_25/AProVE_10/isList.pl",
+      "source_sha256": "70e9464c7cdeb06a6d112150f78e49396751ae793af2829d29d8fb5e630e5e02",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "009.xml.gz",
+      "constructor": "lpTocl09SourceUnifyProof",
+      "category": "Logic_Programming",
+      "answer": "no",
+      "sha256": "bad58bc7d31dcc9a0c697ba72c7f9010db8d07808c979ff19afa6cf19c104014",
+      "source_root": "Logic_Programming/talp_talp/example4-2.pl",
+      "source_sha256": "aae6bc8098819be7a5644be2aa9f7e2bc441399a3e1c1067da18e9cb8def6df2",
+      "origin_mode": "other-oracle"
+    },
+    {
+      "file": "010.xml.gz",
+      "constructor": "prologBinary64SourceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "dec3b1f7b0d7094298ad4e0ff89ee09c04ad311bbbcfcbaf8738033e04ca7885",
+      "source_root": "Weinert_15/get-from-list.pl",
+      "source_sha256": "e2072e35ee26434614b8dd63b982ba54ec68bc4ea40921e40abcff9f9e1d94b1",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "011.xml.gz",
+      "constructor": "prologCallTraceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "9af6f69b32beeef52d431b2d4f3ea3273cbf0be7d6180dd13703da7ad3e1aa47",
+      "source_root": "Art-of-prolog/exercise_triangle.pl",
+      "source_sha256": "435e339ed01207814df92b1db773da22f4f11249f6a0494e371d3dc8a31a5651",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "012.xml.gz",
+      "constructor": "prologDomainGraphNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "a8bbdbce786b81dbd7c3e840f4969f142d523a3d6293d51b8f3e703a38799538",
+      "source_root": "Weinert_15/division-nonterm.pl",
+      "source_sha256": "01b67ac34a50eee4c13b97c154317c0d6305ebc58da15bda8f9f88c699591d94",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "013.xml.gz",
+      "constructor": "prologEstablishedFiniteDirectProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "ba615dafc8066ae08d2c66f8381c0396acd00f1cf9caae49644dcaf4cedca764",
+      "source_root": "Weinert_15/sum.pl",
+      "source_sha256": "1243ca060fb30e92f0c8994045c4047f848b80176a795add0eb7c54d6d226797",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "014.xml.gz",
+      "constructor": "prologEstablishedFiniteLocalSEGMixedProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "d23157fabb4c7346f3be82409614212c8f9d59506b4230f6bf15d03eac87e77d",
+      "source_root": "Art-of-prolog/program-8-10.pl",
+      "source_sha256": "001cf0ea4e07e56181a89afac3cbec2982d4c747c0875845fd2a1ada449ca29b",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "015.xml.gz",
+      "constructor": "prologEstablishedFiniteSEGConstructorTriplesProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "277f0adfe59114758ce22cb7e1f9a7089c4f77d4dee7322e71297900f7275699",
+      "source_root": "prolog_mixed/permute2.pl",
+      "source_sha256": "fab7fb8ad17749dd3c7f96fc347b3d3e01e617086d3966767e8c8a69d221eb42",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "016.xml.gz",
+      "constructor": "prologEstablishedFiniteSEGDependencyTriplesProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "d68c1c06cc0bab0670203effdabea01fec39c0b6bc36de9a480c2a89ec0892a8",
+      "source_root": "AProVE_10_prolog/and1.pl",
+      "source_sha256": "d45eb00753fd9f179a3904f032bb8b66d2a08e03ec2c0fc8fee16e97ea97d10d",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "017.xml.gz",
+      "constructor": "prologEstablishedFiniteSEGGuardedProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "6148fc8e1161050a01b65d9f5dc45da1ba163c3ab96c1a4145dfaa76f19b0e13",
+      "source_root": "AProVE_numeric/svcomp-java-nested-c.pl",
+      "source_sha256": "ad13c7c4b853b2829484744bc6be71aa7660070b915f6ec5c102ddc8c4d398a8",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "018.xml.gz",
+      "constructor": "prologEstablishedSEGDependencyTriplesProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "a414d35c4dcf2008f943b60dd4df137544bafcf64ec05c23724b73059369ad5b",
+      "source_root": "Euler_queensu-cs260/evenspacedwithdiff.pl",
+      "source_sha256": "907da4648b04cb9997b2894887a760deca41c2d9eff9845e7a340020d92caa7f",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "019.xml.gz",
+      "constructor": "prologEstablishedStableSEGMixedProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "c422b478aa4b0b8a2dedaed4bcf6a9aaecd5cf09280f9cd6bcbf9a1d9b67ae5b",
+      "source_root": "Art-of-prolog/program-8-1.pl",
+      "source_sha256": "7253741b30753b545206d98be82ef1b61b22b7c14316602722ae4b6274e9d7df",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "020.xml.gz",
+      "constructor": "prologEstablishedStoppedSEGMixedProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "fe2d4c94545aa6e01b48ed72d7506c1e0ce6baaa80b322f81ebf5172629d8afd",
+      "source_root": "AProVE_numeric/svcomp-b-04-c.pl",
+      "source_sha256": "a0157b51efdfd3b184b791627381b37eea8a28f197c5c1d0c40253ae2e2270d8",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "021.xml.gz",
+      "constructor": "prologGroundIntegerSourceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "c92dc33e574fa1398da2bc898358340a706be41d2474647743ba89d4674f092e",
+      "source_root": "Hett/p2_02.pl",
+      "source_sha256": "bbfa5abc23643df6ea3ce14b56a39c6fcc885a2c2bbedd3630d40a19fa2ea8a5",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "022.xml.gz",
+      "constructor": "prologGuardedDomainGraphNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "c66a0742c732e6a4df2fa7eede9deb4b7e38ecb01839d4d255c976c332e66b23",
+      "source_root": "Art-of-prolog/exercise_range.pl",
+      "source_sha256": "af4d8040500085b680ab16101de3e2f7b0f9ef0779605d503df676ffd5c2fabf",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "023.xml.gz",
+      "constructor": "prologHelperIntegerCallsProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "f11a69a06cdabf173045afdd2b7d9c8e50884afa068015f92937ab21a0a91637",
+      "source_root": "Euler_queensu-cs260/euler-02-nonterm.pl",
+      "source_sha256": "47cc47d422d400df22a4aad6d5f49d998c050d7aae1c5897c74fce02f2b56ba3",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "024.xml.gz",
+      "constructor": "prologIntegerCallsProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "26ef64adc19a6605a1ed31b99f0226bfd2da7aba0459c27d06484bf1b5090011",
+      "source_root": "AProVE_numeric/svcomp-java-continue-c.pl",
+      "source_sha256": "06b821a4c77c53fda37dc78344293ff62894933846de2bc44589a04671cca505",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "025.xml.gz",
+      "constructor": "prologIntegerRecurrenceProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "843f077c4c1883effaf213889030d6751853533a8141ae815b7dbc20c253344d",
+      "source_root": "AProVE_numeric/et1-true-c.pl",
+      "source_sha256": "9be1a1e0f0e2fc0af089bec846352f87b6aae9e6b21fb3cff40511fd033361b9",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "026.xml.gz",
+      "constructor": "prologIntegerSourceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "b03f00301d9cd014e6fdba32e21b5c83b3f29aeaed32519fd9ab2645ea2b4084",
+      "source_root": "Weinert_15/is.pl",
+      "source_sha256": "3cb54c2c85ab87bfbd8c4c2dd9ef2dee7679822e780d9bc11b5071aed7bcd0b1",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "027.xml.gz",
+      "constructor": "prologModularReturnDependencyTriplesProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "94f259693bb4e591695a2958dcf703cb23496f8fde07d73d436d8a732e3c0b35",
+      "source_root": "prolog_mixed/gtsolve.pl",
+      "source_sha256": "d3361fa8c01ba02e6f654c6efaedacfded2d6639b48706714ad6bc21f3715823",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "028.xml.gz",
+      "constructor": "prologPartialIntegerCallsProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "0668536b87de9dd70cb17372ea822478816ecc550c2bb03a47f8f7f85d0446eb",
+      "source_root": "AProVE_numeric/rec-counter1-c.pl",
+      "source_sha256": "21356e111c7dad9f24eb779423a8f655257d1ceaa6cfd61a8fecab62213e5839",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "029.xml.gz",
+      "constructor": "prologRationalSourceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "58ad7718555b9cde82a89419e91b8c0a749a7dc40e9cfbf910683fb8ded84077",
+      "source_root": "AProVE_10_prolog/nonterm.pl",
+      "source_sha256": "1611f962ea61bc918fb652e7642a72103522c97c0f3a7ff057b4697488678632",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "030.xml.gz",
+      "constructor": "prologScalarDomainRecurrenceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "3952116ccaf6c1d21da32f40bbd53f157fff197a82a20c719414192b28d0c013",
+      "source_root": "AProVE_numeric/svcomp-a-04-c.pl",
+      "source_sha256": "c705beb3e0c1924a244b6179f030f64a891f13ad7abb629bc39e627fece481f9",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "031.xml.gz",
+      "constructor": "prologScalarRecurrenceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "94811161f2a08e6e11a832d488fe61629fe71bd777cd87ff6742b510f6c9ab5b",
+      "source_root": "Weinert_15/descend.pl",
+      "source_sha256": "9f23cc22ef8f20d9d9139e2f7c769cc49a910fda5a11e5dfa71336c8379d04fb",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "032.xml.gz",
+      "constructor": "prologStaticSEGProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "1efde690dccc4beab54f8e490fe6652e74d6a2b877e7c4673608a35e302dc16d",
+      "source_root": "AProVE_10_prolog/divrempredef.pl",
+      "source_sha256": "9bd3d76c6b0276ab7b39518de40e6e2e2a4bbd1ae84667ddec0cd8bb05f66705",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "033.xml.gz",
+      "constructor": "prologStaticUniformRecursionProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "0f7b8787c045bd263c608b68ad9b3dca6aa42af807e55085a9259c61745d14dd",
+      "source_root": "Weinert_15/descend-nonterm.pl",
+      "source_sha256": "896df20d1b95b57cd5027cfa0ddd5c486e44f74083619122ddbadce607054dc4",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "034.xml.gz",
+      "constructor": "prologTestSourceNonterminationProof",
+      "category": "Prolog",
+      "answer": "no",
+      "sha256": "dcae9d305ba4fc678cfebd2f02e6373bcf614c64f6137261cbffe5751000cdc6",
+      "source_root": "AProVE_10_prolog/inequality1.pl",
+      "source_sha256": "b1395f616bda0f7c86902280bfd022e50cb439a430804cb415c2941296890c2e",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "035.xml.gz",
+      "constructor": "prologUndefinedQueryProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "273bb06f1f3c4ff462179565d92235866083d457c523504fb2cb79e6b4557041",
+      "source_root": "Hett/p1_19.pl",
+      "source_sha256": "a31225c62286bbb2ba39361958f0ae1e6d8e881be944f4af776660d328a615e3",
+      "origin_mode": "prolog-oracle"
+    },
+    {
+      "file": "036.xml.gz",
+      "constructor": "prologVarReturnDependencyTriplesProof",
+      "category": "Prolog",
+      "answer": "yes",
+      "sha256": "1ed9d772902f82e4306c3796f406f6c9eda95488cf94eb9f50ea741eb38d77d7",
+      "source_root": "AProVE_10_prolog/term.pl",
+      "source_sha256": "cae4b6e26313948c773f352d2017facbf564b530a8889604b9edee263065a833",
+      "origin_mode": "prolog-oracle"
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+[
+  {
+    "root": "prologBinary64SourceNonterminationProof",
+    "answer": "no",
+    "fields": [
+      "fuel",
+      "arguments",
+      "core|coreGoals",
+      "before",
+      "after",
+      "prefix",
+      "loop"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Binary64_NO_XML.thy"
+  },
+  {
+    "root": "prologContextITSProof",
+    "answer": "yes",
+    "fields": [
+      "fuel",
+      "roots",
+      "regions",
+      "prologNumericComponent"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Context_ITS_XML.thy"
+  },
+  {
+    "root": "prologDomainGraphNonterminationProof",
+    "answer": "no",
+    "fields": [
+      "version",
+      "fuel",
+      "arguments",
+      "prefix",
+      "corePredicate",
+      "coreArguments",
+      "pending",
+      "saved",
+      "observations",
+      "initialRecipes",
+      "entry",
+      "modules"
+    ],
+    "version_before_source": true,
+    "parser": "thys/Logic_Programming/LP_Prolog_Domain_Graph_XML.thy"
+  },
+  {
+    "root": "prologEstablishedFiniteSEGGuardedProof",
+    "answer": "yes",
+    "fields": [
+      "fuel",
+      "chainPredicate",
+      "triples",
+      "successProgram",
+      "prologSuccessTransferContract",
+      "contexts",
+      "roots",
+      "components",
+      "observedTriples",
+      "guardedDescents",
+      "argumentProjection",
+      "prologNumericComponent"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Finite_Guarded_XML.thy"
+  },
+  {
+    "root": "prologEstablishedFiniteLocalSEGMixedProof",
+    "answer": "yes",
+    "fields": [
+      "signatures",
+      "fuel",
+      "chainPredicate",
+      "triples",
+      "successProgram",
+      "prologSuccessTransferContract",
+      "contexts",
+      "roots",
+      "components",
+      "observedTriples",
+      "guardedDescents",
+      "routing",
+      "backends"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Finite_Local_Mixed_XML.thy"
+  },
+  {
+    "root": "prologGuardedDomainGraphNonterminationProof",
+    "answer": "no",
+    "fields": [
+      "version",
+      "fuel",
+      "arguments",
+      "prefix",
+      "corePredicate",
+      "coreArguments",
+      "pending",
+      "saved",
+      "observations",
+      "initialRecipes",
+      "entry",
+      "modules"
+    ],
+    "version_before_source": true,
+    "parser": "thys/Logic_Programming/LP_Prolog_Guarded_Domain_Graph_XML.thy"
+  },
+  {
+    "root": "prologHelperIntegerCallsProof",
+    "answer": "no",
+    "fields": [
+      "observations",
+      "interfaces",
+      "callEdges",
+      "numericChild"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Helper_Call_XML.thy"
+  },
+  {
+    "root": "prologIntegerCallsProof",
+    "answer": "no",
+    "fields": [
+      "interfaces",
+      "callEdges",
+      "numericChild"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Integer_Call_XML.thy"
+  },
+  {
+    "root": "prologIntegerRecurrenceProof",
+    "answer": "no",
+    "fields": [
+      "clause",
+      "variables",
+      "operations",
+      "outputs",
+      "coordinates",
+      "location",
+      "numericChild"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_XML.thy"
+  },
+  {
+    "root": "prologCallTraceNonterminationProof",
+    "answer": "no",
+    "fields": [
+      "version",
+      "fuel",
+      "arguments",
+      "prefix",
+      "core",
+      "pending",
+      "saved",
+      "reserved",
+      "interface",
+      "calls",
+      "traces"
+    ],
+    "version_before_source": true,
+    "parser": "thys/Logic_Programming/LP_Prolog_NO_Call_Trace_XML.thy"
+  },
+  {
+    "root": "prologPartialIntegerCallsProof",
+    "answer": "no",
+    "fields": [
+      "observations",
+      "interfaces",
+      "callEdges",
+      "numericChild"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Partial_Integer_XML.thy"
+  },
+  {
+    "root": "prologScalarDomainRecurrenceNonterminationProof",
+    "answer": "no",
+    "fields": [
+      "version",
+      "fuel",
+      "arguments",
+      "prefix",
+      "corePredicate",
+      "coreArguments",
+      "pending",
+      "saved",
+      "observations",
+      "initialRecipes",
+      "selection",
+      "variables",
+      "actions",
+      "outputs",
+      "recipes",
+      "failures"
+    ],
+    "version_before_source": true,
+    "parser": "thys/Logic_Programming/LP_Prolog_Scalar_Domain_XML.thy"
+  },
+  {
+    "root": "prologScalarRecurrenceNonterminationProof",
+    "answer": "no",
+    "fields": [
+      "observations",
+      "selection",
+      "variables",
+      "actions",
+      "outputs",
+      "recipes",
+      "failures"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Scalar_Recurrence_XML.thy"
+  },
+  {
+    "root": "prologEstablishedStableSEGMixedProof",
+    "answer": "yes",
+    "fields": [
+      "fuel",
+      "chainPredicate",
+      "triples",
+      "successProgram",
+      "prologSuccessTransferContract",
+      "contexts",
+      "roots",
+      "components",
+      "observedTriples",
+      "routing",
+      "backends"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Stable_Mixed_XML.thy"
+  },
+  {
+    "root": "prologEstablishedStoppedSEGMixedProof",
+    "answer": "yes",
+    "fields": [
+      "fuel",
+      "chainPredicate",
+      "triples",
+      "successProgram",
+      "prologSuccessTransferContract",
+      "contexts",
+      "roots",
+      "components",
+      "observedTriples",
+      "successCases?",
+      "equationNormalizationFuel?",
+      "normalizedTriples?",
+      "routing",
+      "backends"
+    ],
+    "version_before_source": false,
+    "parser": "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy"
+  }
+]

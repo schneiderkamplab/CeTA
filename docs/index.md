@@ -71,3 +71,7 @@ okf_version: "0.2"
 - [LP refactor historical checkpoints](lp-refactor-history-20261117.md) — Intermediate states superseded by the ranked LP verification.
 
 - [CPF 5 validation](cpf5-validation.md) — Completed compatibility, certification and fresh replay gates.
+
+- [CPF 6 user guide](../xml/CPF6.md) — LP, cut and Prolog certificate semantics and checking commands.
+
+- [CPF 6 validation](cpf6-validation.md) — Certificate integration, compatibility and oracle-guided replay evidence.

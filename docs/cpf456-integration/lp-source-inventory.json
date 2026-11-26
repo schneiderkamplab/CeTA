@@ -1,0 +1,1185 @@
+{
+  "scope": "LP/Prolog-prefixed XMLdo constructors in Logic_Programming/*.thy and generated checker calls in the unified LP adapter. Includes nested forms; not an exhaustive transitive parser or proof-coverage audit.",
+  "adapter_sha256": "59da4806d5a04e1205787f668ddabe9694189f4fb75f2fffaa36e7df8f1485ca",
+  "checker_functions": [
+    "check_lp_constructor_any_xml",
+    "check_lp_finite_xml",
+    "check_lp_initial_triples_xml",
+    "check_lp_nontermination_all_xml",
+    "check_lp_triple_pidp_xml",
+    "check_lpc_constructor_xml",
+    "check_lpc_mgu_constructor_xml",
+    "check_lpc_no_xml",
+    "check_lpc_projected_xml",
+    "check_lpc_return_composed_constructor_xml",
+    "check_lpc_return_composed_triples_xml",
+    "check_lpc_return_constructor_xml",
+    "check_lpc_return_module_constructor_xml",
+    "check_lpc_return_module_triples_xml",
+    "check_lpc_return_nested_constructor_xml",
+    "check_lpc_return_nested_triples_xml",
+    "check_lpc_return_triples_xml",
+    "check_lpc_seg_certificate_xml",
+    "check_lpc_seg_free_certificate_xml",
+    "check_lpc_seg_projected_certificate_xml",
+    "check_lpc_seg_triples_xml",
+    "check_lpc_uniform_xml",
+    "check_lpc_xml",
+    "check_lpp_call_trace_xml",
+    "check_lpp_context_certificate_xml",
+    "check_lpp_context_composed_certificate_xml",
+    "check_lpp_context_its_xml",
+    "check_lpp_domain_graph_xml",
+    "check_lpp_domain_recurrence_xml",
+    "check_lpp_established_constructor_triples_xml",
+    "check_lpp_established_finite_constructor_triples_xml",
+    "check_lpp_established_finite_direct_xml",
+    "check_lpp_established_finite_guarded_xml",
+    "check_lpp_established_finite_local_mixed_xml",
+    "check_lpp_established_finite_triples_xml",
+    "check_lpp_established_stable_guarded_xml",
+    "check_lpp_established_stable_mixed_xml",
+    "check_lpp_established_stopped_mixed_xml",
+    "check_lpp_established_triples_xml",
+    "check_lpp_ground_integer_no_xml",
+    "check_lpp_guarded_domain_graph_xml",
+    "check_lpp_helper_integer_calls_xml",
+    "check_lpp_integer_calls_xml",
+    "check_lpp_integer_no_xml",
+    "check_lpp_integer_recurrence_xml",
+    "check_lpp_machine_no_xml",
+    "check_lpp_module_triples_xml",
+    "check_lpp_partial_integer_calls_xml",
+    "check_lpp_rational_no_xml",
+    "check_lpp_return_triples_xml",
+    "check_lpp_scalar_recurrence_xml",
+    "check_lpp_static_no_xml",
+    "check_lpp_static_xml",
+    "check_lpp_test_no_xml",
+    "check_lpp_undefined_xml",
+    "check_lpp_uniform_xml"
+  ],
+  "constructors": [
+    {
+      "name": "lpAnswerGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Constructor_XML.thy",
+          "line": 49
+        },
+        {
+          "file": "thys/Logic_Programming/LP_SEG_Residual_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpConstructorQDpTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Constructor_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutConstructorGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Constructor_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Table_XML.thy",
+          "line": 176
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutMguConstructorGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_MGU_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutProjectedGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Projected_XML.thy",
+          "line": 67
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnComposedConstructorGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Composed_XML.thy",
+          "line": 96
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnComposedDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Composed_Triples_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnComposedTable",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Composed_XML.thy",
+          "line": 121
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnConstructorGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_XML.thy",
+          "line": 64
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Triples_XML.thy",
+          "line": 44
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnModuleConstructorGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Module_XML.thy",
+          "line": 17
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnModuleDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Module_Triples_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnModuleTable",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Module_XML.thy",
+          "line": 42
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnNestedConstructorGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Nested_XML.thy",
+          "line": 45
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnNestedDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_Nested_Triples_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutReturnTable",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Return_XML.thy",
+          "line": 89
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGControl",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Control_XML.thy",
+          "line": 53
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Triple_XML.thy",
+          "line": 72
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGFreeTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Free_Certificate_XML.thy",
+          "line": 18
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGGround",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Ground_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGInstance",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Instance_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGMeasure",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Measure_XML.thy",
+          "line": 13
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGProjectedTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Projected_Certificate_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGRoles",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Roles_XML.thy",
+          "line": 11
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSEGTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_SEG_Certificate_XML.thy",
+          "line": 96
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutSourceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_NO_XML.thy",
+          "line": 30
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpCutUniformRecursionProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Cut_Uniform_Recursion_XML.thy",
+          "line": 41
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpDependencyTriplesConstructorProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Dependency_Triple_Constructor_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpDependencyTriplesPiDpProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Dependency_Triple_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpFiniteTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Finite_Checker.thy",
+          "line": 180
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "partial_child_coverage"
+    },
+    {
+      "name": "lpSymbolicGraphTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_SEG_XML.thy",
+          "line": 33
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpTocl09AffineLoopProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Affine_Loop_XML.thy",
+          "line": 36
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09ModeTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Mode_Checker.thy",
+          "line": 35
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpTocl09PatternLoopProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Pattern_Trace_XML.thy",
+          "line": 42
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09PiDpModeTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_PiDP_XML.thy",
+          "line": 51
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpTocl09PiDpTerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_PiDP_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpTocl09RecurrentPairProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Recurrent_Pair_XML.thy",
+          "line": 13
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09SimplificationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Source_Simplify_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpTocl09SourceGraphProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Source_Graph_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "lpTocl09SourceLoopProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Source_Loop_XML.thy",
+          "line": 44
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09SourceNeutralProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Source_Unify_XML.thy",
+          "line": 50
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09SourceTraceProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Source_Trace_XML.thy",
+          "line": 49
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09SourceUnifyProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Source_Unify_XML.thy",
+          "line": 14
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "implemented"
+    },
+    {
+      "name": "lpTocl09TerminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_TOCL09_Checker.thy",
+          "line": 54
+        }
+      ],
+      "cpf6_envelope": "implemented",
+      "leta_direct": "partial_child_coverage"
+    },
+    {
+      "name": "prologBinary64SourceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Binary64_NO_XML.thy",
+          "line": 40
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologCallTraceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_NO_Call_Trace_XML.thy",
+          "line": 14
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextComposed",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_Composed_XML.thy",
+          "line": 32
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextComposedDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_Composed_Certificate.thy",
+          "line": 70
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextControl",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_ITS_XML.thy",
+          "line": 7
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_Certificate.thy",
+          "line": 70
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextITSProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_ITS_XML.thy",
+          "line": 48
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextModule",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_Module_XML.thy",
+          "line": 44
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextReferences",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_References_XML.thy",
+          "line": 32
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextReferencesDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_References_Certificate.thy",
+          "line": 70
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextRegion",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_ITS_XML.thy",
+          "line": 34
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologContextTable",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Context_XML.thy",
+          "line": 70
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologDomainGraphNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Domain_Graph_XML.thy",
+          "line": 48
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedFiniteDirectProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Direct_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedFiniteLocalSEGMixedProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Local_Mixed_XML.thy",
+          "line": 25
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedFiniteSEGConstructorTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Constructor_Triple_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedFiniteSEGDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 146
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedFiniteSEGGuardedProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Guarded_XML.thy",
+          "line": 16
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedSEGConstructorTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Constructor_Triple_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedSEGDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+          "line": 104
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedStableSEGGuardedProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Stable_Guarded_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedStableSEGMixedProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Stable_Mixed_XML.thy",
+          "line": 25
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEstablishedStoppedSEGMixedProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy",
+          "line": 175
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologEvaluationControl",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 6
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy",
+          "line": 35
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologGroundIntegerSourceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Ground_Integer_NO_XML.thy",
+          "line": 14
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologGuardedDomainGraphNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Guarded_Domain_Graph_XML.thy",
+          "line": 20
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologHelperIntegerCallsProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Helper_Call_XML.thy",
+          "line": 50
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologIntegerCallsProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Integer_Call_XML.thy",
+          "line": 30
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologIntegerRecurrenceProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Integer_Recurrence_XML.thy",
+          "line": 17
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologIntegerSourceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Integer_NO_XML.thy",
+          "line": 11
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologModularReturnDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Return_Module_XML.thy",
+          "line": 112
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologNumericComponent",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Numeric_Component_XML.thy",
+          "line": 28
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologNumericGuard",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Numeric_Row_XML.thy",
+          "line": 64
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologNumericPath",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Numeric_Path_XML.thy",
+          "line": 12
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologPartialIntegerCallsProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Partial_Integer_XML.thy",
+          "line": 24
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologRationalSourceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Rational_NO_XML.thy",
+          "line": 42
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologScalarDomainRecurrenceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Scalar_Domain_XML.thy",
+          "line": 20
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologScalarRecurrenceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Scalar_Recurrence_XML.thy",
+          "line": 35
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologStableNumericComponent",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Stable_Numeric_XML.thy",
+          "line": 125
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologStaticNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Static_NO_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologStaticSEGProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Static_XML.thy",
+          "line": 14
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologStaticUniformRecursionProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Uniform_NO_XML.thy",
+          "line": 6
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologSuccessMagnitudeContract",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Success_Magnitude_XML.thy",
+          "line": 25
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologSuccessOrderContract",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Success_Order_XML.thy",
+          "line": 28
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologSuccessTransferContract",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Success_Transfer_XML.thy",
+          "line": 14
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologSuccessTypeContract",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Success_Types_XML.thy",
+          "line": 42
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologTestSourceNonterminationProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Test_NO_XML.thy",
+          "line": 11
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologTripleGroundSplit",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 96
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+          "line": 90
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologTripleIntegerSplit",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 67
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+          "line": 67
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologTripleRegion",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 34
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Stopped_Mixed_XML.thy",
+          "line": 76
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+          "line": 34
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologTripleShapeSplit",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 130
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologTripleSplit",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Finite_Triple_XML.thy",
+          "line": 48
+        },
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Triple_XML.thy",
+          "line": 48
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologUndefinedQueryProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Undefined_XML.thy",
+          "line": 32
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    },
+    {
+      "name": "prologVarReturnDependencyTriplesProof",
+      "locations": [
+        {
+          "file": "thys/Logic_Programming/LP_Prolog_Return_XML.thy",
+          "line": 182
+        }
+      ],
+      "cpf6_envelope": "pending",
+      "leta_direct": "pending"
+    }
+  ]
+}

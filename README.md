@@ -19,8 +19,14 @@ Ferrum exports structured XML, including embedded first-order children for
 higher-order delegation. The same unified CeTA executable checks these forms.
 See the [CPF 5 user guide](xml/CPF5.md) for examples, category commands and
 legacy compatibility, and the [validation report](docs/cpf5-validation.md)
-for the completed compatibility and oracle-guided replay gates. CPF 6 and LeTA
-implementation remain deferred.
+for the completed compatibility and oracle-guided replay gates. LeTA implementation remains deferred.
+
+## CPF 6: LP, cut and Prolog
+
+CPF 6 inherits CPF 5 and adds complete source-bound XML envelopes for the
+existing LP, LP-with-cut and Prolog checker interfaces. See the
+[CPF 6 user guide](xml/CPF6.md) for semantics, category commands, schemas,
+recursive proof forms and legacy compatibility. LeTA remains deferred.
 
 ## Build the unified checker
 
