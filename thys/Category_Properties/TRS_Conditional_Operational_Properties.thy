@@ -21,7 +21,7 @@ proof (rule ccontr)
   have edge: "conditional_evaluation_step A R (CReach (ts i) (ts 0))
       (CReach (ts (Suc i)) (ts 0))" for i
     unfolding conditional_evaluation_step_def
-    by (intro exI[of _ "[CRewrite (ts i) (ts (Suc i)), CReach (ts (Suc i)) (ts 0)]"]
+    by (intro exI[of _ "[CStep (ts i) (ts (Suc i)), CReach (ts (Suc i)) (ts 0)]"]
       exI[of _ 1] conjI; (rule conditional_inference.transitive[OF wf wf wf] |
         simp add: conditional_step_def[symmetric] steps less_Suc_eq))
   have "\<not> trs_conditional_operationally_terminates A R"
